@@ -154,3 +154,93 @@ public static class array
         a.capacity = 0;
     }
 }
+
+// public struct b2ArraySegment<T>
+// {
+//     private readonly b2Array<T> _array;
+//
+//     public b2ArraySegment(b2Array<T> array)
+//     {
+//         _array = array;
+//     }
+//     
+//     public T this[int index]
+//     {
+//         get => _array[index];
+//         //set => _array[index] = value;
+//     }
+//
+//     public ReadOnlySpan<T> AsReadOnlySpan()
+//     {
+//         return _array.AsSpan();
+//     }
+// }
+//
+//
+// public class b2Array<T>
+// {
+//     private List<T> _list;
+//     
+//     public int count => _list.Count;
+//     public int capacity => _list.Capacity;
+//
+//     public b2Array(int capacity)
+//     {
+//         _list = new(capacity);
+//     }
+//
+//     public void Add(T item)
+//     {
+//         _list.Add(item);
+//     }
+//
+//     public T this[int index]
+//     {
+//         get => _list[index];
+//         set => _list[index] = value;
+//     }
+//     
+//     public T this[uint index]
+//     {
+//         get => _list[(int)index];
+//         set => _list[(int)index] = value;
+//     }
+//
+//     public void Destroy()
+//     {
+//         _list.Clear();
+//     }
+//
+//     public void Clear()
+//     {
+//         _list.Clear();
+//     }
+//
+//     public void EnsureCapacity(int capacity)
+//     {
+//         _list.EnsureCapacity(capacity);
+//     }
+//
+//     public int RemoveSwap(int index)
+//     {
+//         int movedIndex = B2_NULL_INDEX;
+//         if (index != _list.Count - 1)
+//         {
+//             movedIndex = _list.Count - 1;
+//             _list[index] = _list[movedIndex];
+//             _list.RemoveAt(movedIndex);
+//         }
+//
+//         return movedIndex;
+//     }
+//
+//     public b2ArraySegment<T> AsArraySegment()
+//     {
+//         return new b2ArraySegment<T>(this);
+//     }
+//     
+//     public Span<T> AsSpan()
+//     {
+//         return CollectionsMarshal.AsSpan(_list);
+//     }
+// }
