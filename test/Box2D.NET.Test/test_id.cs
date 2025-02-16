@@ -3,20 +3,6 @@
 
 using NUnit.Framework;
 using static Box2D.NET.id;
-using static Box2D.NET.shape;
-using static Box2D.NET.solver;
-using static Box2D.NET.body;
-using static Box2D.NET.world;
-using static Box2D.NET.joint;
-using static Box2D.NET.distance_joint;
-using static Box2D.NET.motor_joint;
-using static Box2D.NET.mouse_joint;
-using static Box2D.NET.prismatic_joint;
-using static Box2D.NET.revolute_joint;
-using static Box2D.NET.weld_joint;
-using static Box2D.NET.wheel_joint;
-using static Box2D.NET.id_pool;
-using static Box2D.NET.manifold;
 
 namespace Box2D.NET.Test;
 

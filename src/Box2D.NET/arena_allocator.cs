@@ -3,15 +3,8 @@
 
 using System;
 using System.Diagnostics;
-using static Box2D.NET.table;
 using static Box2D.NET.array;
-using static Box2D.NET.atomic;
-using static Box2D.NET.dynamic_tree;
 using static Box2D.NET.core;
-using static Box2D.NET.types;
-using static Box2D.NET.constants;
-using static Box2D.NET.contact;
-using static Box2D.NET.math_function;
 
 
 namespace Box2D.NET;

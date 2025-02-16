@@ -3,7 +3,6 @@
 
 using System.Diagnostics;
 using static Box2D.NET.ctz;
-using static Box2D.NET.math_function;
 using static Box2D.NET.core;
 
 namespace Box2D.NET;

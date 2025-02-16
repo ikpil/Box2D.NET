@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using static Box2D.NET.math_function;
-using static Box2D.NET.geometry;
 using static Box2D.NET.constants;
 using static Box2D.NET.distance;
 
