@@ -60,12 +60,12 @@ public class solver_set
 {
     public static void b2DestroySolverSet(b2World world, int setIndex)
     {
-        b2SolverSet set = Array_Get(world.solverSets, setIndex);
-        Array_Destroy(set.bodySims);
-        Array_Destroy(set.bodyStates);
-        Array_Destroy(set.contactSims);
-        Array_Destroy(set.jointSims);
-        Array_Destroy(set.islandSims);
+        b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
+        b2Array_Destroy(set.bodySims);
+        b2Array_Destroy(set.bodyStates);
+        b2Array_Destroy(set.contactSims);
+        b2Array_Destroy(set.jointSims);
+        b2Array_Destroy(set.islandSims);
         b2FreeId(world.solverSetIdPool, setIndex);
         set.Clear();
         set.setIndex = B2_NULL_INDEX;
@@ -80,9 +80,9 @@ public class solver_set
     public static void b2WakeSolverSet(b2World world, int setIndex)
     {
         Debug.Assert(setIndex >= (int)b2SetType.b2_firstSleepingSet);
-        b2SolverSet set = Array_Get(world.solverSets, setIndex);
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-        b2SolverSet disabledSet = Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+        b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
 
         b2Body[] bodies = world.bodies.data;
 
@@ -99,11 +99,11 @@ public class solver_set
             // Reset sleep timer
             body.sleepTime = 0.0f;
 
-            b2BodySim simDst = Array_Add(awakeSet.bodySims);
+            b2BodySim simDst = b2Array_Add(awakeSet.bodySims);
             //memcpy( simDst, simSrc, sizeof( b2BodySim ) );
             simDst.CopyFrom(simSrc);
 
-            b2BodyState state = Array_Add(awakeSet.bodyStates);
+            b2BodyState state = b2Array_Add(awakeSet.bodyStates);
             state.CopyFrom(b2_identityBodyState);
 
             // move non-touching contacts from disabled set to awake set
@@ -113,7 +113,7 @@ public class solver_set
                 int edgeIndex = contactKey & 1;
                 int contactId = contactKey >> 1;
 
-                b2Contact contact = Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(world.contacts, contactId);
 
                 contactKey = contact.edges[edgeIndex].nextKey;
 
@@ -124,22 +124,22 @@ public class solver_set
                 }
 
                 int localIndex = contact.localIndex;
-                b2ContactSim contactSim = Array_Get(disabledSet.contactSims, localIndex);
+                b2ContactSim contactSim = b2Array_Get(disabledSet.contactSims, localIndex);
 
                 Debug.Assert((contact.flags & (int)b2ContactFlags.b2_contactTouchingFlag) == 0 && contactSim.manifold.pointCount == 0);
 
                 contact.setIndex = (int)b2SetType.b2_awakeSet;
                 contact.localIndex = awakeSet.contactSims.count;
-                b2ContactSim awakeContactSim = Array_Add(awakeSet.contactSims);
+                b2ContactSim awakeContactSim = b2Array_Add(awakeSet.contactSims);
                 //memcpy( awakeContactSim, contactSim, sizeof( b2ContactSim ) );
                 awakeContactSim.CopyFrom(contactSim);
 
-                int movedLocalIndex = Array_RemoveSwap(disabledSet.contactSims, localIndex);
+                int movedLocalIndex = b2Array_RemoveSwap(disabledSet.contactSims, localIndex);
                 if (movedLocalIndex != B2_NULL_INDEX)
                 {
                     // fix moved element
                     b2ContactSim movedContactSim = disabledSet.contactSims.data[localIndex];
-                    b2Contact movedContact = Array_Get(world.contacts, movedContactSim.contactId);
+                    b2Contact movedContact = b2Array_Get(world.contacts, movedContactSim.contactId);
                     Debug.Assert(movedContact.localIndex == movedLocalIndex);
                     movedContact.localIndex = localIndex;
                 }
@@ -152,7 +152,7 @@ public class solver_set
             for (int i = 0; i < contactCount; ++i)
             {
                 b2ContactSim contactSim = set.contactSims.data[i];
-                b2Contact contact = Array_Get(world.contacts, contactSim.contactId);
+                b2Contact contact = b2Array_Get(world.contacts, contactSim.contactId);
                 Debug.Assert(0 != (contact.flags & (int)b2ContactFlags.b2_contactTouchingFlag));
                 Debug.Assert(0 != (contactSim.simFlags & (int)b2ContactSimFlags.b2_simTouchingFlag));
                 Debug.Assert(contactSim.manifold.pointCount > 0);
@@ -168,7 +168,7 @@ public class solver_set
             for (int i = 0; i < jointCount; ++i)
             {
                 b2JointSim jointSim = set.jointSims.data[i];
-                b2Joint joint = Array_Get(world.joints, jointSim.jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointSim.jointId);
                 Debug.Assert(joint.setIndex == setIndex);
                 b2AddJointToGraph(world, jointSim, joint);
                 joint.setIndex = (int)b2SetType.b2_awakeSet;
@@ -184,10 +184,10 @@ public class solver_set
             for (int i = 0; i < islandCount; ++i)
             {
                 b2IslandSim islandSrc = set.islandSims.data[i];
-                b2Island island = Array_Get(world.islands, islandSrc.islandId);
+                b2Island island = b2Array_Get(world.islands, islandSrc.islandId);
                 island.setIndex = (int)b2SetType.b2_awakeSet;
                 island.localIndex = awakeSet.islandSims.count;
-                b2IslandSim islandDst = Array_Add(awakeSet.islandSims);
+                b2IslandSim islandDst = b2Array_Add(awakeSet.islandSims);
                 //memcpy( islandDst, islandSrc, sizeof( b2IslandSim ) );
                 islandDst.CopyFrom(islandSrc);
             }
@@ -201,7 +201,7 @@ public class solver_set
 
     public static void b2TrySleepIsland(b2World world, int islandId)
     {
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
         Debug.Assert(island.setIndex == (int)b2SetType.b2_awakeSet);
 
         // cannot put an island to sleep while it has a pending split
@@ -221,30 +221,30 @@ public class solver_set
         {
             b2SolverSet set = new b2SolverSet();
             set.setIndex = B2_NULL_INDEX;
-            Array_Push(world.solverSets, set);
+            b2Array_Push(world.solverSets, set);
         }
 
-        b2SolverSet sleepSet = Array_Get(world.solverSets, sleepSetId);
+        b2SolverSet sleepSet = b2Array_Get(world.solverSets, sleepSetId);
         //*sleepSet = ( b2SolverSet ){ 0 };
         sleepSet.Clear();
 
         // grab awake set after creating the sleep set because the solver set array may have been resized
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         Debug.Assert(0 <= island.localIndex && island.localIndex < awakeSet.islandSims.count);
 
         sleepSet.setIndex = sleepSetId;
-        sleepSet.bodySims = Array_Create<b2BodySim>(island.bodyCount);
-        sleepSet.contactSims = Array_Create<b2ContactSim>(island.contactCount);
-        sleepSet.jointSims = Array_Create<b2JointSim>(island.jointCount);
+        sleepSet.bodySims = b2Array_Create<b2BodySim>(island.bodyCount);
+        sleepSet.contactSims = b2Array_Create<b2ContactSim>(island.contactCount);
+        sleepSet.jointSims = b2Array_Create<b2JointSim>(island.jointCount);
 
         // move awake bodies to sleeping set
         // this shuffles around bodies in the awake set
         {
-            b2SolverSet disabledSet = Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+            b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
             int bodyId = island.headBody;
             while (bodyId != B2_NULL_INDEX)
             {
-                b2Body body = Array_Get(world.bodies, bodyId);
+                b2Body body = b2Array_Get(world.bodies, bodyId);
                 Debug.Assert(body.setIndex == (int)b2SetType.b2_awakeSet);
                 Debug.Assert(body.islandId == islandId);
 
@@ -252,7 +252,7 @@ public class solver_set
                 // It could happen the body is forced asleep before it ever moves.
                 if (body.bodyMoveIndex != B2_NULL_INDEX)
                 {
-                    b2BodyMoveEvent moveEvent = Array_Get(world.bodyMoveEvents, body.bodyMoveIndex);
+                    b2BodyMoveEvent moveEvent = b2Array_Get(world.bodyMoveEvents, body.bodyMoveIndex);
                     Debug.Assert(moveEvent.bodyId.index1 - 1 == bodyId);
                     Debug.Assert(moveEvent.bodyId.generation == body.generation);
                     moveEvent.fellAsleep = true;
@@ -260,27 +260,27 @@ public class solver_set
                 }
 
                 int awakeBodyIndex = body.localIndex;
-                b2BodySim awakeSim = Array_Get(awakeSet.bodySims, awakeBodyIndex);
+                b2BodySim awakeSim = b2Array_Get(awakeSet.bodySims, awakeBodyIndex);
 
                 // move body sim to sleep set
                 int sleepBodyIndex = sleepSet.bodySims.count;
-                b2BodySim sleepBodySim = Array_Add(sleepSet.bodySims);
+                b2BodySim sleepBodySim = b2Array_Add(sleepSet.bodySims);
                 //memcpy( sleepBodySim, awakeSim, sizeof( b2BodySim ) );
                 sleepBodySim.CopyFrom(awakeSim);
 
-                int movedIndex = Array_RemoveSwap(awakeSet.bodySims, awakeBodyIndex);
+                int movedIndex = b2Array_RemoveSwap(awakeSet.bodySims, awakeBodyIndex);
                 if (movedIndex != B2_NULL_INDEX)
                 {
                     // fix local index on moved element
                     b2BodySim movedSim = awakeSet.bodySims.data[awakeBodyIndex];
                     int movedId = movedSim.bodyId;
-                    b2Body movedBody = Array_Get(world.bodies, movedId);
+                    b2Body movedBody = b2Array_Get(world.bodies, movedId);
                     Debug.Assert(movedBody.localIndex == movedIndex);
                     movedBody.localIndex = awakeBodyIndex;
                 }
 
                 // destroy state, no need to clone
-                Array_RemoveSwap(awakeSet.bodyStates, awakeBodyIndex);
+                b2Array_RemoveSwap(awakeSet.bodyStates, awakeBodyIndex);
 
                 body.setIndex = sleepSetId;
                 body.localIndex = sleepBodyIndex;
@@ -293,7 +293,7 @@ public class solver_set
                     int contactId = contactKey >> 1;
                     int edgeIndex = contactKey & 1;
 
-                    b2Contact contact = Array_Get(world.contacts, contactId);
+                    b2Contact contact = b2Array_Get(world.contacts, contactId);
 
                     Debug.Assert(contact.setIndex == (int)b2SetType.b2_awakeSet || contact.setIndex == (int)b2SetType.b2_disabledSet);
                     contactKey = contact.edges[edgeIndex].nextKey;
@@ -315,14 +315,14 @@ public class solver_set
                     // for moving this contact to the disabled set.
                     int otherEdgeIndex = edgeIndex ^ 1;
                     int otherBodyId = contact.edges[otherEdgeIndex].bodyId;
-                    b2Body otherBody = Array_Get(world.bodies, otherBodyId);
+                    b2Body otherBody = b2Array_Get(world.bodies, otherBodyId);
                     if (otherBody.setIndex == (int)b2SetType.b2_awakeSet)
                     {
                         continue;
                     }
 
                     int localIndex = contact.localIndex;
-                    b2ContactSim contactSim = Array_Get(awakeSet.contactSims, localIndex);
+                    b2ContactSim contactSim = b2Array_Get(awakeSet.contactSims, localIndex);
 
                     Debug.Assert(contactSim.manifold.pointCount == 0);
                     Debug.Assert((contact.flags & (int)b2ContactFlags.b2_contactTouchingFlag) == 0);
@@ -330,16 +330,16 @@ public class solver_set
                     // move the non-touching contact to the disabled set
                     contact.setIndex = (int)b2SetType.b2_disabledSet;
                     contact.localIndex = disabledSet.contactSims.count;
-                    b2ContactSim disabledContactSim = Array_Add(disabledSet.contactSims);
+                    b2ContactSim disabledContactSim = b2Array_Add(disabledSet.contactSims);
                     //memcpy( disabledContactSim, contactSim, sizeof( b2ContactSim ) );
                     disabledContactSim.CopyFrom(contactSim);
 
-                    int movedLocalIndex = Array_RemoveSwap(awakeSet.contactSims, localIndex);
+                    int movedLocalIndex = b2Array_RemoveSwap(awakeSet.contactSims, localIndex);
                     if (movedLocalIndex != B2_NULL_INDEX)
                     {
                         // fix moved element
                         b2ContactSim movedContactSim = awakeSet.contactSims.data[localIndex];
-                        b2Contact movedContact = Array_Get(world.contacts, movedContactSim.contactId);
+                        b2Contact movedContact = b2Array_Get(world.contacts, movedContactSim.contactId);
                         Debug.Assert(movedContact.localIndex == movedLocalIndex);
                         movedContact.localIndex = localIndex;
                     }
@@ -355,7 +355,7 @@ public class solver_set
             int contactId = island.headContact;
             while (contactId != B2_NULL_INDEX)
             {
-                b2Contact contact = Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(world.contacts, contactId);
                 Debug.Assert(contact.setIndex == (int)b2SetType.b2_awakeSet);
                 Debug.Assert(contact.islandId == islandId);
                 int colorIndex = contact.colorIndex;
@@ -372,19 +372,19 @@ public class solver_set
                 }
 
                 int localIndex = contact.localIndex;
-                b2ContactSim awakeContactSim = Array_Get(color.contactSims, localIndex);
+                b2ContactSim awakeContactSim = b2Array_Get(color.contactSims, localIndex);
 
                 int sleepContactIndex = sleepSet.contactSims.count;
-                b2ContactSim sleepContactSim = Array_Add(sleepSet.contactSims);
+                b2ContactSim sleepContactSim = b2Array_Add(sleepSet.contactSims);
                 //memcpy( sleepContactSim, awakeContactSim, sizeof( b2ContactSim ) );
                 sleepContactSim.CopyFrom(awakeContactSim);
 
-                int movedLocalIndex = Array_RemoveSwap(color.contactSims, localIndex);
+                int movedLocalIndex = b2Array_RemoveSwap(color.contactSims, localIndex);
                 if (movedLocalIndex != B2_NULL_INDEX)
                 {
                     // fix moved element
                     b2ContactSim movedContactSim = color.contactSims.data[localIndex];
-                    b2Contact movedContact = Array_Get(world.contacts, movedContactSim.contactId);
+                    b2Contact movedContact = b2Array_Get(world.contacts, movedContactSim.contactId);
                     Debug.Assert(movedContact.localIndex == movedLocalIndex);
                     movedContact.localIndex = localIndex;
                 }
@@ -403,7 +403,7 @@ public class solver_set
             int jointId = island.headJoint;
             while (jointId != B2_NULL_INDEX)
             {
-                b2Joint joint = Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointId);
                 Debug.Assert(joint.setIndex == (int)b2SetType.b2_awakeSet);
                 Debug.Assert(joint.islandId == islandId);
                 int colorIndex = joint.colorIndex;
@@ -413,7 +413,7 @@ public class solver_set
 
                 b2GraphColor color = world.constraintGraph.colors[colorIndex];
 
-                b2JointSim awakeJointSim = Array_Get(color.jointSims, localIndex);
+                b2JointSim awakeJointSim = b2Array_Get(color.jointSims, localIndex);
 
                 if (colorIndex != B2_OVERFLOW_INDEX)
                 {
@@ -423,17 +423,17 @@ public class solver_set
                 }
 
                 int sleepJointIndex = sleepSet.jointSims.count;
-                b2JointSim sleepJointSim = Array_Add(sleepSet.jointSims);
+                b2JointSim sleepJointSim = b2Array_Add(sleepSet.jointSims);
                 //memcpy( sleepJointSim, awakeJointSim, sizeof( b2JointSim ) );
                 sleepJointSim.CopyFrom(awakeJointSim);
 
-                int movedIndex = Array_RemoveSwap(color.jointSims, localIndex);
+                int movedIndex = b2Array_RemoveSwap(color.jointSims, localIndex);
                 if (movedIndex != B2_NULL_INDEX)
                 {
                     // fix moved element
                     b2JointSim movedJointSim = color.jointSims.data[localIndex];
                     int movedId = movedJointSim.jointId;
-                    b2Joint movedJoint = Array_Get(world.joints, movedId);
+                    b2Joint movedJoint = b2Array_Get(world.joints, movedId);
                     Debug.Assert(movedJoint.localIndex == movedIndex);
                     movedJoint.localIndex = localIndex;
                 }
@@ -451,16 +451,16 @@ public class solver_set
             Debug.Assert(island.setIndex == (int)b2SetType.b2_awakeSet);
 
             int islandIndex = island.localIndex;
-            b2IslandSim sleepIsland = Array_Add(sleepSet.islandSims);
+            b2IslandSim sleepIsland = b2Array_Add(sleepSet.islandSims);
             sleepIsland.islandId = islandId;
 
-            int movedIslandIndex = Array_RemoveSwap(awakeSet.islandSims, islandIndex);
+            int movedIslandIndex = b2Array_RemoveSwap(awakeSet.islandSims, islandIndex);
             if (movedIslandIndex != B2_NULL_INDEX)
             {
                 // fix index on moved element
                 b2IslandSim movedIslandSim = awakeSet.islandSims.data[islandIndex];
                 int movedIslandId = movedIslandSim.islandId;
-                b2Island movedIsland = Array_Get(world.islands, movedIslandId);
+                b2Island movedIsland = b2Array_Get(world.islands, movedIslandId);
                 Debug.Assert(movedIsland.localIndex == movedIslandIndex);
                 movedIsland.localIndex = islandIndex;
             }
@@ -481,8 +481,8 @@ public class solver_set
     {
         Debug.Assert(setId1 >= (int)b2SetType.b2_firstSleepingSet);
         Debug.Assert(setId2 >= (int)b2SetType.b2_firstSleepingSet);
-        b2SolverSet set1 = Array_Get(world.solverSets, setId1);
-        b2SolverSet set2 = Array_Get(world.solverSets, setId2);
+        b2SolverSet set1 = b2Array_Get(world.solverSets, setId1);
+        b2SolverSet set2 = b2Array_Get(world.solverSets, setId2);
 
         // Move the fewest number of bodies
         if (set1.bodySims.count < set2.bodySims.count)
@@ -509,7 +509,7 @@ public class solver_set
                 body.setIndex = setId1;
                 body.localIndex = set1.bodySims.count;
 
-                b2BodySim simDst = Array_Add(set1.bodySims);
+                b2BodySim simDst = b2Array_Add(set1.bodySims);
                 //memcpy( simDst, simSrc, sizeof( b2BodySim ) );
                 simDst.CopyFrom(simSrc);
             }
@@ -522,12 +522,12 @@ public class solver_set
             {
                 b2ContactSim contactSrc = set2.contactSims.data[i];
 
-                b2Contact contact = Array_Get(world.contacts, contactSrc.contactId);
+                b2Contact contact = b2Array_Get(world.contacts, contactSrc.contactId);
                 Debug.Assert(contact.setIndex == setId2);
                 contact.setIndex = setId1;
                 contact.localIndex = set1.contactSims.count;
 
-                b2ContactSim contactDst = Array_Add(set1.contactSims);
+                b2ContactSim contactDst = b2Array_Add(set1.contactSims);
                 //memcpy( contactDst, contactSrc, sizeof( b2ContactSim ) );
                 contactDst.CopyFrom(contactSrc);
             }
@@ -540,12 +540,12 @@ public class solver_set
             {
                 b2JointSim jointSrc = set2.jointSims.data[i];
 
-                b2Joint joint = Array_Get(world.joints, jointSrc.jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointSrc.jointId);
                 Debug.Assert(joint.setIndex == setId2);
                 joint.setIndex = setId1;
                 joint.localIndex = set1.jointSims.count;
 
-                b2JointSim jointDst = Array_Add(set1.jointSims);
+                b2JointSim jointDst = b2Array_Add(set1.jointSims);
                 //memcpy( jointDst, jointSrc, sizeof( b2JointSim ) );
                 jointDst.CopyFrom(jointSrc);
             }
@@ -559,11 +559,11 @@ public class solver_set
                 b2IslandSim islandSrc = set2.islandSims.data[i];
                 int islandId = islandSrc.islandId;
 
-                b2Island island = Array_Get(world.islands, islandId);
+                b2Island island = b2Array_Get(world.islands, islandId);
                 island.setIndex = setId1;
                 island.localIndex = set1.islandSims.count;
 
-                b2IslandSim islandDst = Array_Add(set1.islandSims);
+                b2IslandSim islandDst = b2Array_Add(set1.islandSims);
                 //memcpy( islandDst, islandSrc, sizeof( b2IslandSim ) );
                 islandDst.CopyFrom(islandSrc);
             }
@@ -580,32 +580,32 @@ public class solver_set
         Debug.Assert(targetSet != sourceSet);
 
         int sourceIndex = body.localIndex;
-        b2BodySim sourceSim = Array_Get(sourceSet.bodySims, sourceIndex);
+        b2BodySim sourceSim = b2Array_Get(sourceSet.bodySims, sourceIndex);
 
         int targetIndex = targetSet.bodySims.count;
-        b2BodySim targetSim = Array_Add(targetSet.bodySims);
+        b2BodySim targetSim = b2Array_Add(targetSet.bodySims);
         //memcpy( targetSim, sourceSim, sizeof( b2BodySim ) );
         targetSim.CopyFrom(sourceSim);
 
         // Remove body sim from solver set that owns it
-        int movedIndex = Array_RemoveSwap(sourceSet.bodySims, sourceIndex);
+        int movedIndex = b2Array_RemoveSwap(sourceSet.bodySims, sourceIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             // Fix moved body index
             b2BodySim movedSim = sourceSet.bodySims.data[sourceIndex];
             int movedId = movedSim.bodyId;
-            b2Body movedBody = Array_Get(world.bodies, movedId);
+            b2Body movedBody = b2Array_Get(world.bodies, movedId);
             Debug.Assert(movedBody.localIndex == movedIndex);
             movedBody.localIndex = sourceIndex;
         }
 
         if (sourceSet.setIndex == (int)b2SetType.b2_awakeSet)
         {
-            Array_RemoveSwap(sourceSet.bodyStates, sourceIndex);
+            b2Array_RemoveSwap(sourceSet.bodyStates, sourceIndex);
         }
         else if (targetSet.setIndex == (int)b2SetType.b2_awakeSet)
         {
-            b2BodyState state = Array_Add(targetSet.bodyStates);
+            b2BodyState state = b2Array_Add(targetSet.bodyStates);
             //*state = b2_identityBodyState;
             state.CopyFrom(b2_identityBodyState);
         }
@@ -628,12 +628,12 @@ public class solver_set
             Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
             b2GraphColor color = world.constraintGraph.colors[colorIndex];
 
-            sourceSim = Array_Get(color.jointSims, localIndex);
+            sourceSim = b2Array_Get(color.jointSims, localIndex);
         }
         else
         {
             Debug.Assert(colorIndex == B2_NULL_INDEX);
-            sourceSim = Array_Get(sourceSet.jointSims, localIndex);
+            sourceSim = b2Array_Get(sourceSet.jointSims, localIndex);
         }
 
         // Create target and copy. Fix joint.
@@ -648,7 +648,7 @@ public class solver_set
             joint.localIndex = targetSet.jointSims.count;
             joint.colorIndex = B2_NULL_INDEX;
 
-            b2JointSim targetSim = Array_Add(targetSet.jointSims);
+            b2JointSim targetSim = b2Array_Add(targetSet.jointSims);
             //memcpy( targetSim, sourceSim, sizeof( b2JointSim ) );
             targetSim.CopyFrom(sourceSim);
         }
@@ -660,13 +660,13 @@ public class solver_set
         }
         else
         {
-            int movedIndex = Array_RemoveSwap(sourceSet.jointSims, localIndex);
+            int movedIndex = b2Array_RemoveSwap(sourceSet.jointSims, localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // fix swapped element
                 b2JointSim movedJointSim = sourceSet.jointSims.data[localIndex];
                 int movedId = movedJointSim.jointId;
-                b2Joint movedJoint = Array_Get(world.joints, movedId);
+                b2Joint movedJoint = b2Array_Get(world.joints, movedId);
                 movedJoint.localIndex = localIndex;
             }
         }

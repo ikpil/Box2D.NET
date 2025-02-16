@@ -22,7 +22,6 @@ using static Box2D.NET.constants;
 using static Box2D.NET.math_function;
 using static Box2D.NET.bitset;
 
-
 namespace Box2D.NET;
 
 public class b2GraphColor
@@ -49,24 +48,28 @@ public class b2GraphColor
 public class b2ConstraintGraph
 {
     // including overflow at the end
-    public b2GraphColor[] colors = new b2GraphColor[B2_GRAPH_COLOR_COUNT];
+    public b2GraphColor[] colors;
 }
 
 public class constraint_graph
 {
-// This holds constraints that cannot fit the graph color limit. This happens when a single dynamic body
-// is touching many other bodies.
+    // This holds constraints that cannot fit the graph color limit. This happens when a single dynamic body
+    // is touching many other bodies.
     public const int B2_OVERFLOW_INDEX = B2_GRAPH_COLOR_COUNT - 1;
 
 
-//Debug.Assert( B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12" );
-
+    //Debug.Assert( B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12" );
     public static void b2CreateGraph(ref b2ConstraintGraph graph, int bodyCapacity)
     {
         Debug.Assert(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
         Debug.Assert(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
 
         graph = new b2ConstraintGraph();
+        graph.colors = new b2GraphColor[B2_GRAPH_COLOR_COUNT];
+        for (int i = 0; i < graph.colors.Length; ++i)
+        {
+            graph.colors[i] = new b2GraphColor();
+        }
 
         bodyCapacity = b2MaxInt(bodyCapacity, 8);
 
@@ -91,14 +94,14 @@ public class constraint_graph
 
             b2DestroyBitSet(color.bodySet);
 
-            Array_Destroy(color.contactSims);
-            Array_Destroy(color.jointSims);
+            b2Array_Destroy(color.contactSims);
+            b2Array_Destroy(color.jointSims);
         }
     }
 
-// Contacts are always created as non-touching. They get cloned into the constraint
-// graph once they are found to be touching.
-// todo maybe kinematic bodies should not go into graph
+    // Contacts are always created as non-touching. They get cloned into the constraint
+    // graph once they are found to be touching.
+    // todo maybe kinematic bodies should not go into graph
     public static void b2AddContactToGraph(b2World world, b2ContactSim contactSim, b2Contact contact)
     {
         Debug.Assert(contactSim.manifold.pointCount > 0);
@@ -110,8 +113,8 @@ public class constraint_graph
 
         int bodyIdA = contact.edges[0].bodyId;
         int bodyIdB = contact.edges[1].bodyId;
-        b2Body bodyA = Array_Get(world.bodies, bodyIdA);
-        b2Body bodyB = Array_Get(world.bodies, bodyIdB);
+        b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+        b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
         bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
         bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
         Debug.Assert(staticA == false || staticB == false);
@@ -171,7 +174,7 @@ public class constraint_graph
         contact.colorIndex = colorIndex;
         contact.localIndex = color.contactSims.count;
 
-        b2ContactSim newContact = Array_Add(color.contactSims);
+        b2ContactSim newContact = b2Array_Add(color.contactSims);
         //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
 
         // todo perhaps skip this if the contact is already awake
@@ -185,12 +188,12 @@ public class constraint_graph
         else
         {
             Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet);
-            b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
 
             int localIndex = bodyA.localIndex;
             newContact.bodySimIndexA = localIndex;
 
-            b2BodySim bodySimA = Array_Get(awakeSet.bodySims, localIndex);
+            b2BodySim bodySimA = b2Array_Get(awakeSet.bodySims, localIndex);
             newContact.invMassA = bodySimA.invMass;
             newContact.invIA = bodySimA.invInertia;
         }
@@ -204,12 +207,12 @@ public class constraint_graph
         else
         {
             Debug.Assert(bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-            b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
 
             int localIndex = bodyB.localIndex;
             newContact.bodySimIndexB = localIndex;
 
-            b2BodySim bodySimB = Array_Get(awakeSet.bodySims, localIndex);
+            b2BodySim bodySimB = b2Array_Get(awakeSet.bodySims, localIndex);
             newContact.invMassB = bodySimB.invMass;
             newContact.invIB = bodySimB.invInertia;
         }
@@ -229,7 +232,7 @@ public class constraint_graph
             b2ClearBit(color.bodySet, (uint)bodyIdB);
         }
 
-        int movedIndex = Array_RemoveSwap(color.contactSims, localIndex);
+        int movedIndex = b2Array_RemoveSwap(color.contactSims, localIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             // Fix index on swapped contact
@@ -237,7 +240,7 @@ public class constraint_graph
 
             // Fix moved contact
             int movedId = movedContactSim.contactId;
-            b2Contact movedContact = Array_Get(world.contacts, movedId);
+            b2Contact movedContact = b2Array_Get(world.contacts, movedId);
             Debug.Assert(movedContact.setIndex == (int)b2SetType.b2_awakeSet);
             Debug.Assert(movedContact.colorIndex == colorIndex);
             Debug.Assert(movedContact.localIndex == movedIndex);
@@ -306,14 +309,14 @@ public class constraint_graph
 
         int bodyIdA = joint.edges[0].bodyId;
         int bodyIdB = joint.edges[1].bodyId;
-        b2Body bodyA = Array_Get(world.bodies, bodyIdA);
-        b2Body bodyB = Array_Get(world.bodies, bodyIdB);
+        b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+        b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
         bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
         bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
 
         int colorIndex = b2AssignJointColor(graph, bodyIdA, bodyIdB, staticA, staticB);
 
-        b2JointSim jointSim = Array_Add(graph.colors[colorIndex].jointSims);
+        b2JointSim jointSim = b2Array_Add(graph.colors[colorIndex].jointSims);
         //memset( jointSim, 0, sizeof( b2JointSim ) );
 
         joint.colorIndex = colorIndex;
@@ -342,13 +345,13 @@ public class constraint_graph
             b2ClearBit(color.bodySet, (uint)bodyIdB);
         }
 
-        int movedIndex = Array_RemoveSwap(color.jointSims, localIndex);
+        int movedIndex = b2Array_RemoveSwap(color.jointSims, localIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             // Fix moved joint
             b2JointSim movedJointSim = color.jointSims.data[localIndex];
             int movedId = movedJointSim.jointId;
-            b2Joint movedJoint = Array_Get(world.joints, movedId);
+            b2Joint movedJoint = b2Array_Get(world.joints, movedId);
             Debug.Assert(movedJoint.setIndex == (int)b2SetType.b2_awakeSet);
             Debug.Assert(movedJoint.colorIndex == colorIndex);
             Debug.Assert(movedJoint.localIndex == movedIndex);

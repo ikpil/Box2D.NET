@@ -76,7 +76,7 @@ public class arena_allocator
         allocator.allocation = 0;
         allocator.maxAllocation = 0;
         allocator.index = 0;
-        allocator.entries = Array_Create<b2ArenaEntry<T>>(32);
+        allocator.entries = b2Array_Create<b2ArenaEntry<T>>(32);
         return allocator;
     }
 
@@ -112,7 +112,7 @@ public class arena_allocator
             alloc.maxAllocation = alloc.allocation;
         }
 
-        Array_Push(alloc.entries, entry);
+        b2Array_Push(alloc.entries, entry);
         return entry.data;
     }
 
@@ -133,7 +133,7 @@ public class arena_allocator
         }
 
         alloc.allocation -= entry.size;
-        Array_Pop(alloc.entries);
+        b2Array_Pop(alloc.entries);
     }
 
     public static void b2GrowArena(b2ArenaAllocator allocator)

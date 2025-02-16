@@ -27,20 +27,20 @@ public class id_pool
 
     public static int b2GetIdBytes(b2IdPool pool)
     {
-        return Array_ByteCount(pool.freeArray);
+        return b2Array_ByteCount(pool.freeArray);
     }
 
 
     public static b2IdPool b2CreateIdPool()
     {
         b2IdPool pool = new b2IdPool();
-        pool.freeArray = Array_Create<int>(32);
+        pool.freeArray = b2Array_Create<int>(32);
         return pool;
     }
 
     public static void b2DestroyIdPool(ref b2IdPool pool)
     {
-        Array_Destroy(pool.freeArray);
+        b2Array_Destroy(pool.freeArray);
         pool = new b2IdPool(); // TODO: @ikpil check pool
     }
 
@@ -49,7 +49,7 @@ public class id_pool
         int count = pool.freeArray.count;
         if (count > 0)
         {
-            int id = Array_Pop(pool.freeArray);
+            int id = b2Array_Pop(pool.freeArray);
             return id;
         }
 
@@ -69,7 +69,7 @@ public class id_pool
             return;
         }
 
-        Array_Push(pool.freeArray, id);
+        b2Array_Push(pool.freeArray, id);
     }
 
 #if B2_VALIDATE

@@ -402,7 +402,7 @@ public class joint
     public static b2Joint b2GetJointFullId(b2World world, b2JointId jointId)
     {
         int id = jointId.index1 - 1;
-        b2Joint joint = Array_Get(world.joints, id);
+        b2Joint joint = b2Array_Get(world.joints, id);
         Debug.Assert(joint.jointId == id && joint.generation == jointId.generation);
         return joint;
     }
@@ -413,11 +413,11 @@ public class joint
         {
             Debug.Assert(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
             b2GraphColor color = world.constraintGraph.colors[joint.colorIndex];
-            return Array_Get(color.jointSims, joint.localIndex);
+            return b2Array_Get(color.jointSims, joint.localIndex);
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, joint.setIndex);
-        return Array_Get(set.jointSims, joint.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, joint.setIndex);
+        return b2Array_Get(set.jointSims, joint.localIndex);
     }
 
     public static b2JointSim b2GetJointSimCheckType(b2JointId jointId, b2JointType type)
@@ -449,10 +449,10 @@ public class joint
         int jointId = b2AllocId(world.jointIdPool);
         if (jointId == world.joints.count)
         {
-            Array_Push(world.joints, new b2Joint());
+            b2Array_Push(world.joints, new b2Joint());
         }
 
-        b2Joint joint = Array_Get(world.joints, jointId);
+        b2Joint joint = b2Array_Get(world.joints, jointId);
         joint.jointId = jointId;
         joint.userData = userData;
         joint.generation += 1;
@@ -475,7 +475,7 @@ public class joint
         int keyA = (jointId << 1) | 0;
         if (bodyA.headJointKey != B2_NULL_INDEX)
         {
-            b2Joint jointA = Array_Get(world.joints, bodyA.headJointKey >> 1);
+            b2Joint jointA = b2Array_Get(world.joints, bodyA.headJointKey >> 1);
             b2JointEdge edgeA = jointA.edges[bodyA.headJointKey & 1];
             edgeA.prevKey = keyA;
         }
@@ -491,7 +491,7 @@ public class joint
         int keyB = (jointId << 1) | 1;
         if (bodyB.headJointKey != B2_NULL_INDEX)
         {
-            b2Joint jointB = Array_Get(world.joints, bodyB.headJointKey >> 1);
+            b2Joint jointB = b2Array_Get(world.joints, bodyB.headJointKey >> 1);
             b2JointEdge edgeB = jointB.edges[(bodyB.headJointKey & 1)];
             edgeB.prevKey = keyB;
         }
@@ -504,11 +504,11 @@ public class joint
         if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
         {
             // if either body is disabled, create in disabled set
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
             joint.setIndex = (int)b2SetType.b2_disabledSet;
             joint.localIndex = set.jointSims.count;
 
-            jointSim = Array_Add(set.jointSims);
+            jointSim = b2Array_Add(set.jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
 
             jointSim.jointId = jointId;
@@ -518,11 +518,11 @@ public class joint
         else if (bodyA.setIndex == (int)b2SetType.b2_staticSet && bodyB.setIndex == (int)b2SetType.b2_staticSet)
         {
             // joint is connecting static bodies
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
             joint.setIndex = (int)b2SetType.b2_staticSet;
             joint.localIndex = set.jointSims.count;
 
-            jointSim = Array_Add(set.jointSims);
+            jointSim = b2Array_Add(set.jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
 
             jointSim.jointId = jointId;
@@ -553,11 +553,11 @@ public class joint
             // joint should go into the sleeping set (not static set)
             int setIndex = maxSetIndex;
 
-            b2SolverSet set = Array_Get(world.solverSets, setIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
             joint.setIndex = setIndex;
             joint.localIndex = set.jointSims.count;
 
-            jointSim = Array_Add(set.jointSims);
+            jointSim = b2Array_Add(set.jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
 
             jointSim.jointId = jointId;
@@ -574,10 +574,10 @@ public class joint
                 // fix potentially invalid set index
                 setIndex = bodyA.setIndex;
 
-                b2SolverSet mergedSet = Array_Get(world.solverSets, setIndex);
+                b2SolverSet mergedSet = b2Array_Get(world.solverSets, setIndex);
 
                 // Careful! The joint sim pointer was orphaned by the set merge.
-                jointSim = Array_Get(mergedSet.jointSims, joint.localIndex);
+                jointSim = b2Array_Get(mergedSet.jointSims, joint.localIndex);
             }
 
             Debug.Assert(joint.setIndex == setIndex);
@@ -625,7 +625,7 @@ public class joint
             int contactId = contactKey >> 1;
             int edgeIndex = contactKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
             contactKey = contact.edges[edgeIndex].nextKey;
 
             int otherEdgeIndex = edgeIndex ^ 1;
@@ -1001,20 +1001,20 @@ public class joint
 
         int idA = edgeA.bodyId;
         int idB = edgeB.bodyId;
-        b2Body bodyA = Array_Get(world.bodies, idA);
-        b2Body bodyB = Array_Get(world.bodies, idB);
+        b2Body bodyA = b2Array_Get(world.bodies, idA);
+        b2Body bodyB = b2Array_Get(world.bodies, idB);
 
         // Remove from body A
         if (edgeA.prevKey != B2_NULL_INDEX)
         {
-            b2Joint prevJoint = Array_Get(world.joints, edgeA.prevKey >> 1);
+            b2Joint prevJoint = b2Array_Get(world.joints, edgeA.prevKey >> 1);
             b2JointEdge prevEdge = prevJoint.edges[edgeA.prevKey & 1];
             prevEdge.nextKey = edgeA.nextKey;
         }
 
         if (edgeA.nextKey != B2_NULL_INDEX)
         {
-            b2Joint nextJoint = Array_Get(world.joints, edgeA.nextKey >> 1);
+            b2Joint nextJoint = b2Array_Get(world.joints, edgeA.nextKey >> 1);
             b2JointEdge nextEdge = nextJoint.edges[edgeA.nextKey & 1];
             nextEdge.prevKey = edgeA.prevKey;
         }
@@ -1030,14 +1030,14 @@ public class joint
         // Remove from body B
         if (edgeB.prevKey != B2_NULL_INDEX)
         {
-            b2Joint prevJoint = Array_Get(world.joints, edgeB.prevKey >> 1);
+            b2Joint prevJoint = b2Array_Get(world.joints, edgeB.prevKey >> 1);
             b2JointEdge prevEdge = prevJoint.edges[edgeB.prevKey & 1];
             prevEdge.nextKey = edgeB.nextKey;
         }
 
         if (edgeB.nextKey != B2_NULL_INDEX)
         {
-            b2Joint nextJoint = Array_Get(world.joints, edgeB.nextKey >> 1);
+            b2Joint nextJoint = b2Array_Get(world.joints, edgeB.nextKey >> 1);
             b2JointEdge nextEdge = nextJoint.edges[edgeB.nextKey & 1];
             nextEdge.prevKey = edgeB.prevKey;
         }
@@ -1070,14 +1070,14 @@ public class joint
         }
         else
         {
-            b2SolverSet set = Array_Get(world.solverSets, setIndex);
-            int movedIndex = Array_RemoveSwap(set.jointSims, localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
+            int movedIndex = b2Array_RemoveSwap(set.jointSims, localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix moved joint
                 b2JointSim movedJointSim = set.jointSims.data[localIndex];
                 int movedId = movedJointSim.jointId;
-                b2Joint movedJoint = Array_Get(world.joints, movedId);
+                b2Joint movedJoint = b2Array_Get(world.joints, movedId);
                 Debug.Assert(movedJoint.localIndex == movedIndex);
                 movedJoint.localIndex = localIndex;
             }
@@ -1173,8 +1173,8 @@ public class joint
 
         joint.collideConnected = shouldCollide;
 
-        b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-        b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+        b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+        b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
 
         if (shouldCollide)
         {
@@ -1186,7 +1186,7 @@ public class joint
             int shapeId = shapeCountA < shapeCountB ? bodyA.headShapeId : bodyB.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
                 if (shape.proxyKey != B2_NULL_INDEX)
                 {
@@ -1232,8 +1232,8 @@ public class joint
         }
 
         b2Joint joint = b2GetJointFullId(world, jointId);
-        b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-        b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+        b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+        b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
 
         b2WakeBody(world, bodyA);
         b2WakeBody(world, bodyB);
@@ -1491,8 +1491,8 @@ public class joint
 
     public static void b2DrawJoint(b2DebugDraw draw, b2World world, b2Joint joint)
     {
-        b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-        b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+        b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+        b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
         if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
         {
             return;

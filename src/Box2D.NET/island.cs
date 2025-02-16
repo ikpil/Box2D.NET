@@ -81,16 +81,16 @@ public class island
         if (islandId == world.islands.count)
         {
             b2Island emptyIsland = new b2Island();
-            Array_Push(world.islands, emptyIsland);
+            b2Array_Push(world.islands, emptyIsland);
         }
         else
         {
             Debug.Assert(world.islands.data[islandId].setIndex == B2_NULL_INDEX);
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, setIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
 
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
         island.setIndex = setIndex;
         island.localIndex = set.islandSims.count;
         island.islandId = islandId;
@@ -106,7 +106,7 @@ public class island
         island.parentIsland = B2_NULL_INDEX;
         island.constraintRemoveCount = 0;
 
-        b2IslandSim islandSim = Array_Add(set.islandSims);
+        b2IslandSim islandSim = b2Array_Add(set.islandSims);
         islandSim.islandId = islandId;
 
         return island;
@@ -115,15 +115,15 @@ public class island
     public static void b2DestroyIsland(b2World world, int islandId)
     {
         // assume island is empty
-        b2Island island = Array_Get(world.islands, islandId);
-        b2SolverSet set = Array_Get(world.solverSets, island.setIndex);
-        int movedIndex = Array_RemoveSwap(set.islandSims, island.localIndex);
+        b2Island island = b2Array_Get(world.islands, islandId);
+        b2SolverSet set = b2Array_Get(world.solverSets, island.setIndex);
+        int movedIndex = b2Array_RemoveSwap(set.islandSims, island.localIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             // Fix index on moved element
             b2IslandSim movedElement = set.islandSims.data[island.localIndex];
             int movedId = movedElement.islandId;
-            b2Island movedIsland = Array_Get(world.islands, movedId);
+            b2Island movedIsland = b2Array_Get(world.islands, movedId);
             Debug.Assert(movedIsland.localIndex == movedIndex);
             movedIsland.localIndex = island.localIndex;
         }
@@ -141,12 +141,12 @@ public class island
         Debug.Assert(contact.islandPrev == B2_NULL_INDEX);
         Debug.Assert(contact.islandNext == B2_NULL_INDEX);
 
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
 
         if (island.headContact != B2_NULL_INDEX)
         {
             contact.islandNext = island.headContact;
-            b2Contact headContact = Array_Get(world.contacts, island.headContact);
+            b2Contact headContact = b2Array_Get(world.contacts, island.headContact);
             headContact.islandPrev = contact.contactId;
         }
 
@@ -173,8 +173,8 @@ public class island
         int bodyIdA = contact.edges[0].bodyId;
         int bodyIdB = contact.edges[1].bodyId;
 
-        b2Body bodyA = Array_Get(world.bodies, bodyIdA);
-        b2Body bodyB = Array_Get(world.bodies, bodyIdB);
+        b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+        b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
 
         Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_disabledSet && bodyB.setIndex != (int)b2SetType.b2_disabledSet);
         Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_staticSet || bodyB.setIndex != (int)b2SetType.b2_staticSet);
@@ -210,11 +210,11 @@ public class island
         b2Island islandA = null;
         if (islandIdA != B2_NULL_INDEX)
         {
-            islandA = Array_Get(world.islands, islandIdA);
+            islandA = b2Array_Get(world.islands, islandIdA);
             int parentId = islandA.parentIsland;
             while (parentId != B2_NULL_INDEX)
             {
-                b2Island parent = Array_Get(world.islands, parentId);
+                b2Island parent = b2Array_Get(world.islands, parentId);
                 if (parent.parentIsland != B2_NULL_INDEX)
                 {
                     // path compression
@@ -231,11 +231,11 @@ public class island
         b2Island islandB = null;
         if (islandIdB != B2_NULL_INDEX)
         {
-            islandB = Array_Get(world.islands, islandIdB);
+            islandB = b2Array_Get(world.islands, islandIdB);
             int parentId = islandB.parentIsland;
             while (islandB.parentIsland != B2_NULL_INDEX)
             {
-                b2Island parent = Array_Get(world.islands, parentId);
+                b2Island parent = b2Array_Get(world.islands, parentId);
                 if (parent.parentIsland != B2_NULL_INDEX)
                 {
                     // path compression
@@ -276,18 +276,18 @@ public class island
 
         // remove from island
         int islandId = contact.islandId;
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
 
         if (contact.islandPrev != B2_NULL_INDEX)
         {
-            b2Contact prevContact = Array_Get(world.contacts, contact.islandPrev);
+            b2Contact prevContact = b2Array_Get(world.contacts, contact.islandPrev);
             Debug.Assert(prevContact.islandNext == contact.contactId);
             prevContact.islandNext = contact.islandNext;
         }
 
         if (contact.islandNext != B2_NULL_INDEX)
         {
-            b2Contact nextContact = Array_Get(world.contacts, contact.islandNext);
+            b2Contact nextContact = b2Array_Get(world.contacts, contact.islandNext);
             Debug.Assert(nextContact.islandPrev == contact.contactId);
             nextContact.islandPrev = contact.islandPrev;
         }
@@ -319,12 +319,12 @@ public class island
         Debug.Assert(joint.islandPrev == B2_NULL_INDEX);
         Debug.Assert(joint.islandNext == B2_NULL_INDEX);
 
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
 
         if (island.headJoint != B2_NULL_INDEX)
         {
             joint.islandNext = island.headJoint;
-            b2Joint headJoint = Array_Get(world.joints, island.headJoint);
+            b2Joint headJoint = b2Array_Get(world.joints, island.headJoint);
             headJoint.islandPrev = joint.jointId;
         }
 
@@ -343,8 +343,8 @@ public class island
 // Link a joint into the island graph when it is created
     public static void b2LinkJoint(b2World world, b2Joint joint, bool mergeIslands)
     {
-        b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-        b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+        b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+        b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
 
         if (bodyA.setIndex == (int)b2SetType.b2_awakeSet && bodyB.setIndex >= (int)b2SetType.b2_firstSleepingSet)
         {
@@ -371,10 +371,10 @@ public class island
         b2Island islandA = null;
         if (islandIdA != B2_NULL_INDEX)
         {
-            islandA = Array_Get(world.islands, islandIdA);
+            islandA = b2Array_Get(world.islands, islandIdA);
             while (islandA.parentIsland != B2_NULL_INDEX)
             {
-                b2Island parent = Array_Get(world.islands, islandA.parentIsland);
+                b2Island parent = b2Array_Get(world.islands, islandA.parentIsland);
                 if (parent.parentIsland != B2_NULL_INDEX)
                 {
                     // path compression
@@ -390,10 +390,10 @@ public class island
         b2Island islandB = null;
         if (islandIdB != B2_NULL_INDEX)
         {
-            islandB = Array_Get(world.islands, islandIdB);
+            islandB = b2Array_Get(world.islands, islandIdB);
             while (islandB.parentIsland != B2_NULL_INDEX)
             {
-                b2Island parent = Array_Get(world.islands, islandB.parentIsland);
+                b2Island parent = b2Array_Get(world.islands, islandB.parentIsland);
                 if (parent.parentIsland != B2_NULL_INDEX)
                 {
                     // path compression
@@ -441,18 +441,18 @@ public class island
 
         // remove from island
         int islandId = joint.islandId;
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
 
         if (joint.islandPrev != B2_NULL_INDEX)
         {
-            b2Joint prevJoint = Array_Get(world.joints, joint.islandPrev);
+            b2Joint prevJoint = b2Array_Get(world.joints, joint.islandPrev);
             Debug.Assert(prevJoint.islandNext == joint.jointId);
             prevJoint.islandNext = joint.islandNext;
         }
 
         if (joint.islandNext != B2_NULL_INDEX)
         {
-            b2Joint nextJoint = Array_Get(world.joints, joint.islandNext);
+            b2Joint nextJoint = b2Array_Get(world.joints, joint.islandNext);
             Debug.Assert(nextJoint.islandPrev == joint.jointId);
             nextJoint.islandPrev = joint.islandPrev;
         }
@@ -485,14 +485,14 @@ public class island
         Debug.Assert(island.parentIsland != B2_NULL_INDEX);
 
         int rootId = island.parentIsland;
-        b2Island rootIsland = Array_Get(world.islands, rootId);
+        b2Island rootIsland = b2Array_Get(world.islands, rootId);
         Debug.Assert(rootIsland.parentIsland == B2_NULL_INDEX);
 
         // remap island indices
         int bodyId = island.headBody;
         while (bodyId != B2_NULL_INDEX)
         {
-            b2Body body = Array_Get(world.bodies, bodyId);
+            b2Body body = b2Array_Get(world.bodies, bodyId);
             body.islandId = rootId;
             bodyId = body.islandNext;
         }
@@ -500,7 +500,7 @@ public class island
         int contactId = island.headContact;
         while (contactId != B2_NULL_INDEX)
         {
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
             contact.islandId = rootId;
             contactId = contact.islandNext;
         }
@@ -508,19 +508,19 @@ public class island
         int jointId = island.headJoint;
         while (jointId != B2_NULL_INDEX)
         {
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
             joint.islandId = rootId;
             jointId = joint.islandNext;
         }
 
         // connect body lists
         Debug.Assert(rootIsland.tailBody != B2_NULL_INDEX);
-        b2Body tailBody = Array_Get(world.bodies, rootIsland.tailBody);
+        b2Body tailBody = b2Array_Get(world.bodies, rootIsland.tailBody);
         Debug.Assert(tailBody.islandNext == B2_NULL_INDEX);
         tailBody.islandNext = island.headBody;
 
         Debug.Assert(island.headBody != B2_NULL_INDEX);
-        b2Body headBody = Array_Get(world.bodies, island.headBody);
+        b2Body headBody = b2Array_Get(world.bodies, island.headBody);
         Debug.Assert(headBody.islandPrev == B2_NULL_INDEX);
         headBody.islandPrev = rootIsland.tailBody;
 
@@ -542,11 +542,11 @@ public class island
             Debug.Assert(island.tailContact != B2_NULL_INDEX && island.contactCount > 0);
             Debug.Assert(rootIsland.tailContact != B2_NULL_INDEX && rootIsland.contactCount > 0);
 
-            b2Contact tailContact = Array_Get(world.contacts, rootIsland.tailContact);
+            b2Contact tailContact = b2Array_Get(world.contacts, rootIsland.tailContact);
             Debug.Assert(tailContact.islandNext == B2_NULL_INDEX);
             tailContact.islandNext = island.headContact;
 
-            b2Contact headContact = Array_Get(world.contacts, island.headContact);
+            b2Contact headContact = b2Array_Get(world.contacts, island.headContact);
             Debug.Assert(headContact.islandPrev == B2_NULL_INDEX);
             headContact.islandPrev = rootIsland.tailContact;
 
@@ -568,11 +568,11 @@ public class island
             Debug.Assert(island.tailJoint != B2_NULL_INDEX && island.jointCount > 0);
             Debug.Assert(rootIsland.tailJoint != B2_NULL_INDEX && rootIsland.jointCount > 0);
 
-            b2Joint tailJoint = Array_Get(world.joints, rootIsland.tailJoint);
+            b2Joint tailJoint = b2Array_Get(world.joints, rootIsland.tailJoint);
             Debug.Assert(tailJoint.islandNext == B2_NULL_INDEX);
             tailJoint.islandNext = island.headJoint;
 
-            b2Joint headJoint = Array_Get(world.joints, island.headJoint);
+            b2Joint headJoint = b2Array_Get(world.joints, island.headJoint);
             Debug.Assert(headJoint.islandPrev == B2_NULL_INDEX);
             headJoint.islandPrev = rootIsland.tailJoint;
 
@@ -594,7 +594,7 @@ public class island
     {
         b2TracyCZoneNC(b2TracyCZone.merge_islands, "Merge Islands", b2HexColor.b2_colorMediumTurquoise, true);
 
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         b2IslandSim[] islandSims = awakeSet.islandSims.data;
         int awakeIslandCount = awakeSet.islandSims.count;
 
@@ -604,14 +604,14 @@ public class island
         {
             int islandId = islandSims[i].islandId;
 
-            b2Island island = Array_Get(world.islands, islandId);
+            b2Island island = b2Array_Get(world.islands, islandId);
 
             // find the root island
             int rootId = islandId;
             b2Island rootIsland = island;
             while (rootIsland.parentIsland != B2_NULL_INDEX)
             {
-                b2Island parent = Array_Get(world.islands, rootIsland.parentIsland);
+                b2Island parent = b2Array_Get(world.islands, rootIsland.parentIsland);
                 if (parent.parentIsland != B2_NULL_INDEX)
                 {
                     // path compression
@@ -633,7 +633,7 @@ public class island
         for (int i = awakeIslandCount - 1; i >= 0; --i)
         {
             int islandId = islandSims[i].islandId;
-            b2Island island = Array_Get(world.islands, islandId);
+            b2Island island = b2Array_Get(world.islands, islandId);
 
             if (island.parentIsland == B2_NULL_INDEX)
             {
@@ -655,7 +655,7 @@ public class island
 
     public static void b2SplitIsland(b2World world, int baseId)
     {
-        b2Island baseIsland = Array_Get(world.islands, baseId);
+        b2Island baseIsland = b2Array_Get(world.islands, baseId);
         int setIndex = baseIsland.setIndex;
 
         if (setIndex != (int)b2SetType.b2_awakeSet)
@@ -703,7 +703,7 @@ public class island
         int nextContactId = baseIsland.headContact;
         while (nextContactId != B2_NULL_INDEX)
         {
-            b2Contact contact = Array_Get(world.contacts, nextContactId);
+            b2Contact contact = b2Array_Get(world.contacts, nextContactId);
             contact.isMarked = false;
             nextContactId = contact.islandNext;
         }
@@ -712,7 +712,7 @@ public class island
         int nextJoint = baseIsland.headJoint;
         while (nextJoint != B2_NULL_INDEX)
         {
-            b2Joint joint = Array_Get(world.joints, nextJoint);
+            b2Joint joint = b2Array_Get(world.joints, nextJoint);
             joint.isMarked = false;
             nextJoint = joint.islandNext;
         }
@@ -778,7 +778,7 @@ public class island
                     int contactId = contactKey >> 1;
                     int edgeIndex = contactKey & 1;
 
-                    b2Contact contact = Array_Get(world.contacts, contactId);
+                    b2Contact contact = b2Array_Get(world.contacts, contactId);
                     Debug.Assert(contact.contactId == contactId);
 
                     // Next key
@@ -814,7 +814,7 @@ public class island
                     contact.islandId = islandId;
                     if (island.tailContact != B2_NULL_INDEX)
                     {
-                        b2Contact tailContact = Array_Get(world.contacts, island.tailContact);
+                        b2Contact tailContact = b2Array_Get(world.contacts, island.tailContact);
                         tailContact.islandNext = contactId;
                     }
 
@@ -837,7 +837,7 @@ public class island
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint joint = Array_Get(world.joints, jointId);
+                    b2Joint joint = b2Array_Get(world.joints, jointId);
                     Debug.Assert(joint.jointId == jointId);
 
                     // Next key
@@ -873,7 +873,7 @@ public class island
                     joint.islandId = islandId;
                     if (island.tailJoint != B2_NULL_INDEX)
                     {
-                        b2Joint tailJoint = Array_Get(world.joints, island.tailJoint);
+                        b2Joint tailJoint = b2Array_Get(world.joints, island.tailJoint);
                         tailJoint.islandNext = jointId;
                     }
 

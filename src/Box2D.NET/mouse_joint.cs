@@ -86,13 +86,13 @@ public class mouse_joint
 
         b2World world = context.world;
 
-        b2Body bodyB = Array_Get(world.bodies, idB);
+        b2Body bodyB = b2Array_Get(world.bodies, idB);
 
         Debug.Assert(bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-        b2SolverSet setB = Array_Get(world.solverSets, bodyB.setIndex);
+        b2SolverSet setB = b2Array_Get(world.solverSets, bodyB.setIndex);
 
         int localIndexB = bodyB.localIndex;
-        b2BodySim bodySimB = Array_Get(setB.bodySims, localIndexB);
+        b2BodySim bodySimB = b2Array_Get(setB.bodySims, localIndexB);
 
         @base.invMassB = bodySimB.invMass;
         @base.invIB = bodySimB.invInertia;

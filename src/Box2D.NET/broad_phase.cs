@@ -22,7 +22,7 @@ namespace Box2D.NET;
 /// It is up to the client to consume the new pairs and to track subsequent overlap.
 public class b2BroadPhase
 {
-    public b2DynamicTree[] trees = new b2DynamicTree[(int)b2BodyType.b2_bodyTypeCount];
+    public b2DynamicTree[] trees;
     public int proxyCount;
 
     // The move set and array are used to track shapes that have moved significantly
@@ -100,7 +100,7 @@ public class board_phase
         bool alreadyAdded = b2AddKey(bp.moveSet, (ulong)(queryProxy + 1));
         if (alreadyAdded == false)
         {
-            Array_Push(bp.moveArray, queryProxy);
+            b2Array_Push(bp.moveArray, queryProxy);
         }
     }
 
@@ -109,7 +109,7 @@ public class board_phase
 
 // static FILE* s_file = NULL;
 
-    public static void b2CreateBroadPhase(b2BroadPhase bp)
+    public static void b2CreateBroadPhase(ref b2BroadPhase bp)
     {
         Debug.Assert((int)b2BodyType.b2_bodyTypeCount == 3, "must be three body types");
 
@@ -118,13 +118,15 @@ public class board_phase
         //	s_file = fopen("pairs01.txt", "a");
         //	fprintf(s_file, "============\n\n");
         // }
-
+        bp = new b2BroadPhase();
+        bp.trees = new b2DynamicTree[(int)b2BodyType.b2_bodyTypeCount];
         bp.proxyCount = 0;
         bp.moveSet = b2CreateSet(16);
-        bp.moveArray = Array_Create<int>(16);
+        bp.moveArray = b2Array_Create<int>(16);
         bp.moveResults = null;
         bp.movePairs = null;
         bp.movePairCapacity = 0;
+        bp.movePairIndex = new b2AtomicInt();
         b2AtomicStoreInt(bp.movePairIndex, 0);
         bp.pairSet = b2CreateSet(32);
 
@@ -142,7 +144,7 @@ public class board_phase
         }
 
         b2DestroySet(bp.moveSet);
-        Array_Destroy(bp.moveArray);
+        b2Array_Destroy(bp.moveArray);
         b2DestroySet(bp.pairSet);
 
         //memset( bp, 0, sizeof( b2BroadPhase ) );
@@ -168,7 +170,7 @@ public class board_phase
             {
                 if (bp.moveArray.data[i] == proxyKey)
                 {
-                    Array_RemoveSwap(bp.moveArray, i);
+                    b2Array_RemoveSwap(bp.moveArray, i);
                     break;
                 }
             }
@@ -299,8 +301,8 @@ public class board_phase
 
         b2World world = queryContext.world;
 
-        b2Shape shapeA = Array_Get(world.shapes, shapeIdA);
-        b2Shape shapeB = Array_Get(world.shapes, shapeIdB);
+        b2Shape shapeA = b2Array_Get(world.shapes, shapeIdA);
+        b2Shape shapeB = b2Array_Get(world.shapes, shapeIdB);
 
         int bodyIdA = shapeA.bodyId;
         int bodyIdB = shapeB.bodyId;
@@ -323,8 +325,8 @@ public class board_phase
         }
 
         // Does a joint override collision?
-        b2Body bodyA = Array_Get(world.bodies, bodyIdA);
-        b2Body bodyB = Array_Get(world.bodies, bodyIdB);
+        b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+        b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
         if (b2ShouldBodiesCollide(world, bodyA, bodyB) == false)
         {
             return true;
@@ -497,8 +499,8 @@ b2TreeStats b2_staticStats;
                 //	fprintf(s_file, "%d %d\n", shapeIdA, shapeIdB);
                 // }
 
-                b2Shape shapeA = Array_Get(world.shapes, shapeIdA);
-                b2Shape shapeB = Array_Get(world.shapes, shapeIdB);
+                b2Shape shapeA = b2Array_Get(world.shapes, shapeIdA);
+                b2Shape shapeB = b2Array_Get(world.shapes, shapeIdB);
 
                 b2CreateContact(world, shapeA, shapeB);
 
@@ -526,7 +528,7 @@ b2TreeStats b2_staticStats;
         // }
 
         // Reset move buffer
-        Array_Clear(bp.moveArray);
+        b2Array_Clear(bp.moveArray);
         b2ClearSet(bp.moveSet);
 
         b2FreeArenaItem(alloc, bp.movePairs);

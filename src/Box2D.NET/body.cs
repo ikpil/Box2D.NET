@@ -222,33 +222,33 @@ public class body
         Debug.Assert(b2Body_IsValid(bodyId));
 
         // id index starts at one so that zero can represent null
-        return Array_Get(world.bodies, bodyId.index1 - 1);
+        return b2Array_Get(world.bodies, bodyId.index1 - 1);
     }
 
     public static b2Transform b2GetBodyTransformQuick(b2World world, b2Body body)
     {
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        b2BodySim bodySim = Array_Get(set.bodySims, body.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
         return bodySim.transform;
     }
 
     public static b2Transform b2GetBodyTransform(b2World world, int bodyId)
     {
-        b2Body body = Array_Get(world.bodies, bodyId);
+        b2Body body = b2Array_Get(world.bodies, bodyId);
         return b2GetBodyTransformQuick(world, body);
     }
 
     // Create a b2BodyId from a raw id.
     public static b2BodyId b2MakeBodyId(b2World world, int bodyId)
     {
-        b2Body body = Array_Get(world.bodies, bodyId);
+        b2Body body = b2Array_Get(world.bodies, bodyId);
         return new b2BodyId(bodyId + 1, world.worldId, body.generation);
     }
 
     public static b2BodySim b2GetBodySim(b2World world, b2Body body)
     {
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        b2BodySim bodySim = Array_Get(set.bodySims, body.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
         return bodySim;
     }
 
@@ -256,8 +256,8 @@ public class body
     {
         if (body.setIndex == (int)b2SetType.b2_awakeSet)
         {
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-            return Array_Get(set.bodyStates, body.localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            return b2Array_Get(set.bodyStates, body.localIndex);
         }
 
         return null;
@@ -288,18 +288,18 @@ public class body
         }
 
         int islandId = body.islandId;
-        b2Island island = Array_Get(world.islands, islandId);
+        b2Island island = b2Array_Get(world.islands, islandId);
 
         // Fix the island's linked list of sims
         if (body.islandPrev != B2_NULL_INDEX)
         {
-            b2Body prevBody = Array_Get(world.bodies, body.islandPrev);
+            b2Body prevBody = b2Array_Get(world.bodies, body.islandPrev);
             prevBody.islandNext = body.islandNext;
         }
 
         if (body.islandNext != B2_NULL_INDEX)
         {
-            b2Body nextBody = Array_Get(world.bodies, body.islandNext);
+            b2Body nextBody = b2Array_Get(world.bodies, body.islandNext);
             nextBody.islandPrev = body.islandPrev;
         }
 
@@ -348,7 +348,7 @@ public class body
             int contactId = edgeKey >> 1;
             int edgeIndex = edgeKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
             edgeKey = contact.edges[edgeIndex].nextKey;
             b2DestroyContact(world, contact, wakeBodies);
         }
@@ -400,7 +400,7 @@ public class body
             if (setId == world.solverSets.count)
             {
                 // Create a zero initialized solver set. All sub-arrays are also zero initialized.
-                Array_Push(world.solverSets, new b2SolverSet());
+                b2Array_Push(world.solverSets, new b2SolverSet());
             }
             else
             {
@@ -414,8 +414,8 @@ public class body
 
         int bodyId = b2AllocId(world.bodyIdPool);
 
-        b2SolverSet set = Array_Get(world.solverSets, setId);
-        b2BodySim bodySim = Array_Add(set.bodySims);
+        b2SolverSet set = b2Array_Get(world.solverSets, setId);
+        b2BodySim bodySim = b2Array_Add(set.bodySims);
         //*bodySim = ( b2BodySim ){ 0 }; TODO: @ikpil, check
         bodySim.transform.p = def.position;
         bodySim.transform.q = def.rotation;
@@ -441,7 +441,7 @@ public class body
 
         if (setId == (int)b2SetType.b2_awakeSet)
         {
-            b2BodyState bodyState = Array_Add(set.bodyStates);
+            b2BodyState bodyState = b2Array_Add(set.bodyStates);
             //Debug.Assert( ( (uintptr_t)bodyState & 0x1F ) == 0 );
 
             //*bodyState = ( b2BodyState ){ 0 }; TODO: @ikpil, check
@@ -452,14 +452,14 @@ public class body
 
         if (bodyId == world.bodies.count)
         {
-            Array_Push(world.bodies, new b2Body());
+            b2Array_Push(world.bodies, new b2Body());
         }
         else
         {
             Debug.Assert(world.bodies.data[bodyId].id == B2_NULL_INDEX);
         }
 
-        b2Body body = Array_Get(world.bodies, bodyId);
+        b2Body body = b2Array_Get(world.bodies, bodyId);
 
         if (!string.IsNullOrEmpty(def.name))
         {
@@ -546,7 +546,7 @@ public class body
             int jointId = edgeKey >> 1;
             int edgeIndex = edgeKey & 1;
 
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
             edgeKey = joint.edges[edgeIndex].nextKey;
 
             // Careful because this modifies the list being traversed
@@ -560,7 +560,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
             if (shape.sensorIndex != B2_NULL_INDEX)
             {
@@ -580,7 +580,7 @@ public class body
         int chainId = body.headChainId;
         while (chainId != B2_NULL_INDEX)
         {
-            b2ChainShape chain = Array_Get(world.chainShapes, chainId);
+            b2ChainShape chain = b2Array_Get(world.chainShapes, chainId);
 
             b2FreeChainData(chain);
 
@@ -594,14 +594,14 @@ public class body
         b2RemoveBodyFromIsland(world, body);
 
         // Remove body sim from solver set that owns it
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        int movedIndex = Array_RemoveSwap(set.bodySims, body.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        int movedIndex = b2Array_RemoveSwap(set.bodySims, body.localIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             // Fix moved body index
             b2BodySim movedSim = set.bodySims.data[body.localIndex];
             int movedId = movedSim.bodyId;
-            b2Body movedBody = Array_Get(world.bodies, movedId);
+            b2Body movedBody = b2Array_Get(world.bodies, movedId);
             Debug.Assert(movedBody.localIndex == movedIndex);
             movedBody.localIndex = body.localIndex;
         }
@@ -609,7 +609,7 @@ public class body
         // Remove body state from awake set
         if (body.setIndex == (int)b2SetType.b2_awakeSet)
         {
-            int result = Array_RemoveSwap(set.bodyStates, body.localIndex);
+            int result = b2Array_RemoveSwap(set.bodyStates, body.localIndex);
             B2_UNUSED(result);
             Debug.Assert(result == movedIndex);
         }
@@ -662,13 +662,13 @@ public class body
             int contactId = contactKey >> 1;
             int edgeIndex = contactKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
 
             // Is contact touching?
             if (0 != (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag))
             {
-                b2Shape shapeA = Array_Get(world.shapes, contact.shapeIdA);
-                b2Shape shapeB = Array_Get(world.shapes, contact.shapeIdB);
+                b2Shape shapeA = b2Array_Get(world.shapes, contact.shapeIdA);
+                b2Shape shapeB = b2Array_Get(world.shapes, contact.shapeIdB);
 
                 contactData[index].shapeIdA = new b2ShapeId(shapeA.id + 1, bodyId.world0, shapeA.generation);
                 contactData[index].shapeIdB = new b2ShapeId(shapeB.id + 1, bodyId.world0, shapeB.generation);
@@ -702,11 +702,11 @@ public class body
             return new b2AABB(transform.p, transform.p);
         }
 
-        b2Shape shape = Array_Get(world.shapes, body.headShapeId);
+        b2Shape shape = b2Array_Get(world.shapes, body.headShapeId);
         b2AABB aabb = shape.aabb;
         while (shape.nextShapeId != B2_NULL_INDEX)
         {
-            shape = Array_Get(world.shapes, shape.nextShapeId);
+            shape = b2Array_Get(world.shapes, shape.nextShapeId);
             aabb = b2AABB_Union(aabb, shape.aabb);
         }
 
@@ -738,7 +738,7 @@ public class body
                 int nextShapeId = body.headShapeId;
                 while (nextShapeId != B2_NULL_INDEX)
                 {
-                    b2Shape s = Array_Get(world.shapes, nextShapeId);
+                    b2Shape s = b2Array_Get(world.shapes, nextShapeId);
 
                     b2ShapeExtent extent = b2ComputeShapeExtent(s, b2Vec2_zero);
                     bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
@@ -756,7 +756,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape s = Array_Get(world.shapes, shapeId);
+            b2Shape s = b2Array_Get(world.shapes, shapeId);
             shapeId = s.nextShapeId;
 
             if (s.density == 0.0f)
@@ -807,7 +807,7 @@ public class body
         shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape s = Array_Get(world.shapes, shapeId);
+            b2Shape s = b2Array_Get(world.shapes, shapeId);
 
             b2ShapeExtent extent = b2ComputeShapeExtent(s, localCenter);
             bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
@@ -899,7 +899,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             b2AABB aabb = b2ComputeShapeAABB(shape, transform);
             aabb.lowerBound.x -= speculativeDistance;
             aabb.lowerBound.y -= speculativeDistance;
@@ -1011,8 +1011,8 @@ public class body
             return b2Vec2_zero;
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        b2BodySim bodySim = Array_Get(set.bodySims, body.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
 
         b2Vec2 r = b2RotateVector(bodySim.transform.q, b2Sub(localPoint, bodySim.localCenter));
         b2Vec2 v = b2Add(state.linearVelocity, b2CrossSV(state.angularVelocity, r));
@@ -1029,8 +1029,8 @@ public class body
             return b2Vec2_zero;
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        b2BodySim bodySim = Array_Get(set.bodySims, body.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
 
         b2Vec2 r = b2Sub(worldPoint, bodySim.center);
         b2Vec2 v = b2Add(state.linearVelocity, b2CrossSV(state.angularVelocity, r));
@@ -1102,9 +1102,9 @@ public class body
         if (body.setIndex == (int)b2SetType.b2_awakeSet)
         {
             int localIndex = body.localIndex;
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-            b2BodyState state = Array_Get(set.bodyStates, localIndex);
-            b2BodySim bodySim = Array_Get(set.bodySims, localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
+            b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
             state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
             state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(point, bodySim.center), impulse);
         }
@@ -1123,9 +1123,9 @@ public class body
         if (body.setIndex == (int)b2SetType.b2_awakeSet)
         {
             int localIndex = body.localIndex;
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-            b2BodyState state = Array_Get(set.bodyStates, localIndex);
-            b2BodySim bodySim = Array_Get(set.bodySims, localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
+            b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
             state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
         }
     }
@@ -1136,7 +1136,7 @@ public class body
         b2World world = b2GetWorld(bodyId.world0);
 
         int id = bodyId.index1 - 1;
-        b2Body body = Array_Get(world.bodies, id);
+        b2Body body = b2Array_Get(world.bodies, id);
         Debug.Assert(body.generation == bodyId.generation);
 
         if (wake && body.setIndex >= (int)b2SetType.b2_firstSleepingSet)
@@ -1148,9 +1148,9 @@ public class body
         if (body.setIndex == (int)b2SetType.b2_awakeSet)
         {
             int localIndex = body.localIndex;
-            b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-            b2BodyState state = Array_Get(set.bodyStates, localIndex);
-            b2BodySim bodySim = Array_Get(set.bodySims, localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
+            b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
             state.angularVelocity += bodySim.invInertia * impulse;
         }
     }
@@ -1205,7 +1205,7 @@ public class body
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointId);
                 if (joint.islandId != B2_NULL_INDEX)
                 {
                     b2UnlinkJoint(world, joint);
@@ -1214,8 +1214,8 @@ public class body
                 // A body going from static to dynamic or kinematic goes to the awake set
                 // and other attached bodies must be awake as well. For consistency, this is
                 // done for all cases.
-                b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-                b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+                b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+                b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
                 b2WakeBody(world, bodyA);
                 b2WakeBody(world, bodyB);
 
@@ -1230,8 +1230,8 @@ public class body
             // Body is going from static to dynamic or kinematic. It only makes sense to move it to the awake set.
             Debug.Assert(body.setIndex == (int)b2SetType.b2_staticSet);
 
-            b2SolverSet staticSet = Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
-            b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet staticSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
+            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
 
             // Transfer body to awake set
             b2TransferBody(world, awakeSet, staticSet, body);
@@ -1246,7 +1246,7 @@ public class body
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointId);
 
                 // Transfer the joint if it is in the static set
                 if (joint.setIndex == (int)b2SetType.b2_staticSet)
@@ -1278,7 +1278,7 @@ public class body
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
                 b2DestroyShapeProxy(shape, world.broadPhase);
                 bool forcePairCreation = true;
@@ -1291,8 +1291,8 @@ public class body
             // The body is going from dynamic/kinematic to static. It should be awake.
             Debug.Assert(body.setIndex == (int)b2SetType.b2_awakeSet);
 
-            b2SolverSet staticSet = Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
-            b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet staticSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
+            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
 
             // Transfer body to static set
             b2TransferBody(world, staticSet, awakeSet, body);
@@ -1300,7 +1300,7 @@ public class body
             // Remove body from island.
             b2RemoveBodyFromIsland(world, body);
 
-            b2BodySim bodySim = Array_Get(staticSet.bodySims, body.localIndex);
+            b2BodySim bodySim = b2Array_Get(staticSet.bodySims, body.localIndex);
             bodySim.isFast = false;
 
             // Maybe transfer joints to static set.
@@ -1310,11 +1310,11 @@ public class body
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointId);
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 int otherEdgeIndex = edgeIndex ^ 1;
-                b2Body otherBody = Array_Get(world.bodies, joint.edges[otherEdgeIndex].bodyId);
+                b2Body otherBody = b2Array_Get(world.bodies, joint.edges[otherEdgeIndex].bodyId);
 
                 // Skip disabled joint
                 if (joint.setIndex == (int)b2SetType.b2_disabledSet)
@@ -1356,7 +1356,7 @@ public class body
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
                 b2DestroyShapeProxy(shape, world.broadPhase);
                 bool forcePairCreation = true;
@@ -1373,7 +1373,7 @@ public class body
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
                 b2DestroyShapeProxy(shape, world.broadPhase);
                 b2BodyType proxyType = type;
@@ -1390,12 +1390,12 @@ public class body
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(world.joints, jointId);
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 int otherEdgeIndex = edgeIndex ^ 1;
                 int otherBodyId = joint.edges[otherEdgeIndex].bodyId;
-                b2Body otherBody = Array_Get(world.bodies, otherBodyId);
+                b2Body otherBody = b2Array_Get(world.bodies, otherBodyId);
 
                 if (otherBody.setIndex == (int)b2SetType.b2_disabledSet)
                 {
@@ -1627,7 +1627,7 @@ public class body
         }
         else if (awake == false && body.setIndex == (int)b2SetType.b2_awakeSet)
         {
-            b2Island island = Array_Get(world.islands, body.islandId);
+            b2Island island = b2Array_Get(world.islands, body.islandId);
             if (island.constraintRemoveCount > 0)
             {
                 // Must split the island before sleeping. This is expensive.
@@ -1711,14 +1711,14 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shapeId = shape.nextShapeId;
             b2DestroyShapeProxy(shape, world.broadPhase);
         }
 
         // Transfer simulation data to disabled set
-        b2SolverSet set = Array_Get(world.solverSets, body.setIndex);
-        b2SolverSet disabledSet = Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+        b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
+        b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
 
         // Transfer body sim
         b2TransferBody(world, disabledSet, set, body);
@@ -1730,7 +1730,7 @@ public class body
             int jointId = jointKey >> 1;
             int edgeIndex = jointKey & 1;
 
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
             jointKey = joint.edges[edgeIndex].nextKey;
 
             // joint may already be disabled by other body
@@ -1748,7 +1748,7 @@ public class body
             }
 
             // Transfer joint to disabled set
-            b2SolverSet jointSet = Array_Get(world.solverSets, joint.setIndex);
+            b2SolverSet jointSet = b2Array_Get(world.solverSets, joint.setIndex);
             b2TransferJoint(world, disabledSet, jointSet, joint);
         }
 
@@ -1770,9 +1770,9 @@ public class body
             return;
         }
 
-        b2SolverSet disabledSet = Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+        b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
         int setId = body.type == b2BodyType.b2_staticBody ? (int)b2SetType.b2_staticSet : (int)b2SetType.b2_awakeSet;
-        b2SolverSet targetSet = Array_Get(world.solverSets, setId);
+        b2SolverSet targetSet = b2Array_Get(world.solverSets, setId);
 
         b2TransferBody(world, targetSet, disabledSet, body);
 
@@ -1784,7 +1784,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shapeId = shape.nextShapeId;
 
             b2CreateShapeProxy(shape, world.broadPhase, proxyType, transform, forcePairCreation);
@@ -1804,14 +1804,14 @@ public class body
             int jointId = jointKey >> 1;
             int edgeIndex = jointKey & 1;
 
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
             Debug.Assert(joint.setIndex == (int)b2SetType.b2_disabledSet);
             Debug.Assert(joint.islandId == B2_NULL_INDEX);
 
             jointKey = joint.edges[edgeIndex].nextKey;
 
-            b2Body bodyA = Array_Get(world.bodies, joint.edges[0].bodyId);
-            b2Body bodyB = Array_Get(world.bodies, joint.edges[1].bodyId);
+            b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
+            b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
 
             if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
             {
@@ -1834,7 +1834,7 @@ public class body
                 jointSetId = bodyA.setIndex;
             }
 
-            b2SolverSet jointSet = Array_Get(world.solverSets, jointSetId);
+            b2SolverSet jointSet = b2Array_Get(world.solverSets, jointSetId);
             b2TransferJoint(world, jointSet, disabledSet, joint);
 
             // Now that the joint is in the correct set, I can link the joint in the island.
@@ -1908,7 +1908,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shape.enableContactEvents = flag;
             shapeId = shape.nextShapeId;
         }
@@ -1921,7 +1921,7 @@ public class body
         int shapeId = body.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shape.enableHitEvents = flag;
             shapeId = shape.nextShapeId;
         }
@@ -1948,7 +1948,7 @@ public class body
         int shapeCount = 0;
         while (shapeId != B2_NULL_INDEX && shapeCount < capacity)
         {
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             b2ShapeId id = new b2ShapeId(shape.id + 1, bodyId.world0, shape.generation);
             shapeArray[shapeCount] = id;
             shapeCount += 1;
@@ -1978,7 +1978,7 @@ public class body
             int jointId = jointKey >> 1;
             int edgeIndex = jointKey & 1;
 
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
 
             b2JointId id = new b2JointId(jointId + 1, bodyId.world0, joint.generation);
             jointArray[jointCount] = id;
@@ -2016,7 +2016,7 @@ public class body
             int edgeIndex = jointKey & 1;
             int otherEdgeIndex = edgeIndex ^ 1;
 
-            b2Joint joint = Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(world.joints, jointId);
             if (joint.collideConnected == false && joint.edges[otherEdgeIndex].bodyId == otherBodyId)
             {
                 return false;

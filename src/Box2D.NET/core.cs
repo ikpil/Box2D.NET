@@ -86,7 +86,7 @@ public static class core
     public static T[] b2GrowAlloc<T>(T[] oldMem, int oldSize, int newSize) where T : new()
     {
         Debug.Assert(newSize > oldSize);
-        T[] newMem = b2Alloc<T>(newSize);
+        T[] newMem = new T[newSize];
         if (oldSize > 0)
         {
             memcpy<T>(newMem, oldMem, oldSize);

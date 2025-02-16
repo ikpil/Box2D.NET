@@ -191,9 +191,9 @@ public class b2World
     public bool enableSpeculative;
     public bool inUse;
 
-    public void Clear()
+    public void Reset()
     {
-        Debug.Assert(false);
+        // ..?
     }
 }
 
@@ -245,10 +245,21 @@ public class WorldOverlapContext
     }
 }
 
-public class world
+public static class world
 {
-    //Debug.Assert( B2_MAX_WORLDS > 0, "must be 1 or more" );
-    public static readonly b2World[] b2_worlds = new b2World[B2_MAX_WORLDS];
+    private static readonly b2World[] b2_worlds = b2AllocWorlds(B2_MAX_WORLDS);
+
+    private static b2World[] b2AllocWorlds(int maxWorld)
+    {
+        Debug.Assert( B2_MAX_WORLDS > 0, "must be 1 or more" );
+        var worlds = new b2World[maxWorld];
+        for (int i = 0; i < maxWorld; ++i)
+        {
+            worlds[i] = new b2World();
+        }
+
+        return worlds;
+    }
 
 
     public static b2World b2GetWorldFromId(b2WorldId id)
@@ -331,22 +342,21 @@ public class world
         b2World world = b2_worlds[worldId];
         ushort generation = world.generation;
 
-        // TODO: @ikpil reuse or create
-        b2_worlds[worldId] = new b2World();
-        world = b2_worlds[worldId];
+        //*world = ( b2World ){ 0 };
+        world.Reset();
 
         world.worldId = (ushort)worldId;
         world.generation = generation;
         world.inUse = true;
 
         world.stackAllocator = b2CreateArenaAllocator(2048);
-        b2CreateBroadPhase(world.broadPhase);
+        b2CreateBroadPhase(ref world.broadPhase);
         b2CreateGraph(ref world.constraintGraph, 16);
 
         // pools
         world.bodyIdPool = b2CreateIdPool();
-        world.bodies = Array_Create<b2Body>(16);
-        world.solverSets = Array_Create<b2SolverSet>(8);
+        world.bodies = b2Array_Create<b2Body>(16);
+        world.solverSets = b2Array_Create<b2SolverSet>(8);
 
         // add empty static, active, and disabled body sets
         world.solverSetIdPool = b2CreateIdPool();
@@ -354,44 +364,44 @@ public class world
 
         // static set
         set.setIndex = b2AllocId(world.solverSetIdPool);
-        Array_Push(world.solverSets, set);
+        b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_staticSet].setIndex == (int)b2SetType.b2_staticSet);
 
         // disabled set
         set.setIndex = b2AllocId(world.solverSetIdPool);
-        Array_Push(world.solverSets, set);
+        b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_disabledSet].setIndex == (int)b2SetType.b2_disabledSet);
 
         // awake set
         set.setIndex = b2AllocId(world.solverSetIdPool);
-        Array_Push(world.solverSets, set);
+        b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_awakeSet].setIndex == (int)b2SetType.b2_awakeSet);
 
         world.shapeIdPool = b2CreateIdPool();
-        world.shapes = Array_Create<b2Shape>(16);
+        world.shapes = b2Array_Create<b2Shape>(16);
 
         world.chainIdPool = b2CreateIdPool();
-        world.chainShapes = Array_Create<b2ChainShape>(4);
+        world.chainShapes = b2Array_Create<b2ChainShape>(4);
 
         world.contactIdPool = b2CreateIdPool();
-        world.contacts = Array_Create<b2Contact>(16);
+        world.contacts = b2Array_Create<b2Contact>(16);
 
         world.jointIdPool = b2CreateIdPool();
-        world.joints = Array_Create<b2Joint>(16);
+        world.joints = b2Array_Create<b2Joint>(16);
 
         world.islandIdPool = b2CreateIdPool();
-        world.islands = Array_Create<b2Island>(8);
+        world.islands = b2Array_Create<b2Island>(8);
 
-        world.sensors = Array_Create<b2Sensor>(4);
+        world.sensors = b2Array_Create<b2Sensor>(4);
 
-        world.bodyMoveEvents = Array_Create<b2BodyMoveEvent>(4);
-        world.sensorBeginEvents = Array_Create<b2SensorBeginTouchEvent>(4);
-        world.sensorEndEvents[0] = Array_Create<b2SensorEndTouchEvent>(4);
-        world.sensorEndEvents[1] = Array_Create<b2SensorEndTouchEvent>(4);
-        world.contactBeginEvents = Array_Create<b2ContactBeginTouchEvent>(4);
-        world.contactEndEvents[0] = Array_Create<b2ContactEndTouchEvent>(4);
-        world.contactEndEvents[1] = Array_Create<b2ContactEndTouchEvent>(4);
-        world.contactHitEvents = Array_Create<b2ContactHitEvent>(4);
+        world.bodyMoveEvents = b2Array_Create<b2BodyMoveEvent>(4);
+        world.sensorBeginEvents = b2Array_Create<b2SensorBeginTouchEvent>(4);
+        world.sensorEndEvents[0] = b2Array_Create<b2SensorEndTouchEvent>(4);
+        world.sensorEndEvents[1] = b2Array_Create<b2SensorEndTouchEvent>(4);
+        world.contactBeginEvents = b2Array_Create<b2ContactBeginTouchEvent>(4);
+        world.contactEndEvents[0] = b2Array_Create<b2ContactEndTouchEvent>(4);
+        world.contactEndEvents[1] = b2Array_Create<b2ContactEndTouchEvent>(4);
+        world.contactHitEvents = b2Array_Create<b2ContactHitEvent>(4);
         world.endEventArrayIndex = 0;
 
         world.stepIndex = 0;
@@ -449,11 +459,11 @@ public class world
             world.userTaskContext = null;
         }
 
-        world.taskContexts = Array_Create<b2TaskContext>(world.workerCount);
-        Array_Resize(world.taskContexts, world.workerCount);
+        world.taskContexts = b2Array_Create<b2TaskContext>(world.workerCount);
+        b2Array_Resize(world.taskContexts, world.workerCount);
 
-        world.sensorTaskContexts = Array_Create<b2SensorTaskContext>(world.workerCount);
-        Array_Resize(world.sensorTaskContexts, world.workerCount);
+        world.sensorTaskContexts = b2Array_Create<b2SensorTaskContext>(world.workerCount);
+        b2Array_Resize(world.sensorTaskContexts, world.workerCount);
 
         for (int i = 0; i < world.workerCount; ++i)
         {
@@ -489,17 +499,17 @@ public class world
             b2DestroyBitSet(world.sensorTaskContexts.data[i].eventBits);
         }
 
-        Array_Destroy(world.taskContexts);
-        Array_Destroy(world.sensorTaskContexts);
+        b2Array_Destroy(world.taskContexts);
+        b2Array_Destroy(world.sensorTaskContexts);
 
-        Array_Destroy(world.bodyMoveEvents);
-        Array_Destroy(world.sensorBeginEvents);
-        Array_Destroy(world.sensorEndEvents[0]);
-        Array_Destroy(world.sensorEndEvents[1]);
-        Array_Destroy(world.contactBeginEvents);
-        Array_Destroy(world.contactEndEvents[0]);
-        Array_Destroy(world.contactEndEvents[1]);
-        Array_Destroy(world.contactHitEvents);
+        b2Array_Destroy(world.bodyMoveEvents);
+        b2Array_Destroy(world.sensorBeginEvents);
+        b2Array_Destroy(world.sensorEndEvents[0]);
+        b2Array_Destroy(world.sensorEndEvents[1]);
+        b2Array_Destroy(world.contactBeginEvents);
+        b2Array_Destroy(world.contactEndEvents[0]);
+        b2Array_Destroy(world.contactEndEvents[1]);
+        b2Array_Destroy(world.contactHitEvents);
 
         int chainCapacity = world.chainShapes.count;
         for (int i = 0; i < chainCapacity; ++i)
@@ -519,18 +529,18 @@ public class world
         int sensorCount = world.sensors.count;
         for (int i = 0; i < sensorCount; ++i)
         {
-            Array_Destroy(world.sensors.data[i].overlaps1);
-            Array_Destroy(world.sensors.data[i].overlaps2);
+            b2Array_Destroy(world.sensors.data[i].overlaps1);
+            b2Array_Destroy(world.sensors.data[i].overlaps2);
         }
 
-        Array_Destroy(world.sensors);
+        b2Array_Destroy(world.sensors);
 
-        Array_Destroy(world.bodies);
-        Array_Destroy(world.shapes);
-        Array_Destroy(world.chainShapes);
-        Array_Destroy(world.contacts);
-        Array_Destroy(world.joints);
-        Array_Destroy(world.islands);
+        b2Array_Destroy(world.bodies);
+        b2Array_Destroy(world.shapes);
+        b2Array_Destroy(world.chainShapes);
+        b2Array_Destroy(world.contacts);
+        b2Array_Destroy(world.joints);
+        b2Array_Destroy(world.islands);
 
         // Destroy solver sets
         int setCapacity = world.solverSets.count;
@@ -543,7 +553,7 @@ public class world
             }
         }
 
-        Array_Destroy(world.solverSets);
+        b2Array_Destroy(world.solverSets);
 
         b2DestroyGraph(world.constraintGraph);
         b2DestroyBroadPhase(world.broadPhase);
@@ -560,7 +570,7 @@ public class world
 
         // Wipe world but preserve generation
         ushort generation = world.generation;
-        world.Clear();
+        world.Reset();
         world.worldId = 0;
         world.generation = (ushort)(generation + 1);
     }
@@ -659,23 +669,23 @@ public class world
     public static void b2AddNonTouchingContact(b2World world, b2Contact contact, b2ContactSim contactSim)
     {
         Debug.Assert(contact.setIndex == (int)b2SetType.b2_awakeSet);
-        b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         contact.colorIndex = B2_NULL_INDEX;
         contact.localIndex = set.contactSims.count;
 
-        b2ContactSim newContactSim = Array_Add(set.contactSims);
+        b2ContactSim newContactSim = b2Array_Add(set.contactSims);
         //memcpy( newContactSim, contactSim, sizeof( b2ContactSim ) );
         newContactSim.CopyFrom(contactSim);
     }
 
     public static void b2RemoveNonTouchingContact(b2World world, int setIndex, int localIndex)
     {
-        b2SolverSet set = Array_Get(world.solverSets, setIndex);
-        int movedIndex = Array_RemoveSwap(set.contactSims, localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
+        int movedIndex = b2Array_RemoveSwap(set.contactSims, localIndex);
         if (movedIndex != B2_NULL_INDEX)
         {
             b2ContactSim movedContactSim = set.contactSims.data[localIndex];
-            b2Contact movedContact = Array_Get(world.contacts, movedContactSim.contactId);
+            b2Contact movedContact = b2Array_Get(world.contacts, movedContactSim.contactId);
             Debug.Assert(movedContact.setIndex == setIndex);
             Debug.Assert(movedContact.localIndex == movedIndex);
             Debug.Assert(movedContact.colorIndex == B2_NULL_INDEX);
@@ -776,7 +786,7 @@ public class world
             b2InPlaceUnion(bitSet, world.taskContexts.data[i].contactStateBitSet);
         }
 
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
 
         int endEventArrayIndex = world.endEventArrayIndex;
 
@@ -792,7 +802,7 @@ public class world
                 uint ctz = b2CTZ64(bits);
                 int contactId = (int)(64 * k + ctz);
 
-                b2Contact contact = Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(world.contacts, contactId);
                 Debug.Assert(contact.setIndex == (int)b2SetType.b2_awakeSet);
 
                 int colorIndex = contact.colorIndex;
@@ -804,11 +814,11 @@ public class world
                     // contact lives in constraint graph
                     Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
                     b2GraphColor color = graphColors[colorIndex];
-                    contactSim = Array_Get(color.contactSims, localIndex);
+                    contactSim = b2Array_Get(color.contactSims, localIndex);
                 }
                 else
                 {
-                    contactSim = Array_Get(awakeSet.contactSims, localIndex);
+                    contactSim = b2Array_Get(awakeSet.contactSims, localIndex);
                 }
 
                 b2Shape shapeA = shapes[contact.shapeIdA];
@@ -832,7 +842,7 @@ public class world
                     if (0 != (flags & (uint)b2ContactFlags.b2_contactEnableContactEvents))
                     {
                         b2ContactBeginTouchEvent @event = new b2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactSim.manifold);
-                        Array_Push(world.contactBeginEvents, @event);
+                        b2Array_Push(world.contactBeginEvents, @event);
                     }
 
                     Debug.Assert(contactSim.manifold.pointCount > 0);
@@ -849,7 +859,7 @@ public class world
 
                     // Contact sim pointer may have become orphaned due to awake set growth,
                     // so I just need to refresh it.
-                    contactSim = Array_Get(awakeSet.contactSims, localIndex);
+                    contactSim = b2Array_Get(awakeSet.contactSims, localIndex);
 
                     contactSim.simFlags &= ~(uint)b2ContactSimFlags.b2_simStartedTouching;
 
@@ -867,7 +877,7 @@ public class world
                     if (0 != (contact.flags & (uint)b2ContactFlags.b2_contactEnableContactEvents))
                     {
                         b2ContactEndTouchEvent @event = new b2ContactEndTouchEvent(shapeIdA, shapeIdB);
-                        Array_Push(world.contactEndEvents[endEventArrayIndex], @event);
+                        b2Array_Push(world.contactEndEvents[endEventArrayIndex], @event);
                     }
 
                     Debug.Assert(contactSim.manifold.pointCount == 0);
@@ -905,10 +915,10 @@ public class world
 
         // Prepare to capture events
         // Ensure user does not access stale data if there is an early return
-        Array_Clear(world.bodyMoveEvents);
-        Array_Clear(world.sensorBeginEvents);
-        Array_Clear(world.contactBeginEvents);
-        Array_Clear(world.contactHitEvents);
+        b2Array_Clear(world.bodyMoveEvents);
+        b2Array_Clear(world.sensorBeginEvents);
+        b2Array_Clear(world.contactBeginEvents);
+        b2Array_Clear(world.contactHitEvents);
 
         // world.profile = ( b2Profile ){ 0 };
         world.profile.Clear();
@@ -917,8 +927,8 @@ public class world
         {
             // Swap end event array buffers
             world.endEventArrayIndex = 1 - world.endEventArrayIndex;
-            Array_Clear(world.sensorEndEvents[world.endEventArrayIndex]);
-            Array_Clear(world.contactEndEvents[world.endEventArrayIndex]);
+            b2Array_Clear(world.sensorEndEvents[world.endEventArrayIndex]);
+            b2Array_Clear(world.contactEndEvents[world.endEventArrayIndex]);
 
             // todo_erin would be useful to still process collision while paused
             return;
@@ -1007,8 +1017,8 @@ public class world
 
         // Swap end event array buffers
         world.endEventArrayIndex = 1 - world.endEventArrayIndex;
-        Array_Clear(world.sensorEndEvents[world.endEventArrayIndex]);
-        Array_Clear(world.contactEndEvents[world.endEventArrayIndex]);
+        b2Array_Clear(world.sensorEndEvents[world.endEventArrayIndex]);
+        b2Array_Clear(world.contactEndEvents[world.endEventArrayIndex]);
         world.locked = false;
     }
 
@@ -1074,14 +1084,14 @@ public class world
         b2World world = drawContext.world;
         b2DebugDraw draw = drawContext.draw;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
         Debug.Assert(shape.id == shapeId);
 
         b2SetBit(world.debugBodySet, shape.bodyId);
 
         if (draw.drawShapes)
         {
-            b2Body body = Array_Get(world.bodies, shape.bodyId);
+            b2Body body = b2Array_Get(world.bodies, shape.bodyId);
             b2BodySim bodySim = b2GetBodySim(world, body);
 
             b2HexColor color;
@@ -1205,7 +1215,7 @@ public class world
                 uint ctz = b2CTZ64(word);
                 uint bodyId = 64 * k + ctz;
 
-                b2Body body = Array_Get(world.bodies, (int)bodyId);
+                b2Body body = b2Array_Get(world.bodies, (int)bodyId);
 
                 if (draw.drawBodyNames && body.name[0] != 0)
                 {
@@ -1241,7 +1251,7 @@ public class world
                     {
                         int jointId = jointKey >> 1;
                         int edgeIndex = jointKey & 1;
-                        b2Joint joint = Array_Get(world.joints, jointId);
+                        b2Joint joint = b2Array_Get(world.joints, jointId);
 
                         // avoid double draw
                         if (b2GetBit(world.debugJointSet, jointId) == false)
@@ -1267,7 +1277,7 @@ public class world
                     {
                         int contactId = contactKey >> 1;
                         int edgeIndex = contactKey & 1;
-                        b2Contact contact = Array_Get(world.contacts, contactId);
+                        b2Contact contact = b2Array_Get(world.contacts, contactId);
                         contactKey = contact.edges[edgeIndex].nextKey;
 
                         if (contact.setIndex != (int)b2SetType.b2_awakeSet || contact.colorIndex == B2_NULL_INDEX)
@@ -1281,7 +1291,7 @@ public class world
                             Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
 
                             b2GraphColor gc = world.constraintGraph.colors[contact.colorIndex];
-                            b2ContactSim contactSim = Array_Get(gc.contactSims, contact.localIndex);
+                            b2ContactSim contactSim = b2Array_Get(gc.contactSims, contact.localIndex);
                             int pointCount = contactSim.manifold.pointCount;
                             b2Vec2 normal = contactSim.manifold.normal;
                             string buffer;
@@ -1378,12 +1388,12 @@ public class world
             int setCount = world.solverSets.count;
             for (int setIndex = 0; setIndex < setCount; ++setIndex)
             {
-                b2SolverSet set = Array_Get(world.solverSets, setIndex);
+                b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
                 int bodyCount = set.bodySims.count;
                 for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
                 {
                     b2BodySim bodySim = set.bodySims.data[bodyIndex];
-                    b2Body body = Array_Get(world.bodies, bodySim.bodyId);
+                    b2Body body = b2Array_Get(world.bodies, bodySim.bodyId);
                     Debug.Assert(body.setIndex == setIndex);
 
                     b2Transform xf = bodySim.transform;
@@ -1469,7 +1479,7 @@ public class world
             Span<b2Vec2> vs = stackalloc b2Vec2[4];
             for (int setIndex = 0; setIndex < setCount; ++setIndex)
             {
-                b2SolverSet set = Array_Get(world.solverSets, setIndex);
+                b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
                 int bodyCount = set.bodySims.count;
                 for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
                 {
@@ -1478,7 +1488,7 @@ public class world
                     string buffer = "" + bodySim.bodyId;
                     draw.DrawString(bodySim.center, buffer, b2HexColor.b2_colorWhite, draw.context);
 
-                    b2Body body = Array_Get(world.bodies, bodySim.bodyId);
+                    b2Body body = b2Array_Get(world.bodies, bodySim.bodyId);
                     Debug.Assert(body.setIndex == setIndex);
 
                     int shapeId = body.headShapeId;
@@ -1530,7 +1540,7 @@ public class world
             int setCount = world.solverSets.count;
             for (int setIndex = 0; setIndex < setCount; ++setIndex)
             {
-                b2SolverSet set = Array_Get(world.solverSets, setIndex);
+                b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
                 int bodyCount = set.bodySims.count;
                 for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
                 {
@@ -1878,7 +1888,7 @@ public class world
             int setCount = world.solverSets.count;
             for (int i = (int)b2SetType.b2_firstSleepingSet; i < setCount; ++i)
             {
-                b2SolverSet set = Array_Get(world.solverSets, i);
+                b2SolverSet set = b2Array_Get(world.solverSets, i);
                 if (set.bodySims.count > 0)
                 {
                     b2WakeSolverSet(world, i);
@@ -1914,7 +1924,7 @@ public class world
     public static int b2World_GetAwakeBodyCount(b2WorldId worldId)
     {
         b2World world = b2GetWorldFromId(worldId);
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         return awakeSet.bodySims.count;
     }
 
@@ -2121,13 +2131,13 @@ public class world
 
         // world arrays
         writer.Write("world arrays\n");
-        writer.Write("bodies: {0}\n", Array_ByteCount(world.bodies));
-        writer.Write("solver sets: {0}\n", Array_ByteCount(world.solverSets));
-        writer.Write("joints: {0}\n", Array_ByteCount(world.joints));
-        writer.Write("contacts: {0}\n", Array_ByteCount(world.contacts));
-        writer.Write("islands: {0}\n", Array_ByteCount(world.islands));
-        writer.Write("shapes: {0}\n", Array_ByteCount(world.shapes));
-        writer.Write("chains: {0}\n", Array_ByteCount(world.chainShapes));
+        writer.Write("bodies: {0}\n", b2Array_ByteCount(world.bodies));
+        writer.Write("solver sets: {0}\n", b2Array_ByteCount(world.solverSets));
+        writer.Write("joints: {0}\n", b2Array_ByteCount(world.joints));
+        writer.Write("contacts: {0}\n", b2Array_ByteCount(world.contacts));
+        writer.Write("islands: {0}\n", b2Array_ByteCount(world.islands));
+        writer.Write("shapes: {0}\n", b2Array_ByteCount(world.shapes));
+        writer.Write("chains: {0}\n", b2Array_ByteCount(world.chainShapes));
         writer.Write("\n");
 
         // broad-phase
@@ -2137,7 +2147,7 @@ public class world
         writer.Write("dynamic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)b2BodyType.b2_dynamicBody]));
         b2HashSet moveSet = world.broadPhase.moveSet;
         writer.Write("moveSet: {0} ({1}, {2})\n", b2GetHashSetBytes(moveSet), moveSet.count, moveSet.capacity);
-        writer.Write("moveArray: {0}\n", Array_ByteCount(world.broadPhase.moveArray));
+        writer.Write("moveArray: {0}\n", b2Array_ByteCount(world.broadPhase.moveArray));
         b2HashSet pairSet = world.broadPhase.pairSet;
         writer.Write("pairSet: {0} ({1}, {2})\n", b2GetHashSetBytes(pairSet), pairSet.count, pairSet.capacity);
         writer.Write("\n");
@@ -2205,7 +2215,7 @@ public class world
         WorldQueryContext worldContext = context as WorldQueryContext;
         b2World world = worldContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
         b2Filter shapeFilter = shape.filter;
         b2QueryFilter queryFilter = worldContext.filter;
@@ -2255,7 +2265,7 @@ public class world
         WorldOverlapContext worldContext = context as WorldOverlapContext;
         b2World world = worldContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
         b2Filter shapeFilter = shape.filter;
         b2QueryFilter queryFilter = worldContext.filter;
@@ -2265,7 +2275,7 @@ public class world
             return true;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         b2Transform transform = b2GetBodyTransformQuick(world, body);
 
         b2DistanceInput input = new b2DistanceInput();
@@ -2416,7 +2426,7 @@ public class world
         WorldRayCastContext worldContext = context as WorldRayCastContext;
         b2World world = worldContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
         b2Filter shapeFilter = shape.filter;
         b2QueryFilter queryFilter = worldContext.filter;
 
@@ -2425,7 +2435,7 @@ public class world
             return input.maxFraction;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         b2Transform transform = b2GetBodyTransformQuick(world, body);
         b2CastOutput output = b2RayCastShape(input, shape, transform);
 
@@ -2537,7 +2547,7 @@ public class world
         WorldRayCastContext worldContext = context as WorldRayCastContext;
         b2World world = worldContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
         b2Filter shapeFilter = shape.filter;
         b2QueryFilter queryFilter = worldContext.filter;
 
@@ -2546,7 +2556,7 @@ public class world
             return input.maxFraction;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         b2Transform transform = b2GetBodyTransformQuick(world, body);
 
         b2CastOutput output = b2ShapeCastShape(input, shape, transform);
@@ -2836,9 +2846,9 @@ void b2World_Dump()
         ExplosionContext explosionContext = context as ExplosionContext;
         b2World world = explosionContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         Debug.Assert(body.type == b2BodyType.b2_dynamicBody);
 
         b2Transform transform = b2GetBodyTransformQuick(world, body);
@@ -2896,9 +2906,9 @@ void b2World_Dump()
         b2Vec2 impulse = b2MulSV(magnitude, direction);
 
         int localIndex = body.localIndex;
-        b2SolverSet set = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-        b2BodyState state = Array_Get(set.bodyStates, localIndex);
-        b2BodySim bodySim = Array_Get(set.bodySims, localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
+        b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
         state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
         state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(closestPoint, bodySim.center), impulse);
 

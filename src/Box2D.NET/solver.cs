@@ -361,7 +361,7 @@ public class solver
 
         b2World world = continuousContext.world;
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
         // Skip same body
         if (shape.bodyId == fastShape.bodyId)
@@ -382,7 +382,7 @@ public class solver
             return true;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
 
         b2BodySim bodySim = b2GetBodySim(world, body);
         Debug.Assert(body.type == b2BodyType.b2_staticBody || fastBodySim.isBullet);
@@ -394,7 +394,7 @@ public class solver
         }
 
         // Skip filtered bodies
-        b2Body fastBody = Array_Get(world.bodies, fastBodySim.bodyId);
+        b2Body fastBody = b2Array_Get(world.bodies, fastBodySim.bodyId);
         canCollide = b2ShouldBodiesCollide(world, fastBody, body);
         if (canCollide == false)
         {
@@ -522,8 +522,8 @@ public class solver
     {
         b2TracyCZoneNC(b2TracyCZone.ccd, "CCD", b2HexColor.b2_colorDarkGoldenRod, true);
 
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-        b2BodySim fastBodySim = Array_Get(awakeSet.bodySims, bodySimIndex);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2BodySim fastBodySim = b2Array_Get(awakeSet.bodySims, bodySimIndex);
         Debug.Assert(fastBodySim.isFast);
 
         b2Sweep sweep = b2MakeSweep(fastBodySim);
@@ -539,7 +539,7 @@ public class solver
         b2DynamicTree staticTree = world.broadPhase.trees[(int)b2BodyType.b2_staticBody];
         b2DynamicTree kinematicTree = world.broadPhase.trees[(int)b2BodyType.b2_kinematicBody];
         b2DynamicTree dynamicTree = world.broadPhase.trees[(int)b2BodyType.b2_dynamicBody];
-        b2Body fastBody = Array_Get(world.bodies, fastBodySim.bodyId);
+        b2Body fastBody = b2Array_Get(world.bodies, fastBodySim.bodyId);
 
         b2ContinuousContext context = new b2ContinuousContext();
         context.world = world;
@@ -552,7 +552,7 @@ public class solver
         int shapeId = fastBody.headShapeId;
         while (shapeId != B2_NULL_INDEX)
         {
-            b2Shape fastShape = Array_Get(world.shapes, shapeId);
+            b2Shape fastShape = b2Array_Get(world.shapes, shapeId);
             shapeId = fastShape.nextShapeId;
 
             context.fastShape = fastShape;
@@ -605,7 +605,7 @@ public class solver
             shapeId = fastBody.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
                 // Must recompute aabb at the interpolated transform
                 b2AABB aabb = b2ComputeShapeAABB(shape, transform);
@@ -643,7 +643,7 @@ public class solver
             shapeId = fastBody.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
                 // shape.aabb is still valid from above
 
@@ -783,7 +783,7 @@ public class solver
             }
 
             // Any single body in an island can keep it awake
-            b2Island island = Array_Get(world.islands, body.islandId);
+            b2Island island = b2Array_Get(world.islands, body.islandId);
             if (body.sleepTime < B2_TIME_TO_SLEEP)
             {
                 // keep island awake
@@ -807,7 +807,7 @@ public class solver
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
                 if (isFast)
                 {
@@ -1339,7 +1339,7 @@ public enum b2SolverBlockType
         }
 
         // Are there any awake bodies? This scenario should not be important for profiling.
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         int awakeBodyCount = awakeSet.bodySims.count;
         if (awakeBodyCount == 0)
         {
@@ -1383,7 +1383,7 @@ public enum b2SolverBlockType
             }
 
             // prepare for move events
-            Array_Resize(world.bodyMoveEvents, awakeBodyCount);
+            b2Array_Resize(world.bodyMoveEvents, awakeBodyCount);
 
             // Each worker receives at most M blocks of work. The workers may receive less blocks if there is not sufficient work.
             // Each block of work has a minimum number of elements (block size). This in turn may limit the number of blocks.
@@ -1935,13 +1935,13 @@ public enum b2SolverBlockType
                     {
                         @event.normal = contactSim.manifold.normal;
 
-                        b2Shape shapeA = Array_Get(world.shapes, contactSim.shapeIdA);
-                        b2Shape shapeB = Array_Get(world.shapes, contactSim.shapeIdB);
+                        b2Shape shapeA = b2Array_Get(world.shapes, contactSim.shapeIdA);
+                        b2Shape shapeB = b2Array_Get(world.shapes, contactSim.shapeIdB);
 
                         @event.shapeIdA = new b2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                         @event.shapeIdB = new b2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
-                        Array_Push(world.contactHitEvents, @event);
+                        b2Array_Push(world.contactHitEvents, @event);
                     }
                 }
             }

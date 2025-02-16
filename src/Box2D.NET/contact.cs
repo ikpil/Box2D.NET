@@ -328,8 +328,8 @@ public static class contact
             return;
         }
 
-        b2Body bodyA = Array_Get(world.bodies, shapeA.bodyId);
-        b2Body bodyB = Array_Get(world.bodies, shapeB.bodyId);
+        b2Body bodyA = b2Array_Get(world.bodies, shapeA.bodyId);
+        b2Body bodyB = b2Array_Get(world.bodies, shapeB.bodyId);
 
         Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_disabledSet && bodyB.setIndex != (int)b2SetType.b2_disabledSet);
         Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_staticSet || bodyB.setIndex != (int)b2SetType.b2_staticSet);
@@ -347,19 +347,19 @@ public static class contact
             setIndex = (int)b2SetType.b2_disabledSet;
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, setIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
 
         // Create contact key and contact
         int contactId = b2AllocId(world.contactIdPool);
         if (contactId == world.contacts.count)
         {
-            Array_Push(world.contacts, new b2Contact());
+            b2Array_Push(world.contacts, new b2Contact());
         }
 
         int shapeIdA = shapeA.id;
         int shapeIdB = shapeB.id;
 
-        b2Contact contact = Array_Get(world.contacts, contactId);
+        b2Contact contact = b2Array_Get(world.contacts, contactId);
         contact.contactId = contactId;
         contact.setIndex = setIndex;
         contact.colorIndex = B2_NULL_INDEX;
@@ -389,7 +389,7 @@ public static class contact
             int headContactKey = bodyA.headContactKey;
             if (headContactKey != B2_NULL_INDEX)
             {
-                b2Contact headContact = Array_Get(world.contacts, headContactKey >> 1);
+                b2Contact headContact = b2Array_Get(world.contacts, headContactKey >> 1);
                 headContact.edges[headContactKey & 1].prevKey = keyA;
             }
 
@@ -407,7 +407,7 @@ public static class contact
             int headContactKey = bodyB.headContactKey;
             if (bodyB.headContactKey != B2_NULL_INDEX)
             {
-                b2Contact headContact = Array_Get(world.contacts, headContactKey >> 1);
+                b2Contact headContact = b2Array_Get(world.contacts, headContactKey >> 1);
                 headContact.edges[headContactKey & 1].prevKey = keyB;
             }
 
@@ -421,7 +421,7 @@ public static class contact
 
         // Contacts are created as non-touching. Later if they are found to be touching
         // they will link islands and be moved into the constraint graph.
-        b2ContactSim contactSim = Array_Add(set.contactSims);
+        b2ContactSim contactSim = b2Array_Add(set.contactSims);
         contactSim.contactId = contactId;
 
 #if B2_VALIDATE
@@ -472,8 +472,8 @@ public static class contact
 
         int bodyIdA = edgeA.bodyId;
         int bodyIdB = edgeB.bodyId;
-        b2Body bodyA = Array_Get(world.bodies, bodyIdA);
-        b2Body bodyB = Array_Get(world.bodies, bodyIdB);
+        b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+        b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
 
         uint flags = contact.flags;
 
@@ -481,26 +481,26 @@ public static class contact
         if ((flags & (uint)b2ContactFlags.b2_contactTouchingFlag) != 0 && (flags & (uint)b2ContactFlags.b2_contactEnableContactEvents) != 0)
         {
             ushort worldId = world.worldId;
-            b2Shape shapeA = Array_Get(world.shapes, contact.shapeIdA);
-            b2Shape shapeB = Array_Get(world.shapes, contact.shapeIdB);
+            b2Shape shapeA = b2Array_Get(world.shapes, contact.shapeIdA);
+            b2Shape shapeB = b2Array_Get(world.shapes, contact.shapeIdB);
             b2ShapeId shapeIdA = new b2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
             b2ShapeId shapeIdB = new b2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
 
             b2ContactEndTouchEvent @event = new b2ContactEndTouchEvent(shapeIdA, shapeIdB);
-            Array_Push(world.contactEndEvents[world.endEventArrayIndex], @event);
+            b2Array_Push(world.contactEndEvents[world.endEventArrayIndex], @event);
         }
 
         // Remove from body A
         if (edgeA.prevKey != B2_NULL_INDEX)
         {
-            b2Contact prevContact = Array_Get(world.contacts, edgeA.prevKey >> 1);
+            b2Contact prevContact = b2Array_Get(world.contacts, edgeA.prevKey >> 1);
             b2ContactEdge prevEdge = prevContact.edges[(edgeA.prevKey & 1)];
             prevEdge.nextKey = edgeA.nextKey;
         }
 
         if (edgeA.nextKey != B2_NULL_INDEX)
         {
-            b2Contact nextContact = Array_Get(world.contacts, edgeA.nextKey >> 1);
+            b2Contact nextContact = b2Array_Get(world.contacts, edgeA.nextKey >> 1);
             b2ContactEdge nextEdge = nextContact.edges[(edgeA.nextKey & 1)];
             nextEdge.prevKey = edgeA.prevKey;
         }
@@ -518,14 +518,14 @@ public static class contact
         // Remove from body B
         if (edgeB.prevKey != B2_NULL_INDEX)
         {
-            b2Contact prevContact = Array_Get(world.contacts, edgeB.prevKey >> 1);
+            b2Contact prevContact = b2Array_Get(world.contacts, edgeB.prevKey >> 1);
             b2ContactEdge prevEdge = prevContact.edges[(edgeB.prevKey & 1)];
             prevEdge.nextKey = edgeB.nextKey;
         }
 
         if (edgeB.nextKey != B2_NULL_INDEX)
         {
-            b2Contact nextContact = Array_Get(world.contacts, edgeB.nextKey >> 1);
+            b2Contact nextContact = b2Array_Get(world.contacts, edgeB.nextKey >> 1);
             b2ContactEdge nextEdge = nextContact.edges[(edgeB.nextKey & 1)];
             nextEdge.prevKey = edgeB.prevKey;
         }
@@ -554,12 +554,12 @@ public static class contact
         {
             // contact is non-touching or is sleeping or is a sensor
             Debug.Assert(contact.setIndex != (int)b2SetType.b2_awakeSet || (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag) == 0);
-            b2SolverSet set = Array_Get(world.solverSets, contact.setIndex);
-            int movedIndex = Array_RemoveSwap(set.contactSims, contact.localIndex);
+            b2SolverSet set = b2Array_Get(world.solverSets, contact.setIndex);
+            int movedIndex = b2Array_RemoveSwap(set.contactSims, contact.localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 b2ContactSim movedContactSim = set.contactSims.data[contact.localIndex];
-                b2Contact movedContact = Array_Get(world.contacts, movedContactSim.contactId);
+                b2Contact movedContact = b2Array_Get(world.contacts, movedContactSim.contactId);
                 movedContact.localIndex = contact.localIndex;
             }
         }
@@ -585,11 +585,11 @@ public static class contact
             // contact lives in constraint graph
             Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
             b2GraphColor color = world.constraintGraph.colors[contact.colorIndex];
-            return Array_Get(color.contactSims, contact.localIndex);
+            return b2Array_Get(color.contactSims, contact.localIndex);
         }
 
-        b2SolverSet set = Array_Get(world.solverSets, contact.setIndex);
-        return Array_Get(set.contactSims, contact.localIndex);
+        b2SolverSet set = b2Array_Get(world.solverSets, contact.setIndex);
+        return b2Array_Get(set.contactSims, contact.localIndex);
     }
 
 

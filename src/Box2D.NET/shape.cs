@@ -110,7 +110,7 @@ public class shape
     public static b2Shape b2GetShape(b2World world, b2ShapeId shapeId)
     {
         int id = shapeId.index1 - 1;
-        b2Shape shape = Array_Get(world.shapes, id);
+        b2Shape shape = b2Array_Get(world.shapes, id);
         Debug.Assert(shape.id == id && shape.generation == shapeId.generation);
         return shape;
     }
@@ -118,7 +118,7 @@ public class shape
     public static b2ChainShape b2GetChainShape(b2World world, b2ChainId chainId)
     {
         int id = chainId.index1 - 1;
-        b2ChainShape chain = Array_Get(world.chainShapes, id);
+        b2ChainShape chain = b2Array_Get(world.chainShapes, id);
         Debug.Assert(chain.id == id && chain.generation == chainId.generation);
         return chain;
     }
@@ -156,14 +156,14 @@ public class shape
 
         if (shapeId == world.shapes.count)
         {
-            Array_Push(world.shapes, new b2Shape());
+            b2Array_Push(world.shapes, new b2Shape());
         }
         else
         {
             Debug.Assert(world.shapes.data[shapeId].id == B2_NULL_INDEX);
         }
 
-        b2Shape shape = Array_Get(world.shapes, shapeId);
+        b2Shape shape = b2Array_Get(world.shapes, shapeId);
 
         switch (shapeType)
         {
@@ -223,7 +223,7 @@ public class shape
         // Add to shape doubly linked list
         if (body.headShapeId != B2_NULL_INDEX)
         {
-            b2Shape headShape = Array_Get(world.shapes, body.headShapeId);
+            b2Shape headShape = b2Array_Get(world.shapes, body.headShapeId);
             headShape.prevShapeId = shapeId;
         }
 
@@ -237,11 +237,11 @@ public class shape
             shape.sensorIndex = world.sensors.count;
             b2Sensor sensor = new b2Sensor()
             {
-                overlaps1 = Array_Create<b2ShapeRef>(16),
-                overlaps2 = Array_Create<b2ShapeRef>(16),
+                overlaps1 = b2Array_Create<b2ShapeRef>(16),
+                overlaps2 = b2Array_Create<b2ShapeRef>(16),
                 shapeId = shapeId,
             };
-            Array_Push(world.sensors, sensor);
+            b2Array_Push(world.sensors, sensor);
         }
         else
         {
@@ -325,13 +325,13 @@ public class shape
         // Remove the shape from the body's doubly linked list.
         if (shape.prevShapeId != B2_NULL_INDEX)
         {
-            b2Shape prevShape = Array_Get(world.shapes, shape.prevShapeId);
+            b2Shape prevShape = b2Array_Get(world.shapes, shape.prevShapeId);
             prevShape.nextShapeId = shape.nextShapeId;
         }
 
         if (shape.nextShapeId != B2_NULL_INDEX)
         {
-            b2Shape nextShape = Array_Get(world.shapes, shape.nextShapeId);
+            b2Shape nextShape = b2Array_Get(world.shapes, shape.nextShapeId);
             nextShape.prevShapeId = shape.prevShapeId;
         }
 
@@ -352,7 +352,7 @@ public class shape
             int contactId = contactKey >> 1;
             int edgeIndex = contactKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
             contactKey = contact.edges[edgeIndex].nextKey;
 
             if (contact.shapeIdA == shapeId || contact.shapeIdB == shapeId)
@@ -363,7 +363,7 @@ public class shape
 
         if (shape.sensorIndex != B2_NULL_INDEX)
         {
-            b2Sensor sensor = Array_Get(world.sensors, shape.sensorIndex);
+            b2Sensor sensor = b2Array_Get(world.sensors, shape.sensorIndex);
             for (int i = 0; i < sensor.overlaps2.count; ++i)
             {
                 b2ShapeRef @ref = sensor.overlaps2.data[i];
@@ -373,19 +373,19 @@ public class shape
                     visitorShapeId = new b2ShapeId(@ref.shapeId + 1, world.worldId, @ref.generation),
                 };
 
-                Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
+                b2Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
             }
 
             // Destroy sensor
-            Array_Destroy(sensor.overlaps1);
-            Array_Destroy(sensor.overlaps2);
+            b2Array_Destroy(sensor.overlaps1);
+            b2Array_Destroy(sensor.overlaps2);
 
-            int movedIndex = Array_RemoveSwap(world.sensors, shape.sensorIndex);
+            int movedIndex = b2Array_RemoveSwap(world.sensors, shape.sensorIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fixup moved sensor
-                b2Sensor movedSensor = Array_Get(world.sensors, shape.sensorIndex);
-                b2Shape otherSensorShape = Array_Get(world.shapes, movedSensor.shapeId);
+                b2Sensor movedSensor = b2Array_Get(world.sensors, shape.sensorIndex);
+                b2Shape otherSensorShape = b2Array_Get(world.shapes, movedSensor.shapeId);
                 otherSensorShape.sensorIndex = shape.sensorIndex;
             }
         }
@@ -410,7 +410,7 @@ public class shape
         // need to wake bodies because this might be a static body
         bool wakeBodies = true;
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         b2DestroyShapeInternal(world, shape, body, wakeBodies);
 
         if (updateBodyMass == true)
@@ -438,14 +438,14 @@ public class shape
 
         if (chainId == world.chainShapes.count)
         {
-            Array_Push(world.chainShapes, new b2ChainShape());
+            b2Array_Push(world.chainShapes, new b2ChainShape());
         }
         else
         {
             Debug.Assert(world.chainShapes.data[chainId].id == B2_NULL_INDEX);
         }
 
-        b2ChainShape chainShape = Array_Get(world.chainShapes, chainId);
+        b2ChainShape chainShape = b2Array_Get(world.chainShapes, chainId);
 
         chainShape.id = chainId;
         chainShape.bodyId = body.id;
@@ -602,7 +602,7 @@ public class shape
         b2ChainShape chain = b2GetChainShape(world, chainId);
         bool wakeBodies = true;
 
-        b2Body body = Array_Get(world.bodies, chain.bodyId);
+        b2Body body = b2Array_Get(world.bodies, chain.bodyId);
 
         // TODO: @ikpil, check!
         // Remove the chain from the body's singly linked list.
@@ -631,7 +631,7 @@ public class shape
         for (int i = 0; i < count; ++i)
         {
             int shapeId = chain.shapeIndices[i];
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             b2DestroyShapeInternal(world, shape, body, wakeBodies);
         }
 
@@ -676,7 +676,7 @@ public class shape
         for (int i = 0; i < count; ++i)
         {
             int shapeId = chain.shapeIndices[i];
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             segmentArray[i] = new b2ShapeId(shapeId + 1, chainId.world0, shape.generation);
         }
 
@@ -1143,7 +1143,7 @@ public class shape
 
         if (updateBodyMass == true)
         {
-            b2Body body = Array_Get(world.bodies, shape.bodyId);
+            b2Body body = b2Array_Get(world.bodies, shape.bodyId);
             b2UpdateBodyMassData(world, body);
         }
     }
@@ -1228,7 +1228,7 @@ public class shape
 
     public static void b2ResetProxy(b2World world, b2Shape shape, bool wakeBodies, bool destroyProxy)
     {
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
 
         int shapeId = shape.id;
 
@@ -1239,7 +1239,7 @@ public class shape
             int contactId = contactKey >> 1;
             int edgeIndex = contactKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
             contactKey = contact.edges[edgeIndex].nextKey;
 
             if (contact.shapeIdA == shapeId || contact.shapeIdB == shapeId)
@@ -1489,7 +1489,7 @@ public class shape
             int chainId = shape.chainSegment.chainId;
             if (chainId != B2_NULL_INDEX)
             {
-                b2ChainShape chain = Array_Get(world.chainShapes, chainId);
+                b2ChainShape chain = b2Array_Get(world.chainShapes, chainId);
                 b2ChainId id = new b2ChainId(chainId + 1, shapeId.world0, chain.generation);
                 return id;
             }
@@ -1521,7 +1521,7 @@ public class shape
         for (int i = 0; i < count; ++i)
         {
             int shapeId = chainShape.shapeIndices[i];
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shape.friction = friction;
         }
     }
@@ -1556,7 +1556,7 @@ public class shape
         for (int i = 0; i < count; ++i)
         {
             int shapeId = chainShape.shapeIndices[i];
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shape.restitution = restitution;
         }
     }
@@ -1588,7 +1588,7 @@ public class shape
         for (int i = 0; i < count; ++i)
         {
             int shapeId = chainShape.shapeIndices[i];
-            b2Shape shape = Array_Get(world.shapes, shapeId);
+            b2Shape shape = b2Array_Get(world.shapes, shapeId);
             shape.material = material;
         }
     }
@@ -1614,7 +1614,7 @@ public class shape
             return 0;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
 
         // Conservative and fast
         return body.contactCount;
@@ -1634,7 +1634,7 @@ public class shape
             return 0;
         }
 
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         int contactKey = body.headContactKey;
         int index = 0;
         while (contactKey != B2_NULL_INDEX && index < capacity)
@@ -1642,7 +1642,7 @@ public class shape
             int contactId = contactKey >> 1;
             int edgeIndex = contactKey & 1;
 
-            b2Contact contact = Array_Get(world.contacts, contactId);
+            b2Contact contact = b2Array_Get(world.contacts, contactId);
 
             // Does contact involve this shape and is it touching?
             if ((contact.shapeIdA == shapeId.index1 - 1 || contact.shapeIdB == shapeId.index1 - 1) &&
@@ -1681,7 +1681,7 @@ public class shape
             return 0;
         }
 
-        b2Sensor sensor = Array_Get(world.sensors, shape.sensorIndex);
+        b2Sensor sensor = b2Array_Get(world.sensors, shape.sensorIndex);
         return sensor.overlaps2.count;
     }
 
@@ -1699,7 +1699,7 @@ public class shape
             return 0;
         }
 
-        b2Sensor sensor = Array_Get(world.sensors, shape.sensorIndex);
+        b2Sensor sensor = b2Array_Get(world.sensors, shape.sensorIndex);
 
         int count = b2MinInt(sensor.overlaps2.count, capacity);
         b2ShapeRef[] refs = sensor.overlaps2.data;
@@ -1744,7 +1744,7 @@ public class shape
         }
 
         b2Shape shape = b2GetShape(world, shapeId);
-        b2Body body = Array_Get(world.bodies, shape.bodyId);
+        b2Body body = b2Array_Get(world.bodies, shape.bodyId);
         b2Transform transform = b2GetBodyTransformQuick(world, body);
 
         b2DistanceInput input = new b2DistanceInput();

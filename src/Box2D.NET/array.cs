@@ -35,26 +35,26 @@ public class b2Array<T>
 public static class array
 {
     /* Resize */
-    public static void Array_Resize<T>(b2Array<T> a, int count) where T : new()
+    public static void b2Array_Resize<T>(b2Array<T> a, int count) where T : new()
     {
-        Array_Reserve(a, count);
+        b2Array_Reserve(a, count);
         a.count = count;
     }
 
     /* Get */
-    public static T Array_Get<T>(b2Array<T> a, int index)
+    public static T b2Array_Get<T>(b2Array<T> a, int index)
     {
         Debug.Assert(0 <= index && index < a.count);
         return a.data[index];
     }
 
     /* Add */
-    public static ref T Array_Add<T>(b2Array<T> a) where T : new()
+    public static ref T b2Array_Add<T>(b2Array<T> a) where T : new()
     {
         if (a.count == a.capacity)
         {
             int newCapacity = a.capacity < 2 ? 2 : a.capacity + (a.capacity >> 1);
-            Array_Reserve(a, newCapacity);
+            b2Array_Reserve(a, newCapacity);
         }
 
         a.count += 1;
@@ -62,12 +62,12 @@ public static class array
     }
 
     /* Push */
-    public static void Array_Push<T>(b2Array<T> a, T value) where T : new()
+    public static void b2Array_Push<T>(b2Array<T> a, T value) where T : new()
     {
         if (a.count == a.capacity)
         {
             int newCapacity = a.capacity < 2 ? 2 : a.capacity + (a.capacity >> 1);
-            Array_Reserve(a, newCapacity);
+            b2Array_Reserve(a, newCapacity);
         }
 
         a.data[a.count] = value;
@@ -75,14 +75,14 @@ public static class array
     }
 
     /* Set */
-    public static void Array_Set<T>(b2Array<T> a, int index, T value)
+    public static void b2Array_Set<T>(b2Array<T> a, int index, T value)
     {
         Debug.Assert(0 <= index && index < a.count);
         a.data[index] = value;
     }
 
     /* RemoveSwap */
-    public static int Array_RemoveSwap<T>(b2Array<T> a, int index)
+    public static int b2Array_RemoveSwap<T>(b2Array<T> a, int index)
     {
         Debug.Assert(0 <= index && index < a.count);
         int movedIndex = B2_NULL_INDEX;
@@ -97,7 +97,7 @@ public static class array
     }
 
     /* Pop */
-    public static T Array_Pop<T>(b2Array<T> a)
+    public static T b2Array_Pop<T>(b2Array<T> a)
     {
         Debug.Assert(a.count > 0);
         T value = a.data[a.count - 1];
@@ -106,27 +106,27 @@ public static class array
     }
 
     /* Clear */
-    public static void Array_Clear<T>(b2Array<T> a)
+    public static void b2Array_Clear<T>(b2Array<T> a)
     {
         a.count = 0;
     }
 
     /* ByteCount */
-    public static int Array_ByteCount<T>(b2Array<T> a)
+    public static int b2Array_ByteCount<T>(b2Array<T> a)
     {
         // TODO: @ikpil, check
         //return (int)( a.capacity * sizeof( T ) );                                                                               
         return -1;
     }
 
-// Array implementations to be instantiated in a source file where the type T is known
+    // Array implementations to be instantiated in a source file where the type T is known
     /* Create */
-    public static b2Array<T> Array_Create<T>(int capacity) where T : new()
+    public static b2Array<T> b2Array_Create<T>(int capacity)
     {
         b2Array<T> a = new b2Array<T>();
         if (capacity > 0)
         {
-            a.data = b2Alloc<T>(capacity);
+            a.data = new T[capacity];
             a.capacity = capacity;
         }
 
@@ -134,7 +134,7 @@ public static class array
     }
 
     /* Reserve */
-    public static void Array_Reserve<T>(b2Array<T> a, int newCapacity) where T : new()
+    public static void b2Array_Reserve<T>(b2Array<T> a, int newCapacity) where T : new()
     {
         if (newCapacity <= a.capacity)
         {
@@ -146,7 +146,7 @@ public static class array
     }
 
     /* Destroy */
-    public static void Array_Destroy<T>(b2Array<T> a)
+    public static void b2Array_Destroy<T>(b2Array<T> a)
     {
         b2Free(a.data, a.capacity);
         a.data = null;

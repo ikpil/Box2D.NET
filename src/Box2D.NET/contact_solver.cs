@@ -296,7 +296,7 @@ public class contact_solver
         ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
         int contactCount = color.contactSims.count;
         b2World world = context.world;
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         b2BodyState[] states = awakeSet.bodyStates.data;
 
         // This is a dummy state to represent a static body because static bodies don't have a solver body.
@@ -363,7 +363,7 @@ public class contact_solver
         ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
         int contactCount = color.contactSims.count;
         b2World world = context.world;
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         b2BodyState[] states = awakeSet.bodyStates.data;
 
         float inv_h = context.inv_h;
@@ -518,7 +518,7 @@ public class contact_solver
         ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
         int contactCount = color.contactSims.count;
         b2World world = context.world;
-        b2SolverSet awakeSet = Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+        b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
         b2BodyState[] states = awakeSet.bodyStates.data;
 
         float threshold = context.world.restitutionThreshold;
