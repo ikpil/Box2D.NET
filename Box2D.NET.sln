@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1858BB70-0C9E-47DD-B372-BCA0DAA985E6}"
+	ProjectSection(SolutionItems) = preProject
+		src\Box2D.NET.Engine\geometry.cs = src\Box2D.NET.Engine\geometry.cs
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.NET", "src\Box2D.NET\Box2D.NET.csproj", "{11849830-82C5-4BC0-BE87-16D90243FD78}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.NET.Samples", "src\Box2D.NET.Samples\Box2D.NET.Samples.csproj", "{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{536EAF45-6BD7-441A-85AC-061D77F593FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Box2D.NET.Test", "test\Box2D.NET.Test\Box2D.NET.Test.csproj", "{1646ABAA-1CD4-45D1-82D1-13639573837B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11849830-82C5-4BC0-BE87-16D90243FD78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11849830-82C5-4BC0-BE87-16D90243FD78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11849830-82C5-4BC0-BE87-16D90243FD78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11849830-82C5-4BC0-BE87-16D90243FD78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1646ABAA-1CD4-45D1-82D1-13639573837B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1646ABAA-1CD4-45D1-82D1-13639573837B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1646ABAA-1CD4-45D1-82D1-13639573837B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1646ABAA-1CD4-45D1-82D1-13639573837B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11849830-82C5-4BC0-BE87-16D90243FD78} = {1858BB70-0C9E-47DD-B372-BCA0DAA985E6}
+		{3BA9A2F5-DC88-4163-AFA9-657EF32A8A8E} = {1858BB70-0C9E-47DD-B372-BCA0DAA985E6}
+		{1646ABAA-1CD4-45D1-82D1-13639573837B} = {536EAF45-6BD7-441A-85AC-061D77F593FB}
+	EndGlobalSection
+EndGlobal
