@@ -1,38 +1,43 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "bitset.h"
-#include "test_macros.h"
+using NUnit.Framework;
 
-#define COUNT 169
+namespace Box2D.NET.Test;
 
-int BitSetTest( void )
+using static NET.bitset;
+
+public class test_bitset
 {
-	b2BitSet bitSet = b2CreateBitSet( COUNT );
+    private const int COUNT = 169;
 
-	b2SetBitCountAndClear( &bitSet, COUNT );
-	bool values[COUNT] = { false };
+    [Test]
+    public void BitSetTest()
+    {
+        b2BitSet bitSet = b2CreateBitSet(COUNT);
 
-	int32_t i1 = 0, i2 = 1;
-	b2SetBit( &bitSet, i1 );
-	values[i1] = true;
+        b2SetBitCountAndClear(bitSet, COUNT);
+        bool[] values = new bool[COUNT];
 
-	while ( i2 < COUNT )
-	{
-		b2SetBit( &bitSet, i2 );
-		values[i2] = true;
-		int32_t next = i1 + i2;
-		i1 = i2;
-		i2 = next;
-	}
+        int i1 = 0, i2 = 1;
+        b2SetBit(bitSet, i1);
+        values[i1] = true;
 
-	for ( int32_t i = 0; i < COUNT; ++i )
-	{
-		bool value = b2GetBit( &bitSet, i );
-		ENSURE( value == values[i] );
-	}
+        while (i2 < COUNT)
+        {
+            b2SetBit(bitSet, i2);
+            values[i2] = true;
+            int next = i1 + i2;
+            i1 = i2;
+            i2 = next;
+        }
 
-	b2DestroyBitSet( &bitSet );
+        for (int i = 0; i < COUNT; ++i)
+        {
+            bool value = b2GetBit(bitSet, i);
+            Assert.That(value, Is.EqualTo(values[i]));
+        }
 
-	return 0;
+        b2DestroyBitSet(bitSet);
+    }
 }

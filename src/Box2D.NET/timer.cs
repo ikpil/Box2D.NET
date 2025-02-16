@@ -1,185 +1,56 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "box2d/base.h"
+using System.Diagnostics;
+using System.Threading;
 
-#include <stddef.h>
+namespace Box2D.NET;
 
-#if defined( _WIN32 )
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#include <windows.h>
-
-static double s_invFrequency = 0.0;
-
-uint64_t b2GetTicks( void )
+public static class timer
 {
-	LARGE_INTEGER counter;
-	QueryPerformanceCounter( &counter );
-	return (uint64_t)counter.QuadPart;
-}
+    private static readonly double s_invFrequency = 1000000000UL / (double)Stopwatch.Frequency; // counter to nano
 
-float b2GetMilliseconds( uint64_t ticks )
-{
-	if ( s_invFrequency == 0.0 )
-	{
-		LARGE_INTEGER frequency;
-		QueryPerformanceFrequency( &frequency );
+    /// Get the absolute number of system ticks. The value is platform specific.
+    // nanoseconds
+    public static ulong b2GetTicks()
+    {
+        long counter = Stopwatch.GetTimestamp();
+        return (ulong)(counter * s_invFrequency);
+    }
 
-		s_invFrequency = (double)frequency.QuadPart;
-		if ( s_invFrequency > 0.0 )
-		{
-			s_invFrequency = 1000.0 / s_invFrequency;
-		}
-	}
+    /// Get the milliseconds passed from an initial tick value.
+    public static float b2GetMilliseconds(ulong ticks)
+    {
+        ulong ticksNow = b2GetTicks();
+        return (ticksNow - ticks) / (float)1000000;
+    }
 
-	uint64_t ticksNow = b2GetTicks();
-	return (float)( s_invFrequency * ( ticksNow - ticks ) );
-}
+    /// Get the milliseconds passed from an initial tick value.
+    public static float b2GetMillisecondsAndReset(ref ulong ticks)
+    {
+        ulong ticksNow = b2GetTicks();
+        float ms = (ticksNow - ticks) / (float)1000000;
+        ticks = ticksNow;
+        return ms;
+    }
 
-float b2GetMillisecondsAndReset( uint64_t* ticks )
-{
-	if ( s_invFrequency == 0.0 )
-	{
-		LARGE_INTEGER frequency;
-		QueryPerformanceFrequency( &frequency );
+    /// Yield to be used in a busy loop.
+    public static void b2Yield()
+    {
+        Thread.Yield();
+    }
 
-		s_invFrequency = (double)frequency.QuadPart;
-		if ( s_invFrequency > 0.0 )
-		{
-			s_invFrequency = 1000.0 / s_invFrequency;
-		}
-	}
+    // djb2 hash
+    // https://en.wikipedia.org/wiki/List_of_hash_functions
+    public static uint b2Hash(uint hash,  byte[] data,  int count )
+    {
+        uint result = hash;
+        for (int i = 0; i < count; i++)
+        {
+            result = (result << 5) + result + data[i];
+        }
 
-	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( s_invFrequency * ( ticksNow - *ticks ) );
-	*ticks = ticksNow;
-	return ms;
-}
+        return result;
+    }
 
-void b2Yield( void )
-{
-	SwitchToThread();
-}
-
-#elif defined( __linux__ ) || defined( __EMSCRIPTEN__ )
-
-#include <sched.h>
-#include <time.h>
-
-uint64_t b2GetTicks( void )
-{
-	struct timespec ts;
-	clock_gettime( CLOCK_MONOTONIC, &ts );
-	return ts.tv_sec * 1000000000LL + ts.tv_nsec;
-}
-
-float b2GetMilliseconds( uint64_t ticks )
-{
-	uint64_t ticksNow = b2GetTicks();
-	return (float)( (ticksNow - ticks) / 1000000.0 );
-}
-
-float b2GetMillisecondsAndReset( uint64_t* ticks )
-{
-	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( (ticksNow - *ticks) / 1000000.0 );
-	*ticks = ticksNow;
-	return ms;
-}
-
-void b2Yield( void )
-{
-	sched_yield();
-}
-
-#elif defined( __APPLE__ )
-
-#include <mach/mach_time.h>
-#include <sched.h>
-#include <sys/time.h>
-
-static double s_invFrequency = 0.0;
-
-uint64_t b2GetTicks( void )
-{
-	return mach_absolute_time();
-}
-
-float b2GetMilliseconds( uint64_t ticks )
-{
-	if ( s_invFrequency == 0 )
-	{
-		mach_timebase_info_data_t timebase;
-		mach_timebase_info( &timebase );
-
-		// convert to ns then to ms
-		s_invFrequency = 1e-6 * (double)timebase.numer / (double)timebase.denom;
-	}
-
-	uint64_t ticksNow = b2GetTicks();
-	return (float)( s_invFrequency * (ticksNow - ticks) );
-}
-
-float b2GetMillisecondsAndReset( uint64_t* ticks )
-{
-	if ( s_invFrequency == 0 )
-	{
-		mach_timebase_info_data_t timebase;
-		mach_timebase_info( &timebase );
-
-		// convert to ns then to ms
-		s_invFrequency = 1e-6 * (double)timebase.numer / (double)timebase.denom;
-	}
-
-	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( s_invFrequency * ( ticksNow - *ticks ) );
-	*ticks = ticksNow;
-	return ms;
-}
-
-void b2Yield( void )
-{
-	sched_yield();
-}
-
-#else
-
-uint64_t b2GetTicks( void )
-{
-	return 0;
-}
-
-float b2GetMilliseconds( uint64_t ticks )
-{
-	( (void)( ticks ) );
-	return 0.0f;
-}
-
-float b2GetMillisecondsAndReset( uint64_t* ticks )
-{
-	( (void)( ticks ) );
-	return 0.0f;
-}
-
-void b2Yield( void )
-{
-}
-
-#endif
-
-// djb2 hash
-// https://en.wikipedia.org/wiki/List_of_hash_functions
-uint32_t b2Hash( uint32_t hash, const uint8_t* data, int count )
-{
-	uint32_t result = hash;
-	for ( int i = 0; i < count; i++ )
-	{
-		result = ( result << 5 ) + result + data[i];
-	}
-
-	return result;
 }
