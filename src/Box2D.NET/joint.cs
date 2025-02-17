@@ -467,6 +467,11 @@ public class joint
         joint.collideConnected = collideConnected;
         joint.isMarked = false;
 
+        // @ikpil, create the b2JointEdge here for now, and later I'll see how to proceed
+        joint.edges = new b2JointEdge[2];
+        joint.edges[0] = new b2JointEdge();
+        joint.edges[1] = new b2JointEdge();
+        
         // Doubly linked list on bodyA
         joint.edges[0].bodyId = bodyIdA;
         joint.edges[0].prevKey = B2_NULL_INDEX;
