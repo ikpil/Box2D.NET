@@ -58,6 +58,18 @@ public class b2SolverSet
 
 public class solver_set
 {
+    public static b2SolverSet b2CreateSolverSet(b2World world)
+    {
+        var set = new b2SolverSet();
+         set.bodySims = b2Array_Create<b2BodySim>(0);
+         set.bodyStates = b2Array_Create<b2BodyState>(0);
+         set.jointSims = b2Array_Create<b2JointSim>(0);
+         set.contactSims = b2Array_Create<b2ContactSim>(0);
+         set.islandSims = b2Array_Create<b2IslandSim>(0);
+        
+        return set;
+    }
+    
     public static void b2DestroySolverSet(b2World world, int setIndex)
     {
         b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
@@ -71,12 +83,12 @@ public class solver_set
         set.setIndex = B2_NULL_INDEX;
     }
 
-// Wake a solver set. Does not merge islands.
-// Contacts can be in several places:
-// 1. non-touching contacts in the disabled set
-// 2. non-touching contacts already in the awake set
-// 3. touching contacts in the sleeping set
-// This handles contact types 1 and 3. Type 2 doesn't need any action.
+    // Wake a solver set. Does not merge islands.
+    // Contacts can be in several places:
+    // 1. non-touching contacts in the disabled set
+    // 2. non-touching contacts already in the awake set
+    // 3. touching contacts in the sleeping set
+    // This handles contact types 1 and 3. Type 2 doesn't need any action.
     public static void b2WakeSolverSet(b2World world, int setIndex)
     {
         Debug.Assert(setIndex >= (int)b2SetType.b2_firstSleepingSet);

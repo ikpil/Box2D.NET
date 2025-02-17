@@ -360,19 +360,22 @@ public static class world
 
         // add empty static, active, and disabled body sets
         world.solverSetIdPool = b2CreateIdPool();
-        b2SolverSet set = new b2SolverSet();
+        b2SolverSet set = null;
 
         // static set
+        set = b2CreateSolverSet(world);
         set.setIndex = b2AllocId(world.solverSetIdPool);
         b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_staticSet].setIndex == (int)b2SetType.b2_staticSet);
 
         // disabled set
+        set = b2CreateSolverSet(world);
         set.setIndex = b2AllocId(world.solverSetIdPool);
         b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_disabledSet].setIndex == (int)b2SetType.b2_disabledSet);
 
         // awake set
+        set = b2CreateSolverSet(world);
         set.setIndex = b2AllocId(world.solverSetIdPool);
         b2Array_Push(world.solverSets, set);
         Debug.Assert(world.solverSets.data[(int)b2SetType.b2_awakeSet].setIndex == (int)b2SetType.b2_awakeSet);
