@@ -60,7 +60,7 @@ public class b2Contact
     // B2_NULL_INDEX when slot is free
     public int localIndex;
 
-    public b2ContactEdge[] edges = new b2ContactEdge[2];
+    public b2ContactEdge[] edges;
     public int shapeIdA;
     public int shapeIdB;
 
@@ -378,6 +378,11 @@ public static class contact
         {
             contact.flags |= (uint)b2ContactFlags.b2_contactEnableContactEvents;
         }
+
+        // @ikpil, new b2ContactEdge
+        contact.edges = new b2ContactEdge[2];
+        contact.edges[0] = new b2ContactEdge();
+        contact.edges[1] = new b2ContactEdge();
 
         // Connect to body A
         {
