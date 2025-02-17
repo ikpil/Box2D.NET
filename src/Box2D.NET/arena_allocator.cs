@@ -6,7 +6,6 @@ using System.Diagnostics;
 using static Box2D.NET.array;
 using static Box2D.NET.core;
 
-
 namespace Box2D.NET;
 
 public class b2ArenaEntry<T>
@@ -27,8 +26,11 @@ public interface IArenaAllocator
 // if you try to interleave multiple allocate/free pairs.
 // This allocator uses the heap if space is insufficient.
 // I could remove the need to free entries individually.
-public class b2ArenaAllocator<T> : IArenaAllocator
+public class b2ArenaAllocator<T> : IArenaAllocator where T : new()
 {
+    private static readonly object _lock = new();
+    private static b2ArenaAllocator<T> _singleton;
+    
     public ArraySegment<T> data;
     public int capacity;
     public int index;
@@ -37,14 +39,36 @@ public class b2ArenaAllocator<T> : IArenaAllocator
     public int maxAllocation;
 
     public b2Array<b2ArenaEntry<T>> entries;
+
+    public static b2ArenaAllocator<T> Touch(b2ArenaAllocator allocator)
+    {
+        if (null == _singleton)
+        {
+            lock (_lock)
+            {
+                if (null == _singleton)
+                {
+                    _singleton = arena_allocator.b2CreateArenaAllocator<T>(0);
+                    allocator.Add(_singleton);
+                }
+            }
+        }
+
+        return _singleton;
+    }
 }
 
 public class b2ArenaAllocator
 {
-    public b2ArenaAllocator<T> GetAlloc<T>()
+    public b2ArenaAllocator<T> Touch<T>() where T : new()
     {
-        // TODO: @ikpil, check
-        return null;
+        return b2ArenaAllocator<T>.Touch(this);
+    }
+
+    // @ikpil, check!!
+    public void Add<T>(b2ArenaAllocator<T> alloc) where T : new()
+    {
+        // ...
     }
 
     public IArenaAllocator[] GetAll()
@@ -82,7 +106,7 @@ public class arena_allocator
 
     public static ArraySegment<T> b2AllocateArenaItem<T>(b2ArenaAllocator allocator, int size,  string name ) where T : new()
     {
-        var alloc = allocator.GetAlloc<T>();
+        var alloc = allocator.Touch<T>();
         // ensure allocation is 32 byte aligned to support 256-bit SIMD
         int size32 = ((size - 1) | 0x1F) + 1;
 
@@ -116,9 +140,9 @@ public class arena_allocator
         return entry.data;
     }
 
-    public static void b2FreeArenaItem<T>(b2ArenaAllocator allocator, ArraySegment<T> mem)
+    public static void b2FreeArenaItem<T>(b2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
     {
-        var alloc = allocator.GetAlloc<T>();
+        var alloc = allocator.Touch<T>();
         int entryCount = alloc.entries.count;
         Debug.Assert(entryCount > 0);
         b2ArenaEntry<T> entry = alloc.entries.data[entryCount - 1];
