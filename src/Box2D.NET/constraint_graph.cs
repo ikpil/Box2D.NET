@@ -40,7 +40,6 @@ public class b2GraphColor
     //union
     //{
     public ArraySegment<b2ContactConstraintSIMD> simdConstraints;
-
     public ArraySegment<b2ContactConstraint> overflowConstraints;
     //};
 }
@@ -64,6 +63,7 @@ public class constraint_graph
         Debug.Assert(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
         Debug.Assert(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
 
+        // @ikpil, new b2ConstraintGraph
         graph = new b2ConstraintGraph();
         graph.colors = new b2GraphColor[B2_GRAPH_COLOR_COUNT];
         for (int i = 0; i < graph.colors.Length; ++i)
@@ -79,6 +79,9 @@ public class constraint_graph
         {
             b2GraphColor color = graph.colors[i];
             color.bodySet = b2CreateBitSet(bodyCapacity);
+            color.contactSims = b2Array_Create<b2ContactSim>();
+            color.jointSims = b2Array_Create<b2JointSim>();
+
             b2SetBitCountAndClear(color.bodySet, bodyCapacity);
         }
     }

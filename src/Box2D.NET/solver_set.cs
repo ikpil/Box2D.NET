@@ -61,11 +61,11 @@ public class solver_set
     public static b2SolverSet b2CreateSolverSet(b2World world)
     {
         var set = new b2SolverSet();
-         set.bodySims = b2Array_Create<b2BodySim>(0);
-         set.bodyStates = b2Array_Create<b2BodyState>(0);
-         set.jointSims = b2Array_Create<b2JointSim>(0);
-         set.contactSims = b2Array_Create<b2ContactSim>(0);
-         set.islandSims = b2Array_Create<b2IslandSim>(0);
+         set.bodySims = b2Array_Create<b2BodySim>();
+         set.bodyStates = b2Array_Create<b2BodyState>();
+         set.jointSims = b2Array_Create<b2JointSim>();
+         set.contactSims = b2Array_Create<b2ContactSim>();
+         set.islandSims = b2Array_Create<b2IslandSim>();
         
         return set;
     }

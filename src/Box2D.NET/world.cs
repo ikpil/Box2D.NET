@@ -438,6 +438,9 @@ public static class world
         {
             world.restitutionCallback = def.restitutionCallback;
         }
+        
+        // @ikpil, new profile
+        world.profile = new b2Profile();
 
         world.enableSleep = def.enableSleep;
         world.locked = false;

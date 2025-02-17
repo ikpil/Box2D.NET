@@ -121,7 +121,7 @@ public static class array
 
     // Array implementations to be instantiated in a source file where the type T is known
     /* Create */
-    public static b2Array<T> b2Array_Create<T>(int capacity) where T : new()
+    public static b2Array<T> b2Array_Create<T>(int capacity = 0) where T : new()
     {
         b2Array<T> a = new b2Array<T>();
         if (capacity > 0)
