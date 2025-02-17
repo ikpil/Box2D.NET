@@ -89,7 +89,15 @@ public static class core
         T[] newMem = new T[newSize];
         if (oldSize > 0)
         {
-            memcpy<T>(newMem, oldMem, oldSize);
+            Array.Copy(oldMem, newMem, oldSize);
+            if (!typeof(T).IsValueType)
+            {
+                for (int i = oldSize; i < newSize; ++i)
+                {
+                    newMem[i] = new T();
+                }
+            }
+
             b2Free(oldMem, oldSize);
         }
 
@@ -228,7 +236,6 @@ public static class core
 
     public static void TracyCFrameMark()
     {
-        
     }
 #endif
 

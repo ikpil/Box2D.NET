@@ -121,12 +121,20 @@ public static class array
 
     // Array implementations to be instantiated in a source file where the type T is known
     /* Create */
-    public static b2Array<T> b2Array_Create<T>(int capacity)
+    public static b2Array<T> b2Array_Create<T>(int capacity) where T : new()
     {
         b2Array<T> a = new b2Array<T>();
         if (capacity > 0)
         {
             a.data = new T[capacity];
+            if (!typeof(T).IsValueType)
+            {
+                for (int i = 0; i < capacity; ++i)
+                {
+                    a.data[i] = new T();
+                }
+            }
+
             a.capacity = capacity;
         }
 
