@@ -847,7 +847,7 @@ public static class world
                     // Contact is solid
                     if (0 != (flags & (uint)b2ContactFlags.b2_contactEnableContactEvents))
                     {
-                        b2ContactBeginTouchEvent @event = new b2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactSim.manifold);
+                        b2ContactBeginTouchEvent @event = new b2ContactBeginTouchEvent(shapeIdA, shapeIdB, ref contactSim.manifold);
                         b2Array_Push(world.contactBeginEvents, @event);
                     }
 

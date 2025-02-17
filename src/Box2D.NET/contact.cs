@@ -163,39 +163,39 @@ public static class contact
     }
 
 
-// Contacts and determinism
-// A deterministic simulation requires contacts to exist in the same order in b2Island no matter the thread count.
-// The order must reproduce from run to run. This is necessary because the Gauss-Seidel constraint solver is order dependent.
-//
-// Creation:
-// - Contacts are created using results from b2UpdateBroadPhasePairs
-// - These results are ordered according to the order of the broad-phase move array
-// - The move array is ordered according to the shape creation order using a bitset.
-// - The island/shape/body order is determined by creation order
-// - Logically contacts are only created for awake bodies, so they are immediately added to the awake contact array (serially)
-//
-// Island linking:
-// - The awake contact array is built from the body-contact graph for all awake bodies in awake islands.
-// - Awake contacts are solved in parallel and they generate contact state changes.
-// - These state changes may link islands together using union find.
-// - The state changes are ordered using a bit array that encompasses all contacts
-// - As long as contacts are created in deterministic order, island link order is deterministic.
-// - This keeps the order of contacts in islands deterministic
+    // Contacts and determinism
+    // A deterministic simulation requires contacts to exist in the same order in b2Island no matter the thread count.
+    // The order must reproduce from run to run. This is necessary because the Gauss-Seidel constraint solver is order dependent.
+    //
+    // Creation:
+    // - Contacts are created using results from b2UpdateBroadPhasePairs
+    // - These results are ordered according to the order of the broad-phase move array
+    // - The move array is ordered according to the shape creation order using a bitset.
+    // - The island/shape/body order is determined by creation order
+    // - Logically contacts are only created for awake bodies, so they are immediately added to the awake contact array (serially)
+    //
+    // Island linking:
+    // - The awake contact array is built from the body-contact graph for all awake bodies in awake islands.
+    // - Awake contacts are solved in parallel and they generate contact state changes.
+    // - These state changes may link islands together using union find.
+    // - The state changes are ordered using a bit array that encompasses all contacts
+    // - As long as contacts are created in deterministic order, island link order is deterministic.
+    // - This keeps the order of contacts in islands deterministic
 
-// Manifold functions should compute important results in local space to improve precision. However, this
-// interface function takes two world transforms instead of a relative transform for these reasons:
-//
-// First:
-// The anchors need to be computed relative to the shape origin in world space. This is necessary so the
-// solver does not need to access static body transforms. Not even in constraint preparation. This approach
-// has world space vectors yet retains precision.
-//
-// Second:
-// b3ManifoldPoint::point is very useful for debugging and it is in world space.
-//
-// Third:
-// The user may call the manifold functions directly and they should be easy to use and have easy to use
-// results.
+    // Manifold functions should compute important results in local space to improve precision. However, this
+    // interface function takes two world transforms instead of a relative transform for these reasons:
+    //
+    // First:
+    // The anchors need to be computed relative to the shape origin in world space. This is necessary so the
+    // solver does not need to access static body transforms. Not even in constraint preparation. This approach
+    // has world space vectors yet retains precision.
+    //
+    // Second:
+    // b3ManifoldPoint::point is very useful for debugging and it is in world space.
+    //
+    // Third:
+    // The user may call the manifold functions directly and they should be easy to use and have easy to use
+    // results.
     public delegate b2Manifold b2ManifoldFcn(b2Shape shapeA, b2Transform xfA, b2Shape shapeB, b2Transform xfB, b2SimplexCache cache);
 
 
@@ -598,8 +598,8 @@ public static class contact
     }
 
 
-// Update the contact manifold and touching status. Also updates sensor overlap.
-// Note: do not assume the shape AABBs are overlapping or are valid.
+    // Update the contact manifold and touching status. Also updates sensor overlap.
+    // Note: do not assume the shape AABBs are overlapping or are valid.
     public static bool b2UpdateContact(b2World world, b2ContactSim contactSim, b2Shape shapeA, b2Transform transformA, b2Vec2 centerOffsetA,
         b2Shape shapeB, b2Transform transformB, b2Vec2 centerOffsetB)
     {
@@ -638,7 +638,7 @@ public static class contact
             b2ShapeId shapeIdB = new b2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
             // this call assumes thread safety
-            touching = world.preSolveFcn(shapeIdA, shapeIdB, contactSim.manifold, world.preSolveContext);
+            touching = world.preSolveFcn(shapeIdA, shapeIdB, ref contactSim.manifold, world.preSolveContext);
             if (touching == false)
             {
                 // disable contact

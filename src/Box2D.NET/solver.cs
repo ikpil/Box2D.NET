@@ -506,7 +506,7 @@ public class solver
 
             // The user may modify the temporary manifold here but it doesn't matter. They will be able to
             // modify the real manifold in the discrete solver.
-            didHit = world.preSolveFcn(shapeIdA, shapeIdB, manifold, world.preSolveContext);
+            didHit = world.preSolveFcn(shapeIdA, shapeIdB, ref manifold, world.preSolveContext);
         }
 
         if (didHit)

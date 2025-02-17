@@ -257,7 +257,7 @@ public class test_world
         return true;
     }
 
-    public static bool PreSolveStatic(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, object context)
+    public static bool PreSolveStatic(b2ShapeId shapeIdA, b2ShapeId shapeIdB, ref b2Manifold manifold, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);

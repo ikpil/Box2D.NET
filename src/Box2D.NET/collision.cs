@@ -407,7 +407,7 @@ public class b2TOIOutput
 /// Box2D uses speculative collision so some contact points may be separated.
 /// You may use the maxNormalImpulse to determine if there was an interaction during
 /// the time step.
-public class b2ManifoldPoint
+public struct b2ManifoldPoint
 {
     /// Location of the contact point in world space. Subject to precision loss at large coordinates.
     /// @note Should only be used for debugging.
@@ -447,7 +447,7 @@ public class b2ManifoldPoint
 
 /// A contact manifold describes the contact points between colliding shapes.
 /// @note Box2D uses speculative collision so some contact points may be separated.
-public class b2Manifold // TODO: @ikpil class or struct
+public struct b2Manifold
 {
     /// The unit normal vector in world space, points from shape A to bodyB
     public b2Vec2 normal;
@@ -456,10 +456,15 @@ public class b2Manifold // TODO: @ikpil class or struct
     public float rollingImpulse;
 
     /// The manifold points, up to two are possible in 2D
-    public b2ManifoldPoint[] points = new b2ManifoldPoint[2];
+    public b2ManifoldPoint[] points;
 
     /// The number of contacts points, will be 0, 1, or 2
     public int pointCount;
+
+    public b2Manifold()
+    {
+        points = new b2ManifoldPoint[2];
+    }
 }
 
 /**@}*/

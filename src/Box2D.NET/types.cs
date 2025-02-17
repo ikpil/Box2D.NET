@@ -81,7 +81,7 @@ public delegate bool b2CustomFilterFcn(b2ShapeId shapeIdA, b2ShapeId shapeIdB, o
 /// Return false if you want to disable the contact this step
 /// @warning Do not attempt to modify the world inside this callback
 /// @ingroup world
-public delegate bool b2PreSolveFcn(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold, object context);
+public delegate bool b2PreSolveFcn(b2ShapeId shapeIdA, b2ShapeId shapeIdB, ref b2Manifold manifold, object context);
 
 /// Prototype callback for overlap queries.
 /// Called for each shape found in the query.
@@ -1115,7 +1115,7 @@ public class b2ContactBeginTouchEvent
         
     }
 
-    public b2ContactBeginTouchEvent(b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold manifold)
+    public b2ContactBeginTouchEvent(b2ShapeId shapeIdA, b2ShapeId shapeIdB, ref b2Manifold manifold)
     {
         this.shapeIdA = shapeIdA;
         this.shapeIdB = shapeIdB;

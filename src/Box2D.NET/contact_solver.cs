@@ -177,7 +177,7 @@ public class contact_solver
         {
             b2ContactSim contactSim = contacts[i];
 
-            b2Manifold manifold = contactSim.manifold;
+            ref b2Manifold manifold = ref contactSim.manifold;
             int pointCount = manifold.pointCount;
 
             Debug.Assert(0 < pointCount && pointCount <= 2);
@@ -621,7 +621,7 @@ public class contact_solver
         {
             b2ContactConstraint constraint = constraints[i];
             b2ContactSim contact = contacts[i];
-            b2Manifold manifold = contact.manifold;
+            ref b2Manifold manifold = ref contact.manifold;
             int pointCount = manifold.pointCount;
 
             for (int j = 0; j < pointCount; ++j)
@@ -1451,7 +1451,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                 if (contactSim != null)
                 {
-                    b2Manifold manifold = contactSim.manifold;
+                    ref b2Manifold manifold = ref contactSim.manifold;
 
                     int indexA = contactSim.bodySimIndexA;
                     int indexB = contactSim.bodySimIndexB;
@@ -2072,7 +2072,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             for (int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex)
             {
-                b2Manifold m = contacts[baseIndex + laneIndex] == null ? dummy : contacts[baseIndex + laneIndex].manifold;
+                ref b2Manifold m = ref contacts[baseIndex + laneIndex] == null ? ref dummy : ref contacts[baseIndex + laneIndex].manifold;
                 m.rollingImpulse = rollingImpulse[laneIndex];
 
                 m.points[0].normalImpulse = normalImpulse1[laneIndex];
