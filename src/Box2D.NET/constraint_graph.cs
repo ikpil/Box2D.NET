@@ -56,10 +56,9 @@ public class constraint_graph
     // is touching many other bodies.
     public const int B2_OVERFLOW_INDEX = B2_GRAPH_COLOR_COUNT - 1;
 
-
-    //Debug.Assert( B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12" );
     public static void b2CreateGraph(ref b2ConstraintGraph graph, int bodyCapacity)
     {
+        Debug.Assert(B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12" );
         Debug.Assert(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
         Debug.Assert(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
 
@@ -84,6 +83,16 @@ public class constraint_graph
 
             b2SetBitCountAndClear(color.bodySet, bodyCapacity);
         }
+
+        // @ikpil, for dummy
+        for (int i = B2_OVERFLOW_INDEX; i < B2_GRAPH_COLOR_COUNT; ++i)
+        {
+            var color = graph.colors[i];
+            color.bodySet = new b2BitSet();
+            color.contactSims = b2Array_Create<b2ContactSim>();
+            color.jointSims = b2Array_Create<b2JointSim>();
+        }
+        
     }
 
     public static void b2DestroyGraph(b2ConstraintGraph graph)
