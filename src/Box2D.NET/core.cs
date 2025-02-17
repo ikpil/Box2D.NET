@@ -90,15 +90,15 @@ public static class core
         if (oldSize > 0)
         {
             Array.Copy(oldMem, newMem, oldSize);
-            if (!typeof(T).IsValueType)
-            {
-                for (int i = oldSize; i < newSize; ++i)
-                {
-                    newMem[i] = new T();
-                }
-            }
-
             b2Free(oldMem, oldSize);
+        }
+        
+        if (!typeof(T).IsValueType)
+        {
+            for (int i = oldSize; i < newSize; ++i)
+            {
+                newMem[i] = new T();
+            }
         }
 
         return newMem;
