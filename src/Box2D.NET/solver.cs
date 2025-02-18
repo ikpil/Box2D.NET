@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Box2D.NET.Core;
 using static Box2D.NET.table;
 using static Box2D.NET.array;
 using static Box2D.NET.atomic;
@@ -165,12 +166,12 @@ namespace Box2D.NET
         public bool enableWarmStarting;
 
         // todo padding to prevent false sharing
-        public Vector64<byte> dummy1;
+        public Padding64<byte> dummy1;
 
         // sync index (16-bits) | stage type (16-bits)
         public b2AtomicU32 atomicSyncBits;
 
-        public Vector64<byte> dummy2;
+        public Padding64<byte> dummy2;
     }
 
     public class b2WorkerContext

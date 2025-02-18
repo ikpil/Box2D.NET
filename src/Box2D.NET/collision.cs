@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System.Numerics;
 using static Box2D.NET.core;
 using static Box2D.NET.math_function;
 
@@ -458,6 +459,8 @@ namespace Box2D.NET
 
         /// The manifold points, up to two are possible in 2D
         public b2ManifoldPoint[] points;
+
+        private Vector<int> sda;
 
         /// The number of contacts points, will be 0, 1, or 2
         public int pointCount;
