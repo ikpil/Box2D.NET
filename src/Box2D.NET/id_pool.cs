@@ -5,72 +5,72 @@ using System.Diagnostics;
 using static Box2D.NET.array;
 using static Box2D.NET.core;
 
-namespace Box2D.NET;
-
-public class b2IdPool
+namespace Box2D.NET
 {
-    public b2Array<int> freeArray;
-    public int nextIndex;
-}
-
-public class id_pool
-{
-    public static int b2GetIdCount(b2IdPool pool)
+    public class b2IdPool
     {
-        return pool.nextIndex - pool.freeArray.count;
+        public b2Array<int> freeArray;
+        public int nextIndex;
     }
 
-    public static int b2GetIdCapacity(b2IdPool pool)
+    public class id_pool
     {
-        return pool.nextIndex;
-    }
-
-    public static int b2GetIdBytes(b2IdPool pool)
-    {
-        return b2Array_ByteCount(pool.freeArray);
-    }
-
-
-    public static b2IdPool b2CreateIdPool()
-    {
-        b2IdPool pool = new b2IdPool();
-        pool.freeArray = b2Array_Create<int>(32);
-        return pool;
-    }
-
-    public static void b2DestroyIdPool(ref b2IdPool pool)
-    {
-        b2Array_Destroy(pool.freeArray);
-        pool = new b2IdPool(); // TODO: @ikpil check pool
-    }
-
-    public static int b2AllocId(b2IdPool pool)
-    {
-        int count = pool.freeArray.count;
-        if (count > 0)
+        public static int b2GetIdCount(b2IdPool pool)
         {
-            int id = b2Array_Pop(pool.freeArray);
-            return id;
+            return pool.nextIndex - pool.freeArray.count;
         }
 
-        int nextId = pool.nextIndex;
-        pool.nextIndex += 1;
-        return nextId;
-    }
-
-    public static void b2FreeId(b2IdPool pool, int id)
-    {
-        Debug.Assert(pool.nextIndex > 0);
-        Debug.Assert(0 <= id && id < pool.nextIndex);
-
-        if (id == pool.nextIndex)
+        public static int b2GetIdCapacity(b2IdPool pool)
         {
-            pool.nextIndex -= 1;
-            return;
+            return pool.nextIndex;
         }
 
-        b2Array_Push(pool.freeArray, id);
-    }
+        public static int b2GetIdBytes(b2IdPool pool)
+        {
+            return b2Array_ByteCount(pool.freeArray);
+        }
+
+
+        public static b2IdPool b2CreateIdPool()
+        {
+            b2IdPool pool = new b2IdPool();
+            pool.freeArray = b2Array_Create<int>(32);
+            return pool;
+        }
+
+        public static void b2DestroyIdPool(ref b2IdPool pool)
+        {
+            b2Array_Destroy(pool.freeArray);
+            pool = new b2IdPool(); // TODO: @ikpil check pool
+        }
+
+        public static int b2AllocId(b2IdPool pool)
+        {
+            int count = pool.freeArray.count;
+            if (count > 0)
+            {
+                int id = b2Array_Pop(pool.freeArray);
+                return id;
+            }
+
+            int nextId = pool.nextIndex;
+            pool.nextIndex += 1;
+            return nextId;
+        }
+
+        public static void b2FreeId(b2IdPool pool, int id)
+        {
+            Debug.Assert(pool.nextIndex > 0);
+            Debug.Assert(0 <= id && id < pool.nextIndex);
+
+            if (id == pool.nextIndex)
+            {
+                pool.nextIndex -= 1;
+                return;
+            }
+
+            b2Array_Push(pool.freeArray, id);
+        }
 
 #if B2_VALIDATE
 void b2ValidateFreeId( b2IdPool* pool, int id )
@@ -89,11 +89,12 @@ void b2ValidateFreeId( b2IdPool* pool, int id )
 
 #else
 
-    public static void b2ValidateFreeId(b2IdPool pool, int id)
-    {
-        B2_UNUSED(pool);
-        B2_UNUSED(id);
-    }
+        public static void b2ValidateFreeId(b2IdPool pool, int id)
+        {
+            B2_UNUSED(pool);
+            B2_UNUSED(id);
+        }
 
 #endif
+    }
 }
