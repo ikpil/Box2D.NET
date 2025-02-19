@@ -326,6 +326,11 @@ namespace Box2D.NET
         public static void b2TracyCFree<T>(T[] ptr)
         {
         }
+        
+        public static void b2TracyCFree<T>(T ptr)
+        {
+        }
+
 #endif
 
 
@@ -452,5 +457,26 @@ namespace Box2D.NET
 
             b2AtomicFetchAddInt(ref b2_byteCount, -size);
         }
+        
+        public static void b2Free<T>(T mem, int size)
+        {
+            if (mem == null)
+            {
+                return;
+            }
+
+            b2TracyCFree(mem);
+
+            // if (b2_freeFcn != null)
+            // {
+            //     b2_freeFcn(mem);
+            // }
+            // else
+            // {
+            // }
+
+            b2AtomicFetchAddInt(ref b2_byteCount, -size);
+        }
+
     }
 }

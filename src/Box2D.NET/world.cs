@@ -2328,7 +2328,7 @@ namespace Box2D.NET
 
             b2AABB aabb = b2ComputeCircleAABB(circle, transform);
             WorldOverlapContext worldContext = new WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy([circle.center], 1, circle.radius), transform, context
+                world, fcn, filter, b2MakeProxy(circle.center, 1, circle.radius), transform, context
             );
 
             for (int i = 0; i < (int)b2BodyType.b2_bodyTypeCount; ++i)
@@ -2360,7 +2360,7 @@ namespace Box2D.NET
 
             b2AABB aabb = b2ComputeCapsuleAABB(capsule, transform);
             WorldOverlapContext worldContext = new WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy([capsule.center1], 2, capsule.radius), transform, context
+                world, fcn, filter, b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius), transform, context
             );
 
             for (int i = 0; i < (int)b2BodyType.b2_bodyTypeCount; ++i)
@@ -2861,7 +2861,7 @@ void b2World_Dump()
 
             b2DistanceInput input = new b2DistanceInput();
             input.proxyA = b2MakeShapeDistanceProxy(shape);
-            input.proxyB = b2MakeProxy([explosionContext.position], 1, 0.0f);
+            input.proxyB = b2MakeProxy(explosionContext.position, 1, 0.0f);
             input.transformA = transform;
             input.transformB = b2Transform_identity;
             input.useRadii = true;

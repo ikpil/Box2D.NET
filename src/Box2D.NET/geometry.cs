@@ -528,7 +528,7 @@ namespace Box2D.NET
         {
             b2DistanceInput input = new b2DistanceInput();
             input.proxyA = b2MakeProxy(shape.vertices, shape.count, 0.0f);
-            input.proxyB = b2MakeProxy([point], 1, 0.0f);
+            input.proxyB = b2MakeProxy(point, 1, 0.0f);
             input.transformA = b2Transform_identity;
             input.transformB = b2Transform_identity;
             input.useRadii = false;
@@ -897,7 +897,7 @@ namespace Box2D.NET
             // TODO_ERIN this is not working for ray vs box (zero radii)
             b2ShapeCastPairInput castInput = new b2ShapeCastPairInput();
             castInput.proxyA = b2MakeProxy(shape.vertices, shape.count, shape.radius);
-            castInput.proxyB = b2MakeProxy([input.origin], 1, 0.0f);
+            castInput.proxyB = b2MakeProxy(input.origin, 1, 0.0f);
             castInput.transformA = b2Transform_identity;
             castInput.transformB = b2Transform_identity;
             castInput.translationB = input.translation;
@@ -909,7 +909,7 @@ namespace Box2D.NET
         public static b2CastOutput b2ShapeCastCircle(b2ShapeCastInput input, b2Circle shape)
         {
             b2ShapeCastPairInput pairInput = new b2ShapeCastPairInput();
-            pairInput.proxyA = b2MakeProxy([shape.center], 1, shape.radius);
+            pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
             pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
@@ -924,7 +924,7 @@ namespace Box2D.NET
         public static b2CastOutput b2ShapeCastCapsule(b2ShapeCastInput input, b2Capsule shape)
         {
             b2ShapeCastPairInput pairInput = new b2ShapeCastPairInput();
-            pairInput.proxyA = b2MakeProxy([shape.center1], 2, shape.radius);
+            pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
             pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
@@ -939,7 +939,7 @@ namespace Box2D.NET
         public static b2CastOutput b2ShapeCastSegment(b2ShapeCastInput input, b2Segment shape)
         {
             b2ShapeCastPairInput pairInput = new b2ShapeCastPairInput();
-            pairInput.proxyA = b2MakeProxy([shape.point1], 2, 0.0f);
+            pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
             pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;

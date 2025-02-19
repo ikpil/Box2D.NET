@@ -486,7 +486,7 @@ namespace Box2D.NET
             {
                 // fallback to TOI of a small circle around the fast shape centroid
                 b2Vec2 centroid = b2GetShapeCentroid(fastShape);
-                input.proxyB = b2MakeProxy([centroid], 1, B2_SPECULATIVE_DISTANCE);
+                input.proxyB = b2MakeProxy(centroid, 1, B2_SPECULATIVE_DISTANCE);
                 output = b2TimeOfImpact(input);
                 if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                 {

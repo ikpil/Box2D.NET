@@ -994,15 +994,15 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case b2ShapeType.b2_capsuleShape:
-                    return b2MakeProxy([shape.capsule.center1], 2, shape.capsule.radius);
+                    return b2MakeProxy(shape.capsule.center1, shape.capsule.center2, 2, shape.capsule.radius);
                 case b2ShapeType.b2_circleShape:
-                    return b2MakeProxy([shape.circle.center], 1, shape.circle.radius);
+                    return b2MakeProxy(shape.circle.center, 1, shape.circle.radius);
                 case b2ShapeType.b2_polygonShape:
                     return b2MakeProxy(shape.polygon.vertices, shape.polygon.count, shape.polygon.radius);
                 case b2ShapeType.b2_segmentShape:
-                    return b2MakeProxy([shape.segment.point1], 2, 0.0f);
+                    return b2MakeProxy(shape.segment.point1, shape.segment.point2, 2, 0.0f);
                 case b2ShapeType.b2_chainSegmentShape:
-                    return b2MakeProxy([shape.chainSegment.segment.point1], 2, 0.0f);
+                    return b2MakeProxy(shape.chainSegment.segment.point1, shape.chainSegment.segment.point2, 2, 0.0f);
                 default:
                 {
                     Debug.Assert(false);
@@ -1749,7 +1749,7 @@ namespace Box2D.NET
 
             b2DistanceInput input = new b2DistanceInput();
             input.proxyA = b2MakeShapeDistanceProxy(shape);
-            input.proxyB = b2MakeProxy([target], 1, 0.0f);
+            input.proxyB = b2MakeProxy(target, 1, 0.0f);
             input.transformA = transform;
             input.transformB = b2Transform_identity;
             input.useRadii = true;

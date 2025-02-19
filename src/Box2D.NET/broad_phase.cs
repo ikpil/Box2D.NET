@@ -507,7 +507,7 @@ b2TreeStats b2_staticStats;
                     {
                         b2MovePair temp = pair;
                         pair = pair.next;
-                        b2Free([temp], 1);
+                        b2Free(temp, 1);
                     }
                     else
                     {

@@ -1283,7 +1283,7 @@ namespace Box2D.NET
 
             // Distance doesn't work correctly with partial polygons
             b2DistanceInput input = new b2DistanceInput();
-            input.proxyA = b2MakeProxy([segmentA.segment.point1], 2, 0.0f);
+            input.proxyA = b2MakeProxy(segmentA.segment.point1, segmentA.segment.point2, 2, 0.0f);
             input.proxyB = b2MakeProxy(vertices, count, 0.0f);
             input.transformA = b2Transform_identity;
             input.transformB = b2Transform_identity;
