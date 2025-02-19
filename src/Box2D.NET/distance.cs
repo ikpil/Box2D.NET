@@ -139,7 +139,7 @@ namespace Box2D.NET
             proxy.radius = radius;
             return proxy;
         }
-
+        
         public static b2Vec2 b2Weight2(float a1, b2Vec2 w1, float a2, b2Vec2 w2)
         {
             return new b2Vec2(a1 * w1.x + a2 * w2.x, a1 * w1.y + a2 * w2.y);

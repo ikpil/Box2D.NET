@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Numerics;
+using Box2D.NET.Core;
 using static Box2D.NET.core;
 using static Box2D.NET.math_function;
 
@@ -458,17 +459,12 @@ namespace Box2D.NET
         public float rollingImpulse;
 
         /// The manifold points, up to two are possible in 2D
-        public b2ManifoldPoint[] points;
+        public UnsafeArray2<b2ManifoldPoint> points;
 
         private Vector<int> sda;
 
         /// The number of contacts points, will be 0, 1, or 2
         public int pointCount;
-
-        public b2Manifold()
-        {
-            points = new b2ManifoldPoint[2];
-        }
     }
 
     /**@}*/

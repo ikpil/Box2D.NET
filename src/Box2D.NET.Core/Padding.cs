@@ -1,4 +1,6 @@
-﻿namespace Box2D.NET.Core
+﻿#pragma warning disable CS0169
+
+namespace Box2D.NET.Core
 {
     public struct Padding64<T>
     {

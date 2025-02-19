@@ -29,7 +29,7 @@ namespace Box2D.NET
 // I could remove the need to free entries individually.
     public class b2ArenaAllocator<T> : IArenaAllocator where T : new()
     {
-        private static readonly object _lock = new();
+        private static readonly object _lock = new object();
         private static b2ArenaAllocator<T> _singleton;
 
         public ArraySegment<T> data;

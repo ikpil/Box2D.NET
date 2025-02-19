@@ -7,32 +7,6 @@ using Box2D.NET.Core;
 
 namespace Box2D.NET.Benchmark.Box2D.NET.Core.Benchmark;
 
-[StructLayout(LayoutKind.Sequential)]
-public struct UnsafeFixedArray2<T>
-    where T : unmanaged
-{
-    public T Value0;
-
-    public T Value1;
-
-    public const int Length = 2;
-
-    public ref T this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get => ref GetElement(index);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private unsafe ref T GetElement(int index)
-    {
-        if (0 > index || Length <= index)
-            throw new IndexOutOfRangeException();
-
-        return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref Value0), index));
-    }
-}
-
 public ref struct RefFixedArray2<T> where T : unmanaged
 {
     public const int Length = 2;
@@ -139,7 +113,7 @@ public class FixedArrayBenchmarks
     [Benchmark]
     public void UnsafeFixedArray()
     {
-        var array = new UnsafeFixedArray2<int>();
+        var array = new UnsafeArray2<int>();
         array[0] = 3;
         array[1] = 4;
 
