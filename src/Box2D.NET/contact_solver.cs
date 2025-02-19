@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Numerics;
+using Box2D.NET.Core;
 using static Box2D.NET.array;
 using static Box2D.NET.core;
 using static Box2D.NET.constants;
@@ -14,7 +15,7 @@ using static Box2D.NET.body;
 
 namespace Box2D.NET
 {
-    public class b2ContactConstraintPoint
+    public struct b2ContactConstraintPoint
     {
         public b2Vec2 anchorA, anchorB;
         public float baseSeparation;
@@ -30,7 +31,7 @@ namespace Box2D.NET
     {
         public int indexA;
         public int indexB;
-        public b2ContactConstraintPoint[] points = new b2ContactConstraintPoint[2];
+        public UnsafeArray2<b2ContactConstraintPoint> points;
         public b2Vec2 normal;
         public float invMassA, invMassB;
         public float invIA, invIB;
@@ -253,8 +254,8 @@ typedef __m128 b2FloatW;
 
                 for (int j = 0; j < pointCount; ++j)
                 {
-                    b2ManifoldPoint mp = manifold.points[j];
-                    b2ContactConstraintPoint cp = constraint.points[j];
+                    ref b2ManifoldPoint mp = ref manifold.points[j];
+                    ref b2ContactConstraintPoint cp = ref constraint.points[j];
 
                     cp.normalImpulse = warmStartScale * mp.normalImpulse;
                     cp.tangentImpulse = warmStartScale * mp.tangentImpulse;
@@ -329,7 +330,7 @@ typedef __m128 b2FloatW;
 
                 for (int j = 0; j < pointCount; ++j)
                 {
-                    b2ContactConstraintPoint cp = constraint.points[j];
+                    ref b2ContactConstraintPoint cp = ref constraint.points[j];
 
                     // fixed anchors
                     b2Vec2 rA = cp.anchorA;
@@ -403,7 +404,7 @@ typedef __m128 b2FloatW;
                 // Non-penetration
                 for (int j = 0; j < pointCount; ++j)
                 {
-                    b2ContactConstraintPoint cp = constraint.points[j];
+                    ref b2ContactConstraintPoint cp = ref constraint.points[j];
 
                     // compute current separation
                     // this is subject to round-off error if the anchor is far from the body center of mass
@@ -456,7 +457,7 @@ typedef __m128 b2FloatW;
                 // Friction
                 for (int j = 0; j < pointCount; ++j)
                 {
-                    b2ContactConstraintPoint cp = constraint.points[j];
+                    ref b2ContactConstraintPoint cp = ref constraint.points[j];
 
                     // fixed anchor points
                     b2Vec2 rA = cp.anchorA;
@@ -558,7 +559,7 @@ typedef __m128 b2FloatW;
                 {
                     for (int j = 0; j < pointCount; ++j)
                     {
-                        b2ContactConstraintPoint cp = constraint.points[j];
+                        ref b2ContactConstraintPoint cp = ref constraint.points[j];
 
                         // if the normal impulse is zero then there was no collision
                         // this skips speculative contact points that didn't generate an impulse
@@ -1520,7 +1521,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         b2Vec2 tangent = b2RightPerp(normal);
 
                         {
-                            b2ManifoldPoint mp = manifold.points[0];
+                            ref b2ManifoldPoint mp = ref manifold.points[0];
 
                             b2Vec2 rA = mp.anchorA;
                             b2Vec2 rB = mp.anchorB;
@@ -1557,7 +1558,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         if (pointCount == 2)
                         {
-                            b2ManifoldPoint mp = manifold.points[1];
+                            ref b2ManifoldPoint mp = ref manifold.points[1];
 
                             b2Vec2 rA = mp.anchorA;
                             b2Vec2 rB = mp.anchorB;

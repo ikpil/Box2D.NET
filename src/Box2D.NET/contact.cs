@@ -682,7 +682,7 @@ namespace Box2D.NET
             int unmatchedCount = 0;
             for (int i = 0; i < pointCount; ++i)
             {
-                b2ManifoldPoint mp2 = contactSim.manifold.points[i];
+                ref b2ManifoldPoint mp2 = ref contactSim.manifold.points[i];
 
                 // shift anchors to be center of mass relative
                 mp2.anchorA = b2Sub(mp2.anchorA, centerOffsetA);
@@ -698,7 +698,7 @@ namespace Box2D.NET
 
                 for (int j = 0; j < oldManifold.pointCount; ++j)
                 {
-                    b2ManifoldPoint mp1 = oldManifold.points[j];
+                    ref b2ManifoldPoint mp1 = ref oldManifold.points[j];
 
                     if (mp1.id == id2)
                     {

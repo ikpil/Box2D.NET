@@ -88,7 +88,7 @@ namespace Box2D.NET
             b2Vec2 contactPointA = b2Lerp(cA, cB, 0.5f);
 
             manifold.normal = b2RotateVector(xfA.q, normal);
-            b2ManifoldPoint mp = manifold.points[0];
+            ref b2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
             mp.point = b2Add(mp.anchorA, xfA.p);
@@ -154,7 +154,7 @@ namespace Box2D.NET
             b2Vec2 contactPointA = b2Lerp(cA, cB, 0.5f);
 
             manifold.normal = b2RotateVector(xfA.q, normal);
-            b2ManifoldPoint mp = manifold.points[0];
+            ref b2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
             mp.point = b2Add(xfA.p, mp.anchorA);
@@ -225,7 +225,7 @@ namespace Box2D.NET
                 b2Vec2 contactPointA = b2Lerp(cA, cB, 0.5f);
 
                 manifold.normal = b2RotateVector(xfA.q, normal);
-                b2ManifoldPoint mp = manifold.points[0];
+                ref b2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
                 mp.point = b2Add(xfA.p, mp.anchorA);
@@ -248,7 +248,7 @@ namespace Box2D.NET
                 b2Vec2 contactPointA = b2Lerp(cA, cB, 0.5f);
 
                 manifold.normal = b2RotateVector(xfA.q, normal);
-                b2ManifoldPoint mp = manifold.points[0];
+                ref b2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
                 mp.point = b2Add(xfA.p, mp.anchorA);
@@ -271,7 +271,7 @@ namespace Box2D.NET
                 b2Vec2 contactPointA = b2Lerp(cA, cB, 0.5f);
 
                 // The contact point is the midpoint in world space
-                b2ManifoldPoint mp = manifold.points[0];
+                ref b2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
                 mp.point = b2Add(xfA.p, mp.anchorA);
@@ -454,16 +454,15 @@ namespace Box2D.NET
 
                     if (sp <= distance + B2_LINEAR_SLOP || sq <= distance + B2_LINEAR_SLOP)
                     {
-                        b2ManifoldPoint mp;
-                        mp = manifold.points[0];
-                        mp.anchorA = b2MulAdd(cp, 0.5f * (radiusA - radiusB - sp), normalA);
-                        mp.separation = sp - radius;
-                        mp.id = B2_MAKE_ID(0, 0);
+                        ref b2ManifoldPoint mp0 = ref manifold.points[0];
+                        mp0.anchorA = b2MulAdd(cp, 0.5f * (radiusA - radiusB - sp), normalA);
+                        mp0.separation = sp - radius;
+                        mp0.id = B2_MAKE_ID(0, 0);
 
-                        mp = manifold.points[1];
-                        mp.anchorA = b2MulAdd(cq, 0.5f * (radiusA - radiusB - sq), normalA);
-                        mp.separation = sq - radius;
-                        mp.id = B2_MAKE_ID(0, 1);
+                        ref b2ManifoldPoint mp1 = ref manifold.points[1];
+                        mp1.anchorA = b2MulAdd(cq, 0.5f * (radiusA - radiusB - sq), normalA);
+                        mp1.separation = sq - radius;
+                        mp1.id = B2_MAKE_ID(0, 1);
                         manifold.pointCount = 2;
                     }
                 }
@@ -500,15 +499,15 @@ namespace Box2D.NET
 
                     if (sp <= distance + B2_LINEAR_SLOP || sq <= distance + B2_LINEAR_SLOP)
                     {
-                        b2ManifoldPoint mp;
-                        mp = manifold.points[0];
-                        mp.anchorA = b2MulAdd(cp, 0.5f * (radiusB - radiusA - sp), normalB);
-                        mp.separation = sp - radius;
-                        mp.id = B2_MAKE_ID(0, 0);
-                        mp = manifold.points[1];
-                        mp.anchorA = b2MulAdd(cq, 0.5f * (radiusB - radiusA - sq), normalB);
-                        mp.separation = sq - radius;
-                        mp.id = B2_MAKE_ID(1, 0);
+                        ref b2ManifoldPoint mp0 = ref manifold.points[0];
+                        mp0.anchorA = b2MulAdd(cp, 0.5f * (radiusB - radiusA - sp), normalB);
+                        mp0.separation = sp - radius;
+                        mp0.id = B2_MAKE_ID(0, 0);
+
+                        ref b2ManifoldPoint mp1 = ref manifold.points[1];
+                        mp1.anchorA = b2MulAdd(cq, 0.5f * (radiusB - radiusA - sq), normalB);
+                        mp1.separation = sq - radius;
+                        mp1.id = B2_MAKE_ID(1, 0);
                         manifold.pointCount = 2;
                     }
                 }
@@ -544,7 +543,7 @@ namespace Box2D.NET
             manifold.normal = b2RotateVector(xfA.q, manifold.normal);
             for (int i = 0; i < manifold.pointCount; ++i)
             {
-                b2ManifoldPoint mp = manifold.points[i];
+                ref b2ManifoldPoint mp = ref manifold.points[i];
 
                 // anchor points relative to shape origin in world space
                 mp.anchorA = b2RotateVector(xfA.q, b2Add(mp.anchorA, origin));
@@ -666,17 +665,17 @@ namespace Box2D.NET
             if (flip == false)
             {
                 manifold.normal = normal;
-                b2ManifoldPoint cp = manifold.points[0];
 
                 {
+                    ref b2ManifoldPoint cp = ref manifold.points[0];
                     cp.anchorA = vLower;
                     cp.separation = separationLower - radius;
                     cp.id = B2_MAKE_ID(i11, i22);
                     manifold.pointCount += 1;
-                    cp = manifold.points[1];
                 }
 
                 {
+                    ref b2ManifoldPoint cp = ref manifold.points[1];
                     cp.anchorA = vUpper;
                     cp.separation = separationUpper - radius;
                     cp.id = B2_MAKE_ID(i12, i21);
@@ -686,17 +685,17 @@ namespace Box2D.NET
             else
             {
                 manifold.normal = b2Neg(normal);
-                b2ManifoldPoint cp = manifold.points[0];
 
                 {
+                    ref b2ManifoldPoint cp = ref manifold.points[0];
                     cp.anchorA = vUpper;
                     cp.separation = separationUpper - radius;
                     cp.id = B2_MAKE_ID(i21, i12);
                     manifold.pointCount += 1;
-                    cp = manifold.points[1];
                 }
 
                 {
+                    ref b2ManifoldPoint cp = ref manifold.points[1];
                     cp.anchorA = vLower;
                     cp.separation = separationLower - radius;
                     cp.id = B2_MAKE_ID(i22, i11);
@@ -988,7 +987,7 @@ namespace Box2D.NET
                 manifold.normal = b2RotateVector(xfA.q, manifold.normal);
                 for (int i = 0; i < manifold.pointCount; ++i)
                 {
-                    b2ManifoldPoint mp = manifold.points[i];
+                    ref b2ManifoldPoint mp = ref manifold.points[i];
 
                     // anchor points relative to shape origin in world space
                     mp.anchorA = b2RotateVector(xfA.q, b2Add(mp.anchorA, origin));
@@ -1092,7 +1091,7 @@ namespace Box2D.NET
 
             manifold.normal = b2RotateVector(xfA.q, normal);
 
-            b2ManifoldPoint mp = manifold.points[0];
+            ref b2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
             mp.point = b2Add(xfA.p, mp.anchorA);
@@ -1162,14 +1161,14 @@ namespace Box2D.NET
 
             manifold.normal = normal;
             {
-                b2ManifoldPoint cp = manifold.points[0];
+                ref b2ManifoldPoint cp = ref manifold.points[0];
                 cp.anchorA = vLower;
                 cp.separation = separationLower - radius;
                 cp.id = id1;
             }
 
             {
-                b2ManifoldPoint cp = manifold.points[1];
+                ref b2ManifoldPoint cp = ref manifold.points[1];
                 cp.anchorA = vUpper;
                 cp.separation = separationUpper - radius;
                 cp.id = id2;
@@ -1326,7 +1325,7 @@ namespace Box2D.NET
                     if (type == b2NormalType.b2_normalAdmit)
                     {
                         manifold.normal = b2RotateVector(xfA.q, normal);
-                        b2ManifoldPoint cp = manifold.points[0];
+                        ref b2ManifoldPoint cp = ref manifold.points[0];
                         cp.anchorA = b2RotateVector(xfA.q, pA);
                         cp.anchorB = b2Add(cp.anchorA, b2Sub(xfA.p, xfB.p));
                         cp.point = b2Add(xfA.p, cp.anchorA);

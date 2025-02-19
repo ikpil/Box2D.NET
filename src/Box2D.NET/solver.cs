@@ -1932,7 +1932,7 @@ public enum b2SolverBlockType
                         int pointCount = contactSim.manifold.pointCount;
                         for (int k = 0; k < pointCount; ++k)
                         {
-                            b2ManifoldPoint mp = contactSim.manifold.points[k];
+                            ref b2ManifoldPoint mp = ref contactSim.manifold.points[k];
                             float approachSpeed = -mp.normalVelocity;
 
                             // Need to check max impulse because the point may be speculative and not colliding

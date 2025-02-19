@@ -1301,7 +1301,7 @@ namespace Box2D.NET
 
                                 for (int j = 0; j < pointCount; ++j)
                                 {
-                                    b2ManifoldPoint point = contactSim.manifold.points[j];
+                                    ref b2ManifoldPoint point = ref contactSim.manifold.points[j];
 
                                     if (draw.drawGraphColors)
                                     {
@@ -1594,7 +1594,7 @@ namespace Box2D.NET
 
                         for (int j = 0; j < pointCount; ++j)
                         {
-                            b2ManifoldPoint point = contact.manifold.points[j];
+                            ref b2ManifoldPoint point = ref contact.manifold.points[j];
 
                             if (draw.drawGraphColors && 0 <= colorIndex && colorIndex <= B2_GRAPH_COLOR_COUNT)
                             {
