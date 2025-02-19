@@ -16,10 +16,10 @@ namespace Box2D.NET
         b2_faceBType
     };
 
-    public class b2SeparationFunction
+    public ref struct b2SeparationFunction
     {
-        public b2ShapeProxy proxyA;
-        public b2ShapeProxy proxyB;
+        public readonly ref b2ShapeProxy proxyA;
+        public readonly ref b2ShapeProxy proxyB;
         public b2Sweep sweepA, sweepB;
         public b2Vec2 localPoint;
         public b2Vec2 axis;
@@ -173,7 +173,7 @@ namespace Box2D.NET
             return new b2Vec2(a1 * w1.x + a2 * w2.x + a3 * w3.x, a1 * w1.y + a2 * w2.y + a3 * w3.y);
         }
 
-        public static int b2FindSupport(b2ShapeProxy proxy, b2Vec2 direction)
+        public static int b2FindSupport(ref b2ShapeProxy proxy, b2Vec2 direction)
         {
             int bestIndex = 0;
             float bestValue = b2Dot(proxy.points[0], direction);
@@ -190,7 +190,7 @@ namespace Box2D.NET
             return bestIndex;
         }
 
-        static b2Simplex b2MakeSimplexFromCache(b2SimplexCache cache, b2ShapeProxy proxyA, b2Transform transformA, b2ShapeProxy proxyB, b2Transform transformB)
+        static b2Simplex b2MakeSimplexFromCache(b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Transform transformA, ref b2ShapeProxy proxyB, b2Transform transformB)
         {
             Debug.Assert(cache.count <= 3);
             b2Simplex s = new b2Simplex();
@@ -506,14 +506,14 @@ namespace Box2D.NET
         {
             b2DistanceOutput output = new b2DistanceOutput();
 
-            b2ShapeProxy proxyA = input.proxyA;
-            b2ShapeProxy proxyB = input.proxyB;
+            ref b2ShapeProxy proxyA = ref input.proxyA;
+            ref b2ShapeProxy proxyB = ref input.proxyB;
 
             b2Transform transformA = input.transformA;
             b2Transform transformB = input.transformB;
 
             // Initialize the simplex.
-            b2Simplex simplex = b2MakeSimplexFromCache(cache, proxyA, transformA, proxyB, transformB);
+            b2Simplex simplex = b2MakeSimplexFromCache(cache, ref proxyA, transformA, ref proxyB, transformB);
 
             int simplexIndex = 0;
             if (simplexes != null && simplexIndex < simplexCapacity)
@@ -589,9 +589,9 @@ namespace Box2D.NET
                 // Compute a tentative new simplex vertex using support points.
                 // support = support(b, d) - support(a, -d)
                 b2SimplexVertex vertex = vertices[simplex.count];
-                vertex.indexA = b2FindSupport(proxyA, b2InvRotateVector(transformA.q, b2Neg(d)));
+                vertex.indexA = b2FindSupport(ref proxyA, b2InvRotateVector(transformA.q, b2Neg(d)));
                 vertex.wA = b2TransformPoint(transformA, proxyA.points[vertex.indexA]);
-                vertex.indexB = b2FindSupport(proxyB, b2InvRotateVector(transformB.q, d));
+                vertex.indexB = b2FindSupport(ref proxyB, b2InvRotateVector(transformB.q, d));
                 vertex.wB = b2TransformPoint(transformB, proxyB.points[vertex.indexB]);
                 vertex.w = b2Sub(vertex.wB, vertex.wA);
 
@@ -705,9 +705,9 @@ namespace Box2D.NET
             b2SimplexVertex[] vertices = { simplex.v1, simplex.v2, simplex.v3 };
 
             // Get an initial point in A - B
-            int indexA = b2FindSupport(proxyA, b2Neg(r));
+            int indexA = b2FindSupport(ref proxyA, b2Neg(r));
             b2Vec2 wA = proxyA.points[indexA];
-            int indexB = b2FindSupport(proxyB, r);
+            int indexB = b2FindSupport(ref proxyB, r);
             b2Vec2 wB = proxyB.points[indexB];
             b2Vec2 v = b2Sub(wA, wB);
 
@@ -725,9 +725,9 @@ namespace Box2D.NET
                 output.iterations += 1;
 
                 // Support in direction -v (A - B)
-                indexA = b2FindSupport(proxyA, b2Neg(v));
+                indexA = b2FindSupport(ref proxyA, b2Neg(v));
                 wA = proxyA.points[indexA];
-                indexB = b2FindSupport(proxyB, v);
+                indexB = b2FindSupport(ref proxyB, v);
                 wB = proxyB.points[indexB];
                 b2Vec2 p = b2Sub(wA, wB);
 
@@ -835,10 +835,11 @@ namespace Box2D.NET
 #endif
 
 
-        public static b2SeparationFunction b2MakeSeparationFunction(b2SimplexCache cache, b2ShapeProxy proxyA, b2Sweep sweepA, b2ShapeProxy proxyB, b2Sweep sweepB, float t1)
+        public static b2SeparationFunction b2MakeSeparationFunction(b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Sweep sweepA, ref b2ShapeProxy proxyB, b2Sweep sweepB, float t1)
         {
             b2SeparationFunction f = new b2SeparationFunction();
-
+            
+            // TODO: @ikpil, check!!
             f.proxyA = proxyA;
             f.proxyB = proxyB;
             int count = cache.count;
@@ -914,7 +915,7 @@ namespace Box2D.NET
             }
         }
 
-        public static float b2FindMinSeparation(b2SeparationFunction f, ref int indexA, ref int indexB, float t)
+        public static float b2FindMinSeparation(ref b2SeparationFunction f, ref int indexA, ref int indexB, float t)
         {
             b2Transform xfA = b2GetSweepTransform(f.sweepA, t);
             b2Transform xfB = b2GetSweepTransform(f.sweepB, t);
@@ -926,8 +927,8 @@ namespace Box2D.NET
                     b2Vec2 axisA = b2InvRotateVector(xfA.q, f.axis);
                     b2Vec2 axisB = b2InvRotateVector(xfB.q, b2Neg(f.axis));
 
-                    indexA = b2FindSupport(f.proxyA, axisA);
-                    indexB = b2FindSupport(f.proxyB, axisB);
+                    indexA = b2FindSupport(ref f.proxyA, axisA);
+                    indexB = b2FindSupport(ref f.proxyB, axisB);
 
                     b2Vec2 localPointA = f.proxyA.points[indexA];
                     b2Vec2 localPointB = f.proxyB.points[indexB];
@@ -947,7 +948,7 @@ namespace Box2D.NET
                     b2Vec2 axisB = b2InvRotateVector(xfB.q, b2Neg(normal));
 
                     indexA = -1;
-                    indexB = b2FindSupport(f.proxyB, axisB);
+                    indexB = b2FindSupport(ref f.proxyB, axisB);
 
                     b2Vec2 localPointB = f.proxyB.points[indexB];
                     b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
@@ -964,7 +965,7 @@ namespace Box2D.NET
                     b2Vec2 axisA = b2InvRotateVector(xfA.q, b2Neg(normal));
 
                     indexB = -1;
-                    indexA = b2FindSupport(f.proxyA, axisA);
+                    indexA = b2FindSupport(ref f.proxyA, axisA);
 
                     b2Vec2 localPointA = f.proxyA.points[indexA];
                     b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
@@ -1057,8 +1058,8 @@ namespace Box2D.NET
             // c1 can be at the origin yet the points are far away
             // b2Vec2 origin = b2Add(sweepA.c1, input.proxyA.points[0]);
 
-            b2ShapeProxy proxyA = input.proxyA;
-            b2ShapeProxy proxyB = input.proxyB;
+            ref b2ShapeProxy proxyA = ref input.proxyA;
+            ref b2ShapeProxy proxyB = ref input.proxyB;
 
             float tMax = input.maxFraction;
 
@@ -1122,7 +1123,7 @@ namespace Box2D.NET
                 }
 
                 // Initialize the separating axis.
-                b2SeparationFunction fcn = b2MakeSeparationFunction(cache, proxyA, sweepA, proxyB, sweepB, t1);
+                b2SeparationFunction fcn = b2MakeSeparationFunction(cache, ref proxyA, sweepA, ref proxyB, sweepB, t1);
 #if ZERO_DEFINE
                     // Dump the curve seen by the root finder
                     {
@@ -1158,7 +1159,7 @@ namespace Box2D.NET
                 {
                     // Find the deepest point at t2. Store the witness point indices.
                     int indexA = 0, indexB = 0;
-                    float s2 = b2FindMinSeparation(fcn, ref indexA, ref indexB, t2);
+                    float s2 = b2FindMinSeparation(ref fcn, ref indexA, ref indexB, t2);
 
                     // Is the final configuration separated?
                     if (s2 > target + tolerance)

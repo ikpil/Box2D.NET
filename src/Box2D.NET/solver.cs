@@ -1059,7 +1059,7 @@ public enum b2SolverBlockType
             }
         }
 
-// This should not use the thread index because thread 0 can be called twice by enkiTS.
+        // This should not use the thread index because thread 0 can be called twice by enkiTS.
         public static void b2SolverTask(int startIndex, int endIndex, uint threadIndexIgnore, object taskContext)
         {
             B2_UNUSED(startIndex, endIndex, threadIndexIgnore);

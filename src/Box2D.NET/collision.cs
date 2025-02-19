@@ -8,7 +8,6 @@ using static Box2D.NET.math_function;
 
 namespace Box2D.NET
 {
-
     /**
      * @defgroup geometry Geometry
      * @brief Geometry types and algorithms
@@ -91,7 +90,6 @@ namespace Box2D.NET
 
         public b2MassData()
         {
-
         }
 
         public b2MassData(float mass, b2Vec2 center, float rotationalInertia)
@@ -249,10 +247,10 @@ namespace Box2D.NET
     }
 
     /// A distance proxy is used by the GJK algorithm. It encapsulates any shape.
-    public class b2ShapeProxy
+    public struct b2ShapeProxy
     {
         /// The point cloud
-        public b2Vec2[] points = new b2Vec2[constants.B2_MAX_POLYGON_VERTICES];
+        public UnsafeArray8<b2Vec2> points;
 
         /// The number of points
         public int count;
@@ -354,7 +352,6 @@ namespace Box2D.NET
 
         public b2Sweep()
         {
-
         }
 
         public b2Sweep(b2Vec2 localCenter, b2Vec2 c1, b2Vec2 c2, b2Rot q1, b2Rot q2)

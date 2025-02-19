@@ -49,7 +49,7 @@ namespace Box2D.NET
                 {
                     if (null == _singleton)
                     {
-                        _singleton = arena_allocator.b2CreateArenaAllocator<T>(0);
+                        _singleton = arena_allocator.b2CreateArenaAllocator<T>(16); // TODO: @ikpil, test
                         allocator.Add(_singleton);
                     }
                 }
