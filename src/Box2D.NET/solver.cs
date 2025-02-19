@@ -179,6 +179,13 @@ namespace Box2D.NET
         public b2StepContext context;
         public int workerIndex;
         public object userTask;
+
+        public void Clear()
+        {
+            context = null;
+            workerIndex = -1;
+            userTask = null;
+        }
     }
 
     public class solver
@@ -1801,7 +1808,13 @@ public enum b2SolverBlockType
                 Debug.Assert((int)(stageIdx) == stageCount);
 
                 Debug.Assert(workerCount <= B2_MAX_WORKERS);
-                b2WorkerContext[] workerContext = new b2WorkerContext[B2_MAX_WORKERS];
+                Debug.Assert(world.workerContext.Length <= B2_MAX_WORKERS);
+                //b2WorkerContext[] workerContext = new b2WorkerContext[B2_MAX_WORKERS];
+                Span<b2WorkerContext> workerContext = world.workerContext;
+                for (int i = 0; i < workerContext.Length; ++i)
+                {
+                    workerContext[i].Clear();
+                }
 
                 stepContext.graph = graph;
                 stepContext.joints = joints;

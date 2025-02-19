@@ -1,7 +1,10 @@
-﻿#pragma warning disable CS0169
+﻿using System.Runtime.InteropServices;
+
+#pragma warning disable CS0169
 
 namespace Box2D.NET.Core
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct Padding64<T>
     {
         private T _00;

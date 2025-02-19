@@ -190,6 +190,9 @@ namespace Box2D.NET
         public bool enableContinuous;
         public bool enableSpeculative;
         public bool inUse;
+        
+        // TODO: @ikpil for b2Solve 
+        public readonly b2WorkerContext[] workerContext = b2Alloc<b2WorkerContext>(B2_MAX_WORKERS);
 
         public void Reset()
         {
