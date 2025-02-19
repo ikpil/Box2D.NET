@@ -126,8 +126,7 @@ namespace Box2D.NET
             bp.moveResults = null;
             bp.movePairs = null;
             bp.movePairCapacity = 0;
-            bp.movePairIndex = new b2AtomicInt();
-            b2AtomicStoreInt(bp.movePairIndex, 0);
+            b2AtomicStoreInt(ref bp.movePairIndex, 0);
             bp.pairSet = b2CreateSet(32);
 
             for (int i = 0; i < (int)b2BodyType.b2_bodyTypeCount; ++i)
@@ -346,7 +345,7 @@ namespace Box2D.NET
             }
 
             // todo per thread to eliminate atomic?
-            int pairIndex = b2AtomicFetchAddInt(broadPhase.movePairIndex, 1);
+            int pairIndex = b2AtomicFetchAddInt(ref broadPhase.movePairIndex, 1);
 
             b2MovePair pair;
             if (pairIndex < broadPhase.movePairCapacity)
@@ -463,11 +462,11 @@ b2TreeStats b2_staticStats;
             bp.moveResults = b2AllocateArenaItem<b2MoveResult>(alloc, moveCount, "move results");
             bp.movePairCapacity = 16 * moveCount;
             bp.movePairs = b2AllocateArenaItem<b2MovePair>(alloc, bp.movePairCapacity, "move pairs");
-            b2AtomicStoreInt(bp.movePairIndex, 0);
+            b2AtomicStoreInt(ref bp.movePairIndex, 0);
 
 #if B2_SNOOP_TABLE_COUNTERS
 	extern b2AtomicInt b2_probeCount;
-	b2AtomicStoreInt(&b2_probeCount, 0);
+	b2AtomicStoreInt(ref &b2_probeCount, 0);
 #endif
 
             int minRange = 64;

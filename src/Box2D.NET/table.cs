@@ -104,7 +104,7 @@ b2AtomicInt b2_probeCount;
         public static int b2FindSlot(b2HashSet set, ulong key, uint hash)
         {
 #if B2_SNOOP_TABLE_COUNTERS
-		b2AtomicFetchAddInt( &b2_findCount, 1 );
+		b2AtomicFetchAddInt(ref  &b2_findCount, 1 );
 #endif
 
             int capacity = set.capacity;
@@ -113,7 +113,7 @@ b2AtomicInt b2_probeCount;
             while (items[index].hash != 0 && items[index].key != key)
             {
 #if B2_SNOOP_TABLE_COUNTERS
-		b2AtomicFetchAddInt( &b2_probeCount, 1 );
+		b2AtomicFetchAddInt(ref  &b2_probeCount, 1 );
 #endif
                 index = (index + 1) & (capacity - 1);
             }

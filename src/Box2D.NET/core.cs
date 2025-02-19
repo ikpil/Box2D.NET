@@ -6,12 +6,12 @@ using static Box2D.NET.constants;
 
 namespace Box2D.NET
 {
-    public class b2AtomicInt
+    public struct b2AtomicInt
     {
         public volatile int value;
     }
 
-    public class b2AtomicU32
+    public struct b2AtomicU32
     {
         public volatile uint value;
     }
@@ -80,7 +80,7 @@ namespace Box2D.NET
 
     public static class core
     {
-        private static readonly b2AtomicInt b2_byteCount = new b2AtomicInt();
+        private static b2AtomicInt b2_byteCount;
 
 
         public static T[] b2GrowAlloc<T>(T[] oldMem, int oldSize, int newSize) where T : new()
@@ -168,7 +168,7 @@ namespace Box2D.NET
         /// @return the total bytes allocated by Box2D
         public static int b2GetByteCount()
         {
-            return b2AtomicLoadInt(b2_byteCount);
+            return b2AtomicLoadInt(ref b2_byteCount);
         }
 
 
@@ -414,7 +414,7 @@ namespace Box2D.NET
             }
 
             // This could cause some sharing issues, however Box2D rarely calls b2Alloc.
-            b2AtomicFetchAddInt(b2_byteCount, size);
+            b2AtomicFetchAddInt(ref b2_byteCount, size);
 
             // Allocation must be a multiple of 32 or risk a seg fault
             // https://en.cppreference.com/w/c/memory/aligned_alloc
@@ -450,7 +450,7 @@ namespace Box2D.NET
             // {
             // }
 
-            b2AtomicFetchAddInt(b2_byteCount, -size);
+            b2AtomicFetchAddInt(ref b2_byteCount, -size);
         }
     }
 }

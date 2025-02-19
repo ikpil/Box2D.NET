@@ -68,7 +68,7 @@ public class test_table
 
 #if B2_SNOOP_TABLE_COUNTERS
 		extern b2AtomicInt b2_probeCount;
-		b2AtomicStoreInt( &b2_probeCount, 0 );
+		b2AtomicStoreInt(ref  &b2_probeCount, 0 );
 #endif
 
             // Test key search
@@ -93,7 +93,7 @@ public class test_table
             Console.Write("set: count = %d, b2ContainsKey = %.5f ms, ave = %.5f us\n", itemCount, ms, 1000.0f * ms / itemCount);
 
 #if B2_SNOOP_TABLE_COUNTERS
-		int probeCount = b2AtomicLoadInt( &b2_probeCount );
+		int probeCount = b2AtomicLoadInt(ref  &b2_probeCount );
 		float aveProbeCount = (float)probeCount / (float)itemCount;
 		Console.Write( "item count = %d, probe count = %d, ave probe count %.2f\n", itemCount, probeCount, aveProbeCount );
 #endif
