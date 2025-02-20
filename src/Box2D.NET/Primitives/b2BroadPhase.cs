@@ -33,7 +33,15 @@ namespace Box2D.NET.Primitives
 
         public void Clear()
         {
-            Debug.Assert(false, "TODO: @ikpil, clear!!");
+            trees = null;
+            proxyCount = 0;
+            moveSet = null;
+            moveArray = null;
+            moveResults = null;
+            movePairs = null;
+            movePairCapacity = 0;
+            movePairIndex = new b2AtomicInt();
+            pairSet = null;
         }
     }
 }
