@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Threading;
+using Box2D.NET.Primitives;
 
 namespace Box2D.NET
 {
@@ -14,7 +15,7 @@ namespace Box2D.NET
 
         public static int b2AtomicLoadInt(ref b2AtomicInt a)
         {
-            return Interlocked.Or(ref a.value, 0);
+            return Interlocked.Add(ref a.value, 0);
         }
 
         public static int b2AtomicFetchAddInt(ref b2AtomicInt a, int increment)
@@ -34,7 +35,7 @@ namespace Box2D.NET
 
         public static uint b2AtomicLoadU32(ref b2AtomicU32 a)
         {
-            return Interlocked.Or(ref a.value, 0);
+            return (uint)Interlocked.Read(ref a.value);
         }
     }
 }

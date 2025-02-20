@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using static Box2D.NET.array;
 using static Box2D.NET.dynamic_tree;
 using static Box2D.NET.core;

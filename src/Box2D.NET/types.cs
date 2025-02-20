@@ -1571,7 +1571,7 @@ namespace Box2D.NET
             defaultMaterial.friction = 0.6f;
 
             b2ChainDef def = new b2ChainDef();
-            def.materials = [defaultMaterial];
+            def.materials = new b2SurfaceMaterial[] { defaultMaterial };
             def.materialCount = 1;
             def.filter = b2DefaultFilter();
             def.internalValue = B2_SECRET_COOKIE;

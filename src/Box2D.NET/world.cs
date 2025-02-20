@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using Box2D.NET.Primitives;
 using static Box2D.NET.table;
 using static Box2D.NET.array;
 using static Box2D.NET.dynamic_tree;
@@ -190,7 +191,7 @@ namespace Box2D.NET
         public bool enableContinuous;
         public bool enableSpeculative;
         public bool inUse;
-        
+
         // TODO: @ikpil for b2Solve 
         public readonly b2WorkerContext[] workerContext = b2Alloc<b2WorkerContext>(B2_MAX_WORKERS);
 

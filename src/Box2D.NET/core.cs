@@ -1,83 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using static Box2D.NET.atomic;
 using static Box2D.NET.math_function;
 using static Box2D.NET.constants;
 
 namespace Box2D.NET
 {
-    public struct b2AtomicInt
-    {
-        public volatile int value;
-    }
-
-    public struct b2AtomicU32
-    {
-        public volatile uint value;
-    }
-
-    /// Version numbering scheme.
-    /// See https://semver.org/
-    public struct b2Version
-    {
-        /// Significant changes
-        public int major;
-
-        /// Incremental changes
-        public int minor;
-
-        /// Bug fixes
-        public int revision;
-
-        public b2Version(int major, int minor, int revision)
-        {
-            this.major = major;
-            this.minor = minor;
-            this.revision = revision;
-        }
-    }
-
-    public enum b2TracyCZone
-    {
-        pair_task,
-        update_pairs,
-        create_contacts,
-        prepare_overflow_contact,
-        warmstart_overflow_contact,
-        solve_contact,
-        overflow_resitution,
-        prepare_contact,
-        warm_start_contact,
-        restitution,
-        store_impulses,
-        merge_islands,
-        split,
-        sensor_task,
-        overlap_sensors,
-        sensor_state,
-        integrate_velocity,
-        prepare_joints,
-        warm_joints,
-        solve_joints,
-        integrate_positions,
-        ccd,
-        finalize_transfprms,
-        bullet_body_task,
-        merge,
-        prepare_stages,
-        solve_constraints,
-        update_transforms,
-        hit_events,
-        refit_bvh,
-        bullets,
-        sleep_islands,
-        collide_task,
-        tree_task,
-        collide,
-        contact_state,
-        world_step,
-    }
-
     public static class core
     {
         private static b2AtomicInt b2_byteCount;
@@ -326,7 +255,7 @@ namespace Box2D.NET
         public static void b2TracyCFree<T>(T[] ptr)
         {
         }
-        
+
         public static void b2TracyCFree<T>(T ptr)
         {
         }
@@ -457,7 +386,7 @@ namespace Box2D.NET
 
             b2AtomicFetchAddInt(ref b2_byteCount, -size);
         }
-        
+
         public static void b2Free<T>(T mem, int size)
         {
             if (mem == null)
@@ -477,6 +406,5 @@ namespace Box2D.NET
 
             b2AtomicFetchAddInt(ref b2_byteCount, -size);
         }
-
     }
 }

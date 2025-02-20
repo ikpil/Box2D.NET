@@ -10,19 +10,41 @@ namespace Box2D.NET
         // uint에 대해 trailing zero count (CTZ)
         public static uint b2CTZ32(uint block)
         {
-            return (uint)BitOperations.TrailingZeroCount(block);
+            if (block == 0) return 32;
+            uint count = 0;
+            while ((block & 1) == 0)
+            {
+                count++;
+                block >>= 1;
+            }
+            return count;
         }
 
         // uint에 대해 leading zero count (CLZ)
         public static uint b2CLZ32(uint value)
         {
-            return (uint)BitOperations.LeadingZeroCount(value);
+            if (value == 0) return 32;
+            uint count = 0;
+            uint mask = 1u << 31;
+            while ((value & mask) == 0)
+            {
+                count++;
+                mask >>= 1;
+            }
+            return count;
         }
 
         // ulong에 대해 trailing zero count (CTZ)
         public static uint b2CTZ64(ulong block)
         {
-            return (uint)BitOperations.TrailingZeroCount(block);
+            if (block == 0) return 64;
+            uint count = 0;
+            while ((block & 1) == 0)
+            {
+                count++;
+                block >>= 1;
+            }
+            return count;
         }
 
         public static bool b2IsPowerOf2(int x)

@@ -18,8 +18,8 @@ namespace Box2D.NET
 
     public ref struct b2SeparationFunction
     {
-        public readonly ref b2ShapeProxy proxyA;
-        public readonly ref b2ShapeProxy proxyB;
+        public b2ShapeProxy proxyA;
+        public b2ShapeProxy proxyB;
         public b2Sweep sweepA, sweepB;
         public b2Vec2 localPoint;
         public b2Vec2 axis;
