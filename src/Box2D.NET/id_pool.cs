@@ -74,22 +74,21 @@ namespace Box2D.NET
         }
 
 #if B2_VALIDATE
-void b2ValidateFreeId( b2IdPool* pool, int id )
-{
-	int freeCount = pool.freeArray.count;
-	for ( int i = 0; i < freeCount; ++i )
-	{
-		if ( pool.freeArray.data[i] == id )
-		{
-			return;
-		}
-	}
+        public static void b2ValidateFreeId(b2IdPool pool, int id)
+        {
+            int freeCount = pool.freeArray.count;
+            for (int i = 0; i < freeCount; ++i)
+            {
+                if (pool.freeArray.data[i] == id)
+                {
+                    return;
+                }
+            }
 
-	Debug.Assert( 0 );
-}
+            Debug.Assert(false);
+        }
 
 #else
-
         public static void b2ValidateFreeId(b2IdPool pool, int id)
         {
             B2_UNUSED(pool);

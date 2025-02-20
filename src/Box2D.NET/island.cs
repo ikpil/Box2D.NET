@@ -923,111 +923,116 @@ namespace Box2D.NET
         }
 
 #if B2_VALIDATE
-void b2ValidateIsland( b2World* world, int islandId )
-{
-	b2Island* island = Array_Get( &world.islands, islandId );
-	Debug.Assert( island.islandId == islandId );
-	Debug.Assert( island.setIndex != B2_NULL_INDEX );
-	Debug.Assert( island.headBody != B2_NULL_INDEX );
+        public static void b2ValidateIsland(b2World world, int islandId)
+        {
+            b2Island island = b2Array_Get(world.islands, islandId);
+            Debug.Assert(island.islandId == islandId);
+            Debug.Assert(island.setIndex != B2_NULL_INDEX);
+            Debug.Assert(island.headBody != B2_NULL_INDEX);
 
-	{
-		Debug.Assert( island.tailBody != B2_NULL_INDEX );
-		Debug.Assert( island.bodyCount > 0 );
-		if ( island.bodyCount > 1 )
-		{
-			Debug.Assert( island.tailBody != island.headBody );
-		}
-		Debug.Assert( island.bodyCount <= b2GetIdCount( &world.bodyIdPool ) );
+            {
+                Debug.Assert(island.tailBody != B2_NULL_INDEX);
+                Debug.Assert(island.bodyCount > 0);
+                if (island.bodyCount > 1)
+                {
+                    Debug.Assert(island.tailBody != island.headBody);
+                }
 
-		int count = 0;
-		int bodyId = island.headBody;
-		while ( bodyId != B2_NULL_INDEX )
-		{
-			b2Body* body = Array_Get(&world.bodies, bodyId);
-			Debug.Assert( body.islandId == islandId );
-			Debug.Assert( body.setIndex == island.setIndex );
-			count += 1;
+                Debug.Assert(island.bodyCount <= b2GetIdCount(world.bodyIdPool));
 
-			if ( count == island.bodyCount )
-			{
-				Debug.Assert( bodyId == island.tailBody );
-			}
+                int count = 0;
+                int bodyId = island.headBody;
+                while (bodyId != B2_NULL_INDEX)
+                {
+                    b2Body body = b2Array_Get(world.bodies, bodyId);
+                    Debug.Assert(body.islandId == islandId);
+                    Debug.Assert(body.setIndex == island.setIndex);
+                    count += 1;
 
-			bodyId = body.islandNext;
-		}
-		Debug.Assert( count == island.bodyCount );
-	}
+                    if (count == island.bodyCount)
+                    {
+                        Debug.Assert(bodyId == island.tailBody);
+                    }
 
-	if ( island.headContact != B2_NULL_INDEX )
-	{
-		Debug.Assert( island.tailContact != B2_NULL_INDEX );
-		Debug.Assert( island.contactCount > 0 );
-		if ( island.contactCount > 1 )
-		{
-			Debug.Assert( island.tailContact != island.headContact );
-		}
-		Debug.Assert( island.contactCount <= b2GetIdCount( &world.contactIdPool ) );
+                    bodyId = body.islandNext;
+                }
 
-		int count = 0;
-		int contactId = island.headContact;
-		while ( contactId != B2_NULL_INDEX )
-		{
-			b2Contact* contact = Array_Get( &world.contacts, contactId );
-			Debug.Assert( contact.setIndex == island.setIndex );
-			Debug.Assert( contact.islandId == islandId );
-			count += 1;
+                Debug.Assert(count == island.bodyCount);
+            }
 
-			if ( count == island.contactCount )
-			{
-				Debug.Assert( contactId == island.tailContact );
-			}
+            if (island.headContact != B2_NULL_INDEX)
+            {
+                Debug.Assert(island.tailContact != B2_NULL_INDEX);
+                Debug.Assert(island.contactCount > 0);
+                if (island.contactCount > 1)
+                {
+                    Debug.Assert(island.tailContact != island.headContact);
+                }
 
-			contactId = contact.islandNext;
-		}
-		Debug.Assert( count == island.contactCount );
-	}
-	else
-	{
-		Debug.Assert( island.tailContact == B2_NULL_INDEX );
-		Debug.Assert( island.contactCount == 0 );
-	}
+                Debug.Assert(island.contactCount <= b2GetIdCount(world.contactIdPool));
 
-	if ( island.headJoint != B2_NULL_INDEX )
-	{
-		Debug.Assert( island.tailJoint != B2_NULL_INDEX );
-		Debug.Assert( island.jointCount > 0 );
-		if ( island.jointCount > 1 )
-		{
-			Debug.Assert( island.tailJoint != island.headJoint );
-		}
-		Debug.Assert( island.jointCount <= b2GetIdCount( &world.jointIdPool ) );
+                int count = 0;
+                int contactId = island.headContact;
+                while (contactId != B2_NULL_INDEX)
+                {
+                    b2Contact contact = b2Array_Get(world.contacts, contactId);
+                    Debug.Assert(contact.setIndex == island.setIndex);
+                    Debug.Assert(contact.islandId == islandId);
+                    count += 1;
 
-		int count = 0;
-		int jointId = island.headJoint;
-		while ( jointId != B2_NULL_INDEX )
-		{
-			b2Joint* joint = Array_Get( &world.joints, jointId );
-			Debug.Assert( joint.setIndex == island.setIndex );
-			count += 1;
+                    if (count == island.contactCount)
+                    {
+                        Debug.Assert(contactId == island.tailContact);
+                    }
 
-			if ( count == island.jointCount )
-			{
-				Debug.Assert( jointId == island.tailJoint );
-			}
+                    contactId = contact.islandNext;
+                }
 
-			jointId = joint.islandNext;
-		}
-		Debug.Assert( count == island.jointCount );
-	}
-	else
-	{
-		Debug.Assert( island.tailJoint == B2_NULL_INDEX );
-		Debug.Assert( island.jointCount == 0 );
-	}
-}
+                Debug.Assert(count == island.contactCount);
+            }
+            else
+            {
+                Debug.Assert(island.tailContact == B2_NULL_INDEX);
+                Debug.Assert(island.contactCount == 0);
+            }
+
+            if (island.headJoint != B2_NULL_INDEX)
+            {
+                Debug.Assert(island.tailJoint != B2_NULL_INDEX);
+                Debug.Assert(island.jointCount > 0);
+                if (island.jointCount > 1)
+                {
+                    Debug.Assert(island.tailJoint != island.headJoint);
+                }
+
+                Debug.Assert(island.jointCount <= b2GetIdCount(world.jointIdPool));
+
+                int count = 0;
+                int jointId = island.headJoint;
+                while (jointId != B2_NULL_INDEX)
+                {
+                    b2Joint joint = b2Array_Get(world.joints, jointId);
+                    Debug.Assert(joint.setIndex == island.setIndex);
+                    count += 1;
+
+                    if (count == island.jointCount)
+                    {
+                        Debug.Assert(jointId == island.tailJoint);
+                    }
+
+                    jointId = joint.islandNext;
+                }
+
+                Debug.Assert(count == island.jointCount);
+            }
+            else
+            {
+                Debug.Assert(island.tailJoint == B2_NULL_INDEX);
+                Debug.Assert(island.jointCount == 0);
+            }
+        }
 
 #else
-
         public static void b2ValidateIsland(b2World world, int islandId)
         {
             B2_UNUSED(world);

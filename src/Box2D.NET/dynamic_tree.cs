@@ -1003,116 +1003,116 @@ namespace Box2D.NET
         }
 
 #if B2_VALIDATE
-    public static void b2ValidateStructure( const b2DynamicTree* tree, int index )
-    {
-        if ( index == B2_NULL_INDEX )
+        public static void b2ValidateStructure(b2DynamicTree tree, int index)
         {
-            return;
+            if (index == B2_NULL_INDEX)
+            {
+                return;
+            }
+
+            if (index == tree.root)
+            {
+                Debug.Assert(tree.nodes[index].parent == B2_NULL_INDEX);
+            }
+
+            b2TreeNode node = tree.nodes[index];
+
+            Debug.Assert(node.flags == 0 || (node.flags & (ushort)b2TreeNodeFlags.b2_allocatedNode) != 0);
+
+            if (b2IsLeaf(node))
+            {
+                Debug.Assert(node.height == 0);
+                return;
+            }
+
+            int child1 = node.child1;
+            int child2 = node.child2;
+
+            Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
+            Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
+
+            Debug.Assert(tree.nodes[child1].parent == index);
+            Debug.Assert(tree.nodes[child2].parent == index);
+
+            if (0 != ((tree.nodes[child1].flags | tree.nodes[child2].flags) & (ushort)b2TreeNodeFlags.b2_enlargedNode))
+            {
+                Debug.Assert(0 != (node.flags & (ushort)b2TreeNodeFlags.b2_enlargedNode));
+            }
+
+            b2ValidateStructure(tree, child1);
+            b2ValidateStructure(tree, child2);
         }
 
-        if ( index == tree.root )
+        public static void b2ValidateMetrics(b2DynamicTree tree, int index)
         {
-            Debug.Assert( tree.nodes[index].parent == B2_NULL_INDEX );
+            if (index == B2_NULL_INDEX)
+            {
+                return;
+            }
+
+            b2TreeNode node = tree.nodes[index];
+
+            if (b2IsLeaf(node))
+            {
+                Debug.Assert(node.height == 0);
+                return;
+            }
+
+            int child1 = node.child1;
+            int child2 = node.child2;
+
+            Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
+            Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
+
+            int height1 = tree.nodes[child1].height;
+            int height2 = tree.nodes[child2].height;
+            int height = 1 + b2MaxInt(height1, height2);
+            Debug.Assert(node.height == height);
+
+            // b2AABB aabb = b2AABB_Union(tree.nodes[child1].aabb, tree.nodes[child2].aabb);
+
+            Debug.Assert(b2AABB_Contains(node.aabb, tree.nodes[child1].aabb));
+            Debug.Assert(b2AABB_Contains(node.aabb, tree.nodes[child2].aabb));
+
+            // Debug.Assert(aabb.lowerBound.x == node.aabb.lowerBound.x);
+            // Debug.Assert(aabb.lowerBound.y == node.aabb.lowerBound.y);
+            // Debug.Assert(aabb.upperBound.x == node.aabb.upperBound.x);
+            // Debug.Assert(aabb.upperBound.y == node.aabb.upperBound.y);
+
+            ulong categoryBits = tree.nodes[child1].categoryBits | tree.nodes[child2].categoryBits;
+            Debug.Assert(node.categoryBits == categoryBits);
+
+            b2ValidateMetrics(tree, child1);
+            b2ValidateMetrics(tree, child2);
         }
-
-        const b2TreeNode* node = tree.nodes + index;
-
-        Debug.Assert( node.flags == 0 || ( node.flags & b2_allocatedNode ) != 0 );
-
-        if ( b2IsLeaf( node ) )
-        {
-            Debug.Assert( node.height == 0 );
-            return;
-        }
-
-        int child1 = node.child1;
-        int child2 = node.child2;
-
-        Debug.Assert( 0 <= child1 && child1 < tree.nodeCapacity );
-        Debug.Assert( 0 <= child2 && child2 < tree.nodeCapacity );
-
-        Debug.Assert( tree.nodes[child1].parent == index );
-        Debug.Assert( tree.nodes[child2].parent == index );
-
-        if ( ( tree.nodes[child1].flags | tree.nodes[child2].flags ) & b2_enlargedNode )
-        {
-            Debug.Assert( node.flags & b2_enlargedNode );
-        }
-
-        b2ValidateStructure( tree, child1 );
-        b2ValidateStructure( tree, child2 );
-    }
-
-    public static void b2ValidateMetrics( const b2DynamicTree* tree, int index )
-    {
-        if ( index == B2_NULL_INDEX )
-        {
-            return;
-        }
-
-        const b2TreeNode* node = tree.nodes + index;
-
-        if ( b2IsLeaf( node ) )
-        {
-            Debug.Assert( node.height == 0 );
-            return;
-        }
-
-        int child1 = node.child1;
-        int child2 = node.child2;
-
-        Debug.Assert( 0 <= child1 && child1 < tree.nodeCapacity );
-        Debug.Assert( 0 <= child2 && child2 < tree.nodeCapacity );
-
-        int height1 = tree.nodes[child1].height;
-        int height2 = tree.nodes[child2].height;
-        int height = 1 + b2MaxInt( height1, height2 );
-        Debug.Assert( node.height == height );
-
-        // b2AABB aabb = b2AABB_Union(tree.nodes[child1].aabb, tree.nodes[child2].aabb);
-
-        Debug.Assert( b2AABB_Contains( node.aabb, tree.nodes[child1].aabb ) );
-        Debug.Assert( b2AABB_Contains( node.aabb, tree.nodes[child2].aabb ) );
-
-        // Debug.Assert(aabb.lowerBound.x == node.aabb.lowerBound.x);
-        // Debug.Assert(aabb.lowerBound.y == node.aabb.lowerBound.y);
-        // Debug.Assert(aabb.upperBound.x == node.aabb.upperBound.x);
-        // Debug.Assert(aabb.upperBound.y == node.aabb.upperBound.y);
-
-        ulong categoryBits = tree.nodes[child1].categoryBits | tree.nodes[child2].categoryBits;
-        Debug.Assert( node.categoryBits == categoryBits );
-
-        b2ValidateMetrics( tree, child1 );
-        b2ValidateMetrics( tree, child2 );
-    }
 #endif
 
         /// Validate this tree. For testing.
         public static void b2DynamicTree_Validate(b2DynamicTree tree)
         {
 #if B2_VALIDATE
-        if ( tree.root == B2_NULL_INDEX )
-        {
-            return;
-        }
+            if (tree.root == B2_NULL_INDEX)
+            {
+                return;
+            }
 
-        b2ValidateStructure( tree, tree.root );
-        b2ValidateMetrics( tree, tree.root );
+            b2ValidateStructure(tree, tree.root);
+            b2ValidateMetrics(tree, tree.root);
 
-        int freeCount = 0;
-        int freeIndex = tree.freeList;
-        while ( freeIndex != B2_NULL_INDEX )
-        {
-            Debug.Assert( 0 <= freeIndex && freeIndex < tree.nodeCapacity );
-            freeIndex = tree.nodes[freeIndex].next;
-            ++freeCount;
-        }
+            int freeCount = 0;
+            int freeIndex = tree.freeList;
+            while (freeIndex != B2_NULL_INDEX)
+            {
+                Debug.Assert(0 <= freeIndex && freeIndex < tree.nodeCapacity);
+                freeIndex = tree.nodes[freeIndex].next;
+                ++freeCount;
+            }
 
-        int height = b2DynamicTree_GetHeight( tree );
-        int computedHeight = b2ComputeHeight( tree, tree.root );
-        Debug.Assert( height == computedHeight );
+            int height = b2DynamicTree_GetHeight(tree);
+            int computedHeight = b2ComputeHeight(tree, tree.root);
+            Debug.Assert(height == computedHeight);
 
-        Debug.Assert( tree.nodeCount + freeCount == tree.nodeCapacity );
+            Debug.Assert(tree.nodeCount + freeCount == tree.nodeCapacity);
 #else
             B2_UNUSED(tree);
 #endif
@@ -1122,16 +1122,16 @@ namespace Box2D.NET
         public static void b2DynamicTree_ValidateNoEnlarged(b2DynamicTree tree)
         {
 #if B2_VALIDATE
-        int capacity = tree.nodeCapacity;
-        const b2TreeNode* nodes = tree.nodes;
-        for ( int i = 0; i < capacity; ++i )
-        {
-            const b2TreeNode* node = nodes + i;
-            if ( node.flags & b2_allocatedNode )
+            int capacity = tree.nodeCapacity;
+            b2TreeNode[] nodes = tree.nodes;
+            for (int i = 0; i < capacity; ++i)
             {
-                Debug.Assert( ( node.flags & b2_enlargedNode ) == 0 );
+                b2TreeNode node = nodes[i];
+                if (0 != (node.flags & (ushort)b2TreeNodeFlags.b2_allocatedNode))
+                {
+                    Debug.Assert((node.flags & (ushort)b2TreeNodeFlags.b2_enlargedNode) == 0);
+                }
             }
-        }
 #else
             B2_UNUSED(tree);
 #endif
@@ -2033,14 +2033,14 @@ namespace Box2D.NET
             }
 
 #if B2_VALIDATE
-        int capacity = tree.nodeCapacity;
-        for ( int i = 0; i < capacity; ++i )
-        {
-            if ( nodes[i].flags & b2_allocatedNode )
+            int capacity = tree.nodeCapacity;
+            for (int i = 0; i < capacity; ++i)
             {
-                Debug.Assert( ( nodes[i].flags & b2_enlargedNode ) == 0 );
+                if (nodes[i].flags & b2_allocatedNode)
+                {
+                    Debug.Assert((nodes[i].flags & b2_enlargedNode) == 0);
+                }
             }
-        }
 #endif
 
             Debug.Assert(leafCount <= proxyCount);

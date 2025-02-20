@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <DefineConstants>$(DefineConstants);B2_VALIDATE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

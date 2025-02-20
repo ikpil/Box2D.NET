@@ -1420,7 +1420,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #endif
 
-// Contacts that live within the constraint graph coloring
+        // Contacts that live within the constraint graph coloring
         public static void b2PrepareContactsTask(int startIndex, int endIndex, b2StepContext context)
         {
             b2TracyCZoneNC(b2TracyCZone.prepare_contact, "Prepare Contact", b2HexColor.b2_colorYellow, true);
@@ -1429,7 +1429,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             ArraySegment<b2ContactConstraintSIMD> constraints = context.simdContactConstraints;
             b2BodyState[] awakeStates = context.states;
 #if B2_VALIDATE
-	b2Body* bodies = world.bodies.data;
+            b2Body* bodies = world.bodies.data;
 #endif
 
             // Stiffer for static contacts to avoid bodies getting pushed through the ground
