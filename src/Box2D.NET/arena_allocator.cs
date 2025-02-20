@@ -23,17 +23,17 @@ namespace Box2D.NET
             // b2Free(allocator.data, allocator.capacity);
         }
 
-        public static b2ArenaAllocator<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
+        public static b2ArenaAllocatorImpl<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
         {
             Debug.Assert(capacity >= 0);
-            b2ArenaAllocator<T> allocator = new b2ArenaAllocator<T>();
-            allocator.capacity = capacity;
-            allocator.data = b2Alloc<T>(capacity);
-            allocator.allocation = 0;
-            allocator.maxAllocation = 0;
-            allocator.index = 0;
-            allocator.entries = b2Array_Create<b2ArenaEntry<T>>(32);
-            return allocator;
+            b2ArenaAllocatorImpl<T> allocatorImpl = new b2ArenaAllocatorImpl<T>();
+            allocatorImpl.capacity = capacity;
+            allocatorImpl.data = b2Alloc<T>(capacity);
+            allocatorImpl.allocation = 0;
+            allocatorImpl.maxAllocation = 0;
+            allocatorImpl.index = 0;
+            allocatorImpl.entries = b2Array_Create<b2ArenaEntry<T>>(32);
+            return allocatorImpl;
         }
 
         public static ArraySegment<T> b2AllocateArenaItem<T>(b2ArenaAllocator allocator, int size, string name) where T : new()
@@ -94,7 +94,7 @@ namespace Box2D.NET
 
         public static void b2GrowArena(b2ArenaAllocator allocator)
         {
-            var allocs = allocator.GetAll();
+            var allocs = allocator.AsArray();
 
             for (int i = 0; i < allocs.Length; ++i)
             {
@@ -115,23 +115,38 @@ namespace Box2D.NET
         // Grow the arena based on usage
         public static int b2GetArenaCapacity(b2ArenaAllocator allocator)
         {
-            // var alloc = allocator.GetAlloc<T>();
-            // return alloc.capacity;
-            return -1;
+            int capacity = 0;
+            var allocs = allocator.AsArray();
+            for (int i = 0; i < allocs.Length; ++i)
+            {
+                capacity += allocs[i].maxAllocation;
+            }
+
+            return capacity;
         }
 
         public static int b2GetArenaAllocation(b2ArenaAllocator allocator)
         {
-            // var alloc = allocator.GetAlloc<T>();
-            // return alloc.allocation;
-            return -1;
+            int allocation = 0;
+            var allocs = allocator.AsArray();
+            for (int i = 0; i < allocs.Length; ++i)
+            {
+                allocation += allocs[i].allocation;
+            }
+
+            return allocation;
         }
 
         public static int b2GetMaxArenaAllocation(b2ArenaAllocator allocator)
         {
-            // var alloc = allocator.GetAlloc<T>();
-            // return alloc.maxAllocation;
-            return -1;
+            int maxAllocation = 0;
+            var allocs = allocator.AsArray();
+            for (int i = 0; i < allocs.Length; ++i)
+            {
+                maxAllocation += allocs[i].maxAllocation;
+            }
+
+            return maxAllocation;
         }
     }
 }
