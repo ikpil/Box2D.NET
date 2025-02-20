@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.geometry;
 using static Box2D.NET.math_function;
@@ -11,8 +12,8 @@ namespace Box2D.NET.Test;
 
 public class test_shape
 {
-    private b2Capsule capsule = new b2Capsule(new b2Vec2(-1.0f, 0.0f ), new b2Vec2(1.0f, 0.0f ), 1.0f);
-    private b2Circle circle = new b2Circle(new b2Vec2( 1.0f, 0.0f ), 1.0f);
+    private b2Capsule capsule = new b2Capsule(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f), 1.0f);
+    private b2Circle circle = new b2Circle(new b2Vec2(1.0f, 0.0f), 1.0f);
     private b2Polygon box = b2MakeBox(1.0f, 1.0f);
     private b2Segment segment = new b2Segment(new b2Vec2(0.0f, 1.0f), new b2Vec2(0.0f, -1.0f));
 
@@ -130,7 +131,7 @@ public class test_shape
     [Test]
     public void RayCastShapeTest()
     {
-        b2RayCastInput input = new b2RayCastInput(new b2Vec2( -4.0f, 0.0f ), new b2Vec2( 8.0f, 0.0f ), 1.0f );
+        b2RayCastInput input = new b2RayCastInput(new b2Vec2(-4.0f, 0.0f), new b2Vec2(8.0f, 0.0f), 1.0f);
 
         {
             b2CastOutput output = b2RayCastCircle(input, circle);

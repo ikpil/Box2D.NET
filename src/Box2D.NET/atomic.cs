@@ -6,7 +6,7 @@ using Box2D.NET.Primitives;
 
 namespace Box2D.NET
 {
-    public class atomic
+    public static class atomic
     {
         public static void b2AtomicStoreInt(ref b2AtomicInt a, int value)
         {

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.geometry;
 using static Box2D.NET.math_function;

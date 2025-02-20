@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.table;
@@ -18,65 +17,9 @@ using static Box2D.NET.aabb;
 
 namespace Box2D.NET
 {
-    /// The broad-phase is used for computing pairs and performing volume queries and ray casts.
-    /// This broad-phase does not persist pairs. Instead, this reports potentially new pairs.
-    /// It is up to the client to consume the new pairs and to track subsequent overlap.
-    public class b2BroadPhase
+    public static class board_phase
     {
-        public b2DynamicTree[] trees;
-        public int proxyCount;
-
-        // The move set and array are used to track shapes that have moved significantly
-        // and need a pair query for new contacts. The array has a deterministic order.
-        // todo perhaps just a move set?
-        // todo implement a 32bit hash set for faster lookup
-        // todo moveSet can grow quite large on the first time step and remain large
-        public b2HashSet moveSet;
-        public b2Array<int> moveArray;
-
-        // These are the results from the pair query and are used to create new contacts
-        // in deterministic order.
-        // todo these could be in the step context
-        public ArraySegment<b2MoveResult> moveResults;
-        public ArraySegment<b2MovePair> movePairs;
-        public int movePairCapacity;
-        public b2AtomicInt movePairIndex;
-
-        // Tracks shape pairs that have a b2Contact
-        // todo pairSet can grow quite large on the first time step and remain large
-        public b2HashSet pairSet;
-
-        public void Clear()
-        {
-            Debug.Assert(false, "TODO: @ikpil, clear!!");
-        }
-    }
-
-    public class b2MovePair
-    {
-        public int shapeIndexA;
-        public int shapeIndexB;
-        public b2MovePair next;
-        public bool heap;
-    }
-
-    public class b2MoveResult
-    {
-        public b2MovePair pairList;
-    }
-
-    public class b2QueryPairContext
-    {
-        public b2World world;
-        public b2MoveResult moveResult;
-        public b2BodyType queryTreeType;
-        public int queryProxyKey;
-        public int queryShapeIndex;
-    }
-
-    public class board_phase
-    {
-// // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
+        // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
         public static b2BodyType B2_PROXY_TYPE(int KEY)
         {
             return ((b2BodyType)((KEY) & 3));
@@ -93,8 +36,8 @@ namespace Box2D.NET
         }
 
 
-// This is what triggers new contact pairs to be created
-// Warning: this must be called in deterministic order
+        // This is what triggers new contact pairs to be created
+        // Warning: this must be called in deterministic order
         public static void b2BufferMove(b2BroadPhase bp, int queryProxy)
         {
             // Adding 1 because 0 is the sentinel
@@ -106,10 +49,8 @@ namespace Box2D.NET
         }
 
 
-// 
-
-// static FILE* s_file = NULL;
-
+        // 
+        // static FILE* s_file = NULL;
         public static void b2CreateBroadPhase(ref b2BroadPhase bp)
         {
             Debug.Assert((int)b2BodyType.b2_bodyTypeCount == 3, "must be three body types");

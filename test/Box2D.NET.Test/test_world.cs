@@ -3,6 +3,7 @@
 
 
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.world;
 using static Box2D.NET.types;

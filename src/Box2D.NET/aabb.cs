@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Primitives;
+using static Box2D.NET.math_function;
 
 namespace Box2D.NET
 {
-    using static math_function;
-
     public static class aabb
     {
         // Get surface area of an AABB (the perimeter length)

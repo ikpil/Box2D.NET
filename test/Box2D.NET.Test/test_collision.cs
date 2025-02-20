@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.aabb;
 using static Box2D.NET.math_function;

@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.Dynamic;
+using Box2D.NET.Primitives;
 using static Box2D.NET.math_function;
 using static Box2D.NET.constants;
 
@@ -140,21 +141,21 @@ namespace Box2D.NET
             proxy.radius = radius;
             return proxy;
         }
-        
+
         // for single
         public static b2ShapeProxy b2MakeProxy(b2Vec2 v1, int count, float radius)
         {
             Debug.Assert(count == 1);
-            
+
             Span<b2Vec2> vertices = stackalloc b2Vec2[1];
             vertices[0] = v1;
             return b2MakeProxy(vertices, count, radius);
         }
-        
+
         public static b2ShapeProxy b2MakeProxy(b2Vec2 v1, b2Vec2 v2, int count, float radius)
         {
             Debug.Assert(count == 2);
-            
+
             Span<b2Vec2> vertices = stackalloc b2Vec2[2];
             vertices[0] = v1;
             vertices[1] = v2;
@@ -162,7 +163,6 @@ namespace Box2D.NET
         }
 
 
-        
         public static b2Vec2 b2Weight2(float a1, b2Vec2 w1, float a2, b2Vec2 w2)
         {
             return new b2Vec2(a1 * w1.x + a2 * w2.x, a1 * w1.y + a2 * w2.y);
@@ -838,7 +838,7 @@ namespace Box2D.NET
         public static b2SeparationFunction b2MakeSeparationFunction(b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Sweep sweepA, ref b2ShapeProxy proxyB, b2Sweep sweepB, float t1)
         {
             b2SeparationFunction f = new b2SeparationFunction();
-            
+
             // TODO: @ikpil, check!!
             f.proxyA = proxyA;
             f.proxyB = proxyB;
