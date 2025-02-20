@@ -60,26 +60,22 @@ typedef __m128 b2FloatW;
 // TODO: @ikpil, check SIMD
     public struct b2FloatW
     {
-        private Vector4 _simd;
-        public float x { get => _simd.X; set => _simd.X = value; }
-        public float y { get => _simd.Y; set => _simd.Y = value; }
-        public float z { get => _simd.Z; set => _simd.Z = value; }
-        public float w { get => _simd.W; set => _simd.W = value; }
+        private UnsafeArray4<float> _array;
+        public float x { get => _array.v00; set => _array.v00 = value; }
+        public float y { get => _array.v01; set => _array.v01 = value; }
+        public float z { get => _array.v02; set => _array.v02 = value; }
+        public float w { get => _array.v03; set => _array.v03 = value; }
 
 
         public b2FloatW(float x, float y, float z, float w)
         {
-            _simd.X = x;
-            _simd.Y = y;
-            _simd.Z = z;
-            _simd.W = w;
+            _array.v00 = x;
+            _array.v01 = y;
+            _array.v02 = z;
+            _array.v03 = w;
         }
 
-        public float this[int index]
-        {
-            set => _simd[index] = value;
-            get => _simd[index];
-        }
+        public ref float this[int index] => ref _array[index];
     }
 //#endif
 

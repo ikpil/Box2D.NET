@@ -3,35 +3,27 @@
 
 
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using static Box2D.NET.constants;
 using static Box2D.NET.core;
 
 namespace Box2D.NET
 {
-// Macro generated functions for dynamic arrays
-// Pros
-// - type safe
-// - array data debuggable (visible count and capacity)
-// - bounds checking
-// - forward declaration
-// - simple implementation
-// - generates functions (like C++ templates)
-// - functions have https://en.wikipedia.org/wiki/Sequence_point
-// - avoids stretchy buffer dropped pointer update bugs
-// Cons
-// - cannot debug
-// - breaks code navigation
+    // Macro generated functions for dynamic arrays
+    // Pros
+    // - type safe
+    // - array data debuggable (visible count and capacity)
+    // - bounds checking
+    // - forward declaration
+    // - simple implementation
+    // - generates functions (like C++ templates)
+    // - functions have https://en.wikipedia.org/wiki/Sequence_point
+    // - avoids stretchy buffer dropped pointer update bugs
+    // Cons
+    // - cannot debug
+    // - breaks code navigation
 
-// todo_erin consider code-gen: https://github.com/IbrahimHindawi/haikal
-
-// Array declaration that doesn't need the type T to be defined
-    public class b2Array<T>
-    {
-        public T[] data;
-        public int count;
-        public int capacity;
-    }
-
+    // todo_erin consider code-gen: https://github.com/IbrahimHindawi/haikal
     public static class array
     {
         /* Resize */

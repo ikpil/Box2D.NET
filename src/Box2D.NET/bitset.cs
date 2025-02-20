@@ -3,18 +3,11 @@
 
 using System;
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using static Box2D.NET.core;
 
 namespace Box2D.NET
 {
-// Bit set provides fast operations on large arrays of bits.
-    public class b2BitSet
-    {
-        public ulong[] bits;
-        public int blockCapacity;
-        public int blockCount;
-    }
-
     public static class bitset
     {
         public static void b2SetBit(b2BitSet bitSet, int bitIndex)
