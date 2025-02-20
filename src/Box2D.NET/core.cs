@@ -31,7 +31,7 @@ namespace Box2D.NET
 
         public b2Version(int major, int minor, int revision)
         {
-            this.minor = major;
+            this.major = major;
             this.minor = minor;
             this.revision = revision;
         }
