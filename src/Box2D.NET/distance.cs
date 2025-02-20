@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Dynamic;
 using Box2D.NET.Primitives;
 using static Box2D.NET.math_function;
 using static Box2D.NET.constants;
