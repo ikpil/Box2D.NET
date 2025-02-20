@@ -126,7 +126,7 @@ namespace Box2D.NET
 
             // Record the overlap
             b2Sensor sensor = queryContext.sensor;
-            b2ShapeRef shapeRef = b2Array_Add(sensor.overlaps2);
+            ref b2ShapeRef shapeRef = ref b2Array_Add(sensor.overlaps2);
             shapeRef.shapeId = shapeId;
             shapeRef.generation = otherShape.generation;
 

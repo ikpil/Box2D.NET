@@ -427,7 +427,7 @@ namespace Box2D.NET
 
             // Contacts are created as non-touching. Later if they are found to be touching
             // they will link islands and be moved into the constraint graph.
-            b2ContactSim contactSim = b2Array_Add(set.contactSims);
+            ref b2ContactSim contactSim = ref b2Array_Add(set.contactSims);
             contactSim.contactId = contactId;
 
 #if B2_VALIDATE

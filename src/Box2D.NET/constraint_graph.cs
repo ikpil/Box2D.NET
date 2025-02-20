@@ -188,7 +188,7 @@ namespace Box2D.NET
             contact.colorIndex = colorIndex;
             contact.localIndex = color.contactSims.count;
 
-            b2ContactSim newContact = b2Array_Add(color.contactSims);
+            ref b2ContactSim newContact = ref b2Array_Add(color.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
 
             // todo perhaps skip this if the contact is already awake
@@ -317,7 +317,7 @@ namespace Box2D.NET
             return B2_OVERFLOW_INDEX;
         }
 
-        public static b2JointSim b2CreateJointInGraph(b2World world, b2Joint joint)
+        public static ref b2JointSim b2CreateJointInGraph(b2World world, b2Joint joint)
         {
             b2ConstraintGraph graph = world.constraintGraph;
 
@@ -330,12 +330,12 @@ namespace Box2D.NET
 
             int colorIndex = b2AssignJointColor(graph, bodyIdA, bodyIdB, staticA, staticB);
 
-            b2JointSim jointSim = b2Array_Add(graph.colors[colorIndex].jointSims);
+            ref b2JointSim jointSim = ref b2Array_Add(graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
 
             joint.colorIndex = colorIndex;
             joint.localIndex = graph.colors[colorIndex].jointSims.count - 1;
-            return jointSim;
+            return ref jointSim;
         }
 
         public static void b2AddJointToGraph(b2World world, b2JointSim jointSim, b2Joint joint)

@@ -3,10 +3,10 @@
 namespace Box2D.NET.Primitives
 {
     // The body state is designed for fast conversion to and from SIMD via scatter-gather.
-// Only awake dynamic and kinematic bodies have a body state.
-// This is used in the performance critical constraint solver
-//
-// 32 bytes
+    // Only awake dynamic and kinematic bodies have a body state.
+    // This is used in the performance critical constraint solver
+    //
+    // 32 bytes
     public class b2BodyState
     {
         public b2Vec2 linearVelocity; // 8
@@ -20,12 +20,13 @@ namespace Box2D.NET.Primitives
         // the solver and must use zero delta rotation for static bodies (c,s) = (1,0)
         public b2Rot deltaRotation; // 8
 
-        public b2BodyState Clone()
+        public static b2BodyState Create(b2BodyState other)
         {
-            Debug.Assert(false);
-            return null;
+            var state = new b2BodyState();
+            state.CopyFrom(other);
+            return state;
         }
-
+        
         public void CopyFrom(b2BodyState other)
         {
             linearVelocity = other.linearVelocity;

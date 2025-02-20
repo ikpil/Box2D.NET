@@ -297,7 +297,7 @@ typedef __m128 b2FloatW;
             b2BodyState[] states = awakeSet.bodyStates.data;
 
             // This is a dummy state to represent a static body because static bodies don't have a solver body.
-            b2BodyState dummyState = b2_identityBodyState.Clone();
+            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -367,7 +367,7 @@ typedef __m128 b2FloatW;
             float pushout = context.world.contactMaxPushSpeed;
 
             // This is a dummy body to represent a static body since static bodies don't have a solver body.
-            b2BodyState dummyState = b2_identityBodyState.Clone();
+            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -521,7 +521,7 @@ typedef __m128 b2FloatW;
             float threshold = context.world.restitutionThreshold;
 
             // dummy state to represent a static body
-            b2BodyState dummyState = b2_identityBodyState.Clone();
+            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
 
             for (int i = 0; i < contactCount; ++i)
             {

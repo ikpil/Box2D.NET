@@ -243,7 +243,7 @@ namespace Box2D.NET
             int bodyId = b2AllocId(world.bodyIdPool);
 
             b2SolverSet set = b2Array_Get(world.solverSets, setId);
-            b2BodySim bodySim = b2Array_Add(set.bodySims);
+            ref b2BodySim bodySim = ref b2Array_Add(set.bodySims);
             //*bodySim = ( b2BodySim ){ 0 }; TODO: @ikpil, check
             bodySim.transform.p = def.position;
             bodySim.transform.q = def.rotation;
@@ -269,7 +269,7 @@ namespace Box2D.NET
 
             if (setId == (int)b2SetType.b2_awakeSet)
             {
-                b2BodyState bodyState = b2Array_Add(set.bodyStates);
+                ref b2BodyState bodyState = ref b2Array_Add(set.bodyStates);
                 //Debug.Assert( ( (uintptr_t)bodyState & 0x1F ) == 0 );
 
                 //*bodyState = ( b2BodyState ){ 0 }; TODO: @ikpil, check

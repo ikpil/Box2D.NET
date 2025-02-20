@@ -505,7 +505,7 @@ namespace Box2D.NET
             bodyB.headJointKey = keyB;
             bodyB.jointCount += 1;
 
-            b2JointSim jointSim;
+            b2JointSim jointSim = null;
 
             if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
             {

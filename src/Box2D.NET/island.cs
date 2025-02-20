@@ -107,7 +107,7 @@ namespace Box2D.NET
             island.parentIsland = B2_NULL_INDEX;
             island.constraintRemoveCount = 0;
 
-            b2IslandSim islandSim = b2Array_Add(set.islandSims);
+            ref b2IslandSim islandSim = ref b2Array_Add(set.islandSims);
             islandSim.islandId = islandId;
 
             return island;

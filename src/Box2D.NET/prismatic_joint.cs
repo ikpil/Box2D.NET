@@ -346,7 +346,7 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2_identityBodyState.Clone();
+            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
 
             b2PrismaticJoint joint = @base.prismaticJoint;
 
@@ -391,7 +391,7 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2_identityBodyState.Clone();
+            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
 
             b2PrismaticJoint joint = @base.prismaticJoint;
 

@@ -677,7 +677,7 @@ namespace Box2D.NET
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = set.contactSims.count;
 
-            b2ContactSim newContactSim = b2Array_Add(set.contactSims);
+            ref b2ContactSim newContactSim = ref b2Array_Add(set.contactSims);
             //memcpy( newContactSim, contactSim, sizeof( b2ContactSim ) );
             newContactSim.CopyFrom(contactSim);
         }

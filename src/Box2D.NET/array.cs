@@ -34,10 +34,10 @@ namespace Box2D.NET
         }
 
         /* Get */
-        public static T b2Array_Get<T>(b2Array<T> a, int index)
+        public static ref T b2Array_Get<T>(b2Array<T> a, int index)
         {
             Debug.Assert(0 <= index && index < a.count);
-            return a.data[index];
+            return ref a.data[index];
         }
 
         /* Add */
