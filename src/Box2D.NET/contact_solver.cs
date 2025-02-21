@@ -3,7 +3,6 @@
 
 using System;
 using System.Diagnostics;
-using Box2D.NET.Core;
 using Box2D.NET.Primitives;
 using static Box2D.NET.array;
 using static Box2D.NET.core;
@@ -12,142 +11,11 @@ using static Box2D.NET.math_function;
 using static Box2D.NET.constraint_graph;
 using static Box2D.NET.body;
 
-
 namespace Box2D.NET
 {
-    public struct b2ContactConstraintPoint
+    public static class contact_solver
     {
-        public b2Vec2 anchorA, anchorB;
-        public float baseSeparation;
-        public float relativeVelocity;
-        public float normalImpulse;
-        public float tangentImpulse;
-        public float maxNormalImpulse;
-        public float normalMass;
-        public float tangentMass;
-    }
-
-    public class b2ContactConstraint
-    {
-        public int indexA;
-        public int indexB;
-        public UnsafeArray2<b2ContactConstraintPoint> points;
-        public b2Vec2 normal;
-        public float invMassA, invMassB;
-        public float invIA, invIB;
-        public float friction;
-        public float restitution;
-        public float tangentSpeed;
-        public float rollingResistance;
-        public float rollingMass;
-        public float rollingImpulse;
-        public b2Softness softness;
-        public int pointCount;
-    }
-
-#if B2_SIMD_AVX2
-// wide float holds 8 numbers
-typedef __m256 b2FloatW;
-#elif B2_SIMD_NEON
-// wide float holds 4 numbers
-typedef float32x4_t b2FloatW;
-#elif B2_SIMD_SSE2
-// wide float holds 4 numbers
-typedef __m128 b2FloatW;
-#else
-// scalar math
-// TODO: @ikpil, check SIMD
-    public struct b2FloatW
-    {
-        private UnsafeArray4<float> _array;
-        public float x { get => _array.v00; set => _array.v00 = value; }
-        public float y { get => _array.v01; set => _array.v01 = value; }
-        public float z { get => _array.v02; set => _array.v02 = value; }
-        public float w { get => _array.v03; set => _array.v03 = value; }
-
-
-        public b2FloatW(float x, float y, float z, float w)
-        {
-            _array.v00 = x;
-            _array.v01 = y;
-            _array.v02 = z;
-            _array.v03 = w;
-        }
-
-        public ref float this[int index] => ref _array[index];
-    }
-//#endif
-
-// Wide vec2
-    public struct b2Vec2W
-    {
-        public b2FloatW X;
-        public b2FloatW Y;
-
-        public b2Vec2W(b2FloatW X, b2FloatW Y)
-        {
-            this.X = X;
-            this.Y = Y;
-        }
-    }
-
-// Wide rotation
-    public struct b2RotW
-    {
-        public b2FloatW C;
-        public b2FloatW S;
-    }
-
-// Soft contact constraints with sub-stepping support
-// Uses fixed anchors for Jacobians for better behavior on rolling shapes (circles & capsules)
-// http://mmacklin.com/smallsteps.pdf
-// https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf
-
-    public class b2ContactConstraintSIMD
-    {
-        public int[] indexA = new int[B2_SIMD_WIDTH];
-        public int[] indexB = new int[B2_SIMD_WIDTH];
-
-        public b2FloatW invMassA, invMassB;
-        public b2FloatW invIA, invIB;
-        public b2Vec2W normal;
-        public b2FloatW friction;
-        public b2FloatW tangentSpeed;
-        public b2FloatW rollingResistance;
-        public b2FloatW rollingMass;
-        public b2FloatW rollingImpulse;
-        public b2FloatW biasRate;
-        public b2FloatW massScale;
-        public b2FloatW impulseScale;
-        public b2Vec2W anchorA1, anchorB1;
-        public b2FloatW normalMass1, tangentMass1;
-        public b2FloatW baseSeparation1;
-        public b2FloatW normalImpulse1;
-        public b2FloatW maxNormalImpulse1;
-        public b2FloatW tangentImpulse1;
-        public b2Vec2W anchorA2, anchorB2;
-        public b2FloatW baseSeparation2;
-        public b2FloatW normalImpulse2;
-        public b2FloatW maxNormalImpulse2;
-        public b2FloatW tangentImpulse2;
-        public b2FloatW normalMass2, tangentMass2;
-        public b2FloatW restitution;
-        public b2FloatW relativeVelocity1, relativeVelocity2;
-    }
-
-// wide version of b2BodyState
-    public struct b2BodyStateW
-    {
-        public b2Vec2W v;
-        public b2FloatW w;
-        public b2FloatW flags;
-        public b2Vec2W dp;
-        public b2RotW dq;
-    }
-
-    public class contact_solver
-    {
-// Overflow contacts don't fit into the constraint graph coloring
+        // Overflow contacts don't fit into the constraint graph coloring
         public static void b2PrepareOverflowContacts(b2StepContext context)
         {
             b2TracyCZoneNC(b2TracyCZone.prepare_overflow_contact, "Prepare Overflow Contact", b2HexColor.b2_colorYellow, true);
@@ -2087,5 +1955,4 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(b2TracyCZone.store_impulses);
         }
     }
-#endif
 }
