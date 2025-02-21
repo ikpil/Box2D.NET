@@ -13,7 +13,7 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class weld_joint
+    public static class weld_joint
     {
         public static float b2WeldJoint_GetReferenceAngle(b2JointId jointId)
         {
