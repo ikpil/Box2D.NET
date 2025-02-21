@@ -169,8 +169,8 @@ namespace Box2D.NET
             b2JointSim jointSim = b2GetJointSim(world, joint);
             Debug.Assert(jointSim.type == b2JointType.b2_prismaticJoint);
 
-            b2Body bodyA = b2Array_Get(world.bodies, jointSim.bodyIdA);
-            b2Body bodyB = b2Array_Get(world.bodies, jointSim.bodyIdB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, jointSim.bodyIdA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, jointSim.bodyIdB);
             b2BodySim bodySimA = b2GetBodySim(world, bodyA);
             b2BodySim bodySimB = b2GetBodySim(world, bodyB);
             b2BodyState bodyStateA = b2GetBodyState(world, bodyA);
@@ -276,18 +276,18 @@ namespace Box2D.NET
 
             b2World world = context.world;
 
-            b2Body bodyA = b2Array_Get(world.bodies, idA);
-            b2Body bodyB = b2Array_Get(world.bodies, idB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, idA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
             Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet || bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-            b2SolverSet setA = b2Array_Get(world.solverSets, bodyA.setIndex);
-            b2SolverSet setB = b2Array_Get(world.solverSets, bodyB.setIndex);
+            b2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
+            b2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
             int localIndexA = bodyA.localIndex;
             int localIndexB = bodyB.localIndex;
 
-            b2BodySim bodySimA = b2Array_Get(setA.bodySims, localIndexA);
-            b2BodySim bodySimB = b2Array_Get(setB.bodySims, localIndexB);
+            b2BodySim bodySimA = b2Array_Get(ref setA.bodySims, localIndexA);
+            b2BodySim bodySimB = b2Array_Get(ref setB.bodySims, localIndexB);
 
             float mA = bodySimA.invMass;
             float iA = bodySimA.invInertia;

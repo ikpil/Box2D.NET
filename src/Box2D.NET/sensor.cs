@@ -52,7 +52,7 @@ namespace Box2D.NET
             }
 
             b2World world = queryContext.world;
-            b2Shape otherShape = b2Array_Get(world.shapes, shapeId);
+            b2Shape otherShape = b2Array_Get(ref world.shapes, shapeId);
 
             // Sensors don't overlap with other sensors
             if (otherShape.sensorIndex != B2_NULL_INDEX)
@@ -85,7 +85,7 @@ namespace Box2D.NET
 
             // Record the overlap
             b2Sensor sensor = queryContext.sensor;
-            ref b2ShapeRef shapeRef = ref b2Array_Add(sensor.overlaps2);
+            ref b2ShapeRef shapeRef = ref b2Array_Add(ref sensor.overlaps2);
             shapeRef.shapeId = shapeId;
             shapeRef.generation = otherShape.generation;
 
@@ -131,14 +131,14 @@ namespace Box2D.NET
             b2DynamicTree[] trees = world.broadPhase.trees;
             for (int sensorIndex = startIndex; sensorIndex < endIndex; ++sensorIndex)
             {
-                b2Sensor sensor = b2Array_Get(world.sensors, sensorIndex);
-                b2Shape sensorShape = b2Array_Get(world.shapes, sensor.shapeId);
+                b2Sensor sensor = b2Array_Get(ref world.sensors, sensorIndex);
+                b2Shape sensorShape = b2Array_Get(ref world.shapes, sensor.shapeId);
 
                 // swap overlap arrays
                 b2Array<b2ShapeRef> temp = sensor.overlaps1;
                 sensor.overlaps1 = sensor.overlaps2;
                 sensor.overlaps2 = temp;
-                b2Array_Clear(sensor.overlaps2);
+                b2Array_Clear(ref sensor.overlaps2);
 
                 b2Transform transform = b2GetBodyTransform(world, sensorShape.bodyId);
 
@@ -236,8 +236,8 @@ namespace Box2D.NET
                     uint ctz = b2CTZ64(word);
                     int sensorIndex = (int)(64 * k + ctz);
 
-                    b2Sensor sensor = b2Array_Get(world.sensors, sensorIndex);
-                    b2Shape sensorShape = b2Array_Get(world.shapes, sensor.shapeId);
+                    b2Sensor sensor = b2Array_Get(ref world.sensors, sensorIndex);
+                    b2Shape sensorShape = b2Array_Get(ref world.shapes, sensor.shapeId);
                     b2ShapeId sensorId = new b2ShapeId(sensor.shapeId + 1, world.worldId, sensorShape.generation);
 
                     int count1 = sensor.overlaps1.count;
@@ -259,7 +259,7 @@ namespace Box2D.NET
                                 // end
                                 b2ShapeId visitorId = new b2ShapeId(r1.shapeId + 1, world.worldId, r1.generation);
                                 b2SensorEndTouchEvent @event = new b2SensorEndTouchEvent(sensorId, visitorId);
-                                b2Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
+                                b2Array_Push(ref world.sensorEndEvents[world.endEventArrayIndex], @event);
                                 index1 += 1;
                             }
                             else if (r1.generation > r2.generation)
@@ -267,7 +267,7 @@ namespace Box2D.NET
                                 // begin
                                 b2ShapeId visitorId = new b2ShapeId(r2.shapeId + 1, world.worldId, r2.generation);
                                 b2SensorBeginTouchEvent @event = new b2SensorBeginTouchEvent(sensorId, visitorId);
-                                b2Array_Push(world.sensorBeginEvents, @event);
+                                b2Array_Push(ref world.sensorBeginEvents, @event);
                                 index2 += 1;
                             }
                             else
@@ -282,7 +282,7 @@ namespace Box2D.NET
                             // end
                             b2ShapeId visitorId = new b2ShapeId(r1.shapeId + 1, world.worldId, r1.generation);
                             b2SensorEndTouchEvent @event = new b2SensorEndTouchEvent(sensorId, visitorId);
-                            b2Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
+                            b2Array_Push(ref world.sensorEndEvents[world.endEventArrayIndex], @event);
                             index1 += 1;
                         }
                         else
@@ -290,7 +290,7 @@ namespace Box2D.NET
                             // begin
                             b2ShapeId visitorId = new b2ShapeId(r2.shapeId + 1, world.worldId, r2.generation);
                             b2SensorBeginTouchEvent @event = new b2SensorBeginTouchEvent(sensorId, visitorId);
-                            b2Array_Push(world.sensorBeginEvents, @event);
+                            b2Array_Push(ref world.sensorBeginEvents, @event);
                             index2 += 1;
                         }
                     }
@@ -301,7 +301,7 @@ namespace Box2D.NET
                         b2ShapeRef r1 = refs1[index1];
                         b2ShapeId visitorId = new b2ShapeId(r1.shapeId + 1, world.worldId, r1.generation);
                         b2SensorEndTouchEvent @event = new b2SensorEndTouchEvent(sensorId, visitorId);
-                        b2Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
+                        b2Array_Push(ref world.sensorEndEvents[world.endEventArrayIndex], @event);
                         index1 += 1;
                     }
 
@@ -311,7 +311,7 @@ namespace Box2D.NET
                         b2ShapeRef r2 = refs2[index2];
                         b2ShapeId visitorId = new b2ShapeId(r2.shapeId + 1, world.worldId, r2.generation);
                         b2SensorBeginTouchEvent @event = new b2SensorBeginTouchEvent(sensorId, visitorId);
-                        b2Array_Push(world.sensorBeginEvents, @event);
+                        b2Array_Push(ref world.sensorBeginEvents, @event);
                         index2 += 1;
                     }
 
@@ -326,7 +326,7 @@ namespace Box2D.NET
 
         public static void b2DestroySensor(b2World world, b2Shape sensorShape)
         {
-            b2Sensor sensor = b2Array_Get(world.sensors, sensorShape.sensorIndex);
+            b2Sensor sensor = b2Array_Get(ref world.sensors, sensorShape.sensorIndex);
             for (int i = 0; i < sensor.overlaps2.count; ++i)
             {
                 b2ShapeRef @ref = sensor.overlaps2.data[i];
@@ -336,19 +336,19 @@ namespace Box2D.NET
                     visitorShapeId = new b2ShapeId(@ref.shapeId + 1, world.worldId, @ref.generation),
                 };
 
-                b2Array_Push(world.sensorEndEvents[world.endEventArrayIndex], @event);
+                b2Array_Push(ref world.sensorEndEvents[world.endEventArrayIndex], @event);
             }
 
             // Destroy sensor
-            b2Array_Destroy(sensor.overlaps1);
-            b2Array_Destroy(sensor.overlaps2);
+            b2Array_Destroy(ref sensor.overlaps1);
+            b2Array_Destroy(ref sensor.overlaps2);
 
-            int movedIndex = b2Array_RemoveSwap(world.sensors, sensorShape.sensorIndex);
+            int movedIndex = b2Array_RemoveSwap(ref world.sensors, sensorShape.sensorIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fixup moved sensor
-                b2Sensor movedSensor = b2Array_Get(world.sensors, sensorShape.sensorIndex);
-                b2Shape otherSensorShape = b2Array_Get(world.shapes, movedSensor.shapeId);
+                b2Sensor movedSensor = b2Array_Get(ref world.sensors, sensorShape.sensorIndex);
+                b2Shape otherSensorShape = b2Array_Get(ref world.shapes, movedSensor.shapeId);
                 otherSensorShape.sensorIndex = sensorShape.sensorIndex;
             }
         }

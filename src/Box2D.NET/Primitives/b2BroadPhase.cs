@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using static Box2D.NET.array;
 
 namespace Box2D.NET.Primitives
 {
@@ -36,7 +36,7 @@ namespace Box2D.NET.Primitives
             trees = null;
             proxyCount = 0;
             moveSet = null;
-            moveArray = null;
+            b2Array_Clear(ref moveArray);
             moveResults = null;
             movePairs = null;
             movePairCapacity = 0;

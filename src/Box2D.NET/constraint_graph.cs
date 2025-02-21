@@ -81,8 +81,8 @@ namespace Box2D.NET
 
                 b2DestroyBitSet(color.bodySet);
 
-                b2Array_Destroy(color.contactSims);
-                b2Array_Destroy(color.jointSims);
+                b2Array_Destroy(ref color.contactSims);
+                b2Array_Destroy(ref color.jointSims);
             }
         }
 
@@ -100,8 +100,8 @@ namespace Box2D.NET
 
             int bodyIdA = contact.edges[0].bodyId;
             int bodyIdB = contact.edges[1].bodyId;
-            b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
             bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
             bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
             Debug.Assert(staticA == false || staticB == false);
@@ -161,7 +161,7 @@ namespace Box2D.NET
             contact.colorIndex = colorIndex;
             contact.localIndex = color.contactSims.count;
 
-            ref b2ContactSim newContact = ref b2Array_Add(color.contactSims);
+            ref b2ContactSim newContact = ref b2Array_Add(ref color.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
             newContact.CopyFrom(contactSim);
 
@@ -176,12 +176,12 @@ namespace Box2D.NET
             else
             {
                 Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet);
-                b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
 
                 int localIndex = bodyA.localIndex;
                 newContact.bodySimIndexA = localIndex;
 
-                b2BodySim bodySimA = b2Array_Get(awakeSet.bodySims, localIndex);
+                b2BodySim bodySimA = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassA = bodySimA.invMass;
                 newContact.invIA = bodySimA.invInertia;
             }
@@ -195,12 +195,12 @@ namespace Box2D.NET
             else
             {
                 Debug.Assert(bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-                b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
 
                 int localIndex = bodyB.localIndex;
                 newContact.bodySimIndexB = localIndex;
 
-                b2BodySim bodySimB = b2Array_Get(awakeSet.bodySims, localIndex);
+                b2BodySim bodySimB = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassB = bodySimB.invMass;
                 newContact.invIB = bodySimB.invInertia;
             }
@@ -220,7 +220,7 @@ namespace Box2D.NET
                 b2ClearBit(color.bodySet, (uint)bodyIdB);
             }
 
-            int movedIndex = b2Array_RemoveSwap(color.contactSims, localIndex);
+            int movedIndex = b2Array_RemoveSwap(ref color.contactSims, localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix index on swapped contact
@@ -228,7 +228,7 @@ namespace Box2D.NET
 
                 // Fix moved contact
                 int movedId = movedContactSim.contactId;
-                b2Contact movedContact = b2Array_Get(world.contacts, movedId);
+                b2Contact movedContact = b2Array_Get(ref world.contacts, movedId);
                 Debug.Assert(movedContact.setIndex == (int)b2SetType.b2_awakeSet);
                 Debug.Assert(movedContact.colorIndex == colorIndex);
                 Debug.Assert(movedContact.localIndex == movedIndex);
@@ -297,14 +297,14 @@ namespace Box2D.NET
 
             int bodyIdA = joint.edges[0].bodyId;
             int bodyIdB = joint.edges[1].bodyId;
-            b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
             bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
             bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
 
             int colorIndex = b2AssignJointColor(graph, bodyIdA, bodyIdB, staticA, staticB);
 
-            ref b2JointSim jointSim = ref b2Array_Add(graph.colors[colorIndex].jointSims);
+            ref b2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
             jointSim.Clear();
 
@@ -334,13 +334,13 @@ namespace Box2D.NET
                 b2ClearBit(color.bodySet, (uint)bodyIdB);
             }
 
-            int movedIndex = b2Array_RemoveSwap(color.jointSims, localIndex);
+            int movedIndex = b2Array_RemoveSwap(ref color.jointSims, localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix moved joint
                 b2JointSim movedJointSim = color.jointSims.data[localIndex];
                 int movedId = movedJointSim.jointId;
-                b2Joint movedJoint = b2Array_Get(world.joints, movedId);
+                b2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
                 Debug.Assert(movedJoint.setIndex == (int)b2SetType.b2_awakeSet);
                 Debug.Assert(movedJoint.colorIndex == colorIndex);
                 Debug.Assert(movedJoint.localIndex == movedIndex);

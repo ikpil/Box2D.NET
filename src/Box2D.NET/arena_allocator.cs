@@ -68,7 +68,7 @@ namespace Box2D.NET
                 alloc.maxAllocation = alloc.allocation;
             }
 
-            b2Array_Push(alloc.entries, entry);
+            b2Array_Push(ref alloc.entries, entry);
             return entry.data;
         }
 
@@ -89,7 +89,7 @@ namespace Box2D.NET
             }
 
             alloc.allocation -= entry.size;
-            b2Array_Pop(alloc.entries);
+            b2Array_Pop(ref alloc.entries);
         }
 
         public static void b2GrowArena(b2ArenaAllocator allocator)

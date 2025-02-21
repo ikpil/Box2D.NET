@@ -111,7 +111,7 @@ namespace Box2D.NET
         public static b2Joint b2GetJointFullId(b2World world, b2JointId jointId)
         {
             int id = jointId.index1 - 1;
-            b2Joint joint = b2Array_Get(world.joints, id);
+            b2Joint joint = b2Array_Get(ref world.joints, id);
             Debug.Assert(joint.jointId == id && joint.generation == jointId.generation);
             return joint;
         }
@@ -122,11 +122,11 @@ namespace Box2D.NET
             {
                 Debug.Assert(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
                 b2GraphColor color = world.constraintGraph.colors[joint.colorIndex];
-                return b2Array_Get(color.jointSims, joint.localIndex);
+                return b2Array_Get(ref color.jointSims, joint.localIndex);
             }
 
-            b2SolverSet set = b2Array_Get(world.solverSets, joint.setIndex);
-            return b2Array_Get(set.jointSims, joint.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, joint.setIndex);
+            return b2Array_Get(ref set.jointSims, joint.localIndex);
         }
 
         public static b2JointSim b2GetJointSimCheckType(b2JointId jointId, b2JointType type)
@@ -158,10 +158,10 @@ namespace Box2D.NET
             int jointId = b2AllocId(world.jointIdPool);
             if (jointId == world.joints.count)
             {
-                b2Array_Push(world.joints, new b2Joint());
+                b2Array_Push(ref world.joints, new b2Joint());
             }
 
-            b2Joint joint = b2Array_Get(world.joints, jointId);
+            b2Joint joint = b2Array_Get(ref world.joints, jointId);
             joint.jointId = jointId;
             joint.userData = userData;
             joint.generation += 1;
@@ -189,7 +189,7 @@ namespace Box2D.NET
             int keyA = (jointId << 1) | 0;
             if (bodyA.headJointKey != B2_NULL_INDEX)
             {
-                b2Joint jointA = b2Array_Get(world.joints, bodyA.headJointKey >> 1);
+                b2Joint jointA = b2Array_Get(ref world.joints, bodyA.headJointKey >> 1);
                 b2JointEdge edgeA = jointA.edges[bodyA.headJointKey & 1];
                 edgeA.prevKey = keyA;
             }
@@ -205,7 +205,7 @@ namespace Box2D.NET
             int keyB = (jointId << 1) | 1;
             if (bodyB.headJointKey != B2_NULL_INDEX)
             {
-                b2Joint jointB = b2Array_Get(world.joints, bodyB.headJointKey >> 1);
+                b2Joint jointB = b2Array_Get(ref world.joints, bodyB.headJointKey >> 1);
                 b2JointEdge edgeB = jointB.edges[(bodyB.headJointKey & 1)];
                 edgeB.prevKey = keyB;
             }
@@ -218,11 +218,11 @@ namespace Box2D.NET
             if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
             {
                 // if either body is disabled, create in disabled set
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_disabledSet);
                 joint.setIndex = (int)b2SetType.b2_disabledSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(set.jointSims);
+                jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
 
                 jointSim.jointId = jointId;
@@ -232,11 +232,11 @@ namespace Box2D.NET
             else if (bodyA.setIndex == (int)b2SetType.b2_staticSet && bodyB.setIndex == (int)b2SetType.b2_staticSet)
             {
                 // joint is connecting static bodies
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_staticSet);
                 joint.setIndex = (int)b2SetType.b2_staticSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(set.jointSims);
+                jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
 
                 jointSim.jointId = jointId;
@@ -267,11 +267,11 @@ namespace Box2D.NET
                 // joint should go into the sleeping set (not static set)
                 int setIndex = maxSetIndex;
 
-                b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
                 joint.setIndex = setIndex;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(set.jointSims);
+                jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
 
                 jointSim.jointId = jointId;
@@ -288,10 +288,10 @@ namespace Box2D.NET
                     // fix potentially invalid set index
                     setIndex = bodyA.setIndex;
 
-                    b2SolverSet mergedSet = b2Array_Get(world.solverSets, setIndex);
+                    b2SolverSet mergedSet = b2Array_Get(ref world.solverSets, setIndex);
 
                     // Careful! The joint sim pointer was orphaned by the set merge.
-                    jointSim = b2Array_Get(mergedSet.jointSims, joint.localIndex);
+                    jointSim = b2Array_Get(ref mergedSet.jointSims, joint.localIndex);
                 }
 
                 Debug.Assert(joint.setIndex == setIndex);
@@ -339,7 +339,7 @@ namespace Box2D.NET
                 int contactId = contactKey >> 1;
                 int edgeIndex = contactKey & 1;
 
-                b2Contact contact = b2Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(ref world.contacts, contactId);
                 contactKey = contact.edges[edgeIndex].nextKey;
 
                 int otherEdgeIndex = edgeIndex ^ 1;
@@ -715,20 +715,20 @@ namespace Box2D.NET
 
             int idA = edgeA.bodyId;
             int idB = edgeB.bodyId;
-            b2Body bodyA = b2Array_Get(world.bodies, idA);
-            b2Body bodyB = b2Array_Get(world.bodies, idB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, idA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
             // Remove from body A
             if (edgeA.prevKey != B2_NULL_INDEX)
             {
-                b2Joint prevJoint = b2Array_Get(world.joints, edgeA.prevKey >> 1);
+                b2Joint prevJoint = b2Array_Get(ref world.joints, edgeA.prevKey >> 1);
                 b2JointEdge prevEdge = prevJoint.edges[edgeA.prevKey & 1];
                 prevEdge.nextKey = edgeA.nextKey;
             }
 
             if (edgeA.nextKey != B2_NULL_INDEX)
             {
-                b2Joint nextJoint = b2Array_Get(world.joints, edgeA.nextKey >> 1);
+                b2Joint nextJoint = b2Array_Get(ref world.joints, edgeA.nextKey >> 1);
                 b2JointEdge nextEdge = nextJoint.edges[edgeA.nextKey & 1];
                 nextEdge.prevKey = edgeA.prevKey;
             }
@@ -744,14 +744,14 @@ namespace Box2D.NET
             // Remove from body B
             if (edgeB.prevKey != B2_NULL_INDEX)
             {
-                b2Joint prevJoint = b2Array_Get(world.joints, edgeB.prevKey >> 1);
+                b2Joint prevJoint = b2Array_Get(ref world.joints, edgeB.prevKey >> 1);
                 b2JointEdge prevEdge = prevJoint.edges[edgeB.prevKey & 1];
                 prevEdge.nextKey = edgeB.nextKey;
             }
 
             if (edgeB.nextKey != B2_NULL_INDEX)
             {
-                b2Joint nextJoint = b2Array_Get(world.joints, edgeB.nextKey >> 1);
+                b2Joint nextJoint = b2Array_Get(ref world.joints, edgeB.nextKey >> 1);
                 b2JointEdge nextEdge = nextJoint.edges[edgeB.nextKey & 1];
                 nextEdge.prevKey = edgeB.prevKey;
             }
@@ -784,14 +784,14 @@ namespace Box2D.NET
             }
             else
             {
-                b2SolverSet set = b2Array_Get(world.solverSets, setIndex);
-                int movedIndex = b2Array_RemoveSwap(set.jointSims, localIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
+                int movedIndex = b2Array_RemoveSwap(ref set.jointSims, localIndex);
                 if (movedIndex != B2_NULL_INDEX)
                 {
                     // Fix moved joint
                     b2JointSim movedJointSim = set.jointSims.data[localIndex];
                     int movedId = movedJointSim.jointId;
-                    b2Joint movedJoint = b2Array_Get(world.joints, movedId);
+                    b2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
                     Debug.Assert(movedJoint.localIndex == movedIndex);
                     movedJoint.localIndex = localIndex;
                 }
@@ -887,8 +887,8 @@ namespace Box2D.NET
 
             joint.collideConnected = shouldCollide;
 
-            b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
-            b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
+            b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+            b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
             if (shouldCollide)
             {
@@ -900,7 +900,7 @@ namespace Box2D.NET
                 int shapeId = shapeCountA < shapeCountB ? bodyA.headShapeId : bodyB.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                     if (shape.proxyKey != B2_NULL_INDEX)
                     {
@@ -946,8 +946,8 @@ namespace Box2D.NET
             }
 
             b2Joint joint = b2GetJointFullId(world, jointId);
-            b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
-            b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
+            b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+            b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
             b2WakeBody(world, bodyA);
             b2WakeBody(world, bodyB);
@@ -1205,8 +1205,8 @@ namespace Box2D.NET
 
         public static void b2DrawJoint(b2DebugDraw draw, b2World world, b2Joint joint)
         {
-            b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
-            b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
+            b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+            b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
             if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
             {
                 return;

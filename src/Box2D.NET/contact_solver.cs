@@ -161,7 +161,7 @@ namespace Box2D.NET
             ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             b2World world = context.world;
-            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
             b2BodyState[] states = awakeSet.bodyStates.data;
 
             // This is a dummy state to represent a static body because static bodies don't have a solver body.
@@ -228,7 +228,7 @@ namespace Box2D.NET
             ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             b2World world = context.world;
-            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
             b2BodyState[] states = awakeSet.bodyStates.data;
 
             float inv_h = context.inv_h;
@@ -383,7 +383,7 @@ namespace Box2D.NET
             ArraySegment<b2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             b2World world = context.world;
-            b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
             b2BodyState[] states = awakeSet.bodyStates.data;
 
             float threshold = context.world.restitutionThreshold;

@@ -21,7 +21,7 @@ namespace Box2D.NET
 
         public static int b2GetIdBytes(b2IdPool pool)
         {
-            return b2Array_ByteCount(pool.freeArray);
+            return b2Array_ByteCount(ref pool.freeArray);
         }
 
 
@@ -34,7 +34,7 @@ namespace Box2D.NET
 
         public static void b2DestroyIdPool(ref b2IdPool pool)
         {
-            b2Array_Destroy(pool.freeArray);
+            b2Array_Destroy(ref pool.freeArray);
             pool = new b2IdPool(); // TODO: @ikpil check pool
         }
 
@@ -43,7 +43,7 @@ namespace Box2D.NET
             int count = pool.freeArray.count;
             if (count > 0)
             {
-                int id = b2Array_Pop(pool.freeArray);
+                int id = b2Array_Pop(ref pool.freeArray);
                 return id;
             }
 
@@ -63,7 +63,7 @@ namespace Box2D.NET
                 return;
             }
 
-            b2Array_Push(pool.freeArray, id);
+            b2Array_Push(ref pool.freeArray, id);
         }
 
 #if B2_VALIDATE

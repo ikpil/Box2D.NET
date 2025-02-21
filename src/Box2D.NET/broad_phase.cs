@@ -44,7 +44,7 @@ namespace Box2D.NET
             bool alreadyAdded = b2AddKey(bp.moveSet, (ulong)(queryProxy + 1));
             if (alreadyAdded == false)
             {
-                b2Array_Push(bp.moveArray, queryProxy);
+                b2Array_Push(ref bp.moveArray, queryProxy);
             }
         }
 
@@ -85,7 +85,7 @@ namespace Box2D.NET
             }
 
             b2DestroySet(bp.moveSet);
-            b2Array_Destroy(bp.moveArray);
+            b2Array_Destroy(ref bp.moveArray);
             b2DestroySet(bp.pairSet);
 
             //memset( bp, 0, sizeof( b2BroadPhase ) );
@@ -111,7 +111,7 @@ namespace Box2D.NET
                 {
                     if (bp.moveArray.data[i] == proxyKey)
                     {
-                        b2Array_RemoveSwap(bp.moveArray, i);
+                        b2Array_RemoveSwap(ref bp.moveArray, i);
                         break;
                     }
                 }
@@ -242,8 +242,8 @@ namespace Box2D.NET
 
             b2World world = queryContext.world;
 
-            b2Shape shapeA = b2Array_Get(world.shapes, shapeIdA);
-            b2Shape shapeB = b2Array_Get(world.shapes, shapeIdB);
+            b2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+            b2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
 
             int bodyIdA = shapeA.bodyId;
             int bodyIdB = shapeB.bodyId;
@@ -266,8 +266,8 @@ namespace Box2D.NET
             }
 
             // Does a joint override collision?
-            b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
+            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
             if (b2ShouldBodiesCollide(world, bodyA, bodyB) == false)
             {
                 return true;
@@ -440,8 +440,8 @@ b2TreeStats b2_staticStats;
                     //	fprintf(s_file, "%d %d\n", shapeIdA, shapeIdB);
                     // }
 
-                    b2Shape shapeA = b2Array_Get(world.shapes, shapeIdA);
-                    b2Shape shapeB = b2Array_Get(world.shapes, shapeIdB);
+                    b2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+                    b2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
 
                     b2CreateContact(world, shapeA, shapeB);
 
@@ -469,7 +469,7 @@ b2TreeStats b2_staticStats;
             // }
 
             // Reset move buffer
-            b2Array_Clear(bp.moveArray);
+            b2Array_Clear(ref bp.moveArray);
             b2ClearSet(bp.moveSet);
 
             b2FreeArenaItem(alloc, bp.movePairs);

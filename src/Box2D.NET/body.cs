@@ -50,33 +50,33 @@ namespace Box2D.NET
             Debug.Assert(b2Body_IsValid(bodyId));
 
             // id index starts at one so that zero can represent null
-            return b2Array_Get(world.bodies, bodyId.index1 - 1);
+            return b2Array_Get(ref world.bodies, bodyId.index1 - 1);
         }
 
         public static b2Transform b2GetBodyTransformQuick(b2World world, b2Body body)
         {
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            b2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
             return bodySim.transform;
         }
 
         public static b2Transform b2GetBodyTransform(b2World world, int bodyId)
         {
-            b2Body body = b2Array_Get(world.bodies, bodyId);
+            b2Body body = b2Array_Get(ref world.bodies, bodyId);
             return b2GetBodyTransformQuick(world, body);
         }
 
         // Create a b2BodyId from a raw id.
         public static b2BodyId b2MakeBodyId(b2World world, int bodyId)
         {
-            b2Body body = b2Array_Get(world.bodies, bodyId);
+            b2Body body = b2Array_Get(ref world.bodies, bodyId);
             return new b2BodyId(bodyId + 1, world.worldId, body.generation);
         }
 
         public static b2BodySim b2GetBodySim(b2World world, b2Body body)
         {
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            b2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
             return bodySim;
         }
 
@@ -84,8 +84,8 @@ namespace Box2D.NET
         {
             if (body.setIndex == (int)b2SetType.b2_awakeSet)
             {
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-                return b2Array_Get(set.bodyStates, body.localIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                return b2Array_Get(ref set.bodyStates, body.localIndex);
             }
 
             return null;
@@ -116,18 +116,18 @@ namespace Box2D.NET
             }
 
             int islandId = body.islandId;
-            b2Island island = b2Array_Get(world.islands, islandId);
+            b2Island island = b2Array_Get(ref world.islands, islandId);
 
             // Fix the island's linked list of sims
             if (body.islandPrev != B2_NULL_INDEX)
             {
-                b2Body prevBody = b2Array_Get(world.bodies, body.islandPrev);
+                b2Body prevBody = b2Array_Get(ref world.bodies, body.islandPrev);
                 prevBody.islandNext = body.islandNext;
             }
 
             if (body.islandNext != B2_NULL_INDEX)
             {
-                b2Body nextBody = b2Array_Get(world.bodies, body.islandNext);
+                b2Body nextBody = b2Array_Get(ref world.bodies, body.islandNext);
                 nextBody.islandPrev = body.islandPrev;
             }
 
@@ -176,7 +176,7 @@ namespace Box2D.NET
                 int contactId = edgeKey >> 1;
                 int edgeIndex = edgeKey & 1;
 
-                b2Contact contact = b2Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(ref world.contacts, contactId);
                 edgeKey = contact.edges[edgeIndex].nextKey;
                 b2DestroyContact(world, contact, wakeBodies);
             }
@@ -228,7 +228,7 @@ namespace Box2D.NET
                 if (setId == world.solverSets.count)
                 {
                     // Create a zero initialized solver set. All sub-arrays are also zero initialized.
-                    b2Array_Push(world.solverSets, new b2SolverSet());
+                    b2Array_Push(ref world.solverSets, new b2SolverSet());
                 }
                 else
                 {
@@ -242,8 +242,8 @@ namespace Box2D.NET
 
             int bodyId = b2AllocId(world.bodyIdPool);
 
-            b2SolverSet set = b2Array_Get(world.solverSets, setId);
-            ref b2BodySim bodySim = ref b2Array_Add(set.bodySims);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, setId);
+            ref b2BodySim bodySim = ref b2Array_Add(ref set.bodySims);
             //*bodySim = ( b2BodySim ){ 0 };
             bodySim.Clear();
             bodySim.transform.p = def.position;
@@ -270,7 +270,7 @@ namespace Box2D.NET
 
             if (setId == (int)b2SetType.b2_awakeSet)
             {
-                ref b2BodyState bodyState = ref b2Array_Add(set.bodyStates);
+                ref b2BodyState bodyState = ref b2Array_Add(ref set.bodyStates);
                 //Debug.Assert( ( (uintptr_t)bodyState & 0x1F ) == 0 );
                 //*bodyState = ( b2BodyState ){ 0 }; 
                 bodyState.Clear();
@@ -281,14 +281,14 @@ namespace Box2D.NET
 
             if (bodyId == world.bodies.count)
             {
-                b2Array_Push(world.bodies, new b2Body());
+                b2Array_Push(ref world.bodies, new b2Body());
             }
             else
             {
                 Debug.Assert(world.bodies.data[bodyId].id == B2_NULL_INDEX);
             }
 
-            b2Body body = b2Array_Get(world.bodies, bodyId);
+            b2Body body = b2Array_Get(ref world.bodies, bodyId);
 
             if (!string.IsNullOrEmpty(def.name))
             {
@@ -375,7 +375,7 @@ namespace Box2D.NET
                 int jointId = edgeKey >> 1;
                 int edgeIndex = edgeKey & 1;
 
-                b2Joint joint = b2Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(ref world.joints, jointId);
                 edgeKey = joint.edges[edgeIndex].nextKey;
 
                 // Careful because this modifies the list being traversed
@@ -389,7 +389,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                 if (shape.sensorIndex != B2_NULL_INDEX)
                 {
@@ -409,7 +409,7 @@ namespace Box2D.NET
             int chainId = body.headChainId;
             while (chainId != B2_NULL_INDEX)
             {
-                b2ChainShape chain = b2Array_Get(world.chainShapes, chainId);
+                b2ChainShape chain = b2Array_Get(ref world.chainShapes, chainId);
 
                 b2FreeChainData(chain);
 
@@ -423,14 +423,14 @@ namespace Box2D.NET
             b2RemoveBodyFromIsland(world, body);
 
             // Remove body sim from solver set that owns it
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            int movedIndex = b2Array_RemoveSwap(set.bodySims, body.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            int movedIndex = b2Array_RemoveSwap(ref set.bodySims, body.localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix moved body index
                 b2BodySim movedSim = set.bodySims.data[body.localIndex];
                 int movedId = movedSim.bodyId;
-                b2Body movedBody = b2Array_Get(world.bodies, movedId);
+                b2Body movedBody = b2Array_Get(ref world.bodies, movedId);
                 Debug.Assert(movedBody.localIndex == movedIndex);
                 movedBody.localIndex = body.localIndex;
             }
@@ -438,7 +438,7 @@ namespace Box2D.NET
             // Remove body state from awake set
             if (body.setIndex == (int)b2SetType.b2_awakeSet)
             {
-                int result = b2Array_RemoveSwap(set.bodyStates, body.localIndex);
+                int result = b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
                 B2_UNUSED(result);
                 Debug.Assert(result == movedIndex);
             }
@@ -491,13 +491,13 @@ namespace Box2D.NET
                 int contactId = contactKey >> 1;
                 int edgeIndex = contactKey & 1;
 
-                b2Contact contact = b2Array_Get(world.contacts, contactId);
+                b2Contact contact = b2Array_Get(ref world.contacts, contactId);
 
                 // Is contact touching?
                 if (0 != (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag))
                 {
-                    b2Shape shapeA = b2Array_Get(world.shapes, contact.shapeIdA);
-                    b2Shape shapeB = b2Array_Get(world.shapes, contact.shapeIdB);
+                    b2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
+                    b2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
 
                     contactData[index].shapeIdA = new b2ShapeId(shapeA.id + 1, bodyId.world0, shapeA.generation);
                     contactData[index].shapeIdB = new b2ShapeId(shapeB.id + 1, bodyId.world0, shapeB.generation);
@@ -531,11 +531,11 @@ namespace Box2D.NET
                 return new b2AABB(transform.p, transform.p);
             }
 
-            b2Shape shape = b2Array_Get(world.shapes, body.headShapeId);
+            b2Shape shape = b2Array_Get(ref world.shapes, body.headShapeId);
             b2AABB aabb = shape.aabb;
             while (shape.nextShapeId != B2_NULL_INDEX)
             {
-                shape = b2Array_Get(world.shapes, shape.nextShapeId);
+                shape = b2Array_Get(ref world.shapes, shape.nextShapeId);
                 aabb = b2AABB_Union(aabb, shape.aabb);
             }
 
@@ -567,7 +567,7 @@ namespace Box2D.NET
                     int nextShapeId = body.headShapeId;
                     while (nextShapeId != B2_NULL_INDEX)
                     {
-                        b2Shape s = b2Array_Get(world.shapes, nextShapeId);
+                        b2Shape s = b2Array_Get(ref world.shapes, nextShapeId);
 
                         b2ShapeExtent extent = b2ComputeShapeExtent(s, b2Vec2_zero);
                         bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
@@ -585,7 +585,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape s = b2Array_Get(world.shapes, shapeId);
+                b2Shape s = b2Array_Get(ref world.shapes, shapeId);
                 shapeId = s.nextShapeId;
 
                 if (s.density == 0.0f)
@@ -636,7 +636,7 @@ namespace Box2D.NET
             shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape s = b2Array_Get(world.shapes, shapeId);
+                b2Shape s = b2Array_Get(ref world.shapes, shapeId);
 
                 b2ShapeExtent extent = b2ComputeShapeExtent(s, localCenter);
                 bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
@@ -728,7 +728,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 b2AABB aabb = b2ComputeShapeAABB(shape, transform);
                 aabb.lowerBound.x -= speculativeDistance;
                 aabb.lowerBound.y -= speculativeDistance;
@@ -840,8 +840,8 @@ namespace Box2D.NET
                 return b2Vec2_zero;
             }
 
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            b2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
 
             b2Vec2 r = b2RotateVector(bodySim.transform.q, b2Sub(localPoint, bodySim.localCenter));
             b2Vec2 v = b2Add(state.linearVelocity, b2CrossSV(state.angularVelocity, r));
@@ -858,8 +858,8 @@ namespace Box2D.NET
                 return b2Vec2_zero;
             }
 
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            b2BodySim bodySim = b2Array_Get(set.bodySims, body.localIndex);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            b2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
 
             b2Vec2 r = b2Sub(worldPoint, bodySim.center);
             b2Vec2 v = b2Add(state.linearVelocity, b2CrossSV(state.angularVelocity, r));
@@ -931,9 +931,9 @@ namespace Box2D.NET
             if (body.setIndex == (int)b2SetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-                b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
-                b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                b2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
                 state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(point, bodySim.center), impulse);
             }
@@ -952,9 +952,9 @@ namespace Box2D.NET
             if (body.setIndex == (int)b2SetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-                b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
-                b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                b2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
             }
         }
@@ -965,7 +965,7 @@ namespace Box2D.NET
             b2World world = b2GetWorld(bodyId.world0);
 
             int id = bodyId.index1 - 1;
-            b2Body body = b2Array_Get(world.bodies, id);
+            b2Body body = b2Array_Get(ref world.bodies, id);
             Debug.Assert(body.generation == bodyId.generation);
 
             if (wake && body.setIndex >= (int)b2SetType.b2_firstSleepingSet)
@@ -977,9 +977,9 @@ namespace Box2D.NET
             if (body.setIndex == (int)b2SetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                b2SolverSet set = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
-                b2BodyState state = b2Array_Get(set.bodyStates, localIndex);
-                b2BodySim bodySim = b2Array_Get(set.bodySims, localIndex);
+                b2SolverSet set = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                b2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.angularVelocity += bodySim.invInertia * impulse;
             }
         }
@@ -1034,7 +1034,7 @@ namespace Box2D.NET
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint joint = b2Array_Get(world.joints, jointId);
+                    b2Joint joint = b2Array_Get(ref world.joints, jointId);
                     if (joint.islandId != B2_NULL_INDEX)
                     {
                         b2UnlinkJoint(world, joint);
@@ -1043,8 +1043,8 @@ namespace Box2D.NET
                     // A body going from static to dynamic or kinematic goes to the awake set
                     // and other attached bodies must be awake as well. For consistency, this is
                     // done for all cases.
-                    b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
-                    b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
+                    b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+                    b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
                     b2WakeBody(world, bodyA);
                     b2WakeBody(world, bodyB);
 
@@ -1059,8 +1059,8 @@ namespace Box2D.NET
                 // Body is going from static to dynamic or kinematic. It only makes sense to move it to the awake set.
                 Debug.Assert(body.setIndex == (int)b2SetType.b2_staticSet);
 
-                b2SolverSet staticSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
-                b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_staticSet);
+                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
 
                 // Transfer body to awake set
                 b2TransferBody(world, awakeSet, staticSet, body);
@@ -1075,7 +1075,7 @@ namespace Box2D.NET
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint joint = b2Array_Get(world.joints, jointId);
+                    b2Joint joint = b2Array_Get(ref world.joints, jointId);
 
                     // Transfer the joint if it is in the static set
                     if (joint.setIndex == (int)b2SetType.b2_staticSet)
@@ -1107,7 +1107,7 @@ namespace Box2D.NET
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                     shapeId = shape.nextShapeId;
                     b2DestroyShapeProxy(shape, world.broadPhase);
                     bool forcePairCreation = true;
@@ -1120,8 +1120,8 @@ namespace Box2D.NET
                 // The body is going from dynamic/kinematic to static. It should be awake.
                 Debug.Assert(body.setIndex == (int)b2SetType.b2_awakeSet);
 
-                b2SolverSet staticSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_staticSet);
-                b2SolverSet awakeSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_awakeSet);
+                b2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_staticSet);
+                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
 
                 // Transfer body to static set
                 b2TransferBody(world, staticSet, awakeSet, body);
@@ -1129,7 +1129,7 @@ namespace Box2D.NET
                 // Remove body from island.
                 b2RemoveBodyFromIsland(world, body);
 
-                b2BodySim bodySim = b2Array_Get(staticSet.bodySims, body.localIndex);
+                b2BodySim bodySim = b2Array_Get(ref staticSet.bodySims, body.localIndex);
                 bodySim.isFast = false;
 
                 // Maybe transfer joints to static set.
@@ -1139,11 +1139,11 @@ namespace Box2D.NET
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint joint = b2Array_Get(world.joints, jointId);
+                    b2Joint joint = b2Array_Get(ref world.joints, jointId);
                     jointKey = joint.edges[edgeIndex].nextKey;
 
                     int otherEdgeIndex = edgeIndex ^ 1;
-                    b2Body otherBody = b2Array_Get(world.bodies, joint.edges[otherEdgeIndex].bodyId);
+                    b2Body otherBody = b2Array_Get(ref world.bodies, joint.edges[otherEdgeIndex].bodyId);
 
                     // Skip disabled joint
                     if (joint.setIndex == (int)b2SetType.b2_disabledSet)
@@ -1185,7 +1185,7 @@ namespace Box2D.NET
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                     shapeId = shape.nextShapeId;
                     b2DestroyShapeProxy(shape, world.broadPhase);
                     bool forcePairCreation = true;
@@ -1202,7 +1202,7 @@ namespace Box2D.NET
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                     shapeId = shape.nextShapeId;
                     b2DestroyShapeProxy(shape, world.broadPhase);
                     b2BodyType proxyType = type;
@@ -1219,12 +1219,12 @@ namespace Box2D.NET
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint joint = b2Array_Get(world.joints, jointId);
+                    b2Joint joint = b2Array_Get(ref world.joints, jointId);
                     jointKey = joint.edges[edgeIndex].nextKey;
 
                     int otherEdgeIndex = edgeIndex ^ 1;
                     int otherBodyId = joint.edges[otherEdgeIndex].bodyId;
-                    b2Body otherBody = b2Array_Get(world.bodies, otherBodyId);
+                    b2Body otherBody = b2Array_Get(ref world.bodies, otherBodyId);
 
                     if (otherBody.setIndex == (int)b2SetType.b2_disabledSet)
                     {
@@ -1456,7 +1456,7 @@ namespace Box2D.NET
             }
             else if (awake == false && body.setIndex == (int)b2SetType.b2_awakeSet)
             {
-                b2Island island = b2Array_Get(world.islands, body.islandId);
+                b2Island island = b2Array_Get(ref world.islands, body.islandId);
                 if (island.constraintRemoveCount > 0)
                 {
                     // Must split the island before sleeping. This is expensive.
@@ -1540,14 +1540,14 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
                 b2DestroyShapeProxy(shape, world.broadPhase);
             }
 
             // Transfer simulation data to disabled set
-            b2SolverSet set = b2Array_Get(world.solverSets, body.setIndex);
-            b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+            b2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
+            b2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_disabledSet);
 
             // Transfer body sim
             b2TransferBody(world, disabledSet, set, body);
@@ -1559,7 +1559,7 @@ namespace Box2D.NET
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = b2Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(ref world.joints, jointId);
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 // joint may already be disabled by other body
@@ -1577,7 +1577,7 @@ namespace Box2D.NET
                 }
 
                 // Transfer joint to disabled set
-                b2SolverSet jointSet = b2Array_Get(world.solverSets, joint.setIndex);
+                b2SolverSet jointSet = b2Array_Get(ref world.solverSets, joint.setIndex);
                 b2TransferJoint(world, disabledSet, jointSet, joint);
             }
 
@@ -1599,9 +1599,9 @@ namespace Box2D.NET
                 return;
             }
 
-            b2SolverSet disabledSet = b2Array_Get(world.solverSets, (int)b2SetType.b2_disabledSet);
+            b2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_disabledSet);
             int setId = body.type == b2BodyType.b2_staticBody ? (int)b2SetType.b2_staticSet : (int)b2SetType.b2_awakeSet;
-            b2SolverSet targetSet = b2Array_Get(world.solverSets, setId);
+            b2SolverSet targetSet = b2Array_Get(ref world.solverSets, setId);
 
             b2TransferBody(world, targetSet, disabledSet, body);
 
@@ -1613,7 +1613,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
 
                 b2CreateShapeProxy(shape, world.broadPhase, proxyType, transform, forcePairCreation);
@@ -1633,14 +1633,14 @@ namespace Box2D.NET
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = b2Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(ref world.joints, jointId);
                 Debug.Assert(joint.setIndex == (int)b2SetType.b2_disabledSet);
                 Debug.Assert(joint.islandId == B2_NULL_INDEX);
 
                 jointKey = joint.edges[edgeIndex].nextKey;
 
-                b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
-                b2Body bodyB = b2Array_Get(world.bodies, joint.edges[1].bodyId);
+                b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+                b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
                 if (bodyA.setIndex == (int)b2SetType.b2_disabledSet || bodyB.setIndex == (int)b2SetType.b2_disabledSet)
                 {
@@ -1663,7 +1663,7 @@ namespace Box2D.NET
                     jointSetId = bodyA.setIndex;
                 }
 
-                b2SolverSet jointSet = b2Array_Get(world.solverSets, jointSetId);
+                b2SolverSet jointSet = b2Array_Get(ref world.solverSets, jointSetId);
                 b2TransferJoint(world, jointSet, disabledSet, joint);
 
                 // Now that the joint is in the correct set, I can link the joint in the island.
@@ -1737,7 +1737,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 shape.enableContactEvents = flag;
                 shapeId = shape.nextShapeId;
             }
@@ -1750,7 +1750,7 @@ namespace Box2D.NET
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 shape.enableHitEvents = flag;
                 shapeId = shape.nextShapeId;
             }
@@ -1777,7 +1777,7 @@ namespace Box2D.NET
             int shapeCount = 0;
             while (shapeId != B2_NULL_INDEX && shapeCount < capacity)
             {
-                b2Shape shape = b2Array_Get(world.shapes, shapeId);
+                b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 b2ShapeId id = new b2ShapeId(shape.id + 1, bodyId.world0, shape.generation);
                 shapeArray[shapeCount] = id;
                 shapeCount += 1;
@@ -1807,7 +1807,7 @@ namespace Box2D.NET
                 int jointId = jointKey >> 1;
                 int edgeIndex = jointKey & 1;
 
-                b2Joint joint = b2Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(ref world.joints, jointId);
 
                 b2JointId id = new b2JointId(jointId + 1, bodyId.world0, joint.generation);
                 jointArray[jointCount] = id;
@@ -1845,7 +1845,7 @@ namespace Box2D.NET
                 int edgeIndex = jointKey & 1;
                 int otherEdgeIndex = edgeIndex ^ 1;
 
-                b2Joint joint = b2Array_Get(world.joints, jointId);
+                b2Joint joint = b2Array_Get(ref world.joints, jointId);
                 if (joint.collideConnected == false && joint.edges[otherEdgeIndex].bodyId == otherBodyId)
                 {
                     return false;

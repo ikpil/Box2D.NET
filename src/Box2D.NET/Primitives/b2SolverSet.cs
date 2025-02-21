@@ -1,4 +1,6 @@
-﻿namespace Box2D.NET.Primitives
+﻿using static Box2D.NET.array;
+
+namespace Box2D.NET.Primitives
 {
     // This holds solver set data. The following sets are used:
     // - static set for all static bodies (no contacts or joints)
@@ -34,11 +36,11 @@
 
         public void Clear()
         {
-            bodySims = null;
-            bodyStates = null;
-            jointSims = null;
-            contactSims = null;
-            islandSims = null;
+            b2Array_Clear(ref bodySims);
+            b2Array_Clear(ref bodyStates);
+            b2Array_Clear(ref jointSims);
+            b2Array_Clear(ref contactSims);
+            b2Array_Clear(ref islandSims);
             setIndex = 0;
         }
     }
