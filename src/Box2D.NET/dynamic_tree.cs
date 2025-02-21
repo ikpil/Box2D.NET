@@ -1163,7 +1163,7 @@ namespace Box2D.NET
             b2Vec2 p2 = b2MulAdd(p1, maxFraction, d);
 
             // Build a bounding box for the segment.
-            b2AABB segmentAABB = new b2AABB { lowerBound = b2Min(p1, p2), upperBound = b2Max(p1, p2) };
+            b2AABB segmentAABB = new b2AABB(b2Min(p1, p2), b2Max(p1, p2));
 
             int[] stack = new int[B2_TREE_STACK_SIZE];
             int stackCount = 0;
@@ -1276,7 +1276,7 @@ namespace Box2D.NET
                 return stats;
             }
 
-            b2AABB originAABB = new b2AABB { lowerBound = input.points[0], upperBound = input.points[0] };
+            b2AABB originAABB = new b2AABB(input.points[0], input.points[0]);
             for (int i = 1; i < input.count; ++i)
             {
                 originAABB.lowerBound = b2Min(originAABB.lowerBound, input.points[i]);

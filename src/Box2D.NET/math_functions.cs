@@ -25,9 +25,9 @@ namespace Box2D.NET
         public const float FLT_EPSILON = 1.1920929e-7f;
 
         public static readonly b2Vec2 b2Vec2_zero = new b2Vec2(0.0f, 0.0f);
-        public static readonly b2Rot b2Rot_identity = new b2Rot { c = 1.0f, s = 0.0f };
-        public static readonly b2Transform b2Transform_identity = new b2Transform { p = { x = 0.0f, y = 0.0f }, q = { c = 1.0f, s = 0.0f } };
-        public static readonly b2Mat22 b2Mat22_zero = new b2Mat22 { cx = { x = 0.0f, y = 0.0f }, cy = { x = 0.0f, y = 0.0f } };
+        public static readonly b2Rot b2Rot_identity = new b2Rot(1.0f, 0.0f);
+        public static readonly b2Transform b2Transform_identity = new b2Transform(new b2Vec2(0.0f, 0.0f), new b2Rot(1.0f, 0.0f));
+        public static readonly b2Mat22 b2Mat22_zero = new b2Mat22(new b2Vec2(0.0f, 0.0f), new b2Vec2(0.0f, 0.0f));
 
         /// @return the minimum of two integers
         public static int b2MinInt(int a, int b)
@@ -247,7 +247,7 @@ namespace Box2D.NET
         {
             float mag = MathF.Sqrt(q.s * q.s + q.c * q.c);
             float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
-            b2Rot qn = new b2Rot { c = q.c * invMag, s = q.s * invMag };
+            b2Rot qn = new b2Rot(q.c * invMag, q.s * invMag);
             return qn;
         }
 
@@ -260,10 +260,10 @@ namespace Box2D.NET
             // ds/dt = omega * cos(t)
             // c2 = c1 - omega * h * s1
             // s2 = s1 + omega * h * c1
-            b2Rot q2 = new b2Rot { c = q1.c - deltaAngle * q1.s, s = q1.s + deltaAngle * q1.c };
+            b2Rot q2 = new b2Rot(q1.c - deltaAngle * q1.s, q1.s + deltaAngle * q1.c);
             float mag = MathF.Sqrt(q2.s * q2.s + q2.c * q2.c);
             float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
-            b2Rot qn = new b2Rot { c = q2.c * invMag, s = q2.s * invMag };
+            b2Rot qn = new b2Rot(q2.c * invMag, q2.s * invMag);
             return qn;
         }
 
@@ -284,7 +284,7 @@ namespace Box2D.NET
         public static b2Rot b2MakeRot(float radians)
         {
             b2CosSin cs = b2ComputeCosSin(radians);
-            return new b2Rot { c = cs.cosine, s = cs.sine };
+            return new b2Rot(cs.cosine, cs.sine);
         }
 
 
@@ -492,11 +492,7 @@ namespace Box2D.NET
                 det = 1.0f / det;
             }
 
-            b2Mat22 B = new b2Mat22
-            {
-                cx = { x = det * d, y = -det * c },
-                cy = { x = -det * b, y = det * a },
-            };
+            b2Mat22 B = new b2Mat22(new b2Vec2(det * d, -det * c), new b2Vec2(-det * b, det * a));
             return B;
         }
 

@@ -52,7 +52,7 @@ namespace Box2D.NET.Primitives
 
         public void Reset()
         {
-            aabb = new b2AABB { lowerBound = { x = 0.0f, y = 0.0f }, upperBound = { x = 0.0f, y = 0.0f } };
+            aabb = new b2AABB(new b2Vec2(0.0f, 0.0f), new b2Vec2(0.0f, 0.0f));
             categoryBits = B2_DEFAULT_CATEGORY_BITS;
             parent = B2_NULL_INDEX;
             child1 = B2_NULL_INDEX;

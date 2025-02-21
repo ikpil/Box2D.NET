@@ -110,8 +110,8 @@ public class test_math
         v = b2Add(two, two);
         Assert.That(v.x != 5.0f && v.y != 5.0f);
 
-        b2Transform transform1 = new b2Transform { p = new b2Vec2(-2.0f, 3.0f), q = b2MakeRot(1.0f) };
-        b2Transform transform2 = new b2Transform { p = new b2Vec2(1.0f, 0.0f), q = b2MakeRot(-2.0f) };
+        b2Transform transform1 = new b2Transform(new b2Vec2(-2.0f, 3.0f), b2MakeRot(1.0f));
+        b2Transform transform2 = new b2Transform(new b2Vec2(1.0f, 0.0f), b2MakeRot(-2.0f));
 
         b2Transform transform = b2MulTransforms(transform2, transform1);
 
@@ -128,10 +128,7 @@ public class test_math
         Assert.That(v.x - two.x, Is.LessThan(8.0f * FLT_EPSILON));
         Assert.That(v.y - two.y, Is.LessThan(8.0f * FLT_EPSILON));
 
-        v = b2Normalize(new b2Vec2
-        {
-            x = 0.2f, y = -0.5f
-        });
+        v = b2Normalize(new b2Vec2(0.2f, -0.5f));
         for (float y = -1.0f; y <= 1.0f; y += 0.01f)
         {
             for (float x = -1.0f; x <= 1.0f; x += 0.01f)
@@ -141,10 +138,7 @@ public class test_math
                     continue;
                 }
 
-                u = b2Normalize(new b2Vec2
-                {
-                    x = x, y = y
-                });
+                u = b2Normalize(new b2Vec2(x, y));
 
                 b2Rot r = b2ComputeRotationBetweenUnitVectors(v, u);
 
