@@ -1,0 +1,36 @@
+﻿namespace Box2D.NET.Primitives
+{
+// Cold contact data. Used as a persistent handle and for persistent island
+// connectivity.
+    public class b2Contact
+    {
+        // index of simulation set stored in b2World
+        // B2_NULL_INDEX when slot is free
+        public int setIndex;
+
+        // index into the constraint graph color array
+        // B2_NULL_INDEX for non-touching or sleeping contacts
+        // B2_NULL_INDEX when slot is free
+        public int colorIndex;
+
+        // contact index within set or graph color
+        // B2_NULL_INDEX when slot is free
+        public int localIndex;
+
+        public b2ContactEdge[] edges;
+        public int shapeIdA;
+        public int shapeIdB;
+
+        // A contact only belongs to an island if touching, otherwise B2_NULL_INDEX.
+        public int islandPrev;
+        public int islandNext;
+        public int islandId;
+
+        public int contactId;
+
+        // b2ContactFlags
+        public uint flags;
+
+        public bool isMarked;
+    }
+}

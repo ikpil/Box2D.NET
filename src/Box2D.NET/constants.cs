@@ -6,15 +6,6 @@ using static Box2D.NET.core;
 
 namespace Box2D.NET
 {
-
-    [Flags]
-    public enum b2TreeNodeFlags
-    {
-        b2_allocatedNode = 0x0001,
-        b2_enlargedNode = 0x0002,
-        b2_leafNode = 0x0004,
-    };
-
     public static class constants
     {
         // Used to detect bad values. Positions greater than about 16km will have precision

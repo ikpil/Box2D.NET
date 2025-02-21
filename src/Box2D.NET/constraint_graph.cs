@@ -26,34 +26,7 @@ using static Box2D.NET.bitset;
 
 namespace Box2D.NET
 {
-    public class b2GraphColor
-    {
-        // This bitset is indexed by bodyId so this is over-sized to encompass static bodies
-        // however I never traverse these bits or use the bit count for anything
-        // This bitset is unused on the overflow color.
-        public b2BitSet bodySet;
-
-        // cache friendly arrays
-        public b2Array<b2ContactSim> contactSims;
-        public b2Array<b2JointSim> jointSims;
-
-        // TODO: @ikpil, check
-        // transient
-        //union
-        //{
-        public ArraySegment<b2ContactConstraintSIMD> simdConstraints;
-
-        public ArraySegment<b2ContactConstraint> overflowConstraints;
-        //};
-    }
-
-    public class b2ConstraintGraph
-    {
-        // including overflow at the end
-        public b2GraphColor[] colors;
-    }
-
-    public class constraint_graph
+    public static class constraint_graph
     {
         // This holds constraints that cannot fit the graph color limit. This happens when a single dynamic body
         // is touching many other bodies.
