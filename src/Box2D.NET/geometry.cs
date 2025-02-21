@@ -535,7 +535,7 @@ namespace Box2D.NET
             input.useRadii = false;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
 
             return output.distance <= shape.radius;
         }

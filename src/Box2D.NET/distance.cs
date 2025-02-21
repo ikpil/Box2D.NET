@@ -172,7 +172,7 @@ namespace Box2D.NET
             return bestIndex;
         }
 
-        static b2Simplex b2MakeSimplexFromCache(b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Transform transformA, ref b2ShapeProxy proxyB, b2Transform transformB)
+        static b2Simplex b2MakeSimplexFromCache(ref b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Transform transformA, ref b2ShapeProxy proxyB, b2Transform transformB)
         {
             Debug.Assert(cache.count <= 3);
             b2Simplex s = new b2Simplex();
@@ -214,7 +214,7 @@ namespace Box2D.NET
             return s;
         }
 
-        public static void b2MakeSimplexCache(b2SimplexCache cache, b2Simplex simplex)
+        public static void b2MakeSimplexCache(ref b2SimplexCache cache, b2Simplex simplex)
         {
             cache.count = (ushort)simplex.count;
             b2SimplexVertex[] vertices = { simplex.v1, simplex.v2, simplex.v3 };
@@ -484,7 +484,7 @@ namespace Box2D.NET
         /// Compute the closest points between two shapes represented as point clouds.
         /// b2SimplexCache cache is input/output. On the first call set b2SimplexCache.count to zero.
         /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
-        public static b2DistanceOutput b2ShapeDistance(b2SimplexCache cache, b2DistanceInput input, b2Simplex[] simplexes, int simplexCapacity)
+        public static b2DistanceOutput b2ShapeDistance(ref b2SimplexCache cache, b2DistanceInput input, b2Simplex[] simplexes, int simplexCapacity)
         {
             b2DistanceOutput output = new b2DistanceOutput();
 
@@ -495,7 +495,7 @@ namespace Box2D.NET
             b2Transform transformB = input.transformB;
 
             // Initialize the simplex.
-            b2Simplex simplex = b2MakeSimplexFromCache(cache, ref proxyA, transformA, ref proxyB, transformB);
+            b2Simplex simplex = b2MakeSimplexFromCache(ref cache, ref proxyA, transformA, ref proxyB, transformB);
 
             int simplexIndex = 0;
             if (simplexes != null && simplexIndex < simplexCapacity)
@@ -614,7 +614,7 @@ namespace Box2D.NET
             output.simplexCount = simplexIndex;
 
             // Cache the simplex
-            b2MakeSimplexCache(cache, simplex);
+            b2MakeSimplexCache(ref cache, simplex);
 
             // Apply radii if requested
             if (input.useRadii)
@@ -817,7 +817,7 @@ namespace Box2D.NET
 #endif
 
 
-        public static b2SeparationFunction b2MakeSeparationFunction(b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Sweep sweepA, ref b2ShapeProxy proxyB, b2Sweep sweepB, float t1)
+        public static b2SeparationFunction b2MakeSeparationFunction(ref b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Sweep sweepA, ref b2ShapeProxy proxyB, b2Sweep sweepB, float t1)
         {
             b2SeparationFunction f = new b2SeparationFunction();
 
@@ -1074,7 +1074,7 @@ namespace Box2D.NET
                 // to get a separating axis.
                 distanceInput.transformA = xfA;
                 distanceInput.transformB = xfB;
-                b2DistanceOutput distanceOutput = b2ShapeDistance(cache, distanceInput, null, 0);
+                b2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, distanceInput, null, 0);
 
                 distanceIterations += 1;
 #if B2_SNOOP_TOI_COUNTERS
@@ -1105,7 +1105,7 @@ namespace Box2D.NET
                 }
 
                 // Initialize the separating axis.
-                b2SeparationFunction fcn = b2MakeSeparationFunction(cache, ref proxyA, sweepA, ref proxyB, sweepB, t1);
+                b2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, ref proxyA, sweepA, ref proxyB, sweepB, t1);
 #if ZERO_DEFINE
                     // Dump the curve seen by the root finder
                     {

@@ -1082,10 +1082,10 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a capsule
-        public static b2Manifold b2CollideChainSegmentAndCapsule(b2ChainSegment segmentA, b2Transform xfA, b2Capsule capsuleB, b2Transform xfB, b2SimplexCache cache)
+        public static b2Manifold b2CollideChainSegmentAndCapsule(b2ChainSegment segmentA, b2Transform xfA, b2Capsule capsuleB, b2Transform xfB, ref b2SimplexCache cache)
         {
             b2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollideChainSegmentAndPolygon(segmentA, xfA, polyB, xfB, cache);
+            return b2CollideChainSegmentAndPolygon(segmentA, xfA, polyB, xfB, ref cache);
         }
 
         public static b2Manifold b2ClipSegments(b2Vec2 a1, b2Vec2 a2, b2Vec2 b1, b2Vec2 b2, b2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
@@ -1203,7 +1203,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a rounded polygon
-        public static b2Manifold b2CollideChainSegmentAndPolygon(b2ChainSegment segmentA, b2Transform xfA, b2Polygon polygonB, b2Transform xfB, b2SimplexCache cache)
+        public static b2Manifold b2CollideChainSegmentAndPolygon(b2ChainSegment segmentA, b2Transform xfA, b2Polygon polygonB, b2Transform xfB, ref b2SimplexCache cache)
         {
             b2Manifold manifold = new b2Manifold();
 
@@ -1268,7 +1268,7 @@ namespace Box2D.NET
             input.transformB = b2Transform_identity;
             input.useRadii = false;
 
-            b2DistanceOutput output = b2ShapeDistance(cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
 
             if (output.distance > radiusB + B2_SPECULATIVE_DISTANCE)
             {

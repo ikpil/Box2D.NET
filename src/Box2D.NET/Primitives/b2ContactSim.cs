@@ -41,8 +41,35 @@ namespace Box2D.NET.Primitives
 
         public void CopyFrom(b2ContactSim other)
         {
-            Debug.Assert(false);
-            // TODO: @ikpil class type copy!?
+            contactId = other.contactId;
+
+#if B2_VALIDATE
+            bodyIdA = other.bodyIdA;
+            bodyIdB = other.bodyIdB;
+#endif
+
+            bodySimIndexA = other.bodySimIndexA;
+            bodySimIndexB = other.bodySimIndexB;
+
+            shapeIdA = other.shapeIdA;
+            shapeIdB = other.shapeIdB;
+
+            invMassA = other.invMassA;
+            invIA = other.invIA;
+
+            invMassB = other.invMassB;
+            invIB = other.invIB;
+
+            manifold = other.manifold;
+
+            friction = other.friction;
+            restitution = other.restitution;
+            rollingResistance = other.rollingResistance;
+            tangentSpeed = other.tangentSpeed;
+
+            simFlags = other.simFlags;
+
+            cache = other.cache;
         }
     }
 }

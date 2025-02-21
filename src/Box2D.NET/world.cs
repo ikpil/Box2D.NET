@@ -2079,7 +2079,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
 
             if (output.distance > 0.0f)
             {
@@ -2654,7 +2654,7 @@ void b2World_Dump()
             input.useRadii = true;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
 
             float radius = explosionContext.radius;
             float falloff = explosionContext.falloff;
