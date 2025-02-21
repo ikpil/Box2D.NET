@@ -33,164 +33,21 @@ using static Box2D.NET.solver_set;
 
 namespace Box2D.NET
 {
-    public class b2ContinuousContext
+    public static class solver
     {
-        public b2World world;
-        public b2BodySim fastBodySim;
-        public b2Shape fastShape;
-        public b2Vec2 centroid1, centroid2;
-        public b2Sweep sweep;
-        public float fraction;
-    };
+        // TODO: @ikpil. check SIMD
+// #if BOX2D_ENABLE_SIMD
+// #if B2_SIMD_WIDTH == 8
+//     public const int B2_SIMD_SHIFT = 3;
+// #elif B2_SIMD_WIDTH == 4
+//     public const int B2_SIMD_SHIFT = 2;
+// #else
+//     public const int B2_SIMD_SHIFT = 0;
+// #endif
+// #else
+        public const int B2_SIMD_SHIFT = 0;
+//#endif
 
-    public struct b2Softness
-    {
-        public float biasRate;
-        public float massScale;
-        public float impulseScale;
-
-        public b2Softness(float biasRate, float massScale, float impulseScale)
-        {
-            this.biasRate = biasRate;
-            this.massScale = massScale;
-            this.impulseScale = impulseScale;
-        }
-    }
-
-    public enum b2SolverStageType
-    {
-        b2_stagePrepareJoints,
-        b2_stagePrepareContacts,
-        b2_stageIntegrateVelocities,
-        b2_stageWarmStart,
-        b2_stageSolve,
-        b2_stageIntegratePositions,
-        b2_stageRelax,
-        b2_stageRestitution,
-        b2_stageStoreImpulses
-    }
-
-    public enum b2SolverBlockType
-    {
-        b2_bodyBlock,
-        b2_jointBlock,
-        b2_contactBlock,
-        b2_graphJointBlock,
-        b2_graphContactBlock
-    }
-
-// Each block of work has a sync index that gets incremented when a worker claims the block. This ensures only a single worker
-// claims a block, yet lets work be distributed dynamically across multiple workers (work stealing). This also reduces contention
-// on a single block index atomic. For non-iterative stages the sync index is simply set to one. For iterative stages (solver
-// iteration) the same block of work is executed once per iteration and the atomic sync index is shared across iterations, so it
-// increases monotonically.
-    public class b2SolverBlock
-    {
-        public int startIndex;
-        public short count;
-
-        public short blockType; // b2SolverBlockType
-
-        // todo consider false sharing of this atomic
-        public b2AtomicInt syncIndex;
-    }
-
-// Each stage must be completed before going to the next stage.
-// Non-iterative stages use a stage instance once while iterative stages re-use the same instance each iteration.
-    public class b2SolverStage
-    {
-        public b2SolverStageType type;
-        public ArraySegment<b2SolverBlock> blocks;
-        public int blockCount;
-
-        public int colorIndex;
-
-        // todo consider false sharing of this atomic
-        public b2AtomicInt completionCount;
-    }
-
-// Context for a time step. Recreated each time step.
-    public class b2StepContext // TODO: @ikpil, check struct or class
-    {
-        // time step
-        public float dt;
-
-        // inverse time step (0 if dt == 0).
-        public float inv_dt;
-
-        // sub-step
-        public float h;
-        public float inv_h;
-
-        public int subStepCount;
-
-        public b2Softness jointSoftness;
-        public b2Softness contactSoftness;
-        public b2Softness staticSoftness;
-
-        public float restitutionThreshold;
-        public float maxLinearVelocity;
-
-        public b2World world;
-        public b2ConstraintGraph graph;
-
-        // shortcut to body states from awake set
-        public b2BodyState[] states;
-
-        // shortcut to body sims from awake set
-        public b2BodySim[] sims;
-
-        // array of all shape ids for shapes that have enlarged AABBs
-        public int[] enlargedShapes;
-        public int enlargedShapeCount;
-
-        // Array of bullet bodies that need continuous collision handling
-        public ArraySegment<int> bulletBodies;
-        public b2AtomicInt bulletBodyCount;
-
-        // joint pointers for simplified parallel-for access.
-        public ArraySegment<b2JointSim> joints;
-
-        // contact pointers for simplified parallel-for access.
-        // - parallel-for collide with no gaps
-        // - parallel-for prepare and store contacts with NULL gaps for SIMD remainders
-        // despite being an array of pointers, these are contiguous sub-arrays corresponding
-        // to constraint graph colors
-        public ArraySegment<b2ContactSim> contacts;
-
-        public ArraySegment<b2ContactConstraintSIMD> simdContactConstraints;
-        public int activeColorCount;
-        public int workerCount;
-
-        public ArraySegment<b2SolverStage> stages;
-        public int stageCount;
-        public bool enableWarmStarting;
-
-        // todo padding to prevent false sharing
-        public Padding64<byte> dummy1;
-
-        // sync index (16-bits) | stage type (16-bits)
-        public b2AtomicU32 atomicSyncBits;
-
-        public Padding64<byte> dummy2;
-    }
-
-    public class b2WorkerContext
-    {
-        public b2StepContext context;
-        public int workerIndex;
-        public object userTask;
-
-        public void Clear()
-        {
-            context = null;
-            workerIndex = -1;
-            userTask = null;
-        }
-    }
-
-    public class solver
-    {
         public static b2Softness b2MakeSoft(float hertz, float zeta, float h)
         {
             if (hertz == 0.0f)
@@ -1317,18 +1174,6 @@ public enum b2SolverBlockType
             b2TracyCZoneEnd(b2TracyCZone.bullet_body_task);
         }
 
-        // TODO: @ikpil. check SIMD
-// #if BOX2D_ENABLE_SIMD
-// #if B2_SIMD_WIDTH == 8
-//     public const int B2_SIMD_SHIFT = 3;
-// #elif B2_SIMD_WIDTH == 4
-//     public const int B2_SIMD_SHIFT = 2;
-// #else
-//     public const int B2_SIMD_SHIFT = 0;
-// #endif
-// #else
-        public const int B2_SIMD_SHIFT = 0;
-//#endif
 
 // Solve with graph coloring
         public static void b2Solve(b2World world, b2StepContext stepContext)
