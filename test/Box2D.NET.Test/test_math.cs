@@ -98,8 +98,8 @@ public class test_math
         }
 
         b2Vec2 zero = b2Vec2_zero;
-        b2Vec2 one = new b2Vec2 { x = 1.0f, y = 1.0f };
-        b2Vec2 two = new b2Vec2 { x = 2.0f, y = 2.0f };
+        b2Vec2 one = new b2Vec2(1.0f, 1.0f);
+        b2Vec2 two = new b2Vec2(2.0f, 2.0f);
 
         b2Vec2 v = b2Add(one, two);
         Assert.That(v.x == 3.0f && v.y == 3.0f);
@@ -110,8 +110,8 @@ public class test_math
         v = b2Add(two, two);
         Assert.That(v.x != 5.0f && v.y != 5.0f);
 
-        b2Transform transform1 = new b2Transform { p = new b2Vec2 { x = -2.0f, y = 3.0f }, q = b2MakeRot(1.0f) };
-        b2Transform transform2 = new b2Transform { p = new b2Vec2 { x = 1.0f, y = 0.0f }, q = b2MakeRot(-2.0f) };
+        b2Transform transform1 = new b2Transform { p = new b2Vec2(-2.0f, 3.0f), q = b2MakeRot(1.0f) };
+        b2Transform transform2 = new b2Transform { p = new b2Vec2(1.0f, 0.0f), q = b2MakeRot(-2.0f) };
 
         b2Transform transform = b2MulTransforms(transform2, transform1);
 

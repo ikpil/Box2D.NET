@@ -24,7 +24,7 @@ namespace Box2D.NET
 
         public const float FLT_EPSILON = 1.1920929e-7f;
 
-        public static readonly b2Vec2 b2Vec2_zero = new b2Vec2 { x = 0.0f, y = 0.0f };
+        public static readonly b2Vec2 b2Vec2_zero = new b2Vec2(0.0f, 0.0f);
         public static readonly b2Rot b2Rot_identity = new b2Rot { c = 1.0f, s = 0.0f };
         public static readonly b2Transform b2Transform_identity = new b2Transform { p = { x = 0.0f, y = 0.0f }, q = { c = 1.0f, s = 0.0f } };
         public static readonly b2Mat22 b2Mat22_zero = new b2Mat22 { cx = { x = 0.0f, y = 0.0f }, cy = { x = 0.0f, y = 0.0f } };
@@ -93,74 +93,74 @@ namespace Box2D.NET
         /// Perform the cross product on a vector and a scalar. In 2D this produces a vector.
         public static b2Vec2 b2CrossVS(b2Vec2 v, float s)
         {
-            return new b2Vec2 { x = s * v.y, y = -s * v.x };
+            return new b2Vec2(s * v.y, -s * v.x);
         }
 
         /// Perform the cross product on a scalar and a vector. In 2D this produces a vector.
         public static b2Vec2 b2CrossSV(float s, b2Vec2 v)
         {
-            return new b2Vec2 { x = -s * v.y, y = s * v.x };
+            return new b2Vec2(-s * v.y, s * v.x);
         }
 
         /// Get a left pointing perpendicular vector. Equivalent to b2CrossSV(1.0f, v)
         public static b2Vec2 b2LeftPerp(b2Vec2 v)
         {
-            return new b2Vec2 { x = -v.y, y = v.x };
+            return new b2Vec2(-v.y, v.x);
         }
 
         /// Get a right pointing perpendicular vector. Equivalent to b2CrossVS(v, 1.0f)
         public static b2Vec2 b2RightPerp(b2Vec2 v)
         {
-            return new b2Vec2 { x = v.y, y = -v.x };
+            return new b2Vec2(v.y, -v.x);
         }
 
         /// Vector addition
         public static b2Vec2 b2Add(b2Vec2 a, b2Vec2 b)
         {
-            return new b2Vec2 { x = a.x + b.x, y = a.y + b.y };
+            return new b2Vec2(a.x + b.x, a.y + b.y);
         }
 
         /// Vector subtraction
         public static b2Vec2 b2Sub(b2Vec2 a, b2Vec2 b)
         {
-            return new b2Vec2 { x = a.x - b.x, y = a.y - b.y };
+            return new b2Vec2(a.x - b.x, a.y - b.y);
         }
 
         /// Vector negation
         public static b2Vec2 b2Neg(b2Vec2 a)
         {
-            return new b2Vec2 { x = -a.x, y = -a.y };
+            return new b2Vec2(-a.x, -a.y);
         }
 
         /// Vector linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
         public static b2Vec2 b2Lerp(b2Vec2 a, b2Vec2 b, float t)
         {
-            return new b2Vec2 { x = (1.0f - t) * a.x + t * b.x, y = (1.0f - t) * a.y + t * b.y };
+            return new b2Vec2((1.0f - t) * a.x + t * b.x, (1.0f - t) * a.y + t * b.y);
         }
 
         /// Component-wise multiplication
         public static b2Vec2 b2Mul(b2Vec2 a, b2Vec2 b)
         {
-            return new b2Vec2 { x = a.x * b.x, y = a.y * b.y };
+            return new b2Vec2(a.x * b.x, a.y * b.y);
         }
 
         /// Multiply a scalar and vector
         public static b2Vec2 b2MulSV(float s, b2Vec2 v)
         {
-            return new b2Vec2 { x = s * v.x, y = s * v.y };
+            return new b2Vec2(s * v.x, s * v.y);
         }
 
         /// a + s * b
         public static b2Vec2 b2MulAdd(b2Vec2 a, float s, b2Vec2 b)
         {
-            return new b2Vec2 { x = a.x + s * b.x, y = a.y + s * b.y };
+            return new b2Vec2(a.x + s * b.x, a.y + s * b.y);
         }
 
         /// a - s * b
         public static b2Vec2 b2MulSub(b2Vec2 a, float s, b2Vec2 b)
         {
-            return new b2Vec2 { x = a.x - s * b.x, y = a.y - s * b.y };
+            return new b2Vec2(a.x - s * b.x, a.y - s * b.y);
         }
 
         /// Component-wise absolute vector
@@ -223,7 +223,7 @@ namespace Box2D.NET
             }
 
             float invLength = 1.0f / length;
-            b2Vec2 n = new b2Vec2 { x = invLength * v.x, y = invLength * v.y };
+            b2Vec2 n = new b2Vec2(invLength * v.x, invLength * v.y);
             return n;
         }
 
@@ -238,7 +238,7 @@ namespace Box2D.NET
             }
 
             float invLength = 1.0f / length;
-            b2Vec2 n = new b2Vec2 { x = invLength * v.x, y = invLength * v.y };
+            b2Vec2 n = new b2Vec2(invLength * v.x, invLength * v.y);
             return n;
         }
 
@@ -276,7 +276,7 @@ namespace Box2D.NET
         /// Get the distance squared between points
         public static float b2DistanceSquared(b2Vec2 a, b2Vec2 b)
         {
-            b2Vec2 c = new b2Vec2 { x = b.x - a.x, y = b.y - a.y };
+            b2Vec2 c = new b2Vec2(b.x - a.x, b.y - a.y);
             return c.x * c.x + c.y * c.y;
         }
 
@@ -340,14 +340,14 @@ namespace Box2D.NET
         /// Get the x-axis
         public static b2Vec2 b2Rot_GetXAxis(b2Rot q)
         {
-            b2Vec2 v = new b2Vec2 { x = q.c, y = q.s };
+            b2Vec2 v = new b2Vec2(q.c, q.s);
             return v;
         }
 
         /// Get the y-axis
         public static b2Vec2 b2Rot_GetYAxis(b2Rot q)
         {
-            b2Vec2 v = new b2Vec2 { x = -q.s, y = q.c };
+            b2Vec2 v = new b2Vec2(-q.s, q.c);
             return v;
         }
 
@@ -421,13 +421,13 @@ namespace Box2D.NET
         /// Rotate a vector
         public static b2Vec2 b2RotateVector(b2Rot q, b2Vec2 v)
         {
-            return new b2Vec2 { x = q.c * v.x - q.s * v.y, y = q.s * v.x + q.c * v.y };
+            return new b2Vec2(q.c * v.x - q.s * v.y, q.s * v.x + q.c * v.y);
         }
 
         /// Inverse rotate a vector
         public static b2Vec2 b2InvRotateVector(b2Rot q, b2Vec2 v)
         {
-            return new b2Vec2 { x = q.c * v.x + q.s * v.y, y = -q.s * v.x + q.c * v.y };
+            return new b2Vec2(q.c * v.x + q.s * v.y, -q.s * v.x + q.c * v.y);
         }
 
         /// Transform a point (e.g. local space to world space)
@@ -436,7 +436,7 @@ namespace Box2D.NET
             float x = (t.q.c * p.x - t.q.s * p.y) + t.p.x;
             float y = (t.q.s * p.x + t.q.c * p.y) + t.p.y;
 
-            return new b2Vec2 { x = x, y = y };
+            return new b2Vec2(x, y);
         }
 
         /// Inverse transform a point (e.g. world space to local space)
@@ -444,7 +444,7 @@ namespace Box2D.NET
         {
             float vx = p.x - t.p.x;
             float vy = p.y - t.p.y;
-            return new b2Vec2 { x = t.q.c * vx + t.q.s * vy, y = -t.q.s * vx + t.q.c * vy };
+            return new b2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
         }
 
         /// Multiply two transforms. If the result is applied to a point p local to frame B,
@@ -511,7 +511,7 @@ namespace Box2D.NET
                 det = 1.0f / det;
             }
 
-            b2Vec2 x = new b2Vec2 { x = det * (a22 * b.x - a12 * b.y), y = det * (a11 * b.y - a21 * b.x) };
+            b2Vec2 x = new b2Vec2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
             return x;
         }
 
@@ -529,14 +529,14 @@ namespace Box2D.NET
         /// Get the center of the AABB.
         public static b2Vec2 b2AABB_Center(b2AABB a)
         {
-            b2Vec2 b = new b2Vec2 { x = 0.5f * (a.lowerBound.x + a.upperBound.x), y = 0.5f * (a.lowerBound.y + a.upperBound.y) };
+            b2Vec2 b = new b2Vec2(0.5f * (a.lowerBound.x + a.upperBound.x), 0.5f * (a.lowerBound.y + a.upperBound.y));
             return b;
         }
 
         /// Get the extents of the AABB (half-widths).
         public static b2Vec2 b2AABB_Extents(b2AABB a)
         {
-            b2Vec2 b = new b2Vec2 { x = 0.5f * (a.upperBound.x - a.lowerBound.x), y = 0.5f * (a.upperBound.y - a.lowerBound.y) };
+            b2Vec2 b = new b2Vec2(0.5f * (a.upperBound.x - a.lowerBound.x), 0.5f * (a.upperBound.y - a.lowerBound.y));
             return b;
         }
 

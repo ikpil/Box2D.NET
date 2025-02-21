@@ -1283,7 +1283,7 @@ namespace Box2D.NET
                 originAABB.upperBound = b2Max(originAABB.upperBound, input.points[i]);
             }
 
-            b2Vec2 radius = new b2Vec2 { x = input.radius, y = input.radius };
+            b2Vec2 radius = new b2Vec2(input.radius, input.radius);
 
             originAABB.lowerBound = b2Sub(originAABB.lowerBound, radius);
             originAABB.upperBound = b2Add(originAABB.upperBound, radius);
@@ -1421,7 +1421,7 @@ namespace Box2D.NET
             }
 
             b2Vec2 d = b2Sub(upperBound, lowerBound);
-            b2Vec2 c = new b2Vec2 { x = 0.5f * (lowerBound.x + upperBound.x), y = 0.5f * (lowerBound.y + upperBound.y) };
+            b2Vec2 c = new b2Vec2(0.5f * (lowerBound.x + upperBound.x), 0.5f * (lowerBound.y + upperBound.y));
 
             // Partition longest axis using the Hoare partition scheme
             // https://en.wikipedia.org/wiki/Quicksort
@@ -1567,8 +1567,8 @@ namespace Box2D.NET
             // Initialize bin bounds and count
             for (int i = 0; i < B2_BIN_COUNT; ++i)
             {
-                bins[i].aabb.lowerBound = new b2Vec2 { x = float.MaxValue, y = float.MaxValue };
-                bins[i].aabb.upperBound = new b2Vec2 { x = -float.MaxValue, y = -float.MaxValue };
+                bins[i].aabb.lowerBound = new b2Vec2(float.MaxValue, float.MaxValue);
+                bins[i].aabb.upperBound = new b2Vec2(-float.MaxValue, -float.MaxValue);
                 bins[i].count = 0;
             }
 
