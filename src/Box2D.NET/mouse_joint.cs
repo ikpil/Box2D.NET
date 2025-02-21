@@ -13,7 +13,7 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class mouse_joint
+    public static class mouse_joint
     {
         public static void b2MouseJoint_SetTarget(b2JointId jointId, b2Vec2 target)
         {

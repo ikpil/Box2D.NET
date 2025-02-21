@@ -14,7 +14,7 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class prismatic_joint
+    public static class prismatic_joint
     {
         public static void b2PrismaticJoint_EnableSpring(b2JointId jointId, bool enableSpring)
         {

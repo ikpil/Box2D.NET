@@ -20,78 +20,7 @@ using static Box2D.NET.distance;
 
 namespace Box2D.NET
 {
-    public class b2Shape
-    {
-        public int id;
-        public int bodyId;
-        public int prevShapeId;
-        public int nextShapeId;
-        public int sensorIndex;
-        public b2ShapeType type;
-        public float density;
-        public float friction;
-        public float restitution;
-        public float rollingResistance;
-        public float tangentSpeed;
-        public int material;
-
-        public b2AABB aabb;
-        public b2AABB fatAABB;
-        public b2Vec2 localCentroid;
-        public int proxyKey;
-
-        public b2Filter filter;
-        public object userData;
-        public uint customColor;
-
-        // TODO: @ikpil, ...... how to handle this?
-        // union
-        // {
-        public b2Capsule capsule;
-        public b2Circle circle;
-        public b2Polygon polygon;
-        public b2Segment segment;
-        public b2ChainSegment chainSegment;
-        //};
-
-        public ushort generation;
-        public bool enableContactEvents;
-        public bool enableHitEvents;
-        public bool enablePreSolveEvents;
-        public bool enlargedAABB;
-    }
-
-    public class b2ChainShape
-    {
-        public int id;
-        public int bodyId;
-        public int nextChainId;
-        public int count;
-        public int materialCount;
-        public int[] shapeIndices;
-        public b2SurfaceMaterial[] materials;
-        public ushort generation;
-    }
-
-    public class b2ShapeExtent
-    {
-        public float minExtent;
-        public float maxExtent;
-    }
-
-// Sensors are shapes that live in the broad-phase but never have contacts.
-// At the end of the time step all sensors are queried for overlap with any other shapes.
-// Sensors ignore body type and sleeping.
-// Sensors generate events when there is a new overlap or and overlap disappears.
-// The sensor overlaps don't get cleared until the next time step regardless of the overlapped
-// shapes being destroyed.
-// When a sensor is destroyed.
-    public struct b2SensorOverlaps
-    {
-        public b2Array<int> overlaps;
-    }
-
-    public class shape
+    public static class shape
     {
         public static float b2GetShapeRadius(b2Shape shape)
         {

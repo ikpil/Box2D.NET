@@ -20,64 +20,23 @@ using static Box2D.NET.ctz;
 
 namespace Box2D.NET
 {
-    public class b2ShapeRef
+    public static class sensor
     {
-        public int shapeId;
-        public ushort generation;
-    }
+        // Sensor shapes need to
+        // - detect begin and end overlap events
+        // - events must be reported in deterministic order
+        // - maintain an active list of overlaps for query
 
-    public class b2Sensor
-    {
-        public b2Array<b2ShapeRef> overlaps1;
-        public b2Array<b2ShapeRef> overlaps2;
-        public int shapeId;
-    }
+        // Assumption
+        // - sensors don't detect other sensors
 
-    public class b2SensorTaskContext
-    {
-        public b2BitSet eventBits;
-    }
+        // Algorithm
+        // Query all sensors for overlaps
+        // Check against previous overlaps
 
-    public class b2SensorQueryContext
-    {
-        public b2World world;
-        public b2SensorTaskContext taskContext;
-        public b2Sensor sensor;
-        public b2Shape sensorShape;
-        public b2Transform transform;
-    }
-
-    public class b2ShapeRefComparer : IComparer<b2ShapeRef>
-    {
-        public static readonly b2ShapeRefComparer Shared = new b2ShapeRefComparer();
-
-        private b2ShapeRefComparer()
-        {
-        }
-
-        public int Compare(b2ShapeRef a, b2ShapeRef b)
-        {
-            return sensor.b2CompareShapeRefs(a, b);
-        }
-    }
-
-    public class sensor
-    {
-// Sensor shapes need to
-// - detect begin and end overlap events
-// - events must be reported in deterministic order
-// - maintain an active list of overlaps for query
-
-// Assumption
-// - sensors don't detect other sensors
-
-// Algorithm
-// Query all sensors for overlaps
-// Check against previous overlaps
-
-// Data structures
-// Each sensor has an double buffered array of overlaps
-// These overlaps use a shape reference with index and generation
+        // Data structures
+        // Each sensor has an double buffered array of overlaps
+        // These overlaps use a shape reference with index and generation
 
         public static bool b2SensorQueryCallback(int proxyId, int shapeId, object context)
         {

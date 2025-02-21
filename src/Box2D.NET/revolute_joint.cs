@@ -13,7 +13,7 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class revolute_joint
+    public static class revolute_joint
     {
         public static void b2RevoluteJoint_EnableSpring(b2JointId jointId, bool enableSpring)
         {

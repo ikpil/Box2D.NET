@@ -14,7 +14,7 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class motor_joint
+    public static class motor_joint
     {
         public static void b2MotorJoint_SetLinearOffset(b2JointId jointId, b2Vec2 linearOffset)
         {
