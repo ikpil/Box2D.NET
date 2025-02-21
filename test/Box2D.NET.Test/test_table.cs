@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.ctz;
 using static Box2D.NET.table;

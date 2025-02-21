@@ -1,0 +1,25 @@
+﻿namespace Box2D.NET.Primitives
+{
+    /// The explosion definition is used to configure options for explosions. Explosions
+    /// consider shape geometry when computing the impulse.
+    /// @ingroup world
+    public class b2ExplosionDef
+    {
+        /// Mask bits to filter shapes
+        public ulong maskBits;
+
+        /// The center of the explosion in world space
+        public b2Vec2 position;
+
+        /// The radius of the explosion
+        public float radius;
+
+        /// The falloff distance beyond the radius. Impulse is reduced to zero at this distance.
+        public float falloff;
+
+        /// Impulse per unit length. This applies an impulse according to the shape perimeter that
+        /// is facing the explosion. Explosions only apply to circles, capsules, and polygons. This
+        /// may be negative for implosions.
+        public float impulsePerLength;
+    }
+}

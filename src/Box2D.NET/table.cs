@@ -2,32 +2,13 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
+using Box2D.NET.Primitives;
 using static Box2D.NET.ctz;
 using static Box2D.NET.core;
 
 namespace Box2D.NET
 {
-// @ikpil, must be strcut
-    public struct b2SetItem
-    {
-        public ulong key;
-        public uint hash;
-
-        public void Clear()
-        {
-            key = 0;
-            hash = 0;
-        }
-    }
-
-    public class b2HashSet
-    {
-        public b2SetItem[] items;
-        public int capacity;
-        public uint count;
-    }
-
-    public class table
+    public static class table
     {
         public static ulong B2_SHAPE_PAIR_KEY(long K1, long K2)
         {
@@ -35,12 +16,11 @@ namespace Box2D.NET
         }
 
 #if B2_SNOOP_TABLE_COUNTERS
-b2AtomicInt b2_findCount;
-b2AtomicInt b2_probeCount;
+        b2AtomicInt b2_findCount;
+        b2AtomicInt b2_probeCount;
 #endif
 
-// todo compare with https://github.com/skeeto/scratch/blob/master/set32/set32.h
-
+        // todo compare with https://github.com/skeeto/scratch/blob/master/set32/set32.h
         public static b2HashSet b2CreateSet(int capacity)
         {
             b2HashSet set = new b2HashSet();
