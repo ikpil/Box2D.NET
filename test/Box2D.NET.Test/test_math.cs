@@ -3,6 +3,7 @@
 
 
 using System;
+using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.math_function;
 
