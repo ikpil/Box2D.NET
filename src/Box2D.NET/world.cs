@@ -3020,9 +3020,9 @@ void b2World_Dump()
                     int contactId = contactKey >> 1;
                     int edgeIndex = contactKey & 1;
 
-                    b2Contact* contact = Array_Get(&world.contacts, contactId);
+                    b2Contact contact = b2Array_Get(world.contacts, contactId);
 
-                    bool touching = (contact.flags & b2ContactFlags.b2_contactTouchingFlag) != 0;
+                    bool touching = (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag) != 0;
                     if (touching)
                     {
                         if (bodySetIndex != (int)b2SetType.b2_staticSet)
@@ -3045,11 +3045,11 @@ void b2World_Dump()
                     int jointId = jointKey >> 1;
                     int edgeIndex = jointKey & 1;
 
-                    b2Joint* joint = Array_Get(&world.joints, jointId);
+                    b2Joint joint = b2Array_Get(world.joints, jointId);
 
                     int otherEdgeIndex = edgeIndex ^ 1;
 
-                    b2Body* otherBody = Array_Get(&world.bodies, joint.edges[otherEdgeIndex].bodyId);
+                    b2Body otherBody = b2Array_Get(world.bodies, joint.edges[otherEdgeIndex].bodyId);
 
                     if (bodySetIndex == (int)b2SetType.b2_disabledSet || otherBody.setIndex == (int)b2SetType.b2_disabledSet)
                     {
@@ -3278,13 +3278,13 @@ void b2World_Dump()
                 }
             }
 
-            int setIdCount = b2GetIdCount(&world.solverSetIdPool);
+            int setIdCount = b2GetIdCount(world.solverSetIdPool);
             Debug.Assert(activeSetCount == setIdCount);
 
-            int bodyIdCount = b2GetIdCount(&world.bodyIdPool);
+            int bodyIdCount = b2GetIdCount(world.bodyIdPool);
             Debug.Assert(totalBodyCount == bodyIdCount);
 
-            int islandIdCount = b2GetIdCount(&world.islandIdPool);
+            int islandIdCount = b2GetIdCount(world.islandIdPool);
             Debug.Assert(totalIslandCount == islandIdCount);
 
             // Validate constraint graph
@@ -3296,11 +3296,11 @@ void b2World_Dump()
                     totalContactCount += color.contactSims.count;
                     for (int i = 0; i < color.contactSims.count; ++i)
                     {
-                        b2ContactSim* contactSim = color.contactSims.data + i;
-                        b2Contact* contact = Array_Get(&world.contacts, contactSim.contactId);
+                        b2ContactSim contactSim = color.contactSims.data[i];
+                        b2Contact contact = b2Array_Get(world.contacts, contactSim.contactId);
                         // contact should be touching in the constraint graph or awaiting transfer to non-touching
                         Debug.Assert(contactSim.manifold.pointCount > 0 ||
-                                     (contactSim.simFlags & (b2_simStoppedTouching | b2_simDisjoint)) != 0);
+                                     (contactSim.simFlags & ((uint)b2ContactSimFlags.b2_simStoppedTouching | (uint)b2ContactSimFlags.b2_simDisjoint)) != 0);
                         Debug.Assert(contact.setIndex == (int)b2SetType.b2_awakeSet);
                         Debug.Assert(contact.colorIndex == colorIndex);
                         Debug.Assert(contact.localIndex == i);
@@ -3310,10 +3310,10 @@ void b2World_Dump()
 
                         if (colorIndex < B2_OVERFLOW_INDEX)
                         {
-                            b2Body* bodyA = Array_Get(&world.bodies, bodyIdA);
-                            b2Body* bodyB = Array_Get(&world.bodies, bodyIdB);
-                            Debug.Assert(b2GetBit(&color.bodySet, bodyIdA) == (bodyA.type != b2BodyType.b2_staticBody));
-                            Debug.Assert(b2GetBit(&color.bodySet, bodyIdB) == (bodyB.type != b2BodyType.b2_staticBody));
+                            b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+                            b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
+                            Debug.Assert(b2GetBit(color.bodySet, bodyIdA) == (bodyA.type != b2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(color.bodySet, bodyIdB) == (bodyB.type != b2BodyType.b2_staticBody));
                         }
                     }
                 }
@@ -3323,8 +3323,8 @@ void b2World_Dump()
                     totalJointCount += color.jointSims.count;
                     for (int i = 0; i < color.jointSims.count; ++i)
                     {
-                        b2JointSim* jointSim = color.jointSims.data + i;
-                        b2Joint* joint = Array_Get(&world.joints, jointSim.jointId);
+                        b2JointSim jointSim = color.jointSims.data[i];
+                        b2Joint joint = b2Array_Get(world.joints, jointSim.jointId);
                         Debug.Assert(joint.setIndex == (int)b2SetType.b2_awakeSet);
                         Debug.Assert(joint.colorIndex == colorIndex);
                         Debug.Assert(joint.localIndex == i);
@@ -3334,20 +3334,20 @@ void b2World_Dump()
 
                         if (colorIndex < B2_OVERFLOW_INDEX)
                         {
-                            b2Body* bodyA = Array_Get(&world.bodies, bodyIdA);
-                            b2Body* bodyB = Array_Get(&world.bodies, bodyIdB);
-                            Debug.Assert(b2GetBit(&color.bodySet, bodyIdA) == (bodyA.type != b2BodyType.b2_staticBody));
-                            Debug.Assert(b2GetBit(&color.bodySet, bodyIdB) == (bodyB.type != b2BodyType.b2_staticBody));
+                            b2Body bodyA = b2Array_Get(world.bodies, bodyIdA);
+                            b2Body bodyB = b2Array_Get(world.bodies, bodyIdB);
+                            Debug.Assert(b2GetBit(color.bodySet, bodyIdA) == (bodyA.type != b2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(color.bodySet, bodyIdB) == (bodyB.type != b2BodyType.b2_staticBody));
                         }
                     }
                 }
             }
 
-            int contactIdCount = b2GetIdCount(&world.contactIdPool);
+            int contactIdCount = b2GetIdCount(world.contactIdPool);
             Debug.Assert(totalContactCount == contactIdCount);
             Debug.Assert(totalContactCount == (int)world.broadPhase.pairSet.count);
 
-            int jointIdCount = b2GetIdCount(&world.jointIdPool);
+            int jointIdCount = b2GetIdCount(world.jointIdPool);
             Debug.Assert(totalJointCount == jointIdCount);
 
 // Validate shapes
@@ -3395,16 +3395,16 @@ void b2World_Dump()
 #endif
         }
 
-// Validate contact touching status.
-        void b2ValidateContacts(b2World* world)
+        // Validate contact touching status.
+        public static void b2ValidateContacts(b2World world)
         {
             int contactCount = world.contacts.count;
-            Debug.Assert(contactCount == b2GetIdCapacity(&world.contactIdPool));
+            Debug.Assert(contactCount == b2GetIdCapacity(world.contactIdPool));
             int allocatedContactCount = 0;
 
             for (int contactIndex = 0; contactIndex < contactCount; ++contactIndex)
             {
-                b2Contact* contact = Array_Get(&world.contacts, contactIndex);
+                b2Contact contact = b2Array_Get(world.contacts, contactIndex);
                 if (contact.contactId == B2_NULL_INDEX)
                 {
                     continue;
@@ -3414,7 +3414,7 @@ void b2World_Dump()
 
                 allocatedContactCount += 1;
 
-                bool touching = (contact.flags & b2ContactFlags.b2_contactTouchingFlag) != 0;
+                bool touching = (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag) != 0;
 
                 int setId = contact.setIndex;
 
@@ -3441,19 +3441,19 @@ void b2World_Dump()
                     Debug.Assert(touching == false && setId == (int)b2SetType.b2_disabledSet);
                 }
 
-                b2ContactSim* contactSim = b2GetContactSim(world, contact);
+                b2ContactSim contactSim = b2GetContactSim(world, contact);
                 Debug.Assert(contactSim.contactId == contactIndex);
                 Debug.Assert(contactSim.bodyIdA == contact.edges[0].bodyId);
                 Debug.Assert(contactSim.bodyIdB == contact.edges[1].bodyId);
 
                 // Sim touching is true for solid and sensor contacts
-                bool simTouching = (contactSim.simFlags & b2ContactSimFlags.b2_simTouchingFlag) != 0;
+                bool simTouching = (contactSim.simFlags & (uint)b2ContactSimFlags.b2_simTouchingFlag) != 0;
                 Debug.Assert(touching == simTouching);
 
                 Debug.Assert(0 <= contactSim.manifold.pointCount && contactSim.manifold.pointCount <= 2);
             }
 
-            int contactIdCount = b2GetIdCount(&world.contactIdPool);
+            int contactIdCount = b2GetIdCount(world.contactIdPool);
             Debug.Assert(allocatedContactCount == contactIdCount);
         }
 

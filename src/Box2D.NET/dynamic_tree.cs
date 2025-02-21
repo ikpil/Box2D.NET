@@ -2036,9 +2036,9 @@ namespace Box2D.NET
             int capacity = tree.nodeCapacity;
             for (int i = 0; i < capacity; ++i)
             {
-                if (nodes[i].flags & b2_allocatedNode)
+                if (0 != (nodes[i].flags & (ushort)b2TreeNodeFlags.b2_allocatedNode))
                 {
-                    Debug.Assert((nodes[i].flags & b2_enlargedNode) == 0);
+                    Debug.Assert((nodes[i].flags & (ushort)b2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }
 #endif

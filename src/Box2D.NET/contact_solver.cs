@@ -161,7 +161,7 @@ typedef __m128 b2FloatW;
             b2BodyState[] awakeStates = context.states;
 
 #if B2_VALIDATE
-	b2Body* bodies = world.bodies.data;
+            b2Body[] bodies = world.bodies.data;
 #endif
 
             // Stiffer for static contacts to avoid bodies getting pushed through the ground
@@ -183,13 +183,13 @@ typedef __m128 b2FloatW;
                 int indexB = contactSim.bodySimIndexB;
 
 #if B2_VALIDATE
-		b2Body* bodyA = bodies + contactSim.bodyIdA;
-		int validIndexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
-		Debug.Assert( indexA == validIndexA );
+                b2Body bodyA = bodies[contactSim.bodyIdA];
+                int validIndexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
+                Debug.Assert(indexA == validIndexA);
 
-		b2Body* bodyB = bodies + contactSim.bodyIdB;
-		int validIndexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
-		Debug.Assert( indexB == validIndexB );
+                b2Body bodyB = bodies[contactSim.bodyIdB];
+                int validIndexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
+                Debug.Assert(indexB == validIndexB);
 #endif
 
                 b2ContactConstraint constraint = constraints[i];
@@ -1429,7 +1429,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             ArraySegment<b2ContactConstraintSIMD> constraints = context.simdContactConstraints;
             b2BodyState[] awakeStates = context.states;
 #if B2_VALIDATE
-            b2Body* bodies = world.bodies.data;
+            b2Body[] bodies = world.bodies.data;
 #endif
 
             // Stiffer for static contacts to avoid bodies getting pushed through the ground
@@ -1454,13 +1454,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         int indexB = contactSim.bodySimIndexB;
 
 #if B2_VALIDATE
-				b2Body* bodyA = bodies + contactSim.bodyIdA;
-				int validIndexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
-				b2Body* bodyB = bodies + contactSim.bodyIdB;
-				int validIndexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
+                        b2Body bodyA = bodies[contactSim.bodyIdA];
+                        int validIndexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
+                        b2Body bodyB = bodies[contactSim.bodyIdB];
+                        int validIndexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
 
-				Debug.Assert( indexA == validIndexA );
-				Debug.Assert( indexB == validIndexB );
+                        Debug.Assert(indexA == validIndexA);
+                        Debug.Assert(indexB == validIndexB);
 #endif
                         constraint.indexA[j] = indexA;
                         constraint.indexB[j] = indexB;
