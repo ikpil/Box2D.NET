@@ -15,11 +15,8 @@ using static Box2D.NET.joint;
 
 namespace Box2D.NET
 {
-    public class distance_joint
+    public static class distance_joint
     {
-// needed for dll export
-
-
         public static void b2DistanceJoint_SetLength(b2JointId jointId, float length)
         {
             b2JointSim @base = b2GetJointSimCheckType(jointId, b2JointType.b2_distanceJoint);
@@ -106,7 +103,7 @@ namespace Box2D.NET
             @base.distanceJoint.enableSpring = enableSpring;
         }
 
-        bool b2DistanceJoint_IsSpringEnabled(b2JointId jointId)
+        public static bool b2DistanceJoint_IsSpringEnabled(b2JointId jointId)
         {
             b2JointSim @base = b2GetJointSimCheckType(jointId, b2JointType.b2_distanceJoint);
             return @base.distanceJoint.enableSpring;

@@ -9,23 +9,6 @@ using static Box2D.NET.constants;
 
 namespace Box2D.NET
 {
-    public enum b2SeparationType
-    {
-        b2_pointsType,
-        b2_faceAType,
-        b2_faceBType
-    };
-
-    public ref struct b2SeparationFunction
-    {
-        public b2ShapeProxy proxyA;
-        public b2ShapeProxy proxyB;
-        public b2Sweep sweepA, sweepB;
-        public b2Vec2 localPoint;
-        public b2Vec2 axis;
-        public b2SeparationType type;
-    }
-
     public static class distance
     {
         /// Evaluate the transform sweep at a specific time.

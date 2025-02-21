@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Primitives;
+
 namespace Box2D.NET
 {
     /**
@@ -28,79 +30,6 @@ namespace Box2D.NET
      * @warning You should use ids to access objects in Box2D. Do not access files within the src folder. Such usage is unsupported.
      * @{
      */
-    /// World id references a world instance. This should be treated as an opaque handle.
-    public readonly struct b2WorldId
-    {
-        public readonly ushort index1;
-        public readonly ushort generation;
-
-        public b2WorldId(ushort index1, ushort generation)
-        {
-            this.index1 = index1;
-            this.generation = generation;
-        }
-    }
-
-    /// Body id references a body instance. This should be treated as an opaque handle.
-    public readonly struct b2BodyId
-    {
-        public readonly int index1;
-        public readonly ushort world0;
-        public readonly ushort generation;
-
-        public b2BodyId(int index1, ushort world0, ushort generation)
-        {
-            this.index1 = index1;
-            this.world0 = world0;
-            this.generation = generation;
-        }
-    }
-
-    /// Shape id references a shape instance. This should be treated as an opaque handle.
-    public readonly struct b2ShapeId
-    {
-        public readonly int index1;
-        public readonly ushort world0;
-        public readonly ushort generation;
-
-        public b2ShapeId(int index1, ushort world0, ushort generation)
-        {
-            this.index1 = index1;
-            this.world0 = world0;
-            this.generation = generation;
-        }
-    }
-
-    /// Chain id references a chain instances. This should be treated as an opaque handle.
-    public readonly struct b2ChainId
-    {
-        public readonly int index1;
-        public readonly ushort world0;
-        public readonly ushort generation;
-
-        public b2ChainId(int index1, ushort world0, ushort generation)
-        {
-            this.index1 = index1;
-            this.world0 = world0;
-            this.generation = generation;
-        }
-    }
-
-    /// Joint id references a joint instance. This should be treated as an opaque handle.
-    public readonly struct b2JointId
-    {
-        public readonly int index1;
-        public readonly ushort world0;
-        public readonly ushort generation;
-
-        public b2JointId(int index1, ushort world0, ushort generation)
-        {
-            this.index1 = index1;
-            this.world0 = world0;
-            this.generation = generation;
-        }
-    }
-
     public static class id
     {
         /// Use these to make your identifiers null.
