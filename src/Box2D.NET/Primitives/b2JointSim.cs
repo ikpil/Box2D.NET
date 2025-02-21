@@ -30,25 +30,46 @@
         public b2WheelJoint wheelJoint;
         //};
 
-        public void CopyFrom(b2JointSim jointSim)
+        public void Clear()
         {
-            this.jointId = jointSim.jointId;
-            this.bodyIdA = jointSim.bodyIdA;
-            this.bodyIdB = jointSim.bodyIdB;
-            this.type = jointSim.type;
-            this.localOriginAnchorA = jointSim.localOriginAnchorA;
-            this.localOriginAnchorB = jointSim.localOriginAnchorB;
-            this.invMassA = jointSim.invMassA;
-            this.invMassB = jointSim.invMassB;
-            this.invIA = jointSim.invIA;
-            this.invIB = jointSim.invIB;
-            this.distanceJoint = jointSim.distanceJoint;
-            this.motorJoint = jointSim.motorJoint;
-            this.mouseJoint = jointSim.mouseJoint;
-            this.revoluteJoint = jointSim.revoluteJoint;
-            this.prismaticJoint = jointSim.prismaticJoint;
-            this.weldJoint = jointSim.weldJoint;
-            this.wheelJoint = jointSim.wheelJoint;
+            jointId = 0;
+            bodyIdA = 0;
+            bodyIdB = 0;
+            type = b2JointType.b2_distanceJoint;
+            localOriginAnchorA = new b2Vec2();
+            localOriginAnchorB = new b2Vec2();
+            invMassA = 0.0f;
+            invMassB = 0.0f;
+            invIA = 0.0f;
+            invIB = 0.0f;
+            distanceJoint = null;
+            motorJoint = null;
+            mouseJoint = null;
+            revoluteJoint = null;
+            prismaticJoint = null;
+            weldJoint = null;
+            wheelJoint = null;
+        }
+        
+        public void CopyFrom(b2JointSim other)
+        {
+            jointId = other.jointId;
+            bodyIdA = other.bodyIdA;
+            bodyIdB = other.bodyIdB;
+            type = other.type;
+            localOriginAnchorA = other.localOriginAnchorA;
+            localOriginAnchorB = other.localOriginAnchorB;
+            invMassA = other.invMassA;
+            invMassB = other.invMassB;
+            invIA = other.invIA;
+            invIB = other.invIB;
+            distanceJoint = other.distanceJoint;
+            motorJoint = other.motorJoint;
+            mouseJoint = other.mouseJoint;
+            revoluteJoint = other.revoluteJoint;
+            prismaticJoint = other.prismaticJoint;
+            weldJoint = other.weldJoint;
+            wheelJoint = other.wheelJoint;
         }
     }
 }

@@ -42,6 +42,39 @@
         public bool allowFastRotation;
         public bool enlargeAABB;
 
+        public void Clear()
+        {
+            transform = new b2Transform();
+
+            center = new b2Vec2();
+
+            rotation0 = new b2Rot();
+            center0 = new b2Vec2();
+
+            localCenter = new b2Vec2();
+
+            force = new b2Vec2();
+            torque = 0.0f;
+
+            invMass = 0.0f;
+            invInertia = 0.0f;
+
+            minExtent = 0.0f;
+            maxExtent = 0.0f;
+            linearDamping = 0.0f;
+            angularDamping = 0.0f;
+            gravityScale = 0.0f;
+
+            bodyId = 0;
+
+            isFast = false;
+            isBullet = false;
+
+            isSpeedCapped = false;
+            allowFastRotation = false;
+            enlargeAABB = false;
+        }
+
         public void CopyFrom(b2BodySim other)
         {
             transform = other.transform;

@@ -27,6 +27,17 @@ namespace Box2D.NET.Primitives
             return state;
         }
         
+        public void Clear()
+        {
+            linearVelocity = new b2Vec2();
+            angularVelocity = 0.0f;
+            flags = 0;
+
+            deltaPosition = new b2Vec2();
+
+            deltaRotation = new b2Rot();
+        }
+        
         public void CopyFrom(b2BodyState other)
         {
             linearVelocity = other.linearVelocity;

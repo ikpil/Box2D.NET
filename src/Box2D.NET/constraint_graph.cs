@@ -163,6 +163,7 @@ namespace Box2D.NET
 
             ref b2ContactSim newContact = ref b2Array_Add(color.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
+            newContact.CopyFrom(contactSim);
 
             // todo perhaps skip this if the contact is already awake
 
@@ -305,6 +306,7 @@ namespace Box2D.NET
 
             ref b2JointSim jointSim = ref b2Array_Add(graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
+            jointSim.Clear();
 
             joint.colorIndex = colorIndex;
             joint.localIndex = graph.colors[colorIndex].jointSims.count - 1;

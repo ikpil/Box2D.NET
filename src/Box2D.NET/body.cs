@@ -244,7 +244,8 @@ namespace Box2D.NET
 
             b2SolverSet set = b2Array_Get(world.solverSets, setId);
             ref b2BodySim bodySim = ref b2Array_Add(set.bodySims);
-            //*bodySim = ( b2BodySim ){ 0 }; TODO: @ikpil, check
+            //*bodySim = ( b2BodySim ){ 0 };
+            bodySim.Clear();
             bodySim.transform.p = def.position;
             bodySim.transform.q = def.rotation;
             bodySim.center = def.position;
@@ -271,8 +272,8 @@ namespace Box2D.NET
             {
                 ref b2BodyState bodyState = ref b2Array_Add(set.bodyStates);
                 //Debug.Assert( ( (uintptr_t)bodyState & 0x1F ) == 0 );
-
-                //*bodyState = ( b2BodyState ){ 0 }; TODO: @ikpil, check
+                //*bodyState = ( b2BodyState ){ 0 }; 
+                bodyState.Clear();
                 bodyState.linearVelocity = def.linearVelocity;
                 bodyState.angularVelocity = def.angularVelocity;
                 bodyState.deltaRotation = b2Rot_identity;
