@@ -16,63 +16,17 @@ using static Box2D.NET.timer;
 
 namespace Box2D.NET
 {
-// Deterministic solver
-//
-// Collide all awake contacts
-// Use bit array to emit start/stop touching events in defined order, per thread. Try using contact index, assuming contacts are
-// created in a deterministic order. bit-wise OR together bit arrays and issue changes:
-// - start touching: merge islands - temporary linked list - mark root island dirty - wake all - largest island is root
-// - stop touching: increment constraintRemoveCount
-
-// Persistent island for awake bodies, joints, and contacts
-// https://en.wikipedia.org/wiki/Component_(graph_theory)
-// https://en.wikipedia.org/wiki/Dynamic_connectivity
-// map from int to solver set and index
-    public class b2Island
+    // Deterministic solver
+    //
+    // Collide all awake contacts
+    // Use bit array to emit start/stop touching events in defined order, per thread. Try using contact index, assuming contacts are
+    // created in a deterministic order. bit-wise OR together bit arrays and issue changes:
+    // - start touching: merge islands - temporary linked list - mark root island dirty - wake all - largest island is root
+    // - stop touching: increment constraintRemoveCount
+    public static class island
     {
-        // index of solver set stored in b2World
-        // may be B2_NULL_INDEX
-        public int setIndex;
+        public const int B2_CONTACT_REMOVE_THRESHOLD = 1;
 
-        // island index within set
-        // may be B2_NULL_INDEX
-        public int localIndex;
-
-        public int islandId;
-
-        public int headBody;
-        public int tailBody;
-        public int bodyCount;
-
-        public int headContact;
-        public int tailContact;
-        public int contactCount;
-
-        public int headJoint;
-        public int tailJoint;
-        public int jointCount;
-
-        // Union find
-        public int parentIsland;
-
-        // Keeps track of how many contacts have been removed from this island.
-        // This is used to determine if an island is a candidate for splitting.
-        public int constraintRemoveCount;
-    }
-
-// This is used to move islands across solver sets
-    public class b2IslandSim
-    {
-        public int islandId;
-
-        public void CopyFrom(b2IslandSim other)
-        {
-            islandId = other.islandId;
-        }
-    }
-
-    public class island
-    {
         public static b2Island b2CreateIsland(b2World world, int setIndex)
         {
             Debug.Assert(setIndex == (int)b2SetType.b2_awakeSet || setIndex >= (int)b2SetType.b2_firstSleepingSet);
@@ -341,7 +295,7 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-// Link a joint into the island graph when it is created
+        // Link a joint into the island graph when it is created
         public static void b2LinkJoint(b2World world, b2Joint joint, bool mergeIslands)
         {
             b2Body bodyA = b2Array_Get(world.bodies, joint.edges[0].bodyId);
@@ -652,7 +606,6 @@ namespace Box2D.NET
             b2TracyCZoneEnd(b2TracyCZone.merge_islands);
         }
 
-        public const int B2_CONTACT_REMOVE_THRESHOLD = 1;
 
         public static void b2SplitIsland(b2World world, int baseId)
         {

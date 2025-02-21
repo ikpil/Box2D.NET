@@ -4,17 +4,10 @@
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.array;
-using static Box2D.NET.core;
 
 namespace Box2D.NET
 {
-    public class b2IdPool
-    {
-        public b2Array<int> freeArray;
-        public int nextIndex;
-    }
-
-    public class id_pool
+    public static class id_pool
     {
         public static int b2GetIdCount(b2IdPool pool)
         {
