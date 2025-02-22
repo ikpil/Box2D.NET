@@ -1,14 +1,6 @@
 // SPDX-FileCopyrightText: 2024 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#if defined( _WIN32 )
-	#define _CRTDBG_MAP_ALLOC
-	#include <crtdbg.h>
-	#include <stdlib.h>
-#else
-	#include <stdlib.h>
-#endif
-
 uint32_t CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath );
 uint32_t CreateProgramFromStrings( const char* vertexString, const char* fragmentString );
 

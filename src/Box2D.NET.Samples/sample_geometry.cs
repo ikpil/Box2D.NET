@@ -1,16 +1,12 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "draw.h"
-#include "random.h"
-#include "sample.h"
-#include "settings.h"
+using Box2D.NET.Samples;
 
-#include "box2d/math_functions.h"
-
-#include <GLFW/glfw3.h>
-
-class ConvexHull : public Sample
+namespace Box2D.NET.Samples
+{
+    class ConvexHull :
+} public Sample
 {
 public:
 	enum

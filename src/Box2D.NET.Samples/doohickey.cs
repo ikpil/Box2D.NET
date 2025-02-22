@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
+namespace Box2D.NET.Samples;
+
 class Doohickey
 {
-public:
+    public:
     Doohickey();
 
     void Spawn( b2WorldId worldId, b2Vec2 position, float scale );
@@ -19,7 +21,7 @@ public:
     b2JointId m_sliderId;
 
     bool m_isSpawned;
-};
+}
 
 
 Doohickey::Doohickey()

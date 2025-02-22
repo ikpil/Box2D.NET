@@ -1,37 +1,12 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Samples;
+
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRTDBG_MAP_ALLOC
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS 1
 
-#include "TaskScheduler.h"
-#include "draw.h"
-#include "sample.h"
-#include "settings.h"
-
-#include "box2d/base.h"
-#include "box2d/box2d.h"
-#include "box2d/math_functions.h"
-
-// clang-format off
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
-// clang-format on
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
-#include <crtdbg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#ifdef BOX2D_PROFILE
-#include <tracy/Tracy.hpp>
-#else
-#define FrameMark
-#endif
 
 #if defined( _WIN32 ) && 0
 #include <crtdbg.h>

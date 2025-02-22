@@ -1,12 +1,15 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-class Donut
+namespace Box2D.NET.Samples
 {
-    enum
+    class Donut
     {
-        e_sides = 7
-    };
+        enum
+        {
+            e_sides = 7
+        };
+}
 
 public:
     Donut();

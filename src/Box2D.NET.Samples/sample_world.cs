@@ -1,20 +1,12 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "car.h"
-#include "donut.h"
-#include "draw.h"
-#include "human.h"
-#include "sample.h"
-#include "settings.h"
+using Box2D.NET.Samples;
 
-#include "box2d/box2d.h"
-#include "box2d/math_functions.h"
-
-#include <GLFW/glfw3.h>
-#include <imgui.h>
-
-class LargeWorld : public Sample
+namespace Box2D.NET.Samples
+{
+    class LargeWorld :
+} public Sample
 {
 public:
 	explicit LargeWorld( Settings& settings )
