@@ -1,11 +1,17 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System.IO;
+using System.Text;
+
 namespace Box2D.NET.Samples;
 
 // todo add camera and draw and remove globals
 public class Settings
 {
+    public const int MAX_TOKENS = 32;
+    public const string fileName = "settings.ini";
+    
     public int sampleIndex = 0;
     public int windowWidth = 1920;
     public int windowHeight = 1080;
@@ -33,7 +39,6 @@ public class Settings
     public bool singleStep = false;
     public bool restart = false;
 
-    public const string fileName = "settings.ini";
 
     // Load a file. You must free the character array.
     public static bool ReadFile( char*& data, int& size, const char* filename )
@@ -64,7 +69,7 @@ public class Settings
 
     public void Save()
     {
-        FILE* file = fopen(fileName, "w");
+        using StreamWriter file = new StreamWriter(fileName, Encoding.UTF8);
         fprintf(file, "{\n");
         fprintf(file, "  \"sampleIndex\": %d,\n", sampleIndex);
         fprintf(file, "  \"drawShapes\": %s,\n", drawShapes ? "true" : "false");
@@ -95,7 +100,6 @@ public class Settings
         return -1;
     }
 
-    public const int MAX_TOKENS = 32;
 
     public void Load()
     {
