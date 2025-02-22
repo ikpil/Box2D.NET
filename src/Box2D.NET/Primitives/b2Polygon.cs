@@ -1,4 +1,5 @@
-﻿using static Box2D.NET.core;
+﻿using System;
+using static Box2D.NET.core;
 
 namespace Box2D.NET.Primitives
 {
@@ -28,8 +29,8 @@ namespace Box2D.NET.Primitives
         public b2Polygon Clone()
         {
             var p = new b2Polygon();
-            memcpy<b2Vec2>(p.vertices, vertices);
-            memcpy<b2Vec2>(p.normals, normals);
+            Array.Copy(vertices, p.vertices, vertices.Length);
+            Array.Copy(normals, p.normals, normals.Length);
             p.centroid = centroid;
             p.radius = radius;
             p.count = count;

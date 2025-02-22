@@ -60,20 +60,20 @@ namespace Box2D.NET
         }
 
 
-        public static void memset<T>(Span<T> array, T value, int count)
-        {
-            array.Slice(0, count).Fill(value);
-        }
+        // public static void memset<T>(Span<T> array, T value, int count)
+        // {
+        //     array.Slice(0, count).Fill(value);
+        // }
 
-        public static void memcpy<T>(Span<T> dst, Span<T> src, int count)
-        {
-            src.Slice(0, count).CopyTo(dst);
-        }
-
-        public static void memcpy<T>(Span<T> dst, Span<T> src)
-        {
-            src.CopyTo(dst);
-        }
+        // public static void memcpy<T>(Span<T> dst, Span<T> src, int count)
+        // {
+        //     src.Slice(0, count).CopyTo(dst);
+        // }
+        //
+        // public static void memcpy<T>(Span<T> dst, Span<T> src)
+        // {
+        //     src.CopyTo(dst);
+        // }
 
         // Used to prevent the compiler from warning about unused variables
         public static void B2_UNUSED<T1>(T1 a)

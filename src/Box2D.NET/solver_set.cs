@@ -75,6 +75,7 @@ namespace Box2D.NET
                 simDst.CopyFrom(simSrc);
 
                 ref b2BodyState state = ref b2Array_Add(ref awakeSet.bodyStates);
+                //*state = b2_identityBodyState;
                 state.CopyFrom(b2_identityBodyState);
 
                 // move non-touching contacts from disabled set to awake set
@@ -443,11 +444,11 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-// Merge set 2 into set 1 then destroy set 2.
-// Warning: any pointers into these sets will be orphaned.
-// This is called when joints are created between sets. I want to allow the sets
-// to continue sleeping if both are asleep. Otherwise one set is waked.
-// Islands will get merge when the set is waked.
+        // Merge set 2 into set 1 then destroy set 2.
+        // Warning: any pointers into these sets will be orphaned.
+        // This is called when joints are created between sets. I want to allow the sets
+        // to continue sleeping if both are asleep. Otherwise one set is waked.
+        // Islands will get merge when the set is waked.
         public static void b2MergeSolverSets(b2World world, int setId1, int setId2)
         {
             Debug.Assert(setId1 >= (int)b2SetType.b2_firstSleepingSet);

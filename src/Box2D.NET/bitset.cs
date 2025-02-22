@@ -102,7 +102,8 @@ namespace Box2D.NET
                 //memset( newBits, 0, bitSet->blockCapacity * sizeof( uint64_t ) );
                 Array.Fill(newBits, 0UL, 0, bitSet.blockCapacity);
                 Debug.Assert(bitSet.bits != null);
-                memcpy<ulong>(newBits, bitSet.bits, oldCapacity);
+                //memcpy( newBits, bitSet->bits, oldCapacity * sizeof( uint64_t ) );
+                Array.Copy(bitSet.bits, newBits, oldCapacity);
                 b2Free(bitSet.bits, oldCapacity);
                 bitSet.bits = newBits;
             }

@@ -102,7 +102,7 @@ namespace Box2D.NET
             b2Free(tree.leafBoxes, tree.rebuildCapacity);
             b2Free(tree.leafCenters, tree.rebuildCapacity);
             b2Free(tree.binIndices, tree.rebuildCapacity);
-            
+
             //memset( tree, 0, sizeof( b2DynamicTree ) );
             tree.Clear();
         }
@@ -126,6 +126,7 @@ namespace Box2D.NET
                 {
                     tree.nodes[i].CopyFrom(oldNodes[i]);
                 }
+
                 //memset( tree->nodes + tree->nodeCount, 0, ( tree->nodeCapacity - tree->nodeCount ) * sizeof( b2TreeNode ) );
                 for (int i = tree.nodeCount; i < tree.nodeCapacity; ++i)
                 {
@@ -1319,9 +1320,10 @@ namespace Box2D.NET
                 upperBound = b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t)),
             };
 
+            //b2ShapeCastInput subInput = *input;
             b2ShapeCastInput subInput = input;
             subInput.points = new b2Vec2[input.points.Length];
-            memcpy<b2Vec2>(subInput.points, input.points, input.points.Length);
+            Array.Copy(input.points, subInput.points, input.points.Length);
             b2TreeNode[] nodes = tree.nodes;
 
             int[] stack = new int[B2_TREE_STACK_SIZE];
