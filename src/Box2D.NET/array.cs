@@ -74,7 +74,7 @@ namespace Box2D.NET
         }
 
         /* RemoveSwap */
-        public static int b2Array_RemoveSwap<T>(ref b2Array<T> a, int index)
+        public static int b2Array_RemoveSwap<T>(ref b2Array<T> a, int index) where T : new()
         {
             Debug.Assert(0 <= index && index < a.count);
             int movedIndex = B2_NULL_INDEX;
@@ -82,6 +82,12 @@ namespace Box2D.NET
             {
                 movedIndex = a.count - 1;
                 a.data[index] = a.data[movedIndex];
+                
+                // fixed, ikpil
+                if (!typeof(T).IsValueType)
+                {
+                    a.data[movedIndex] = new T();
+                }
             }
 
             a.count -= 1;
@@ -89,10 +95,16 @@ namespace Box2D.NET
         }
 
         /* Pop */
-        public static T b2Array_Pop<T>(ref b2Array<T> a)
+        public static T b2Array_Pop<T>(ref b2Array<T> a) where T : new()
         {
             Debug.Assert(a.count > 0);
             T value = a.data[a.count - 1];
+            
+            // fixed, ikpil
+            if (!typeof(T).IsValueType)
+            {
+                a.data[a.count - 1] = new T();
+            }
             a.count -= 1;
             return value;
         }
