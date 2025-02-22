@@ -1,16 +1,6 @@
 // SPDX-FileCopyrightText: 2024 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#define _CRT_SECURE_NO_WARNINGS
-
-#include "shader.h"
-
-#include "../src/core.h"
-
-#include <assert.h>
-#include <glad/glad.h>
-#include <stdio.h>
-
 #if defined( _WIN32 )
 	#define _CRTDBG_MAP_ALLOC
 	#include <crtdbg.h>
@@ -18,6 +8,14 @@
 #else
 	#include <stdlib.h>
 #endif
+
+uint32_t CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath );
+uint32_t CreateProgramFromStrings( const char* vertexString, const char* fragmentString );
+
+void CheckErrorGL();
+void DumpInfoGL();
+void PrintLogGL( int object );
+
 
 void DumpInfoGL()
 {

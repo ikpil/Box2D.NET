@@ -1,12 +1,26 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "car.h"
+class Car
+{
+public:
+    Car();
 
-#include "box2d/box2d.h"
-#include "box2d/math_functions.h"
+    void Spawn( b2WorldId worldId, b2Vec2 position, float scale, float hertz, float dampingRatio, float torque, void* userData );
+    void Despawn();
 
-#include <assert.h>
+    void SetSpeed( float speed );
+    void SetTorque( float torque );
+    void SetHertz( float hertz );
+    void SetDampingRadio( float dampingRatio );
+
+    b2BodyId m_chassisId;
+    b2BodyId m_rearWheelId;
+    b2BodyId m_frontWheelId;
+    b2JointId m_rearAxleId;
+    b2JointId m_frontAxleId;
+    bool m_isSpawned;
+};
 
 Car::Car()
 {
@@ -145,6 +159,29 @@ void Car::SetDampingRadio( float dampingRatio )
 	b2WheelJoint_SetSpringDampingRatio( m_rearAxleId, dampingRatio );
 	b2WheelJoint_SetSpringDampingRatio( m_frontAxleId, dampingRatio );
 }
+
+class Truck
+{
+public:
+    Truck();
+
+    void Spawn( b2WorldId worldId, b2Vec2 position, float scale, float hertz, float dampingRatio, float torque, float density,
+                void* userData );
+    void Despawn();
+
+    void SetSpeed( float speed );
+    void SetTorque( float torque );
+    void SetHertz( float hertz );
+    void SetDampingRadio( float dampingRatio );
+
+    b2BodyId m_chassisId;
+    b2BodyId m_rearWheelId;
+    b2BodyId m_frontWheelId;
+    b2JointId m_rearAxleId;
+    b2JointId m_frontAxleId;
+    bool m_isSpawned;
+};
+
 
 Truck::Truck()
 {

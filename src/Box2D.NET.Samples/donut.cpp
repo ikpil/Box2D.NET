@@ -1,12 +1,24 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "donut.h"
+class Donut
+{
+    enum
+    {
+        e_sides = 7
+    };
 
-#include "box2d/box2d.h"
-#include "box2d/math_functions.h"
+public:
+    Donut();
 
-#include <assert.h>
+    void Spawn( b2WorldId worldId, b2Vec2 position, float scale, int groupIndex, void* userData );
+    void Despawn();
+
+    b2BodyId m_bodyIds[e_sides];
+    b2JointId m_jointIds[e_sides];
+    bool m_isSpawned;
+};
+
 
 Donut::Donut()
 {

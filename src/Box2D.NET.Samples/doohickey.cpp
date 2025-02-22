@@ -1,12 +1,26 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#include "doohickey.h"
+class Doohickey
+{
+public:
+    Doohickey();
 
-#include "box2d/box2d.h"
-#include "box2d/math_functions.h"
+    void Spawn( b2WorldId worldId, b2Vec2 position, float scale );
+    void Despawn();
 
-#include <assert.h>
+    b2BodyId m_wheelId1;
+    b2BodyId m_wheelId2;
+    b2BodyId m_barId1;
+    b2BodyId m_barId2;
+
+    b2JointId m_axleId1;
+    b2JointId m_axleId2;
+    b2JointId m_sliderId;
+
+    bool m_isSpawned;
+};
+
 
 Doohickey::Doohickey()
 {
