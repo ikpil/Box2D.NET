@@ -1,7 +1,9 @@
-﻿namespace Box2D.NET.Primitives
+﻿using Box2D.NET.Core;
+
+namespace Box2D.NET.Primitives
 {
-// Cold contact data. Used as a persistent handle and for persistent island
-// connectivity.
+    // Cold contact data. Used as a persistent handle and for persistent island
+    // connectivity.
     public class b2Contact
     {
         // index of simulation set stored in b2World
@@ -17,7 +19,7 @@
         // B2_NULL_INDEX when slot is free
         public int localIndex;
 
-        public b2ContactEdge[] edges;
+        public UnsafeArray2<b2ContactEdge> edges;
         public int shapeIdA;
         public int shapeIdB;
 

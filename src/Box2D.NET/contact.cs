@@ -249,11 +249,6 @@ namespace Box2D.NET
                 contact.flags |= (uint)b2ContactFlags.b2_contactEnableContactEvents;
             }
 
-            // @ikpil, new b2ContactEdge
-            contact.edges = new b2ContactEdge[2];
-            contact.edges[0] = new b2ContactEdge();
-            contact.edges[1] = new b2ContactEdge();
-
             // Connect to body A
             {
                 contact.edges[0].bodyId = shapeA.bodyId;
@@ -342,8 +337,8 @@ namespace Box2D.NET
             ulong pairKey = B2_SHAPE_PAIR_KEY(contact.shapeIdA, contact.shapeIdB);
             b2RemoveKey(world.broadPhase.pairSet, pairKey);
 
-            b2ContactEdge edgeA = contact.edges[0];
-            b2ContactEdge edgeB = contact.edges[1];
+            ref b2ContactEdge edgeA = ref contact.edges[0];
+            ref b2ContactEdge edgeB = ref contact.edges[1];
 
             int bodyIdA = edgeA.bodyId;
             int bodyIdB = edgeB.bodyId;
@@ -369,14 +364,14 @@ namespace Box2D.NET
             if (edgeA.prevKey != B2_NULL_INDEX)
             {
                 b2Contact prevContact = b2Array_Get(ref world.contacts, edgeA.prevKey >> 1);
-                b2ContactEdge prevEdge = prevContact.edges[(edgeA.prevKey & 1)];
+                ref b2ContactEdge prevEdge = ref prevContact.edges[(edgeA.prevKey & 1)];
                 prevEdge.nextKey = edgeA.nextKey;
             }
 
             if (edgeA.nextKey != B2_NULL_INDEX)
             {
                 b2Contact nextContact = b2Array_Get(ref world.contacts, edgeA.nextKey >> 1);
-                b2ContactEdge nextEdge = nextContact.edges[(edgeA.nextKey & 1)];
+                ref b2ContactEdge nextEdge = ref nextContact.edges[(edgeA.nextKey & 1)];
                 nextEdge.prevKey = edgeA.prevKey;
             }
 
@@ -394,14 +389,14 @@ namespace Box2D.NET
             if (edgeB.prevKey != B2_NULL_INDEX)
             {
                 b2Contact prevContact = b2Array_Get(ref world.contacts, edgeB.prevKey >> 1);
-                b2ContactEdge prevEdge = prevContact.edges[(edgeB.prevKey & 1)];
+                ref b2ContactEdge prevEdge = ref prevContact.edges[(edgeB.prevKey & 1)];
                 prevEdge.nextKey = edgeB.nextKey;
             }
 
             if (edgeB.nextKey != B2_NULL_INDEX)
             {
                 b2Contact nextContact = b2Array_Get(ref world.contacts, edgeB.nextKey >> 1);
-                b2ContactEdge nextEdge = nextContact.edges[(edgeB.nextKey & 1)];
+                ref b2ContactEdge nextEdge = ref nextContact.edges[(edgeB.nextKey & 1)];
                 nextEdge.prevKey = edgeB.prevKey;
             }
 
