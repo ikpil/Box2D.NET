@@ -176,11 +176,6 @@ namespace Box2D.NET
             joint.collideConnected = collideConnected;
             joint.isMarked = false;
 
-            // @ikpil, create the b2JointEdge here for now, and later I'll see how to proceed
-            joint.edges = new b2JointEdge[2];
-            joint.edges[0] = new b2JointEdge();
-            joint.edges[1] = new b2JointEdge();
-
             // Doubly linked list on bodyA
             joint.edges[0].bodyId = bodyIdA;
             joint.edges[0].prevKey = B2_NULL_INDEX;
@@ -190,7 +185,7 @@ namespace Box2D.NET
             if (bodyA.headJointKey != B2_NULL_INDEX)
             {
                 b2Joint jointA = b2Array_Get(ref world.joints, bodyA.headJointKey >> 1);
-                b2JointEdge edgeA = jointA.edges[bodyA.headJointKey & 1];
+                ref b2JointEdge edgeA = ref jointA.edges[bodyA.headJointKey & 1];
                 edgeA.prevKey = keyA;
             }
 
@@ -206,7 +201,7 @@ namespace Box2D.NET
             if (bodyB.headJointKey != B2_NULL_INDEX)
             {
                 b2Joint jointB = b2Array_Get(ref world.joints, bodyB.headJointKey >> 1);
-                b2JointEdge edgeB = jointB.edges[(bodyB.headJointKey & 1)];
+                ref b2JointEdge edgeB = ref jointB.edges[(bodyB.headJointKey & 1)];
                 edgeB.prevKey = keyB;
             }
 
@@ -224,6 +219,7 @@ namespace Box2D.NET
 
                 jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
+                jointSim.Clear();
 
                 jointSim.jointId = jointId;
                 jointSim.bodyIdA = bodyIdA;
@@ -238,6 +234,7 @@ namespace Box2D.NET
 
                 jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
+                jointSim.Clear();
 
                 jointSim.jointId = jointId;
                 jointSim.bodyIdA = bodyIdA;
@@ -273,6 +270,7 @@ namespace Box2D.NET
 
                 jointSim = b2Array_Add(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
+                jointSim.Clear();
 
                 jointSim.jointId = jointId;
                 jointSim.bodyIdA = bodyIdA;
@@ -710,8 +708,8 @@ namespace Box2D.NET
         {
             int jointId = joint.jointId;
 
-            b2JointEdge edgeA = joint.edges[0];
-            b2JointEdge edgeB = joint.edges[1];
+            ref b2JointEdge edgeA = ref joint.edges[0];
+            ref b2JointEdge edgeB = ref joint.edges[1];
 
             int idA = edgeA.bodyId;
             int idB = edgeB.bodyId;
@@ -722,14 +720,14 @@ namespace Box2D.NET
             if (edgeA.prevKey != B2_NULL_INDEX)
             {
                 b2Joint prevJoint = b2Array_Get(ref world.joints, edgeA.prevKey >> 1);
-                b2JointEdge prevEdge = prevJoint.edges[edgeA.prevKey & 1];
+                ref b2JointEdge prevEdge = ref prevJoint.edges[edgeA.prevKey & 1];
                 prevEdge.nextKey = edgeA.nextKey;
             }
 
             if (edgeA.nextKey != B2_NULL_INDEX)
             {
                 b2Joint nextJoint = b2Array_Get(ref world.joints, edgeA.nextKey >> 1);
-                b2JointEdge nextEdge = nextJoint.edges[edgeA.nextKey & 1];
+                ref b2JointEdge nextEdge = ref nextJoint.edges[edgeA.nextKey & 1];
                 nextEdge.prevKey = edgeA.prevKey;
             }
 
@@ -745,14 +743,14 @@ namespace Box2D.NET
             if (edgeB.prevKey != B2_NULL_INDEX)
             {
                 b2Joint prevJoint = b2Array_Get(ref world.joints, edgeB.prevKey >> 1);
-                b2JointEdge prevEdge = prevJoint.edges[edgeB.prevKey & 1];
+                ref b2JointEdge prevEdge = ref prevJoint.edges[edgeB.prevKey & 1];
                 prevEdge.nextKey = edgeB.nextKey;
             }
 
             if (edgeB.nextKey != B2_NULL_INDEX)
             {
                 b2Joint nextJoint = b2Array_Get(ref world.joints, edgeB.nextKey >> 1);
-                b2JointEdge nextEdge = nextJoint.edges[edgeB.nextKey & 1];
+                ref b2JointEdge nextEdge = ref nextJoint.edges[edgeB.nextKey & 1];
                 nextEdge.prevKey = edgeB.prevKey;
             }
 

@@ -63,8 +63,8 @@ namespace Box2D.NET
             bitSet.blockCapacity = (bitCapacity + sizeof(ulong) * 8 - 1) / (sizeof(ulong) * 8);
             bitSet.blockCount = 0;
             bitSet.bits = b2Alloc<ulong>(bitSet.blockCapacity);
-            Array.Fill(bitSet.bits, 0UL, 0, bitSet.blockCapacity);
-            memset<ulong>(bitSet.bits, 0, bitSet.blockCapacity);
+            //memset( bitSet.bits, 0, bitSet.blockCapacity * sizeof( uint64_t ) );
+            Array.Fill(bitSet.bits, 0UL);
             return bitSet;
         }
 
@@ -87,7 +87,8 @@ namespace Box2D.NET
             }
 
             bitSet.blockCount = blockCount;
-            memset<ulong>(bitSet.bits, 0, bitSet.blockCount);
+            //memset( bitSet->bits, 0, bitSet->blockCount * sizeof( uint64_t ) );
+            Array.Fill(bitSet.bits, 0UL, 0, bitSet.blockCount);
         }
 
         public static void b2GrowBitSet(b2BitSet bitSet, int blockCount)
@@ -98,7 +99,8 @@ namespace Box2D.NET
                 int oldCapacity = bitSet.blockCapacity;
                 bitSet.blockCapacity = blockCount + blockCount / 2;
                 ulong[] newBits = b2Alloc<ulong>(bitSet.blockCapacity);
-                memset<ulong>(newBits, 0, bitSet.blockCapacity);
+                //memset( newBits, 0, bitSet->blockCapacity * sizeof( uint64_t ) );
+                Array.Fill(newBits, 0UL, 0, bitSet.blockCapacity);
                 Debug.Assert(bitSet.bits != null);
                 memcpy<ulong>(newBits, bitSet.bits, oldCapacity);
                 b2Free(bitSet.bits, oldCapacity);

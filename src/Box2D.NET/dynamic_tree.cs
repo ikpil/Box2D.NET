@@ -69,6 +69,10 @@ namespace Box2D.NET
             tree.nodeCount = 0;
             tree.nodes = b2Alloc<b2TreeNode>(tree.nodeCapacity);
             //memset( tree.nodes, 0, tree.nodeCapacity * sizeof( b2TreeNode ) );
+            foreach (var node in tree.nodes)
+            {
+                node.Clear();
+            }
 
             // Build a linked list for the free list.
             for (int i = 0; i < tree.nodeCapacity - 1; ++i)
@@ -98,6 +102,8 @@ namespace Box2D.NET
             b2Free(tree.leafBoxes, tree.rebuildCapacity);
             b2Free(tree.leafCenters, tree.rebuildCapacity);
             b2Free(tree.binIndices, tree.rebuildCapacity);
+            
+            //memset( tree, 0, sizeof( b2DynamicTree ) );
             tree.Clear();
         }
 
@@ -115,10 +121,15 @@ namespace Box2D.NET
                 tree.nodeCapacity += oldCapacity >> 1;
                 tree.nodes = b2Alloc<b2TreeNode>(tree.nodeCapacity);
                 Debug.Assert(oldNodes != null);
-                memcpy<b2TreeNode>(tree.nodes, oldNodes, tree.nodeCount);
-                foreach (var n in tree.nodes.AsSpan(tree.nodeCount, tree.nodeCapacity - tree.nodeCount))
+                //memcpy( tree->nodes, oldNodes, tree->nodeCount * sizeof( b2TreeNode ) );
+                for (int i = 0; i < tree.nodeCount; ++i)
                 {
-                    n.Clear();
+                    tree.nodes[i].CopyFrom(oldNodes[i]);
+                }
+                //memset( tree->nodes + tree->nodeCount, 0, ( tree->nodeCapacity - tree->nodeCount ) * sizeof( b2TreeNode ) );
+                for (int i = tree.nodeCount; i < tree.nodeCapacity; ++i)
+                {
+                    tree.nodes[i].Clear();
                 }
 
                 b2Free(oldNodes, oldCapacity);
