@@ -11,7 +11,7 @@ namespace Box2D.NET.Primitives
         /// Category bits for collision filtering
         public ulong categoryBits; // 8
 
-        // TODO: @ikpil, checking
+        // TODO: @ikpil, check union
         // union
         // {
         private int _parent;
@@ -26,8 +26,8 @@ namespace Box2D.NET.Primitives
         /// Child 1 index (internal node)
         public int child1; // 4
 
-        // TODO: @ikpil, checking
-        //union
+        // TODO: @ikpil, check union
+        // union
         //{
         private int _child2;
         //}; // 4

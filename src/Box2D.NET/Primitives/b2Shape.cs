@@ -24,7 +24,7 @@
         public object userData;
         public uint customColor;
 
-        // TODO: @ikpil, ...... how to handle this?
+        // TODO: @ikpil, check union
         // union
         // {
         public b2Capsule capsule;

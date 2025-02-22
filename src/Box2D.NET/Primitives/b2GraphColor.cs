@@ -15,7 +15,7 @@ namespace Box2D.NET.Primitives
 
         // TODO: @ikpil, check union
         // transient
-        //union
+        // union
         //{
         public ArraySegment<b2ContactConstraintSIMD> simdConstraints;
         public ArraySegment<b2ContactConstraint> overflowConstraints;

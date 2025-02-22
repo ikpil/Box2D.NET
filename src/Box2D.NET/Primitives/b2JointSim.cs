@@ -18,7 +18,7 @@
         public float invMassA, invMassB;
         public float invIA, invIB;
 
-        // TODO: @ikpil, check
+        // TODO: @ikpil, check union
         // union
         // {
         public b2DistanceJoint distanceJoint;
