@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.IO;
-using System.Text;
+using Newtonsoft.Json;
 
 namespace Box2D.NET.Samples;
 
@@ -11,155 +11,77 @@ public class Settings
 {
     public const int MAX_TOKENS = 32;
     public const string fileName = "settings.ini";
-    
-    public int sampleIndex = 0;
-    public int windowWidth = 1920;
-    public int windowHeight = 1080;
-    public float hertz = 60.0f;
-    public int subStepCount = 4;
-    public int workerCount = 1;
-    public bool useCameraBounds = false;
-    public bool drawShapes = true;
-    public bool drawJoints = true;
-    public bool drawJointExtras = false;
-    public bool drawAABBs = false;
-    public bool drawContactPoints = false;
-    public bool drawContactNormals = false;
-    public bool drawContactImpulses = false;
-    public bool drawFrictionImpulses = false;
-    public bool drawMass = false;
-    public bool drawBodyNames = false;
-    public bool drawGraphColors = false;
-    public bool drawCounters = false;
-    public bool drawProfile = false;
-    public bool enableWarmStarting = true;
-    public bool enableContinuous = true;
-    public bool enableSleep = true;
-    public bool pause = false;
-    public bool singleStep = false;
-    public bool restart = false;
 
-
-    // Load a file. You must free the character array.
-    public static bool ReadFile( char*& data, int& size, const char* filename )
-    {
-        FILE* file = fopen( filename, "rb" );
-        if ( file == nullptr )
-        {
-            return false;
-        }
-
-        fseek( file, 0, SEEK_END );
-        size = (int)ftell( file );
-        fseek( file, 0, SEEK_SET );
-
-        if ( size == 0 )
-        {
-            return false;
-        }
-
-        data = (char*)malloc( size + 1 );
-        size_t count = fread( data, size, 1, file );
-        B2_UNUSED( count );
-        fclose( file );
-        data[size] = 0;
-
-        return true;
-    }
+    public int sampleIndex { get; set; } = 0;
+    public int windowWidth { get; set; } = 1920;
+    public int windowHeight { get; set; } = 1080;
+    public float hertz { get; set; } = 60.0f;
+    public int subStepCount { get; set; } = 4;
+    public int workerCount { get; set; } = 1;
+    public bool useCameraBounds { get; set; } = false;
+    public bool drawShapes { get; set; } = true;
+    public bool drawJoints { get; set; } = true;
+    public bool drawJointExtras { get; set; } = false;
+    public bool drawAABBs { get; set; } = false;
+    public bool drawContactPoints { get; set; } = false;
+    public bool drawContactNormals { get; set; } = false;
+    public bool drawContactImpulses { get; set; } = false;
+    public bool drawFrictionImpulses { get; set; } = false;
+    public bool drawMass { get; set; } = false;
+    public bool drawBodyNames { get; set; } = false;
+    public bool drawGraphColors { get; set; } = false;
+    public bool drawCounters { get; set; } = false;
+    public bool drawProfile { get; set; } = false;
+    public bool enableWarmStarting { get; set; } = true;
+    public bool enableContinuous { get; set; } = true;
+    public bool enableSleep { get; set; } = true;
+    public bool pause { get; set; } = false;
+    public bool singleStep { get; set; } = false;
+    public bool restart { get; set; } = false;
 
     public void Save()
     {
-        using StreamWriter file = new StreamWriter(fileName, Encoding.UTF8);
-        fprintf(file, "{\n");
-        fprintf(file, "  \"sampleIndex\": %d,\n", sampleIndex);
-        fprintf(file, "  \"drawShapes\": %s,\n", drawShapes ? "true" : "false");
-        fprintf(file, "  \"drawJoints\": %s,\n", drawJoints ? "true" : "false");
-        fprintf(file, "  \"drawAABBs\": %s,\n", drawAABBs ? "true" : "false");
-        fprintf(file, "  \"drawContactPoints\": %s,\n", drawContactPoints ? "true" : "false");
-        fprintf(file, "  \"drawContactNormals\": %s,\n", drawContactNormals ? "true" : "false");
-        fprintf(file, "  \"drawContactImpulses\": %s,\n", drawContactImpulses ? "true" : "false");
-        fprintf(file, "  \"drawFrictionImpulse\": %s,\n", drawFrictionImpulses ? "true" : "false");
-        fprintf(file, "  \"drawMass\": %s,\n", drawMass ? "true" : "false");
-        fprintf(file, "  \"drawCounters\": %s,\n", drawCounters ? "true" : "false");
-        fprintf(file, "  \"drawProfile\": %s,\n", drawProfile ? "true" : "false");
-        fprintf(file, "  \"enableWarmStarting\": %s,\n", enableWarmStarting ? "true" : "false");
-        fprintf(file, "  \"enableContinuous\": %s,\n", enableContinuous ? "true" : "false");
-        fprintf(file, "  \"enableSleep\": %s\n", enableSleep ? "true" : "false");
-        fprintf(file, "}\n");
-        fclose(file);
+        string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+        File.WriteAllText(fileName, json);
     }
-
-    public static int jsoneq( const char* json, jsmntok_t* tok, const char* s )
-    {
-        if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
-            strncmp(json + tok->start, s, tok->end - tok->start) == 0)
-        {
-            return 0;
-        }
-
-        return -1;
-    }
-
 
     public void Load()
     {
-        char* data = nullptr;
-        int size = 0;
-        bool found = ReadFile(data, size, fileName);
-        if (found == false)
-        {
+        if (!File.Exists(fileName))
             return;
-        }
 
-        jsmn_parser parser;
-        jsmntok_t tokens[MAX_TOKENS];
+        string json = File.ReadAllText(fileName);
+        var loaded = JsonConvert.DeserializeObject<Settings>(json);
+        CopyFrom(loaded);
+    }
 
-        jsmn_init(&parser);
-
-        // js - pointer to JSON string
-        // tokens - an array of tokens available
-        // 10 - number of tokens available
-        int tokenCount = jsmn_parse(&parser, data, size, tokens, MAX_TOKENS);
-        char buffer[32];
-
-        for (int i = 0; i < tokenCount; ++i)
-        {
-            if (jsoneq(data, &tokens[i], "sampleIndex") == 0)
-            {
-                int count = tokens[i + 1].end - tokens[i + 1].start;
-                Debug.Assert(count < 32);
-                const char* s = data + tokens[i + 1].start;
-                strncpy(buffer, s, count);
-                buffer[count] = 0;
-                char* dummy;
-                sampleIndex = (int)strtol(buffer, &dummy, 10);
-            }
-            else if (jsoneq(data, &tokens[i], "drawShapes") == 0)
-            {
-                const char* s = data + tokens[i + 1].start;
-                if (strncmp(s, "true", 4) == 0)
-                {
-                    drawShapes = true;
-                }
-                else if (strncmp(s, "false", 5) == 0)
-                {
-                    drawShapes = false;
-                }
-            }
-            else if (jsoneq(data, &tokens[i], "drawJoints") == 0)
-            {
-                const char* s = data + tokens[i + 1].start;
-                if (strncmp(s, "true", 4) == 0)
-                {
-                    drawJoints = true;
-                }
-                else if (strncmp(s, "false", 5) == 0)
-                {
-                    drawJoints = false;
-                }
-            }
-        }
-
-        free(data);
+    public void CopyFrom(Settings other)
+    {
+        sampleIndex = other.sampleIndex;
+        windowWidth = other.windowWidth;
+        windowHeight = other.windowHeight;
+        hertz = other.hertz;
+        subStepCount = other.subStepCount;
+        workerCount = other.workerCount;
+        useCameraBounds = other.useCameraBounds;
+        drawShapes = other.drawShapes;
+        drawJoints = other.drawJoints;
+        drawJointExtras = other.drawJointExtras;
+        drawAABBs = other.drawAABBs;
+        drawContactPoints = other.drawContactPoints;
+        drawContactNormals = other.drawContactNormals;
+        drawContactImpulses = other.drawContactImpulses;
+        drawFrictionImpulses = other.drawFrictionImpulses;
+        drawMass = other.drawMass;
+        drawBodyNames = other.drawBodyNames;
+        drawGraphColors = other.drawGraphColors;
+        drawCounters = other.drawCounters;
+        drawProfile = other.drawProfile;
+        enableWarmStarting = other.enableWarmStarting;
+        enableContinuous = other.enableContinuous;
+        enableSleep = other.enableSleep;
+        pause = other.pause;
+        singleStep = other.singleStep;
+        restart = other.restart;
     }
 }
