@@ -1,102 +1,22 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System.Diagnostics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
+using static Box2D.NET.joint;
+using static Box2D.NET.id;
+using static Box2D.NET.hull;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.wheel_joint;
+using static Box2D.NET.world;
+using static Box2D.NET.mouse_joint;
 
 namespace Box2D.NET.Samples;
-
-public static class sample_debug
-{
-#if DEBUG
-    public const bool g_sampleDebug = true;
-#else
-    public const bool g_sampleDebug = false;
-#endif
-    public const int k_maxContactPoints = 12 * 2048;
-    
-    public static object EnqueueTask( b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext )
-    {
-        Sample sample = userContext as Sample;
-        if ( sample.m_taskCount < Sample.m_maxTasks )
-        {
-            SampleTask sampleTask = sample.m_tasks[sample.m_taskCount];
-            sampleTask.m_SetSize = itemCount;
-            sampleTask.m_MinRange = minRange;
-            sampleTask.m_task = task;
-            sampleTask.m_taskContext = taskContext;
-            sample.m_scheduler.AddTaskSetToPipe( &sampleTask );
-            ++sample.m_taskCount;
-            return &sampleTask;
-        }
-        else
-        {
-            // This is not fatal but the maxTasks should be increased
-            Debug.Assert( false );
-            task( 0, itemCount, 0, taskContext );
-            return nullptr;
-        }
-    }
-}
-
-
-
-
-
-static void FinishTask( void* taskPtr, void* userContext )
-{
-    if ( taskPtr != nullptr )
-    {
-        SampleTask* sampleTask = static_cast<SampleTask*>( taskPtr );
-        Sample* sample = static_cast<Sample*>( userContext );
-        sample.m_scheduler.WaitforTask( sampleTask );
-    }
-}
-
-static void TestMathCpp()
-{
-    b2Vec2 a = { 1.0f, 2.0f };
-    b2Vec2 b = { 3.0f, 4.0f };
-
-    b2Vec2 c = a;
-    c += b;
-    c -= b;
-    c *= 2.0f;
-    c = -a;
-    c = c + b;
-    c = c - a;
-    c = 2.0f * a;
-    c = a * 2.0f;
-
-    if ( b == a )
-    {
-        c = a;
-    }
-
-    if ( b != a )
-    {
-        c = b;
-    }
-
-    c += c;
-}
-
-
-delegate Sample SampleCreateFcn( Settings settings );
-
-
-#define MAX_SAMPLES 256
-extern SampleEntry g_sampleEntries[MAX_SAMPLES];
-extern int g_sampleCount;
-
-public class TaskScheduler
-{
-    public void AddTaskSetToPipe()
-    {
-        
-    }
-}
-
 
 public class Sample
 {
@@ -123,8 +43,8 @@ public class Sample
 
     public Sample( Settings settings )
     {
-        // m_scheduler = TaskScheduler.Current; // todo: ikpil check!
-        // m_scheduler.Initialize( settings.workerCount );
+        m_scheduler = new TaskScheduler();
+        m_scheduler.Initialize( settings.workerCount );
 
         m_tasks = new SampleTask[m_maxTasks];
         m_taskCount = 0;
@@ -141,12 +61,12 @@ public class Sample
 
         m_groundBodyId = b2_nullBodyId;
 
-        m_maxProfile = {};
-        m_totalProfile = {};
+        m_maxProfile = new b2Profile();
+        m_totalProfile = new b2Profile();
 
         g_seed = RAND_SEED;
 
-        m_settings = &settings;
+        m_settings = settings;
 
         CreateWorld();
         TestMathCpp();
@@ -176,12 +96,73 @@ public class Sample
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_settings.enableSleep;
 
-        m_worldId = b2CreateWorld( &worldDef );
+        m_worldId = b2CreateWorld( worldDef );
+    }
+    
+    public void TestMathCpp()
+    {
+        b2Vec2 a = new b2Vec2(1.0f, 2.0f);
+        b2Vec2 b = new b2Vec2(3.0f, 4.0f);
+
+        b2Vec2 c = a;
+        c += b;
+        c -= b;
+        c *= 2.0f;
+        c = -a;
+        c = c + b;
+        c = c - a;
+        c = 2.0f * a;
+        c = a * 2.0f;
+
+        if (b == a)
+        {
+            c = a;
+        }
+
+        if (b != a)
+        {
+            c = b;
+        }
+
+        c += c;
     }
 
-    public void DrawTitle( const char* string )
+    private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
     {
-        g_draw.DrawString( 5, 5, string );
+        Sample sample = userContext as Sample;
+        if (sample.m_taskCount < Sample.m_maxTasks)
+        {
+            SampleTask sampleTask = sample.m_tasks[sample.m_taskCount];
+            sampleTask.m_SetSize = itemCount;
+            sampleTask.m_MinRange = minRange;
+            sampleTask.m_task = task;
+            sampleTask.m_taskContext = taskContext;
+            sample.m_scheduler.AddTaskSetToPipe(sampleTask);
+            ++sample.m_taskCount;
+            return sampleTask;
+        }
+        else
+        {
+            // This is not fatal but the maxTasks should be increased
+            Debug.Assert(false);
+            task(0, itemCount, 0, taskContext);
+            return null;
+        }
+    }
+
+    private static void FinishTask(object taskPtr, object userContext)
+    {
+        if (taskPtr != null)
+        {
+            SampleTask sampleTask = taskPtr as SampleTask;
+            Sample sample = userContext as Sample;
+            sample.m_scheduler.WaitforTask(sampleTask);
+        }
+    }
+
+    public void DrawTitle( string title )
+    {
+        g_draw.DrawString( 5, 5, title);
         m_textLine = int( 26.0f );
     }
 
@@ -666,18 +647,3 @@ public class Sample
         return pointCount;
     }
 
-SampleEntry g_sampleEntries[MAX_SAMPLES] = {};
-int g_sampleCount = 0;
-
-int RegisterSample( const char* category, const char* name, SampleCreateFcn* fcn )
-{
-    int index = g_sampleCount;
-    if ( index < MAX_SAMPLES )
-    {
-        g_sampleEntries[index] = { category, name, fcn };
-        ++g_sampleCount;
-        return index;
-    }
-
-    return -1;
-}
