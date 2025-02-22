@@ -1045,6 +1045,10 @@ namespace Box2D.NET
                 b2TreeNode node = nodes[i];
                 if (0 != (node.flags & (ushort)b2TreeNodeFlags.b2_allocatedNode))
                 {
+                    if ((node.flags & (ushort)b2TreeNodeFlags.b2_enlargedNode) != 0)
+                    {
+                        int a = 3;
+                    }
                     Debug.Assert((node.flags & (ushort)b2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }

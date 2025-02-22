@@ -522,11 +522,11 @@ b2TreeStats b2_staticStats;
         public static void b2ValidateNoEnlarged(b2BroadPhase bp)
         {
 #if B2_VALIDATE
-	for ( int j = 0; j < (int)b2BodyType.b2_bodyTypeCount; ++j )
-    {
-        b2DynamicTree tree = bp.trees[j];
-		b2DynamicTree_ValidateNoEnlarged( tree );
-	}
+            for ( int j = 0; j < (int)b2BodyType.b2_bodyTypeCount; ++j )
+            {
+                b2DynamicTree tree = bp.trees[j];
+                b2DynamicTree_ValidateNoEnlarged( tree );
+            }
 #else
             B2_UNUSED(bp);
 #endif

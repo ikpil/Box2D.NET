@@ -3,6 +3,7 @@
 
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
@@ -29,21 +30,25 @@ public class b2TaskTester : IDisposable
     private SemaphoreSlim _semaphore;
     private int e_maxTasks;
     public int taskCount;
+    private ConcurrentQueue<Task> _runningTasks;
 
     public b2TaskTester(int workerCount, int maxTasks)
     {
         _workerCount = workerCount;
         _semaphore = new SemaphoreSlim(workerCount);
         e_maxTasks = maxTasks;
+        _runningTasks = new ConcurrentQueue<Task>();
     }
 
     public void Dispose()
     {
-        _semaphore?.Dispose();
+        _semaphore.Dispose();
         _semaphore = null;
+        
+        Debug.Assert(0 >= _runningTasks.Count);
     }
-
-    IEnumerable<int> Next(int itemCount, int minRange)
+    
+    private IEnumerable<int> Next(int itemCount, int minRange)
     {
         if (itemCount <= minRange)
         {
@@ -87,7 +92,7 @@ public class b2TaskTester : IDisposable
                 idx = endIndex;
 
                 uint workerIndex = (uint)(++loop % _workerCount);
-                Task.Run(async () =>
+                var task = Task.Run(async () =>
                 {
                     await _semaphore.WaitAsync();
                     try
@@ -99,6 +104,8 @@ public class b2TaskTester : IDisposable
                         _semaphore.Release();
                     }
                 });
+                
+                _runningTasks.Enqueue(task);
             }
 
             ++taskCount;
@@ -116,7 +123,12 @@ public class b2TaskTester : IDisposable
     public void FinishTask(object userTask, object userContext)
     {
         B2_UNUSED(userContext);
-        // .,,
+
+        // wait!
+        while (_runningTasks.TryDequeue(out var task))
+        {
+            task.Wait();
+        }
     }
 }
 
@@ -134,7 +146,7 @@ public class test_determinism
     // todo_erin move this to shared
     public void TiltedStacks(int testIndex, int workerCount)
     {
-        using var tester = new b2TaskTester(workerCount, e_maxTasks);
+        var tester = new b2TaskTester(workerCount, e_maxTasks);
 
         b2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.enqueueTask = tester.EnqueueTask;
