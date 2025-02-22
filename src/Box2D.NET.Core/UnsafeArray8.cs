@@ -9,14 +9,14 @@ namespace Box2D.NET.Core
     {
         public const int Length = 8;
         
-        public T v00;
-        public T v01;
-        public T v02;
-        public T v03;
-        public T v04;
-        public T v05;
-        public T v06;
-        public T v07;
+        public T v0000;
+        public T v0001;
+        public T v0002;
+        public T v0003;
+        public T v0004;
+        public T v0005;
+        public T v0006;
+        public T v0007;
 
         public ref T this[int index]
         {
@@ -30,7 +30,7 @@ namespace Box2D.NET.Core
             if (0 > index || Length <= index)
                 throw new IndexOutOfRangeException();
 
-            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v00), index));
+            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
         }
     }
 }

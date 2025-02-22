@@ -61,11 +61,11 @@ namespace Box2D.NET.Primitives
         public bool enableWarmStarting;
 
         // todo padding to prevent false sharing
-        public Padding64<byte> dummy1;
+        public UnsafeArray64<byte> dummy1;
 
         // sync index (16-bits) | stage type (16-bits)
         public b2AtomicU32 atomicSyncBits;
 
-        public Padding64<byte> dummy2;
+        public UnsafeArray64<byte> dummy2;
     }
 }
