@@ -35,7 +35,8 @@ namespace Box2D.NET
         public static void b2DestroyIdPool(ref b2IdPool pool)
         {
             b2Array_Destroy(ref pool.freeArray);
-            pool = new b2IdPool(); // TODO: @ikpil check pool
+            //*pool = ( b2IdPool ) {0}
+            pool.Clear();
         }
 
         public static int b2AllocId(b2IdPool pool)

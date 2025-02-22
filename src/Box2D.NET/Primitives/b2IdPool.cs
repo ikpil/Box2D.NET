@@ -4,5 +4,11 @@
     {
         public b2Array<int> freeArray;
         public int nextIndex;
+
+        public void Clear()
+        {
+            freeArray = new b2Array<int>();
+            nextIndex = 0;
+        }
     }
 }

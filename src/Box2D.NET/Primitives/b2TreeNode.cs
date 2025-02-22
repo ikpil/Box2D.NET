@@ -50,15 +50,15 @@ namespace Box2D.NET.Primitives
             flags = 0; // 2
         }
 
-        public void Reset()
+        public void CopyFrom(b2TreeNode other)
         {
-            aabb = new b2AABB(new b2Vec2(0.0f, 0.0f), new b2Vec2(0.0f, 0.0f));
-            categoryBits = B2_DEFAULT_CATEGORY_BITS;
-            parent = B2_NULL_INDEX;
-            child1 = B2_NULL_INDEX;
-            child2 = B2_NULL_INDEX;
-            height = 0;
-            flags = (ushort)b2TreeNodeFlags.b2_allocatedNode;
+            aabb = other.aabb;
+            categoryBits = other.categoryBits;
+            parent = other.parent;
+            child1 = other.child1;
+            child2 = other.child2;
+            height = other.height;
+            flags = other.flags;
         }
     }
 }

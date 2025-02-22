@@ -37,6 +37,7 @@ namespace Box2D.NET
             b2Array_Destroy(ref set.jointSims);
             b2Array_Destroy(ref set.islandSims);
             b2FreeId(world.solverSetIdPool, setIndex);
+            //*set = ( b2SolverSet ){ 0 };
             set.Clear();
             set.setIndex = B2_NULL_INDEX;
         }

@@ -33,10 +33,9 @@ namespace Box2D.NET
         /// - return a value of input->maxFraction to continue the ray cast without clipping
         public delegate float b2TreeShapeCastCallbackFcn(b2ShapeCastInput input, int proxyId, int userData, object context);
 
-
         public static readonly b2TreeNode b2_defaultTreeNode = new b2TreeNode()
         {
-            aabb = { lowerBound = { x = 0.0f, y = 0.0f }, upperBound = { x = 0.0f, y = 0.0f } },
+            aabb = new b2AABB(new b2Vec2(0.0f, 0.0f), new b2Vec2(0.0f, 0.0f)),
             categoryBits = B2_DEFAULT_CATEGORY_BITS,
             parent = B2_NULL_INDEX,
             child1 = B2_NULL_INDEX,
@@ -139,7 +138,7 @@ namespace Box2D.NET
             int nodeIndex = tree.freeList;
             b2TreeNode node = tree.nodes[nodeIndex];
             tree.freeList = node.next;
-            node.Reset();
+            node.CopyFrom(b2_defaultTreeNode);
             ++tree.nodeCount;
             return nodeIndex;
         }
