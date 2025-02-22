@@ -1,47 +1,19 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
+using Box2D.NET.Benchmark.Fixtures;
 using Box2D.NET.Core;
 
 namespace Box2D.NET.Benchmark.Box2D.NET.Core.Benchmark;
 
-public ref struct RefFixedArray2<T> where T : unmanaged
-{
-    public const int Length = 2;
-    public ref T Value0;
-    public ref T Value1;
-
-    public RefFixedArray2(ref T v0, ref T v1)
-    {
-        Value0 = ref v0;
-        Value1 = ref v1;
-    }
-
-    public ref T this[int index]
-    {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        get
-        {
-            switch (index)
-            {
-                case 0: return ref Value0;
-                case 1: return ref Value1;
-            }
-
-            throw new IndexOutOfRangeException();
-        }
-    }
-}
-
 [MemoryDiagnoser]
-public class FixedArrayBenchmarks
+public class ArrayBenchmarks
 {
     private const int Count = 100000000;
     private readonly Consumer _consumer = new Consumer();
 
     [Benchmark]
-    public void HeapAllocArray()
+    public void Benchmark_HeapArray()
     {
         int[] array = new int[2];
         array[0] = 3;
@@ -64,7 +36,7 @@ public class FixedArrayBenchmarks
     }
 
     [Benchmark]
-    public void StackallocArray()
+    public void Benchmark_StackallocArray()
     {
         Span<int> array = stackalloc int[2];
         array[0] = 3;
@@ -87,7 +59,30 @@ public class FixedArrayBenchmarks
     }
 
     [Benchmark]
-    public void RefFixedArray()
+    public void Benchmark_StackallocArray1024()
+    {
+        Span<int> array = stackalloc int[1024];
+        array[0] = 3;
+        array[1] = 4;
+
+        for (int i = 0; i < Count; ++i)
+        {
+            array[0] += 1;
+            array[1] += 1;
+        }
+
+        if (array[0] != Count + 3)
+            throw new InvalidOperationException("");
+
+        if (array[1] != Count + 4)
+            throw new InvalidOperationException("");
+
+        _consumer.Consume(array[0]);
+        _consumer.Consume(array[1]);
+    }
+
+    [Benchmark]
+    public void Benchmark_RefFixedArray()
     {
         int a = 3;
         int b = 4;
@@ -110,7 +105,7 @@ public class FixedArrayBenchmarks
     }
 
     [Benchmark]
-    public void UnsafeFixedArray()
+    public void Benchmark_UnsafeArray()
     {
         var array = new UnsafeArray2<int>();
         array[0] = 3;
@@ -133,7 +128,31 @@ public class FixedArrayBenchmarks
     }
 
     [Benchmark]
-    public void StructBasedFixedArray2()
+    public void Benchmark_UnsafeArray1024()
+    {
+        var array = new UnsafeArray1024<int>();
+        array[0] = 3;
+        array[1] = 4;
+
+        for (int i = 0; i < Count; ++i)
+        {
+            array[0] += 1;
+            array[1] += 1;
+        }
+
+        if (array[0] != Count + 3)
+            throw new InvalidOperationException("");
+
+        if (array[1] != Count + 4)
+            throw new InvalidOperationException("");
+
+        _consumer.Consume(array[0]);
+        _consumer.Consume(array[1]);
+    }
+
+
+    [Benchmark]
+    public void Benchmark_StructBasedFixedArray()
     {
         var array = new StructBasedFixedArray2<int>();
         array[0] = 3;
@@ -155,8 +174,9 @@ public class FixedArrayBenchmarks
         _consumer.Consume(array[1]);
     }
 
+
     [Benchmark]
-    public void FixedArray2()
+    public void Benchmark_ClassBasedFixedArray()
     {
         var array = new ClassBasedFixedArray2<int>();
         array[0] = 3;

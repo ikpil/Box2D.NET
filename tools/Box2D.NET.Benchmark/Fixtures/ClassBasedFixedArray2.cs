@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Box2D.NET.Benchmark.Box2D.NET.Core.Benchmark;
+namespace Box2D.NET.Benchmark.Fixtures;
 
 public class ClassBasedFixedArray2<T> where T : unmanaged
 {
