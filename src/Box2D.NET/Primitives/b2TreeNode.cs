@@ -14,12 +14,14 @@ namespace Box2D.NET.Primitives
         // TODO: @ikpil, checking
         // union
         // {
+        private int _parent;
+        //}; // 4
+
         /// The node parent index (allocated node)
-        public int parent;
+        public int parent { get => _parent; set => _parent = value; } // this is union
 
         /// The node freelist next index (free node)
-        public int next;
-        //}; // 4
+        public int next { get => _parent; set => _parent = value; } // this is union
 
         /// Child 1 index (internal node)
         public int child1; // 4
@@ -27,12 +29,14 @@ namespace Box2D.NET.Primitives
         // TODO: @ikpil, checking
         //union
         //{
+        private int _child2;
+        //}; // 4
+
         /// Child 2 index (internal node)
-        public int child2;
+        public int child2 { get => _child2; set => _child2 = value; } // this is union
 
         /// User data (leaf node)
-        public int userData;
-        //}; // 4
+        public int userData { get => _child2; set => _child2 = value; } // this is union
 
         public ushort height; // 2
         public ushort flags; // 2

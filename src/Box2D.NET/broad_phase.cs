@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.table;
@@ -167,8 +168,8 @@ namespace Box2D.NET
         }
 
 
-// This is called from b2DynamicTree::Query when we are gathering pairs.
-        static bool b2PairQueryCallback(int proxyId, int shapeId, object context)
+        // This is called from b2DynamicTree::Query when we are gathering pairs.
+        public static bool b2PairQueryCallback(int proxyId, int shapeId, object context)
         {
             b2QueryPairContext queryContext = context as b2QueryPairContext;
             b2BroadPhase broadPhase = queryContext.world.broadPhase;
