@@ -349,7 +349,7 @@ public class test_determinism
                             BitConverter.GetBytes(xf.p.x).AsSpan().CopyTo(bxf.AsSpan(0, 4));
                             BitConverter.GetBytes(xf.p.y).AsSpan().CopyTo(bxf.AsSpan(4, 4));
                             BitConverter.GetBytes(xf.q.c).AsSpan().CopyTo(bxf.AsSpan(8, 4));
-                            BitConverter.GetBytes(xf.q.c).AsSpan().CopyTo(bxf.AsSpan(12, 4));
+                            BitConverter.GetBytes(xf.q.s).AsSpan().CopyTo(bxf.AsSpan(12, 4));
                             hash = b2Hash(hash, bxf, bxf.Length);
                         }
 

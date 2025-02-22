@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -42,7 +43,7 @@ namespace Box2D.NET
 
         // djb2 hash
         // https://en.wikipedia.org/wiki/List_of_hash_functions
-        public static uint b2Hash(uint hash, byte[] data, int count)
+        public static uint b2Hash(uint hash, ReadOnlySpan<byte> data, int count)
         {
             uint result = hash;
             for (int i = 0; i < count; i++)
