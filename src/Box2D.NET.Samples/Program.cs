@@ -1,12 +1,51 @@
 ﻿using System;
+using System.IO;
+using System.Threading;
+using Box2D.NET.Samples.Helpers;
+using Serilog;
+using Serilog.Core;
 
 namespace Box2D.NET.Samples;
 
 public class Program
 {
-    public static int Main(string[] args)
+    private static void InitializeLogger()
     {
-        Console.WriteLine("Hello World!");
-        return 0;
+        var format = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj} [{ThreadName}:{ThreadId}]{NewLine}{Exception}";
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .Enrich.WithThreadId()
+            .Enrich.WithThreadName()
+            .WriteTo.Async(c => c.LogMessageBroker(outputTemplate: format))
+            .WriteTo.Async(c => c.Console(outputTemplate: format))
+            .WriteTo.Async(c => c.File(
+                "logs/log.log",
+                rollingInterval: RollingInterval.Hour,
+                rollOnFileSizeLimit: true,
+                retainedFileCountLimit: null,
+                outputTemplate: format)
+            )
+            .CreateLogger();
+    }
+
+    private static void InitializeWorkingDirectory()
+    {
+        var path = DirectoryUtils.SearchFile("LICENSE");
+        if (!string.IsNullOrEmpty(path))
+        {
+            var workingDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+            workingDirectory = Path.GetFullPath(workingDirectory);
+            Directory.SetCurrentDirectory(workingDirectory);
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        Thread.CurrentThread.Name ??= "main";
+        InitializeWorkingDirectory();
+        InitializeLogger();
+        
+        Log.Logger.Information($"Hello World! - {Directory.GetCurrentDirectory()}");
+        Thread.Sleep(1);
     }
 }
