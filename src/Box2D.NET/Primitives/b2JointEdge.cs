@@ -5,7 +5,7 @@
     /// is an edge. A joint edge belongs to a doubly linked list
     /// maintained in each attached body. Each joint has two joint
     /// nodes, one for each attached body.
-    public class b2JointEdge
+    public struct b2JointEdge
     {
         public int bodyId;
         public int prevKey;
