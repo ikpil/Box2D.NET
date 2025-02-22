@@ -444,9 +444,9 @@ void Step( Settings& settings ) override
 {
     Sample::Step( settings );
 
-    g_draw.DrawString( 5, m_textLine, "This tests various character collision shapes." );
+    Draw.g_draw.DrawString( 5, m_textLine, "This tests various character collision shapes." );
     m_textLine += m_textIncrement;
-    g_draw.DrawString( 5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes." );
+    Draw.g_draw.DrawString( 5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes." );
     m_textLine += m_textIncrement;
 }
 
@@ -560,7 +560,7 @@ void Step( Settings& settings ) override
 {
     Sample::Step( settings );
 
-    g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2_colorAzure );
+    Draw.g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2_colorAzure );
 
     // This shows how to get the velocity of a point on a body
     b2Vec2 localPoint = { 0.0f, 2.0f };
@@ -570,8 +570,8 @@ void Step( Settings& settings ) override
     b2Vec2 v2 = b2Body_GetWorldPointVelocity( m_weebleId, worldPoint );
 
     b2Vec2 offset = { 0.05f, 0.0f };
-    g_draw.DrawSegment( worldPoint, worldPoint + v1, b2_colorRed );
-    g_draw.DrawSegment( worldPoint + offset, worldPoint + v2 + offset, b2_colorGreen );
+    Draw.g_draw.DrawSegment( worldPoint, worldPoint + v1, b2_colorRed );
+    Draw.g_draw.DrawSegment( worldPoint + offset, worldPoint + v2 + offset, b2_colorGreen );
 }
 
 static Sample* Create( Settings& settings )
@@ -764,7 +764,7 @@ void Step( Settings& settings ) override
 
     for ( int i = 0; i < 2; ++i )
     {
-        g_draw.DrawString( 5, m_textLine, "sensor touch %d = %s", i, m_sensorTouching[i] ? "true" : "false" );
+        Draw.g_draw.DrawString( 5, m_textLine, "sensor touch %d = %s", i, m_sensorTouching[i] ? "true" : "false" );
         m_textLine += m_textIncrement;
     }
 }
@@ -842,10 +842,10 @@ void Step( Settings& settings ) override
 {
     Sample::Step( settings );
 
-    g_draw.DrawString( 5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body." );
+    Draw.g_draw.DrawString( 5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body." );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed." );
+    Draw.g_draw.DrawString( 5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed." );
     m_textLine += m_textIncrement;
 
     // For science
@@ -919,7 +919,7 @@ void Step( Settings& settings ) override
     b2Vec2 r = b2Body_GetWorldVector( m_bodyId, { 0.0f, -m_lever } );
 
     b2Vec2 vp = v + b2CrossSV( omega, r );
-    g_draw.DrawString( 5, m_textLine, "pivot velocity = (%g, %g)", vp.x, vp.y );
+    Draw.g_draw.DrawString( 5, m_textLine, "pivot velocity = (%g, %g)", vp.x, vp.y );
     m_textLine += m_textIncrement;
 }
 

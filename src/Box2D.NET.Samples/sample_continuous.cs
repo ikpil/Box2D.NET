@@ -156,8 +156,8 @@ void Step( Settings& settings ) override
         HitEvent* e = m_hitEvents + i;
         if ( e->stepIndex > 0 && m_stepCount <= e->stepIndex + 30 )
         {
-            g_draw.DrawCircle( e->point, 0.1f, b2_colorOrangeRed );
-            g_draw.DrawString( e->point, "%.1f", e->speed );
+            Draw.g_draw.DrawCircle( e->point, 0.1f, b2_colorOrangeRed );
+            Draw.g_draw.DrawString( e->point, "%.1f", e->speed );
         }
     }
 
@@ -242,7 +242,7 @@ void Step( Settings& settings ) override
     b2CosSin cs2 = b2ComputeCosSin( m_time );
     float gravity = 10.0f;
     b2Vec2 gravityVec = { gravity * cs1.sine, gravity * cs2.cosine };
-    g_draw.DrawSegment( b2Vec2_zero, b2Vec2{ 3.0f * cs1.sine, 3.0f * cs2.cosine }, b2_colorWhite );
+    Draw.g_draw.DrawSegment( b2Vec2_zero, b2Vec2{ 3.0f * cs1.sine, 3.0f * cs2.cosine }, b2_colorWhite );
     m_time += timeStep;
     m_countDown -= timeStep;
     b2World_SetGravity( m_worldId, gravityVec );
@@ -435,7 +435,7 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
 #ifndef NDEBUG
-    g_draw.DrawString( 5, m_textLine, "toi hits = %d", b2_toiHitCount );
+    Draw.g_draw.DrawString( 5, m_textLine, "toi hits = %d", b2_toiHitCount );
     m_textLine += m_textIncrement;
 #endif
 }
@@ -1023,7 +1023,7 @@ void Step( Settings& settings ) override
 
     b2Vec2 p = b2Body_GetPosition( m_ballId );
     b2Vec2 v = b2Body_GetLinearVelocity( m_ballId );
-    g_draw.DrawString( 5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y );
+    Draw.g_draw.DrawString( 5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y );
     m_textLine += m_textIncrement;
 
     Sample::Step( settings );
@@ -1094,7 +1094,7 @@ void Step( Settings& settings ) override
 
     b2Vec2 p = b2Body_GetPosition( m_ballId );
     b2Vec2 v = b2Body_GetLinearVelocity( m_ballId );
-    g_draw.DrawString( 5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y );
+    Draw.g_draw.DrawString( 5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y );
     m_textLine += m_textIncrement;
 
     Sample::Step( settings );
@@ -1398,11 +1398,11 @@ void Step( Settings& settings ) override
     ImDrawList* drawList = ImGui::GetWindowDrawList();
 
     const char* ContinuousText = m_continuous && m_speculative ? "Continuous ON" : "Continuous OFF";
-    drawList->AddText( g_draw.m_largeFont, g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
+    drawList->AddText( Draw.g_draw.m_largeFont, Draw.g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
 
     if ( m_frameSkip > 0 )
     {
-        drawList->AddText( g_draw.m_mediumFont, g_draw.m_mediumFont->FontSize, { 40.0f, 40.0f + 64.0f + 20.0f },
+        drawList->AddText( Draw.g_draw.m_mediumFont, Draw.g_draw.m_mediumFont->FontSize, { 40.0f, 40.0f + 64.0f + 20.0f },
         IM_COL32( 200, 200, 200, 255 ), "Slow Time" );
     }
 

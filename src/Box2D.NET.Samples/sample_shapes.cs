@@ -195,8 +195,8 @@ namespace Box2D.NET.Samples;
     {
         Sample::Step( settings );
 
-        g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2_colorRed );
-        g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2_colorGreen );
+        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2_colorRed );
+        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2_colorGreen );
 
 #ifndef NDEBUG
         DrawTextLine( "toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount );
@@ -413,16 +413,16 @@ namespace Box2D.NET.Samples;
         if ( m_drawBodyAABBs )
         {
             b2AABB aabb = b2Body_ComputeAABB( m_table1Id );
-            g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_table2Id );
-            g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_ship1Id );
-            g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_ship2Id );
-            g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
         }
     }
 
@@ -627,13 +627,13 @@ namespace Box2D.NET.Samples;
         Sample::Step( settings );
 
         b2Vec2 p1 = b2Body_GetPosition( m_player1Id );
-        g_draw.DrawString( { p1.x - 0.5f, p1.y }, "player 1" );
+        Draw.g_draw.DrawString( { p1.x - 0.5f, p1.y }, "player 1" );
 
         b2Vec2 p2 = b2Body_GetPosition( m_player2Id );
-        g_draw.DrawString( { p2.x - 0.5f, p2.y }, "player 2" );
+        Draw.g_draw.DrawString( { p2.x - 0.5f, p2.y }, "player 2" );
 
         b2Vec2 p3 = b2Body_GetPosition( m_player3Id );
-        g_draw.DrawString( { p3.x - 0.5f, p3.y }, "player 3" );
+        Draw.g_draw.DrawString( { p3.x - 0.5f, p3.y }, "player 3" );
     }
 
     static Sample* Create( Settings& settings )
@@ -702,7 +702,7 @@ namespace Box2D.NET.Samples;
 
     void Step( Settings& settings ) override
     {
-        g_draw.DrawString( 5, m_textLine, "Custom filter disables collision between odd and even shapes" );
+        Draw.g_draw.DrawString( 5, m_textLine, "Custom filter disables collision between odd and even shapes" );
         m_textLine += m_textIncrement;
 
         Sample::Step( settings );
@@ -710,7 +710,7 @@ namespace Box2D.NET.Samples;
         for ( int i = 0; i < e_count; ++i )
         {
             b2Vec2 p = b2Body_GetPosition( m_bodyIds[i] );
-            g_draw.DrawString( { p.x, p.y }, "%d", i );
+            Draw.g_draw.DrawString( { p.x, p.y }, "%d", i );
         }
     }
 
@@ -1018,7 +1018,7 @@ namespace Box2D.NET.Samples;
 
         for ( int i = 0; i < 20; ++i )
         {
-            g_draw.DrawString( { -41.5f, 2.0f * i + 1.0f }, "%.2f", m_resistScale * i );
+            Draw.g_draw.DrawString( { -41.5f, 2.0f * i + 1.0f }, "%.2f", m_resistScale * i );
         }
     }
 
@@ -1423,7 +1423,7 @@ namespace Box2D.NET.Samples;
     {
         Sample::Step( settings );
 
-        g_draw.DrawString( 5, m_textLine, "This shows how to link together two chain shapes" );
+        Draw.g_draw.DrawString( 5, m_textLine, "This shows how to link together two chain shapes" );
         m_textLine += m_textIncrement;
     }
 
@@ -1551,7 +1551,7 @@ namespace Box2D.NET.Samples;
     {
         Sample::Step( settings );
 
-        g_draw.DrawTransform( b2Transform_identity );
+        Draw.g_draw.DrawTransform( b2Transform_identity );
     }
 
     static Sample* Create( Settings& settings )
@@ -1655,11 +1655,11 @@ namespace Box2D.NET.Samples;
 
         Sample::Step( settings );
 
-        g_draw.DrawString( 5, m_textLine, "reference angle = %g", m_referenceAngle );
+        Draw.g_draw.DrawString( 5, m_textLine, "reference angle = %g", m_referenceAngle );
         m_textLine += m_textIncrement;
 
-        g_draw.DrawCircle( b2Vec2_zero, m_radius + m_falloff, b2_colorBox2DBlue );
-        g_draw.DrawCircle( b2Vec2_zero, m_radius, b2_colorBox2DYellow );
+        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius + m_falloff, b2_colorBox2DBlue );
+        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius, b2_colorBox2DYellow );
     }
 
     static Sample* Create( Settings& settings )

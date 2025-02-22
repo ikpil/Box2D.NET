@@ -235,7 +235,7 @@ public class Draw
         ImGui::Begin("Overlay", nullptr,
             ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
             ImGuiWindowFlags_NoScrollbar);
-        ImGui::PushFont(g_draw.m_regularFont);
+        ImGui::PushFont(Draw.g_draw.m_regularFont);
         ImGui::SetCursorPos(ImVec2(float(x), float(y)));
         ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
         ImGui::PopFont();

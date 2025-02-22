@@ -37,7 +37,7 @@ void Step( Settings& settings ) override
 {
     Sample::Step( settings );
 
-    // g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2_colorWhite);
+    // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2_colorWhite);
 
     b2Vec2 position = b2Body_GetPosition( m_bodyId );
     DrawTextLine( "(x, y) = (%.2g, %.2g)", position.x, position.y );
@@ -454,7 +454,7 @@ void Step( Settings& settings ) override
         int indexA = static_cast<int>( reinterpret_cast<intptr_t>( userDataA ) );
         int indexB = static_cast<int>( reinterpret_cast<intptr_t>( userDataB ) );
 
-        g_draw.DrawPoint( event->point, 10.0f, b2_colorWhite );
+        Draw.g_draw.DrawPoint( event->point, 10.0f, b2_colorWhite );
 
         m_events.push_back( { indexA, indexB } );
     }
@@ -462,7 +462,7 @@ void Step( Settings& settings ) override
     int eventCount = (int)m_events.size();
     for ( int i = 0; i < eventCount; ++i )
     {
-        g_draw.DrawString( 5, m_textLine, "%d, %d", m_events[i].indexA, m_events[i].indexB );
+        Draw.g_draw.DrawString( 5, m_textLine, "%d, %d", m_events[i].indexA, m_events[i].indexB );
         m_textLine += m_textIncrement;
     }
 }

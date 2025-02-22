@@ -456,7 +456,7 @@ void Step( Settings& settings ) override
         }
     }
 
-    g_draw.DrawString( 5, m_textLine, "visiting == %s", m_isVisiting ? "true" : "false" );
+    Draw.g_draw.DrawString( 5, m_textLine, "visiting == %s", m_isVisiting ? "true" : "false" );
     m_textLine += m_textIncrement;
 }
 
@@ -580,7 +580,7 @@ void Step( Settings& settings ) override
         }
     }
 
-    g_draw.DrawString( 5, m_textLine, "count == %d", m_overlapCount );
+    Draw.g_draw.DrawString( 5, m_textLine, "count == %d", m_overlapCount );
     m_textLine += m_textIncrement;
 
     int capacity = b2Shape_GetSensorCapacity( m_sensorId );
@@ -592,7 +592,7 @@ void Step( Settings& settings ) override
         b2ShapeId shapeId = m_overlaps[i];
         b2AABB aabb = b2Shape_GetAABB( shapeId );
         b2Vec2 point = b2AABB_Center( aabb );
-        g_draw.DrawPoint( point, 10.0f, b2_colorWhite );
+        Draw.g_draw.DrawPoint( point, 10.0f, b2_colorWhite );
     }
 }
 
@@ -740,7 +740,7 @@ void UpdateUI() override
 
 void Step( Settings& settings ) override
 {
-    g_draw.DrawString( 5, m_textLine, "move using WASD" );
+    Draw.g_draw.DrawString( 5, m_textLine, "move using WASD" );
     m_textLine += m_textIncrement;
 
     b2Vec2 position = b2Body_GetPosition( m_playerId );
@@ -815,8 +815,8 @@ void Step( Settings& settings ) override
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
                         b2ManifoldPoint point = manifold.points[k];
-                        g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorBlueViolet );
-                        g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorBlueViolet );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
                     }
                 }
             }
@@ -845,8 +845,8 @@ void Step( Settings& settings ) override
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
                         b2ManifoldPoint point = manifold.points[k];
-                        g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorYellowGreen );
-                        g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorYellowGreen );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
                     }
                 }
             }
@@ -1247,14 +1247,14 @@ void Step( Settings& settings ) override
 
     b2ContactData contactData = {};
     int contactCount = b2Body_GetContactData( m_movingPlatformId, &contactData, 1 );
-    g_draw.DrawString( 5, m_textLine, "Platform contact count = %d, point count = %d", contactCount,
+    Draw.g_draw.DrawString( 5, m_textLine, "Platform contact count = %d, point count = %d", contactCount,
         contactData.manifold.pointCount );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "Movement: A/D/Space" );
+    Draw.g_draw.DrawString( 5, m_textLine, "Movement: A/D/Space" );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "Can jump = %s", canJump ? "true" : "false" );
+    Draw.g_draw.DrawString( 5, m_textLine, "Can jump = %s", canJump ? "true" : "false" );
     m_textLine += m_textIncrement;
 
     if ( settings.hertz > 0.0f )
@@ -1412,7 +1412,7 @@ void Step( Settings& settings ) override
     {
         // draw the transform of every body that moved (not sleeping)
         const b2BodyMoveEvent* event = events.moveEvents + i;
-        g_draw.DrawTransform( event->transform );
+        Draw.g_draw.DrawTransform( event->transform );
 
         // this shows a somewhat contrived way to track body sleeping
         b2BodyId* bodyId = static_cast<b2BodyId*>( event->userData );
@@ -1434,9 +1434,9 @@ void Step( Settings& settings ) override
         }
     }
 
-    g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2_colorAzure );
+    Draw.g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2_colorAzure );
 
-    g_draw.DrawString( 5, m_textLine, "sleep count: %d", m_sleepCount );
+    Draw.g_draw.DrawString( 5, m_textLine, "sleep count: %d", m_sleepCount );
     m_textLine += m_textIncrement;
 }
 
@@ -1619,11 +1619,11 @@ void Step( Settings& settings ) override
     b2Vec2 origin = { 5.0f, 1.0f };
     b2Vec2 translation = { -10.0f, 0.0f };
     b2RayResult result = b2World_CastRayClosest( m_worldId, origin, translation, b2DefaultQueryFilter() );
-    g_draw.DrawSegment( origin, origin + translation, b2_colorDimGray );
+    Draw.g_draw.DrawSegment( origin, origin + translation, b2_colorDimGray );
 
     if (result.hit)
     {
-        g_draw.DrawPoint( result.point, 10.0f, b2_colorCyan );
+        Draw.g_draw.DrawPoint( result.point, 10.0f, b2_colorCyan );
     }
 }
 

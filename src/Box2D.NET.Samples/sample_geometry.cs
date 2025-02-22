@@ -109,7 +109,7 @@ public:
 	{
 		Sample::Step( settings );
 
-		g_draw.DrawString( 5, m_textLine, "Options: generate(g), auto(a), bulk(b)" );
+		Draw.g_draw.DrawString( 5, m_textLine, "Options: generate(g), auto(a), bulk(b)" );
 		m_textLine += m_textIncrement;
 
 		b2Hull hull;
@@ -170,34 +170,34 @@ public:
 
 		if ( valid == false )
 		{
-			g_draw.DrawString( 5, m_textLine, "generation = %d, FAILED", m_generation );
+			Draw.g_draw.DrawString( 5, m_textLine, "generation = %d, FAILED", m_generation );
 			m_textLine += m_textIncrement;
 		}
 		else
 		{
-			g_draw.DrawString( 5, m_textLine, "generation = %d, count = %d", m_generation, hull.count );
+			Draw.g_draw.DrawString( 5, m_textLine, "generation = %d, count = %d", m_generation, hull.count );
 			m_textLine += m_textIncrement;
 		}
 
 		if ( milliseconds > 0.0f )
 		{
-			g_draw.DrawString( 5, m_textLine, "milliseconds = %g", milliseconds );
+			Draw.g_draw.DrawString( 5, m_textLine, "milliseconds = %g", milliseconds );
 			m_textLine += m_textIncrement;
 		}
 
 		m_textLine += m_textIncrement;
 
-		g_draw.DrawPolygon( hull.points, hull.count, b2_colorGray );
+		Draw.g_draw.DrawPolygon( hull.points, hull.count, b2_colorGray );
 
 		for ( int i = 0; i < m_count; ++i )
 		{
-			g_draw.DrawPoint( m_points[i], 5.0f, b2_colorBlue );
-			g_draw.DrawString( b2Add( m_points[i], { 0.1f, 0.1f } ), "%d", i );
+			Draw.g_draw.DrawPoint( m_points[i], 5.0f, b2_colorBlue );
+			Draw.g_draw.DrawString( b2Add( m_points[i], { 0.1f, 0.1f } ), "%d", i );
 		}
 
 		for ( int i = 0; i < hull.count; ++i )
 		{
-			g_draw.DrawPoint( hull.points[i], 6.0f, b2_colorGreen );
+			Draw.g_draw.DrawPoint( hull.points[i], 6.0f, b2_colorGreen );
 		}
 	}
 

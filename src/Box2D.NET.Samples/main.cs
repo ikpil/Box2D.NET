@@ -129,10 +129,10 @@ static void CreateUI( GLFWwindow* window, const char* glslVersion )
 	{
 		ImFontConfig fontConfig;
 		fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-		g_draw.m_smallFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
-		g_draw.m_regularFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
-		g_draw.m_mediumFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
-		g_draw.m_largeFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
+		Draw.g_draw.m_smallFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
+		Draw.g_draw.m_regularFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
+		Draw.g_draw.m_mediumFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
+		Draw.g_draw.m_largeFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
 	}
 	else
 	{
@@ -260,7 +260,7 @@ static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, 
 				break;
 
 			case GLFW_KEY_TAB:
-				g_draw.m_showUI = !g_draw.m_showUI;
+				Draw.g_draw.m_showUI = !Draw.g_draw.m_showUI;
 
 			default:
 				if ( s_sample )
@@ -359,12 +359,12 @@ static void UpdateUI()
 	int maxWorkers = enki::GetNumHardwareThreads();
 
 	float menuWidth = 180.0f;
-	if ( g_draw.m_showUI )
+	if ( Draw.g_draw.m_showUI )
 	{
 		ImGui::SetNextWindowPos( { g_camera.m_width - menuWidth - 10.0f, 10.0f } );
 		ImGui::SetNextWindowSize( { menuWidth, g_camera.m_height - 20.0f } );
 
-		ImGui::Begin( "Tools", &g_draw.m_showUI,
+		ImGui::Begin( "Tools", &Draw.g_draw.m_showUI,
 					  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse );
 
 		if ( ImGui::BeginTabBar( "ControlTabs", ImGuiTabBarFlags_None ) )
@@ -606,7 +606,7 @@ int main( int, char** )
 
 	// todo put this in s_settings
 	CreateUI( g_mainWindow, glslVersion );
-	g_draw.Create();
+	Draw.g_draw.Create();
 
 	s_settings.sampleIndex = b2ClampInt( s_settings.sampleIndex, 0, g_sampleCount - 1 );
 	s_selection = s_settings.sampleIndex;
@@ -640,7 +640,7 @@ int main( int, char** )
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-		//g_draw.DrawBackground();
+		//Draw.g_draw.DrawBackground();
 
 		double cursorPosX = 0, cursorPosY = 0;
 		glfwGetCursorPos( g_mainWindow, &cursorPosX, &cursorPosY );
@@ -671,7 +671,7 @@ int main( int, char** )
 			s_sample = g_sampleEntries[s_settings.sampleIndex].createFcn( s_settings );
 		}
 
-		if ( g_draw.m_showUI )
+		if ( Draw.g_draw.m_showUI )
 		{
 			const SampleEntry& entry = g_sampleEntries[s_settings.sampleIndex];
 			snprintf( buffer, 128, "%s : %s", entry.category, entry.name );
@@ -680,13 +680,13 @@ int main( int, char** )
 
 		s_sample->Step( s_settings );
 
-		g_draw.Flush();
+		Draw.g_draw.Flush();
 
 		UpdateUI();
 
 		// ImGui::ShowDemoWindow();
 
-		if ( g_draw.m_showUI )
+		if ( Draw.g_draw.m_showUI )
 		{
 			snprintf( buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample->m_stepCount,
 					  g_camera.m_center.x, g_camera.m_center.y, g_camera.m_zoom );
@@ -740,7 +740,7 @@ int main( int, char** )
 	delete s_sample;
 	s_sample = nullptr;
 
-	g_draw.Destroy();
+	Draw.g_draw.Destroy();
 
 	DestroyUI();
 	glfwTerminate();

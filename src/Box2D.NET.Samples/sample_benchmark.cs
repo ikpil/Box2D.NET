@@ -821,13 +821,13 @@ void Step( Settings settings ) override
 
     if ( m_wakeCount > 0 )
     {
-        g_draw.DrawString( 5, m_textLine, "wake ave = %g ms", m_wakeTotal / m_wakeCount );
+        Draw.g_draw.DrawString( 5, m_textLine, "wake ave = %g ms", m_wakeTotal / m_wakeCount );
         m_textLine += m_textIncrement;
     }
 
     if ( m_sleepCount > 0 )
     {
-        g_draw.DrawString( 5, m_textLine, "sleep ave = %g ms", m_sleepTotal / m_sleepCount );
+        Draw.g_draw.DrawString( 5, m_textLine, "sleep ave = %g ms", m_sleepTotal / m_sleepCount );
         m_textLine += m_textIncrement;
     }
 
@@ -1327,12 +1327,12 @@ void Step( Settings settings ) override
 
         b2Vec2 p1 = m_origins[m_drawIndex];
         b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-        g_draw.DrawSegment( p1, p2, b2_colorWhite );
-        g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-        g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
+        Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
+        Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
+        Draw.g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
         if ( drawResult.hit )
         {
-            g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
         }
     }
     else if ( m_queryType == e_circleCast )
@@ -1367,14 +1367,14 @@ void Step( Settings settings ) override
 
         b2Vec2 p1 = m_origins[m_drawIndex];
         b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-        g_draw.DrawSegment( p1, p2, b2_colorWhite );
-        g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-        g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
+        Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
+        Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
+        Draw.g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
         if ( drawResult.hit )
         {
             b2Vec2 t = b2Lerp( p1, p2, drawResult.fraction );
-            g_draw.DrawCircle( t, m_radius, b2_colorWhite );
-            g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawCircle( t, m_radius, b2_colorWhite );
+            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
         }
     }
     else if ( m_queryType == e_overlap )
@@ -1410,29 +1410,29 @@ void Step( Settings settings ) override
         b2Vec2 origin = m_origins[m_drawIndex];
         b2AABB aabb = { origin - extent, origin + extent };
 
-        g_draw.DrawAABB( aabb, b2_colorWhite );
+        Draw.g_draw.DrawAABB( aabb, b2_colorWhite );
 
         for ( int i = 0; i < drawResult.count; ++i )
         {
-            g_draw.DrawPoint( drawResult.points[i], 5.0f, b2_colorHotPink );
+            Draw.g_draw.DrawPoint( drawResult.points[i], 5.0f, b2_colorHotPink );
         }
     }
 
-    g_draw.DrawString( 5, m_textLine, "build time ms = %g", m_buildTime );
+    Draw.g_draw.DrawString( 5, m_textLine, "build time ms = %g", m_buildTime );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "hit count = %d, node visits = %d, leaf visits = %d", hitCount, nodeVisits,
+    Draw.g_draw.DrawString( 5, m_textLine, "hit count = %d, node visits = %d, leaf visits = %d", hitCount, nodeVisits,
         leafVisits );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "total ms = %.3f", ms );
+    Draw.g_draw.DrawString( 5, m_textLine, "total ms = %.3f", ms );
     m_textLine += m_textIncrement;
 
-    g_draw.DrawString( 5, m_textLine, "min total ms = %.3f", m_minTime );
+    Draw.g_draw.DrawString( 5, m_textLine, "min total ms = %.3f", m_minTime );
     m_textLine += m_textIncrement;
 
     float aveRayCost = 1000.0f * m_minTime / float( sampleCount );
-    g_draw.DrawString( 5, m_textLine, "average us = %.2f", aveRayCost );
+    Draw.g_draw.DrawString( 5, m_textLine, "average us = %.2f", aveRayCost );
     m_textLine += m_textIncrement;
 }
 

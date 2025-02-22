@@ -193,7 +193,7 @@ namespace Box2D.NET.Samples;
 
 		if ( m_explode )
 		{
-			g_draw.DrawCircle( m_explosionPosition, radius, b2_colorAzure );
+			Draw.g_draw.DrawCircle( m_explosionPosition, radius, b2_colorAzure );
 		}
 
 		if ( glfwGetKey( g_mainWindow, GLFW_KEY_A ) == GLFW_PRESS )

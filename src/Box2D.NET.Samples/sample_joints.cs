@@ -311,14 +311,14 @@ void Step( Settings& settings ) override
     b2MotorJoint_SetAngularOffset( m_jointId, angularOffset );
 
     b2Transform transform = { linearOffset, b2MakeRot( angularOffset ) };
-    g_draw.DrawTransform( transform );
+    Draw.g_draw.DrawTransform( transform );
 
     Sample::Step( settings );
 
     b2Vec2 force = b2Joint_GetConstraintForce( m_jointId );
     float torque = b2Joint_GetConstraintTorque( m_jointId );
 
-    g_draw.DrawString( 5, m_textLine, "force = {%3.f, %3.f}, torque = %3.f", force.x, force.y, torque );
+    Draw.g_draw.DrawString( 5, m_textLine, "force = {%3.f, %3.f}, torque = %3.f", force.x, force.y, torque );
     m_textLine += 15;
 }
 
@@ -561,15 +561,15 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
     float angle1 = b2RevoluteJoint_GetAngle( m_jointId1 );
-    g_draw.DrawString( 5, m_textLine, "Angle (Deg) 1 = %2.1f", angle1 );
+    Draw.g_draw.DrawString( 5, m_textLine, "Angle (Deg) 1 = %2.1f", angle1 );
     m_textLine += m_textIncrement;
 
     float torque1 = b2RevoluteJoint_GetMotorTorque( m_jointId1 );
-    g_draw.DrawString( 5, m_textLine, "Motor Torque 1 = %4.1f", torque1 );
+    Draw.g_draw.DrawString( 5, m_textLine, "Motor Torque 1 = %4.1f", torque1 );
     m_textLine += m_textIncrement;
 
     float torque2 = b2RevoluteJoint_GetMotorTorque( m_jointId2 );
-    g_draw.DrawString( 5, m_textLine, "Motor Torque 2 = %4.1f", torque2 );
+    Draw.g_draw.DrawString( 5, m_textLine, "Motor Torque 2 = %4.1f", torque2 );
     m_textLine += m_textIncrement;
 }
 
@@ -715,15 +715,15 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
     float force = b2PrismaticJoint_GetMotorForce( m_jointId );
-    g_draw.DrawString( 5, m_textLine, "Motor Force = %4.1f", force );
+    Draw.g_draw.DrawString( 5, m_textLine, "Motor Force = %4.1f", force );
     m_textLine += m_textIncrement;
 
     float translation = b2PrismaticJoint_GetTranslation( m_jointId );
-    g_draw.DrawString( 5, m_textLine, "Translation = %4.1f", translation );
+    Draw.g_draw.DrawString( 5, m_textLine, "Translation = %4.1f", translation );
     m_textLine += m_textIncrement;
 
     float speed = b2PrismaticJoint_GetSpeed( m_jointId );
-    g_draw.DrawString( 5, m_textLine, "Speed = %4.8f", speed );
+    Draw.g_draw.DrawString( 5, m_textLine, "Speed = %4.8f", speed );
     m_textLine += m_textIncrement;
 }
 
@@ -859,7 +859,7 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
     float torque = b2WheelJoint_GetMotorTorque( m_jointId );
-    g_draw.DrawString( 5, m_textLine, "Motor Torque = %4.1f", torque );
+    Draw.g_draw.DrawString( 5, m_textLine, "Motor Torque = %4.1f", torque );
     m_textLine += m_textIncrement;
 }
 
@@ -1271,7 +1271,7 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
     b2Vec2 tipPosition = b2Body_GetPosition( m_tipId );
-    g_draw.DrawString( 5, m_textLine, "tip-y = %.2f", tipPosition.y );
+    Draw.g_draw.DrawString( 5, m_textLine, "tip-y = %.2f", tipPosition.y );
     m_textLine += m_textIncrement;
 }
 
@@ -1747,7 +1747,7 @@ void Step( Settings& settings ) override
         else
         {
             b2Vec2 point = b2Joint_GetLocalAnchorA( m_jointIds[i] );
-            g_draw.DrawString( point, "(%.1f, %.1f)", force.x, force.y );
+            Draw.g_draw.DrawString( point, "(%.1f, %.1f)", force.x, force.y );
         }
     }
 
@@ -1800,7 +1800,7 @@ void Step( Settings& settings ) override
     Sample::Step( settings );
 
     b2Transform axes = b2Transform_identity;
-    g_draw.DrawTransform( axes );
+    Draw.g_draw.DrawTransform( axes );
 
     if ( settings.pause )
     {
@@ -1847,12 +1847,12 @@ void Step( Settings& settings ) override
         float C = length - slackLength;
         if ( C < 0.0f || length < 0.001f )
         {
-            g_draw.DrawSegment( anchorA, anchorB, b2_colorLightCyan );
+            Draw.g_draw.DrawSegment( anchorA, anchorB, b2_colorLightCyan );
             m_impulses[i] = 0.0f;
             continue;
         }
 
-        g_draw.DrawSegment( anchorA, anchorB, b2_colorViolet );
+        Draw.g_draw.DrawSegment( anchorA, anchorB, b2_colorViolet );
         b2Vec2 axis = b2Normalize( deltaAnchor );
 
         b2Vec2 rB = b2Sub( anchorB, pB );
@@ -1873,7 +1873,7 @@ void Step( Settings& settings ) override
     b2Body_SetLinearVelocity( m_bodyId, vB );
     b2Body_SetAngularVelocity( m_bodyId, omegaB );
 
-    g_draw.DrawString( 5, m_textLine, "forces = %g, %g", m_impulses[0] * invTimeStep, m_impulses[1] * invTimeStep );
+    Draw.g_draw.DrawString( 5, m_textLine, "forces = %g, %g", m_impulses[0] * invTimeStep, m_impulses[1] * invTimeStep );
     m_textLine += m_textIncrement;
 }
 
@@ -2120,12 +2120,12 @@ void Step( Settings& settings ) override
         m_car.SetSpeed( -m_speed );
     }
 
-    g_draw.DrawString( 5, m_textLine, "Keys: left = a, brake = s, right = d" );
+    Draw.g_draw.DrawString( 5, m_textLine, "Keys: left = a, brake = s, right = d" );
     m_textLine += m_textIncrement;
 
     b2Vec2 linearVelocity = b2Body_GetLinearVelocity( m_car.m_chassisId );
     float kph = linearVelocity.x * 3.6f;
-    g_draw.DrawString( 5, m_textLine, "speed in kph: %.2g", kph );
+    Draw.g_draw.DrawString( 5, m_textLine, "speed in kph: %.2g", kph );
     m_textLine += m_textIncrement;
 
     b2Vec2 carPosition = b2Body_GetPosition( m_car.m_chassisId );

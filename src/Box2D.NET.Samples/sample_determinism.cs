@@ -155,7 +155,7 @@ void Step(Settings& settings) override
         }
     }
 
-    g_draw.DrawString( 5, m_textLine, "sleep step = %d, hash = 0x%08x", m_sleepStep, m_hash );
+    Draw.g_draw.DrawString( 5, m_textLine, "sleep step = %d, hash = 0x%08x", m_sleepStep, m_hash );
     m_textLine += m_textIncrement;
 }
 
