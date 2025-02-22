@@ -224,7 +224,7 @@ public class test_world
             for (int j = 0; j < WORLD_COUNT; ++j)
             {
                 worldIds[j] = b2CreateWorld(worldDef);
-                Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true));
+                Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true), $"i({i}) j({j})");
 
                 b2BodyDef bodyDef = b2DefaultBodyDef();
                 b2CreateBody(worldIds[j], bodyDef);
@@ -244,7 +244,7 @@ public class test_world
             for (int j = WORLD_COUNT - 1; j >= 0; --j)
             {
                 b2DestroyWorld(worldIds[j]);
-                Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(false));
+                Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(false), $"i({i}) j({j})");
                 worldIds[j] = b2_nullWorldId;
             }
         }

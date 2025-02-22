@@ -130,7 +130,7 @@ namespace Box2D.NET
             ushort generation = world.generation;
 
             //*world = ( b2World ){ 0 };
-            world.Reset();
+            world.Clear();
 
             world.worldId = (ushort)worldId;
             world.generation = generation;
@@ -363,7 +363,7 @@ namespace Box2D.NET
 
             // Wipe world but preserve generation
             ushort generation = world.generation;
-            world.Reset();
+            world.Clear();
             world.worldId = 0;
             world.generation = (ushort)(generation + 1);
         }

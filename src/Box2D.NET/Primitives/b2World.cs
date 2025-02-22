@@ -138,11 +138,114 @@ namespace Box2D.NET.Primitives
         public bool inUse;
 
         // TODO: @ikpil for b2Solve 
-        public readonly b2WorkerContext[] workerContext = b2Alloc<b2WorkerContext>(B2_MAX_WORKERS);
+        public readonly b2WorkerContext[] tempWorkerContext = b2Alloc<b2WorkerContext>(B2_MAX_WORKERS);
 
-        public void Reset()
+        public void Clear()
         {
-            // ..?
+            stackAllocator = null;
+            broadPhase = null;
+            constraintGraph = null;
+
+            bodyIdPool = null;
+
+            bodies = new b2Array<b2Body>();
+
+            solverSetIdPool = null;
+
+            solverSets = new b2Array<b2SolverSet>();
+
+            jointIdPool = null;
+
+            joints = new b2Array<b2Joint>();
+
+            contactIdPool = null;
+
+            contacts = new b2Array<b2Contact>();
+
+            islandIdPool = null;
+
+            islands = new b2Array<b2Island>();
+
+            shapeIdPool = null;
+            chainIdPool = null;
+
+            shapes = new b2Array<b2Shape>();
+            chainShapes = new b2Array<b2ChainShape>();
+
+            sensors = new b2Array<b2Sensor>();
+
+            taskContexts = new b2Array<b2TaskContext>();
+            sensorTaskContexts = new b2Array<b2SensorTaskContext>();
+
+            bodyMoveEvents = new b2Array<b2BodyMoveEvent>();
+            sensorBeginEvents = new b2Array<b2SensorBeginTouchEvent>();
+            contactBeginEvents = new b2Array<b2ContactBeginTouchEvent>();
+
+            sensorEndEvents[0] = new b2Array<b2SensorEndTouchEvent>();
+            sensorEndEvents[1] = new b2Array<b2SensorEndTouchEvent>();
+            contactEndEvents[0] = new b2Array<b2ContactEndTouchEvent>();
+            contactEndEvents[1] = new b2Array<b2ContactEndTouchEvent>();
+            endEventArrayIndex = 0;
+
+            contactHitEvents = new b2Array<b2ContactHitEvent>();
+
+            debugBodySet = null;
+            debugJointSet = null;
+            debugContactSet = null;
+
+            stepIndex = 0;
+
+            splitIslandId = 0;
+
+            gravity = new b2Vec2();
+            hitEventThreshold = 0.0f;
+            restitutionThreshold = 0.0f;
+            maxLinearSpeed = 0.0f;
+            contactMaxPushSpeed = 0.0f;
+            contactHertz = 0.0f;
+            contactDampingRatio = 0.0f;
+            jointHertz = 0.0f;
+            jointDampingRatio = 0.0f;
+
+            frictionCallback = null;
+            restitutionCallback = null;
+
+            generation = 0;
+
+            profile = null;
+
+            preSolveFcn = null;
+            preSolveContext = null;
+
+            customFilterFcn = null;
+            customFilterContext = null;
+
+            workerCount = 0;
+            enqueueTaskFcn = null;
+            finishTaskFcn = null;
+            userTaskContext = null;
+            userTreeTask = null;
+
+            userData = null;
+
+            inv_h = 0.0f;
+
+            activeTaskCount = 0;
+            taskCount = 0;
+
+            worldId = 0;
+
+            enableSleep = false;
+            locked = false;
+            enableWarmStarting = false;
+            enableContinuous = false;
+            enableSpeculative = false;
+            inUse = false;
+
+            foreach (var workerContext in tempWorkerContext)
+            {
+                workerContext.Clear();
+            }
         }
     }
 }
