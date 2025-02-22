@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System.Diagnostics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.joint;
@@ -22,105 +23,22 @@ namespace Box2D.NET.Samples;
 #define SHADER_TEXT( x ) "#version 330\n" #x
 
 
-
-void DrawPolygonFcn( const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawPolygon( vertices, vertexCount, color );
-}
-
-void DrawSolidPolygonFcn( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,
-void* context )
-{
-    static_cast<Draw*>( context ).DrawSolidPolygon( transform, vertices, vertexCount, radius, color );
-}
-
-void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawCircle( center, radius, color );
-}
-
-void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawSolidCircle( transform, b2Vec2_zero, radius, color );
-}
-
-void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawSolidCapsule( p1, p2, radius, color );
-}
-
-void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawSegment( p1, p2, color );
-}
-
-void DrawTransformFcn( b2Transform transform, void* context )
-{
-    static_cast<Draw*>( context ).DrawTransform( transform );
-}
-
-void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawPoint( p, size, color );
-}
-
-void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context )
-{
-    static_cast<Draw*>( context ).DrawString( p, s );
-}
-
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {
-    Draw g_draw;
-    Camera g_camera;
-
-    Draw();
-    ~Draw();
-
-    void Create();
-    void Destroy();
-
-    void DrawPolygon( const b2Vec2* vertices,  int vertexCount, b2HexColor color );
-    void DrawSolidPolygon(b2Transform transform,  const b2Vec2* vertices,  int vertexCount, float radius, b2HexColor color );
-
-    void DrawCircle(b2Vec2 center, float radius, b2HexColor color);
-    void DrawSolidCircle(b2Transform transform, b2Vec2 center, float radius, b2HexColor color);
-
-    void DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color);
-
-    void DrawSegment(b2Vec2 p1, b2Vec2 p2, b2HexColor color);
-
-    void DrawTransform(b2Transform transform);
-
-    void DrawPoint(b2Vec2 p, float size, b2HexColor color);
-
-    void DrawString(int x, int y,  const char*  string, ...);
-
-    void DrawString(b2Vec2 p,  const char*  string, ...);
-
-    void DrawAABB(b2AABB aabb, b2HexColor color);
-
-    void Flush();
-    void DrawBackground();
+    public static Draw g_draw;
+    public static Camera g_camera;
 
     bool m_showUI;
 
-    struct GLBackground* m_background;
-
-    struct GLPoints* m_points;
-
-    struct GLLines* m_lines;
-
-    struct GLTriangles* m_triangles;
-
-    struct GLCircles* m_circles;
-
-    struct GLSolidCircles* m_solidCircles;
-
-    struct GLSolidCapsules* m_solidCapsules;
-
-    struct GLSolidPolygons* m_solidPolygons;
+    GLBackground m_background;
+    GLPoints m_points;
+    GLLines m_lines;
+    GLTriangles m_triangles;
+    GLCircles m_circles;
+    GLSolidCircles m_solidCircles;
+    GLSolidCapsules m_solidCapsules;
+    GLSolidPolygons m_solidPolygons;
     b2DebugDraw m_debugDraw;
 
     ImFont* m_smallFont;
@@ -133,8 +51,7 @@ public class Draw
 
     extern struct GLFWwindow* g_mainWindow;
 
-
-    Draw::Draw()
+    public Draw()
     {
         m_showUI = true;
         m_points = nullptr;
@@ -154,35 +71,35 @@ public class Draw
         m_background = nullptr;
     }
 
-    Draw::~Draw()
+    ~Draw()
     {
-        Debug.Assert(m_points == nullptr);
-        Debug.Assert(m_lines == nullptr);
-        Debug.Assert(m_triangles == nullptr);
-        Debug.Assert(m_circles == nullptr);
-        Debug.Assert(m_solidCircles == nullptr);
-        Debug.Assert(m_solidCapsules == nullptr);
-        Debug.Assert(m_solidPolygons == nullptr);
-        Debug.Assert(m_background == nullptr);
+        Debug.Assert(m_points == null);
+        Debug.Assert(m_lines == null);
+        Debug.Assert(m_triangles == null);
+        Debug.Assert(m_circles == null);
+        Debug.Assert(m_solidCircles == null);
+        Debug.Assert(m_solidCapsules == null);
+        Debug.Assert(m_solidPolygons == null);
+        Debug.Assert(m_background == null);
     }
 
-    void Draw::Create()
+    public void Create()
     {
-        m_background = new GLBackground;
+        m_background = new GLBackground();
         m_background.Create();
-        m_points = new GLPoints;
+        m_points = new GLPoints();
         m_points.Create();
-        m_lines = new GLLines;
+        m_lines = new GLLines();
         m_lines.Create();
-        m_triangles = new GLTriangles;
+        m_triangles = new GLTriangles();
         m_triangles.Create();
-        m_circles = new GLCircles;
+        m_circles = new GLCircles();
         m_circles.Create();
-        m_solidCircles = new GLSolidCircles;
+        m_solidCircles = new GLSolidCircles();
         m_solidCircles.Create();
-        m_solidCapsules = new GLSolidCapsules;
+        m_solidCapsules = new GLSolidCapsules();
         m_solidCapsules.Create();
-        m_solidPolygons = new GLSolidPolygons;
+        m_solidPolygons = new GLSolidPolygons();
         m_solidPolygons.Create();
 
         b2AABB bounds = { { -FLT_MAX, -FLT_MAX }, { FLT_MAX, FLT_MAX } };
@@ -217,7 +134,7 @@ public class Draw
         m_debugDraw.context = this;
     }
 
-    void Draw::Destroy()
+    public void Destroy()
     {
         m_background.Destroy();
         delete m_background;
@@ -252,7 +169,7 @@ public class Draw
         m_solidPolygons = nullptr;
     }
 
-    void Draw::DrawPolygon( const b2Vec2* vertices,  int vertexCount, b2HexColor color )
+    public void DrawPolygon( const b2Vec2* vertices,  int vertexCount, b2HexColor color )
     {
         b2Vec2 p1 = vertices[vertexCount - 1];
         for (int i = 0; i < vertexCount; ++i)
@@ -263,33 +180,33 @@ public class Draw
         }
     }
 
-    void Draw::DrawSolidPolygon(b2Transform transform,  const b2Vec2* vertices,  int vertexCount, float radius, b2HexColor color )
+    public void DrawSolidPolygon(b2Transform transform,  const b2Vec2* vertices,  int vertexCount, float radius, b2HexColor color )
     {
         m_solidPolygons.AddPolygon(transform, vertices, vertexCount, radius, color);
     }
 
-    void Draw::DrawCircle(b2Vec2 center, float radius, b2HexColor color)
+    public void DrawCircle(b2Vec2 center, float radius, b2HexColor color)
     {
         m_circles.AddCircle(center, radius, color);
     }
 
-    void Draw::DrawSolidCircle(b2Transform transform, b2Vec2 center, float radius, b2HexColor color)
+    public void DrawSolidCircle(b2Transform transform, b2Vec2 center, float radius, b2HexColor color)
     {
         transform.p = b2TransformPoint(transform, center);
         m_solidCircles.AddCircle(transform, radius, color);
     }
 
-    void Draw::DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color)
+    public void DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color)
     {
         m_solidCapsules.AddCapsule(p1, p2, radius, color);
     }
 
-    void Draw::DrawSegment(b2Vec2 p1, b2Vec2 p2, b2HexColor color)
+    public void DrawSegment(b2Vec2 p1, b2Vec2 p2, b2HexColor color)
     {
         m_lines.AddLine(p1, p2, color);
     }
 
-    void Draw::DrawTransform(b2Transform transform)
+    public void DrawTransform(b2Transform transform)
     {
         const float k_axisScale = 0.2f;
         b2Vec2 p1 = transform.p;
@@ -301,12 +218,12 @@ public class Draw
         m_lines.AddLine(p1, p2, b2_colorGreen);
     }
 
-    void Draw::DrawPoint(b2Vec2 p, float size, b2HexColor color)
+    public void DrawPoint(b2Vec2 p, float size, b2HexColor color)
     {
         m_points.AddPoint(p, size, color);
     }
 
-    void Draw::DrawString(int x, int y,  const char*  string, ...)
+    public void DrawString(int x, int y,  const char*  string, ...)
     {
         // if (m_showUI == false)
         //{
@@ -326,7 +243,7 @@ public class Draw
         va_end(arg);
     }
 
-    void Draw::DrawString(b2Vec2 p,  const char*  string, ...)
+    public void DrawString(b2Vec2 p,  const char*  string, ...)
     {
         b2Vec2 ps = g_camera.ConvertWorldToScreen(p);
 
@@ -341,7 +258,7 @@ public class Draw
         va_end(arg);
     }
 
-    void Draw::DrawAABB(b2AABB aabb, b2HexColor c)
+    public void DrawAABB(b2AABB aabb, b2HexColor c)
     {
         b2Vec2 p1 = aabb.lowerBound;
         b2Vec2 p2 = { aabb.upperBound.x, aabb.lowerBound.y };
@@ -354,7 +271,7 @@ public class Draw
         m_lines.AddLine(p4, p1, c);
     }
 
-    void Draw::Flush()
+    public void Flush()
     {
         m_solidCircles.Flush();
         m_solidCapsules.Flush();
@@ -366,8 +283,54 @@ public class Draw
         CheckErrorGL();
     }
 
-    void Draw::DrawBackground()
+    public void DrawBackground()
     {
         m_background.Draw();
     }
+    
+    public static void DrawPolygonFcn( const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawPolygon( vertices, vertexCount, color );
+    }
+
+    public static void DrawSolidPolygonFcn( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,void* context )
+    {
+        static_cast<Draw*>( context ).DrawSolidPolygon( transform, vertices, vertexCount, radius, color );
+    }
+
+    public static void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawCircle( center, radius, color );
+    }
+
+    public static void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawSolidCircle( transform, b2Vec2_zero, radius, color );
+    }
+
+    public static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawSolidCapsule( p1, p2, radius, color );
+    }
+
+    public static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawSegment( p1, p2, color );
+    }
+
+    public static void DrawTransformFcn( b2Transform transform, void* context )
+    {
+        static_cast<Draw*>( context ).DrawTransform( transform );
+    }
+
+    public static void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawPoint( p, size, color );
+    }
+
+    public static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context )
+    {
+        static_cast<Draw*>( context ).DrawString( p, s );
+    }
+
 }
