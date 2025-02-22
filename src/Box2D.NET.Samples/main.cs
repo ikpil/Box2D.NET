@@ -25,7 +25,7 @@ static int MyAllocHook( int allocType, void* userData, size_t size, int blockTyp
 #endif
 
 GLFWwindow* g_mainWindow = nullptr;
-static int32_t s_selection = 0;
+static int s_selection = 0;
 static Sample* s_sample = nullptr;
 static Settings s_settings;
 static bool s_rightMouseDown = false;
@@ -33,25 +33,25 @@ static b2Vec2 s_clickPointWS = b2Vec2_zero;
 static float s_windowScale = 1.0f;
 static float s_framebufferScale = 1.0f;
 
-inline bool IsPowerOfTwo( int32_t x )
+inline bool IsPowerOfTwo( int x )
 {
 	return ( x != 0 ) && ( ( x & ( x - 1 ) ) == 0 );
 }
 
-void* AllocFcn( uint32_t size, int32_t alignment )
+void* AllocFcn( uint size, int alignment )
 {
 	// Allocation must be a multiple of alignment or risk a seg fault
 	// https://en.cppreference.com/w/c/memory/aligned_alloc
-	assert( IsPowerOfTwo( alignment ) );
+	Debug.Assert( IsPowerOfTwo( alignment ) );
 	size_t sizeAligned = ( ( size - 1 ) | ( alignment - 1 ) ) + 1;
-	assert( ( sizeAligned & ( alignment - 1 ) ) == 0 );
+	Debug.Assert( ( sizeAligned & ( alignment - 1 ) ) == 0 );
 
 #if defined( _WIN64 ) || defined( _WIN32 )
 	void* ptr = _aligned_malloc( sizeAligned, alignment );
 #else
 	void* ptr = aligned_alloc( alignment, sizeAligned );
 #endif
-	assert( ptr != nullptr );
+	Debug.Assert( ptr != nullptr );
 	return ptr;
 }
 
@@ -112,14 +112,14 @@ static void CreateUI( GLFWwindow* window, const char* glslVersion )
 	if ( success == false )
 	{
 		printf( "ImGui_ImplGlfw_InitForOpenGL failed\n" );
-		assert( false );
+		Debug.Assert( false );
 	}
 
 	success = ImGui_ImplOpenGL3_Init( glslVersion );
 	if ( success == false )
 	{
 		printf( "ImGui_ImplOpenGL3_Init failed\n" );
-		assert( false );
+		Debug.Assert( false );
 	}
 
 	const char* fontPath = "samples/data/droid_sans.ttf";
@@ -276,7 +276,7 @@ static void CharCallback( GLFWwindow* window, unsigned int c )
 	ImGui_ImplGlfw_CharCallback( window, c );
 }
 
-static void MouseButtonCallback( GLFWwindow* window, int32_t button, int32_t action, int32_t mods )
+static void MouseButtonCallback( GLFWwindow* window, int button, int action, int mods )
 {
 	ImGui_ImplGlfw_MouseButtonCallback( window, button, action, mods );
 

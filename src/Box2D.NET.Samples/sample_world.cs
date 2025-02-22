@@ -3,14 +3,11 @@
 
 using Box2D.NET.Samples;
 
-namespace Box2D.NET.Samples
+namespace Box2D.NET.Samples;
+
+    public class LargeWorld : Sample
 {
-    class LargeWorld :
-} public Sample
-{
-public:
-	explicit LargeWorld( Settings& settings )
-		: Sample( settings )
+	public LargeWorld( Settings settings ) : base( settings )
 	{
 		m_period = 40.0f;
 		float omega = 2.0 * B2_PI / m_period;
@@ -135,7 +132,7 @@ public:
 		m_followCar = false;
 	}
 
-	void UpdateUI() override
+	public override void UpdateUI()
 	{
 		float height = 160.0f;
 		ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );

@@ -7,7 +7,7 @@ namespace Box2D.NET.Samples;
 #define BUFFER_OFFSET( x ) ( (const void*)( x ) )
 #define SHADER_TEXT( x ) "#version 330\n" #x
 
-struct Camera
+public struct Camera
 {
     Camera();
 
@@ -24,14 +24,14 @@ struct Camera
 };
 
 
-struct RGBA8
+public struct RGBA8
 {
-    uint8_t r, g, b, a;
+    byte r, g, b, a;
 };
 
 static RGBA8 MakeRGBA8( b2HexColor c, float alpha )
 {
-    return { uint8_t( ( c >> 16 ) & 0xFF ), uint8_t( ( c >> 8 ) & 0xFF ), uint8_t( c & 0xFF ), uint8_t( 0xFF * alpha ) };
+    return { byte( ( c >> 16 ) & 0xFF ), byte( ( c >> 8 ) & 0xFF ), byte( c & 0xFF ), byte( 0xFF * alpha ) };
 }
 
 Draw g_draw;
@@ -440,7 +440,7 @@ struct GLLines
             return;
         }
 
-        assert( count % 2 == 0 );
+        Debug.Assert( count % 2 == 0 );
 
         glUseProgram( m_programId );
 
@@ -577,7 +577,7 @@ struct GLTriangles
             return;
         }
 
-        assert( count % 3 == 0 );
+        Debug.Assert( count % 3 == 0 );
 
         glUseProgram( m_programId );
 
@@ -1309,17 +1309,16 @@ void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context )
 }
 
 // This class implements Box2D debug drawing callbacks
-class Draw
+public class Draw
 {
-    public:
     Draw();
     ~Draw();
 
     void Create();
     void Destroy();
 
-    void DrawPolygon( const b2Vec2* vertices, int32_t vertexCount, b2HexColor color );
-    void DrawSolidPolygon( b2Transform transform, const b2Vec2* vertices, int32_t vertexCount, float radius, b2HexColor color );
+    void DrawPolygon( const b2Vec2* vertices, int vertexCount, b2HexColor color );
+    void DrawSolidPolygon( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color );
 
     void DrawCircle( b2Vec2 center, float radius, b2HexColor color );
     void DrawSolidCircle( b2Transform transform, b2Vec2 center, float radius, b2HexColor color );
@@ -1383,14 +1382,14 @@ Draw::Draw()
 
 Draw::~Draw()
 {
-    assert( m_points == nullptr );
-    assert( m_lines == nullptr );
-    assert( m_triangles == nullptr );
-    assert( m_circles == nullptr );
-    assert( m_solidCircles == nullptr );
-    assert( m_solidCapsules == nullptr );
-    assert( m_solidPolygons == nullptr );
-    assert( m_background == nullptr );
+    Debug.Assert( m_points == nullptr );
+    Debug.Assert( m_lines == nullptr );
+    Debug.Assert( m_triangles == nullptr );
+    Debug.Assert( m_circles == nullptr );
+    Debug.Assert( m_solidCircles == nullptr );
+    Debug.Assert( m_solidCapsules == nullptr );
+    Debug.Assert( m_solidPolygons == nullptr );
+    Debug.Assert( m_background == nullptr );
 }
 
 void Draw::Create()

@@ -3,8 +3,8 @@
 
 extern "C" int b2_toiCalls;
 
-namespace Box2D.NET.Samples
-{
+namespace Box2D.NET.Samples;
+
     extern "C" int b2_toiHitCount;
 #endif
 
@@ -498,7 +498,7 @@ namespace Box2D.NET.Samples
 
             for ( int i = 0; i < m_tumblerCount; ++i )
             {
-                assert( m_bodyIndex < m_bodyCount );
+                Debug.Assert( m_bodyIndex < m_bodyCount );
 
                 b2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = b2_dynamicBody;
@@ -664,7 +664,7 @@ namespace Box2D.NET.Samples
                 float x = 0.5f * i * shift + ( j - i ) * shift - centerx;
                 bodyDef.position = { x, y };
 
-                assert( index < e_maxBodyCount );
+                Debug.Assert( index < e_maxBodyCount );
                 m_bodies[index] = b2CreateBody( m_worldId, &bodyDef );
                 b2CreatePolygonShape( m_bodies[index], &shapeDef, &box );
 
@@ -797,7 +797,7 @@ namespace Box2D.NET.Samples
                 float x = 0.5f * i * shift + ( j - i ) * shift - centerx;
                 bodyDef.position = { x, y };
 
-                assert( index < e_maxBodyCount );
+                Debug.Assert( index < e_maxBodyCount );
                 m_bodies[index] = b2CreateBody( m_worldId, &bodyDef );
                 b2CreatePolygonShape( m_bodies[index], &shapeDef, &box );
 
@@ -1554,4 +1554,3 @@ namespace Box2D.NET.Samples
     };
 
     static int benchmarkRain = RegisterSample( "Benchmark", "Rain", BenchmarkRain::Create );
-}

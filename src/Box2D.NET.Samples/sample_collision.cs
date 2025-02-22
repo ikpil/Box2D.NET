@@ -94,7 +94,7 @@ namespace Box2D.NET.Samples
                 break;
 
             default:
-                assert( false );
+                Debug.Assert( false );
         }
 
         return proxy;
@@ -143,7 +143,7 @@ namespace Box2D.NET.Samples
                 break;
 
             default:
-                assert( false );
+                Debug.Assert( false );
         }
     }
 
@@ -269,7 +269,7 @@ namespace Box2D.NET.Samples
         switch ( s->count )
         {
             case 0:
-                assert( false );
+                Debug.Assert( false );
                 break;
 
             case 1:
@@ -288,7 +288,7 @@ namespace Box2D.NET.Samples
                 break;
 
             default:
-                assert( false );
+                Debug.Assert( false );
                 break;
         }
     }
@@ -442,8 +442,8 @@ namespace Box2D.NET.Samples
         bool moved;
     };
 
-    static bool QueryCallback( int32_t proxyId, int32_t userData, void* context );
-    static float RayCallback( const b2RayCastInput* input, int32_t proxyId, int32_t userData, void* context );
+    static bool QueryCallback( int proxyId, int userData, void* context );
+    static float RayCallback( const b2RayCastInput* input, int proxyId, int userData, void* context );
 
 // Tests the Box2D bounding volume hierarchy (BVH). The dynamic tree
 // can be used independently as a spatial data structure.
@@ -520,7 +520,7 @@ namespace Box2D.NET.Samples
                 float fillTest = RandomFloatRange( 0.0f, 1.0f );
                 if ( fillTest <= m_fill )
                 {
-                    assert( m_proxyCount <= m_proxyCapacity );
+                    Debug.Assert( m_proxyCount <= m_proxyCapacity );
                     Proxy* p = m_proxies + m_proxyCount;
                     p->position = { x, y };
 
@@ -846,7 +846,7 @@ namespace Box2D.NET.Samples
     {
         DynamicTree* sample = static_cast<DynamicTree*>( context );
         Proxy* proxy = sample->m_proxies + userData;
-        assert( proxy->proxyId == proxyId );
+        Debug.Assert( proxy->proxyId == proxyId );
         proxy->queryStamp = sample->m_timeStamp;
         return true;
     }
@@ -855,7 +855,7 @@ namespace Box2D.NET.Samples
     {
         DynamicTree* sample = static_cast<DynamicTree*>( context );
         Proxy* proxy = sample->m_proxies + userData;
-        assert( proxy->proxyId == proxyId );
+        Debug.Assert( proxy->proxyId == proxyId );
         proxy->rayStamp = sample->m_timeStamp;
         return input->maxFraction;
     }
@@ -1274,7 +1274,7 @@ namespace Box2D.NET.Samples
         }
 
         int count = rayContext->count;
-        assert( count < 3 );
+        Debug.Assert( count < 3 );
 
         rayContext->points[count] = point;
         rayContext->normals[count] = normal;
@@ -1306,7 +1306,7 @@ namespace Box2D.NET.Samples
         }
 
         int count = rayContext->count;
-        assert( count <= 3 );
+        Debug.Assert( count <= 3 );
 
         int index = 3;
         while ( fraction < rayContext->fractions[index - 1] )
@@ -1323,8 +1323,8 @@ namespace Box2D.NET.Samples
         {
             // not closer, continue but tell the caller not to consider fractions further than the largest fraction acquired
             // this only happens once the buffer is full
-            assert( rayContext->count == 3 );
-            assert( rayContext->fractions[2] <= 1.0f );
+            Debug.Assert( rayContext->count == 3 );
+            Debug.Assert( rayContext->fractions[2] <= 1.0f );
             return rayContext->fractions[2];
         }
 
@@ -1751,7 +1751,7 @@ namespace Box2D.NET.Samples
 
             if ( context.count > 0 )
             {
-                assert( context.count <= 3 );
+                Debug.Assert( context.count <= 3 );
                 b2HexColor colors[3] = { b2_colorRed, b2_colorGreen, b2_colorBlue };
                 for ( int i = 0; i < context.count; ++i )
                 {
@@ -2175,8 +2175,8 @@ namespace Box2D.NET.Samples
             }
 
             int index = userData->index;
-            assert( 0 <= index && index < e_maxCount );
-            assert( B2_IS_NON_NULL( m_bodyIds[index] ) );
+            Debug.Assert( 0 <= index && index < e_maxCount );
+            Debug.Assert( B2_IS_NON_NULL( m_bodyIds[index] ) );
 
             b2DestroyBody( m_bodyIds[index] );
             m_bodyIds[index] = b2_nullBodyId;
@@ -2362,8 +2362,8 @@ namespace Box2D.NET.Samples
 
             if ( m_showIds )
             {
-                // uint32_t indexA = mp->id >> 8;
-                // uint32_t indexB = 0xFF & mp->id;
+                // uint indexA = mp->id >> 8;
+                // uint indexB = 0xFF & mp->id;
                 b2Vec2 p = { p1.x + 0.05f, p1.y - 0.02f };
                 g_draw.DrawString( p, "0x%04x", mp->id );
             }
@@ -3060,8 +3060,8 @@ namespace Box2D.NET.Samples
 
             if ( m_showIds )
             {
-                // uint32_t indexA = mp->id >> 8;
-                // uint32_t indexB = 0xFF & mp->id;
+                // uint indexA = mp->id >> 8;
+                // uint indexB = 0xFF & mp->id;
                 b2Vec2 p = { p1.x + 0.05f, p1.y - 0.02f };
                 g_draw.DrawString( p, "0x%04x", mp->id );
             }

@@ -3,11 +3,9 @@
 
 namespace Box2D.NET.Samples;
 
-class SingleBox : public Sample
+public class SingleBox : Sample
 {
-public:
-explicit SingleBox( Settings& settings )
-    : Sample( settings )
+public SingleBox( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -310,7 +308,7 @@ void FireBullets()
         {
             b2CreateCircleShape( bullet, &shapeDef, &circle );
         }
-        assert( B2_IS_NULL( m_bullets[i] ) );
+        Debug.Assert( B2_IS_NULL( m_bullets[i] ) );
         m_bullets[i] = bullet;
     }
 }

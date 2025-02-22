@@ -1,8 +1,12 @@
 // SPDX-FileCopyrightText: 2024 Erin Catto
 // SPDX-License-Identifier: MIT
 
-uint32_t CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath );
-uint32_t CreateProgramFromStrings( const char* vertexString, const char* fragmentString );
+
+public static class shader
+{
+    
+uint CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath );
+uint CreateProgramFromStrings( const char* vertexString, const char* fragmentString );
 
 void CheckErrorGL();
 void DumpInfoGL();
@@ -35,11 +39,11 @@ void CheckErrorGL()
 	if ( errCode != GL_NO_ERROR )
 	{
 		printf( "OpenGL error = %d\n", errCode );
-		assert( false );
+		Debug.Assert( false );
 	}
 }
 
-void PrintLogGL( uint32_t object )
+void PrintLogGL( uint object )
 {
 	GLint log_length = 0;
 	if ( glIsShader( object ) )
@@ -93,7 +97,7 @@ static GLuint sCreateShaderFromString( const char* source, GLenum type )
 	return shader;
 }
 
-uint32_t CreateProgramFromStrings( const char* vertexString, const char* fragmentString )
+uint CreateProgramFromStrings( const char* vertexString, const char* fragmentString )
 {
 	GLuint vertex = sCreateShaderFromString( vertexString, GL_VERTEX_SHADER );
 	if ( vertex == 0 )
@@ -167,7 +171,7 @@ static GLuint sCreateShaderFromFile( const char* filename, GLenum type )
 	return shader;
 }
 
-uint32_t CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath )
+uint CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath )
 {
 	GLuint vertex = sCreateShaderFromFile( vertexPath, GL_VERTEX_SHADER );
 	if ( vertex == 0 )
@@ -200,4 +204,6 @@ uint32_t CreateProgramFromFiles( const char* vertexPath, const char* fragmentPat
 	glDeleteShader( fragment );
 
 	return program;
+}
+
 }

@@ -5,9 +5,8 @@ namespace Box2D.NET.Samples;
 
 
 // Test the distance joint and all options
-class DistanceJoint : public Sample
+public class DistanceJoint : Sample
 {
-public:
 enum
 {
     e_maxCount = 10
@@ -949,7 +948,7 @@ explicit Bridge( Settings& settings )
         jointDef.maxMotorTorque = m_frictionTorque;
         m_jointIds[jointIndex++] = b2CreateRevoluteJoint( m_worldId, &jointDef );
 
-        assert( jointIndex == e_count + 1 );
+        Debug.Assert( jointIndex == e_count + 1 );
     }
 
     for ( int i = 0; i < 2; ++i )
@@ -1101,7 +1100,7 @@ explicit BallAndChain( Settings& settings )
         jointDef.enableMotor = true;
         jointDef.maxMotorTorque = m_frictionTorque;
         m_jointIds[jointIndex++] = b2CreateRevoluteJoint( m_worldId, &jointDef );
-        assert( jointIndex == e_count + 1 );
+        Debug.Assert( jointIndex == e_count + 1 );
     }
 }
 
@@ -1353,7 +1352,7 @@ void CreateScene()
 
     // distance joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1377,7 +1376,7 @@ void CreateScene()
 
     // motor joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1398,7 +1397,7 @@ void CreateScene()
 
     // prismatic joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1420,7 +1419,7 @@ void CreateScene()
 
     // revolute joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1441,7 +1440,7 @@ void CreateScene()
 
     // weld joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1466,7 +1465,7 @@ void CreateScene()
 
     // wheel joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         m_bodyIds[index] = b2CreateBody( m_worldId, &bodyDef );
@@ -1567,7 +1566,7 @@ explicit BreakableJoint( Settings& settings )
 
     // distance joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1591,7 +1590,7 @@ explicit BreakableJoint( Settings& settings )
 
     // motor joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1612,7 +1611,7 @@ explicit BreakableJoint( Settings& settings )
 
     // prismatic joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1634,7 +1633,7 @@ explicit BreakableJoint( Settings& settings )
 
     // revolute joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1655,7 +1654,7 @@ explicit BreakableJoint( Settings& settings )
 
     // weld joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1680,7 +1679,7 @@ explicit BreakableJoint( Settings& settings )
 
     // wheel joint
     {
-        assert( index < e_count );
+        Debug.Assert( index < e_count );
 
         bodyDef.position = position;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1933,7 +1932,7 @@ explicit Driving( Settings& settings )
         points[count--] = { x + 40.0f, 0.0f };
         points[count--] = { x + 40.0f, -20.0f };
 
-        assert( count == -1 );
+        Debug.Assert( count == -1 );
 
         b2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;

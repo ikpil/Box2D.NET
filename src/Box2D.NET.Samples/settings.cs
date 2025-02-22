@@ -4,161 +4,158 @@
 namespace Box2D.NET.Samples;
 
 // todo add camera and draw and remove globals
-struct Settings
+public class Settings
 {
-    void Save();
-    void Load();
+    public int sampleIndex = 0;
+    public int windowWidth = 1920;
+    public int windowHeight = 1080;
+    public float hertz = 60.0f;
+    public int subStepCount = 4;
+    public int workerCount = 1;
+    public bool useCameraBounds = false;
+    public bool drawShapes = true;
+    public bool drawJoints = true;
+    public bool drawJointExtras = false;
+    public bool drawAABBs = false;
+    public bool drawContactPoints = false;
+    public bool drawContactNormals = false;
+    public bool drawContactImpulses = false;
+    public bool drawFrictionImpulses = false;
+    public bool drawMass = false;
+    public bool drawBodyNames = false;
+    public bool drawGraphColors = false;
+    public bool drawCounters = false;
+    public bool drawProfile = false;
+    public bool enableWarmStarting = true;
+    public bool enableContinuous = true;
+    public bool enableSleep = true;
+    public bool pause = false;
+    public bool singleStep = false;
+    public bool restart = false;
 
-    int sampleIndex = 0;
-    int windowWidth = 1920;
-    int windowHeight = 1080;
-    float hertz = 60.0f;
-    int subStepCount = 4;
-    int workerCount = 1;
-    bool useCameraBounds = false;
-    bool drawShapes = true;
-    bool drawJoints = true;
-    bool drawJointExtras = false;
-    bool drawAABBs = false;
-    bool drawContactPoints = false;
-    bool drawContactNormals = false;
-    bool drawContactImpulses = false;
-    bool drawFrictionImpulses = false;
-    bool drawMass = false;
-    bool drawBodyNames = false;
-    bool drawGraphColors = false;
-    bool drawCounters = false;
-    bool drawProfile = false;
-    bool enableWarmStarting = true;
-    bool enableContinuous = true;
-    bool enableSleep = true;
-    bool pause = false;
-    bool singleStep = false;
-    bool restart = false;
-};
+    public const string fileName = "settings.ini";
 
+    // Load a file. You must free the character array.
+    public static bool ReadFile( char*& data, int& size, const char* filename )
+    {
+        FILE* file = fopen( filename, "rb" );
+        if ( file == nullptr )
+        {
+            return false;
+        }
 
-static const char* fileName = "settings.ini";
+        fseek( file, 0, SEEK_END );
+        size = (int)ftell( file );
+        fseek( file, 0, SEEK_SET );
 
-// Load a file. You must free the character array.
-static bool ReadFile( char*& data, int& size, const char* filename )
-{
-	FILE* file = fopen( filename, "rb" );
-	if ( file == nullptr )
-	{
-		return false;
-	}
+        if ( size == 0 )
+        {
+            return false;
+        }
 
-	fseek( file, 0, SEEK_END );
-	size = (int)ftell( file );
-	fseek( file, 0, SEEK_SET );
+        data = (char*)malloc( size + 1 );
+        size_t count = fread( data, size, 1, file );
+        B2_UNUSED( count );
+        fclose( file );
+        data[size] = 0;
 
-	if ( size == 0 )
-	{
-		return false;
-	}
+        return true;
+    }
 
-	data = (char*)malloc( size + 1 );
-	size_t count = fread( data, size, 1, file );
-	B2_UNUSED( count );
-	fclose( file );
-	data[size] = 0;
+    public void Save()
+    {
+        FILE* file = fopen(fileName, "w");
+        fprintf(file, "{\n");
+        fprintf(file, "  \"sampleIndex\": %d,\n", sampleIndex);
+        fprintf(file, "  \"drawShapes\": %s,\n", drawShapes ? "true" : "false");
+        fprintf(file, "  \"drawJoints\": %s,\n", drawJoints ? "true" : "false");
+        fprintf(file, "  \"drawAABBs\": %s,\n", drawAABBs ? "true" : "false");
+        fprintf(file, "  \"drawContactPoints\": %s,\n", drawContactPoints ? "true" : "false");
+        fprintf(file, "  \"drawContactNormals\": %s,\n", drawContactNormals ? "true" : "false");
+        fprintf(file, "  \"drawContactImpulses\": %s,\n", drawContactImpulses ? "true" : "false");
+        fprintf(file, "  \"drawFrictionImpulse\": %s,\n", drawFrictionImpulses ? "true" : "false");
+        fprintf(file, "  \"drawMass\": %s,\n", drawMass ? "true" : "false");
+        fprintf(file, "  \"drawCounters\": %s,\n", drawCounters ? "true" : "false");
+        fprintf(file, "  \"drawProfile\": %s,\n", drawProfile ? "true" : "false");
+        fprintf(file, "  \"enableWarmStarting\": %s,\n", enableWarmStarting ? "true" : "false");
+        fprintf(file, "  \"enableContinuous\": %s,\n", enableContinuous ? "true" : "false");
+        fprintf(file, "  \"enableSleep\": %s\n", enableSleep ? "true" : "false");
+        fprintf(file, "}\n");
+        fclose(file);
+    }
 
-	return true;
-}
+    public static int jsoneq( const char* json, jsmntok_t* tok, const char* s )
+    {
+        if (tok->type == JSMN_STRING && (int)strlen(s) == tok->end - tok->start &&
+            strncmp(json + tok->start, s, tok->end - tok->start) == 0)
+        {
+            return 0;
+        }
 
-void Settings::Save()
-{
-	FILE* file = fopen( fileName, "w" );
-	fprintf( file, "{\n" );
-	fprintf( file, "  \"sampleIndex\": %d,\n", sampleIndex );
-	fprintf( file, "  \"drawShapes\": %s,\n", drawShapes ? "true" : "false" );
-	fprintf( file, "  \"drawJoints\": %s,\n", drawJoints ? "true" : "false" );
-	fprintf( file, "  \"drawAABBs\": %s,\n", drawAABBs ? "true" : "false" );
-	fprintf( file, "  \"drawContactPoints\": %s,\n", drawContactPoints ? "true" : "false" );
-	fprintf( file, "  \"drawContactNormals\": %s,\n", drawContactNormals ? "true" : "false" );
-	fprintf( file, "  \"drawContactImpulses\": %s,\n", drawContactImpulses ? "true" : "false" );
-	fprintf( file, "  \"drawFrictionImpulse\": %s,\n", drawFrictionImpulses ? "true" : "false" );
-	fprintf( file, "  \"drawMass\": %s,\n", drawMass ? "true" : "false" );
-	fprintf( file, "  \"drawCounters\": %s,\n", drawCounters ? "true" : "false" );
-	fprintf( file, "  \"drawProfile\": %s,\n", drawProfile ? "true" : "false" );
-	fprintf( file, "  \"enableWarmStarting\": %s,\n", enableWarmStarting ? "true" : "false" );
-	fprintf( file, "  \"enableContinuous\": %s,\n", enableContinuous ? "true" : "false" );
-	fprintf( file, "  \"enableSleep\": %s\n", enableSleep ? "true" : "false" );
-	fprintf( file, "}\n" );
-	fclose( file );
-}
+        return -1;
+    }
 
-static int jsoneq( const char* json, jsmntok_t* tok, const char* s )
-{
-	if ( tok->type == JSMN_STRING && (int)strlen( s ) == tok->end - tok->start &&
-		 strncmp( json + tok->start, s, tok->end - tok->start ) == 0 )
-	{
-		return 0;
-	}
-	return -1;
-}
+    public const int MAX_TOKENS = 32;
 
-#define MAX_TOKENS 32
+    public void Load()
+    {
+        char* data = nullptr;
+        int size = 0;
+        bool found = ReadFile(data, size, fileName);
+        if (found == false)
+        {
+            return;
+        }
 
-void Settings::Load()
-{
-	char* data = nullptr;
-	int size = 0;
-	bool found = ReadFile( data, size, fileName );
-	if ( found == false )
-	{
-		return;
-	}
+        jsmn_parser parser;
+        jsmntok_t tokens[MAX_TOKENS];
 
-	jsmn_parser parser;
-	jsmntok_t tokens[MAX_TOKENS];
+        jsmn_init(&parser);
 
-	jsmn_init( &parser );
+        // js - pointer to JSON string
+        // tokens - an array of tokens available
+        // 10 - number of tokens available
+        int tokenCount = jsmn_parse(&parser, data, size, tokens, MAX_TOKENS);
+        char buffer[32];
 
-	// js - pointer to JSON string
-	// tokens - an array of tokens available
-	// 10 - number of tokens available
-	int tokenCount = jsmn_parse( &parser, data, size, tokens, MAX_TOKENS );
-	char buffer[32];
+        for (int i = 0; i < tokenCount; ++i)
+        {
+            if (jsoneq(data, &tokens[i], "sampleIndex") == 0)
+            {
+                int count = tokens[i + 1].end - tokens[i + 1].start;
+                Debug.Assert(count < 32);
+                const char* s = data + tokens[i + 1].start;
+                strncpy(buffer, s, count);
+                buffer[count] = 0;
+                char* dummy;
+                sampleIndex = (int)strtol(buffer, &dummy, 10);
+            }
+            else if (jsoneq(data, &tokens[i], "drawShapes") == 0)
+            {
+                const char* s = data + tokens[i + 1].start;
+                if (strncmp(s, "true", 4) == 0)
+                {
+                    drawShapes = true;
+                }
+                else if (strncmp(s, "false", 5) == 0)
+                {
+                    drawShapes = false;
+                }
+            }
+            else if (jsoneq(data, &tokens[i], "drawJoints") == 0)
+            {
+                const char* s = data + tokens[i + 1].start;
+                if (strncmp(s, "true", 4) == 0)
+                {
+                    drawJoints = true;
+                }
+                else if (strncmp(s, "false", 5) == 0)
+                {
+                    drawJoints = false;
+                }
+            }
+        }
 
-	for ( int i = 0; i < tokenCount; ++i )
-	{
-		if ( jsoneq( data, &tokens[i], "sampleIndex" ) == 0 )
-		{
-			int count = tokens[i + 1].end - tokens[i + 1].start;
-			assert( count < 32 );
-			const char* s = data + tokens[i + 1].start;
-			strncpy( buffer, s, count );
-			buffer[count] = 0;
-			char* dummy;
-			sampleIndex = (int)strtol( buffer, &dummy, 10 );
-		}
-		else if ( jsoneq( data, &tokens[i], "drawShapes" ) == 0 )
-		{
-			const char* s = data + tokens[i + 1].start;
-			if ( strncmp( s, "true", 4 ) == 0 )
-			{
-				drawShapes = true;
-			}
-			else if ( strncmp( s, "false", 5 ) == 0 )
-			{
-				drawShapes = false;
-			}
-		}
-		else if ( jsoneq( data, &tokens[i], "drawJoints" ) == 0 )
-		{
-			const char* s = data + tokens[i + 1].start;
-			if ( strncmp( s, "true", 4 ) == 0 )
-			{
-				drawJoints = true;
-			}
-			else if ( strncmp( s, "false", 5 ) == 0 )
-			{
-				drawJoints = false;
-			}
-		}
-	}
-
-	free( data );
+        free(data);
+    }
 }

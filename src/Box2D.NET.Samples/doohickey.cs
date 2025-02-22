@@ -40,7 +40,7 @@ Doohickey::Doohickey()
 
 void Doohickey::Spawn( b2WorldId worldId, b2Vec2 position, float scale )
 {
-	assert( m_isSpawned == false );
+	Debug.Assert( m_isSpawned == false );
 
 	b2BodyDef bodyDef = b2DefaultBodyDef();
 	bodyDef.type = b2_dynamicBody;
@@ -102,7 +102,7 @@ void Doohickey::Spawn( b2WorldId worldId, b2Vec2 position, float scale )
 
 void Doohickey::Despawn()
 {
-	assert( m_isSpawned == true );
+	Debug.Assert( m_isSpawned == true );
 
 	b2DestroyJoint( m_axleId1 );
 	b2DestroyJoint( m_axleId2 );

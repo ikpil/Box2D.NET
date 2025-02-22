@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Primitives;
+
 namespace Box2D.NET.Samples;
 
-class BodyType : public Sample
+public class BodyType : Sample
 {
-public:
-explicit BodyType( Settings& settings )
-    : Sample( settings )
+public BodyType( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {

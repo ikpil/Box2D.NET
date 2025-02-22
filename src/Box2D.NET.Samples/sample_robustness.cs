@@ -4,9 +4,8 @@
 namespace Box2D.NET.Samples;
 
 // Pyramid with heavy box on top
-class HighMassRatio1 : public Sample
+public class HighMassRatio1 : Sample
 {
-public:
 explicit HighMassRatio1( Settings& settings )
     : Sample( settings )
 {
@@ -225,7 +224,7 @@ explicit OverlapRecovery( Settings& settings )
 
 void CreateScene()
 {
-    for ( int32_t i = 0; i < m_bodyCount; ++i )
+    for ( int i = 0; i < m_bodyCount; ++i )
     {
         b2DestroyBody( m_bodyIds[i] );
     }
@@ -242,13 +241,13 @@ void CreateScene()
     m_bodyCount = m_baseCount * ( m_baseCount + 1 ) / 2;
     m_bodyIds = (b2BodyId*)realloc( m_bodyIds, m_bodyCount * sizeof( b2BodyId ) );
 
-    int32_t bodyIndex = 0;
+    int bodyIndex = 0;
     float fraction = 1.0f - m_overlap;
     float y = m_extent;
-    for ( int32_t i = 0; i < m_baseCount; ++i )
+    for ( int i = 0; i < m_baseCount; ++i )
     {
         float x = fraction * m_extent * ( i - m_baseCount );
-        for ( int32_t j = i; j < m_baseCount; ++j )
+        for ( int j = i; j < m_baseCount; ++j )
         {
             bodyDef.position = { x, y };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -263,7 +262,7 @@ void CreateScene()
         y += 2.0f * fraction * m_extent;
     }
 
-    assert( bodyIndex == m_bodyCount );
+    Debug.Assert( bodyIndex == m_bodyCount );
 }
 
 void UpdateUI() override
@@ -299,8 +298,8 @@ static Sample* Create( Settings& settings )
 }
 
 b2BodyId* m_bodyIds;
-int32_t m_bodyCount;
-int32_t m_baseCount;
+int m_bodyCount;
+int m_baseCount;
 float m_overlap;
 float m_extent;
 float m_pushout;

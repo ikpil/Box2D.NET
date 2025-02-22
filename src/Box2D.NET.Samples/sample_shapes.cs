@@ -1,17 +1,10 @@
 // SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-License-Identifier: MIT
 
-#ifndef NDEBUG
-extern "C" int b2_toiCalls;
+namespace Box2D.NET.Samples;
 
-namespace Box2D.NET.Samples
-{
-    extern "C" int b2_toiHitCount;
-#endif
-
-    class ChainShape : public Sample
+    public class ChainShape : Sample
     {
-    public:
     enum ShapeType
     {
         e_circleShape = 0,
@@ -19,8 +12,8 @@ namespace Box2D.NET.Samples
         e_boxShape
     };
 
-    explicit ChainShape( Settings& settings )
-        : Sample( settings )
+    public ChainShape( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -1269,7 +1262,7 @@ namespace Box2D.NET.Samples
                 break;
 
             default:
-                assert( false );
+                Debug.Assert( false );
                 break;
         }
 

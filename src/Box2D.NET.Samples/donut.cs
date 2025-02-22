@@ -36,12 +36,12 @@ Donut::Donut()
 
 void Donut::Spawn( b2WorldId worldId, b2Vec2 position, float scale, int groupIndex, void* userData )
 {
-	assert( m_isSpawned == false );
+	Debug.Assert( m_isSpawned == false );
 
 	for ( int i = 0; i < e_sides; ++i )
 	{
-		assert( B2_IS_NULL( m_bodyIds[i] ) );
-		assert( B2_IS_NULL( m_jointIds[i] ) );
+		Debug.Assert( B2_IS_NULL( m_bodyIds[i] ) );
+		Debug.Assert( B2_IS_NULL( m_jointIds[i] ) );
 	}
 
 	float radius = 1.0f * scale;
@@ -98,7 +98,7 @@ void Donut::Spawn( b2WorldId worldId, b2Vec2 position, float scale, int groupInd
 
 void Donut::Despawn()
 {
-	assert( m_isSpawned == true );
+	Debug.Assert( m_isSpawned == true );
 
 	for ( int i = 0; i < e_sides; ++i )
 	{

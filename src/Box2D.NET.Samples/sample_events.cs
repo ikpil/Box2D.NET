@@ -3,18 +3,16 @@
 
 namespace Box2D.NET.Samples;
 
-class SensorFunnel : public Sample
+public class SensorFunnel : Sample
 {
-public:
-enum
+enum ea
 {
     e_donut = 1,
     e_human = 2,
     e_count = 32
 };
 
-explicit SensorFunnel( Settings& settings )
-    : Sample( settings )
+public SensorFunnel( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -267,7 +265,7 @@ void Step( Settings& settings ) override
             if ( donut != nullptr )
             {
                 int index = (int)( donut - m_donuts );
-                assert( 0 <= index && index < e_count );
+                Debug.Assert( 0 <= index && index < e_count );
 
                 // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                 deferredDestructions[index] = true;
@@ -279,7 +277,7 @@ void Step( Settings& settings ) override
             if ( human != nullptr )
             {
                 int index = (int)( human - m_humans );
-                assert( 0 <= index && index < e_count );
+                Debug.Assert( 0 <= index && index < e_count );
 
                 // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                 deferredDestructions[index] = true;
@@ -441,7 +439,7 @@ void Step( Settings& settings ) override
 
         if ( B2_ID_EQUALS( event.visitorShapeId, m_visitorShapeId ) )
         {
-            assert( m_isVisiting == false );
+            Debug.Assert( m_isVisiting == false );
             m_isVisiting = true;
         }
     }
@@ -453,7 +451,7 @@ void Step( Settings& settings ) override
         bool wasVisitorDestroyed = b2Shape_IsValid( event.visitorShapeId ) == false;
         if ( B2_ID_EQUALS( event.visitorShapeId, m_visitorShapeId ) || wasVisitorDestroyed )
         {
-            assert( m_isVisiting == true );
+            Debug.Assert( m_isVisiting == true );
             m_isVisiting = false;
         }
     }
@@ -562,7 +560,7 @@ void Step( Settings& settings ) override
     {
         b2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
 
-        assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
+        Debug.Assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
 
         if ( B2_ID_EQUALS( event.sensorShapeId, m_sensorId ) )
         {
@@ -574,7 +572,7 @@ void Step( Settings& settings ) override
     {
         b2SensorEndTouchEvent event = sensorEvents.endEvents[i];
 
-        assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
+        Debug.Assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
 
         if ( B2_ID_EQUALS( event.sensorShapeId, m_sensorId ) )
         {
@@ -800,7 +798,7 @@ void Step( Settings& settings ) override
 
             // The count may be less than the capacity
             int countA = b2Shape_GetContactData( event.shapeIdA, contactData.data(), capacityA );
-            assert( countA >= 1 );
+            Debug.Assert( countA >= 1 );
 
             for ( int j = 0; j < countA; ++j )
             {
@@ -808,11 +806,11 @@ void Step( Settings& settings ) override
                 b2ShapeId idB = contactData[j].shapeIdB;
                 if ( B2_ID_EQUALS( idA, event.shapeIdB ) || B2_ID_EQUALS( idB, event.shapeIdB ) )
                 {
-                    assert( B2_ID_EQUALS( idA, event.shapeIdA ) || B2_ID_EQUALS( idB, event.shapeIdA ) );
+                    Debug.Assert( B2_ID_EQUALS( idA, event.shapeIdA ) || B2_ID_EQUALS( idB, event.shapeIdA ) );
 
                     b2Manifold manifold = contactData[j].manifold;
                     b2Vec2 normal = manifold.normal;
-                    assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
+                    Debug.Assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
 
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
@@ -829,7 +827,7 @@ void Step( Settings& settings ) override
 
             // The count may be less than the capacity
             int countB = b2Shape_GetContactData( event.shapeIdB, contactData.data(), capacityB );
-            assert( countB >= 1 );
+            Debug.Assert( countB >= 1 );
 
             for ( int j = 0; j < countB; ++j )
             {
@@ -838,11 +836,11 @@ void Step( Settings& settings ) override
 
                 if ( B2_ID_EQUALS( idA, event.shapeIdA ) || B2_ID_EQUALS( idB, event.shapeIdA ) )
                 {
-                    assert( B2_ID_EQUALS( idA, event.shapeIdB ) || B2_ID_EQUALS( idB, event.shapeIdB ) );
+                    Debug.Assert( B2_ID_EQUALS( idA, event.shapeIdB ) || B2_ID_EQUALS( idB, event.shapeIdB ) );
 
                     b2Manifold manifold = contactData[j].manifold;
                     b2Vec2 normal = manifold.normal;
-                    assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
+                    Debug.Assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
 
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
@@ -890,7 +888,7 @@ void Step( Settings& settings ) override
         else
         {
             // Only expect events for the player
-            assert( B2_ID_EQUALS( bodyIdB, m_playerId ) );
+            Debug.Assert( B2_ID_EQUALS( bodyIdB, m_playerId ) );
             BodyUserData* userDataA = static_cast<BodyUserData*>( b2Body_GetUserData( bodyIdA ) );
             if ( userDataA == nullptr )
             {
@@ -983,7 +981,7 @@ void Step( Settings& settings ) override
                 break;
 
             default:
-                assert( false );
+                Debug.Assert( false );
         }
 
         b2DestroyBody( debrisId );
@@ -1121,8 +1119,8 @@ static bool PreSolveStatic( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* 
 // does not try to access any values in the world that may be changing, such as contact data.
 bool PreSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold ) const
 {
-    assert( b2Shape_IsValid( shapeIdA ) );
-    assert( b2Shape_IsValid( shapeIdB ) );
+    Debug.Assert( b2Shape_IsValid( shapeIdA ) );
+    Debug.Assert( b2Shape_IsValid( shapeIdB ) );
 
     float sign = 0.0f;
     if ( B2_ID_EQUALS( shapeIdA, m_playerShapeId ) )
@@ -1344,7 +1342,7 @@ void CreateBodies()
     b2ShapeDef shapeDef = b2DefaultShapeDef();
 
     float x = -5.0f, y = 10.0f;
-    for ( int32_t i = 0; i < 10 && m_count < e_count; ++i )
+    for ( int i = 0; i < 10 && m_count < e_count; ++i )
     {
         bodyDef.position = { x, y };
         bodyDef.userData = m_bodyIds + m_count;

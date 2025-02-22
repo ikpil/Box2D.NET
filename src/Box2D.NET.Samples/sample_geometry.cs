@@ -3,10 +3,9 @@
 
 using Box2D.NET.Samples;
 
-namespace Box2D.NET.Samples
-{
-    class ConvexHull :
-} public Sample
+namespace Box2D.NET.Samples;
+
+    public class ConvexHull : Sample
 {
 public:
 	enum
@@ -56,7 +55,7 @@ public:
 		bool valid = b2ValidateHull( &hull );
 		if ( valid == false )
 		{
-			assert( valid );
+			Debug.Assert( valid );
 		}
 
 		m_count = e_count;
@@ -190,13 +189,13 @@ public:
 
 		g_draw.DrawPolygon( hull.points, hull.count, b2_colorGray );
 
-		for ( int32_t i = 0; i < m_count; ++i )
+		for ( int i = 0; i < m_count; ++i )
 		{
 			g_draw.DrawPoint( m_points[i], 5.0f, b2_colorBlue );
 			g_draw.DrawString( b2Add( m_points[i], { 0.1f, 0.1f } ), "%d", i );
 		}
 
-		for ( int32_t i = 0; i < hull.count; ++i )
+		for ( int i = 0; i < hull.count; ++i )
 		{
 			g_draw.DrawPoint( hull.points[i], 6.0f, b2_colorGreen );
 		}
@@ -208,8 +207,8 @@ public:
 	}
 
 	b2Vec2 m_points[B2_MAX_POLYGON_VERTICES];
-	int32_t m_count;
-	int32_t m_generation;
+	int m_count;
+	int m_generation;
 	bool m_auto;
 	bool m_bulk;
 };
