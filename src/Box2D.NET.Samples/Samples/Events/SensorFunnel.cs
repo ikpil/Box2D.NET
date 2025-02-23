@@ -70,8 +70,8 @@ public SensorFunnel( Settings settings ) : base( settings )
         int count = std::size( points );
 
         // float scale = 0.25f;
-        // b2Vec2 lower = {FLT_MAX, FLT_MAX};
-        // b2Vec2 upper = {-FLT_MAX, -FLT_MAX};
+        // b2Vec2 lower = {float.MaxValue, float.MaxValue};
+        // b2Vec2 upper = {-float.MaxValue, -float.MaxValue};
         // for (int i = 0; i < count; ++i)
         //{
         //	points[i].x = scale * points[i].x;

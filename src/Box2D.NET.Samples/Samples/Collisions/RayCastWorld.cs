@@ -574,9 +574,9 @@ public class RayCastWorld : Sample
             RayCastContext context = { };
 
             // Must initialize fractions for sorting
-            context.fractions[0] = FLT_MAX;
-            context.fractions[1] = FLT_MAX;
-            context.fractions[2] = FLT_MAX;
+            context.fractions[0] = float.MaxValue;
+            context.fractions[1] = float.MaxValue;
+            context.fractions[2] = float.MaxValue;
 
             b2Circle circle = { { 0.0f, 0.0f }, m_castRadius };
             b2Capsule capsule = { { -0.25f, 0.0f }, { 0.25f, 0.0f }, m_castRadius };

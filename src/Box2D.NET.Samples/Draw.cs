@@ -92,7 +92,7 @@ public class Draw
         m_solidPolygons = new GLSolidPolygons();
         m_solidPolygons.Create();
 
-        b2AABB bounds = { { -FLT_MAX, -FLT_MAX }, { FLT_MAX, FLT_MAX } };
+        b2AABB bounds = new b2AABB( new b2Vec2( -float.MaxValue, -float.MaxValue ), new b2Vec2( float.MaxValue, float.MaxValue ) );
 
         m_debugDraw =  {
         }
@@ -274,47 +274,47 @@ public class Draw
         m_background.Draw();
     }
     
-    public static void DrawPolygonFcn( const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context )
+    public static void DrawPolygonFcn( ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawPolygon( vertices, vertexCount, color );
     }
 
-    public static void DrawSolidPolygonFcn( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,void* context )
+    public static void DrawSolidPolygonFcn( b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawSolidPolygon( transform, vertices, vertexCount, radius, color );
     }
 
-    public static void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, void* context )
+    public static void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawCircle( center, radius, color );
     }
 
-    public static void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, void* context )
+    public static void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawSolidCircle( transform, b2Vec2_zero, radius, color );
     }
 
-    public static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context )
+    public static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawSolidCapsule( p1, p2, radius, color );
     }
 
-    public static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, void* context )
+    public static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawSegment( p1, p2, color );
     }
 
-    public static void DrawTransformFcn( b2Transform transform, void* context )
+    public static void DrawTransformFcn( b2Transform transform, object context )
     {
         static_cast<Draw*>( context ).DrawTransform( transform );
     }
 
-    public static void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, void* context )
+    public static void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawPoint( p, size, color );
     }
 
-    public static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, void* context )
+    public static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, object context )
     {
         static_cast<Draw*>( context ).DrawString( p, s );
     }
