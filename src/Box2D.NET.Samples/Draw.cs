@@ -222,7 +222,7 @@ public class Draw
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(float(x), float(y)));
-        ImGui.TextColoredV(ImColor(230, 153, 153, 255), message, arg);
+        ImGui.TextColoredV(new Vector4(230, 153, 153, 255), message, arg);
         ImGui.PopFont();
         ImGui.End();
         va_end(arg);
@@ -236,7 +236,7 @@ public class Draw
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
-        ImGui.TextColoredV(ImColor(230, 230, 230, 255), message, arg);
+        ImGui.TextColoredV(new Vector4(230, 230, 230, 255), message, arg);
         ImGui.End();
         va_end(arg);
     }

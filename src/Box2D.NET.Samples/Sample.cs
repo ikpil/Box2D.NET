@@ -304,7 +304,7 @@ public class Sample
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(5.0f, float(m_textLine)));
-        ImGui.TextColoredV(ImColor(230, 153, 153, 255), text, arg);
+        ImGui.TextColoredV(new Vector4(230, 153, 153, 255), text, arg);
         ImGui.PopFont();
         ImGui.End();
         va_end(arg);

@@ -8,6 +8,8 @@ using System.Threading;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Helpers;
 using Serilog;
+using static Box2D.NET.core;
+
 
 #define _CRTDBG_MAP_ALLOC
 #define IMGUI_DISABLE_OBSOLETE_FUNCTIONS 1
@@ -408,7 +410,7 @@ static void UpdateUI()
 		ImGui.Begin( "Tools", &Draw.g_draw.m_showUI,
 					  ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse );
 
-		if ( ImGui.BeginTabBar( "ControlTabs", ImGuiTabBarFlags_None ) )
+		if ( ImGui.BeginTabBar( "ControlTabs", ImGuiTabBarFlags.None ) )
 		{
 			if ( ImGui.BeginTabItem( "Controls" ) )
 			{
@@ -445,7 +447,7 @@ static void UpdateUI()
 				ImGui.Checkbox( "Counters", &s_settings.drawCounters );
 				ImGui.Checkbox( "Profile", &s_settings.drawProfile );
 
-				ImVec2 button_sz = new Vector2( -1, 0 );
+				Vector2 button_sz = new Vector2( -1, 0 );
 				if ( ImGui.Button( "Pause (P)", button_sz ) )
 				{
 					s_settings.pause = !s_settings.pause;
@@ -479,10 +481,10 @@ static void UpdateUI()
 				ImGui.EndTabItem();
 			}
 
-			ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
-			leafNodeFlags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+			ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
+			leafNodeFlags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
 
-			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
 
 			if ( ImGui.BeginTabItem( "Samples" ) )
 			{
@@ -492,7 +494,7 @@ static void UpdateUI()
 				while ( i < g_sampleCount )
 				{
 					bool categorySelected = strcmp( category, g_sampleEntries[s_settings.sampleIndex].category ) == 0;
-					ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags_Selected : 0;
+					ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags.Selected : 0;
 					bool nodeOpen = ImGui.TreeNodeEx( category, nodeFlags | nodeSelectionFlags );
 
 					if ( nodeOpen )
@@ -502,7 +504,7 @@ static void UpdateUI()
 							ImGuiTreeNodeFlags selectionFlags = 0;
 							if ( s_settings.sampleIndex == i )
 							{
-								selectionFlags = ImGuiTreeNodeFlags_Selected;
+								selectionFlags = ImGuiTreeNodeFlags.Selected;
 							}
 							ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s",
 											   g_sampleEntries[i].name );
@@ -744,7 +746,7 @@ public static void Main(string[] args)
 						  ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
 							  ImGuiWindowFlags.NoScrollbar );
 			ImGui.SetCursorPos( new Vector2( 5.0f, Draw.g_camera.m_height - 20.0f ) );
-			ImGui.TextColored( ImColor( 153, 230, 153, 255 ), "%s", buffer );
+			ImGui.TextColored( new Vector4( 153, 230, 153, 255 ), "%s", buffer );
 			ImGui.End();
 		}
 
