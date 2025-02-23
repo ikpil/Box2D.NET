@@ -8,9 +8,14 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Robustness;
 
 // Big box on small boxes
-class HighMassRatio2 : Sample
+public class HighMassRatio2 : Sample
 {
-public:
+    static Sample Create( Settings settings )
+    {
+        return new HighMassRatio2( settings );
+    }
+    static int sampleIndex2 = RegisterSample( "Robustness", "HighMassRatio2", Create );
+
 public HighMassRatio2( Settings settings )
     : base( settings )
 {
@@ -57,10 +62,5 @@ public HighMassRatio2( Settings settings )
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new HighMassRatio2( settings );
 }
-};
 
-static int sampleIndex2 = RegisterSample( "Robustness", "HighMassRatio2", HighMassRatio2::Create );

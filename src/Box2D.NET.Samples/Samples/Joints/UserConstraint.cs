@@ -8,9 +8,17 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Joints;
 
 // This shows how you can implement a constraint outside of Box2D
-class UserConstraint : Sample
+public class UserConstraint : Sample
 {
-public:
+    b2BodyId m_bodyId;
+    float m_impulses[2];
+    static int sampleUserConstraintIndex = RegisterSample( "Joints", "User Constraint", Create );
+
+    static Sample Create( Settings settings )
+    {
+        return new UserConstraint( settings );
+    }
+
 public UserConstraint( Settings settings )
     : base( settings )
 {
@@ -119,13 +127,7 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new UserConstraint( settings );
+
+
 }
 
-b2BodyId m_bodyId;
-float m_impulses[2];
-};
-
-static int sampleUserConstraintIndex = RegisterSample( "Joints", "User Constraint", UserConstraint::Create );

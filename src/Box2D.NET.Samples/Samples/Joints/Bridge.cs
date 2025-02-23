@@ -15,13 +15,20 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 
 // A suspension bridge
-class Bridge : Sample
+public class Bridge : Sample
 {
-public:
-enum
-{
-    e_count = 160
-};
+    public const int e_count = 160;
+    
+    b2BodyId m_bodyIds[e_count];
+    b2JointId m_jointIds[e_count + 1];
+    float m_frictionTorque;
+    float m_gravityScale;
+    static int sampleBridgeIndex = RegisterSample( "Joints", "Bridge", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Bridge( settings );
+    }
+
 
 public Bridge( Settings settings )
     : base( settings )
@@ -147,16 +154,8 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new Bridge( settings );
+
+
 }
 
-b2BodyId m_bodyIds[e_count];
-b2JointId m_jointIds[e_count + 1];
-float m_frictionTorque;
-float m_gravityScale;
-};
-
-static int sampleBridgeIndex = RegisterSample( "Joints", "Bridge", Bridge::Create );
 

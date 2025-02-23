@@ -13,9 +13,24 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 // Shows how to make a rigid body character mover and use the pre-solve callback. In this
 // case the platform should get the pre-solve event, not the player.
-class Platformer : Sample
+public class Platformer : Sample
 {
-public:
+    
+    bool m_jumping;
+    float m_radius;
+    float m_force;
+    float m_impulse;
+    float m_jumpDelay;
+    b2BodyId m_playerId;
+    b2ShapeId m_playerShapeId;
+    b2BodyId m_movingPlatformId;
+
+    static int samplePlatformer = RegisterSample( "Events", "Platformer", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Platformer( settings );
+    }
+
 public Platformer( Settings settings )
     : base( settings )
 {
@@ -248,19 +263,7 @@ public override void Step(Settings settings)
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new Platformer( settings );
+
+
 }
 
-bool m_jumping;
-float m_radius;
-float m_force;
-float m_impulse;
-float m_jumpDelay;
-b2BodyId m_playerId;
-b2ShapeId m_playerShapeId;
-b2BodyId m_movingPlatformId;
-};
-
-static int samplePlatformer = RegisterSample( "Events", "Platformer", Platformer::Create );

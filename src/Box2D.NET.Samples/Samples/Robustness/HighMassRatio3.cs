@@ -9,9 +9,14 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Robustness;
 
 // Big box on small triangles
-class HighMassRatio3 : Sample
+public class HighMassRatio3 : Sample
 {
-public:
+    static Sample Create( Settings settings )
+    {
+        return new HighMassRatio3( settings );
+    }
+    static int sampleIndex3 = RegisterSample( "Robustness", "HighMassRatio3", Create );
+
 public HighMassRatio3( Settings settings )
     : base( settings )
 {
@@ -60,11 +65,7 @@ public HighMassRatio3( Settings settings )
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new HighMassRatio3( settings );
-}
-};
 
-static int sampleIndex3 = RegisterSample( "Robustness", "HighMassRatio3", HighMassRatio3::Create );
+}
+
 

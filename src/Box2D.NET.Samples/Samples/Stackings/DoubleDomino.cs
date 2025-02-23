@@ -6,9 +6,14 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
-class DoubleDomino : Sample
+public class DoubleDomino : Sample
 {
-    public:
+    static int sampleDoubleDomino = RegisterSample( "Stacking", "Double Domino", Create );
+    static Sample Create( Settings settings )
+    {
+        return new DoubleDomino( settings );
+    }
+
     public DoubleDomino( Settings settings )
         : base( settings )
     {
@@ -51,11 +56,6 @@ class DoubleDomino : Sample
         }
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new DoubleDomino( settings );
-    }
-};
+}
 
-static int sampleDoubleDomino = RegisterSample( "Stacking", "Double Domino", DoubleDomino::Create );
 

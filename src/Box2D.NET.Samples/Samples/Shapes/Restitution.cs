@@ -10,19 +10,26 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Shapes;
 
 // Restitution is approximate since Box2D uses speculative collision
-    class Restitution : Sample
-    {
-    public:
-    enum
-    {
-        e_count = 40
-    };
-
+public class Restitution : Sample
+{
     enum ShapeType
     {
         e_circleShape = 0,
         e_boxShape
     };
+
+    public const int e_count = 40;
+
+
+    b2BodyId m_bodyIds[e_count];
+    ShapeType m_shapeType;
+
+    static int sampleIndex = RegisterSample( "Shapes", "Restitution", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Restitution( settings );
+    }
+
 
     public Restitution( Settings settings )
         : base( settings )
@@ -126,13 +133,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ImGui.End();
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new Restitution( settings );
-    }
 
-    b2BodyId m_bodyIds[e_count];
-    ShapeType m_shapeType;
-    };
 
-    static int sampleIndex = RegisterSample( "Shapes", "Restitution", Restitution::Create );
+}
+

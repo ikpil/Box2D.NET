@@ -11,9 +11,26 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This sample shows how to modify the geometry on an existing shape. This is only supported on
 // dynamic and kinematic shapes because static shapes don't look for new collisions.
-    class ModifyGeometry : Sample
+public class ModifyGeometry : Sample
+{
+    b2ShapeId m_shapeId;
+    b2ShapeType m_shapeType;
+    float m_scale;
+
+    union
     {
-    public:
+        b2Circle m_circle;
+        b2Capsule m_capsule;
+        b2Segment m_segment;
+        b2Polygon m_polygon;
+    }
+    
+    static int sampleModifyGeometry = RegisterSample( "Shapes", "Modify Geometry", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ModifyGeometry( settings );
+    }
+
     public ModifyGeometry( Settings settings )
         : base( settings )
     {
@@ -149,24 +166,6 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     {
         base.Step( settings );
     }
+}
 
-    static Sample Create( Settings settings )
-    {
-        return new ModifyGeometry( settings );
-    }
-
-    b2ShapeId m_shapeId;
-    b2ShapeType m_shapeType;
-    float m_scale;
-
-    union
-    {
-        b2Circle m_circle;
-        b2Capsule m_capsule;
-        b2Segment m_segment;
-        b2Polygon m_polygon;
-    };
-    };
-
-    static int sampleModifyGeometry = RegisterSample( "Shapes", "Modify Geometry", ModifyGeometry::Create );
 

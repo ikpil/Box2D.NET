@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Collections.Generic;
+using Box2D.NET.Primitives;
 using static Box2D.NET.geometry;
 using static Box2D.NET.types;
 using static Box2D.NET.body;
@@ -7,9 +8,8 @@ using static Box2D.NET.world;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
-class SensorTypes : Sample
+public class SensorTypes : Sample
 {
-public:
 enum CollisionBits
 {
     GROUND = 0x00000001,
@@ -18,6 +18,21 @@ enum CollisionBits
 
     ALL_BITS = ( ~0u )
 };
+
+b2ShapeId m_staticSensorId;
+b2ShapeId m_kinematicSensorId;
+b2ShapeId m_dynamicSensorId;
+
+b2BodyId m_kinematicBodyId;
+
+List<b2ShapeId> m_overlaps;
+
+static int sampleSensorTypes = RegisterSample( "Events", "Sensor Types", Create );
+static Sample Create( Settings settings )
+{
+    return new SensorTypes( settings );
+}
+
 
 public SensorTypes( Settings settings )
     : base( settings )
@@ -178,18 +193,6 @@ public override void Step(Settings settings)
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new SensorTypes( settings );
+
+
 }
-
-b2ShapeId m_staticSensorId;
-b2ShapeId m_kinematicSensorId;
-b2ShapeId m_dynamicSensorId;
-
-b2BodyId m_kinematicBodyId;
-
-std::vector<b2ShapeId> m_overlaps;
-};
-
-static int sampleSensorTypes = RegisterSample( "Events", "Sensor Types", SensorTypes::Create );

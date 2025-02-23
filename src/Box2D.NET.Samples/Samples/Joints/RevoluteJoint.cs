@@ -11,9 +11,24 @@ using static Box2D.NET.revolute_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class RevoluteJoint : Sample
+public class RevoluteJoint : Sample
 {
-public:
+    b2BodyId m_ball;
+    b2JointId m_jointId1;
+    b2JointId m_jointId2;
+    float m_motorSpeed;
+    float m_motorTorque;
+    float m_hertz;
+    float m_dampingRatio;
+    bool m_enableSpring;
+    bool m_enableMotor;
+    bool m_enableLimit;
+    static int sampleRevolute = RegisterSample( "Joints", "Revolute", Create );
+    static Sample Create( Settings settings )
+    {
+        return new RevoluteJoint( settings );
+    }
+
 public RevoluteJoint( Settings settings )
     : base( settings )
 {
@@ -194,21 +209,7 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new RevoluteJoint( settings );
+
+
 }
 
-b2BodyId m_ball;
-b2JointId m_jointId1;
-b2JointId m_jointId2;
-float m_motorSpeed;
-float m_motorTorque;
-float m_hertz;
-float m_dampingRatio;
-bool m_enableSpring;
-bool m_enableMotor;
-bool m_enableLimit;
-};
-
-static int sampleRevolute = RegisterSample( "Joints", "Revolute", RevoluteJoint::Create );

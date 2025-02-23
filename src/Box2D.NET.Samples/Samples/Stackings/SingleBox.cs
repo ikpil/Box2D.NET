@@ -8,6 +8,13 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class SingleBox : Sample
 {
+    b2BodyId m_bodyId;
+    static int sampleSingleBox = RegisterSample( "Stacking", "Single Box", Create );
+    static Sample Create( Settings settings )
+    {
+        return new SingleBox( settings );
+    }
+
     public SingleBox( Settings settings ) : base( settings )
     {
         if ( settings.restart == false )
@@ -46,13 +53,8 @@ public class SingleBox : Sample
         DrawTextLine( "(x, y) = (%.2g, %.2g)", position.x, position.y );
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new SingleBox( settings );
-    }
 
-    b2BodyId m_bodyId;
-};
 
-static int sampleSingleBox = RegisterSample( "Stacking", "Single Box", SingleBox::Create );
+}
+
 

@@ -7,9 +7,15 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
-class OffsetShapes : Sample
+public class OffsetShapes : Sample
 {
-    public:
+    
+    static int sampleOffsetShapes = RegisterSample( "Shapes", "Offset", Create );
+    static Sample Create( Settings settings )
+    {
+        return new OffsetShapes( settings );
+    }
+
     public OffsetShapes( Settings settings )
         : base( settings )
     {
@@ -57,10 +63,5 @@ class OffsetShapes : Sample
         Draw.g_draw.DrawTransform( b2Transform_identity );
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new OffsetShapes( settings );
-    }
-};
+}
 
-static int sampleOffsetShapes = RegisterSample( "Shapes", "Offset", OffsetShapes::Create );

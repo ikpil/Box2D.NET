@@ -10,9 +10,21 @@ using static Box2D.NET.world;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
-class SensorBookend : Sample
+public class SensorBookend : Sample
 {
-public:
+    b2BodyId m_sensorBodyId;
+    b2ShapeId m_sensorShapeId;
+
+    b2BodyId m_visitorBodyId;
+    b2ShapeId m_visitorShapeId;
+    bool m_isVisiting;
+
+    static int sampleSensorBookendEvent = RegisterSample( "Events", "Sensor Bookend", Create );
+    static Sample Create( Settings settings )
+    {
+        return new SensorBookend( settings );
+    }
+
 public SensorBookend( Settings settings )
     : base( settings )
 {
@@ -148,18 +160,8 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new SensorBookend( settings );
+
+
 }
 
-b2BodyId m_sensorBodyId;
-b2ShapeId m_sensorShapeId;
-
-b2BodyId m_visitorBodyId;
-b2ShapeId m_visitorShapeId;
-bool m_isVisiting;
-};
-
-static int sampleSensorBookendEvent = RegisterSample( "Events", "Sensor Bookend", SensorBookend::Create );
 

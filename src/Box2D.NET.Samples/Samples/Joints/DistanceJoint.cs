@@ -12,10 +12,24 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // Test the distance joint and all options
 public class DistanceJoint : Sample
 {
-enum
-{
-    e_maxCount = 10
-};
+    public const int e_maxCount = 10;
+
+    b2BodyId m_groundId;
+    b2BodyId m_bodyIds[e_maxCount];
+    b2JointId m_jointIds[e_maxCount];
+    int m_count;
+    float m_hertz;
+    float m_dampingRatio;
+    float m_length;
+    float m_minLength;
+    float m_maxLength;
+    bool m_enableSpring;
+    bool m_enableLimit;
+    static int sampleDistanceJoint = RegisterSample( "Joints", "Distance Joint", Create );
+    static Sample Create( Settings settings )
+    {
+        return new DistanceJoint( settings );
+    }
 
 public DistanceJoint( Settings settings )
     : base( settings )
@@ -193,22 +207,7 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new DistanceJoint( settings );
+
+
 }
 
-b2BodyId m_groundId;
-b2BodyId m_bodyIds[e_maxCount];
-b2JointId m_jointIds[e_maxCount];
-int m_count;
-float m_hertz;
-float m_dampingRatio;
-float m_length;
-float m_minLength;
-float m_maxLength;
-bool m_enableSpring;
-bool m_enableLimit;
-};
-
-static int sampleDistanceJoint = RegisterSample( "Joints", "Distance Joint", DistanceJoint::Create );

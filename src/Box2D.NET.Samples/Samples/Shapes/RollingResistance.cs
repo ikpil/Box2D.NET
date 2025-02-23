@@ -6,9 +6,16 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
-    class RollingResistance : Sample
+public class RollingResistance : Sample
+{
+    float m_resistScale;
+    float m_lift;
+    static int sampleRollingResistance = RegisterSample( "Shapes", "Rolling Resistance", Create );
+    static Sample Create( Settings settings )
     {
-    public:
+        return new RollingResistance( settings );
+    }
+
     public RollingResistance( Settings settings )
         : base( settings )
     {
@@ -86,13 +93,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new RollingResistance( settings );
-    }
 
-    float m_resistScale;
-    float m_lift;
-    };
 
-    static int sampleRollingResistance = RegisterSample( "Shapes", "Rolling Resistance", RollingResistance::Create );
+}
+

@@ -11,13 +11,26 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 // This sample shows the limitations of an iterative solver. The cantilever sags even though the weld
 // joint is stiff as possible.
-class Cantilever : Sample
+public class Cantilever : Sample
 {
-public:
-enum
-{
-    e_count = 8
-};
+    public const int e_count = 8;
+    
+    float m_linearHertz;
+    float m_linearDampingRatio;
+    float m_angularHertz;
+    float m_angularDampingRatio;
+    float m_gravityScale;
+    b2BodyId m_tipId;
+    b2BodyId m_bodyIds[e_count];
+    b2JointId m_jointIds[e_count];
+    bool m_collideConnected;
+
+    static int sampleCantileverIndex = RegisterSample( "Joints", "Cantilever", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Cantilever( settings );
+    }
+
 
 public Cantilever( Settings settings )
     : base( settings )
@@ -149,20 +162,7 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new Cantilever( settings );
+
+
 }
 
-float m_linearHertz;
-float m_linearDampingRatio;
-float m_angularHertz;
-float m_angularDampingRatio;
-float m_gravityScale;
-b2BodyId m_tipId;
-b2BodyId m_bodyIds[e_count];
-b2JointId m_jointIds[e_count];
-bool m_collideConnected;
-};
-
-static int sampleCantileverIndex = RegisterSample( "Joints", "Cantilever", Cantilever::Create );

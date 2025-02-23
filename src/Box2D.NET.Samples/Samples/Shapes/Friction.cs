@@ -8,9 +8,14 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Shapes;
 
 
-    class Friction : Sample
+public class Friction : Sample
+{
+    static int sampleFriction = RegisterSample( "Shapes", "Friction", Create );
+    static Sample Create( Settings settings )
     {
-    public:
+        return new Friction( settings );
+    }
+
     public Friction( Settings settings )
         : base( settings )
     {
@@ -67,10 +72,5 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new Friction( settings );
-    }
-    };
+}
 
-    static int sampleFriction = RegisterSample( "Shapes", "Friction", Friction::Create );

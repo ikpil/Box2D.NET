@@ -5,11 +5,18 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
-    class TangentSpeed : Sample
+public class TangentSpeed : Sample
+{
+    public const int m_totalCount = 200;
+    
+    int m_count = 0;
+    static int sampleTangentSpeed = RegisterSample( "Shapes", "Tangent Speed", Create );
+    static Sample Create( Settings settings )
     {
-    public:
-    public TangentSpeed( Settings settings )
-        : base( settings )
+        return new TangentSpeed( settings );
+    }
+
+    public TangentSpeed( Settings settings ) : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -94,13 +101,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new TangentSpeed( settings );
-    }
 
-    static constexpr int m_totalCount = 200;
-    int m_count = 0;
-    };
 
-    static int sampleTangentSpeed = RegisterSample( "Shapes", "Tangent Speed", TangentSpeed::Create );
+}
+

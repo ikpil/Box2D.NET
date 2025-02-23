@@ -10,9 +10,20 @@ using static Box2D.NET.distance_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class ScissorLift : Sample
+public class ScissorLift : Sample
 {
-public:
+    b2JointId m_liftJointId;
+    float m_motorForce;
+    float m_motorSpeed;
+    bool m_enableMotor;
+
+    static int sampleScissorLift = RegisterSample( "Joints", "Scissor Lift", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ScissorLift( settings );
+    }
+
+    
 public ScissorLift( Settings settings )
     : base( settings )
 {
@@ -212,15 +223,6 @@ public override void Step(Settings settings)
     base.Step( settings );
 }
 
-static Sample Create( Settings settings )
-{
-    return new ScissorLift( settings );
+
+
 }
-
-b2JointId m_liftJointId;
-float m_motorForce;
-float m_motorSpeed;
-bool m_enableMotor;
-};
-
-static int sampleScissorLift = RegisterSample( "Joints", "Scissor Lift", ScissorLift::Create );

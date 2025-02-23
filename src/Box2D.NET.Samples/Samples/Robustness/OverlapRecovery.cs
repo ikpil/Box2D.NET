@@ -9,9 +9,22 @@ using static Box2D.NET.world;
 
 namespace Box2D.NET.Samples.Samples.Robustness;
 
-class OverlapRecovery : Sample
+public class OverlapRecovery : Sample
 {
-public:
+    b2BodyId* m_bodyIds;
+    int m_bodyCount;
+    int m_baseCount;
+    float m_overlap;
+    float m_extent;
+    float m_pushout;
+    float m_hertz;
+    float m_dampingRatio;
+    static int sampleIndex4 = RegisterSample( "Robustness", "Overlap Recovery", Create );
+    static Sample Create( Settings settings )
+    {
+        return new OverlapRecovery( settings );
+    }
+
 public OverlapRecovery( Settings settings )
     : base( settings )
 {
@@ -114,19 +127,6 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new OverlapRecovery( settings );
+
+
 }
-
-b2BodyId* m_bodyIds;
-int m_bodyCount;
-int m_baseCount;
-float m_overlap;
-float m_extent;
-float m_pushout;
-float m_hertz;
-float m_dampingRatio;
-};
-
-static int sampleIndex4 = RegisterSample( "Robustness", "Overlap Recovery", OverlapRecovery::Create );

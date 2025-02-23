@@ -9,9 +9,23 @@ using static Box2D.NET.wheel_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class WheelJoint : Sample
+public class WheelJoint : Sample
 {
-public:
+    b2JointId m_jointId;
+    float m_hertz;
+    float m_dampingRatio;
+    float m_motorSpeed;
+    float m_motorTorque;
+    bool m_enableSpring;
+    bool m_enableMotor;
+    bool m_enableLimit;
+
+    static int sampleWheel = RegisterSample( "Joints", "Wheel", Create );
+    static Sample Create( Settings settings )
+    {
+        return new WheelJoint( settings );
+    }
+
 public WheelJoint( Settings settings )
     : base( settings )
 {
@@ -128,19 +142,7 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new WheelJoint( settings );
+
+
 }
 
-b2JointId m_jointId;
-float m_hertz;
-float m_dampingRatio;
-float m_motorSpeed;
-float m_motorTorque;
-bool m_enableSpring;
-bool m_enableMotor;
-bool m_enableLimit;
-};
-
-static int sampleWheel = RegisterSample( "Joints", "Wheel", WheelJoint::Create );

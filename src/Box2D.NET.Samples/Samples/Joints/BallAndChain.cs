@@ -11,13 +11,18 @@ using static Box2D.NET.revolute_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class BallAndChain : Sample
+public class BallAndChain : Sample
 {
-public:
-enum
+    public const int e_count = 30;
+
+b2JointId m_jointIds[e_count + 1];
+float m_frictionTorque;
+
+static int sampleBallAndChainIndex = RegisterSample( "Joints", "Ball & Chain", Create );
+static Sample Create( Settings settings )
 {
-    e_count = 30
-};
+    return new BallAndChain( settings );
+}
 
 public BallAndChain( Settings settings )
     : base( settings )
@@ -109,14 +114,8 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new BallAndChain( settings );
+
+
 }
 
-b2JointId m_jointIds[e_count + 1];
-float m_frictionTorque;
-};
-
-static int sampleBallAndChainIndex = RegisterSample( "Joints", "Ball & Chain", BallAndChain::Create );
 

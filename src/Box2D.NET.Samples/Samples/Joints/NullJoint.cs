@@ -9,9 +9,14 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 // This sample shows how to use a null joint to prevent collision between two bodies.
 // This is more specific than filters. It also shows that sleeping is coupled by the null joint.
-class NullJoint : Sample
+public class NullJoint : Sample
 {
-    public:
+    static int sampleNullJoint = RegisterSample( "Joints", "Null Joint", Create );
+    static Sample Create( Settings settings )
+    {
+        return new NullJoint( settings );
+    }
+
     public NullJoint( Settings settings )
         : base( settings )
     {
@@ -52,10 +57,5 @@ class NullJoint : Sample
         }
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new NullJoint( settings );
-    }
-};
+}
 
-static int sampleNullJoint = RegisterSample( "Joints", "Null Joint", NullJoint::Create );

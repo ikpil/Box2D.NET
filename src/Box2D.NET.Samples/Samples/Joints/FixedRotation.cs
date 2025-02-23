@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using ImGuiNET;
@@ -12,13 +13,20 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Joints;
 
 // This test ensures joints work correctly with bodies that have fixed rotation
-class FixedRotation : Sample
+public class FixedRotation : Sample
 {
-public:
-enum
+    public const int e_count = 6;
+    
+b2BodyId m_groundId;
+b2BodyId m_bodyIds[e_count];
+b2JointId m_jointIds[e_count];
+bool m_fixedRotation;
+static int sampleFixedRotation = RegisterSample( "Joints", "Fixed Rotation", Create );
+
+static Sample Create( Settings settings )
 {
-    e_count = 6
-};
+    return new FixedRotation( settings );
+}
 
 public FixedRotation( Settings settings )
     : base( settings )
@@ -231,15 +239,6 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new FixedRotation( settings );
+
 }
 
-b2BodyId m_groundId;
-b2BodyId m_bodyIds[e_count];
-b2JointId m_jointIds[e_count];
-bool m_fixedRotation;
-};
-
-static int sampleFixedRotation = RegisterSample( "Joints", "Fixed Rotation", FixedRotation::Create );

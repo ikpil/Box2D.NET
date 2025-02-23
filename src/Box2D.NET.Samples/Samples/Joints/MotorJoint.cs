@@ -1,4 +1,6 @@
-﻿using Box2D.NET.Primitives;
+﻿using System;
+using System.Numerics;
+using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.joint;
 using static Box2D.NET.geometry;
@@ -6,6 +8,7 @@ using static Box2D.NET.types;
 using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
+using static Box2D.NET.motor_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -14,9 +17,21 @@ namespace Box2D.NET.Samples.Samples.Joints;
 /// the body can be blocked by collision with other bodies.
 /// By setting the correction factor to zero, the motor joint acts
 /// like top-down dry friction.
-class MotorJoint : Sample
+public class MotorJoint : Sample
 {
-public:
+    b2JointId m_jointId;
+    float m_time;
+    float m_maxForce;
+    float m_maxTorque;
+    float m_correctionFactor;
+    bool m_go;
+
+    static int sampleMotorJoint = RegisterSample( "Joints", "Motor Joint", Create );
+    static Sample Create( Settings settings )
+    {
+        return new MotorJoint( settings );
+    }
+
 public MotorJoint( Settings settings )
     : base( settings )
 {
@@ -103,10 +118,10 @@ public override void Step(Settings settings)
     }
 
     b2Vec2 linearOffset;
-    linearOffset.x = 6.0f * sinf( 2.0f * m_time );
-    linearOffset.y = 8.0f + 4.0f * sinf( 1.0f * m_time );
+    linearOffset.x = 6.0f * MathF.Sin( 2.0f * m_time );
+    linearOffset.y = 8.0f + 4.0f * MathF.Sin( 1.0f * m_time );
 
-    float angularOffset = B2_PI * sinf( -0.5f * m_time );
+    float angularOffset = B2_PI * MathF.Sin( -0.5f * m_time );
 
     b2MotorJoint_SetLinearOffset( m_jointId, linearOffset );
     b2MotorJoint_SetAngularOffset( m_jointId, angularOffset );
@@ -123,18 +138,8 @@ public override void Step(Settings settings)
     m_textLine += 15;
 }
 
-static Sample Create( Settings settings )
-{
-    return new MotorJoint( settings );
+
+
 }
 
-b2JointId m_jointId;
-float m_time;
-float m_maxForce;
-float m_maxTorque;
-float m_correctionFactor;
-bool m_go;
-};
-
-static int sampleMotorJoint = RegisterSample( "Joints", "Motor Joint", MotorJoint::Create );
 

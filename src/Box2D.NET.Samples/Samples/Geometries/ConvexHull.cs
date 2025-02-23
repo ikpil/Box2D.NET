@@ -2,16 +2,26 @@
 using Box2D.NET.Samples;
 using static Box2D.NET.hull;
 using static Box2D.NET.math_function;
+using static Box2D.NET.constants;
 
 namespace Box2D.NET.Samples.Samples.Geometries;
 
-    public class ConvexHull : Sample
+public class ConvexHull : Sample
 {
-public:
-	enum
-	{
-		e_count = B2_MAX_POLYGON_VERTICES
-	};
+    public const int e_count = B2_MAX_POLYGON_VERTICES;
+
+b2Vec2 m_points[B2_MAX_POLYGON_VERTICES];
+int m_count;
+int m_generation;
+bool m_auto;
+bool m_bulk;
+static int sampleIndex = RegisterSample( "Geometry", "Convex Hull", Create );
+
+static Sample Create( Settings settings )
+{
+    return new ConvexHull( settings );
+}
+
 
 	public ConvexHull( Settings settings )
 		: base( settings )
@@ -201,16 +211,8 @@ public:
 		}
 	}
 
-	static Sample Create( Settings settings )
-	{
-		return new ConvexHull( settings );
-	}
 
-	b2Vec2 m_points[B2_MAX_POLYGON_VERTICES];
-	int m_count;
-	int m_generation;
-	bool m_auto;
-	bool m_bulk;
-};
 
-static int sampleIndex = RegisterSample( "Geometry", "Convex Hull", ConvexHull::Create );
+
+}
+

@@ -4,12 +4,29 @@ using static Box2D.NET.math_function;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-    public class ShapeCast : Sample
+public class ShapeCast : Sample
+{
+    public const int e_vertexCount = 8;
+    
+    b2Vec2 m_vAs[B2_MAX_POLYGON_VERTICES];
+    int m_countA;
+    float m_radiusA;
+
+    b2Vec2 m_vBs[B2_MAX_POLYGON_VERTICES];
+    int m_countB;
+    float m_radiusB;
+
+    b2Transform m_transformA;
+    b2Transform m_transformB;
+    b2Vec2 m_translationB;
+    bool m_rayDrag;
+
+    static int sampleShapeCast = RegisterSample( "Collision", "Shape Cast", ShapeCast::Create );
+    static Sample Create( Settings settings )
     {
-    enum
-    {
-        e_vertexCount = 8
-    };
+        return new ShapeCast( settings );
+    }
+
 
     public ShapeCast( Settings settings )
         : base( settings )
@@ -20,7 +37,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
             Draw.g_camera.m_zoom = 25.0f * 0.2f;
         }
 
-#if ZERO_DEFINE
+    #if ZERO_DEFINE
         // box swept against a triangle
         m_vAs[0] = {-0.5f, 1.0f};
         m_vAs[1] = {0.5f, 1.0f};
@@ -40,82 +57,78 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         m_transformB.p = {-4.0f, 0.0f};
         m_transformB.q = b2Rot_identity;
         m_translationB = {8.0f, 0.0f};
-#elif 1
-		// box swept against a segment
-		m_vAs[0] = { -2.0f, 0.0f };
-		m_vAs[1] = { 2.0f, 0.0f };
-		m_countA = 2;
-		m_radiusA = 0.0f;
+    #elif 1
+        // box swept against a segment
+        m_vAs[0] = { -2.0f, 0.0f };
+        m_vAs[1] = { 2.0f, 0.0f };
+        m_countA = 2;
+        m_radiusA = 0.0f;
 
-		m_vBs[0] = { -0.25f, -0.25f };
-		m_vBs[1] = { 0.25f, -0.25f };
-		m_vBs[2] = { 0.25f, 0.25f };
-		m_vBs[3] = { -0.25f, 0.25f };
-		m_countB = 4;
-		m_radiusB = 0.25f;
+        m_vBs[0] = { -0.25f, -0.25f };
+        m_vBs[1] = { 0.25f, -0.25f };
+        m_vBs[2] = { 0.25f, 0.25f };
+        m_vBs[3] = { -0.25f, 0.25f };
+        m_countB = 4;
+        m_radiusB = 0.25f;
 
-		m_transformA.p = { 0.0f, 0.0 };
-		m_transformA.q = b2MakeRot( 0.25f * B2_PI );
-		m_transformB.p = { -8.0f, 0.0f };
-		m_transformB.q = b2Rot_identity;
-		m_translationB = { 8.0f, 0.0f };
-#elif 0
-		// A point swept against a box
-		m_vAs[0] = { -0.5f, -0.5f };
-		m_vAs[1] = { 0.5f, -0.5f };
-		m_vAs[2] = { 0.5f, 0.5f };
-		m_vAs[3] = { -0.5f, 0.5f };
-		m_countA = 4;
-		m_radiusA = 0.0f;
+        m_transformA.p = { 0.0f, 0.0 };
+        m_transformA.q = b2MakeRot( 0.25f * B2_PI );
+        m_transformB.p = { -8.0f, 0.0f };
+        m_transformB.q = b2Rot_identity;
+        m_translationB = { 8.0f, 0.0f };
+    #elif 0
+        // A point swept against a box
+        m_vAs[0] = { -0.5f, -0.5f };
+        m_vAs[1] = { 0.5f, -0.5f };
+        m_vAs[2] = { 0.5f, 0.5f };
+        m_vAs[3] = { -0.5f, 0.5f };
+        m_countA = 4;
+        m_radiusA = 0.0f;
 
-		m_vBs[0] = { 0.0f, 0.0f };
-		m_countB = 1;
-		m_radiusB = 0.0f;
+        m_vBs[0] = { 0.0f, 0.0f };
+        m_countB = 1;
+        m_radiusB = 0.0f;
 
-		m_transformA.p = { 0.0f, 0.0f };
-		m_transformA.q = b2Rot_identity;
-		m_transformB.p = { -1.0f, 0.0f };
-		m_transformB.q = b2Rot_identity;
-		m_translationB = { 1.0f, 0.0f };
-#elif 0
-		m_vAs[0] = { 0.0f, 0.0f };
-		m_countA = 1;
-		m_radiusA = 0.5f;
+        m_transformA.p = { 0.0f, 0.0f };
+        m_transformA.q = b2Rot_identity;
+        m_transformB.p = { -1.0f, 0.0f };
+        m_transformB.q = b2Rot_identity;
+        m_translationB = { 1.0f, 0.0f };
+    #elif 0
+        m_vAs[0] = { 0.0f, 0.0f };
+        m_countA = 1;
+        m_radiusA = 0.5f;
 
-		m_vBs[0] = { 0.0f, 0.0f };
-		m_countB = 1;
-		m_radiusB = 0.5f;
+        m_vBs[0] = { 0.0f, 0.0f };
+        m_countB = 1;
+        m_radiusB = 0.5f;
 
-		m_transformA.p = { 0.0f, 0.25f };
-		m_transformA.q = b2Rot_identity;
-		m_transformB.p = { -4.0f, 0.0f };
-		m_transformB.q = b2Rot_identity;
-		m_translationB = { 8.0f, 0.0f };
-#else
-		m_vAs[0] = { 0.0f, 0.0f };
-		m_vAs[1] = { 2.0f, 0.0f };
-		m_countA = 2;
-		m_radiusA = 0.0f;
+        m_transformA.p = { 0.0f, 0.25f };
+        m_transformA.q = b2Rot_identity;
+        m_transformB.p = { -4.0f, 0.0f };
+        m_transformB.q = b2Rot_identity;
+        m_translationB = { 8.0f, 0.0f };
+    #else
+        m_vAs[0] = { 0.0f, 0.0f };
+        m_vAs[1] = { 2.0f, 0.0f };
+        m_countA = 2;
+        m_radiusA = 0.0f;
 
-		m_vBs[0] = { 0.0f, 0.0f };
-		m_countB = 1;
-		m_radiusB = 0.25f;
+        m_vBs[0] = { 0.0f, 0.0f };
+        m_countB = 1;
+        m_radiusB = 0.25f;
 
-		// Initial overlap
-		m_transformA.p = b2Vec2_zero;
-		m_transformA.q = b2Rot_identity;
-		m_transformB.p = { -0.244360745f, 0.05999358f };
-		m_transformB.q = b2Rot_identity;
-		m_translationB = { 0.0f, 0.0399999991f };
-#endif
+        // Initial overlap
+        m_transformA.p = b2Vec2_zero;
+        m_transformA.q = b2Rot_identity;
+        m_transformB.p = { -0.244360745f, 0.05999358f };
+        m_transformB.q = b2Rot_identity;
+        m_translationB = { 0.0f, 0.0399999991f };
+    #endif
 
         m_rayDrag = false;
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new ShapeCast( settings );
-    }
 
     public override void MouseDown( b2Vec2 p, int button, int mods )
     {
@@ -250,18 +263,5 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         Draw.g_draw.DrawSegment( m_transformB.p, b2Add( m_transformB.p, m_translationB ), b2HexColor.b2_colorGray );
     }
 
-    b2Vec2 m_vAs[B2_MAX_POLYGON_VERTICES];
-    int m_countA;
-    float m_radiusA;
+}
 
-    b2Vec2 m_vBs[B2_MAX_POLYGON_VERTICES];
-    int m_countB;
-    float m_radiusB;
-
-    b2Transform m_transformA;
-    b2Transform m_transformB;
-    b2Vec2 m_translationB;
-    bool m_rayDrag;
-    };
-
-    static int sampleShapeCast = RegisterSample( "Collision", "Shape Cast", ShapeCast::Create );

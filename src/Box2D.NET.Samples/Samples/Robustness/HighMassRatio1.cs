@@ -10,6 +10,12 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 // Pyramid with heavy box on top
 public class HighMassRatio1 : Sample
 {
+    static Sample Create( Settings settings )
+    {
+        return new HighMassRatio1( settings );
+    }
+    static int sampleIndex1 = RegisterSample( "Robustness", "HighMassRatio1", Create );
+
 public HighMassRatio1( Settings settings )
     : base( settings )
 {
@@ -61,10 +67,5 @@ public HighMassRatio1( Settings settings )
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new HighMassRatio1( settings );
 }
-};
 
-static int sampleIndex1 = RegisterSample( "Robustness", "HighMassRatio1", HighMassRatio1::Create );

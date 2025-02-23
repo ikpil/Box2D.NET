@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.id;
 using static Box2D.NET.geometry;
@@ -10,9 +11,8 @@ using static Box2D.NET.world;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
-class FootSensor : Sample
+public class FootSensor : Sample
 {
-public:
 enum CollisionBits
 {
     GROUND = 0x00000001,
@@ -21,6 +21,17 @@ enum CollisionBits
 
     ALL_BITS = ( ~0u )
 };
+
+b2BodyId m_playerId;
+b2ShapeId m_sensorId;
+List<b2ShapeId> m_overlaps;
+int m_overlapCount;
+static int sampleCharacterSensor = RegisterSample( "Events", "Foot Sensor", Create );
+static Sample Create( Settings settings )
+{
+    return new FootSensor( settings );
+}
+
 
 public FootSensor( Settings settings )
     : base( settings )
@@ -131,15 +142,7 @@ public override void Step(Settings settings)
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new FootSensor( settings );
+
+
 }
 
-b2BodyId m_playerId;
-b2ShapeId m_sensorId;
-std::vector<b2ShapeId> m_overlaps;
-int m_overlapCount;
-};
-
-static int sampleCharacterSensor = RegisterSample( "Events", "Foot Sensor", FootSensor::Create );

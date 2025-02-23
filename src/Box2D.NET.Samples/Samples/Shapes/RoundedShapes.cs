@@ -4,12 +4,19 @@ using static Box2D.NET.types;
 using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
+using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
-    class RoundedShapes : Sample
+public class RoundedShapes : Sample
+{
+    
+    static int sampleRoundedShapes = RegisterSample( "Shapes", "Rounded", Create );
+    static Sample Create( Settings settings )
     {
-    public:
+        return new RoundedShapes( settings );
+    }
+
     public RoundedShapes( Settings settings )
         : base( settings )
     {
@@ -67,11 +74,5 @@ namespace Box2D.NET.Samples.Samples.Shapes;
             y += 1.0f;
         }
     }
+}
 
-    static Sample Create( Settings settings )
-    {
-        return new RoundedShapes( settings );
-    }
-    };
-
-    static int sampleRoundedShapes = RegisterSample( "Shapes", "Rounded", RoundedShapes::Create );

@@ -10,8 +10,27 @@ using static Box2D.NET.world;
 
 namespace Box2D.NET.Samples.Samples.Worlds;
 
-    public class LargeWorld : Sample
+public class LargeWorld : Sample
 {
+    Car m_car;
+    b2Vec2 m_viewPosition;
+    float m_period;
+    int m_cycleCount;
+    int m_cycleIndex;
+    float m_gridCount;
+    float m_gridSize;
+    float m_speed;
+
+    b2Vec2 m_explosionPosition;
+    bool m_explode;
+    bool m_followCar;
+    
+    static int sampleLargeWorld = RegisterSample( "World", "Large World", Create );
+    static Sample Create( Settings settings )
+    {
+        return new LargeWorld( settings );
+    }
+
 	public LargeWorld( Settings settings ) : base( settings )
 	{
 		m_period = 40.0f;
@@ -219,24 +238,8 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 		base.Step( settings );
 	}
 
-	static Sample Create( Settings settings )
-	{
-		return new LargeWorld( settings );
-	}
 
-	Car m_car;
-	b2Vec2 m_viewPosition;
-	float m_period;
-	int m_cycleCount;
-	int m_cycleIndex;
-	float m_gridCount;
-	float m_gridSize;
-	float m_speed;
 
-	b2Vec2 m_explosionPosition;
-	bool m_explode;
-	bool m_followCar;
-};
+}
 
-static int sampleLargeWorld = RegisterSample( "World", "Large World", LargeWorld::Create );
 

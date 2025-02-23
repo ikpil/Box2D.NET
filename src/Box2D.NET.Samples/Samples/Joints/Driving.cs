@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.joint;
@@ -11,9 +12,22 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Joints;
 
 // This is a fun demo that shows off the wheel joint
-class Driving : Sample
+public class Driving : Sample
 {
-public:
+    Car m_car;
+
+    float m_throttle;
+    float m_hertz;
+    float m_dampingRatio;
+    float m_torque;
+    float m_speed;
+
+    static int sampleDriving = RegisterSample( "Joints", "Driving", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Driving( settings );
+    }
+
 public Driving( Settings settings )
     : base( settings )
 {
@@ -256,18 +270,7 @@ public override void Step(Settings settings)
     base.Step( settings );
 }
 
-static Sample Create( Settings settings )
-{
-    return new Driving( settings );
+
+
 }
 
-Car m_car;
-
-float m_throttle;
-float m_hertz;
-float m_dampingRatio;
-float m_torque;
-float m_speed;
-};
-
-static int sampleDriving = RegisterSample( "Joints", "Driving", Driving::Create );

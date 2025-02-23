@@ -10,9 +10,22 @@ using static Box2D.NET.prismatic_joint;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class PrismaticJoint : Sample
+public class PrismaticJoint : Sample
 {
-public:
+    b2JointId m_jointId;
+    float m_motorSpeed;
+    float m_motorForce;
+    float m_hertz;
+    float m_dampingRatio;
+    bool m_enableSpring;
+    bool m_enableMotor;
+    bool m_enableLimit;
+    static int samplePrismatic = RegisterSample( "Joints", "Prismatic", Create );
+    static Sample Create( Settings settings )
+    {
+        return new PrismaticJoint( settings );
+    }
+
 public PrismaticJoint( Settings settings )
     : base( settings )
 {
@@ -145,19 +158,7 @@ public override void Step(Settings settings)
     m_textLine += m_textIncrement;
 }
 
-static Sample Create( Settings settings )
-{
-    return new PrismaticJoint( settings );
+
+
 }
 
-b2JointId m_jointId;
-float m_motorSpeed;
-float m_motorForce;
-float m_hertz;
-float m_dampingRatio;
-bool m_enableSpring;
-bool m_enableMotor;
-bool m_enableLimit;
-};
-
-static int samplePrismatic = RegisterSample( "Joints", "Prismatic", PrismaticJoint::Create );

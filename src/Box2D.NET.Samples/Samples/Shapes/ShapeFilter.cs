@@ -7,9 +7,8 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
-    class ShapeFilter : Sample
-    {
-    public:
+public class ShapeFilter : Sample
+{
     enum CollisionBits
     {
         GROUND = 0x00000001,
@@ -19,6 +18,20 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
         ALL_BITS = ( ~0u )
     };
+    static int sampleShapeFilter = RegisterSample( "Shapes", "Filter", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ShapeFilter( settings );
+    }
+
+    b2BodyId m_player1Id;
+    b2BodyId m_player2Id;
+    b2BodyId m_player3Id;
+
+    b2ShapeId m_shape1Id;
+    b2ShapeId m_shape2Id;
+    b2ShapeId m_shape3Id;
+
 
     public ShapeFilter( Settings settings )
         : base( settings )
@@ -203,18 +216,5 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         Draw.g_draw.DrawString( { p3.x - 0.5f, p3.y }, "player 3" );
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new ShapeFilter( settings );
-    }
+}
 
-    b2BodyId m_player1Id;
-    b2BodyId m_player2Id;
-    b2BodyId m_player3Id;
-
-    b2ShapeId m_shape1Id;
-    b2ShapeId m_shape2Id;
-    b2ShapeId m_shape3Id;
-    };
-
-    static int sampleShapeFilter = RegisterSample( "Shapes", "Filter", ShapeFilter::Create );

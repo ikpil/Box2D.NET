@@ -14,13 +14,18 @@ using static Box2D.NET.world;
 namespace Box2D.NET.Samples.Samples.Joints;
 
 // This sample shows how to break joints when the internal reaction force becomes large.
-class BreakableJoint : Sample
+public class BreakableJoint : Sample
 {
-public:
-enum
-{
-    e_count = 6
-};
+    public const int e_count = 6;
+
+    b2JointId m_jointIds[e_count];
+    float m_breakForce;
+
+    static int sampleBreakableJoint = RegisterSample( "Joints", "Breakable", Create );
+    static Sample Create( Settings settings )
+    {
+        return new BreakableJoint( settings );
+    }
 
 public BreakableJoint( Settings settings )
     : base( settings )
@@ -241,14 +246,8 @@ public override void Step(Settings settings)
     base.Step( settings );
 }
 
-static Sample Create( Settings settings )
-{
-    return new BreakableJoint( settings );
+
+
 }
 
-b2JointId m_jointIds[e_count];
-float m_breakForce;
-};
-
-static int sampleBreakableJoint = RegisterSample( "Joints", "Breakable", BreakableJoint::Create );
 

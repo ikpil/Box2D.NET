@@ -8,9 +8,15 @@ using static Box2D.NET.shape;
 namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This sample tests a static shape being recreated every step.
-class RecreateStatic : Sample
+public class RecreateStatic : Sample
 {
-    public:
+    b2BodyId m_groundId;
+    static int sampleSingleBox = RegisterSample( "Shapes", "Recreate Static", Create );
+    static Sample Create( Settings settings )
+    {
+        return new RecreateStatic( settings );
+    }
+
     public RecreateStatic( Settings settings )
         : base( settings )
     {
@@ -54,13 +60,5 @@ class RecreateStatic : Sample
 
         base.Step( settings );
     }
-
-    static Sample Create( Settings settings )
-    {
-        return new RecreateStatic( settings );
-    }
-
-    b2BodyId m_groundId;
 }
 
-static int sampleSingleBox = RegisterSample( "Shapes", "Recreate Static", RecreateStatic::Create );

@@ -1,14 +1,26 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Numerics;
+using Box2D.NET.Primitives;
+using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
 using static Box2D.NET.types;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
+using static Box2D.NET.Shared.human;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-class Ragdoll : Sample
+public class Ragdoll : Sample
 {
-public:
+    Human m_human;
+    float m_jointFrictionTorque;
+    float m_jointHertz;
+    float m_jointDampingRatio;
+    static int sampleRagdoll = RegisterSample( "Joints", "Ragdoll", Create );
+    static Sample Create( Settings settings )
+    {
+        return new Ragdoll( settings );
+    }
+
 public Ragdoll( Settings settings )
     : base( settings )
 {
@@ -78,16 +90,8 @@ public override void UpdateUI()
     ImGui.End();
 }
 
-static Sample Create( Settings settings )
-{
-    return new Ragdoll( settings );
+
+
 }
 
-Human m_human;
-float m_jointFrictionTorque;
-float m_jointHertz;
-float m_jointDampingRatio;
-};
-
-static int sampleRagdoll = RegisterSample( "Joints", "Ragdoll", Ragdoll::Create );
 

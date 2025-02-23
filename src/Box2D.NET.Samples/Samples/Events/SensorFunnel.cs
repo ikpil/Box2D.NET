@@ -1,5 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
 using static Box2D.NET.joint;
 using static Box2D.NET.geometry;
@@ -19,6 +21,20 @@ enum ea
     e_human = 2,
     e_count = 32
 };
+
+Human m_humans[e_count];
+Donut m_donuts[e_count];
+bool m_isSpawned[e_count];
+int m_type;
+float m_wait;
+float m_side;
+
+static int sampleSensorBeginEvent = RegisterSample( "Events", "Sensor Funnel", Create );
+static Sample Create( Settings settings )
+{
+    return new SensorFunnel( settings );
+}
+
 
 public SensorFunnel( Settings settings ) : base( settings )
 {
@@ -315,17 +331,7 @@ public override void Step(Settings settings)
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new SensorFunnel( settings );
+
+
 }
 
-Human m_humans[e_count];
-Donut m_donuts[e_count];
-bool m_isSpawned[e_count];
-int m_type;
-float m_wait;
-float m_side;
-};
-
-static int sampleSensorBeginEvent = RegisterSample( "Events", "Sensor Funnel", SensorFunnel::Create );

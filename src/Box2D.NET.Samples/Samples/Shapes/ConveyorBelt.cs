@@ -8,7 +8,12 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 class ConveyorBelt : Sample
 {
-    public:
+    static int sampleConveyorBelt = RegisterSample( "Shapes", "Conveyor Belt", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ConveyorBelt( settings );
+    }
+ 
     public ConveyorBelt( Settings settings )
         : base( settings )
     {
@@ -57,10 +62,5 @@ class ConveyorBelt : Sample
         }
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new ConveyorBelt( settings );
-    }
-};
+}
 
-static int sampleConveyorBelt = RegisterSample( "Shapes", "Conveyor Belt", ConveyorBelt::Create );
