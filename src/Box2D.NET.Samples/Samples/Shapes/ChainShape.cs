@@ -154,7 +154,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
             m_shapeId = b2CreatePolygonShape( m_bodyId, &shapeDef, &box );
         }
 
-#ifndef NDEBUG
+#if DEBUG
         b2_toiCalls = 0;
         b2_toiHitCount = 0;
 #endif
@@ -204,7 +204,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2HexColor.b2_colorRed );
         Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2HexColor.b2_colorGreen );
 
-#ifndef NDEBUG
+#if DEBUG
         DrawTextLine( "toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount );
 #endif
     }
