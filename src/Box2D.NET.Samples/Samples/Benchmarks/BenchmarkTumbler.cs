@@ -1,24 +1,26 @@
-﻿namespace Box2D.NET.Samples.Samples.Benchmarks;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.Shared.benchmarks;
 
-class BenchmarkTumbler : Sample
+namespace Box2D.NET.Samples.Samples.Benchmarks;
+
+public class BenchmarkTumbler : Sample
 {
-    public:
-    explicit BenchmarkTumbler( Settings settings )
-        : Sample( settings )
+    static int benchmarkTumbler = RegisterSample("Benchmark", "Tumbler", Create);
+
+    static Sample Create(Settings settings)
     {
-        if ( settings.restart == false )
+        return new BenchmarkTumbler(settings);
+    }
+
+    public BenchmarkTumbler(Settings settings)
+        : base(settings)
+    {
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 1.5f, 10.0f };
+            Draw.g_camera.m_center = new b2Vec2(1.5f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.6f;
         }
 
-        CreateTumbler( m_worldId );
+        CreateTumbler(m_worldId);
     }
-
-    static Sample* Create( Settings settings )
-    {
-        return new BenchmarkTumbler( settings );
-    }
-};
-
-static int benchmarkTumbler = RegisterSample( "Benchmark", "Tumbler", BenchmarkTumbler::Create );
+}

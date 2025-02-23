@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.math_function;
 using static Box2D.NET.constants;
+using static Box2D.NET.timer;
 
 namespace Box2D.NET
 {
@@ -1024,8 +1025,8 @@ namespace Box2D.NET
         public static b2TOIOutput b2TimeOfImpact(b2TOIInput input)
         {
 #if B2_SNOOP_TOI_COUNTERS
-        ulong ticks = b2GetTicks();
-        ++b2_toiCalls;
+            ulong ticks = b2GetTicks();
+            ++b2_toiCalls;
 #endif
 
             b2TOIOutput output = new b2TOIOutput();
