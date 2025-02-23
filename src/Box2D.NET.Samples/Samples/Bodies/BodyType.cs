@@ -13,8 +13,6 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 
 public class BodyType : Sample
 {
-    private static int sampleBodyType = RegisterSample("Bodies", "Body Type", BodyType.Create);
-
     b2BodyId m_attachmentId;
     b2BodyId m_secondAttachmentId;
     b2BodyId m_platformId;
@@ -24,6 +22,8 @@ public class BodyType : Sample
     b2BodyType m_type;
     float m_speed;
     bool m_isEnabled;
+
+    private static int sampleBodyType = RegisterSample("Bodies", "Body Type", BodyType.Create);
 
     private static Sample Create(Settings settings)
     {
