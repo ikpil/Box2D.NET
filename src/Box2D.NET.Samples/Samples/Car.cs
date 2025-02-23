@@ -18,12 +18,12 @@ namespace Box2D.NET.Samples;
 
 public class Car
 {
-    private b2BodyId m_chassisId;
-    private b2BodyId m_rearWheelId;
-    private b2BodyId m_frontWheelId;
-    private b2JointId m_rearAxleId;
-    private b2JointId m_frontAxleId;
-    private bool m_isSpawned;
+    public b2BodyId m_chassisId;
+    public b2BodyId m_rearWheelId;
+    public b2BodyId m_frontWheelId;
+    public b2JointId m_rearAxleId;
+    public b2JointId m_frontAxleId;
+    public bool m_isSpawned;
 
     public Car()
     {
