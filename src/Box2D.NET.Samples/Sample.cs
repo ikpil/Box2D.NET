@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
+using ImGuiNET;
 using static Box2D.NET.joint;
 using static Box2D.NET.id;
 using static Box2D.NET.types;
@@ -293,10 +295,8 @@ public class Sample
         }
     }
 
-    public void DrawTextLine(string text, ...)
+    public void DrawTextLine(string text, params object[] arg)
     {
-        va_list arg;
-        va_start(arg, text);
         ImGui.Begin("Overlay", nullptr,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
