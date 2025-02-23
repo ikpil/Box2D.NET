@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 class RecreateStatic : Sample
 {
     public:
-    explicit RecreateStatic( Settings settings )
+    public RecreateStatic( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

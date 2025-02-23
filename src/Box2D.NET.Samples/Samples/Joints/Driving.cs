@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class Driving : Sample
 {
 public:
-explicit Driving( Settings settings )
+public Driving( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

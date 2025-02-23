@@ -20,7 +20,7 @@ enum
     e_count = 6
 };
 
-explicit FixedRotation( Settings settings )
+public FixedRotation( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

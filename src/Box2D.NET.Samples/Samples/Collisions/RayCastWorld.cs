@@ -228,7 +228,7 @@ public class RayCastWorld : Sample
     }
 
 
-    explicit RayCastWorld( Settings settings )
+    public RayCastWorld( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

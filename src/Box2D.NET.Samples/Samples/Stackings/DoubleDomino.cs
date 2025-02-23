@@ -9,7 +9,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 class DoubleDomino : Sample
 {
     public:
-    explicit DoubleDomino( Settings settings )
+    public DoubleDomino( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

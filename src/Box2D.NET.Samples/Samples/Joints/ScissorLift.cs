@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class ScissorLift : Sample
 {
 public:
-explicit ScissorLift( Settings settings )
+public ScissorLift( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

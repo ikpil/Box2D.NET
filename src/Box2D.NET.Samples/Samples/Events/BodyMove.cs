@@ -20,7 +20,7 @@ enum
     e_count = 50
 };
 
-explicit BodyMove( Settings settings )
+public BodyMove( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

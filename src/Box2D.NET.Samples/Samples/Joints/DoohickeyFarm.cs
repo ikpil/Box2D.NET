@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class SoftBody : Sample
 {
 public:
-explicit SoftBody( Settings settings )
+public SoftBody( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )
@@ -43,7 +43,7 @@ static int sampleDonut = RegisterSample( "Joints", "Soft Body", SoftBody::Create
 class DoohickeyFarm : Sample
 {
 public:
-explicit DoohickeyFarm( Settings settings )
+public DoohickeyFarm( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

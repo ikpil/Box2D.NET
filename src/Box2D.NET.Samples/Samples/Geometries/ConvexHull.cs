@@ -13,7 +13,7 @@ public:
 		e_count = B2_MAX_POLYGON_VERTICES
 	};
 
-	explicit ConvexHull( Settings settings )
+	public ConvexHull( Settings settings )
 		: base( settings )
 	{
 		if ( settings.restart == false )
@@ -30,7 +30,7 @@ public:
 
 	void Generate()
 	{
-#if 0
+#if ZERO_DEFINE
 		m_points[0] = { 5.65314484f, 0.204832315f };
 		m_points[1] = {-5.65314484f, -0.204832315f };
 		m_points[2] = {2.34463644f, 1.15731204f };

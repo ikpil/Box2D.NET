@@ -17,7 +17,7 @@ enum
     e_maxCount = 10
 };
 
-explicit DistanceJoint( Settings settings )
+public DistanceJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

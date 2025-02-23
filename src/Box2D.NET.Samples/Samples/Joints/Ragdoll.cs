@@ -9,7 +9,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class Ragdoll : Sample
 {
 public:
-explicit Ragdoll( Settings settings )
+public Ragdoll( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

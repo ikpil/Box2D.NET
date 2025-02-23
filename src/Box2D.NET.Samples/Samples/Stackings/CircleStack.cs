@@ -15,7 +15,7 @@ struct Event
     int indexA, indexB;
 };
 
-explicit CircleStack( Settings settings )
+public CircleStack( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

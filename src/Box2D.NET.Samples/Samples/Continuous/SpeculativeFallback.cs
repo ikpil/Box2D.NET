@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class SpeculativeFallback : Sample
 {
     public:
-    explicit SpeculativeFallback( Settings settings )
+    public SpeculativeFallback( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         e_count = 10
     };
 
-    explicit CustomFilter( Settings settings )
+    public CustomFilter( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

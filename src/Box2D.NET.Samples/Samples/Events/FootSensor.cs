@@ -22,7 +22,7 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-explicit FootSensor( Settings settings )
+public FootSensor( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

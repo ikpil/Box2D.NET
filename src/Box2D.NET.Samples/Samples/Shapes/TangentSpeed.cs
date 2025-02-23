@@ -8,7 +8,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class TangentSpeed : Sample
     {
     public:
-    explicit TangentSpeed( Settings settings )
+    public TangentSpeed( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

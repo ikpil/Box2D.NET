@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class ChainLink : Sample
     {
     public:
-    explicit ChainLink( Settings settings )
+    public ChainLink( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

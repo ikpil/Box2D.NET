@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class RevoluteJoint : Sample
 {
 public:
-explicit RevoluteJoint( Settings settings )
+public RevoluteJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class RestitutionThreshold : Sample
 {
 public:
-explicit RestitutionThreshold( Settings settings )
+public RestitutionThreshold( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

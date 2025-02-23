@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class Drop : Sample
 {
 public:
-explicit Drop( Settings settings )
+public Drop( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )
@@ -23,7 +23,7 @@ explicit Drop( Settings settings )
         settings.drawJoints = false;
     }
 
-#if 0
+#if ZERO_DEFINE
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
@@ -286,7 +286,7 @@ public override void Keyboard( int key )
 
 public override void Step(Settings settings)
 {
-#if 0
+#if ZERO_DEFINE
     ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
     ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
     ImGui.SetNextWindowBgAlpha( 0.0f );

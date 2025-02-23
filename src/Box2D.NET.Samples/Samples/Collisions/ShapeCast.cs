@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         e_vertexCount = 8
     };
 
-    explicit ShapeCast( Settings settings )
+    public ShapeCast( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )
@@ -20,7 +20,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
             Draw.g_camera.m_zoom = 25.0f * 0.2f;
         }
 
-#if 0
+#if ZERO_DEFINE
         // box swept against a triangle
         m_vAs[0] = {-0.5f, 1.0f};
         m_vAs[1] = {0.5f, 1.0f};

@@ -24,7 +24,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         e_boxShape
     };
 
-    explicit Restitution( Settings settings )
+    public Restitution( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

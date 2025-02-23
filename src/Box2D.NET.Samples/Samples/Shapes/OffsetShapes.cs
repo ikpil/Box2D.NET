@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 class OffsetShapes : Sample
 {
     public:
-    explicit OffsetShapes( Settings settings )
+    public OffsetShapes( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

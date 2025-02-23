@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class BounceHumans : Sample
 {
 public:
-explicit BounceHumans( Settings settings )
+public BounceHumans( Settings settings )
     : base( settings )
 {
     Draw.g_camera.m_center = { 0.0f, 0.0f };

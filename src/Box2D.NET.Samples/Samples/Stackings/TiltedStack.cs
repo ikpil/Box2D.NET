@@ -17,7 +17,7 @@ class TiltedStack : Sample
         e_rows = 10,
     };
 
-explicit TiltedStack( Settings settings )
+public TiltedStack( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

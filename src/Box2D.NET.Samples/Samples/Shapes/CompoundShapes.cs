@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class CompoundShapes : Sample
     {
     public:
-    explicit CompoundShapes( Settings settings )
+    public CompoundShapes( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System;
+using Box2D.NET.Primitives;
 
 namespace Box2D.NET.Samples.Primitives;
 
@@ -106,7 +107,7 @@ public class GLSolidPolygons
         }
     }
 
-    public void AddPolygon( const b2Transform& transform, const b2Vec2* points, int count, float radius, b2HexColor color )
+    public void AddPolygon( ref b2Transform transform, ReadOnlySpan<b2Vec2> points, int count, float radius, b2HexColor color )
     {
         PolygonData data = {};
         data.transform = transform;

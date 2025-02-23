@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class PixelImperfect : Sample
 {
 public:
-explicit PixelImperfect( Settings settings )
+public PixelImperfect( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

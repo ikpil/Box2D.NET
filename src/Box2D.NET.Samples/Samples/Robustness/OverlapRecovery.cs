@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 class OverlapRecovery : Sample
 {
 public:
-explicit OverlapRecovery( Settings settings )
+public OverlapRecovery( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

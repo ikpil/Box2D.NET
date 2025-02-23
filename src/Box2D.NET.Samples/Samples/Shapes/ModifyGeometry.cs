@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class ModifyGeometry : Sample
     {
     public:
-    explicit ModifyGeometry( Settings settings )
+    public ModifyGeometry( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

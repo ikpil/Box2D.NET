@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class WheelJoint : Sample
 {
 public:
-explicit WheelJoint( Settings settings )
+public WheelJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

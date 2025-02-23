@@ -19,7 +19,7 @@ enum
     e_count = 8
 };
 
-explicit Cantilever( Settings settings )
+public Cantilever( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

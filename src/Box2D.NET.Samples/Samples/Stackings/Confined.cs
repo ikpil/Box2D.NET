@@ -15,7 +15,7 @@ enum
     e_maxCount = e_gridCount * e_gridCount
 };
 
-explicit Confined( Settings settings )
+public Confined( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

@@ -23,7 +23,7 @@ enum
     e_count = 160
 };
 
-explicit Bridge( Settings settings )
+public Bridge( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

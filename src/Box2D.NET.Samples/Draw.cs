@@ -2,7 +2,9 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -157,7 +159,7 @@ public class Draw
         m_solidPolygons = nullptr;
     }
 
-    public void DrawPolygon( const b2Vec2* vertices,  int vertexCount, b2HexColor color )
+    public void DrawPolygon( ReadOnlySpan<b2Vec2> vertices,  int vertexCount, b2HexColor color )
     {
         b2Vec2 p1 = vertices[vertexCount - 1];
         for (int i = 0; i < vertexCount; ++i)
@@ -168,9 +170,9 @@ public class Draw
         }
     }
 
-    public void DrawSolidPolygon(b2Transform transform,  b2Vec2[] vertices,  int vertexCount, float radius, b2HexColor color )
+    public void DrawSolidPolygon(ref b2Transform transform,  ReadOnlySpan<b2Vec2> vertices,  int vertexCount, float radius, b2HexColor color )
     {
-        m_solidPolygons.AddPolygon(transform, vertices, vertexCount, radius, color);
+        m_solidPolygons.AddPolygon(ref transform, vertices, vertexCount, radius, color);
     }
 
     public void DrawCircle(b2Vec2 center, float radius, b2HexColor color)
@@ -178,10 +180,10 @@ public class Draw
         m_circles.AddCircle(center, radius, color);
     }
 
-    public void DrawSolidCircle(b2Transform transform, b2Vec2 center, float radius, b2HexColor color)
+    public void DrawSolidCircle(ref b2Transform transform, b2Vec2 center, float radius, b2HexColor color)
     {
         transform.p = b2TransformPoint(transform, center);
-        m_solidCircles.AddCircle(transform, radius, color);
+        m_solidCircles.AddCircle(ref transform, radius, color);
     }
 
     public void DrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color)
@@ -200,10 +202,10 @@ public class Draw
         b2Vec2 p1 = transform.p;
 
         b2Vec2 p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetXAxis(transform.q));
-        m_lines.AddLine(p1, p2, b2HexColor.b2_colorRed);
+        m_lines.AddLine(p1, p2, NET.Primitives.b2HexColor.b2_colorRed);
 
         p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetYAxis(transform.q));
-        m_lines.AddLine(p1, p2, b2HexColor.b2_colorGreen);
+        m_lines.AddLine(p1, p2, NET.Primitives.b2HexColor.b2_colorGreen);
     }
 
     public void DrawPoint(b2Vec2 p, float size, b2HexColor color)

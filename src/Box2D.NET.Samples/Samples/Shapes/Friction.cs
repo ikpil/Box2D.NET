@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class Friction : Sample
     {
     public:
-    explicit Friction( Settings settings )
+    public Friction( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

@@ -19,7 +19,7 @@ enum
     e_count = 30
 };
 
-explicit BallAndChain( Settings settings )
+public BallAndChain( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

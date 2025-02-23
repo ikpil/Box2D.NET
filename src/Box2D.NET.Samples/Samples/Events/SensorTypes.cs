@@ -19,7 +19,7 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-explicit SensorTypes( Settings settings )
+public SensorTypes( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

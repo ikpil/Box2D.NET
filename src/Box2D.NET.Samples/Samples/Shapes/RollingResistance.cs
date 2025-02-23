@@ -9,7 +9,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class RollingResistance : Sample
     {
     public:
-    explicit RollingResistance( Settings settings )
+    public RollingResistance( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

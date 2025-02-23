@@ -26,7 +26,7 @@ struct HitEvent
     int stepIndex;
 };
 
-explicit BounceHouse( Settings settings )
+public BounceHouse( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

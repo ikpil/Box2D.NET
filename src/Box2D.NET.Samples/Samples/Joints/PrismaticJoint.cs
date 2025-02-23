@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class PrismaticJoint : Sample
 {
 public:
-explicit PrismaticJoint( Settings settings )
+public PrismaticJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

@@ -16,7 +16,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 class Platformer : Sample
 {
 public:
-explicit Platformer( Settings settings )
+public Platformer( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

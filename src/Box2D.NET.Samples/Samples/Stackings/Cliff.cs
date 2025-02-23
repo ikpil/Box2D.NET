@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 class Cliff : Sample
 {
 public:
-explicit Cliff( Settings settings )
+public Cliff( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

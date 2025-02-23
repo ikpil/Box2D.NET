@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 class SensorBookend : Sample
 {
 public:
-explicit SensorBookend( Settings settings )
+public SensorBookend( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

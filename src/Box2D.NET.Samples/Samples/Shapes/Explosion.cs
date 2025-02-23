@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class Explosion : Sample
     {
     public:
-    explicit Explosion( Settings settings )
+    public Explosion( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

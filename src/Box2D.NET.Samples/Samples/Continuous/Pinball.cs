@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class Pinball : Sample
 {
 public:
-explicit Pinball( Settings settings )
+public Pinball( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

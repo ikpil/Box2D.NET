@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class UserConstraint : Sample
 {
 public:
-explicit UserConstraint( Settings settings )
+public UserConstraint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

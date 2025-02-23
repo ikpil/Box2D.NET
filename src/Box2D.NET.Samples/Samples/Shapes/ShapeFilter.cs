@@ -20,7 +20,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ALL_BITS = ( ~0u )
     };
 
-    explicit ShapeFilter( Settings settings )
+    public ShapeFilter( Settings settings )
         : base( settings )
     {
         if ( settings.restart == false )

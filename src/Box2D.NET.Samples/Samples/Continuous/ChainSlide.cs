@@ -8,7 +8,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class ChainSlide : Sample
 {
 public:
-explicit ChainSlide( Settings settings )
+public ChainSlide( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

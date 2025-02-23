@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 class HighMassRatio2 : Sample
 {
 public:
-explicit HighMassRatio2( Settings settings )
+public HighMassRatio2( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

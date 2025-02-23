@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class MotorJoint : Sample
 {
 public:
-explicit MotorJoint( Settings settings )
+public MotorJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

@@ -25,7 +25,7 @@ enum
     e_count = 20
 };
 
-explicit ContactEvent( Settings settings )
+public ContactEvent( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

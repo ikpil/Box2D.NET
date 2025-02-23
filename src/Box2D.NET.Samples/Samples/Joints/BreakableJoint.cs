@@ -22,7 +22,7 @@ enum
     e_count = 6
 };
 
-explicit BreakableJoint( Settings settings )
+public BreakableJoint( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

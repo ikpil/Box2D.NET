@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class SkinnyBox : Sample
 {
 public:
-explicit SkinnyBox( Settings settings )
+public SkinnyBox( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

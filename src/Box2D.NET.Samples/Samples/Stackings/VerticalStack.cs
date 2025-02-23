@@ -26,7 +26,7 @@ enum ShapeType
     e_boxShape
 };
 
-explicit VerticalStack( Settings settings )
+public VerticalStack( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )

@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class ChainDrop : Sample
 {
 public:
-explicit ChainDrop( Settings settings )
+public ChainDrop( Settings settings )
     : base( settings )
 {
     if ( settings.restart == false )
