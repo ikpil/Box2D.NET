@@ -10,7 +10,7 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 /// This is a test of typical character collision scenarios. This does not
 /// show how you should implement a character in your application.
 /// Instead this is used to test smooth collision on chain shapes.
-class Character : Sample
+public class Character : Sample
 {
     private static int sampleCharacter = RegisterSample("Bodies", "Character", Create);
 
