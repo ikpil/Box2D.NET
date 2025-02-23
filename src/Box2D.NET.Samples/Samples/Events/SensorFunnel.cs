@@ -111,7 +111,7 @@ public SensorFunnel( Settings settings ) : base( settings )
             shapeDef.restitution = 1.0f;
             shapeDef.density = 1.0f;
 
-            b2CreatePolygonShape( bodyId, &shapeDef, &box );
+            b2CreatePolygonShape( bodyId, shapeDef, box );
 
             b2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             revoluteDef.bodyIdA = groundId;

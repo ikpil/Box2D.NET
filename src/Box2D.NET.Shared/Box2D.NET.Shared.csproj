@@ -3,5 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="..\Box2D.NET\Box2D.NET.csproj"/>
+  </ItemGroup>
+
 </Project>

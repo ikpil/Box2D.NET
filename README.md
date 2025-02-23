@@ -10,6 +10,7 @@ I will upload it to nuget as soon as it's ready.
 
 # history
 
+- 2025-02-23 : Shared completed
 - 2025-02-22 : all test complete!
 - 2025-02-16 : compile success
 - 2025-02-07 : start 
