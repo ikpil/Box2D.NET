@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using Box2D.NET.Primitives;
-using Box2D.NET.Samples.Primitives;
+﻿using Box2D.NET.Samples.Primitives;
 
 namespace Box2D.NET.Samples;
 

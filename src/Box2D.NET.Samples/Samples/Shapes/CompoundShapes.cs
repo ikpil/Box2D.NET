@@ -1,4 +1,13 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.hull;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This sample shows how careful creation of compound shapes leads to better simulation and avoids
 // objects getting stuck.

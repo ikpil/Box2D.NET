@@ -1,4 +1,11 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Joints;
 
 // This shows how you can implement a constraint outside of Box2D
 class UserConstraint : Sample

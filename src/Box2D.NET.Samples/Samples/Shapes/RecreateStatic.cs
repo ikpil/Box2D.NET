@@ -1,4 +1,11 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.id;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This sample tests a static shape being recreated every step.
 class RecreateStatic : Sample

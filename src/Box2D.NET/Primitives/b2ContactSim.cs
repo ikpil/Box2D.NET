@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Box2D.NET.Primitives
+﻿namespace Box2D.NET.Primitives
 {
     /// The class manages contact between two shapes. A contact exists for each overlapping
     /// AABB in the broad-phase (except if filtered). Therefore a contact object may exist

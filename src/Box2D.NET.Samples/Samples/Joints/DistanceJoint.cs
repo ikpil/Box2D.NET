@@ -1,4 +1,13 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using Box2D.NET.Samples;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.id;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Joints;
 
 // Test the distance joint and all options
 public class DistanceJoint : Sample

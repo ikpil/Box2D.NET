@@ -1,4 +1,11 @@
-﻿namespace Box2D.NET.Samples.Samples.Collisions;
+﻿using System.Diagnostics;
+using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.math_function;
+using static Box2D.NET.timer;
+using static Box2D.NET.dynamic_tree;
+
+namespace Box2D.NET.Samples.Samples.Collisions;
 
 enum UpdateType
 {

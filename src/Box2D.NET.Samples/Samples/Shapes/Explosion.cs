@@ -1,4 +1,15 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.world;
+using static Box2D.NET.weld_joint;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This shows how to use explosions and demonstrates the projected perimeter
     class Explosion : Sample

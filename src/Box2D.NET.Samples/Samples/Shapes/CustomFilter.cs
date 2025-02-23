@@ -1,4 +1,12 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using Box2D.NET.Primitives;
+using Box2D.NET.Samples;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.world;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This shows how to use custom filtering
     class CustomFilter : Sample

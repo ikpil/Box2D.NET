@@ -6,7 +6,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Box2D.NET.Core;
 using Box2D.NET.Primitives;
 using static Box2D.NET.table;
 using static Box2D.NET.array;

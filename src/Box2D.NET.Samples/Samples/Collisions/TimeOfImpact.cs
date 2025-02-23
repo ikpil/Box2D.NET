@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Samples.Samples.Collisions;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.math_function;
+using static Box2D.NET.distance;
+
+namespace Box2D.NET.Samples.Samples.Collisions;
 
     class TimeOfImpact : Sample
     {

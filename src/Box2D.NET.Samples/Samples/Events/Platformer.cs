@@ -1,4 +1,15 @@
-﻿namespace Box2D.NET.Samples.Samples.Events;
+﻿using System.Diagnostics;
+using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.id;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.world;
+
+namespace Box2D.NET.Samples.Samples.Events;
 
 // Shows how to make a rigid body character mover and use the pre-solve callback. In this
 // case the platform should get the pre-solve event, not the player.

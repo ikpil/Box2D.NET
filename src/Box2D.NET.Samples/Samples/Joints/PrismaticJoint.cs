@@ -1,4 +1,14 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.prismatic_joint;
+
+namespace Box2D.NET.Samples.Samples.Joints;
 
 class PrismaticJoint : Sample
 {

@@ -1,4 +1,11 @@
-﻿namespace Box2D.NET.Samples.Samples.Collisions;
+﻿using System.Diagnostics;
+using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.hull;
+using static Box2D.NET.geometry;
+using static Box2D.NET.math_function;
+
+namespace Box2D.NET.Samples.Samples.Collisions;
 
 constexpr int SIMPLEX_CAPACITY = 20;
 

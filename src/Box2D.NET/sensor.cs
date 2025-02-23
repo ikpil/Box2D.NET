@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.array;

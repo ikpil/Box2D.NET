@@ -1,21 +1,12 @@
+
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
-using static Box2D.NET.joint;
-using static Box2D.NET.id;
-using static Box2D.NET.hull;
-using static Box2D.NET.geometry;
-using static Box2D.NET.types;
+using ImGuiNET;
 using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
-using static Box2D.NET.wheel_joint;
-using static Box2D.NET.world;
-using static Box2D.NET.mouse_joint;
-
 
 namespace Box2D.NET.Samples;
 
@@ -41,10 +32,10 @@ public class Draw
     public GLSolidPolygons m_solidPolygons;
     public b2DebugDraw m_debugDraw;
 
-    ImFont* m_smallFont;
-    ImFont* m_regularFont;
-    ImFont* m_mediumFont;
-    ImFont* m_largeFont;
+    ImFont m_smallFont;
+    ImFont m_regularFont;
+    ImFont m_mediumFont;
+    ImFont m_largeFont;
 
     extern struct GLFWwindow* g_mainWindow;
 

@@ -6,13 +6,10 @@ using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.joint;
 using static Box2D.NET.id;
-using static Box2D.NET.hull;
-using static Box2D.NET.geometry;
 using static Box2D.NET.types;
 using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
-using static Box2D.NET.wheel_joint;
 
 namespace Box2D.NET.Samples;
 

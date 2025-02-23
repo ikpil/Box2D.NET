@@ -1,4 +1,13 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Joints;
 
 /// This test shows how to use a motor joint. A motor joint
 /// can be used to animate a dynamic body. With finite motor forces

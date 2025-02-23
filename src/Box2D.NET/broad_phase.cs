@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.table;

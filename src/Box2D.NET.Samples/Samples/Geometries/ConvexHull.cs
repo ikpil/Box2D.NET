@@ -1,4 +1,9 @@
-﻿namespace Box2D.NET.Samples.Samples.Geometries;
+﻿using Box2D.NET.Primitives;
+using Box2D.NET.Samples;
+using static Box2D.NET.hull;
+using static Box2D.NET.math_function;
+
+namespace Box2D.NET.Samples.Samples.Geometries;
 
     public class ConvexHull : Sample
 {

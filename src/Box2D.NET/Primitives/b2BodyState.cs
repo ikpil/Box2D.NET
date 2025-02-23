@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace Box2D.NET.Primitives
+﻿namespace Box2D.NET.Primitives
 {
     // The body state is designed for fast conversion to and from SIMD via scatter-gather.
     // Only awake dynamic and kinematic bodies have a body state.

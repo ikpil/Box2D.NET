@@ -1,13 +1,13 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using Box2D.NET.Samples;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.id;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
 
-
-
-
-
-
-
-
-
+namespace Box2D.NET.Samples.Samples.Joints;
 
 // This sample shows the limitations of an iterative solver. The cantilever sags even though the weld
 // joint is stiff as possible.

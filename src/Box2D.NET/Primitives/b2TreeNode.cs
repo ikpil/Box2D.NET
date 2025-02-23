@@ -1,6 +1,4 @@
-﻿using static Box2D.NET.constants;
-
-namespace Box2D.NET.Primitives
+﻿namespace Box2D.NET.Primitives
 {
     /// A node in the dynamic tree. This is private data placed here for performance reasons.
     public class b2TreeNode

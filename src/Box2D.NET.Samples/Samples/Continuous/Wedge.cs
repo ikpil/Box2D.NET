@@ -1,4 +1,9 @@
-﻿namespace Box2D.NET.Samples.Samples.Continuous;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Continuous;
 
 // This shows the importance of secondary collisions in continuous physics.
 // This also shows a difficult setup for the solver with an acute angle.

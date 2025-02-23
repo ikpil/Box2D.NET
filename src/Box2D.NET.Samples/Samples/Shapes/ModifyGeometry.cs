@@ -1,4 +1,13 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using System.Diagnostics;
+using Box2D.NET.Primitives;
+using ImGuiNET;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 // This sample shows how to modify the geometry on an existing shape. This is only supported on
 // dynamic and kinematic shapes because static shapes don't look for new collisions.

@@ -1,5 +1,4 @@
 ﻿using System;
-using static Box2D.NET.core;
 
 namespace Box2D.NET.Primitives
 {

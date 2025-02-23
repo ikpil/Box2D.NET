@@ -1,4 +1,10 @@
-﻿namespace Box2D.NET.Samples.Samples.Shapes;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Shapes;
 
 class ConveyorBelt : Sample
 {

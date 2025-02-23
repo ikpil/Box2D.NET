@@ -1,4 +1,11 @@
-﻿namespace Box2D.NET.Samples.Samples.Joints;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.joint;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+
+namespace Box2D.NET.Samples.Samples.Joints;
 
 // This sample shows how to use a null joint to prevent collision between two bodies.
 // This is more specific than filters. It also shows that sleeping is coupled by the null joint.

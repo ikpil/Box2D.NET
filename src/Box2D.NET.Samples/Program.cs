@@ -1,9 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading;
 using Box2D.NET.Samples.Helpers;
 using Serilog;
-using Serilog.Core;
 
 namespace Box2D.NET.Samples;
 
