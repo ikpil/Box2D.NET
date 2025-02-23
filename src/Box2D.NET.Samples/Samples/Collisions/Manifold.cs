@@ -222,8 +222,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollideCircles(circle1, transform1, circle2, transform2);
 
-            Draw.g_draw.DrawSolidCircle(transform1, circle1.center, circle1.radius, color1);
-            Draw.g_draw.DrawSolidCircle(transform2, circle2.center, circle2.radius, color2);
+            Draw.g_draw.DrawSolidCircle(ref transform1, circle1.center, circle1.radius, color1);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle2.center, circle2.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -244,7 +244,7 @@ public class Manifold : Sample
             b2Vec2 v2 = b2TransformPoint(transform1, capsule.center2);
             Draw.g_draw.DrawSolidCapsule(v1, v2, capsule.radius, color1);
 
-            Draw.g_draw.DrawSolidCircle(transform2, circle.center, circle.radius, color2);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -265,7 +265,7 @@ public class Manifold : Sample
             b2Vec2 p2 = b2TransformPoint(transform1, segment.point2);
             Draw.g_draw.DrawSegment(p1, p2, color1);
 
-            Draw.g_draw.DrawSolidCircle(transform2, circle.center, circle.radius, color2);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -283,8 +283,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygonAndCircle(box, transform1, circle, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box.vertices, box.count, m_round, color1);
-            Draw.g_draw.DrawSolidCircle(transform2, circle.center, circle.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box.vertices, box.count, m_round, color1);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -324,7 +324,7 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygonAndCapsule(box, transform1, capsule, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box.vertices, box.count, box.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box.vertices, box.count, box.radius, color1);
 
             b2Vec2 v1 = b2TransformPoint(transform2, capsule.center1);
             b2Vec2 v2 = b2TransformPoint(transform2, capsule.center2);
@@ -370,8 +370,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(box1, transform1, box, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box1.vertices, box1.count, box1.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, box.vertices, box.count, box.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box1.vertices, box1.count, box1.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, box.vertices, box.count, box.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -389,8 +389,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(box1, transform1, box, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box1.vertices, box1.count, box1.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, box.vertices, box.count, box.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box1.vertices, box1.count, box1.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, box.vertices, box.count, box.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -409,8 +409,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(box, transform1, rox, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box.vertices, box.count, box.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, rox.vertices, rox.count, rox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box.vertices, box.count, box.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, rox.vertices, rox.count, rox.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -429,8 +429,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(rox, transform1, rox, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, rox.vertices, rox.count, rox.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, rox.vertices, rox.count, rox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, rox.vertices, rox.count, rox.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, rox.vertices, rox.count, rox.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -452,7 +452,7 @@ public class Manifold : Sample
             b2Vec2 p1 = b2TransformPoint(transform1, segment.point1);
             b2Vec2 p2 = b2TransformPoint(transform1, segment.point2);
             Draw.g_draw.DrawSegment(p1, p2, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, rox.vertices, rox.count, rox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, rox.vertices, rox.count, rox.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -469,10 +469,10 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(wox, transform1, wox, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, wox.vertices, wox.count, wox.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform1, wox.vertices, wox.count, 0.0f, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, wox.vertices, wox.count, wox.radius, color2);
-            Draw.g_draw.DrawSolidPolygon(transform2, wox.vertices, wox.count, 0.0f, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, wox.vertices, wox.count, wox.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, wox.vertices, wox.count, 0.0f, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, wox.vertices, wox.count, wox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, wox.vertices, wox.count, 0.0f, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -495,10 +495,10 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(w1, transform1, w2, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, w1.vertices, w1.count, w1.radius, color1);
-            Draw.g_draw.DrawSolidPolygon(transform1, w1.vertices, w1.count, 0.0f, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, w2.vertices, w2.count, w2.radius, color2);
-            Draw.g_draw.DrawSolidPolygon(transform2, w2.vertices, w2.count, 0.0f, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, w1.vertices, w1.count, w1.radius, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, w1.vertices, w1.count, 0.0f, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, w2.vertices, w2.count, w2.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, w2.vertices, w2.count, 0.0f, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -520,8 +520,8 @@ public class Manifold : Sample
 
             b2Manifold m = b2CollidePolygons(box, transform1, tri, transform2);
 
-            Draw.g_draw.DrawSolidPolygon(transform1, box.vertices, box.count, 0.0f, color1);
-            Draw.g_draw.DrawSolidPolygon(transform2, tri.vertices, tri.count, 0.0f, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform1, box.vertices, box.count, 0.0f, color1);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, tri.vertices, tri.count, 0.0f, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -550,7 +550,7 @@ public class Manifold : Sample
             Draw.g_draw.DrawSegment(g1, p1, b2HexColor.b2_colorLightGray);
             Draw.g_draw.DrawSegment(p1, p2, color1);
             Draw.g_draw.DrawSegment(p2, g2, b2HexColor.b2_colorLightGray);
-            Draw.g_draw.DrawSolidCircle(transform2, circle.center, circle.radius, color2);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
@@ -606,7 +606,7 @@ public class Manifold : Sample
                 Draw.g_draw.DrawPoint(p2, 4.0f, color1);
             }
 
-            Draw.g_draw.DrawSolidPolygon(transform2, rox.vertices, rox.count, rox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, rox.vertices, rox.count, rox.radius, color2);
             Draw.g_draw.DrawPoint(b2TransformPoint(transform2, rox.centroid), 5.0f, b2HexColor.b2_colorGainsboro);
 
             DrawManifold(ref m1, transform1.p, transform2.p);

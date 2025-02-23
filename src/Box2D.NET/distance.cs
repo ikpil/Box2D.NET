@@ -1108,7 +1108,7 @@ namespace Box2D.NET
 
                 // Initialize the separating axis.
                 b2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, ref proxyA, sweepA, ref proxyB, sweepB, t1);
-#if ZERO_DEFINE
+#if FALSE
                     // Dump the curve seen by the root finder
                     {
                         const int N = 100;

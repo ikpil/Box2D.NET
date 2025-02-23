@@ -40,7 +40,7 @@ public class Drop : Sample
             settings.drawJoints = false;
         }
 
-#if ZERO_DEFINE
+#if FALSE
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
@@ -305,7 +305,7 @@ public class Drop : Sample
 
     public override void Step(Settings settings)
     {
-#if ZERO_DEFINE
+#if FALSE
     ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
     ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
     ImGui.SetNextWindowBgAlpha( 0.0f );

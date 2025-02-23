@@ -597,7 +597,7 @@ namespace Box2D.NET
             stateB.angularVelocity = wB;
         }
 
-#if ZERO_DEFINE
+#if FALSE
 void b2PrismaticJoint::Dump()
 {
 	int32 indexA = joint.bodyA.joint.islandIndex;

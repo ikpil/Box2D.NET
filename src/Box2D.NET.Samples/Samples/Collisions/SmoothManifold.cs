@@ -279,7 +279,7 @@ public class SmoothManifold : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
-            Draw.g_draw.DrawSolidCircle(transform2, circle.center, circle.radius, color2);
+            Draw.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {
@@ -292,7 +292,7 @@ public class SmoothManifold : Sample
         {
             float h = 0.5f - m_round;
             b2Polygon rox = b2MakeRoundedBox(h, h, m_round);
-            Draw.g_draw.DrawSolidPolygon(transform2, rox.vertices, rox.count, rox.radius, color2);
+            Draw.g_draw.DrawSolidPolygon(ref transform2, rox.vertices, rox.count, rox.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {

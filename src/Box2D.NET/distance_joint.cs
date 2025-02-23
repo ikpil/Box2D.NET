@@ -488,7 +488,7 @@ namespace Box2D.NET
             stateB.angularVelocity = wB;
         }
 
-#if ZERO_DEFINE
+#if FALSE
     public static void b2DistanceJoint::Dump()
     {
     	int32 indexA = m_bodyA.m_islandIndex;

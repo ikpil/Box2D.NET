@@ -268,7 +268,7 @@ namespace Box2D.NET
             bodyB.angularVelocity = wB;
         }
 
-#if ZERO_DEFINE
+#if FALSE
     void b2DumpMotorJoint()
     {
         int32 indexA = m_bodyA.m_islandIndex;

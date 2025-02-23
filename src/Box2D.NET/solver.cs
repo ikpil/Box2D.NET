@@ -304,7 +304,7 @@ namespace Box2D.NET
             }
 
             // todo_erin testing early out for segments
-#if ZERO_DEFINE
+#if FALSE
 	if ( shape.type == b2ShapeType.b2_segmentShape )
 	{
 		b2Transform transform = bodySim.transform;

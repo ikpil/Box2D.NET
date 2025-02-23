@@ -119,7 +119,7 @@ public class TimeOfImpact : Sample
             m_textLine += m_textIncrement;
         }
 
-#if ZERO_DEFINE
+#if FALSE
         for (float t = 0.0f; t < 1.0f; t += 0.1f)
         {
             transformB = b2GetSweepTransform(&sweepB, t);

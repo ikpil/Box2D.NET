@@ -37,7 +37,7 @@ public class ShapeCast : Sample
             Draw.g_camera.m_zoom = 25.0f * 0.2f;
         }
 
-    #if ZERO_DEFINE
+    #if FALSE
         // box swept against a triangle
         m_vAs[0] = {-0.5f, 1.0f};
         m_vAs[1] = {0.5f, 1.0f};

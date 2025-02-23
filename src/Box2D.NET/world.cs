@@ -832,14 +832,14 @@ namespace Box2D.NET
                 {
                     b2Circle circle = shape.circle;
                     xf.p = b2TransformPoint(xf, circle.center);
-                    draw.DrawSolidCircle(xf, circle.radius, color, draw.context);
+                    draw.DrawSolidCircle(ref xf, circle.radius, color, draw.context);
                 }
                     break;
 
                 case b2ShapeType.b2_polygonShape:
                 {
                     b2Polygon poly = shape.polygon;
-                    draw.DrawSolidPolygon(xf, poly.vertices, poly.count, poly.radius, color, draw.context);
+                    draw.DrawSolidPolygon(ref xf, poly.vertices, poly.count, poly.radius, color, draw.context);
                 }
                     break;
 
@@ -2499,7 +2499,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-#if ZERO_DEFINE
+#if FALSE
 void b2World_ShiftOrigin(b2WorldId worldId, b2Vec2 newOrigin)
 {
 	Debug.Assert(m_locked == false);
@@ -3141,7 +3141,7 @@ void b2World_Dump()
 
 // Validate shapes
 // This is very slow on compounds
-#if ZERO_DEFINE
+#if FALSE
 	int shapeCapacity = b2Array(world.shapeArray).count;
 	for (int shapeIndex = 0; shapeIndex < shapeCapacity; shapeIndex += 1)
 	{

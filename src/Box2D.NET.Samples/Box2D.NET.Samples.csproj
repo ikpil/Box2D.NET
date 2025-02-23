@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DefineConstants>$(DefineConstants);NDEBUG</DefineConstants>
+    <DefineConstants>$(DefineConstants);NDEBUG;ENABLED</DefineConstants>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS</DefineConstants>
+    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;ENABLED</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>

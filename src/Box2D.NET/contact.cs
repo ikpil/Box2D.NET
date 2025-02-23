@@ -583,7 +583,7 @@ namespace Box2D.NET
 
             B2_UNUSED(unmatchedCount);
 
-#if ZERO_DEFINE
+#if FALSE
 		// todo I haven't found an improvement from this yet
 		// If there are unmatched new contact points, apply any left over old impulse.
 		if (unmatchedCount > 0)

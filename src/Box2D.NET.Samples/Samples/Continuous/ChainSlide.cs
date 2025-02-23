@@ -66,7 +66,7 @@ public class ChainSlide : Sample
             chainDef.count = count;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, &chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         {
