@@ -186,16 +186,16 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             if ( m_radiusA > 0.0f )
             {
-                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusA, b2_colorLightGray );
+                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusA, b2HexColor.b2_colorLightGray );
             }
             else
             {
-                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2_colorLightGray );
+                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2HexColor.b2_colorLightGray );
             }
         }
         else
         {
-            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countA, m_radiusA, b2_colorLightGray );
+            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countA, m_radiusA, b2HexColor.b2_colorLightGray );
         }
 
         for ( int i = 0; i < m_countB; ++i )
@@ -207,16 +207,16 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             if ( m_radiusB > 0.0f )
             {
-                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusB, b2_colorGreen );
+                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusB, b2HexColor.b2_colorGreen );
             }
             else
             {
-                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2_colorGreen );
+                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2HexColor.b2_colorGreen );
             }
         }
         else
         {
-            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countB, m_radiusB, b2_colorGreen );
+            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countB, m_radiusB, b2HexColor.b2_colorGreen );
         }
 
         for ( int i = 0; i < m_countB; ++i )
@@ -228,27 +228,27 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             if ( m_radiusB > 0.0f )
             {
-                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusB, b2_colorOrange );
+                Draw.g_draw.DrawSolidCircle( b2Transform_identity, vertices[0], m_radiusB, b2HexColor.b2_colorOrange );
             }
             else
             {
-                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2_colorOrange );
+                Draw.g_draw.DrawPoint( vertices[0], 5.0f, b2HexColor.b2_colorOrange );
             }
         }
         else
         {
-            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countB, m_radiusB, b2_colorOrange );
+            Draw.g_draw.DrawSolidPolygon( b2Transform_identity, vertices, m_countB, m_radiusB, b2HexColor.b2_colorOrange );
         }
 
         if ( output.hit )
         {
             b2Vec2 p1 = output.point;
-            Draw.g_draw.DrawPoint( p1, 10.0f, b2_colorRed );
+            Draw.g_draw.DrawPoint( p1, 10.0f, b2HexColor.b2_colorRed );
             b2Vec2 p2 = b2MulAdd( p1, 1.0f, output.normal );
-            Draw.g_draw.DrawSegment( p1, p2, b2_colorRed );
+            Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorRed );
         }
 
-        Draw.g_draw.DrawSegment( m_transformB.p, b2Add( m_transformB.p, m_translationB ), b2_colorGray );
+        Draw.g_draw.DrawSegment( m_transformB.p, b2Add( m_transformB.p, m_translationB ), b2HexColor.b2_colorGray );
     }
 
     b2Vec2 m_vAs[B2_MAX_POLYGON_VERTICES];

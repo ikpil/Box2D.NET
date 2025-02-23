@@ -1,5 +1,7 @@
-﻿using System.Numerics;
+﻿using System.Collections.Generic;
+using System.Numerics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.geometry;
 using static Box2D.NET.types;
@@ -7,29 +9,59 @@ using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.world;
+using static Box2D.NET.Shared.random;
+using static Box2D.NET.timer;
 
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-enum QueryType
+struct CastResult
 {
-    e_rayCast,
-    e_circleCast,
-    e_overlap,
-};
+    public b2Vec2 point;
+    public float fraction;
+    public bool hit;
+}
+
+struct OverlapResult
+{
+    public b2Vec2 points[32];
+    public int count;
+}
 
 public class BenchmarkCast : Sample
 {
+    QueryType m_queryType;
+
+    List<b2Vec2> m_origins = new List<b2Vec2>();
+    List<b2Vec2> m_translations = new List<b2Vec2>();
+    float m_minTime;
+    float m_buildTime;
+
+    int m_rowCount, m_columnCount;
+    int m_updateType;
+    int m_drawIndex;
+    float m_radius;
+    float m_fill;
+    float m_ratio;
+    float m_grid;
+    bool m_topDown;
+
+    static int sampleCast = RegisterSample( "Benchmark", "Cast", Create );
+    static Sample Create( Settings settings )
+    {
+        return new BenchmarkCast( settings );
+    }
+
 BenchmarkCast( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
-        Draw.g_camera.m_center = { 500.0f, 500.0f };
+        Draw.g_camera.m_center = new b2Vec2(500.0f, 500.0f);
         Draw.g_camera.m_zoom = 25.0f * 21.0f;
         // settings.drawShapes = g_sampleDebug;
     }
 
-    m_queryType = e_circleCast;
+    m_queryType = QueryType.e_circleCast;
     m_ratio = 5.0f;
     m_grid = 1.0f;
     m_fill = 0.1f;
@@ -43,8 +75,8 @@ BenchmarkCast( Settings settings ) : base( settings )
 
     g_seed = 1234;
     int sampleCount = g_sampleDebug ? 100 : 10000;
-    m_origins.resize( sampleCount );
-    m_translations.resize( sampleCount );
+    m_origins.EnsureCapacity( sampleCount );
+    m_translations.EnsureCapacity( sampleCount );
     float extent = m_rowCount * m_grid;
 
     // Pre-compute rays to avoid randomizer overhead
@@ -65,9 +97,9 @@ void BuildScene()
     g_seed = 1234;
     b2DestroyWorld( m_worldId );
     b2WorldDef worldDef = b2DefaultWorldDef();
-    m_worldId = b2CreateWorld( &worldDef );
+    m_worldId = b2CreateWorld( worldDef );
 
-    uint64_t ticks = b2GetTicks();
+    ulong ticks = b2GetTicks();
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
     b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -83,8 +115,8 @@ void BuildScene()
             float fillTest = RandomFloatRange( 0.0f, 1.0f );
             if ( fillTest <= m_fill )
             {
-                bodyDef.position = { x, y };
-                b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+                bodyDef.position = new b2Vec2(x, y);
+                b2BodyId bodyId = b2CreateBody( m_worldId, bodyDef );
 
                 float ratio = RandomFloatRange( 1.0f, m_ratio );
                 float halfWidth = RandomFloatRange( 0.05f, 0.25f );
@@ -99,22 +131,22 @@ void BuildScene()
                     box = b2MakeBox( halfWidth, ratio * halfWidth );
                 }
 
-                int category = RandomIntRange( 0, 2 );
-                shapeDef.filter.categoryBits = 1 << category;
+                int category = (int)RandomIntRange( 0, 2 );
+                shapeDef.filter.categoryBits = (ulong)(1 << category);
                 if ( category == 0 )
                 {
-                    shapeDef.customColor = b2_colorBox2DBlue;
+                    shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DBlue;
                 }
                 else if ( category == 1 )
                 {
-                    shapeDef.customColor = b2_colorBox2DYellow;
+                    shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DYellow;
                 }
                 else
                 {
-                    shapeDef.customColor = b2_colorBox2DGreen;
+                    shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DGreen;
                 }
 
-                b2CreatePolygonShape( bodyId, &shapeDef, &box );
+                b2CreatePolygonShape( bodyId, shapeDef, box );
             }
 
             x += m_grid;
@@ -132,24 +164,25 @@ void BuildScene()
     m_minTime = 1e6f;
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
+    bool open = false;
     float height = 240.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
     ImGui.SetNextWindowSize( new Vector2( 200.0f, height ) );
 
-    ImGui.Begin( "Cast", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
+    ImGui.Begin( "Cast", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
     ImGui.PushItemWidth( 100.0f );
 
     bool changed = false;
 
-    const char* queryTypes[] = { "Ray", "Circle", "Overlap" };
-    int queryType = int( m_queryType );
-    if ( ImGui.Combo( "Query", &queryType, queryTypes, IM_ARRAYSIZE( queryTypes ) ) )
+    string[] queryTypes = { "Ray", "Circle", "Overlap" };
+    int queryType = (int)m_queryType;
+    if ( ImGui.Combo( "Query", ref queryType, queryTypes,  queryTypes.Length ) )
     {
-        m_queryType = QueryType( queryType );
-        if ( m_queryType == e_overlap )
+        m_queryType = (QueryType)queryType;
+        if ( m_queryType == QueryType.e_overlap )
         {
             m_radius = 5.0f;
         }
@@ -161,39 +194,39 @@ void UpdateUI() override
         changed = true;
     }
 
-    if ( ImGui.SliderInt( "rows", &m_rowCount, 0, 1000, "%d" ) )
+    if ( ImGui.SliderInt( "rows", ref m_rowCount, 0, 1000, "%d" ) )
     {
         changed = true;
     }
 
-    if ( ImGui.SliderInt( "columns", &m_columnCount, 0, 1000, "%d" ) )
+    if ( ImGui.SliderInt( "columns", ref m_columnCount, 0, 1000, "%d" ) )
     {
         changed = true;
     }
 
-    if ( ImGui.SliderFloat( "fill", &m_fill, 0.0f, 1.0f, "%.2f" ) )
+    if ( ImGui.SliderFloat( "fill", ref m_fill, 0.0f, 1.0f, "%.2f" ) )
     {
         changed = true;
     }
 
-    if ( ImGui.SliderFloat( "grid", &m_grid, 0.5f, 2.0f, "%.2f" ) )
+    if ( ImGui.SliderFloat( "grid", ref m_grid, 0.5f, 2.0f, "%.2f" ) )
     {
         changed = true;
     }
 
-    if ( ImGui.SliderFloat( "ratio", &m_ratio, 1.0f, 10.0f, "%.2f" ) )
+    if ( ImGui.SliderFloat( "ratio", ref m_ratio, 1.0f, 10.0f, "%.2f" ) )
     {
         changed = true;
     }
 
-    if ( ImGui.Checkbox( "top down", &m_topDown ) )
+    if ( ImGui.Checkbox( "top down", ref m_topDown ) )
     {
         changed = true;
     }
 
     if ( ImGui.Button( "Draw Next" ) )
     {
-        m_drawIndex = ( m_drawIndex + 1 ) % m_origins.size();
+        m_drawIndex = (m_drawIndex + 1) % m_origins.Count;
     }
 
     ImGui.PopItemWidth();
@@ -205,12 +238,6 @@ void UpdateUI() override
     }
 }
 
-struct CastResult
-{
-    b2Vec2 point;
-    float fraction;
-    bool hit;
-};
 
 static float CastCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
 {
@@ -221,11 +248,6 @@ static float CastCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float
     return fraction;
 }
 
-struct OverlapResult
-{
-    b2Vec2 points[32];
-    int count;
-};
 
 static bool OverlapCallback( b2ShapeId shapeId, void* context )
 {
@@ -240,9 +262,9 @@ static bool OverlapCallback( b2ShapeId shapeId, void* context )
     return true;
 }
 
-void Step( Settings settings ) override
+public override void Step( Settings settings )
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2QueryFilter filter = b2DefaultQueryFilter();
     filter.maskBits = 1;
@@ -254,7 +276,7 @@ void Step( Settings settings ) override
 
     if ( m_queryType == e_rayCast )
     {
-        uint64_t ticks = b2GetTicks();
+        ulong ticks = b2GetTicks();
 
         b2RayResult drawResult = {};
 
@@ -281,17 +303,17 @@ void Step( Settings settings ) override
 
         b2Vec2 p1 = m_origins[m_drawIndex];
         b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-        Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
-        Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-        Draw.g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
+        Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorWhite );
+        Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
+        Draw.g_draw.DrawPoint( p2, 5.0f, b2HexColor.b2_colorRed );
         if ( drawResult.hit )
         {
-            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2HexColor.b2_colorWhite );
         }
     }
     else if ( m_queryType == e_circleCast )
     {
-        uint64_t ticks = b2GetTicks();
+        ulong ticks = b2GetTicks();
 
         b2Circle circle = { { 0.0f, 0.0f }, m_radius };
         CastResult drawResult = {};
@@ -321,19 +343,19 @@ void Step( Settings settings ) override
 
         b2Vec2 p1 = m_origins[m_drawIndex];
         b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-        Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
-        Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-        Draw.g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
+        Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorWhite );
+        Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
+        Draw.g_draw.DrawPoint( p2, 5.0f, b2HexColor.b2_colorRed );
         if ( drawResult.hit )
         {
             b2Vec2 t = b2Lerp( p1, p2, drawResult.fraction );
-            Draw.g_draw.DrawCircle( t, m_radius, b2_colorWhite );
-            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawCircle( t, m_radius, b2HexColor.b2_colorWhite );
+            Draw.g_draw.DrawPoint( drawResult.point, 5.0f, b2HexColor.b2_colorWhite );
         }
     }
     else if ( m_queryType == e_overlap )
     {
-        uint64_t ticks = b2GetTicks();
+        ulong ticks = b2GetTicks();
 
         OverlapResult drawResult = {};
         b2Vec2 extent = { m_radius, m_radius };
@@ -364,11 +386,11 @@ void Step( Settings settings ) override
         b2Vec2 origin = m_origins[m_drawIndex];
         b2AABB aabb = { origin - extent, origin + extent };
 
-        Draw.g_draw.DrawAABB( aabb, b2_colorWhite );
+        Draw.g_draw.DrawAABB( aabb, b2HexColor.b2_colorWhite );
 
         for ( int i = 0; i < drawResult.count; ++i )
         {
-            Draw.g_draw.DrawPoint( drawResult.points[i], 5.0f, b2_colorHotPink );
+            Draw.g_draw.DrawPoint( drawResult.points[i], 5.0f, b2HexColor.b2_colorHotPink );
         }
     }
 
@@ -390,26 +412,7 @@ void Step( Settings settings ) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings settings )
-{
-    return new BenchmarkCast( settings );
+
+
 }
 
-QueryType m_queryType;
-
-std::vector<b2Vec2> m_origins;
-std::vector<b2Vec2> m_translations;
-float m_minTime;
-float m_buildTime;
-
-int m_rowCount, m_columnCount;
-int m_updateType;
-int m_drawIndex;
-float m_radius;
-float m_fill;
-float m_ratio;
-float m_grid;
-bool m_topDown;
-};
-
-static int sampleCast = RegisterSample( "Benchmark", "Cast", BenchmarkCast::Create );

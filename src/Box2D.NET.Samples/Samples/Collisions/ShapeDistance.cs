@@ -315,8 +315,8 @@ class ShapeDistance : Sample
 
         m_simplexCount = output.simplexCount;
 
-        DrawShape( m_typeA, b2Transform_identity, m_radiusA, b2_colorCyan );
-        DrawShape( m_typeB, m_transform, m_radiusB, b2_colorBisque );
+        DrawShape( m_typeA, b2Transform_identity, m_radiusA, b2HexColor.b2_colorCyan );
+        DrawShape( m_typeB, m_transform, m_radiusB, b2HexColor.b2_colorBisque );
 
         if ( m_drawSimplex )
         {
@@ -329,12 +329,12 @@ class ShapeDistance : Sample
                 b2Vec2 pointA, pointB;
                 ComputeSimplexWitnessPoints( &pointA, &pointB, simplex );
 
-                Draw.g_draw.DrawSegment( pointA, pointB, b2_colorWhite );
-                Draw.g_draw.DrawPoint( pointA, 5.0f, b2_colorWhite );
-                Draw.g_draw.DrawPoint( pointB, 5.0f, b2_colorWhite );
+                Draw.g_draw.DrawSegment( pointA, pointB, b2HexColor.b2_colorWhite );
+                Draw.g_draw.DrawPoint( pointA, 5.0f, b2HexColor.b2_colorWhite );
+                Draw.g_draw.DrawPoint( pointB, 5.0f, b2HexColor.b2_colorWhite );
             }
 
-            b2HexColor colors[3] = { b2_colorRed, b2_colorGreen, b2_colorBlue };
+            b2HexColor colors[3] = { b2_colorRed, b2HexColor.b2_colorGreen, b2HexColor.b2_colorBlue };
 
             for ( int i = 0; i < simplex->count; ++i )
             {
@@ -345,9 +345,9 @@ class ShapeDistance : Sample
         }
         else
         {
-            Draw.g_draw.DrawSegment( output.pointA, output.pointB, b2_colorWhite );
-            Draw.g_draw.DrawPoint( output.pointA, 5.0f, b2_colorWhite );
-            Draw.g_draw.DrawPoint( output.pointB, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawSegment( output.pointA, output.pointB, b2HexColor.b2_colorWhite );
+            Draw.g_draw.DrawPoint( output.pointA, 5.0f, b2HexColor.b2_colorWhite );
+            Draw.g_draw.DrawPoint( output.pointB, 5.0f, b2HexColor.b2_colorWhite );
         }
 
         if ( m_showIndices )

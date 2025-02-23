@@ -14,7 +14,7 @@ namespace Box2D.NET
         b2AtomicInt b2_findCount;
         b2AtomicInt b2_probeCount;
 #endif
-        //#define B2_SHAPE_PAIR_KEY( K1, K2 ) K1 < K2 ? (uint64_t)K1 << 32 | (uint64_t)K2 : (uint64_t)K2 << 32 | (uint64_t)K1
+        //#define B2_SHAPE_PAIR_KEY( K1, K2 ) K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1
         public static ulong B2_SHAPE_PAIR_KEY(long K1, long K2)
         {
             return K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1;

@@ -62,7 +62,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             vertices[i] = b2TransformPoint( transformA, m_verticesA[i] );
         }
-        Draw.g_draw.DrawPolygon( vertices, m_countA, b2_colorGray );
+        Draw.g_draw.DrawPolygon( vertices, m_countA, b2HexColor.b2_colorGray );
 
         // Draw B at t = 0
         b2Transform transformB = b2GetSweepTransform( &sweepB, 0.0f );
@@ -70,8 +70,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             vertices[i] = b2TransformPoint( transformB, m_verticesB[i] );
         }
-        Draw.g_draw.DrawSolidCapsule( vertices[0], vertices[1], m_radiusB, b2_colorGreen );
-        // Draw.g_draw.DrawPolygon( vertices, m_countB, b2_colorGreen );
+        Draw.g_draw.DrawSolidCapsule( vertices[0], vertices[1], m_radiusB, b2HexColor.b2_colorGreen );
+        // Draw.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorGreen );
 
         // Draw B at t = hit_time
         transformB = b2GetSweepTransform( &sweepB, output.fraction );
@@ -79,7 +79,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             vertices[i] = b2TransformPoint( transformB, m_verticesB[i] );
         }
-        Draw.g_draw.DrawPolygon( vertices, m_countB, b2_colorOrange );
+        Draw.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorOrange );
 
         // Draw B at t = 1
         transformB = b2GetSweepTransform( &sweepB, 1.0f );
@@ -87,8 +87,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             vertices[i] = b2TransformPoint( transformB, m_verticesB[i] );
         }
-        Draw.g_draw.DrawSolidCapsule( vertices[0], vertices[1], m_radiusB, b2_colorRed );
-        // Draw.g_draw.DrawPolygon( vertices, m_countB, b2_colorRed );
+        Draw.g_draw.DrawSolidCapsule( vertices[0], vertices[1], m_radiusB, b2HexColor.b2_colorRed );
+        // Draw.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorRed );
 
         if ( output.state == b2_toiStateHit )
         {

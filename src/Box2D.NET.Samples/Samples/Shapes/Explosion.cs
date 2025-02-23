@@ -107,8 +107,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         Draw.g_draw.DrawString( 5, m_textLine, "reference angle = %g", m_referenceAngle );
         m_textLine += m_textIncrement;
 
-        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius + m_falloff, b2_colorBox2DBlue );
-        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius, b2_colorBox2DYellow );
+        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius + m_falloff, b2HexColor.b2_colorBox2DBlue );
+        Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius, b2HexColor.b2_colorBox2DYellow );
     }
 
     static Sample* Create( Settings& settings )

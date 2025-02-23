@@ -104,7 +104,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
         b2SurfaceMaterial material = {};
         material.friction = 0.2f;
-        material.customColor = b2_colorSteelBlue;
+        material.customColor = b2HexColor.b2_colorSteelBlue;
         material.material = 42;
 
         b2ChainDef chainDef = b2DefaultChainDef();
@@ -201,8 +201,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     {
         Sample::Step( settings );
 
-        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2_colorRed );
-        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2_colorGreen );
+        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2HexColor.b2_colorRed );
+        Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2HexColor.b2_colorGreen );
 
 #ifndef NDEBUG
         DrawTextLine( "toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount );

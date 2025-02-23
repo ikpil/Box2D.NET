@@ -485,9 +485,9 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
         m_textLine += m_textIncrement;
 
-        b2HexColor color1 = b2_colorGreen;
-        b2HexColor color2 = b2_colorLightGray;
-        b2HexColor color3 = b2_colorMagenta;
+        b2HexColor color1 = b2HexColor.b2_colorGreen;
+        b2HexColor color2 = b2HexColor.b2_colorLightGray;
+        b2HexColor color3 = b2HexColor.b2_colorMagenta;
 
         b2Vec2 rayTranslation = b2Sub( m_rayEnd, m_rayStart );
 
@@ -575,7 +575,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
             if ( context.count > 0 )
             {
                 Debug.Assert( context.count <= 3 );
-                b2HexColor colors[3] = { b2_colorRed, b2_colorGreen, b2_colorBlue };
+                b2HexColor colors[3] = { b2_colorRed, b2HexColor.b2_colorGreen, b2HexColor.b2_colorBlue };
                 for ( int i = 0; i < context.count; ++i )
                 {
                     b2Vec2 c = b2MulAdd( m_rayStart, context.fractions[i], rayTranslation );
@@ -591,17 +591,17 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
                     if ( m_castType == e_circleCast )
                     {
-                        Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2_colorYellow );
+                        Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorYellow );
                     }
                     else if ( m_castType == e_capsuleCast )
                     {
                         b2Vec2 p1 = b2Add( b2TransformPoint( transform, capsule.center1 ), t );
                         b2Vec2 p2 = b2Add( b2TransformPoint( transform, capsule.center2 ), t );
-                        Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2_colorYellow );
+                        Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2HexColor.b2_colorYellow );
                     }
                     else if ( m_castType == e_polygonCast )
                     {
-                        Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2_colorYellow );
+                        Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
                     }
                 }
             }
@@ -612,22 +612,22 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
                 if ( m_castType == e_circleCast )
                 {
-                    Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2_colorGray );
+                    Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorGray );
                 }
                 else if ( m_castType == e_capsuleCast )
                 {
                     b2Vec2 p1 = b2Add( b2TransformPoint( transform, capsule.center1 ), rayTranslation );
                     b2Vec2 p2 = b2Add( b2TransformPoint( transform, capsule.center2 ), rayTranslation );
-                    Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2_colorYellow );
+                    Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2HexColor.b2_colorYellow );
                 }
                 else if ( m_castType == e_polygonCast )
                 {
-                    Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2_colorYellow );
+                    Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
                 }
             }
         }
 
-        Draw.g_draw.DrawPoint( m_rayStart, 5.0f, b2_colorGreen );
+        Draw.g_draw.DrawPoint( m_rayStart, 5.0f, b2HexColor.b2_colorGreen );
 
         if ( B2_IS_NON_NULL( m_bodyIds[m_ignoreIndex] ) )
         {

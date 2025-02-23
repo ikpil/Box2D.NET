@@ -198,7 +198,7 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 
 		if ( m_explode )
 		{
-			Draw.g_draw.DrawCircle( m_explosionPosition, radius, b2_colorAzure );
+			Draw.g_draw.DrawCircle( m_explosionPosition, radius, b2HexColor.b2_colorAzure );
 		}
 
 		if ( glfwGetKey( g_mainWindow, GLFW_KEY_A ) == GLFW_PRESS )

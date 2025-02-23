@@ -496,8 +496,8 @@ namespace Box2D.NET
             b2HexColor c3 = b2HexColor.b2_colorRed;
 
             float L = drawSize;
-            // draw.drawPoint(pA, 3.0f, b2_colorGray40, draw.context);
-            // draw.drawPoint(pB, 3.0f, b2_colorLightBlue, draw.context);
+            // draw.drawPoint(pA, 3.0f, b2HexColor.b2_colorGray40, draw.context);
+            // draw.drawPoint(pB, 3.0f, b2HexColor.b2_colorLightBlue, draw.context);
             draw.DrawCircle(pB, L, c1, draw.context);
 
             float angle = b2RelativeAngle(transformB.q, transformA.q);

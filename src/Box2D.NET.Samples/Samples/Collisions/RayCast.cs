@@ -148,17 +148,17 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         if ( output->hit )
         {
             b2Vec2 p = b2MulAdd( p1, output->fraction, d );
-            Draw.g_draw.DrawSegment( p1, p, b2_colorWhite );
-            Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-            Draw.g_draw.DrawPoint( output->point, 5.0f, b2_colorWhite );
+            Draw.g_draw.DrawSegment( p1, p, b2HexColor.b2_colorWhite );
+            Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
+            Draw.g_draw.DrawPoint( output->point, 5.0f, b2HexColor.b2_colorWhite );
 
             b2Vec2 n = b2MulAdd( p, 1.0f, output->normal );
-            Draw.g_draw.DrawSegment( p, n, b2_colorViolet );
+            Draw.g_draw.DrawSegment( p, n, b2HexColor.b2_colorViolet );
 
             // if (m_rayRadius > 0.0f)
             //{
-            //	Draw.g_draw.DrawCircle(p1, m_rayRadius, b2_colorGreen);
-            //	Draw.g_draw.DrawCircle(p, m_rayRadius, b2_colorRed);
+            //	Draw.g_draw.DrawCircle(p1, m_rayRadius, b2HexColor.b2_colorGreen);
+            //	Draw.g_draw.DrawCircle(p, m_rayRadius, b2HexColor.b2_colorRed);
             // }
 
             if ( m_showFraction )
@@ -169,14 +169,14 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
         else
         {
-            Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
-            Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
-            Draw.g_draw.DrawPoint( p2, 5.0f, b2_colorRed );
+            Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorWhite );
+            Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
+            Draw.g_draw.DrawPoint( p2, 5.0f, b2HexColor.b2_colorRed );
 
             // if (m_rayRadius > 0.0f)
             //{
-            //	Draw.g_draw.DrawCircle(p1, m_rayRadius, b2_colorGreen);
-            //	Draw.g_draw.DrawCircle(p2, m_rayRadius, b2_colorRed);
+            //	Draw.g_draw.DrawCircle(p1, m_rayRadius, b2HexColor.b2_colorGreen);
+            //	Draw.g_draw.DrawCircle(p2, m_rayRadius, b2HexColor.b2_colorRed);
             // }
         }
     }
@@ -186,7 +186,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         b2Vec2 offset = { -20.0f, 20.0f };
         b2Vec2 increment = { 10.0f, 0.0f };
 
-        b2HexColor color1 = b2_colorYellow;
+        b2HexColor color1 = b2HexColor.b2_colorYellow;
 
         b2CastOutput output = { };
         float maxFraction = 1.0f;

@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Primitives;
 
 public class BodyType : Sample
 {
-    private static int sampleBodyType = SampleRegister.RegisterSample("Bodies", "Body Type", BodyType.Create);
+    private static int sampleBodyType = RegisterSample("Bodies", "Body Type", BodyType.Create);
 
     b2BodyId m_attachmentId;
     b2BodyId m_secondAttachmentId;

@@ -89,12 +89,12 @@ void Step( Settings& settings ) override
         float C = length - slackLength;
         if ( C < 0.0f || length < 0.001f )
         {
-            Draw.g_draw.DrawSegment( anchorA, anchorB, b2_colorLightCyan );
+            Draw.g_draw.DrawSegment( anchorA, anchorB, b2HexColor.b2_colorLightCyan );
             m_impulses[i] = 0.0f;
             continue;
         }
 
-        Draw.g_draw.DrawSegment( anchorA, anchorB, b2_colorViolet );
+        Draw.g_draw.DrawSegment( anchorA, anchorB, b2HexColor.b2_colorViolet );
         b2Vec2 axis = b2Normalize( deltaAnchor );
 
         b2Vec2 rB = b2Sub( anchorB, pB );

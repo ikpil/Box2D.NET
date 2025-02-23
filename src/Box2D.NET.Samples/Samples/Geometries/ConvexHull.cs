@@ -187,17 +187,17 @@ public:
 
 		m_textLine += m_textIncrement;
 
-		Draw.g_draw.DrawPolygon( hull.points, hull.count, b2_colorGray );
+		Draw.g_draw.DrawPolygon( hull.points, hull.count, b2HexColor.b2_colorGray );
 
 		for ( int i = 0; i < m_count; ++i )
 		{
-			Draw.g_draw.DrawPoint( m_points[i], 5.0f, b2_colorBlue );
+			Draw.g_draw.DrawPoint( m_points[i], 5.0f, b2HexColor.b2_colorBlue );
 			Draw.g_draw.DrawString( b2Add( m_points[i], { 0.1f, 0.1f } ), "%d", i );
 		}
 
 		for ( int i = 0; i < hull.count; ++i )
 		{
-			Draw.g_draw.DrawPoint( hull.points[i], 6.0f, b2_colorGreen );
+			Draw.g_draw.DrawPoint( hull.points[i], 6.0f, b2HexColor.b2_colorGreen );
 		}
 	}
 

@@ -42,19 +42,19 @@ namespace Box2D.NET.Samples.Samples.Shapes;
             }
 
             materials[0].tangentSpeed = -10.0;
-            materials[0].customColor = b2_colorDarkBlue;
+            materials[0].customColor = b2HexColor.b2_colorDarkBlue;
             materials[1].tangentSpeed = -20.0;
-            materials[1].customColor = b2_colorDarkCyan;
+            materials[1].customColor = b2HexColor.b2_colorDarkCyan;
             materials[2].tangentSpeed = -30.0;
-            materials[2].customColor = b2_colorDarkGoldenRod;
+            materials[2].customColor = b2HexColor.b2_colorDarkGoldenRod;
             materials[3].tangentSpeed = -40.0;
-            materials[3].customColor = b2_colorDarkGray;
+            materials[3].customColor = b2HexColor.b2_colorDarkGray;
             materials[4].tangentSpeed = -50.0;
-            materials[4].customColor = b2_colorDarkGreen;
+            materials[4].customColor = b2HexColor.b2_colorDarkGreen;
             materials[5].tangentSpeed = -60.0;
-            materials[5].customColor = b2_colorDarkKhaki;
+            materials[5].customColor = b2HexColor.b2_colorDarkKhaki;
             materials[6].tangentSpeed = -70.0;
-            materials[6].customColor = b2_colorDarkMagenta;
+            materials[6].customColor = b2HexColor.b2_colorDarkMagenta;
 
             b2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;

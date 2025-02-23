@@ -127,7 +127,7 @@ void Step( Settings& settings ) override
         b2ShapeId shapeId = m_overlaps[i];
         b2AABB aabb = b2Shape_GetAABB( shapeId );
         b2Vec2 point = b2AABB_Center( aabb );
-        Draw.g_draw.DrawPoint( point, 10.0f, b2_colorWhite );
+        Draw.g_draw.DrawPoint( point, 10.0f, b2HexColor.b2_colorWhite );
     }
 }
 

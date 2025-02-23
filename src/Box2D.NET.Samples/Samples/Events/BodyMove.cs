@@ -165,7 +165,7 @@ void Step( Settings& settings ) override
         }
     }
 
-    Draw.g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2_colorAzure );
+    Draw.g_draw.DrawCircle( m_explosionPosition, m_explosionRadius, b2HexColor.b2_colorAzure );
 
     Draw.g_draw.DrawString( 5, m_textLine, "sleep count: %d", m_sleepCount );
     m_textLine += m_textIncrement;

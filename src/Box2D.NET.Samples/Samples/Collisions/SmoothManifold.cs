@@ -198,15 +198,15 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
             b2Vec2 p1 = mp->point;
             b2Vec2 p2 = b2MulAdd( p1, 0.5f, manifold->normal );
-            Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
+            Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorWhite );
 
             if ( m_showAnchors )
             {
-                Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
+                Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
             }
             else
             {
-                Draw.g_draw.DrawPoint( p1, 5.0f, b2_colorGreen );
+                Draw.g_draw.DrawPoint( p1, 5.0f, b2HexColor.b2_colorGreen );
             }
 
             if ( m_showIds )
@@ -227,8 +227,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
     void Step( Settings& ) override
     {
-        b2HexColor color1 = b2_colorYellow;
-        b2HexColor color2 = b2_colorMagenta;
+        b2HexColor color1 = b2HexColor.b2_colorYellow;
+        b2HexColor color2 = b2HexColor.b2_colorMagenta;
 
         b2Transform transform1 = b2Transform_identity;
         b2Transform transform2 = m_transform;

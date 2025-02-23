@@ -40,7 +40,7 @@ public class SingleBox : Sample
     {
         Sample::Step( settings );
 
-        // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2_colorWhite);
+        // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         b2Vec2 position = b2Body_GetPosition( m_bodyId );
         DrawTextLine( "(x, y) = (%.2g, %.2g)", position.x, position.y );

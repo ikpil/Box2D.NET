@@ -106,7 +106,7 @@ void CreateScene()
 
 void Step( Settings settings ) override
 {
-    uint64_t ticks = b2GetTicks();
+    ulong ticks = b2GetTicks();
 
     for ( int i = 0; i < m_iterations; ++i )
     {

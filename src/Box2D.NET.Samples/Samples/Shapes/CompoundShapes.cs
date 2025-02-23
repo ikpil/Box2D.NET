@@ -203,16 +203,16 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         if ( m_drawBodyAABBs )
         {
             b2AABB aabb = b2Body_ComputeAABB( m_table1Id );
-            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2HexColor.b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_table2Id );
-            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2HexColor.b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_ship1Id );
-            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2HexColor.b2_colorYellow );
 
             aabb = b2Body_ComputeAABB( m_ship2Id );
-            Draw.g_draw.DrawAABB( aabb, b2_colorYellow );
+            Draw.g_draw.DrawAABB( aabb, b2HexColor.b2_colorYellow );
         }
     }
 

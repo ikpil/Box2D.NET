@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Primitives;
 
 class Weeble : Sample
 {
-    private static int sampleWeeble = SampleRegister.RegisterSample("Bodies", "Weeble", Create);
+    private static int sampleWeeble = RegisterSample("Bodies", "Weeble", Create);
     
     b2BodyId m_weebleId;
     b2Vec2 m_explosionPosition;
@@ -134,7 +134,7 @@ class Weeble : Sample
     {
         Sample::Step(settings);
 
-        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, b2_colorAzure);
+        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, b2HexColor.b2_colorAzure);
 
         // This shows how to get the velocity of a point on a body
         b2Vec2 localPoint = { 0.0f, 2.0f };
@@ -144,7 +144,7 @@ class Weeble : Sample
         b2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
 
         b2Vec2 offset = { 0.05f, 0.0f };
-        Draw.g_draw.DrawSegment(worldPoint, worldPoint + v1, b2_colorRed);
-        Draw.g_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, b2_colorGreen);
+        Draw.g_draw.DrawSegment(worldPoint, worldPoint + v1, b2HexColor.b2_colorRed);
+        Draw.g_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, b2HexColor.b2_colorGreen);
     }
 }

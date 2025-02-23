@@ -135,16 +135,16 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
             b2Vec2 p1 = mp->point;
             b2Vec2 p2 = b2MulAdd( p1, 0.5f, manifold->normal );
-            Draw.g_draw.DrawSegment( p1, p2, b2_colorWhite );
+            Draw.g_draw.DrawSegment( p1, p2, b2HexColor.b2_colorWhite );
 
             if ( m_showAnchors )
             {
-                Draw.g_draw.DrawPoint( b2Add( origin1, mp->anchorA ), 5.0f, b2_colorRed );
-                Draw.g_draw.DrawPoint( b2Add( origin2, mp->anchorB ), 5.0f, b2_colorGreen );
+                Draw.g_draw.DrawPoint( b2Add( origin1, mp->anchorA ), 5.0f, b2HexColor.b2_colorRed );
+                Draw.g_draw.DrawPoint( b2Add( origin2, mp->anchorB ), 5.0f, b2HexColor.b2_colorGreen );
             }
             else
             {
-                Draw.g_draw.DrawPoint( p1, 10.0f, b2_colorBlue );
+                Draw.g_draw.DrawPoint( p1, 10.0f, b2HexColor.b2_colorBlue );
             }
 
             if ( m_showIds )
@@ -168,8 +168,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         b2Vec2 offset = { -10.0f, -5.0f };
         b2Vec2 increment = { 4.0f, 0.0f };
 
-        b2HexColor color1 = b2_colorAquamarine;
-        b2HexColor color2 = b2_colorPaleGoldenRod;
+        b2HexColor color1 = b2HexColor.b2_colorAquamarine;
+        b2HexColor color2 = b2HexColor.b2_colorPaleGoldenRod;
 
         if ( m_enableCaching == false )
         {
@@ -509,9 +509,9 @@ namespace Box2D.NET.Samples.Samples.Collisions;
             b2Vec2 g2 = b2TransformPoint( transform1, segment.ghost2 );
             b2Vec2 p1 = b2TransformPoint( transform1, segment.segment.point1 );
             b2Vec2 p2 = b2TransformPoint( transform1, segment.segment.point2 );
-            Draw.g_draw.DrawSegment( g1, p1, b2_colorLightGray );
+            Draw.g_draw.DrawSegment( g1, p1, b2HexColor.b2_colorLightGray );
             Draw.g_draw.DrawSegment( p1, p2, color1 );
-            Draw.g_draw.DrawSegment( p2, g2, b2_colorLightGray );
+            Draw.g_draw.DrawSegment( p2, g2, b2HexColor.b2_colorLightGray );
             Draw.g_draw.DrawSolidCircle( transform2, circle.center, circle.radius, color2 );
 
             DrawManifold( &m, transform1.p, transform2.p );
@@ -543,21 +543,21 @@ namespace Box2D.NET.Samples.Samples.Collisions;
                 Draw.g_draw.DrawSegment( p1, p2, color1 );
                 Draw.g_draw.DrawPoint( p1, 4.0f, color1 );
                 Draw.g_draw.DrawPoint( p2, 4.0f, color1 );
-                Draw.g_draw.DrawSegment( p2, g2, b2_colorLightGray );
+                Draw.g_draw.DrawSegment( p2, g2, b2HexColor.b2_colorLightGray );
             }
 
             {
                 b2Vec2 g1 = b2TransformPoint( transform1, segment2.ghost1 );
                 b2Vec2 p1 = b2TransformPoint( transform1, segment2.segment.point1 );
                 b2Vec2 p2 = b2TransformPoint( transform1, segment2.segment.point2 );
-                Draw.g_draw.DrawSegment( g1, p1, b2_colorLightGray );
+                Draw.g_draw.DrawSegment( g1, p1, b2HexColor.b2_colorLightGray );
                 Draw.g_draw.DrawSegment( p1, p2, color1 );
                 Draw.g_draw.DrawPoint( p1, 4.0f, color1 );
                 Draw.g_draw.DrawPoint( p2, 4.0f, color1 );
             }
 
             Draw.g_draw.DrawSolidPolygon( transform2, rox.vertices, rox.count, rox.radius, color2 );
-            Draw.g_draw.DrawPoint( b2TransformPoint( transform2, rox.centroid ), 5.0f, b2_colorGainsboro );
+            Draw.g_draw.DrawPoint( b2TransformPoint( transform2, rox.centroid ), 5.0f, b2HexColor.b2_colorGainsboro );
 
             DrawManifold( &m1, transform1.p, transform2.p );
             DrawManifold( &m2, transform1.p, transform2.p );
@@ -581,29 +581,29 @@ namespace Box2D.NET.Samples.Samples.Collisions;
                 b2Vec2 g2 = b2TransformPoint( transform1, segment1.ghost2 );
                 b2Vec2 p1 = b2TransformPoint( transform1, segment1.segment.point1 );
                 b2Vec2 p2 = b2TransformPoint( transform1, segment1.segment.point2 );
-                // Draw.g_draw.DrawSegment(g1, p1, b2_colorLightGray);
+                // Draw.g_draw.DrawSegment(g1, p1, b2HexColor.b2_colorLightGray);
                 Draw.g_draw.DrawSegment( p1, p2, color1 );
                 Draw.g_draw.DrawPoint( p1, 4.0f, color1 );
                 Draw.g_draw.DrawPoint( p2, 4.0f, color1 );
-                Draw.g_draw.DrawSegment( p2, g2, b2_colorLightGray );
+                Draw.g_draw.DrawSegment( p2, g2, b2HexColor.b2_colorLightGray );
             }
 
             {
                 b2Vec2 g1 = b2TransformPoint( transform1, segment2.ghost1 );
                 b2Vec2 p1 = b2TransformPoint( transform1, segment2.segment.point1 );
                 b2Vec2 p2 = b2TransformPoint( transform1, segment2.segment.point2 );
-                Draw.g_draw.DrawSegment( g1, p1, b2_colorLightGray );
+                Draw.g_draw.DrawSegment( g1, p1, b2HexColor.b2_colorLightGray );
                 Draw.g_draw.DrawSegment( p1, p2, color1 );
                 Draw.g_draw.DrawPoint( p1, 4.0f, color1 );
                 Draw.g_draw.DrawPoint( p2, 4.0f, color1 );
-                // Draw.g_draw.DrawSegment(p2, g2, b2_colorLightGray);
+                // Draw.g_draw.DrawSegment(p2, g2, b2HexColor.b2_colorLightGray);
             }
 
             b2Vec2 p1 = b2TransformPoint( transform2, capsule.center1 );
             b2Vec2 p2 = b2TransformPoint( transform2, capsule.center2 );
             Draw.g_draw.DrawSolidCapsule( p1, p2, capsule.radius, color2 );
 
-            Draw.g_draw.DrawPoint( b2Lerp( p1, p2, 0.5f ), 5.0f, b2_colorGainsboro );
+            Draw.g_draw.DrawPoint( b2Lerp( p1, p2, 0.5f ), 5.0f, b2HexColor.b2_colorGainsboro );
 
             DrawManifold( &m1, transform1.p, transform2.p );
             DrawManifold( &m2, transform1.p, transform2.p );

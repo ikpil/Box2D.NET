@@ -218,8 +218,8 @@ void Step( Settings& settings ) override
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
                         b2ManifoldPoint point = manifold.points[k];
-                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorBlueViolet );
-                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2HexColor.b2_colorBlueViolet );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2HexColor.b2_colorWhite );
                     }
                 }
             }
@@ -248,8 +248,8 @@ void Step( Settings& settings ) override
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
                         b2ManifoldPoint point = manifold.points[k];
-                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2_colorYellowGreen );
-                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2_colorWhite );
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2HexColor.b2_colorYellowGreen );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2HexColor.b2_colorWhite );
                     }
                 }
             }

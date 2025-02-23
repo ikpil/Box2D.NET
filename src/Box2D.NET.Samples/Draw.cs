@@ -200,10 +200,10 @@ public class Draw
         b2Vec2 p1 = transform.p;
 
         b2Vec2 p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetXAxis(transform.q));
-        m_lines.AddLine(p1, p2, b2_colorRed);
+        m_lines.AddLine(p1, p2, b2HexColor.b2_colorRed);
 
         p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetYAxis(transform.q));
-        m_lines.AddLine(p1, p2, b2_colorGreen);
+        m_lines.AddLine(p1, p2, b2HexColor.b2_colorGreen);
     }
 
     public void DrawPoint(b2Vec2 p, float size, b2HexColor color)

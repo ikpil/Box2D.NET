@@ -302,7 +302,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         {
             b2World_OverlapCircle( m_worldId, &m_queryCircle, transform, b2DefaultQueryFilter(), OverlapWorld::OverlapResultFcn,
                 this );
-            Draw.g_draw.DrawSolidCircle( transform, b2Vec2_zero, m_queryCircle.radius, b2_colorWhite );
+            Draw.g_draw.DrawSolidCircle( transform, b2Vec2_zero, m_queryCircle.radius, b2HexColor.b2_colorWhite );
         }
         else if ( m_shapeType == e_capsuleShape )
         {
@@ -310,7 +310,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
                 this );
             b2Vec2 p1 = b2TransformPoint( transform, m_queryCapsule.center1 );
             b2Vec2 p2 = b2TransformPoint( transform, m_queryCapsule.center2 );
-            Draw.g_draw.DrawSolidCapsule( p1, p2, m_queryCapsule.radius, b2_colorWhite );
+            Draw.g_draw.DrawSolidCapsule( p1, p2, m_queryCapsule.radius, b2HexColor.b2_colorWhite );
         }
         else if ( m_shapeType == e_boxShape )
         {
@@ -321,7 +321,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
             {
                 points[i] = b2TransformPoint( transform, m_queryBox.vertices[i] );
             }
-            Draw.g_draw.DrawPolygon( points, m_queryBox.count, b2_colorWhite );
+            Draw.g_draw.DrawPolygon( points, m_queryBox.count, b2HexColor.b2_colorWhite );
         }
 
         if ( B2_IS_NON_NULL( m_bodyIds[m_ignoreIndex] ) )

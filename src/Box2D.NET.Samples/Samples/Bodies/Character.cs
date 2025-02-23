@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Primitives;
 /// Instead this is used to test smooth collision on chain shapes.
 class Character : Sample
 {
-    private static int sampleCharacter = SampleRegister.RegisterSample("Bodies", "Character", Create);
+    private static int sampleCharacter = RegisterSample("Bodies", "Character", Create);
 
     b2BodyId m_circleCharacterId;
     b2BodyId m_capsuleCharacterId;

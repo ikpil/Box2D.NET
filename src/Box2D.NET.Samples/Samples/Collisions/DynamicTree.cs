@@ -240,7 +240,7 @@ void Step( Settings& ) override
         b2AABB box = { b2Min( m_startPoint, m_endPoint ), b2Max( m_startPoint, m_endPoint ) };
         b2DynamicTree_Query( &m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, this );
 
-        Draw.g_draw.DrawAABB( box, b2_colorWhite );
+        Draw.g_draw.DrawAABB( box, b2HexColor.b2_colorWhite );
     }
 
     // m_startPoint = {-1.0f, 0.5f};
@@ -251,16 +251,16 @@ void Step( Settings& ) override
         b2RayCastInput input = { m_startPoint, b2Sub( m_endPoint, m_startPoint ), 1.0f };
         b2TreeStats result = b2DynamicTree_RayCast( &m_tree, &input, B2_DEFAULT_MASK_BITS, RayCallback, this );
 
-        Draw.g_draw.DrawSegment( m_startPoint, m_endPoint, b2_colorWhite );
-        Draw.g_draw.DrawPoint( m_startPoint, 5.0f, b2_colorGreen );
-        Draw.g_draw.DrawPoint( m_endPoint, 5.0f, b2_colorRed );
+        Draw.g_draw.DrawSegment( m_startPoint, m_endPoint, b2HexColor.b2_colorWhite );
+        Draw.g_draw.DrawPoint( m_startPoint, 5.0f, b2HexColor.b2_colorGreen );
+        Draw.g_draw.DrawPoint( m_endPoint, 5.0f, b2HexColor.b2_colorRed );
 
         Draw.g_draw.DrawString( 5, m_textLine, "node visits = %d, leaf visits = %d", result.nodeVisits, result.leafVisits );
         m_textLine += m_textIncrement;
     }
 
-    b2HexColor c = b2_colorBlue;
-    b2HexColor qc = b2_colorGreen;
+    b2HexColor c = b2HexColor.b2_colorBlue;
+    b2HexColor qc = b2HexColor.b2_colorGreen;
 
     const b2Vec2 aabbMargin = { 0.1f, 0.1f };
 
@@ -312,7 +312,7 @@ void Step( Settings& ) override
     {
         case Update_Incremental:
         {
-            uint64_t ticks = b2GetTicks();
+            ulong ticks = b2GetTicks();
             for ( int i = 0; i < m_proxyCount; ++i )
             {
                 Proxy* p = m_proxies + i;
@@ -338,7 +338,7 @@ void Step( Settings& ) override
                 }
             }
 
-            uint64_t ticks = b2GetTicks();
+            ulong ticks = b2GetTicks();
             int boxCount = b2DynamicTree_Rebuild( &m_tree, true );
             float ms = b2GetMilliseconds( ticks );
             Draw.g_draw.DrawString( 5, m_textLine, "full build %d : %.3f ms", boxCount, ms );
@@ -357,7 +357,7 @@ void Step( Settings& ) override
                 }
             }
 
-            uint64_t ticks = b2GetTicks();
+            ulong ticks = b2GetTicks();
             int boxCount = b2DynamicTree_Rebuild( &m_tree, false );
             float ms = b2GetMilliseconds( ticks );
             Draw.g_draw.DrawString( 5, m_textLine, "partial rebuild %d : %.3f ms", boxCount, ms );

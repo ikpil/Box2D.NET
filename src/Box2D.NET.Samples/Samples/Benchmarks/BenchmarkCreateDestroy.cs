@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Diagnostics;
+using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using static Box2D.NET.id;
 using static Box2D.NET.geometry;
@@ -47,7 +48,7 @@ public BenchmarkCreateDestroy( Settings settings ) : base( settings )
 
 void CreateScene()
 {
-    uint64_t ticks = b2GetTicks();
+    ulong ticks = b2GetTicks();
 
     for ( int i = 0; i < e_maxBodyCount; ++i )
     {

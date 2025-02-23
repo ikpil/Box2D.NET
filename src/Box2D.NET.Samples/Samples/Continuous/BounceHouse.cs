@@ -162,7 +162,7 @@ void Step( Settings& settings ) override
         HitEvent* e = m_hitEvents + i;
         if ( e->stepIndex > 0 && m_stepCount <= e->stepIndex + 30 )
         {
-            Draw.g_draw.DrawCircle( e->point, 0.1f, b2_colorOrangeRed );
+            Draw.g_draw.DrawCircle( e->point, 0.1f, b2HexColor.b2_colorOrangeRed );
             Draw.g_draw.DrawString( e->point, "%.1f", e->speed );
         }
     }
