@@ -1,9 +1,4 @@
-// SPDX-FileCopyrightText: 2022 Erin Catto
-// SPDX-License-Identifier: MIT
-
-using Box2D.NET.Samples;
-
-namespace Box2D.NET.Samples;
+﻿namespace Box2D.NET.Samples.Samples.Worlds;
 
     public class LargeWorld : Sample
 {
@@ -234,3 +229,4 @@ namespace Box2D.NET.Samples;
 };
 
 static int sampleLargeWorld = RegisterSample( "World", "Large World", LargeWorld::Create );
+
