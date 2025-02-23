@@ -358,10 +358,7 @@ public class test_determinism
                         {
                             b2Transform xf = b2Body_GetTransform(bodies[i]);
                             byte[] bxf = new byte[sizeof(float) * 4];
-                            BitConverter.GetBytes(xf.p.x).AsSpan().CopyTo(bxf.AsSpan(0, 4));
-                            BitConverter.GetBytes(xf.p.y).AsSpan().CopyTo(bxf.AsSpan(4, 4));
-                            BitConverter.GetBytes(xf.q.c).AsSpan().CopyTo(bxf.AsSpan(8, 4));
-                            BitConverter.GetBytes(xf.q.s).AsSpan().CopyTo(bxf.AsSpan(12, 4));
+                            xf.TryWriteBytes(bxf);
                             hash = b2Hash(hash, bxf, bxf.Length);
                         }
 
