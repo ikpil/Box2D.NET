@@ -1,7 +1,5 @@
-// SPDX-FileCopyrightText: 2022 Erin Catto
-// SPDX-License-Identifier: MIT
-
-using Box2D.NET.Samples;
+﻿
+namespace Box2D.NET.Samples.Samples.Determinisms;
 
 // This sample provides a visual representation of the cross platform determinism unit test.
 // The scenario is designed to produce a chaotic result engaging:
@@ -11,7 +9,6 @@ using Box2D.NET.Samples;
 // Once all the bodies go to sleep the step counter and transform hash is emitted which
 // can then be transferred to the unit test and tested in GitHub build actions.
 // See CrossPlatformTest in the unit tests.
-namespace Box2D.NET.Samples;
 
     public class FallingHinges : Sample
 {
