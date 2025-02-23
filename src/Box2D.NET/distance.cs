@@ -11,6 +11,17 @@ namespace Box2D.NET
 {
     public static class distance
     {
+        // Warning: writing to these globals significantly slows multithreading performance
+#if B2_SNOOP_TOI_COUNTERS
+        public static float b2_toiTime, b2_toiMaxTime;
+        public static int b2_toiCalls, b2_toiDistanceIterations, b2_toiMaxDistanceIterations;
+        public static int b2_toiRootIterations, b2_toiMaxRootIterations;
+        public static int b2_toiFailedCount;
+        public static int b2_toiOverlappedCount;
+        public static int b2_toiHitCount;
+        public static int b2_toiSeparatedCount;
+#endif
+        
         /// Evaluate the transform sweep at a specific time.
         public static b2Transform b2GetSweepTransform(b2Sweep sweep, float time)
         {
@@ -805,16 +816,6 @@ namespace Box2D.NET
             return output;
         }
 
-        // Warning: writing to these globals significantly slows multithreading performance
-#if B2_SNOOP_TOI_COUNTERS
-    float b2_toiTime, b2_toiMaxTime;
-    int b2_toiCalls, b2_toiDistanceIterations, b2_toiMaxDistanceIterations;
-    int b2_toiRootIterations, b2_toiMaxRootIterations;
-    int b2_toiFailedCount;
-    int b2_toiOverlappedCount;
-    int b2_toiHitCount;
-    int b2_toiSeparatedCount;
-#endif
 
 
         public static b2SeparationFunction b2MakeSeparationFunction(ref b2SimplexCache cache, ref b2ShapeProxy proxyA, b2Sweep sweepA, ref b2ShapeProxy proxyB, b2Sweep sweepB, float t1)

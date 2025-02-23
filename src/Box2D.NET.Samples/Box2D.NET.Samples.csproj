@@ -12,6 +12,10 @@
     <DefineConstants>$(DefineConstants);NDEBUG</DefineConstants>
   </PropertyGroup>
   
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Box2D.NET.Shared\Box2D.NET.Shared.csproj" />
     <ProjectReference Include="..\Box2D.NET\Box2D.NET.csproj"/>

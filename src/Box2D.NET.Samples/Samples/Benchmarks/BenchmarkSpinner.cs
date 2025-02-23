@@ -1,30 +1,39 @@
-﻿namespace Box2D.NET.Samples.Samples.Benchmarks;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.distance;
+using static Box2D.NET.Shared.benchmarks;
 
-class BenchmarkSpinner : Sample
+namespace Box2D.NET.Samples.Samples.Benchmarks;
+
+public class BenchmarkSpinner : Sample
 {
-    public:
-    explicit BenchmarkSpinner( Settings settings )
-        : Sample( settings )
+    static int sampleSpinner = RegisterSample("Benchmark", "Spinner", Create);
+
+    static Sample Create(Settings settings)
     {
-        if ( settings.restart == false )
+        return new BenchmarkSpinner(settings);
+    }
+
+    public BenchmarkSpinner(Settings settings) : base(settings)
+    {
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 0.0f, 32.0f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 32.0f);
             Draw.g_camera.m_zoom = 42.0f;
         }
 
-#ifndef NDEBUG
+#if DEBUG
         b2_toiCalls = 0;
         b2_toiHitCount = 0;
 #endif
 
-        CreateSpinner( m_worldId );
+        CreateSpinner(m_worldId);
     }
 
-    void Step( Settings settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step(settings);
 
-        if ( m_stepCount == 1000 && false )
+        if (m_stepCount == 1000 && false)
         {
             // 0.1 : 46544, 25752
             // 0.25 : 5745, 1947
@@ -32,15 +41,8 @@ class BenchmarkSpinner : Sample
             settings.pause = true;
         }
 
-#ifndef NDEBUG
-        DrawTextLine( "toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount );
+#if DEBUG
+        DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);
 #endif
     }
-
-    static Sample* Create( Settings settings )
-    {
-        return new BenchmarkSpinner( settings );
-    }
-};
-
-static int sampleSpinner = RegisterSample( "Benchmark", "Spinner", BenchmarkSpinner::Create );
+}
