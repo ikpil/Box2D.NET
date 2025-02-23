@@ -10,17 +10,12 @@ using static Box2D.NET.timer;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-class BenchmarkCreateDestroy : Sample
+public class BenchmarkCreateDestroy : Sample
 {
-public:
-enum
-{
-    e_maxBaseCount = 100,
-    e_maxBodyCount = e_maxBaseCount * ( e_maxBaseCount + 1 ) / 2
-};
+    public const int e_maxBaseCount = 100;
+    public const int e_maxBodyCount = e_maxBaseCount * ( e_maxBaseCount + 1 ) / 2;
 
-explicit BenchmarkCreateDestroy( Settings settings )
-    : Sample( settings )
+public BenchmarkCreateDestroy( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {

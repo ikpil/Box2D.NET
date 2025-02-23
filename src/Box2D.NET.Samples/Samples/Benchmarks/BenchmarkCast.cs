@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Numerics;
+using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.geometry;
 using static Box2D.NET.types;
@@ -17,11 +18,9 @@ enum QueryType
     e_overlap,
 };
 
-class BenchmarkCast : Sample
+public class BenchmarkCast : Sample
 {
-public:
-explicit BenchmarkCast( Settings settings )
-    : Sample( settings )
+BenchmarkCast( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -136,8 +135,8 @@ void BuildScene()
 void UpdateUI() override
 {
     float height = 240.0f;
-    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
-    ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
+    ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( new Vector2( 200.0f, height ) );
 
     ImGui.Begin( "Cast", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 

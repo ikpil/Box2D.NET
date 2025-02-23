@@ -404,7 +404,7 @@ static void UpdateUI()
 				ImGui.Checkbox( "Counters", &s_settings.drawCounters );
 				ImGui.Checkbox( "Profile", &s_settings.drawProfile );
 
-				ImVec2 button_sz = ImVec2( -1, 0 );
+				ImVec2 button_sz = new Vector2( -1, 0 );
 				if ( ImGui.Button( "Pause (P)", button_sz ) )
 				{
 					s_settings.pause = !s_settings.pause;
@@ -657,8 +657,8 @@ int main( int, char** )
 
 		ImGui.NewFrame();
 
-		ImGui.SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
-		ImGui.SetNextWindowSize( ImVec2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+		ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
+		ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
 		ImGui.SetNextWindowBgAlpha( 0.0f );
 		ImGui.Begin( "Overlay", nullptr,
 					  ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
@@ -695,7 +695,7 @@ int main( int, char** )
 			ImGui.Begin( "Overlay", nullptr,
 						  ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
 							  ImGuiWindowFlags.NoScrollbar );
-			ImGui.SetCursorPos( ImVec2( 5.0f, Draw.g_camera.m_height - 20.0f ) );
+			ImGui.SetCursorPos( new Vector2( 5.0f, Draw.g_camera.m_height - 20.0f ) );
 			ImGui.TextColored( ImColor( 153, 230, 153, 255 ), "%s", buffer );
 			ImGui.End();
 		}

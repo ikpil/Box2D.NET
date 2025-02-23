@@ -17,6 +17,31 @@ namespace Box2D.NET.Samples;
 
 public class Sample
 {
+#if DEBUG
+    public const bool g_sampleDebug = true;
+#else
+    public const bool g_sampleDebug = false;
+#endif
+    public const int k_maxContactPoints = 12 * 2048;
+
+    public const int MAX_SAMPLES = 256;
+    public static SampleEntry[] g_sampleEntries = new SampleEntry[MAX_SAMPLES];
+    public static int g_sampleCount = 0;
+
+    public static int RegisterSample(string category, string name, SampleCreateFcn fcn)
+    {
+        int index = g_sampleCount;
+        if (index < MAX_SAMPLES)
+        {
+            g_sampleEntries[index] = new SampleEntry(category, name, fcn);
+            ++g_sampleCount;
+            return index;
+        }
+
+        return -1;
+    }
+
+    // -----------------------------------------------------------------------------------------------------
     public const int m_maxTasks = 64;
     public const int m_maxThreads = 64;
 
@@ -276,7 +301,7 @@ public class Sample
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
-        ImGui.SetCursorPos(ImVec2(5.0f, float(m_textLine)));
+        ImGui.SetCursorPos(new Vector2(5.0f, float(m_textLine)));
         ImGui.TextColoredV(ImColor(230, 153, 153, 255), text, arg);
         ImGui.PopFont();
         ImGui.End();

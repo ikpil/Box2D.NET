@@ -287,8 +287,8 @@ void Keyboard( int key ) override
 void Step( Settings& settings ) override
 {
 #if 0
-    ImGui.SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
-    ImGui.SetNextWindowSize( ImVec2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+    ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
+    ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
     ImGui.SetNextWindowBgAlpha( 0.0f );
     ImGui.Begin( "DropBackground", nullptr,
         ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |

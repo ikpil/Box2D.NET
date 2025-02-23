@@ -7,9 +7,8 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-class BenchmarkCompound : Sample
+public class BenchmarkCompound : Sample
 {
-public:
 explicit BenchmarkCompound( Settings settings )
     : Sample( settings )
 {

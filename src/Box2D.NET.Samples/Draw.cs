@@ -224,7 +224,7 @@ public class Draw
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
-        ImGui.SetCursorPos(ImVec2(float(x), float(y)));
+        ImGui.SetCursorPos(new Vector2(float(x), float(y)));
         ImGui.TextColoredV(ImColor(230, 153, 153, 255), string, arg);
         ImGui.PopFont();
         ImGui.End();
@@ -240,7 +240,7 @@ public class Draw
         ImGui.Begin("Overlay", nullptr,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.SetCursorPos(ImVec2(ps.x, ps.y));
+        ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
         ImGui.TextColoredV(ImColor(230, 230, 230, 255), string, arg);
         ImGui.End();
         va_end(arg);

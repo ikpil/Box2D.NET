@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.math_function;
 using static Box2D.NET.timer;
@@ -7,24 +8,7 @@ using static Box2D.NET.dynamic_tree;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-enum UpdateType
-{
-    Update_Incremental = 0,
-    Update_FullRebuild = 1,
-    Update_PartialRebuild = 2,
-};
 
-struct Proxy
-{
-    b2AABB box;
-    b2AABB fatBox;
-    b2Vec2 position;
-    b2Vec2 width;
-    int proxyId;
-    int rayStamp;
-    int queryStamp;
-    bool moved;
-};
 
 static bool QueryCallback( int proxyId, int userData, void* context );
 static float RayCallback( const b2RayCastInput* input, int proxyId, int userData, void* context );
@@ -143,8 +127,8 @@ void BuildTree()
 void UpdateUI() override
 {
     float height = 320.0f;
-    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
-    ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
+    ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( new Vector2( 200.0f, height ) );
 
     ImGui.Begin( "Dynamic Tree", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 

@@ -224,8 +224,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
     void UpdateUI() override
     {
         float height = 330.0f;
-        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
-        ImGui.SetNextWindowSize( ImVec2( 140.0f, height ) );
+        ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( new Vector2( 140.0f, height ) );
 
         ImGui.Begin( "Overlap World", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 

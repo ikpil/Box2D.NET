@@ -1,10 +1,8 @@
 ﻿namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-class BenchmarkJointGrid : Sample
+public class BenchmarkJointGrid : Sample
 {
-    public:
-    explicit BenchmarkJointGrid( Settings settings )
-        : Sample( settings )
+    BenchmarkJointGrid( Settings settings ) : base( settings )
     {
         if ( settings.restart == false )
         {

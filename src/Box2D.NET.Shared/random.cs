@@ -12,7 +12,7 @@ namespace Box2D.NET.Shared
     public static class random
     {
         // Global seed for simple random number generator.
-        private static uint g_seed = RAND_SEED;
+        public static uint g_seed = RAND_SEED;
         public const int RAND_LIMIT = 32767;
         public const int RAND_SEED = 12345;
 
