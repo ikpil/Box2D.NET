@@ -7,49 +7,47 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-
-class DoohickeyFarm : Sample
+public class DoohickeyFarm : Sample
 {
-    static int sampleDoohickey = RegisterSample( "Joints", "Doohickey", Create );
-    static Sample Create( Settings settings )
+    static int sampleDoohickey = RegisterSample("Joints", "Doohickey", Create);
+
+    static Sample Create(Settings settings)
     {
-        return new DoohickeyFarm( settings );
+        return new DoohickeyFarm(settings);
     }
 
-public DoohickeyFarm( Settings settings )
-    : base( settings )
-{
-    if ( settings.restart == false )
+    public DoohickeyFarm(Settings settings)
+        : base(settings)
     {
-        Draw.g_camera.m_center = { 0.0f, 5.0f };
-        Draw.g_camera.m_zoom = 25.0f * 0.35f;
+        if (settings.restart == false)
+        {
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_zoom = 25.0f * 0.35f;
+        }
+
+        {
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+
+            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2Segment segment = new b2Segment(new b2Vec2(-20.0f, 0.0f), new b2Vec2(20.0f, 0.0f));
+            b2CreateSegmentShape(groundId, shapeDef, segment);
+
+            b2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new b2Vec2(0.0f, 1.0f), b2Rot_identity);
+            b2CreatePolygonShape(groundId, shapeDef, box);
+        }
+
+        float y = 4.0f;
+        for (int i = 0; i < 4; ++i)
+        {
+            Doohickey doohickey = new Doohickey();
+            doohickey.Spawn(m_worldId, new b2Vec2(0.0f, y), 0.5f);
+            y += 2.0f;
+        }
     }
 
+    public override void Step(Settings settings)
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
-
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2Segment segment = { { -20.0f, 0.0f }, { 20.0f, 0.0f } };
-        b2CreateSegmentShape( groundId, &shapeDef, &segment );
-
-        b2Polygon box = b2MakeOffsetBox( 1.0f, 1.0f, { 0.0f, 1.0f }, b2Rot_identity );
-        b2CreatePolygonShape( groundId, &shapeDef, &box );
-    }
-
-    float y = 4.0f;
-    for ( int i = 0; i < 4; ++i )
-    {
-        Doohickey doohickey;
-        doohickey.Spawn( m_worldId, { 0.0f, y }, 0.5f );
-        y += 2.0f;
+        base.Step(settings);
     }
 }
-
-public override void Step(Settings settings)
-{
-    base.Step( settings );
-}
-
-}
-
