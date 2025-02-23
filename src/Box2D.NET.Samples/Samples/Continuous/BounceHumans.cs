@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class BounceHumans : Sample
 {
 public:
-explicit BounceHumans( Settings& settings )
-    : Sample( settings )
+explicit BounceHumans( Settings settings )
+    : base( settings )
 {
     Draw.g_camera.m_center = { 0.0f, 0.0f };
     Draw.g_camera.m_zoom = 12.0f;
@@ -48,7 +48,7 @@ explicit BounceHumans( Settings& settings )
     b2CreateCircleShape( groundId, &shapeDef, &circle );
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     if ( m_humanCount < 5 && m_countDown <= 0.0f )
     {
@@ -74,10 +74,10 @@ void Step( Settings& settings ) override
     m_countDown -= timeStep;
     b2World_SetGravity( m_worldId, gravityVec );
 
-    Sample::Step( settings );
+    base.Step( settings );
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new BounceHumans( settings );
 }

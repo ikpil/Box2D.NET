@@ -158,7 +158,7 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 		ImGui.End();
 	}
 
-	void Step( Settings& settings ) override
+	public override void Step(Settings settings)
 	{
 		float span = 0.5f * ( m_period * m_cycleCount );
 		float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
@@ -216,10 +216,10 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 			m_car.SetSpeed( -5.0f );
 		}
 
-		Sample::Step( settings );
+		base.Step( settings );
 	}
 
-	static Sample* Create( Settings& settings )
+	static Sample Create( Settings settings )
 	{
 		return new LargeWorld( settings );
 	}

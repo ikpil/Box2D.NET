@@ -11,8 +11,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class UserConstraint : Sample
 {
 public:
-explicit UserConstraint( Settings& settings )
-    : Sample( settings )
+explicit UserConstraint( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -37,9 +37,9 @@ explicit UserConstraint( Settings& settings )
     m_impulses[1] = 0.0f;
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2Transform axes = b2Transform_identity;
     Draw.g_draw.DrawTransform( axes );
@@ -119,7 +119,7 @@ void Step( Settings& settings ) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new UserConstraint( settings );
 }

@@ -8,8 +8,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class ChainSlide : Sample
 {
 public:
-explicit ChainSlide( Settings& settings )
-    : Sample( settings )
+explicit ChainSlide( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -77,9 +77,9 @@ explicit ChainSlide( Settings& settings )
     }
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
 #ifndef NDEBUG
     Draw.g_draw.DrawString( 5, m_textLine, "toi hits = %d", b2_toiHitCount );
@@ -87,7 +87,7 @@ void Step( Settings& settings ) override
 #endif
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new ChainSlide( settings );
 }

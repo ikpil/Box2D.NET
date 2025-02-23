@@ -17,8 +17,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class MotorJoint : Sample
 {
 public:
-explicit MotorJoint( Settings& settings )
-    : Sample( settings )
+explicit MotorJoint( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -65,7 +65,7 @@ explicit MotorJoint( Settings& settings )
     m_time = 0.0f;
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 140.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -95,7 +95,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     if ( m_go && settings.hertz > 0.0f )
     {
@@ -114,7 +114,7 @@ void Step( Settings& settings ) override
     b2Transform transform = { linearOffset, b2MakeRot( angularOffset ) };
     Draw.g_draw.DrawTransform( transform );
 
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2Vec2 force = b2Joint_GetConstraintForce( m_jointId );
     float torque = b2Joint_GetConstraintTorque( m_jointId );
@@ -123,7 +123,7 @@ void Step( Settings& settings ) override
     m_textLine += 15;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new MotorJoint( settings );
 }

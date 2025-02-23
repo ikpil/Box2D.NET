@@ -36,9 +36,9 @@ public class SingleBox : Sample
         b2CreatePolygonShape( m_bodyId, &shapeDef, &box );
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
@@ -46,7 +46,7 @@ public class SingleBox : Sample
         DrawTextLine( "(x, y) = (%.2g, %.2g)", position.x, position.y );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new SingleBox( settings );
     }

@@ -11,8 +11,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 class RecreateStatic : Sample
 {
     public:
-    explicit RecreateStatic( Settings& settings )
-        : Sample( settings )
+    explicit RecreateStatic( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -32,7 +32,7 @@ class RecreateStatic : Sample
         m_groundId = {};
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
         if ( B2_IS_NON_NULL( m_groundId ) )
         {
@@ -52,10 +52,10 @@ class RecreateStatic : Sample
         b2Segment segment = { { -10.0f, 0.0f }, { 10.0f, 0.0f } };
         b2CreateSegmentShape( m_groundId, &shapeDef, &segment );
 
-        Sample::Step( settings );
+        base.Step( settings );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new RecreateStatic( settings );
     }

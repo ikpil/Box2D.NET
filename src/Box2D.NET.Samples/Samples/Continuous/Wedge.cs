@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class Wedge : Sample
 {
     public:
-    explicit Wedge( Settings& settings )
-        : Sample( settings )
+    explicit Wedge( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -45,7 +45,7 @@ class Wedge : Sample
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new Wedge( settings );
     }

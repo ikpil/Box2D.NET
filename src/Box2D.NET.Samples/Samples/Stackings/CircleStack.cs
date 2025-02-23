@@ -15,8 +15,8 @@ struct Event
     int indexA, indexB;
 };
 
-explicit CircleStack( Settings& settings )
-    : Sample( settings )
+explicit CircleStack( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -67,9 +67,9 @@ explicit CircleStack( Settings& settings )
     }
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2ContactEvents events = b2World_GetContactEvents( m_worldId );
     for ( int i = 0; i < events.hitCount; ++i )
@@ -94,7 +94,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new CircleStack( settings );
 }

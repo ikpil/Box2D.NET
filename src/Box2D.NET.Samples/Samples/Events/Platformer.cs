@@ -16,8 +16,8 @@ namespace Box2D.NET.Samples.Samples.Events;
 class Platformer : Sample
 {
 public:
-explicit Platformer( Settings& settings )
-    : Sample( settings )
+explicit Platformer( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -145,7 +145,7 @@ bool PreSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold ) co
     return false;
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 100.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -159,7 +159,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     bool canJump = false;
     b2Vec2 velocity = b2Body_GetLinearVelocity( m_playerId );
@@ -228,7 +228,7 @@ void Step( Settings& settings ) override
         m_jumping = false;
     }
 
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2ContactData contactData = {};
     int contactCount = b2Body_GetContactData( m_movingPlatformId, &contactData, 1 );
@@ -248,7 +248,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Platformer( settings );
 }

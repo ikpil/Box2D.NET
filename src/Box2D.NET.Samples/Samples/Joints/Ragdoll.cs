@@ -9,8 +9,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class Ragdoll : Sample
 {
 public:
-explicit Ragdoll( Settings& settings )
-    : Sample( settings )
+explicit Ragdoll( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -45,7 +45,7 @@ void Spawn()
     Human_ApplyRandomAngularImpulse( &m_human, 10.0f );
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 140.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -78,7 +78,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Ragdoll( settings );
 }

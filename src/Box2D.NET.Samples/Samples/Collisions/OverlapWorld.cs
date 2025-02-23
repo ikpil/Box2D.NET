@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
@@ -104,8 +105,8 @@ public class OverlapWorld : Sample
 
         {
             float w = 1.0f;
-            float b = w / ( 2.0f + sqrtf( 2.0f ) );
-            float s = sqrtf( 2.0f ) * b;
+            float b = w / ( 2.0f + MathF.Sqrt( 2.0f ) );
+            float s = MathF.Sqrt( 2.0f ) * b;
 
             b2Vec2 vertices[8] = { { 0.5f * s, 0.0f }, { 0.5f * w, b },		 { 0.5f * w, b + s }, { 0.5f * s, w },
                 { -0.5f * s, w },   { -0.5f * w, b + s }, { -0.5f * w, b },	  { -0.5f * s, 0.0f } };
@@ -211,7 +212,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -229,7 +230,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    void MouseUp( b2Vec2 _, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -238,7 +239,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_dragging )
         {
@@ -251,13 +252,14 @@ public class OverlapWorld : Sample
         }
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
+        bool open = false;
         float height = 330.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
         ImGui.SetNextWindowSize( new Vector2( 140.0f, height ) );
 
-        ImGui.Begin( "Overlap World", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
+        ImGui.Begin( "Overlap World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
         if ( ImGui.Button( "Polygon 1" ) )
             Create( 0 );
@@ -315,9 +317,9 @@ public class OverlapWorld : Sample
         ImGui.End();
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawString( 5, m_textLine, "left mouse button: drag query shape" );
         m_textLine += m_textIncrement;

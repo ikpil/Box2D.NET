@@ -13,8 +13,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class SpeculativeFallback : Sample
 {
     public:
-    explicit SpeculativeFallback( Settings& settings )
-        : Sample( settings )
+    explicit SpeculativeFallback( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -51,7 +51,7 @@ class SpeculativeFallback : Sample
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new SpeculativeFallback( settings );
     }

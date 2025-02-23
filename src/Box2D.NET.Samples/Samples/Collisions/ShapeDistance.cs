@@ -11,7 +11,41 @@ constexpr int SIMPLEX_CAPACITY = 20;
 
 class ShapeDistance : Sample
 {
-    static int sampleShapeDistance = RegisterSample( "Collision", "Shape Distance", ShapeDistance::Create );
+    b2Polygon m_box;
+    b2Polygon m_triangle;
+    b2Vec2 m_point;
+    b2Segment m_segment;
+
+    ShapeType m_typeA;
+    ShapeType m_typeB;
+    float m_radiusA;
+    float m_radiusB;
+    b2ShapeProxy m_proxyA;
+    b2ShapeProxy m_proxyB;
+
+    b2SimplexCache m_cache;
+    b2Simplex m_simplexes[SIMPLEX_CAPACITY];
+    int m_simplexCount;
+    int m_simplexIndex;
+
+    b2Transform m_transform;
+    float m_angle;
+
+    b2Vec2 m_basePosition;
+    b2Vec2 m_startPoint;
+    float m_baseAngle;
+
+    bool m_dragging;
+    bool m_rotating;
+    bool m_showIndices;
+    bool m_useCache;
+    bool m_drawSimplex;
+
+    static int sampleShapeDistance = RegisterSample( "Collision", "Shape Distance", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ShapeDistance( settings );
+    }
     enum ShapeType
     {
         e_point,
@@ -21,7 +55,7 @@ class ShapeDistance : Sample
     };
 
     public ShapeDistance( Settings settings )
-        : Sample( settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -151,7 +185,7 @@ class ShapeDistance : Sample
         }
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 310.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -215,7 +249,7 @@ class ShapeDistance : Sample
         ImGui.End();
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -234,7 +268,7 @@ class ShapeDistance : Sample
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -243,7 +277,7 @@ class ShapeDistance : Sample
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_dragging )
         {
@@ -297,7 +331,7 @@ class ShapeDistance : Sample
         }
     }
 
-    void Step( Settings& ) override
+    public override void Step( Settings _ )
     {
         b2DistanceInput input;
         input.proxyA = m_proxyA;
@@ -389,39 +423,6 @@ class ShapeDistance : Sample
         m_textLine += m_textIncrement;
     }
 
-    static Sample* Create( Settings& settings )
-    {
-        return new ShapeDistance( settings );
-    }
 
-    b2Polygon m_box;
-    b2Polygon m_triangle;
-    b2Vec2 m_point;
-    b2Segment m_segment;
-
-    ShapeType m_typeA;
-    ShapeType m_typeB;
-    float m_radiusA;
-    float m_radiusB;
-    b2ShapeProxy m_proxyA;
-    b2ShapeProxy m_proxyB;
-
-    b2SimplexCache m_cache;
-    b2Simplex m_simplexes[SIMPLEX_CAPACITY];
-    int m_simplexCount;
-    int m_simplexIndex;
-
-    b2Transform m_transform;
-    float m_angle;
-
-    b2Vec2 m_basePosition;
-    b2Vec2 m_startPoint;
-    float m_baseAngle;
-
-    bool m_dragging;
-    bool m_rotating;
-    bool m_showIndices;
-    bool m_useCache;
-    bool m_drawSimplex;
 }
 

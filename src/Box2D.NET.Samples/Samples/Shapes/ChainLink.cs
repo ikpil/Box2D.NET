@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class ChainLink : Sample
     {
     public:
-    explicit ChainLink( Settings& settings )
-        : Sample( settings )
+    explicit ChainLink( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -72,15 +72,15 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawString( 5, m_textLine, "This shows how to link together two chain shapes" );
         m_textLine += m_textIncrement;
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new ChainLink( settings );
     }

@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class PixelImperfect : Sample
 {
 public:
-explicit PixelImperfect( Settings& settings )
-    : Sample( settings )
+explicit PixelImperfect( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -51,7 +51,7 @@ explicit PixelImperfect( Settings& settings )
     }
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     b2ContactData data;
     b2Body_GetContactData( m_ballId, &data, 1 );
@@ -61,10 +61,10 @@ void Step( Settings& settings ) override
     Draw.g_draw.DrawString( 5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y );
     m_textLine += m_textIncrement;
 
-    Sample::Step( settings );
+    base.Step( settings );
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new PixelImperfect( settings );
 }

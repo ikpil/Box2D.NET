@@ -6,11 +6,10 @@ using static Box2D.NET.math_function;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-    class RayCast : Sample
+    public class RayCast : Sample
     {
-    public:
-    explicit RayCast( Settings& settings )
-        : Sample( settings )
+    public RayCast( Settings settings )
+        : base ( settings )
     {
         if ( settings.restart == false )
         {
@@ -45,7 +44,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         m_showFraction = false;
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 230.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -86,7 +85,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         ImGui.End();
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -110,7 +109,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -120,7 +119,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_rayDrag )
         {
@@ -181,7 +180,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void Step( Settings& ) override
+    public override void Step( Settings _ )
     {
         b2Vec2 offset = { -20.0f, 20.0f };
         b2Vec2 increment = { 10.0f, 0.0f };
@@ -304,7 +303,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         DrawRay( &output );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new RayCast( settings );
     }

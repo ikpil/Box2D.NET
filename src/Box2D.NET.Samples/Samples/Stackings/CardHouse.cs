@@ -11,8 +11,8 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 class CardHouse : Sample
 {
 public:
-explicit CardHouse( Settings& settings )
-    : Sample( settings )
+explicit CardHouse( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -76,7 +76,7 @@ explicit CardHouse( Settings& settings )
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new CardHouse( settings );
 }

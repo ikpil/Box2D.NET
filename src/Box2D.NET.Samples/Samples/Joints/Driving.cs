@@ -14,8 +14,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class Driving : Sample
 {
 public:
-explicit Driving( Settings& settings )
-    : Sample( settings )
+explicit Driving( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -189,7 +189,7 @@ explicit Driving( Settings& settings )
     m_car.Spawn( m_worldId, { 0.0f, 0.0f }, 1.0f, m_hertz, m_dampingRatio, m_torque, nullptr );
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 140.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -222,7 +222,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     if ( glfwGetKey( g_mainWindow, GLFW_KEY_A ) == GLFW_PRESS )
     {
@@ -253,10 +253,10 @@ void Step( Settings& settings ) override
     b2Vec2 carPosition = b2Body_GetPosition( m_car.m_chassisId );
     Draw.g_camera.m_center.x = carPosition.x;
 
-    Sample::Step( settings );
+    base.Step( settings );
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Driving( settings );
 }

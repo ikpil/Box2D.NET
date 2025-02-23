@@ -22,8 +22,8 @@ enum
     e_count = 6
 };
 
-explicit BreakableJoint( Settings& settings )
-    : Sample( settings )
+explicit BreakableJoint( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -197,7 +197,7 @@ explicit BreakableJoint( Settings& settings )
     m_breakForce = 1000.0f;
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 100.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -216,7 +216,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     for ( int i = 0; i < e_count; ++i )
     {
@@ -238,10 +238,10 @@ void Step( Settings& settings ) override
         }
     }
 
-    Sample::Step( settings );
+    base.Step( settings );
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new BreakableJoint( settings );
 }

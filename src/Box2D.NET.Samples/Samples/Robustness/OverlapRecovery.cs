@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 class OverlapRecovery : Sample
 {
 public:
-explicit OverlapRecovery( Settings& settings )
-    : Sample( settings )
+explicit OverlapRecovery( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -43,10 +43,6 @@ explicit OverlapRecovery( Settings& settings )
     CreateScene();
 }
 
-~OverlapRecovery() override
-{
-    free( m_bodyIds );
-}
 
 void CreateScene()
 {
@@ -91,7 +87,7 @@ void CreateScene()
     Debug.Assert( bodyIndex == m_bodyCount );
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 210.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -118,7 +114,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new OverlapRecovery( settings );
 }

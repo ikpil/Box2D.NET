@@ -22,16 +22,23 @@ namespace Box2D.NET.Samples.Samples.Determinisms;
 // can then be transferred to the unit test and tested in GitHub build actions.
 // See CrossPlatformTest in the unit tests.
 
-    public class FallingHinges : Sample
+public class FallingHinges : Sample
 {
-enum
-{
-    e_columns = 4,
-    e_rows = 30,
-};
+    public const int e_columns = 4;
+    public const int e_rows = 30;
 
-explicit FallingHinges( Settings& settings )
-    : Sample( settings )
+    b2BodyId m_bodies[e_rows * e_columns];
+    uint m_hash;
+    int m_sleepStep;
+    static int sampleFallingHinges = RegisterSample( "Determinism", "Falling Hinges", FallingHinges::Create );
+    static Sample Create( Settings settings )
+    {
+        return new FallingHinges( settings );
+    }
+
+    
+public FallingHinges( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -139,9 +146,9 @@ void PrintTransforms()
     printf( "hash = 0x%08x\n", hash );
 }
 
-void Step(Settings& settings) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     if (m_hash == 0)
     {
@@ -168,14 +175,7 @@ void Step(Settings& settings) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
-{
-    return new FallingHinges( settings );
+
+
 }
 
-b2BodyId m_bodies[e_rows * e_columns];
-uint m_hash;
-int m_sleepStep;
-};
-
-static int sampleFallingHinges = RegisterSample( "Determinism", "Falling Hinges", FallingHinges::Create );

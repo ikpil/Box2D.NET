@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class Drop : Sample
 {
 public:
-explicit Drop( Settings& settings )
-    : Sample( settings )
+explicit Drop( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -243,7 +243,7 @@ void Scene4()
     m_frameCount = 1;
 }
 
-void Keyboard( int key ) override
+public override void Keyboard( int key )
 {
     switch ( key )
     {
@@ -284,7 +284,7 @@ void Keyboard( int key ) override
     }
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
 #if 0
     ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
@@ -318,20 +318,20 @@ void Step( Settings& settings ) override
 
     if ( ( m_frameSkip == 0 || m_frameCount % m_frameSkip == 0 ) && settings.pause == false )
     {
-        Sample::Step( settings );
+        base.Step( settings );
     }
     else
     {
         bool pause = settings.pause;
         settings.pause = true;
-        Sample::Step( settings );
+        base.Step( settings );
         settings.pause = pause;
     }
 
     m_frameCount += 1;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Drop( settings );
 }

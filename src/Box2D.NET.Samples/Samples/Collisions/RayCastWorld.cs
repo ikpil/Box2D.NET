@@ -222,14 +222,14 @@ public class RayCastWorld : Sample
     bool m_dragging;
 
     static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", RayCastWorld::Create );
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new RayCastWorld( settings );
     }
 
 
-    explicit RayCastWorld( Settings& settings )
-        : Sample( settings )
+    explicit RayCastWorld( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -262,8 +262,8 @@ public class RayCastWorld : Sample
 
         {
             float w = 1.0f;
-            float b = w / ( 2.0f + sqrtf( 2.0f ) );
-            float s = sqrtf( 2.0f ) * b;
+            float b = w / ( 2.0f + MathF.Sqrt( 2.0f ) );
+            float s = MathF.Sqrt( 2.0f ) * b;
 
             b2Vec2 vertices[8] = { { 0.5f * s, 0.0f }, { 0.5f * w, b },		 { 0.5f * w, b + s }, { 0.5f * s, w },
                 { -0.5f * s, w },   { -0.5f * w, b + s }, { -0.5f * w, b },	  { -0.5f * s, 0.0f } };
@@ -383,7 +383,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -402,7 +402,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -411,7 +411,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_dragging )
         {
@@ -424,7 +424,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 300.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -506,9 +506,9 @@ public class RayCastWorld : Sample
         ImGui.End();
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawString( 5, m_textLine, "Click left mouse button and drag to modify ray cast" );
         m_textLine += m_textIncrement;

@@ -14,8 +14,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class Pinball : Sample
 {
 public:
-explicit Pinball( Settings& settings )
-    : Sample( settings )
+explicit Pinball( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -149,9 +149,9 @@ explicit Pinball( Settings& settings )
     }
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     if ( glfwGetKey( g_mainWindow, GLFW_KEY_SPACE ) == GLFW_PRESS )
     {
@@ -165,7 +165,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Pinball( settings );
 }

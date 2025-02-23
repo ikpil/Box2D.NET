@@ -20,8 +20,8 @@ enum
     e_count = 6
 };
 
-explicit FixedRotation( Settings& settings )
-    : Sample( settings )
+explicit FixedRotation( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -212,7 +212,7 @@ void CreateScene()
     ++index;
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 60.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -231,7 +231,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new FixedRotation( settings );
 }

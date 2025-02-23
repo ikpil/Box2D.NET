@@ -15,8 +15,8 @@ enum
     e_maxCount = e_gridCount * e_gridCount
 };
 
-explicit Confined( Settings& settings )
-    : Sample( settings )
+explicit Confined( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -70,7 +70,7 @@ explicit Confined( Settings& settings )
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Confined( settings );
 }

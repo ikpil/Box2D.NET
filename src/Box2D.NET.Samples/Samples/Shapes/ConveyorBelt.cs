@@ -9,8 +9,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 class ConveyorBelt : Sample
 {
     public:
-    explicit ConveyorBelt( Settings& settings )
-        : Sample( settings )
+    explicit ConveyorBelt( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -57,7 +57,7 @@ class ConveyorBelt : Sample
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new ConveyorBelt( settings );
     }

@@ -13,8 +13,8 @@ namespace Box2D.NET.Samples.Samples.Events;
 class SensorBookend : Sample
 {
 public:
-explicit SensorBookend( Settings& settings )
-    : Sample( settings )
+explicit SensorBookend( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -71,7 +71,7 @@ void CreateVisitor()
     m_visitorShapeId = b2CreateCircleShape( m_visitorBodyId, &shapeDef, &circle );
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 90.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -116,9 +116,9 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
     for ( int i = 0; i < sensorEvents.beginCount; ++i )
@@ -148,7 +148,7 @@ void Step( Settings& settings ) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new SensorBookend( settings );
 }

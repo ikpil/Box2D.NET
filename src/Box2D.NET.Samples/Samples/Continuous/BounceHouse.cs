@@ -26,8 +26,8 @@ struct HitEvent
     int stepIndex;
 };
 
-explicit BounceHouse( Settings& settings )
-    : Sample( settings )
+explicit BounceHouse( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -110,7 +110,7 @@ void Launch()
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 100.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -134,9 +134,9 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2ContactEvents events = b2World_GetContactEvents( m_worldId );
     for ( int i = 0; i < events.hitCount; ++i )
@@ -173,7 +173,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new BounceHouse( settings );
 }

@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class SpeculativeGhost : Sample
 {
 public:
-explicit SpeculativeGhost( Settings& settings )
-    : Sample( settings )
+explicit SpeculativeGhost( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -49,7 +49,7 @@ explicit SpeculativeGhost( Settings& settings )
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new SpeculativeGhost( settings );
 }

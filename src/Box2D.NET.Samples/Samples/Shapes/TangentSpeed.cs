@@ -8,8 +8,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class TangentSpeed : Sample
     {
     public:
-    explicit TangentSpeed( Settings& settings )
-        : Sample( settings )
+    explicit TangentSpeed( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -82,7 +82,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         return bodyId;
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
         if ( m_stepCount % 25 == 0 && m_count < m_totalCount && settings.pause == false)
         {
@@ -90,11 +90,11 @@ namespace Box2D.NET.Samples.Samples.Shapes;
             m_count += 1;
         }
 
-        Sample::Step( settings );
+        base.Step( settings );
 
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new TangentSpeed( settings );
     }

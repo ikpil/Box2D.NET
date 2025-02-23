@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class WheelJoint : Sample
 {
 public:
-explicit WheelJoint( Settings& settings )
-    : Sample( settings )
+explicit WheelJoint( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -67,7 +67,7 @@ explicit WheelJoint( Settings& settings )
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 220.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -119,16 +119,16 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     float torque = b2WheelJoint_GetMotorTorque( m_jointId );
     Draw.g_draw.DrawString( 5, m_textLine, "Motor Torque = %4.1f", torque );
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new WheelJoint( settings );
 }

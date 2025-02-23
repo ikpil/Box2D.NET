@@ -14,8 +14,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class RevoluteJoint : Sample
 {
 public:
-explicit RevoluteJoint( Settings& settings )
-    : Sample( settings )
+explicit RevoluteJoint( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -118,7 +118,7 @@ explicit RevoluteJoint( Settings& settings )
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 220.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -177,9 +177,9 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     float angle1 = b2RevoluteJoint_GetAngle( m_jointId1 );
     Draw.g_draw.DrawString( 5, m_textLine, "Angle (Deg) 1 = %2.1f", angle1 );
@@ -194,7 +194,7 @@ void Step( Settings& settings ) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new RevoluteJoint( settings );
 }

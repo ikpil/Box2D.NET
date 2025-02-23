@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 class SkinnyBox : Sample
 {
 public:
-explicit SkinnyBox( Settings& settings )
-    : Sample( settings )
+explicit SkinnyBox( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -93,7 +93,7 @@ void Launch()
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 110.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -113,9 +113,9 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 
     if ( m_autoTest && m_stepCount % 60 == 0 )
     {
@@ -123,7 +123,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new SkinnyBox( settings );
 }

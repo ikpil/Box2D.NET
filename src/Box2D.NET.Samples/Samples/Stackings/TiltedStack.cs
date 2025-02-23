@@ -17,8 +17,8 @@ class TiltedStack : Sample
         e_rows = 10,
     };
 
-explicit TiltedStack( Settings& settings )
-    : Sample( settings )
+explicit TiltedStack( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -72,7 +72,7 @@ explicit TiltedStack( Settings& settings )
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new TiltedStack( settings );
 }

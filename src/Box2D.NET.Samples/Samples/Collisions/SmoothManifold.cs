@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Numerics;
+using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.geometry;
 using static Box2D.NET.math_function;
@@ -15,8 +16,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         e_boxShape
     };
 
-    explicit SmoothManifold( Settings& settings )
-        : Sample( settings )
+    explicit SmoothManifold( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -98,12 +99,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    virtual ~SmoothManifold() override
-    {
-        free( m_segments );
-    }
-
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 290.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -147,7 +143,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         ImGui.End();
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -166,7 +162,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -175,7 +171,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_dragging )
         {
@@ -225,7 +221,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void Step( Settings& ) override
+    public override void Step( Settings _ )
     {
         b2HexColor color1 = b2HexColor.b2_colorYellow;
         b2HexColor color2 = b2HexColor.b2_colorMagenta;
@@ -271,7 +267,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new SmoothManifold( settings );
     }

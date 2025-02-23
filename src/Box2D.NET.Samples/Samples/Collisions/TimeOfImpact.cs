@@ -7,8 +7,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
     class TimeOfImpact : Sample
     {
     public:
-    explicit TimeOfImpact( Settings& settings )
-        : Sample( settings )
+    explicit TimeOfImpact( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -18,14 +18,14 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new TimeOfImpact( settings );
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         b2Sweep sweepA = {
             b2Vec2_zero, { 0.0f, 0.0f }, { 0.0f, 0.0f }, b2Rot_identity, b2Rot_identity,

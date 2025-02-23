@@ -162,7 +162,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         m_stepCount = 0;
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 155.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -197,9 +197,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ImGui.End();
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.5f, 0.0f }, b2HexColor.b2_colorRed );
         Draw.g_draw.DrawSegment( b2Vec2_zero, { 0.0f, 0.5f }, b2HexColor.b2_colorGreen );
@@ -209,7 +209,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 #endif
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new ChainShape( settings );
     }

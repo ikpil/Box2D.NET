@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 class OffsetShapes : Sample
 {
     public:
-    explicit OffsetShapes( Settings& settings )
-        : Sample( settings )
+    explicit OffsetShapes( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -50,14 +50,14 @@ class OffsetShapes : Sample
         }
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawTransform( b2Transform_identity );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new OffsetShapes( settings );
     }

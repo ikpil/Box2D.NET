@@ -20,8 +20,8 @@ enum
     e_count = 50
 };
 
-explicit BodyMove( Settings& settings )
-    : Sample( settings )
+explicit BodyMove( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -105,7 +105,7 @@ void CreateBodies()
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 100.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -128,14 +128,14 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     if ( settings.pause == false && ( m_stepCount & 15 ) == 15 && m_count < e_count )
     {
         CreateBodies();
     }
 
-    Sample::Step( settings );
+    base.Step( settings );
 
     // Process body events
     b2BodyEvents events = b2World_GetBodyEvents( m_worldId );
@@ -171,7 +171,7 @@ void Step( Settings& settings ) override
     m_textLine += m_textIncrement;
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new BodyMove( settings );
 }

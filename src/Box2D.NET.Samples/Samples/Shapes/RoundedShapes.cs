@@ -10,8 +10,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class RoundedShapes : Sample
     {
     public:
-    explicit RoundedShapes( Settings& settings )
-        : Sample( settings )
+    explicit RoundedShapes( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -68,7 +68,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new RoundedShapes( settings );
     }

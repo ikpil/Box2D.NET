@@ -4,16 +4,15 @@ using static Box2D.NET.math_function;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-    class ShapeCast : Sample
+    public class ShapeCast : Sample
     {
-    public:
     enum
     {
         e_vertexCount = 8
     };
 
-    explicit ShapeCast( Settings& settings )
-        : Sample( settings )
+    explicit ShapeCast( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -113,12 +112,12 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         m_rayDrag = false;
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new ShapeCast( settings );
     }
 
-    void MouseDown( b2Vec2 p, int button, int mods ) override
+    public override void MouseDown( b2Vec2 p, int button, int mods )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -127,7 +126,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    public override void MouseUp( b2Vec2 _, int button )
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -135,7 +134,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseMove( b2Vec2 p ) override
+    public override void MouseMove( b2Vec2 p )
     {
         if ( m_rayDrag )
         {
@@ -143,9 +142,9 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         b2ShapeCastPairInput input = { };
         input.proxyA = b2MakeProxy( m_vAs, m_countA, m_radiusA );

@@ -19,8 +19,8 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-explicit SensorTypes( Settings& settings )
-    : Sample( settings )
+explicit SensorTypes( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -148,7 +148,7 @@ void PrintOverlaps( b2ShapeId sensorShapeId, const char* prefix )
     DrawTextLine( buffer );
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     b2Vec2 position = b2Body_GetPosition( m_kinematicBodyId );
     if (position.y < 0.0f)
@@ -161,7 +161,7 @@ void Step( Settings& settings ) override
         b2Body_SetLinearVelocity( m_kinematicBodyId, { 0.0f, -1.0f } );
     }
 
-    Sample::Step( settings );
+    base.Step( settings );
 
     PrintOverlaps( m_staticSensorId, "static" );
     PrintOverlaps( m_kinematicSensorId, "kinematic" );
@@ -178,7 +178,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new SensorTypes( settings );
 }

@@ -9,8 +9,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class RollingResistance : Sample
     {
     public:
-    explicit RollingResistance( Settings& settings )
-        : Sample( settings )
+    explicit RollingResistance( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -48,7 +48,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    void Keyboard( int key ) override
+    public override void Keyboard( int key )
     {
         switch ( key )
         {
@@ -76,9 +76,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         for ( int i = 0; i < 20; ++i )
         {
@@ -86,7 +86,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new RollingResistance( settings );
     }

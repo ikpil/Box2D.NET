@@ -17,8 +17,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         e_count = 10
     };
 
-    explicit CustomFilter( Settings& settings )
-        : Sample( settings )
+    explicit CustomFilter( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -56,12 +56,12 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
         Draw.g_draw.DrawString( 5, m_textLine, "Custom filter disables collision between odd and even shapes" );
         m_textLine += m_textIncrement;
 
-        Sample::Step( settings );
+        base.Step( settings );
 
         for ( int i = 0; i < e_count; ++i )
         {
@@ -92,7 +92,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         return customFilter->ShouldCollide( shapeIdA, shapeIdB );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new CustomFilter( settings );
     }

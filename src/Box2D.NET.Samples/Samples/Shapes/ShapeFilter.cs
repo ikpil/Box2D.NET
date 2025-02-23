@@ -20,8 +20,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ALL_BITS = ( ~0u )
     };
 
-    explicit ShapeFilter( Settings& settings )
-        : Sample( settings )
+    explicit ShapeFilter( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -72,7 +72,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         }
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 240.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -189,9 +189,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ImGui.End();
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
-        Sample::Step( settings );
+        base.Step( settings );
 
         b2Vec2 p1 = b2Body_GetPosition( m_player1Id );
         Draw.g_draw.DrawString( { p1.x - 0.5f, p1.y }, "player 1" );
@@ -203,7 +203,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         Draw.g_draw.DrawString( { p3.x - 0.5f, p3.y }, "player 3" );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new ShapeFilter( settings );
     }

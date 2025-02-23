@@ -12,8 +12,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class NullJoint : Sample
 {
     public:
-    explicit NullJoint( Settings& settings )
-        : Sample( settings )
+    explicit NullJoint( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -52,7 +52,7 @@ class NullJoint : Sample
         }
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new NullJoint( settings );
     }

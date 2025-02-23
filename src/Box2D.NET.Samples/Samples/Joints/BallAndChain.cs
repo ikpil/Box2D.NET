@@ -19,8 +19,8 @@ enum
     e_count = 30
 };
 
-explicit BallAndChain( Settings& settings )
-    : Sample( settings )
+explicit BallAndChain( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -89,7 +89,7 @@ explicit BallAndChain( Settings& settings )
     }
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 60.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -109,7 +109,7 @@ void UpdateUI() override
     ImGui.End();
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new BallAndChain( settings );
 }

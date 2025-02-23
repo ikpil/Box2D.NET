@@ -15,8 +15,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
     class Explosion : Sample
     {
     public:
-    explicit Explosion( Settings& settings )
-        : Sample( settings )
+    explicit Explosion( Settings settings )
+        : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -63,7 +63,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         m_impulse = 10.0f;
     }
 
-    void UpdateUI() override
+    public override void UpdateUI()
     {
         float height = 160.0f;
         ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -88,7 +88,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         ImGui.End();
     }
 
-    void Step( Settings& settings ) override
+    public override void Step(Settings settings)
     {
         if ( settings.pause == false || settings.singleStep == true )
         {
@@ -102,7 +102,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
             }
         }
 
-        Sample::Step( settings );
+        base.Step( settings );
 
         Draw.g_draw.DrawString( 5, m_textLine, "reference angle = %g", m_referenceAngle );
         m_textLine += m_textIncrement;
@@ -111,7 +111,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
         Draw.g_draw.DrawCircle( b2Vec2_zero, m_radius, b2HexColor.b2_colorBox2DYellow );
     }
 
-    static Sample* Create( Settings& settings )
+    static Sample Create( Settings settings )
     {
         return new Explosion( settings );
     }

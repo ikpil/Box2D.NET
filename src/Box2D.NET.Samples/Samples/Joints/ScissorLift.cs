@@ -13,8 +13,8 @@ namespace Box2D.NET.Samples.Samples.Joints;
 class ScissorLift : Sample
 {
 public:
-explicit ScissorLift( Settings& settings )
-    : Sample( settings )
+explicit ScissorLift( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -178,7 +178,7 @@ explicit ScissorLift( Settings& settings )
     car.Spawn( m_worldId, { 0.0f, y + 2.0f }, 1.0f, 3.0f, 0.7f, 0.0f, nullptr );
 }
 
-void UpdateUI() override
+public override void UpdateUI()
 {
     float height = 140.0f;
     ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
@@ -207,12 +207,12 @@ void UpdateUI() override
     ImGui.End();
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
-    Sample::Step( settings );
+    base.Step( settings );
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new ScissorLift( settings );
 }

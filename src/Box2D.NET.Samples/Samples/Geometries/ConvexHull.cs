@@ -13,8 +13,8 @@ public:
 		e_count = B2_MAX_POLYGON_VERTICES
 	};
 
-	explicit ConvexHull( Settings& settings )
-		: Sample( settings )
+	explicit ConvexHull( Settings settings )
+		: base( settings )
 	{
 		if ( settings.restart == false )
 		{
@@ -84,7 +84,7 @@ public:
 		m_generation += 1;
 	}
 
-	void Keyboard( int key ) override
+	public override void Keyboard( int key )
 	{
 		switch ( key )
 		{
@@ -105,9 +105,9 @@ public:
 		}
 	}
 
-	void Step( Settings& settings ) override
+	public override void Step(Settings settings)
 	{
-		Sample::Step( settings );
+		base.Step( settings );
 
 		Draw.g_draw.DrawString( 5, m_textLine, "Options: generate(g), auto(a), bulk(b)" );
 		m_textLine += m_textIncrement;
@@ -201,7 +201,7 @@ public:
 		}
 	}
 
-	static Sample* Create( Settings& settings )
+	static Sample Create( Settings settings )
 	{
 		return new ConvexHull( settings );
 	}

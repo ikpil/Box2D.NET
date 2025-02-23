@@ -22,8 +22,8 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-explicit FootSensor( Settings& settings )
-    : Sample( settings )
+explicit FootSensor( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -76,7 +76,7 @@ explicit FootSensor( Settings& settings )
     m_overlapCount = 0;
 }
 
-void Step( Settings& settings ) override
+public override void Step(Settings settings)
 {
     if ( glfwGetKey( g_mainWindow, GLFW_KEY_A ) == GLFW_PRESS )
     {
@@ -88,7 +88,7 @@ void Step( Settings& settings ) override
         b2Body_ApplyForceToCenter( m_playerId, { 50.0f, 0.0f }, true );
     }
 
-    Sample::Step( settings );
+    base.Step( settings );
 
     b2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
     for ( int i = 0; i < sensorEvents.beginCount; ++i )
@@ -131,7 +131,7 @@ void Step( Settings& settings ) override
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new FootSensor( settings );
 }

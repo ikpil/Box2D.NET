@@ -11,8 +11,8 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 class Arch : Sample
 {
 public:
-explicit Arch( Settings& settings )
-    : Sample( settings )
+explicit Arch( Settings settings )
+    : base( settings )
 {
     if ( settings.restart == false )
     {
@@ -98,7 +98,7 @@ explicit Arch( Settings& settings )
     }
 }
 
-static Sample* Create( Settings& settings )
+static Sample Create( Settings settings )
 {
     return new Arch( settings );
 }
