@@ -1,25 +1,26 @@
-﻿namespace Box2D.NET.Samples.Samples.Benchmarks;
+﻿using Box2D.NET.Primitives;
+using static Box2D.NET.Shared.benchmarks;
 
-class BenchmarkLargePyramid : Sample
+namespace Box2D.NET.Samples.Samples.Benchmarks;
+
+public class BenchmarkLargePyramid : Sample
 {
-    public:
-    explicit BenchmarkLargePyramid( Settings settings )
-        : Sample( settings )
+    static int benchmarkLargePyramid = RegisterSample("Benchmark", "Large Pyramid", Create);
+
+    static Sample Create(Settings settings)
     {
-        if ( settings.restart == false )
+        return new BenchmarkLargePyramid(settings);
+    }
+
+    public BenchmarkLargePyramid(Settings settings) : base(settings)
+    {
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 0.0f, 50.0f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 50.0f);
             Draw.g_camera.m_zoom = 25.0f * 2.2f;
             settings.enableSleep = false;
         }
 
-        CreateLargePyramid( m_worldId );
+        CreateLargePyramid(m_worldId);
     }
-
-    static Sample* Create( Settings settings )
-    {
-        return new BenchmarkLargePyramid( settings );
-    }
-};
-
-static int benchmarkLargePyramid = RegisterSample( "Benchmark", "Large Pyramid", BenchmarkLargePyramid::Create );
+}
