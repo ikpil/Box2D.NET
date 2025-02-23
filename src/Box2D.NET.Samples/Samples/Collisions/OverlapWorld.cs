@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.id;
 using static Box2D.NET.hull;
 using static Box2D.NET.geometry;
@@ -10,29 +12,58 @@ using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.world;
+using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-    class OverlapWorld : Sample
-    {
-    public:
-    enum
-    {
-        e_circleShape = 0,
-        e_capsuleShape = 1,
-        e_boxShape = 2
-    };
+public class OverlapWorld : Sample
+{
+    public const int e_circleShape = 0;
+    public const int e_capsuleShape = 1;
+    public const int e_boxShape = 2;
+    public const int e_maxCount = 64;
+    public const int e_maxDoomed = 16;
+    
+    int m_bodyIndex;
+    b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
+    ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
+    b2Polygon[] m_polygons = new b2Polygon[4];
+    b2Capsule m_capsule;
+    b2Circle m_circle;
+    b2Segment m_segment;
+    int m_ignoreIndex;
 
-    enum
-    {
-        e_maxCount = 64,
-        e_maxDoomed = 16,
-    };
+    b2ShapeId[] m_doomIds = new b2ShapeId[e_maxDoomed];
+    int m_doomCount;
 
-    static bool OverlapResultFcn( b2ShapeId shapeId, void* context )
+    b2Circle m_queryCircle;
+    b2Capsule m_queryCapsule;
+    b2Polygon m_queryBox;
+
+    int m_shapeType;
+    b2Transform m_transform;
+
+    b2Vec2 m_startPosition;
+
+    b2Vec2 m_position;
+    b2Vec2 m_basePosition;
+    float m_angle;
+    float m_baseAngle;
+
+    bool m_dragging;
+    bool m_rotating;
+    
+    static int sampleOverlapWorld = RegisterSample( "Collision", "Overlap World", Create );
+    static Sample Create( Settings settings )
+    {
+        return new OverlapWorld( settings );
+    }
+
+
+    static bool OverlapResultFcn( b2ShapeId shapeId, object context )
     {
         ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData->ignore )
+        if ( userData != nullptr && userData.ignore )
         {
             // continue the query
             return true;
@@ -40,23 +71,22 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
         OverlapWorld* sample = (OverlapWorld*)context;
 
-        if ( sample->m_doomCount < e_maxDoomed )
+        if ( sample.m_doomCount < e_maxDoomed )
         {
-            int index = sample->m_doomCount;
-            sample->m_doomIds[index] = shapeId;
-            sample->m_doomCount += 1;
+            int index = sample.m_doomCount;
+            sample.m_doomIds[index] = shapeId;
+            sample.m_doomCount += 1;
         }
 
         // continue the query
         return true;
     }
 
-    explicit OverlapWorld( Settings& settings )
-        : Sample( settings )
+    public OverlapWorld( Settings settings ) : base( settings )
     {
         if ( settings.restart == false )
         {
-            Draw.g_camera.m_center = { 0.0f, 10.0f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
@@ -199,7 +229,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    void MouseUp( b2Vec2, int button ) override
+    void MouseUp( b2Vec2 _, int button ) override
     {
         if ( button == (int)MouseButton.Left )
         {
@@ -340,7 +370,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
                 continue;
             }
 
-            int index = userData->index;
+            int index = userData.index;
             Debug.Assert( 0 <= index && index < e_maxCount );
             Debug.Assert( B2_IS_NON_NULL( m_bodyIds[index] ) );
 
@@ -349,39 +379,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    static Sample* Create( Settings& settings )
-    {
-        return new OverlapWorld( settings );
-    }
 
-    int m_bodyIndex;
-    b2BodyId m_bodyIds[e_maxCount];
-    ShapeUserData m_userData[e_maxCount];
-    b2Polygon m_polygons[4];
-    b2Capsule m_capsule;
-    b2Circle m_circle;
-    b2Segment m_segment;
-    int m_ignoreIndex;
 
-    b2ShapeId m_doomIds[e_maxDoomed];
-    int m_doomCount;
+}
 
-    b2Circle m_queryCircle;
-    b2Capsule m_queryCapsule;
-    b2Polygon m_queryBox;
-
-    int m_shapeType;
-    b2Transform m_transform;
-
-    b2Vec2 m_startPosition;
-
-    b2Vec2 m_position;
-    b2Vec2 m_basePosition;
-    float m_angle;
-    float m_baseAngle;
-
-    bool m_dragging;
-    bool m_rotating;
-    };
-
-    static int sampleOverlapWorld = RegisterSample( "Collision", "Overlap World", OverlapWorld::Create );

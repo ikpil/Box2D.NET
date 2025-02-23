@@ -10,73 +10,74 @@ using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.world;
+using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
 // This shows how to filter a specific shape using using data.
-    struct ShapeUserData
-    {
-        int index;
-        bool ignore;
-    };
+struct ShapeUserData
+{
+    int index;
+    bool ignore;
+};
 
 // Context for ray cast callbacks. Do what you want with this.
-    struct RayCastContext
-    {
-        b2Vec2 points[3];
-        b2Vec2 normals[3];
-        float fractions[3];
-        int count;
-    };
+struct RayCastContext
+{
+    b2Vec2 points[3];
+    b2Vec2 normals[3];
+    float fractions[3];
+    int count;
+};
 
 // This callback finds the closest hit. This is the most common callback used in games.
-    static float RayCastClosestCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+static float RayCastClosestCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+{
+    RayCastContext* rayContext = (RayCastContext*)context;
+
+    ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
+    if ( userData != nullptr && userData->ignore )
     {
-        RayCastContext* rayContext = (RayCastContext*)context;
-
-        ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData->ignore )
-        {
-            // By returning -1, we instruct the calling code to ignore this shape and
-            // continue the ray-cast to the next shape.
-            return -1.0f;
-        }
-
-        rayContext->points[0] = point;
-        rayContext->normals[0] = normal;
-        rayContext->fractions[0] = fraction;
-        rayContext->count = 1;
-
-        // By returning the current fraction, we instruct the calling code to clip the ray and
-        // continue the ray-cast to the next shape. WARNING: do not assume that shapes
-        // are reported in order. However, by clipping, we can always get the closest shape.
-        return fraction;
+        // By returning -1, we instruct the calling code to ignore this shape and
+        // continue the ray-cast to the next shape.
+        return -1.0f;
     }
+
+    rayContext->points[0] = point;
+    rayContext->normals[0] = normal;
+    rayContext->fractions[0] = fraction;
+    rayContext->count = 1;
+
+    // By returning the current fraction, we instruct the calling code to clip the ray and
+    // continue the ray-cast to the next shape. WARNING: do not assume that shapes
+    // are reported in order. However, by clipping, we can always get the closest shape.
+    return fraction;
+}
 
 // This callback finds any hit. For this type of query we are usually just checking for obstruction,
 // so the hit data is not relevant.
 // NOTE: shape hits are not ordered, so this may not return the closest hit
-    static float RayCastAnyCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+static float RayCastAnyCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+{
+    RayCastContext* rayContext = (RayCastContext*)context;
+
+    ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
+    if ( userData != nullptr && userData->ignore )
     {
-        RayCastContext* rayContext = (RayCastContext*)context;
-
-        ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData->ignore )
-        {
-            // By returning -1, we instruct the calling code to ignore this shape and
-            // continue the ray-cast to the next shape.
-            return -1.0f;
-        }
-
-        rayContext->points[0] = point;
-        rayContext->normals[0] = normal;
-        rayContext->fractions[0] = fraction;
-        rayContext->count = 1;
-
-        // At this point we have a hit, so we know the ray is obstructed.
-        // By returning 0, we instruct the calling code to terminate the ray-cast.
-        return 0.0f;
+        // By returning -1, we instruct the calling code to ignore this shape and
+        // continue the ray-cast to the next shape.
+        return -1.0f;
     }
+
+    rayContext->points[0] = point;
+    rayContext->normals[0] = normal;
+    rayContext->fractions[0] = fraction;
+    rayContext->count = 1;
+
+    // At this point we have a hit, so we know the ray is obstructed.
+    // By returning 0, we instruct the calling code to terminate the ray-cast.
+    return 0.0f;
+}
 
 // This ray cast collects multiple hits along the ray.
 // The shapes are not necessary reported in order, so we might not capture
@@ -84,97 +85,96 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 // NOTE: shape hits are not ordered, so this may return hits in any order. This means that
 // if you limit the number of results, you may discard the closest hit. You can see this
 // behavior in the sample.
-    static float RayCastMultipleCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+static float RayCastMultipleCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+{
+    RayCastContext* rayContext = (RayCastContext*)context;
+
+    ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
+    if ( userData != nullptr && userData->ignore )
     {
-        RayCastContext* rayContext = (RayCastContext*)context;
-
-        ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData->ignore )
-        {
-            // By returning -1, we instruct the calling code to ignore this shape and
-            // continue the ray-cast to the next shape.
-            return -1.0f;
-        }
-
-        int count = rayContext->count;
-        Debug.Assert( count < 3 );
-
-        rayContext->points[count] = point;
-        rayContext->normals[count] = normal;
-        rayContext->fractions[count] = fraction;
-        rayContext->count = count + 1;
-
-        if ( rayContext->count == 3 )
-        {
-            // At this point the buffer is full.
-            // By returning 0, we instruct the calling code to terminate the ray-cast.
-            return 0.0f;
-        }
-
-        // By returning 1, we instruct the caller to continue without clipping the ray.
-        return 1.0f;
+        // By returning -1, we instruct the calling code to ignore this shape and
+        // continue the ray-cast to the next shape.
+        return -1.0f;
     }
+
+    int count = rayContext->count;
+    Debug.Assert( count < 3 );
+
+    rayContext->points[count] = point;
+    rayContext->normals[count] = normal;
+    rayContext->fractions[count] = fraction;
+    rayContext->count = count + 1;
+
+    if ( rayContext->count == 3 )
+    {
+        // At this point the buffer is full.
+        // By returning 0, we instruct the calling code to terminate the ray-cast.
+        return 0.0f;
+    }
+
+    // By returning 1, we instruct the caller to continue without clipping the ray.
+    return 1.0f;
+}
 
 // This ray cast collects multiple hits along the ray and sorts them.
-    static float RayCastSortedCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+static float RayCastSortedCallback( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+{
+    RayCastContext* rayContext = (RayCastContext*)context;
+
+    ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
+    if ( userData != nullptr && userData->ignore )
     {
-        RayCastContext* rayContext = (RayCastContext*)context;
-
-        ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData->ignore )
-        {
-            // By returning -1, we instruct the calling code to ignore this shape and
-            // continue the ray-cast to the next shape.
-            return -1.0f;
-        }
-
-        int count = rayContext->count;
-        Debug.Assert( count <= 3 );
-
-        int index = 3;
-        while ( fraction < rayContext->fractions[index - 1] )
-        {
-            index -= 1;
-
-            if ( index == 0 )
-            {
-                break;
-            }
-        }
-
-        if ( index == 3 )
-        {
-            // not closer, continue but tell the caller not to consider fractions further than the largest fraction acquired
-            // this only happens once the buffer is full
-            Debug.Assert( rayContext->count == 3 );
-            Debug.Assert( rayContext->fractions[2] <= 1.0f );
-            return rayContext->fractions[2];
-        }
-
-        for ( int j = 2; j > index; --j )
-        {
-            rayContext->points[j] = rayContext->points[j - 1];
-            rayContext->normals[j] = rayContext->normals[j - 1];
-            rayContext->fractions[j] = rayContext->fractions[j - 1];
-        }
-
-        rayContext->points[index] = point;
-        rayContext->normals[index] = normal;
-        rayContext->fractions[index] = fraction;
-        rayContext->count = count < 3 ? count + 1 : 3;
-
-        if ( rayContext->count == 3 )
-        {
-            return rayContext->fractions[2];
-        }
-
-        // By returning 1, we instruct the caller to continue without clipping the ray.
-        return 1.0f;
+        // By returning -1, we instruct the calling code to ignore this shape and
+        // continue the ray-cast to the next shape.
+        return -1.0f;
     }
 
-    class RayCastWorld : Sample
+    int count = rayContext->count;
+    Debug.Assert( count <= 3 );
+
+    int index = 3;
+    while ( fraction < rayContext->fractions[index - 1] )
     {
-    public:
+        index -= 1;
+
+        if ( index == 0 )
+        {
+            break;
+        }
+    }
+
+    if ( index == 3 )
+    {
+        // not closer, continue but tell the caller not to consider fractions further than the largest fraction acquired
+        // this only happens once the buffer is full
+        Debug.Assert( rayContext->count == 3 );
+        Debug.Assert( rayContext->fractions[2] <= 1.0f );
+        return rayContext->fractions[2];
+    }
+
+    for ( int j = 2; j > index; --j )
+    {
+        rayContext->points[j] = rayContext->points[j - 1];
+        rayContext->normals[j] = rayContext->normals[j - 1];
+        rayContext->fractions[j] = rayContext->fractions[j - 1];
+    }
+
+    rayContext->points[index] = point;
+    rayContext->normals[index] = normal;
+    rayContext->fractions[index] = fraction;
+    rayContext->count = count < 3 ? count + 1 : 3;
+
+    if ( rayContext->count == 3 )
+    {
+        return rayContext->fractions[2];
+    }
+
+    // By returning 1, we instruct the caller to continue without clipping the ray.
+    return 1.0f;
+}
+
+public class RayCastWorld : Sample
+{
     enum Mode
     {
         e_any = 0,
@@ -195,6 +195,38 @@ namespace Box2D.NET.Samples.Samples.Collisions;
     {
         e_maxCount = 64
     };
+
+    int m_bodyIndex;
+    b2BodyId m_bodyIds[e_maxCount] = {};
+    ShapeUserData m_userData[e_maxCount] = {};
+    b2Polygon m_polygons[4] = {};
+    b2Capsule m_capsule;
+    b2Circle m_circle;
+    b2Segment m_segment;
+
+    bool m_simple;
+
+    int m_mode;
+    int m_ignoreIndex;
+
+    CastType m_castType;
+    float m_castRadius;
+
+    b2Vec2 m_angleAnchor;
+    float m_baseAngle;
+    float m_angle;
+    bool m_rotating;
+
+    b2Vec2 m_rayStart;
+    b2Vec2 m_rayEnd;
+    bool m_dragging;
+
+    static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", RayCastWorld::Create );
+    static Sample* Create( Settings& settings )
+    {
+        return new RayCastWorld( settings );
+    }
+
 
     explicit RayCastWorld( Settings& settings )
         : Sample( settings )
@@ -637,35 +669,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         }
     }
 
-    static Sample* Create( Settings& settings )
-    {
-        return new RayCastWorld( settings );
-    }
 
-    int m_bodyIndex;
-    b2BodyId m_bodyIds[e_maxCount] = {};
-    ShapeUserData m_userData[e_maxCount] = {};
-    b2Polygon m_polygons[4] = {};
-    b2Capsule m_capsule;
-    b2Circle m_circle;
-    b2Segment m_segment;
 
-    bool m_simple;
+}
 
-    int m_mode;
-    int m_ignoreIndex;
-
-    CastType m_castType;
-    float m_castRadius;
-
-    b2Vec2 m_angleAnchor;
-    float m_baseAngle;
-    float m_angle;
-    bool m_rotating;
-
-    b2Vec2 m_rayStart;
-    b2Vec2 m_rayEnd;
-    bool m_dragging;
-    };
-
-    static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", RayCastWorld::Create );
