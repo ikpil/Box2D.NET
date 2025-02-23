@@ -1,9 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
-// SPDX-License-Identifier: MIT
-
-using Box2D.NET.Samples;
-
-namespace Box2D.NET.Samples;
+﻿namespace Box2D.NET.Samples.Samples.Geometries;
 
     public class ConvexHull : Sample
 {
