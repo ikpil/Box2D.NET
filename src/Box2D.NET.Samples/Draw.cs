@@ -211,37 +211,33 @@ public class Draw
         m_points.AddPoint(p, size, color);
     }
 
-    public void DrawString(int x, int y,  const char*  string, ...)
+    public void DrawString(int x, int y, string message, params object[] arg)
     {
         // if (m_showUI == false)
         //{
         //	return;
         // }
 
-        va_list arg;
-        va_start(arg, string);
         ImGui.Begin("Overlay", nullptr,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(float(x), float(y)));
-        ImGui.TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+        ImGui.TextColoredV(ImColor(230, 153, 153, 255), message, arg);
         ImGui.PopFont();
         ImGui.End();
         va_end(arg);
     }
 
-    public void DrawString(b2Vec2 p,  const char*  string, ...)
+    public void DrawString(b2Vec2 p,  string message, params object[] arg)
     {
         b2Vec2 ps = Draw.g_camera.ConvertWorldToScreen(p);
 
-        va_list arg;
-        va_start(arg, string);
         ImGui.Begin("Overlay", nullptr,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
-        ImGui.TextColoredV(ImColor(230, 230, 230, 255), string, arg);
+        ImGui.TextColoredV(ImColor(230, 230, 230, 255), message, arg);
         ImGui.End();
         va_end(arg);
     }
