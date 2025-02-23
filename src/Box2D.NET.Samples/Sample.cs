@@ -6,6 +6,7 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.joint;
 using static Box2D.NET.id;
 using static Box2D.NET.types;
@@ -14,6 +15,7 @@ using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.world;
 using static Box2D.NET.mouse_joint;
+using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples;
 
