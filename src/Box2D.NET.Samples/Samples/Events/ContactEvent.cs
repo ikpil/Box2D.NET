@@ -17,13 +17,23 @@ struct BodyUserData
     int index;
 };
 
-class ContactEvent : Sample
+public class ContactEvent : Sample
 {
-public:
-enum
-{
-    e_count = 20
-};
+    public const int e_count = 20;
+    
+    b2BodyId m_playerId;
+    b2ShapeId m_coreShapeId;
+    b2BodyId m_debrisIds[e_count];
+    BodyUserData m_bodyUserData[e_count];
+    float m_force;
+    float m_wait;
+
+    static int sampleWeeble = RegisterSample( "Events", "Contact", Create );
+    static Sample Create( Settings settings )
+    {
+        return new ContactEvent( settings );
+    }
+
 
 public ContactEvent( Settings settings )
     : base( settings )
@@ -414,18 +424,8 @@ public override void Step(Settings settings)
     }
 }
 
-static Sample Create( Settings settings )
-{
-    return new ContactEvent( settings );
+
+
 }
 
-b2BodyId m_playerId;
-b2ShapeId m_coreShapeId;
-b2BodyId m_debrisIds[e_count];
-BodyUserData m_bodyUserData[e_count];
-float m_force;
-float m_wait;
-};
-
-static int sampleWeeble = RegisterSample( "Events", "Contact", ContactEvent::Create );
 
