@@ -8,7 +8,7 @@
      * @{
      */
     /// Low level ray cast input data
-    public struct b2RayCastInput
+    public struct b2RayCastInput // todo @ikpil, check! for class
     {
         /// Start point of the ray cast
         public b2Vec2 origin;

@@ -217,7 +217,7 @@ class ShapeDistance : Sample
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
     {
-        if ( button == GLFW_MOUSE_BUTTON_1 )
+        if ( button == (int)MouseButton.Left )
         {
             if ( mods == 0 && m_rotating == false )
             {
@@ -236,7 +236,7 @@ class ShapeDistance : Sample
 
     void MouseUp( b2Vec2, int button ) override
     {
-        if ( button == GLFW_MOUSE_BUTTON_1 )
+        if ( button == (int)MouseButton.Left )
         {
             m_dragging = false;
             m_rotating = false;

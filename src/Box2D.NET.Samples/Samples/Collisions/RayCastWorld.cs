@@ -353,7 +353,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
     {
-        if ( button == GLFW_MOUSE_BUTTON_1 )
+        if ( button == (int)MouseButton.Left )
         {
             if ( mods == 0 && m_rotating == false )
             {
@@ -372,7 +372,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
     void MouseUp( b2Vec2, int button ) override
     {
-        if ( button == GLFW_MOUSE_BUTTON_1 )
+        if ( button == (int)MouseButton.Left )
         {
             m_dragging = false;
             m_rotating = false;

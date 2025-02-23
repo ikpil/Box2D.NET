@@ -290,7 +290,7 @@ static void MouseButtonCallback( GLFWwindow* window, int button, int action, int
 	b2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
 
 	// Use the mouse to move things around.
-	if ( button == GLFW_MOUSE_BUTTON_1 )
+	if ( button == (int)MouseButton.Left )
 	{
 		b2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
 		if ( action == GLFW_PRESS )

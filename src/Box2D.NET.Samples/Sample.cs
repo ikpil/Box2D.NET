@@ -230,7 +230,7 @@ public class Sample
             return;
         }
 
-        if (button == GLFW_MOUSE_BUTTON_1)
+        if (button == (int)MouseButton.Left)
         {
             // Make a small box.
             b2AABB box;
@@ -269,7 +269,7 @@ public class Sample
             m_mouseJointId = b2_nullJointId;
         }
 
-        if (B2_IS_NON_NULL(m_mouseJointId) && button == GLFW_MOUSE_BUTTON_1)
+        if (B2_IS_NON_NULL(m_mouseJointId) && button == (int)MouseButton.Left)
         {
             b2DestroyJoint(m_mouseJointId);
             m_mouseJointId = b2_nullJointId;
