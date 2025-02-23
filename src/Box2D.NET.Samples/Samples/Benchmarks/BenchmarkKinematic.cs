@@ -7,21 +7,26 @@ using static Box2D.NET.shape;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-class BenchmarkKinematic : Sample
+public class BenchmarkKinematic : Sample
 {
-    public:
-    explicit BenchmarkKinematic( Settings settings )
-        : Sample( settings )
+    static int sampleKinematic = RegisterSample("Benchmark", "Kinematic", Create);
+
+    static Sample Create(Settings settings)
     {
-        if ( settings.restart == false )
+        return new BenchmarkKinematic(settings);
+    }
+
+    public BenchmarkKinematic(Settings settings) : base(settings)
+    {
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 0.0f, 0.0f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 150.0f;
         }
 
         float grid = 1.0f;
 
-#ifdef NDEBUG
+#if NDEBUG
         int span = 100;
 #else
         int span = 20;
@@ -38,27 +43,20 @@ class BenchmarkKinematic : Sample
         // defer mass properties to avoid n-squared mass computations
         shapeDef.updateBodyMass = false;
 
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        b2BodyId bodyId = b2CreateBody(m_worldId, &bodyDef);
 
-        for ( int i = -span; i < span; ++i )
+        for (int i = -span; i < span; ++i)
         {
             float y = i * grid;
-            for ( int j = -span; j < span; ++j )
+            for (int j = -span; j < span; ++j)
             {
                 float x = j * grid;
-                b2Polygon square = b2MakeOffsetBox( 0.5f * grid, 0.5f * grid, { x, y }, b2Rot_identity );
-                b2CreatePolygonShape( bodyId, &shapeDef, &square );
+                b2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new b2Vec2(x, y), b2Rot_identity);
+                b2CreatePolygonShape(bodyId, shapeDef, square);
             }
         }
 
         // All shapes have been added so I can efficiently compute the mass properties.
-        b2Body_ApplyMassFromShapes( bodyId );
+        b2Body_ApplyMassFromShapes(bodyId);
     }
-
-    static Sample* Create( Settings settings )
-    {
-        return new BenchmarkKinematic( settings );
-    }
-};
-
-static int sampleKinematic = RegisterSample( "Benchmark", "Kinematic", BenchmarkKinematic::Create );
+}

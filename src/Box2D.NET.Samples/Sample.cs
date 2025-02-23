@@ -19,10 +19,10 @@ namespace Box2D.NET.Samples;
 
 public class Sample
 {
-#if DEBUG
-    public const bool g_sampleDebug = true;
-#else
+#if NDEBUG
     public const bool g_sampleDebug = false;
+#else
+    public const bool g_sampleDebug = true;
 #endif
     public const int k_maxContactPoints = 12 * 2048;
 

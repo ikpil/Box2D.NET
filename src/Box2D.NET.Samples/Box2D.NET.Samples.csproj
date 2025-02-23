@@ -8,6 +8,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);NDEBUG</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\Box2D.NET.Shared\Box2D.NET.Shared.csproj" />
     <ProjectReference Include="..\Box2D.NET\Box2D.NET.csproj"/>

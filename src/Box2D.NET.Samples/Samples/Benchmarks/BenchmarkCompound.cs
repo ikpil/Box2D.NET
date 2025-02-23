@@ -25,12 +25,12 @@ public class BenchmarkCompound : Sample
         }
 
         float grid = 1.0f;
-#if DEBUG
+#if NDEBUG
+        int height = 200;
+        int width = 200;
+#else
         int height = 100;
         int width = 100;
-#else
-    int height = 200;
-    int width = 200;
 #endif
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -61,12 +61,12 @@ public class BenchmarkCompound : Sample
         }
 
         {
-#if DEBUG
-            int span = 5;
+#if NDEBUG
+            int span = 20;
             int count = 5;
 #else
-        int span = 20;
-        int count = 5;
+            int span = 5;
+            int count = 5;
 #endif
 
             b2BodyDef bodyDef = b2DefaultBodyDef();

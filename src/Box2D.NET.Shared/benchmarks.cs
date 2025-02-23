@@ -20,10 +20,10 @@ namespace Box2D.NET.Shared
 {
     public static class benchmarks
     {
-#if DEBUG
-        private const bool BENCHMARK_DEBUG = true;
-#else
+#if NDEBUG
         private const bool BENCHMARK_DEBUG = false;
+#else
+        private const bool BENCHMARK_DEBUG = true;
 #endif
         private const int SPINNER_POINT_COUNT = 360;
 
