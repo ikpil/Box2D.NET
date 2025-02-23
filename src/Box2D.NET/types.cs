@@ -207,7 +207,7 @@ namespace Box2D.NET
             B2_UNUSED((b2Vec2[])null, vertexCount, color, context);
         }
 
-        public static void b2EmptyDrawSolidPolygon(b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawSolidPolygon(ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context)
         {
             B2_UNUSED(transform, (b2Vec2[])null, vertexCount, radius, color, context);
         }
@@ -217,7 +217,7 @@ namespace Box2D.NET
             B2_UNUSED(center, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCircle(b2Transform transform, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawSolidCircle(ref b2Transform transform, float radius, b2HexColor color, object context)
         {
             B2_UNUSED(transform, radius, color, context);
         }
