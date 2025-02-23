@@ -1,42 +1,46 @@
-﻿namespace Box2D.NET.Samples.Samples.Benchmarks;
+﻿using Box2D.NET.Primitives;
+using Box2D.NET.Shared.Primitives;
+using static Box2D.NET.Shared.benchmarks;
 
-class BenchmarkRain : Sample
+namespace Box2D.NET.Samples.Samples.Benchmarks;
+
+public class BenchmarkRain : Sample
 {
-    public:
-    explicit BenchmarkRain( Settings settings )
-        : Sample( settings )
+    static int benchmarkRain = RegisterSample("Benchmark", "Rain", Create);
+
+    private RainData m_rainData;
+
+    static Sample Create(Settings settings)
     {
-        if ( settings.restart == false )
+        return new BenchmarkRain(settings);
+    }
+
+    public BenchmarkRain(Settings settings) : base(settings)
+    {
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 0.0f, 110.0f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 110.0f);
             Draw.g_camera.m_zoom = 125.0f;
             settings.enableSleep = true;
         }
 
         settings.drawJoints = false;
 
-        CreateRain( m_worldId );
+        m_rainData = CreateRain(m_worldId);
     }
 
-    void Step( Settings settings ) override
+    public override void Step(Settings settings)
     {
-        if ( settings.pause == false || settings.singleStep == true )
+        if (settings.pause == false || settings.singleStep == true)
         {
-            StepRain( m_worldId, m_stepCount );
+            StepRain(m_rainData, m_worldId, m_stepCount);
         }
 
-        Sample::Step( settings );
+        base.Step(settings);
 
-        if ( m_stepCount % 1000 == 0 )
+        if (m_stepCount % 1000 == 0)
         {
             m_stepCount += 0;
         }
     }
-
-    static Sample* Create( Settings settings )
-    {
-        return new BenchmarkRain( settings );
-    }
-};
-
-static int benchmarkRain = RegisterSample( "Benchmark", "Rain", BenchmarkRain::Create );
+}

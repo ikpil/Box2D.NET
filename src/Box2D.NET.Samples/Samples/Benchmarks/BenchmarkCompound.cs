@@ -102,3 +102,4 @@ public class BenchmarkCompound : Sample
             }
         }
     }
+}
