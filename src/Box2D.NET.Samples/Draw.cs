@@ -39,26 +39,25 @@ public class Draw
     ImFont m_mediumFont;
     ImFont m_largeFont;
 
-    extern struct GLFWwindow* g_mainWindow;
+    GLFWwindow g_mainWindow;
 
     public Draw()
     {
         m_showUI = true;
-        m_points = nullptr;
-        m_lines = nullptr;
-        m_triangles = nullptr;
-        m_circles = nullptr;
-        m_solidCircles = nullptr;
-        m_solidCapsules = nullptr;
-        m_solidPolygons = nullptr;
-        m_debugDraw =  {
-        }
-        ;
-        m_smallFont = nullptr;
-        m_mediumFont = nullptr;
-        m_largeFont = nullptr;
-        m_regularFont = nullptr;
-        m_background = nullptr;
+        m_points = null;
+        m_lines = null;
+        m_triangles = null;
+        m_circles = null;
+        m_solidCircles = null;
+        m_solidCapsules = null;
+        m_solidPolygons = null;
+        m_debugDraw = null;
+        
+        m_smallFont = default;
+        m_mediumFont = default;
+        m_largeFont = default;
+        m_regularFont = default;
+        m_background = null;
     }
 
     ~Draw()
@@ -94,9 +93,7 @@ public class Draw
 
         b2AABB bounds = new b2AABB( new b2Vec2( -float.MaxValue, -float.MaxValue ), new b2Vec2( float.MaxValue, float.MaxValue ) );
 
-        m_debugDraw =  {
-        }
-        ;
+        m_debugDraw = new b2DebugDraw();
 
         m_debugDraw.DrawPolygon = DrawPolygonFcn;
         m_debugDraw.DrawSolidPolygon = DrawSolidPolygonFcn;
@@ -247,9 +244,9 @@ public class Draw
     public void DrawAABB(b2AABB aabb, b2HexColor c)
     {
         b2Vec2 p1 = aabb.lowerBound;
-        b2Vec2 p2 = { aabb.upperBound.x, aabb.lowerBound.y };
+        b2Vec2 p2 = new b2Vec2(aabb.upperBound.x, aabb.lowerBound.y);
         b2Vec2 p3 = aabb.upperBound;
-        b2Vec2 p4 = { aabb.lowerBound.x, aabb.upperBound.y };
+        b2Vec2 p4 = new b2Vec2(aabb.lowerBound.x, aabb.upperBound.y);
 
         m_lines.AddLine(p1, p2, c);
         m_lines.AddLine(p2, p3, c);
@@ -276,47 +273,47 @@ public class Draw
     
     public static void DrawPolygonFcn( ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawPolygon( vertices, vertexCount, color );
+        (context as Draw).DrawPolygon( vertices, vertexCount, color );
     }
 
-    public static void DrawSolidPolygonFcn( b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context )
+    public static void DrawSolidPolygonFcn( ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawSolidPolygon( transform, vertices, vertexCount, radius, color );
+        (context as Draw).DrawSolidPolygon( ref transform, vertices, vertexCount, radius, color );
     }
 
     public static void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawCircle( center, radius, color );
+        (context as Draw).DrawCircle( center, radius, color );
     }
 
-    public static void DrawSolidCircleFcn( b2Transform transform, float radius, b2HexColor color, object context )
+    public static void DrawSolidCircleFcn( ref b2Transform transform, float radius, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawSolidCircle( transform, b2Vec2_zero, radius, color );
+        (context as Draw).DrawSolidCircle( ref transform, b2Vec2_zero, radius, color );
     }
 
     public static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawSolidCapsule( p1, p2, radius, color );
+        (context as Draw).DrawSolidCapsule( p1, p2, radius, color );
     }
 
     public static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawSegment( p1, p2, color );
+        (context as Draw).DrawSegment( p1, p2, color );
     }
 
     public static void DrawTransformFcn( b2Transform transform, object context )
     {
-        static_cast<Draw*>( context ).DrawTransform( transform );
+        (context as Draw).DrawTransform( transform );
     }
 
     public static void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawPoint( p, size, color );
+        (context as Draw).DrawPoint( p, size, color );
     }
 
-    public static void DrawStringFcn( b2Vec2 p, const char* s, b2HexColor color, object context )
+    public static void DrawStringFcn( b2Vec2 p, string s, b2HexColor color, object context )
     {
-        static_cast<Draw*>( context ).DrawString( p, s );
+        (context as Draw).DrawString( p, s );
     }
 
 }

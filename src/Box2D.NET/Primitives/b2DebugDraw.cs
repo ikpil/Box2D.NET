@@ -14,7 +14,7 @@ namespace Box2D.NET.Primitives
         public DrawPolygonDelegate DrawPolygon;
 
         /// Draw a solid closed polygon provided in CCW order.
-        public delegate void DrawSolidPolygonDelegate(b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context);
+        public delegate void DrawSolidPolygonDelegate(ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context);
 
         public DrawSolidPolygonDelegate DrawSolidPolygon;
 
@@ -24,7 +24,7 @@ namespace Box2D.NET.Primitives
         public DrawCircleDelegate DrawCircle;
 
         /// Draw a solid circle.
-        public delegate void DrawSolidCircleDelegate(b2Transform transform, float radius, b2HexColor color, object context);
+        public delegate void DrawSolidCircleDelegate(ref b2Transform transform, float radius, b2HexColor color, object context);
 
         public DrawSolidCircleDelegate DrawSolidCircle;
 
