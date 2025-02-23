@@ -59,6 +59,7 @@ namespace Box2D.NET
 
         /// Compare two ids for equality. Doesn't work for b2WorldId.
         public static bool B2_ID_EQUALS(b2BodyId id1, b2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+        public static bool B2_ID_EQUALS(b2ShapeId id1, b2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         /// Store a body id into a ulong.
         public static ulong b2StoreBodyId(b2BodyId id)
