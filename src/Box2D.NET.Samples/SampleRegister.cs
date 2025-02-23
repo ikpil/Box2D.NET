@@ -4,7 +4,7 @@ using Box2D.NET.Samples.Primitives;
 
 namespace Box2D.NET.Samples;
 
-public static class SampleInstaller
+public static class SampleRegister
 {
 #if DEBUG
     public const bool g_sampleDebug = true;

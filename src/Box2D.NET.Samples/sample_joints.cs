@@ -17,8 +17,8 @@ explicit DistanceJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 12.0f };
-        g_camera.m_zoom = 25.0f * 0.35f;
+        Draw.g_camera.m_center = { 0.0f, 12.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.35f;
     }
 
     {
@@ -82,7 +82,7 @@ void CreateScene( int newCount )
     for ( int i = 0; i < m_count; ++i )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.angularDamping = 0.1f;
         bodyDef.position = { m_length * ( i + 1.0f ), yOffset };
         m_bodyIds[i] = b2CreateBody( m_worldId, &bodyDef );
@@ -103,13 +103,13 @@ void CreateScene( int newCount )
 void UpdateUI() override
 {
     float height = 240.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-    ImGui::Begin( "Distance Joint", nullptr, ImGuiWindowFlags_NoResize );
-    ImGui::PushItemWidth( 100.0f );
+    ImGui.Begin( "Distance Joint", nullptr, ImGuiWindowFlags.NoResize );
+    ImGui.PushItemWidth( 100.0f );
 
-    if ( ImGui::SliderFloat( "Length", &m_length, 0.1f, 4.0f, "%3.1f" ) )
+    if ( ImGui.SliderFloat( "Length", &m_length, 0.1f, 4.0f, "%3.1f" ) )
     {
         for ( int i = 0; i < m_count; ++i )
         {
@@ -118,7 +118,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::Checkbox( "Spring", &m_enableSpring ) )
+    if ( ImGui.Checkbox( "Spring", &m_enableSpring ) )
     {
         for ( int i = 0; i < m_count; ++i )
         {
@@ -129,7 +129,7 @@ void UpdateUI() override
 
     if ( m_enableSpring )
     {
-        if ( ImGui::SliderFloat( "Hertz", &m_hertz, 0.0f, 15.0f, "%3.1f" ) )
+        if ( ImGui.SliderFloat( "Hertz", &m_hertz, 0.0f, 15.0f, "%3.1f" ) )
         {
             for ( int i = 0; i < m_count; ++i )
             {
@@ -138,7 +138,7 @@ void UpdateUI() override
             }
         }
 
-        if ( ImGui::SliderFloat( "Damping", &m_dampingRatio, 0.0f, 4.0f, "%3.1f" ) )
+        if ( ImGui.SliderFloat( "Damping", &m_dampingRatio, 0.0f, 4.0f, "%3.1f" ) )
         {
             for ( int i = 0; i < m_count; ++i )
             {
@@ -148,7 +148,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::Checkbox( "Limit", &m_enableLimit ) )
+    if ( ImGui.Checkbox( "Limit", &m_enableLimit ) )
     {
         for ( int i = 0; i < m_count; ++i )
         {
@@ -159,7 +159,7 @@ void UpdateUI() override
 
     if ( m_enableLimit )
     {
-        if ( ImGui::SliderFloat( "Min Length", &m_minLength, 0.1f, 4.0f, "%3.1f" ) )
+        if ( ImGui.SliderFloat( "Min Length", &m_minLength, 0.1f, 4.0f, "%3.1f" ) )
         {
             for ( int i = 0; i < m_count; ++i )
             {
@@ -168,7 +168,7 @@ void UpdateUI() override
             }
         }
 
-        if ( ImGui::SliderFloat( "Max Length", &m_maxLength, 0.1f, 4.0f, "%3.1f" ) )
+        if ( ImGui.SliderFloat( "Max Length", &m_maxLength, 0.1f, 4.0f, "%3.1f" ) )
         {
             for ( int i = 0; i < m_count; ++i )
             {
@@ -179,13 +179,13 @@ void UpdateUI() override
     }
 
     int count = m_count;
-    if ( ImGui::SliderInt( "Count", &count, 1, e_maxCount ) )
+    if ( ImGui.SliderInt( "Count", &count, 1, e_maxCount ) )
     {
         CreateScene( count );
     }
 
-    ImGui::PopItemWidth();
-    ImGui::End();
+    ImGui.PopItemWidth();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -213,7 +213,7 @@ static int sampleDistanceJoint = RegisterSample( "Joints", "Distance Joint", Dis
 /// the body can be blocked by collision with other bodies.
 /// By setting the correction factor to zero, the motor joint acts
 /// like top-down dry friction.
-class MotorJoint : public Sample
+class MotorJoint : Sample
 {
 public:
 explicit MotorJoint( Settings& settings )
@@ -221,8 +221,8 @@ explicit MotorJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 7.0f };
-        g_camera.m_zoom = 25.0f * 0.4f;
+        Draw.g_camera.m_center = { 0.0f, 7.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.4f;
     }
 
     b2BodyId groundId;
@@ -237,7 +237,7 @@ explicit MotorJoint( Settings& settings )
     // Define motorized body
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { 0.0f, 8.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -267,31 +267,31 @@ explicit MotorJoint( Settings& settings )
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Motor Joint", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Motor Joint", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Go", &m_go ) )
+    if ( ImGui.Checkbox( "Go", &m_go ) )
     {
     }
 
-    if ( ImGui::SliderFloat( "Max Force", &m_maxForce, 0.0f, 1000.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Max Force", &m_maxForce, 0.0f, 1000.0f, "%.0f" ) )
     {
         b2MotorJoint_SetMaxForce( m_jointId, m_maxForce );
     }
 
-    if ( ImGui::SliderFloat( "Max Torque", &m_maxTorque, 0.0f, 1000.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Max Torque", &m_maxTorque, 0.0f, 1000.0f, "%.0f" ) )
     {
         b2MotorJoint_SetMaxTorque( m_jointId, m_maxTorque );
     }
 
-    if ( ImGui::SliderFloat( "Correction", &m_correctionFactor, 0.0f, 1.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Correction", &m_correctionFactor, 0.0f, 1.0f, "%.1f" ) )
     {
         b2MotorJoint_SetCorrectionFactor( m_jointId, m_correctionFactor );
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -339,7 +339,7 @@ static int sampleMotorJoint = RegisterSample( "Joints", "Motor Joint", MotorJoin
 
 // This sample shows how to use a null joint to prevent collision between two bodies.
 // This is more specific than filters. It also shows that sleeping is coupled by the null joint.
-class NullJoint : public Sample
+class NullJoint : Sample
 {
 public:
 explicit NullJoint( Settings& settings )
@@ -347,8 +347,8 @@ explicit NullJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 7.0f };
-        g_camera.m_zoom = 25.0f * 0.4f;
+        Draw.g_camera.m_center = { 0.0f, 7.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.4f;
     }
 
     {
@@ -362,7 +362,7 @@ explicit NullJoint( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -4.0f, 2.0f };
         b2BodyId bodyId1 = b2CreateBody( m_worldId, &bodyDef );
 
@@ -390,7 +390,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleNullJoint = RegisterSample( "Joints", "Null Joint", NullJoint::Create );
 
-class RevoluteJoint : public Sample
+class RevoluteJoint : Sample
 {
 public:
 explicit RevoluteJoint( Settings& settings )
@@ -398,8 +398,8 @@ explicit RevoluteJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 15.5f };
-        g_camera.m_zoom = 25.0f * 0.7f;
+        Draw.g_camera.m_center = { 0.0f, 15.5f };
+        Draw.g_camera.m_zoom = 25.0f * 0.7f;
     }
 
     b2BodyId groundId = b2_nullBodyId;
@@ -424,7 +424,7 @@ explicit RevoluteJoint( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -10.0f, 20.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -459,7 +459,7 @@ explicit RevoluteJoint( Settings& settings )
         circle.radius = 2.0f;
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { 5.0f, 30.0f };
         m_ball = b2CreateBody( m_worldId, &bodyDef );
 
@@ -472,7 +472,7 @@ explicit RevoluteJoint( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = { 20.0f, 10.0f };
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2BodyId body = b2CreateBody( m_worldId, &bodyDef );
 
         b2Polygon box = b2MakeOffsetBox( 10.0f, 0.5f, { -10.0f, 0.0f }, b2Rot_identity );
@@ -500,18 +500,18 @@ explicit RevoluteJoint( Settings& settings )
 void UpdateUI() override
 {
     float height = 220.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Revolute Joint", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Revolute Joint", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Limit", &m_enableLimit ) )
+    if ( ImGui.Checkbox( "Limit", &m_enableLimit ) )
     {
         b2RevoluteJoint_EnableLimit( m_jointId1, m_enableLimit );
         b2Joint_WakeBodies( m_jointId1 );
     }
 
-    if ( ImGui::Checkbox( "Motor", &m_enableMotor ) )
+    if ( ImGui.Checkbox( "Motor", &m_enableMotor ) )
     {
         b2RevoluteJoint_EnableMotor( m_jointId1, m_enableMotor );
         b2Joint_WakeBodies( m_jointId1 );
@@ -519,20 +519,20 @@ void UpdateUI() override
 
     if ( m_enableMotor )
     {
-        if ( ImGui::SliderFloat( "Max Torque", &m_motorTorque, 0.0f, 5000.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Max Torque", &m_motorTorque, 0.0f, 5000.0f, "%.0f" ) )
         {
             b2RevoluteJoint_SetMaxMotorTorque( m_jointId1, m_motorTorque );
             b2Joint_WakeBodies( m_jointId1 );
         }
 
-        if ( ImGui::SliderFloat( "Speed", &m_motorSpeed, -20.0f, 20.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Speed", &m_motorSpeed, -20.0f, 20.0f, "%.0f" ) )
         {
             b2RevoluteJoint_SetMotorSpeed( m_jointId1, m_motorSpeed );
             b2Joint_WakeBodies( m_jointId1 );
         }
     }
 
-    if ( ImGui::Checkbox( "Spring", &m_enableSpring ) )
+    if ( ImGui.Checkbox( "Spring", &m_enableSpring ) )
     {
         b2RevoluteJoint_EnableSpring( m_jointId1, m_enableSpring );
         b2Joint_WakeBodies( m_jointId1 );
@@ -540,20 +540,20 @@ void UpdateUI() override
 
     if ( m_enableSpring )
     {
-        if ( ImGui::SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
         {
             b2RevoluteJoint_SetSpringHertz( m_jointId1, m_hertz );
             b2Joint_WakeBodies( m_jointId1 );
         }
 
-        if ( ImGui::SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
         {
             b2RevoluteJoint_SetSpringDampingRatio( m_jointId1, m_dampingRatio );
             b2Joint_WakeBodies( m_jointId1 );
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -592,7 +592,7 @@ bool m_enableLimit;
 
 static int sampleRevolute = RegisterSample( "Joints", "Revolute", RevoluteJoint::Create );
 
-class PrismaticJoint : public Sample
+class PrismaticJoint : Sample
 {
 public:
 explicit PrismaticJoint( Settings& settings )
@@ -600,8 +600,8 @@ explicit PrismaticJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 8.0f };
-        g_camera.m_zoom = 25.0f * 0.5f;
+        Draw.g_camera.m_center = { 0.0f, 8.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.5f;
     }
 
     b2BodyId groundId;
@@ -621,7 +621,7 @@ explicit PrismaticJoint( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = { 0.0f, 10.0f };
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -654,18 +654,18 @@ explicit PrismaticJoint( Settings& settings )
 void UpdateUI() override
 {
     float height = 220.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Prismatic Joint", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Prismatic Joint", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Limit", &m_enableLimit ) )
+    if ( ImGui.Checkbox( "Limit", &m_enableLimit ) )
     {
         b2PrismaticJoint_EnableLimit( m_jointId, m_enableLimit );
         b2Joint_WakeBodies( m_jointId );
     }
 
-    if ( ImGui::Checkbox( "Motor", &m_enableMotor ) )
+    if ( ImGui.Checkbox( "Motor", &m_enableMotor ) )
     {
         b2PrismaticJoint_EnableMotor( m_jointId, m_enableMotor );
         b2Joint_WakeBodies( m_jointId );
@@ -673,20 +673,20 @@ void UpdateUI() override
 
     if ( m_enableMotor )
     {
-        if ( ImGui::SliderFloat( "Max Force", &m_motorForce, 0.0f, 200.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Max Force", &m_motorForce, 0.0f, 200.0f, "%.0f" ) )
         {
             b2PrismaticJoint_SetMaxMotorForce( m_jointId, m_motorForce );
             b2Joint_WakeBodies( m_jointId );
         }
 
-        if ( ImGui::SliderFloat( "Speed", &m_motorSpeed, -40.0f, 40.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Speed", &m_motorSpeed, -40.0f, 40.0f, "%.0f" ) )
         {
             b2PrismaticJoint_SetMotorSpeed( m_jointId, m_motorSpeed );
             b2Joint_WakeBodies( m_jointId );
         }
     }
 
-    if ( ImGui::Checkbox( "Spring", &m_enableSpring ) )
+    if ( ImGui.Checkbox( "Spring", &m_enableSpring ) )
     {
         b2PrismaticJoint_EnableSpring( m_jointId, m_enableSpring );
         b2Joint_WakeBodies( m_jointId );
@@ -694,20 +694,20 @@ void UpdateUI() override
 
     if ( m_enableSpring )
     {
-        if ( ImGui::SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
         {
             b2PrismaticJoint_SetSpringHertz( m_jointId, m_hertz );
             b2Joint_WakeBodies( m_jointId );
         }
 
-        if ( ImGui::SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
         {
             b2PrismaticJoint_SetSpringDampingRatio( m_jointId, m_dampingRatio );
             b2Joint_WakeBodies( m_jointId );
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -744,7 +744,7 @@ bool m_enableLimit;
 
 static int samplePrismatic = RegisterSample( "Joints", "Prismatic", PrismaticJoint::Create );
 
-class WheelJoint : public Sample
+class WheelJoint : Sample
 {
 public:
 explicit WheelJoint( Settings& settings )
@@ -752,8 +752,8 @@ explicit WheelJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 10.0f };
-        g_camera.m_zoom = 25.0f * 0.15f;
+        Draw.g_camera.m_center = { 0.0f, 10.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.15f;
     }
 
     b2BodyId groundId;
@@ -774,7 +774,7 @@ explicit WheelJoint( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = { 0.0f, 10.25f };
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -805,53 +805,53 @@ explicit WheelJoint( Settings& settings )
 void UpdateUI() override
 {
     float height = 220.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Wheel Joint", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Wheel Joint", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Limit", &m_enableLimit ) )
+    if ( ImGui.Checkbox( "Limit", &m_enableLimit ) )
     {
         b2WheelJoint_EnableLimit( m_jointId, m_enableLimit );
     }
 
-    if ( ImGui::Checkbox( "Motor", &m_enableMotor ) )
+    if ( ImGui.Checkbox( "Motor", &m_enableMotor ) )
     {
         b2WheelJoint_EnableMotor( m_jointId, m_enableMotor );
     }
 
     if ( m_enableMotor )
     {
-        if ( ImGui::SliderFloat( "Torque", &m_motorTorque, 0.0f, 20.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Torque", &m_motorTorque, 0.0f, 20.0f, "%.0f" ) )
         {
             b2WheelJoint_SetMaxMotorTorque( m_jointId, m_motorTorque );
         }
 
-        if ( ImGui::SliderFloat( "Speed", &m_motorSpeed, -20.0f, 20.0f, "%.0f" ) )
+        if ( ImGui.SliderFloat( "Speed", &m_motorSpeed, -20.0f, 20.0f, "%.0f" ) )
         {
             b2WheelJoint_SetMotorSpeed( m_jointId, m_motorSpeed );
         }
     }
 
-    if ( ImGui::Checkbox( "Spring", &m_enableSpring ) )
+    if ( ImGui.Checkbox( "Spring", &m_enableSpring ) )
     {
         b2WheelJoint_EnableSpring( m_jointId, m_enableSpring );
     }
 
     if ( m_enableSpring )
     {
-        if ( ImGui::SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Hertz", &m_hertz, 0.0f, 10.0f, "%.1f" ) )
         {
             b2WheelJoint_SetSpringHertz( m_jointId, m_hertz );
         }
 
-        if ( ImGui::SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Damping", &m_dampingRatio, 0.0f, 2.0f, "%.1f" ) )
         {
             b2WheelJoint_SetSpringDampingRatio( m_jointId, m_dampingRatio );
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -881,7 +881,7 @@ bool m_enableLimit;
 static int sampleWheel = RegisterSample( "Joints", "Wheel", WheelJoint::Create );
 
 // A suspension bridge
-class Bridge : public Sample
+class Bridge : Sample
 {
 public:
 enum
@@ -894,7 +894,7 @@ explicit Bridge( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_zoom = 25.0f * 2.5f;
+        Draw.g_camera.m_zoom = 25.0f * 2.5f;
     }
 
     b2BodyId groundId = b2_nullBodyId;
@@ -920,7 +920,7 @@ explicit Bridge( Settings& settings )
         for ( int i = 0; i < e_count; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { xbase + 0.5f + 1.0f * i, 20.0f };
             bodyDef.linearDamping = 0.1f;
             bodyDef.angularDamping = 0.1f;
@@ -962,7 +962,7 @@ explicit Bridge( Settings& settings )
         shapeDef.density = 20.0f;
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -8.0f + 8.0f * i, 22.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
         b2CreatePolygonShape( bodyId, &shapeDef, &triangle );
@@ -976,7 +976,7 @@ explicit Bridge( Settings& settings )
         shapeDef.density = 20.0f;
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -6.0f + 6.0f * i, 25.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
         b2CreateCircleShape( bodyId, &shapeDef, &circle );
@@ -986,14 +986,14 @@ explicit Bridge( Settings& settings )
 void UpdateUI() override
 {
     float height = 80.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Bridge", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Bridge", nullptr, ImGuiWindowFlags.NoResize );
 
     // Slider takes half the window
-    ImGui::PushItemWidth( ImGui::GetWindowWidth() * 0.5f );
-    bool updateFriction = ImGui::SliderFloat( "Joint Friction", &m_frictionTorque, 0.0f, 1000.0f, "%2.f" );
+    ImGui.PushItemWidth( ImGui.GetWindowWidth() * 0.5f );
+    bool updateFriction = ImGui.SliderFloat( "Joint Friction", &m_frictionTorque, 0.0f, 1000.0f, "%2.f" );
     if ( updateFriction )
     {
         for ( int i = 0; i <= e_count; ++i )
@@ -1002,7 +1002,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::SliderFloat( "Gravity scale", &m_gravityScale, -1.0f, 1.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Gravity scale", &m_gravityScale, -1.0f, 1.0f, "%.1f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1010,7 +1010,7 @@ void UpdateUI() override
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -1026,7 +1026,7 @@ float m_gravityScale;
 
 static int sampleBridgeIndex = RegisterSample( "Joints", "Bridge", Bridge::Create );
 
-class BallAndChain : public Sample
+class BallAndChain : Sample
 {
 public:
 enum
@@ -1039,8 +1039,8 @@ explicit BallAndChain( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, -8.0f };
-        g_camera.m_zoom = 27.5f;
+        Draw.g_camera.m_center = { 0.0f, -8.0f };
+        Draw.g_camera.m_zoom = 27.5f;
     }
 
     b2BodyId groundId = b2_nullBodyId;
@@ -1066,7 +1066,7 @@ explicit BallAndChain( Settings& settings )
         for ( int i = 0; i < e_count; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { ( 1.0f + 2.0f * i ) * hx, e_count * hx };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2CreateCapsuleShape( bodyId, &shapeDef, &capsule );
@@ -1086,7 +1086,7 @@ explicit BallAndChain( Settings& settings )
         b2Circle circle = { { 0.0f, 0.0f }, 4.0f };
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { ( 1.0f + 2.0f * e_count ) * hx + circle.radius - hx, e_count * hx };
 
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1107,12 +1107,12 @@ explicit BallAndChain( Settings& settings )
 void UpdateUI() override
 {
     float height = 60.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Ball and Chain", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Ball and Chain", nullptr, ImGuiWindowFlags.NoResize );
 
-    bool updateFriction = ImGui::SliderFloat( "Joint Friction", &m_frictionTorque, 0.0f, 1000.0f, "%2.f" );
+    bool updateFriction = ImGui.SliderFloat( "Joint Friction", &m_frictionTorque, 0.0f, 1000.0f, "%2.f" );
     if ( updateFriction )
     {
         for ( int i = 0; i <= e_count; ++i )
@@ -1121,7 +1121,7 @@ void UpdateUI() override
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -1137,7 +1137,7 @@ static int sampleBallAndChainIndex = RegisterSample( "Joints", "Ball & Chain", B
 
 // This sample shows the limitations of an iterative solver. The cantilever sags even though the weld
 // joint is stiff as possible.
-class Cantilever : public Sample
+class Cantilever : Sample
 {
 public:
 enum
@@ -1150,8 +1150,8 @@ explicit Cantilever( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 0.0f };
-        g_camera.m_zoom = 25.0f * 0.35f;
+        Draw.g_camera.m_center = { 0.0f, 0.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.35f;
     }
 
     b2BodyId groundId = b2_nullBodyId;
@@ -1176,7 +1176,7 @@ explicit Cantilever( Settings& settings )
         b2WeldJointDef jointDef = b2DefaultWeldJointDef();
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.isAwake = false;
 
         b2BodyId prevBodyId = groundId;
@@ -1208,13 +1208,13 @@ explicit Cantilever( Settings& settings )
 void UpdateUI() override
 {
     float height = 180.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Cantilever", nullptr, ImGuiWindowFlags_NoResize );
-    ImGui::PushItemWidth( 100.0f );
+    ImGui.Begin( "Cantilever", nullptr, ImGuiWindowFlags.NoResize );
+    ImGui.PushItemWidth( 100.0f );
 
-    if ( ImGui::SliderFloat( "Linear Hertz", &m_linearHertz, 0.0f, 20.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Linear Hertz", &m_linearHertz, 0.0f, 20.0f, "%.0f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1222,7 +1222,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::SliderFloat( "Linear Damping Ratio", &m_linearDampingRatio, 0.0f, 10.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Linear Damping Ratio", &m_linearDampingRatio, 0.0f, 10.0f, "%.1f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1230,7 +1230,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::SliderFloat( "Angular Hertz", &m_angularHertz, 0.0f, 20.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Angular Hertz", &m_angularHertz, 0.0f, 20.0f, "%.0f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1238,7 +1238,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::SliderFloat( "Angular Damping Ratio", &m_angularDampingRatio, 0.0f, 10.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Angular Damping Ratio", &m_angularDampingRatio, 0.0f, 10.0f, "%.1f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1246,7 +1246,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::Checkbox( "Collide Connected", &m_collideConnected ) )
+    if ( ImGui.Checkbox( "Collide Connected", &m_collideConnected ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1254,7 +1254,7 @@ void UpdateUI() override
         }
     }
 
-    if ( ImGui::SliderFloat( "Gravity Scale", &m_gravityScale, -1.0f, 1.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Gravity Scale", &m_gravityScale, -1.0f, 1.0f, "%.1f" ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1262,8 +1262,8 @@ void UpdateUI() override
         }
     }
 
-    ImGui::PopItemWidth();
-    ImGui::End();
+    ImGui.PopItemWidth();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -1294,7 +1294,7 @@ bool m_collideConnected;
 static int sampleCantileverIndex = RegisterSample( "Joints", "Cantilever", Cantilever::Create );
 
 // This test ensures joints work correctly with bodies that have fixed rotation
-class FixedRotation : public Sample
+class FixedRotation : Sample
 {
 public:
 enum
@@ -1307,8 +1307,8 @@ explicit FixedRotation( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 8.0f };
-        g_camera.m_zoom = 25.0f * 0.7f;
+        Draw.g_camera.m_center = { 0.0f, 8.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.7f;
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -1343,7 +1343,7 @@ void CreateScene()
 
     b2Vec2 position = { -12.5f, 10.0f };
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.fixedRotation = m_fixedRotation;
 
     b2Polygon box = b2MakeBox( 1.0f, 1.0f );
@@ -1497,12 +1497,12 @@ void CreateScene()
 void UpdateUI() override
 {
     float height = 60.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-    ImGui::Begin( "Fixed Rotation", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Fixed Rotation", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Fixed Rotation", &m_fixedRotation ) )
+    if ( ImGui.Checkbox( "Fixed Rotation", &m_fixedRotation ) )
     {
         for ( int i = 0; i < e_count; ++i )
         {
@@ -1510,7 +1510,7 @@ void UpdateUI() override
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -1527,7 +1527,7 @@ bool m_fixedRotation;
 static int sampleFixedRotation = RegisterSample( "Joints", "Fixed Rotation", FixedRotation::Create );
 
 // This sample shows how to break joints when the internal reaction force becomes large.
-class BreakableJoint : public Sample
+class BreakableJoint : Sample
 {
 public:
 enum
@@ -1540,8 +1540,8 @@ explicit BreakableJoint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 8.0f };
-        g_camera.m_zoom = 25.0f * 0.7f;
+        Draw.g_camera.m_center = { 0.0f, 8.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.7f;
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -1557,7 +1557,7 @@ explicit BreakableJoint( Settings& settings )
     }
 
     b2Vec2 position = { -12.5f, 10.0f };
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.enableSleep = false;
 
     b2Polygon box = b2MakeBox( 1.0f, 1.0f );
@@ -1713,20 +1713,20 @@ explicit BreakableJoint( Settings& settings )
 void UpdateUI() override
 {
     float height = 100.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Breakable Joint", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Breakable Joint", nullptr, ImGuiWindowFlags.NoResize );
 
-    ImGui::SliderFloat( "break force", &m_breakForce, 0.0f, 10000.0f, "%.1f" );
+    ImGui.SliderFloat( "break force", &m_breakForce, 0.0f, 10000.0f, "%.1f" );
 
     b2Vec2 gravity = b2World_GetGravity( m_worldId );
-    if ( ImGui::SliderFloat( "gravity", &gravity.y, -50.0f, 50.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "gravity", &gravity.y, -50.0f, 50.0f, "%.1f" ) )
     {
         b2World_SetGravity( m_worldId, gravity );
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -1766,7 +1766,7 @@ float m_breakForce;
 static int sampleBreakableJoint = RegisterSample( "Joints", "Breakable", BreakableJoint::Create );
 
 // This shows how you can implement a constraint outside of Box2D
-class UserConstraint : public Sample
+class UserConstraint : Sample
 {
 public:
 explicit UserConstraint( Settings& settings )
@@ -1774,8 +1774,8 @@ explicit UserConstraint( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 3.0f, -1.0f };
-        g_camera.m_zoom = 25.0f * 0.15f;
+        Draw.g_camera.m_center = { 3.0f, -1.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.15f;
     }
 
     b2Polygon box = b2MakeBox( 1.0f, 0.5f );
@@ -1784,7 +1784,7 @@ explicit UserConstraint( Settings& settings )
     shapeDef.density = 20.0f;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.gravityScale = 1.0f;
     bodyDef.angularDamping = 0.5f;
     bodyDef.linearDamping = 0.2f;
@@ -1889,7 +1889,7 @@ float m_impulses[2];
 static int sampleUserConstraintIndex = RegisterSample( "Joints", "User Constraint", UserConstraint::Create );
 
 // This is a fun demo that shows off the wheel joint
-class Driving : public Sample
+class Driving : Sample
 {
 public:
 explicit Driving( Settings& settings )
@@ -1897,8 +1897,8 @@ explicit Driving( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center.y = 5.0f;
-        g_camera.m_zoom = 25.0f * 0.4f;
+        Draw.g_camera.m_center.y = 5.0f;
+        Draw.g_camera.m_zoom = 25.0f * 0.4f;
         settings.drawJoints = false;
     }
 
@@ -1966,7 +1966,7 @@ explicit Driving( Settings& settings )
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = { 140.0f, 1.0f };
         bodyDef.angularVelocity = 1.0f;
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -1997,7 +1997,7 @@ explicit Driving( Settings& settings )
         for ( int i = 0; i < N; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { 161.0f + 2.0f * i, -0.125f };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2CreateCapsuleShape( bodyId, &shapeDef, &capsule );
@@ -2028,7 +2028,7 @@ explicit Driving( Settings& settings )
 
         b2BodyId bodyId;
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.friction = 0.25f;
@@ -2070,34 +2070,34 @@ explicit Driving( Settings& settings )
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 200.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
 
-    ImGui::Begin( "Driving", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Driving", nullptr, ImGuiWindowFlags.NoResize );
 
-    ImGui::PushItemWidth( 100.0f );
-    if ( ImGui::SliderFloat( "Spring Hertz", &m_hertz, 0.0f, 20.0f, "%.0f" ) )
+    ImGui.PushItemWidth( 100.0f );
+    if ( ImGui.SliderFloat( "Spring Hertz", &m_hertz, 0.0f, 20.0f, "%.0f" ) )
     {
         m_car.SetHertz( m_hertz );
     }
 
-    if ( ImGui::SliderFloat( "Damping Ratio", &m_dampingRatio, 0.0f, 10.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Damping Ratio", &m_dampingRatio, 0.0f, 10.0f, "%.1f" ) )
     {
         m_car.SetDampingRadio( m_dampingRatio );
     }
 
-    if ( ImGui::SliderFloat( "Speed", &m_speed, 0.0f, 50.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Speed", &m_speed, 0.0f, 50.0f, "%.0f" ) )
     {
         m_car.SetSpeed( m_throttle * m_speed );
     }
 
-    if ( ImGui::SliderFloat( "Torque", &m_torque, 0.0f, 10.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Torque", &m_torque, 0.0f, 10.0f, "%.1f" ) )
     {
         m_car.SetTorque( m_torque );
     }
-    ImGui::PopItemWidth();
+    ImGui.PopItemWidth();
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -2129,7 +2129,7 @@ void Step( Settings& settings ) override
     m_textLine += m_textIncrement;
 
     b2Vec2 carPosition = b2Body_GetPosition( m_car.m_chassisId );
-    g_camera.m_center.x = carPosition.x;
+    Draw.g_camera.m_center.x = carPosition.x;
 
     Sample::Step( settings );
 }
@@ -2150,7 +2150,7 @@ float m_speed;
 
 static int sampleDriving = RegisterSample( "Joints", "Driving", Driving::Create );
 
-class Ragdoll : public Sample
+class Ragdoll : Sample
 {
 public:
 explicit Ragdoll( Settings& settings )
@@ -2158,11 +2158,11 @@ explicit Ragdoll( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 12.0f };
-        g_camera.m_zoom = 16.0f;
+        Draw.g_camera.m_center = { 0.0f, 12.0f };
+        Draw.g_camera.m_zoom = 16.0f;
 
-        // g_camera.m_center = { 0.0f, 26.0f };
-        // g_camera.m_zoom = 1.0f;
+        // Draw.g_camera.m_center = { 0.0f, 26.0f };
+        // Draw.g_camera.m_zoom = 1.0f;
     }
 
     {
@@ -2192,34 +2192,34 @@ void Spawn()
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-    ImGui::Begin( "Ragdoll", nullptr, ImGuiWindowFlags_NoResize );
-    ImGui::PushItemWidth( 100.0f );
+    ImGui.Begin( "Ragdoll", nullptr, ImGuiWindowFlags.NoResize );
+    ImGui.PushItemWidth( 100.0f );
 
-    if ( ImGui::SliderFloat( "Friction", &m_jointFrictionTorque, 0.0f, 1.0f, "%3.2f" ) )
+    if ( ImGui.SliderFloat( "Friction", &m_jointFrictionTorque, 0.0f, 1.0f, "%3.2f" ) )
     {
         Human_SetJointFrictionTorque( &m_human, m_jointFrictionTorque );
     }
 
-    if ( ImGui::SliderFloat( "Hertz", &m_jointHertz, 0.0f, 10.0f, "%3.1f" ) )
+    if ( ImGui.SliderFloat( "Hertz", &m_jointHertz, 0.0f, 10.0f, "%3.1f" ) )
     {
         Human_SetJointSpringHertz( &m_human, m_jointHertz );
     }
 
-    if ( ImGui::SliderFloat( "Damping", &m_jointDampingRatio, 0.0f, 4.0f, "%3.1f" ) )
+    if ( ImGui.SliderFloat( "Damping", &m_jointDampingRatio, 0.0f, 4.0f, "%3.1f" ) )
     {
         Human_SetJointDampingRatio( &m_human, m_jointDampingRatio );
     }
 
-    if ( ImGui::Button( "Respawn" ) )
+    if ( ImGui.Button( "Respawn" ) )
     {
         DestroyHuman( &m_human );
         Spawn();
     }
-    ImGui::PopItemWidth();
-    ImGui::End();
+    ImGui.PopItemWidth();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -2235,7 +2235,7 @@ float m_jointDampingRatio;
 
 static int sampleRagdoll = RegisterSample( "Joints", "Ragdoll", Ragdoll::Create );
 
-class SoftBody : public Sample
+class SoftBody : Sample
 {
 public:
 explicit SoftBody( Settings& settings )
@@ -2243,8 +2243,8 @@ explicit SoftBody( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 5.0f };
-        g_camera.m_zoom = 25.0f * 0.25f;
+        Draw.g_camera.m_center = { 0.0f, 5.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.25f;
     }
 
     {
@@ -2268,7 +2268,7 @@ Donut m_donut;
 
 static int sampleDonut = RegisterSample( "Joints", "Soft Body", SoftBody::Create );
 
-class DoohickeyFarm : public Sample
+class DoohickeyFarm : Sample
 {
 public:
 explicit DoohickeyFarm( Settings& settings )
@@ -2276,8 +2276,8 @@ explicit DoohickeyFarm( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 5.0f };
-        g_camera.m_zoom = 25.0f * 0.35f;
+        Draw.g_camera.m_center = { 0.0f, 5.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.35f;
     }
 
     {
@@ -2314,7 +2314,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleDoohickey = RegisterSample( "Joints", "Doohickey", DoohickeyFarm::Create );
 
-class ScissorLift : public Sample
+class ScissorLift : Sample
 {
 public:
 explicit ScissorLift( Settings& settings )
@@ -2322,8 +2322,8 @@ explicit ScissorLift( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 9.0f };
-        g_camera.m_zoom = 25.0f * 0.4f;
+        Draw.g_camera.m_center = { 0.0f, 9.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.4f;
     }
 
     // Need 8 sub-steps for smoother operation
@@ -2340,7 +2340,7 @@ explicit ScissorLift( Settings& settings )
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.sleepThreshold = 0.01f;
 
     b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -2485,30 +2485,30 @@ explicit ScissorLift( Settings& settings )
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Scissor Lift", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Scissor Lift", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Checkbox( "Motor", &m_enableMotor ) )
+    if ( ImGui.Checkbox( "Motor", &m_enableMotor ) )
     {
         b2DistanceJoint_EnableMotor( m_liftJointId, m_enableMotor );
         b2Joint_WakeBodies( m_liftJointId );
     }
 
-    if ( ImGui::SliderFloat( "Max Force", &m_motorForce, 0.0f, 3000.0f, "%.0f" ) )
+    if ( ImGui.SliderFloat( "Max Force", &m_motorForce, 0.0f, 3000.0f, "%.0f" ) )
     {
         b2DistanceJoint_SetMaxMotorForce( m_liftJointId, m_motorForce );
         b2Joint_WakeBodies( m_liftJointId );
     }
 
-    if ( ImGui::SliderFloat( "Speed", &m_motorSpeed, -0.3f, 0.3f, "%.2f" ) )
+    if ( ImGui.SliderFloat( "Speed", &m_motorSpeed, -0.3f, 0.3f, "%.2f" ) )
     {
         b2DistanceJoint_SetMotorSpeed( m_liftJointId, m_motorSpeed );
         b2Joint_WakeBodies( m_liftJointId );
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override

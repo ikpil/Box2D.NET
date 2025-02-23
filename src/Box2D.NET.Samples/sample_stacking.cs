@@ -9,8 +9,8 @@ public SingleBox( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 2.5f };
-        g_camera.m_zoom = 3.5f;
+        Draw.g_camera.m_center = { 0.0f, 2.5f };
+        Draw.g_camera.m_zoom = 3.5f;
     }
 
     float extent = 1.0f;
@@ -24,7 +24,7 @@ public SingleBox( Settings settings ) : base( settings )
 
     b2Segment segment = { { -0.5f * 2.0f * groundWidth, 0.0f }, { 0.5f * 2.0f * groundWidth, 0.0f } };
     b2CreateSegmentShape( groundId, &shapeDef, &segment );
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     b2Polygon box = b2MakeBox( extent, extent );
     bodyDef.position = { 0.0f, 1.0f };
@@ -53,7 +53,7 @@ b2BodyId m_bodyId;
 
 static int sampleSingleBox = RegisterSample( "Stacking", "Single Box", SingleBox::Create );
 
-class TiltedStack : public Sample
+class TiltedStack : Sample
 {
 public:
 enum
@@ -67,8 +67,8 @@ explicit TiltedStack( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 7.5f, 7.5f };
-        g_camera.m_zoom = 20.0f;
+        Draw.g_camera.m_center = { 7.5f, 7.5f };
+        Draw.g_camera.m_zoom = 20.0f;
     }
 
     {
@@ -103,7 +103,7 @@ explicit TiltedStack( Settings& settings )
         for ( int i = 0; i < e_rows; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
 
             int n = j * e_rows + i;
 
@@ -127,7 +127,7 @@ b2BodyId m_bodies[e_rows * e_columns];
 
 static int sampleTiltedStack = RegisterSample( "Stacking", "Tilted Stack", TiltedStack::Create );
 
-class VerticalStack : public Sample
+class VerticalStack : Sample
 {
 public:
 enum
@@ -148,8 +148,8 @@ explicit VerticalStack( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { -7.0f, 9.0f };
-        g_camera.m_zoom = 14.0f;
+        Draw.g_camera.m_center = { -7.0f, 9.0f };
+        Draw.g_camera.m_zoom = 14.0f;
     }
 
     {
@@ -226,7 +226,7 @@ void CreateStacks()
         for ( int i = 0; i < m_rowCount; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
 
             int n = j * m_rowCount + i;
 
@@ -292,7 +292,7 @@ void FireBullets()
     for ( int i = 0; i < m_bulletCount; ++i )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -25.0f - i, 6.0f };
         float speed = RandomFloatRange( 200.0f, 300.0f );
         bodyDef.linearVelocity = { speed, 0.0f };
@@ -316,43 +316,43 @@ void FireBullets()
 void UpdateUI() override
 {
     float height = 230.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Vertical Stack", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Vertical Stack", nullptr, ImGuiWindowFlags.NoResize );
 
-    ImGui::PushItemWidth( 120.0f );
+    ImGui.PushItemWidth( 120.0f );
 
     bool changed = false;
     const char* shapeTypes[] = { "Circle", "Box" };
 
     int shapeType = int( m_shapeType );
-    changed = changed || ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
+    changed = changed || ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
     m_shapeType = ShapeType( shapeType );
 
-    changed = changed || ImGui::SliderInt( "Rows", &m_rowCount, 1, e_maxRows );
-    changed = changed || ImGui::SliderInt( "Columns", &m_columnCount, 1, e_maxColumns );
+    changed = changed || ImGui.SliderInt( "Rows", &m_rowCount, 1, e_maxRows );
+    changed = changed || ImGui.SliderInt( "Columns", &m_columnCount, 1, e_maxColumns );
 
-    ImGui::SliderInt( "Bullets", &m_bulletCount, 1, e_maxBullets );
+    ImGui.SliderInt( "Bullets", &m_bulletCount, 1, e_maxBullets );
 
     int bulletType = int( m_bulletType );
-    ImGui::Combo( "Bullet Shape", &bulletType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
+    ImGui.Combo( "Bullet Shape", &bulletType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
     m_bulletType = ShapeType( bulletType );
 
-    ImGui::PopItemWidth();
+    ImGui.PopItemWidth();
 
-    if ( ImGui::Button( "Fire Bullets" ) || glfwGetKey( g_mainWindow, GLFW_KEY_B ) == GLFW_PRESS )
+    if ( ImGui.Button( "Fire Bullets" ) || glfwGetKey( g_mainWindow, GLFW_KEY_B ) == GLFW_PRESS )
     {
         DestroyBullets();
         FireBullets();
     }
 
-    if ( ImGui::Button( "Destroy Body" ) )
+    if ( ImGui.Button( "Destroy Body" ) )
     {
         DestroyBody();
     }
 
-    changed = changed || ImGui::Button( "Reset Stack" );
+    changed = changed || ImGui.Button( "Reset Stack" );
 
     if ( changed )
     {
@@ -360,7 +360,7 @@ void UpdateUI() override
         CreateStacks();
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -380,7 +380,7 @@ ShapeType m_bulletType;
 static int sampleVerticalStack = RegisterSample( "Stacking", "Vertical Stack", VerticalStack::Create );
 
 // A simple circle stack that also shows how to collect hit events
-class CircleStack : public Sample
+class CircleStack : Sample
 {
 public:
 struct Event
@@ -393,8 +393,8 @@ explicit CircleStack( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 5.0f };
-        g_camera.m_zoom = 6.0f;
+        Draw.g_camera.m_center = { 0.0f, 5.0f };
+        Draw.g_camera.m_zoom = 6.0f;
     }
 
     int shapeIndex = 0;
@@ -422,7 +422,7 @@ explicit CircleStack( Settings& settings )
     shapeDef.rollingResistance = 0.2f;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     float y = 0.5f;
 
@@ -477,7 +477,7 @@ std::vector<Event> m_events;
 
 static int sampleCircleStack = RegisterSample( "Stacking", "Circle Stack", CircleStack::Create );
 
-class Cliff : public Sample
+class Cliff : Sample
 {
 public:
 explicit Cliff( Settings& settings )
@@ -485,8 +485,8 @@ explicit Cliff( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_zoom = 25.0f * 0.5f;
-        g_camera.m_center = { 0.0f, 5.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.5f;
+        Draw.g_camera.m_center = { 0.0f, 5.0f };
     }
 
     {
@@ -536,7 +536,7 @@ void CreateBodies()
     b2Polygon square = b2MakeSquare( 0.5f );
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     {
         b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -600,18 +600,18 @@ void CreateBodies()
 void UpdateUI() override
 {
     float height = 60.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 160.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 160.0f, height ) );
 
-    ImGui::Begin( "Cliff", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Cliff", nullptr, ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Button( "Flip" ) )
+    if ( ImGui.Button( "Flip" ) )
     {
         m_flip = !m_flip;
         CreateBodies();
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -625,7 +625,7 @@ bool m_flip;
 
 static int sampleCliff = RegisterSample( "Stacking", "Cliff", Cliff::Create );
 
-class Arch : public Sample
+class Arch : Sample
 {
 public:
 explicit Arch( Settings& settings )
@@ -633,8 +633,8 @@ explicit Arch( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 8.0f };
-        g_camera.m_zoom = 25.0f * 0.35f;
+        Draw.g_camera.m_center = { 0.0f, 8.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.35f;
     }
 
     b2Vec2 ps1[9] = { { 16.0f, 0.0f },
@@ -675,7 +675,7 @@ explicit Arch( Settings& settings )
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     for ( int i = 0; i < 8; ++i )
     {
@@ -723,7 +723,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleArch = RegisterSample( "Stacking", "Arch", Arch::Create );
 
-class DoubleDomino : public Sample
+class DoubleDomino : Sample
 {
 public:
 explicit DoubleDomino( Settings& settings )
@@ -731,8 +731,8 @@ explicit DoubleDomino( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 4.0f };
-        g_camera.m_zoom = 25.0f * 0.25f;
+        Draw.g_camera.m_center = { 0.0f, 4.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.25f;
     }
 
     {
@@ -750,7 +750,7 @@ explicit DoubleDomino( Settings& settings )
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.friction = 0.6f;
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     int count = 15;
     float x = -0.5f * count;
@@ -776,7 +776,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleDoubleDomino = RegisterSample( "Stacking", "Double Domino", DoubleDomino::Create );
 
-class Confined : public Sample
+class Confined : Sample
 {
 public:
 enum
@@ -790,8 +790,8 @@ explicit Confined( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 10.0f };
-        g_camera.m_zoom = 25.0f * 0.5f;
+        Draw.g_camera.m_center = { 0.0f, 10.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.5f;
     }
 
     {
@@ -815,7 +815,7 @@ explicit Confined( Settings& settings )
     m_count = 0;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.gravityScale = 0.0f;
 
     b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -853,7 +853,7 @@ int m_count;
 static int sampleConfined = RegisterSample( "Stacking", "Confined", Confined::Create );
 
 // From PEEL
-class CardHouse : public Sample
+class CardHouse : Sample
 {
 public:
 explicit CardHouse( Settings& settings )
@@ -861,8 +861,8 @@ explicit CardHouse( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.75f, 0.9f };
-        g_camera.m_zoom = 25.0f * 0.05f;
+        Draw.g_camera.m_center = { 0.75f, 0.9f };
+        Draw.g_camera.m_zoom = 25.0f * 0.05f;
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -883,7 +883,7 @@ explicit CardHouse( Settings& settings )
     float angle2 = 0.5f * B2_PI;
 
     b2Polygon cardBox = b2MakeBox( cardThickness, cardHeight );
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     int Nb = 5;
     float z0 = 0.0f;

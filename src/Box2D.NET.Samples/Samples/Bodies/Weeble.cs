@@ -1,0 +1,157 @@
+﻿// SPDX-FileCopyrightText: 2022 Erin Catto
+// SPDX-License-Identifier: MIT
+
+using System.Numerics;
+using Box2D.NET.Primitives;
+using Box2D.NET.Samples;
+using Box2D.NET.Samples.Primitives;
+using ImGuiNET;
+using static Box2D.NET.joint;
+using static Box2D.NET.id;
+using static Box2D.NET.hull;
+using static Box2D.NET.geometry;
+using static Box2D.NET.types;
+using static Box2D.NET.math_function;
+using static Box2D.NET.body;
+using static Box2D.NET.shape;
+using static Box2D.NET.wheel_joint;
+using static Box2D.NET.world;
+using static Box2D.NET.mouse_joint;
+
+namespace Box2D.NET.Samples.Primitives;
+
+class Weeble : Sample
+{
+    private static int sampleWeeble = SampleRegister.RegisterSample("Bodies", "Weeble", Create);
+    
+    b2BodyId m_weebleId;
+    b2Vec2 m_explosionPosition;
+    float m_explosionRadius;
+    float m_explosionMagnitude;
+
+    private static Sample Create(Settings settings)
+    {
+        return new Weeble(settings);
+    }
+
+    public Weeble(Settings settings) : base(settings)
+    {
+        if (settings.restart == false)
+        {
+            Draw.g_camera.m_center =  {
+                2.3f, 10.0f
+            }
+            ;
+            Draw.g_camera.m_zoom = 25.0f * 0.5f;
+        }
+
+        // Test friction and restitution callbacks
+        b2World_SetFrictionCallback(m_worldId, FrictionCallback);
+        b2World_SetRestitutionCallback(m_worldId, RestitutionCallback);
+
+        b2BodyId groundId = b2_nullBodyId;
+        {
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            groundId = b2CreateBody(m_worldId, &bodyDef);
+
+            b2Segment segment = { { -20.0f, 0.0f }, { 20.0f, 0.0f } };
+            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2CreateSegmentShape(groundId, &shapeDef, &segment);
+        }
+
+        // Build weeble
+        {
+            b2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = b2BodyType.b2_dynamicBody;
+            bodyDef.position =  {
+                0.0f, 3.0f
+            }
+            ;
+            bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
+            m_weebleId = b2CreateBody(m_worldId, &bodyDef);
+
+            b2Capsule capsule = { { 0.0f, -1.0f }, { 0.0f, 1.0f }, 1.0f };
+            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.density = 1.0f;
+            b2CreateCapsuleShape(m_weebleId, &shapeDef, &capsule);
+
+            float mass = b2Body_GetMass(m_weebleId);
+            float inertiaTensor = b2Body_GetRotationalInertia(m_weebleId);
+
+            float offset = 1.5f;
+
+            // See: https://en.wikipedia.org/wiki/Parallel_axis_theorem
+            inertiaTensor += mass * offset * offset;
+
+            b2MassData massData = { mass, { 0.0f, -offset }, inertiaTensor };
+            b2Body_SetMassData(m_weebleId, massData);
+        }
+
+        m_explosionPosition =  {
+            0.0f, 0.0f
+        }
+        ;
+        m_explosionRadius = 2.0f;
+        m_explosionMagnitude = 8.0f;
+    }
+
+    static float FrictionCallback(float frictionA, int materialA, float frictionB, int materialB)
+    {
+        return 0.1f;
+    }
+
+    static float RestitutionCallback(float restitutionA, int materialA, float restitutionB, int materialB)
+    {
+        return 1.0f;
+    }
+
+
+    void UpdateUI() override
+    {
+        float height = 120.0f;
+        ImGui.SetNextWindowPos(ImVec2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(ImVec2(200.0f, height));
+        ImGui.Begin("Weeble", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        if (ImGui.Button("Teleport"))
+        {
+            b2Body_SetTransform(m_weebleId,  {
+                0.0f, 5.0f
+            }, b2MakeRot(0.95 * B2_PI) );
+        }
+
+        if (ImGui.Button("Explode"))
+        {
+            b2ExplosionDef def = b2DefaultExplosionDef();
+            def.position = m_explosionPosition;
+            def.radius = m_explosionRadius;
+            def.falloff = 0.1f;
+            def.impulsePerLength = m_explosionMagnitude;
+            b2World_Explode(m_worldId, &def);
+        }
+
+        ImGui.PushItemWidth(100.0f);
+
+        ImGui.SliderFloat("Magnitude", &m_explosionMagnitude, -100.0f, 100.0f, "%.1f");
+
+        ImGui.PopItemWidth();
+        ImGui.End();
+    }
+
+    void Step(Settings& settings) override
+    {
+        Sample::Step(settings);
+
+        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, b2_colorAzure);
+
+        // This shows how to get the velocity of a point on a body
+        b2Vec2 localPoint = { 0.0f, 2.0f };
+        b2Vec2 worldPoint = b2Body_GetWorldPoint(m_weebleId, localPoint);
+
+        b2Vec2 v1 = b2Body_GetLocalPointVelocity(m_weebleId, localPoint);
+        b2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
+
+        b2Vec2 offset = { 0.05f, 0.0f };
+        Draw.g_draw.DrawSegment(worldPoint, worldPoint + v1, b2_colorRed);
+        Draw.g_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, b2_colorGreen);
+    }
+}

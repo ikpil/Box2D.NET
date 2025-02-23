@@ -18,8 +18,8 @@ public:
 	{
 		if ( settings.restart == false )
 		{
-			g_camera.m_center = { 0.5f, 0.0f };
-			g_camera.m_zoom = 25.0f * 0.3f;
+			Draw.g_camera.m_center = { 0.5f, 0.0f };
+			Draw.g_camera.m_zoom = 25.0f * 0.3f;
 		}
 
 		m_generation = 0;

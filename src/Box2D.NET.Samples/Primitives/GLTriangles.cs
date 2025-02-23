@@ -114,7 +114,7 @@ public class GLTriangles
             0.0f
         }
         ;
-        g_camera.BuildProjectionMatrix(proj, 0.2f);
+        Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
 

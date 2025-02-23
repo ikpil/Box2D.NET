@@ -26,8 +26,8 @@ explicit FallingHinges( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 7.5f };
-        g_camera.m_zoom = 10.0f;
+        Draw.g_camera.m_center = { 0.0f, 7.5f };
+        Draw.g_camera.m_zoom = 10.0f;
     }
 
     {
@@ -79,7 +79,7 @@ explicit FallingHinges( Settings& settings )
         for ( int i = 0; i < e_rows; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
 
             bodyDef.position.x = x + offset * i;
             bodyDef.position.y = h + 2.0f * h * i;

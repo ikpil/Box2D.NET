@@ -21,8 +21,8 @@ namespace Box2D.NET.Samples;
 
 		if ( settings.restart == false )
 		{
-			g_camera.m_center = m_viewPosition;
-			g_camera.m_zoom = 25.0f * 1.0f;
+			Draw.g_camera.m_center = m_viewPosition;
+			Draw.g_camera.m_zoom = 25.0f * 1.0f;
 			settings.drawJoints = false;
 			settings.useCameraBounds = true;
 		}
@@ -81,7 +81,7 @@ namespace Box2D.NET.Samples;
 			if ( remainder == 0 )
 			{
 				b2BodyDef bodyDef = b2DefaultBodyDef();
-				bodyDef.type = b2_dynamicBody;
+				bodyDef.type = b2BodyType.b2_dynamicBody;
 				bodyDef.position = { xbase - 3.0f, 10.0f };
 
 				b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -135,22 +135,22 @@ namespace Box2D.NET.Samples;
 	public override void UpdateUI()
 	{
 		float height = 160.0f;
-		ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-		ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+		ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+		ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-		ImGui::Begin( "Large World", nullptr, ImGuiWindowFlags_NoResize );
+		ImGui.Begin( "Large World", nullptr, ImGuiWindowFlags.NoResize );
 
-		ImGui::SliderFloat( "speed", &m_speed, -400.0f, 400.0f, "%.0f" );
-		if ( ImGui::Button( "stop" ) )
+		ImGui.SliderFloat( "speed", &m_speed, -400.0f, 400.0f, "%.0f" );
+		if ( ImGui.Button( "stop" ) )
 		{
 			m_speed = 0.0f;
 		}
 
-		ImGui::Checkbox( "explode", &m_explode );
-		ImGui::Checkbox( "follow car", &m_followCar );
+		ImGui.Checkbox( "explode", &m_explode );
+		ImGui.Checkbox( "follow car", &m_followCar );
 
-		ImGui::Text( "world size = %g kilometers", m_gridSize * m_gridCount / 1000.0f );
-		ImGui::End();
+		ImGui.Text( "world size = %g kilometers", m_gridSize * m_gridCount / 1000.0f );
+		ImGui.End();
 	}
 
 	void Step( Settings& settings ) override
@@ -168,12 +168,12 @@ namespace Box2D.NET.Samples;
 
 		if ( m_speed != 0.0f )
 		{
-			g_camera.m_center = m_viewPosition;
+			Draw.g_camera.m_center = m_viewPosition;
 		}
 
 		if ( m_followCar )
 		{
-			g_camera.m_center.x = b2Body_GetPosition( m_car.m_chassisId ).x;
+			Draw.g_camera.m_center.x = b2Body_GetPosition( m_car.m_chassisId ).x;
 		}
 
 		float radius = 2.0f;

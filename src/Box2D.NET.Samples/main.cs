@@ -106,7 +106,7 @@ static void RestartSample()
 static void CreateUI( GLFWwindow* window, const char* glslVersion )
 {
 	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+	ImGui.CreateContext();
 
 	bool success = ImGui_ImplGlfw_InitForOpenGL( window, false );
 	if ( success == false )
@@ -129,10 +129,10 @@ static void CreateUI( GLFWwindow* window, const char* glslVersion )
 	{
 		ImFontConfig fontConfig;
 		fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-		Draw.g_draw.m_smallFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
-		Draw.g_draw.m_regularFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
-		Draw.g_draw.m_mediumFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
-		Draw.g_draw.m_largeFont = ImGui::GetIO().Fonts->AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
+		Draw.g_draw.m_smallFont = ImGui.GetIO().Fonts->AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
+		Draw.g_draw.m_regularFont = ImGui.GetIO().Fonts->AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
+		Draw.g_draw.m_mediumFont = ImGui.GetIO().Fonts->AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
+		Draw.g_draw.m_largeFont = ImGui.GetIO().Fonts->AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
 	}
 	else
 	{
@@ -145,13 +145,13 @@ static void DestroyUI()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
+	ImGui.DestroyContext();
 }
 
 static void ResizeWindowCallback( GLFWwindow*, int width, int height )
 {
-	g_camera.m_width = int( width / s_windowScale );
-	g_camera.m_height = int( height / s_windowScale );
+	Draw.g_camera.m_width = int( width / s_windowScale );
+	Draw.g_camera.m_height = int( height / s_windowScale );
 	s_settings.windowWidth = int( width / s_windowScale );
 	s_settings.windowHeight = int( height / s_windowScale );
 }
@@ -159,7 +159,7 @@ static void ResizeWindowCallback( GLFWwindow*, int width, int height )
 static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, int mods )
 {
 	ImGui_ImplGlfw_KeyCallback( window, key, scancode, action, mods );
-	if ( ImGui::GetIO().WantCaptureKeyboard )
+	if ( ImGui.GetIO().WantCaptureKeyboard )
 	{
 		return;
 	}
@@ -182,7 +182,7 @@ static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, 
 				}
 				else
 				{
-					g_camera.m_center.x -= 0.5f;
+					Draw.g_camera.m_center.x -= 0.5f;
 				}
 				break;
 
@@ -195,7 +195,7 @@ static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, 
 				}
 				else
 				{
-					g_camera.m_center.x += 0.5f;
+					Draw.g_camera.m_center.x += 0.5f;
 				}
 				break;
 
@@ -208,7 +208,7 @@ static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, 
 				}
 				else
 				{
-					g_camera.m_center.y -= 0.5f;
+					Draw.g_camera.m_center.y -= 0.5f;
 				}
 				break;
 
@@ -221,12 +221,12 @@ static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, 
 				}
 				else
 				{
-					g_camera.m_center.y += 0.5f;
+					Draw.g_camera.m_center.y += 0.5f;
 				}
 				break;
 
 			case GLFW_KEY_HOME:
-				g_camera.ResetView();
+				Draw.g_camera.ResetView();
 				break;
 
 			case GLFW_KEY_R:
@@ -280,7 +280,7 @@ static void MouseButtonCallback( GLFWwindow* window, int button, int action, int
 {
 	ImGui_ImplGlfw_MouseButtonCallback( window, button, action, mods );
 
-	if ( ImGui::GetIO().WantCaptureMouse )
+	if ( ImGui.GetIO().WantCaptureMouse )
 	{
 		return;
 	}
@@ -292,7 +292,7 @@ static void MouseButtonCallback( GLFWwindow* window, int button, int action, int
 	// Use the mouse to move things around.
 	if ( button == GLFW_MOUSE_BUTTON_1 )
 	{
-		b2Vec2 pw = g_camera.ConvertScreenToWorld( ps );
+		b2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
 		if ( action == GLFW_PRESS )
 		{
 			s_sample->MouseDown( pw, button, mods );
@@ -307,7 +307,7 @@ static void MouseButtonCallback( GLFWwindow* window, int button, int action, int
 	{
 		if ( action == GLFW_PRESS )
 		{
-			s_clickPointWS = g_camera.ConvertScreenToWorld( ps );
+			s_clickPointWS = Draw.g_camera.ConvertScreenToWorld( ps );
 			s_rightMouseDown = true;
 		}
 
@@ -324,33 +324,33 @@ static void MouseMotionCallback( GLFWwindow* window, double xd, double yd )
 
 	ImGui_ImplGlfw_CursorPosCallback( window, ps.x, ps.y );
 
-	b2Vec2 pw = g_camera.ConvertScreenToWorld( ps );
+	b2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
 	s_sample->MouseMove( pw );
 
 	if ( s_rightMouseDown )
 	{
 		b2Vec2 diff = b2Sub( pw, s_clickPointWS );
-		g_camera.m_center.x -= diff.x;
-		g_camera.m_center.y -= diff.y;
-		s_clickPointWS = g_camera.ConvertScreenToWorld( ps );
+		Draw.g_camera.m_center.x -= diff.x;
+		Draw.g_camera.m_center.y -= diff.y;
+		s_clickPointWS = Draw.g_camera.ConvertScreenToWorld( ps );
 	}
 }
 
 static void ScrollCallback( GLFWwindow* window, double dx, double dy )
 {
 	ImGui_ImplGlfw_ScrollCallback( window, dx, dy );
-	if ( ImGui::GetIO().WantCaptureMouse )
+	if ( ImGui.GetIO().WantCaptureMouse )
 	{
 		return;
 	}
 
 	if ( dy > 0 )
 	{
-		g_camera.m_zoom /= 1.1f;
+		Draw.g_camera.m_zoom /= 1.1f;
 	}
 	else
 	{
-		g_camera.m_zoom *= 1.1f;
+		Draw.g_camera.m_zoom *= 1.1f;
 	}
 }
 
@@ -361,81 +361,81 @@ static void UpdateUI()
 	float menuWidth = 180.0f;
 	if ( Draw.g_draw.m_showUI )
 	{
-		ImGui::SetNextWindowPos( { g_camera.m_width - menuWidth - 10.0f, 10.0f } );
-		ImGui::SetNextWindowSize( { menuWidth, g_camera.m_height - 20.0f } );
+		ImGui.SetNextWindowPos( { Draw.g_camera.m_width - menuWidth - 10.0f, 10.0f } );
+		ImGui.SetNextWindowSize( { menuWidth, Draw.g_camera.m_height - 20.0f } );
 
-		ImGui::Begin( "Tools", &Draw.g_draw.m_showUI,
-					  ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse );
+		ImGui.Begin( "Tools", &Draw.g_draw.m_showUI,
+					  ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse );
 
-		if ( ImGui::BeginTabBar( "ControlTabs", ImGuiTabBarFlags_None ) )
+		if ( ImGui.BeginTabBar( "ControlTabs", ImGuiTabBarFlags_None ) )
 		{
-			if ( ImGui::BeginTabItem( "Controls" ) )
+			if ( ImGui.BeginTabItem( "Controls" ) )
 			{
-				ImGui::PushItemWidth( 100.0f );
-				ImGui::SliderInt( "Sub-steps", &s_settings.subStepCount, 1, 50 );
-				ImGui::SliderFloat( "Hertz", &s_settings.hertz, 5.0f, 120.0f, "%.0f hz" );
+				ImGui.PushItemWidth( 100.0f );
+				ImGui.SliderInt( "Sub-steps", &s_settings.subStepCount, 1, 50 );
+				ImGui.SliderFloat( "Hertz", &s_settings.hertz, 5.0f, 120.0f, "%.0f hz" );
 
-				if ( ImGui::SliderInt( "Workers", &s_settings.workerCount, 1, maxWorkers ) )
+				if ( ImGui.SliderInt( "Workers", &s_settings.workerCount, 1, maxWorkers ) )
 				{
 					s_settings.workerCount = b2ClampInt( s_settings.workerCount, 1, maxWorkers );
 					RestartSample();
 				}
-				ImGui::PopItemWidth();
+				ImGui.PopItemWidth();
 
-				ImGui::Separator();
+				ImGui.Separator();
 
-				ImGui::Checkbox( "Sleep", &s_settings.enableSleep );
-				ImGui::Checkbox( "Warm Starting", &s_settings.enableWarmStarting );
-				ImGui::Checkbox( "Continuous", &s_settings.enableContinuous );
+				ImGui.Checkbox( "Sleep", &s_settings.enableSleep );
+				ImGui.Checkbox( "Warm Starting", &s_settings.enableWarmStarting );
+				ImGui.Checkbox( "Continuous", &s_settings.enableContinuous );
 
-				ImGui::Separator();
+				ImGui.Separator();
 
-				ImGui::Checkbox( "Shapes", &s_settings.drawShapes );
-				ImGui::Checkbox( "Joints", &s_settings.drawJoints );
-				ImGui::Checkbox( "Joint Extras", &s_settings.drawJointExtras );
-				ImGui::Checkbox( "AABBs", &s_settings.drawAABBs );
-				ImGui::Checkbox( "Contact Points", &s_settings.drawContactPoints );
-				ImGui::Checkbox( "Contact Normals", &s_settings.drawContactNormals );
-				ImGui::Checkbox( "Contact Impulses", &s_settings.drawContactImpulses );
-				ImGui::Checkbox( "Friction Impulses", &s_settings.drawFrictionImpulses );
-				ImGui::Checkbox( "Center of Masses", &s_settings.drawMass );
-				ImGui::Checkbox( "Body Names", &s_settings.drawBodyNames );
-				ImGui::Checkbox( "Graph Colors", &s_settings.drawGraphColors );
-				ImGui::Checkbox( "Counters", &s_settings.drawCounters );
-				ImGui::Checkbox( "Profile", &s_settings.drawProfile );
+				ImGui.Checkbox( "Shapes", &s_settings.drawShapes );
+				ImGui.Checkbox( "Joints", &s_settings.drawJoints );
+				ImGui.Checkbox( "Joint Extras", &s_settings.drawJointExtras );
+				ImGui.Checkbox( "AABBs", &s_settings.drawAABBs );
+				ImGui.Checkbox( "Contact Points", &s_settings.drawContactPoints );
+				ImGui.Checkbox( "Contact Normals", &s_settings.drawContactNormals );
+				ImGui.Checkbox( "Contact Impulses", &s_settings.drawContactImpulses );
+				ImGui.Checkbox( "Friction Impulses", &s_settings.drawFrictionImpulses );
+				ImGui.Checkbox( "Center of Masses", &s_settings.drawMass );
+				ImGui.Checkbox( "Body Names", &s_settings.drawBodyNames );
+				ImGui.Checkbox( "Graph Colors", &s_settings.drawGraphColors );
+				ImGui.Checkbox( "Counters", &s_settings.drawCounters );
+				ImGui.Checkbox( "Profile", &s_settings.drawProfile );
 
 				ImVec2 button_sz = ImVec2( -1, 0 );
-				if ( ImGui::Button( "Pause (P)", button_sz ) )
+				if ( ImGui.Button( "Pause (P)", button_sz ) )
 				{
 					s_settings.pause = !s_settings.pause;
 				}
 
-				if ( ImGui::Button( "Single Step (O)", button_sz ) )
+				if ( ImGui.Button( "Single Step (O)", button_sz ) )
 				{
 					s_settings.singleStep = !s_settings.singleStep;
 				}
 
-				if ( ImGui::Button( "Dump Mem Stats", button_sz ) )
+				if ( ImGui.Button( "Dump Mem Stats", button_sz ) )
 				{
 					b2World_DumpMemoryStats( s_sample->m_worldId );
 				}
 
-				if ( ImGui::Button( "Reset Profile", button_sz ) )
+				if ( ImGui.Button( "Reset Profile", button_sz ) )
 				{
 					s_sample->ResetProfile();
 				}
 
-				if ( ImGui::Button( "Restart (R)", button_sz ) )
+				if ( ImGui.Button( "Restart (R)", button_sz ) )
 				{
 					RestartSample();
 				}
 
-				if ( ImGui::Button( "Quit", button_sz ) )
+				if ( ImGui.Button( "Quit", button_sz ) )
 				{
 					glfwSetWindowShouldClose( g_mainWindow, GL_TRUE );
 				}
 
-				ImGui::EndTabItem();
+				ImGui.EndTabItem();
 			}
 
 			ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
@@ -443,7 +443,7 @@ static void UpdateUI()
 
 			ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 
-			if ( ImGui::BeginTabItem( "Samples" ) )
+			if ( ImGui.BeginTabItem( "Samples" ) )
 			{
 				int categoryIndex = 0;
 				const char* category = g_sampleEntries[categoryIndex].category;
@@ -452,7 +452,7 @@ static void UpdateUI()
 				{
 					bool categorySelected = strcmp( category, g_sampleEntries[s_settings.sampleIndex].category ) == 0;
 					ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags_Selected : 0;
-					bool nodeOpen = ImGui::TreeNodeEx( category, nodeFlags | nodeSelectionFlags );
+					bool nodeOpen = ImGui.TreeNodeEx( category, nodeFlags | nodeSelectionFlags );
 
 					if ( nodeOpen )
 					{
@@ -463,15 +463,15 @@ static void UpdateUI()
 							{
 								selectionFlags = ImGuiTreeNodeFlags_Selected;
 							}
-							ImGui::TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s",
+							ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s",
 											   g_sampleEntries[i].name );
-							if ( ImGui::IsItemClicked() )
+							if ( ImGui.IsItemClicked() )
 							{
 								s_selection = i;
 							}
 							++i;
 						}
-						ImGui::TreePop();
+						ImGui.TreePop();
 					}
 					else
 					{
@@ -487,12 +487,12 @@ static void UpdateUI()
 						categoryIndex = i;
 					}
 				}
-				ImGui::EndTabItem();
+				ImGui.EndTabItem();
 			}
-			ImGui::EndTabBar();
+			ImGui.EndTabBar();
 		}
 
-		ImGui::End();
+		ImGui.End();
 
 		s_sample->UpdateUI();
 	}
@@ -524,8 +524,8 @@ int main( int, char** )
 
 	glfwSetErrorCallback( glfwErrorCallback );
 
-	g_camera.m_width = s_settings.windowWidth;
-	g_camera.m_height = s_settings.windowHeight;
+	Draw.g_camera.m_width = s_settings.windowWidth;
+	Draw.g_camera.m_height = s_settings.windowHeight;
 
 	if ( glfwInit() == 0 )
 	{
@@ -567,7 +567,7 @@ int main( int, char** )
 	}
 	else
 	{
-		g_mainWindow = glfwCreateWindow( int( g_camera.m_width * s_windowScale ), int( g_camera.m_height * s_windowScale ),
+		g_mainWindow = glfwCreateWindow( int( Draw.g_camera.m_width * s_windowScale ), int( Draw.g_camera.m_height * s_windowScale ),
 										 buffer, nullptr, nullptr );
 	}
 
@@ -622,17 +622,17 @@ int main( int, char** )
 		if ( glfwGetKey( g_mainWindow, GLFW_KEY_Z ) == GLFW_PRESS )
 		{
 			// Zoom out
-			g_camera.m_zoom = b2MinFloat( 1.005f * g_camera.m_zoom, 100.0f );
+			Draw.g_camera.m_zoom = b2MinFloat( 1.005f * Draw.g_camera.m_zoom, 100.0f );
 		}
 		else if ( glfwGetKey( g_mainWindow, GLFW_KEY_X ) == GLFW_PRESS )
 		{
 			// Zoom in
-			g_camera.m_zoom = b2MaxFloat( 0.995f * g_camera.m_zoom, 0.5f );
+			Draw.g_camera.m_zoom = b2MaxFloat( 0.995f * Draw.g_camera.m_zoom, 0.5f );
 		}
 
-		glfwGetWindowSize( g_mainWindow, &g_camera.m_width, &g_camera.m_height );
-		g_camera.m_width = int( g_camera.m_width / s_windowScale );
-		g_camera.m_height = int( g_camera.m_height / s_windowScale );
+		glfwGetWindowSize( g_mainWindow, &Draw.g_camera.m_width, &Draw.g_camera.m_height );
+		Draw.g_camera.m_width = int( Draw.g_camera.m_width / s_windowScale );
+		Draw.g_camera.m_height = int( Draw.g_camera.m_height / s_windowScale );
 
 		int bufferWidth, bufferHeight;
 		glfwGetFramebufferSize( g_mainWindow, &bufferWidth, &bufferHeight );
@@ -649,21 +649,21 @@ int main( int, char** )
 		ImGui_ImplGlfw_NewFrame();
 		ImGui_ImplGlfw_CursorPosCallback( g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale );
 
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize.x = float( g_camera.m_width );
-		io.DisplaySize.y = float( g_camera.m_height );
-		io.DisplayFramebufferScale.x = bufferWidth / float( g_camera.m_width );
-		io.DisplayFramebufferScale.y = bufferHeight / float( g_camera.m_height );
+		ImGuiIO& io = ImGui.GetIO();
+		io.DisplaySize.x = float( Draw.g_camera.m_width );
+		io.DisplaySize.y = float( Draw.g_camera.m_height );
+		io.DisplayFramebufferScale.x = bufferWidth / float( Draw.g_camera.m_width );
+		io.DisplayFramebufferScale.y = bufferHeight / float( Draw.g_camera.m_height );
 
-		ImGui::NewFrame();
+		ImGui.NewFrame();
 
-		ImGui::SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
-		ImGui::SetNextWindowSize( ImVec2( float( g_camera.m_width ), float( g_camera.m_height ) ) );
-		ImGui::SetNextWindowBgAlpha( 0.0f );
-		ImGui::Begin( "Overlay", nullptr,
-					  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-						  ImGuiWindowFlags_NoScrollbar );
-		ImGui::End();
+		ImGui.SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
+		ImGui.SetNextWindowSize( ImVec2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+		ImGui.SetNextWindowBgAlpha( 0.0f );
+		ImGui.Begin( "Overlay", nullptr,
+					  ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+						  ImGuiWindowFlags.NoScrollbar );
+		ImGui.End();
 
 		if ( s_sample == nullptr )
 		{
@@ -684,24 +684,24 @@ int main( int, char** )
 
 		UpdateUI();
 
-		// ImGui::ShowDemoWindow();
+		// ImGui.ShowDemoWindow();
 
 		if ( Draw.g_draw.m_showUI )
 		{
 			snprintf( buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample->m_stepCount,
-					  g_camera.m_center.x, g_camera.m_center.y, g_camera.m_zoom );
+					  Draw.g_camera.m_center.x, Draw.g_camera.m_center.y, Draw.g_camera.m_zoom );
 			// snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
 
-			ImGui::Begin( "Overlay", nullptr,
-						  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-							  ImGuiWindowFlags_NoScrollbar );
-			ImGui::SetCursorPos( ImVec2( 5.0f, g_camera.m_height - 20.0f ) );
-			ImGui::TextColored( ImColor( 153, 230, 153, 255 ), "%s", buffer );
-			ImGui::End();
+			ImGui.Begin( "Overlay", nullptr,
+						  ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+							  ImGuiWindowFlags.NoScrollbar );
+			ImGui.SetCursorPos( ImVec2( 5.0f, Draw.g_camera.m_height - 20.0f ) );
+			ImGui.TextColored( ImColor( 153, 230, 153, 255 ), "%s", buffer );
+			ImGui.End();
 		}
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+		ImGui.Render();
+		ImGui_ImplOpenGL3_RenderDrawData( ImGui.GetDrawData() );
 
 		glfwSwapBuffers( g_mainWindow );
 
@@ -710,7 +710,7 @@ int main( int, char** )
 
 		if ( s_selection != s_settings.sampleIndex )
 		{
-			g_camera.ResetView();
+			Draw.g_camera.ResetView();
 			s_settings.sampleIndex = s_selection;
 
 			// #todo restore all drawing settings that may have been overridden by a sample

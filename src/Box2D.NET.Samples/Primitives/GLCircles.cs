@@ -119,10 +119,10 @@ public class GLCircles
             0.0f
         }
         ;
-        g_camera.BuildProjectionMatrix(proj, 0.2f);
+        Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        glUniform1f(m_pixelScaleUniform, g_camera.m_height / g_camera.m_zoom);
+        glUniform1f(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
 
         glBindVertexArray(m_vaoId);
 

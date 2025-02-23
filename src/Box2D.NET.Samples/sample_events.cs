@@ -16,8 +16,8 @@ public SensorFunnel( Settings settings ) : base( settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 0.0f };
-        g_camera.m_zoom = 25.0f * 1.333f;
+        Draw.g_camera.m_center = { 0.0f, 0.0f };
+        Draw.g_camera.m_zoom = 25.0f * 1.333f;
     }
 
     settings.drawJoints = false;
@@ -93,7 +93,7 @@ public SensorFunnel( Settings settings ) : base( settings )
         for ( int i = 0; i < 3; ++i )
         {
             bodyDef.position = { 0.0f, y };
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
 
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -221,24 +221,24 @@ void Clear()
 void UpdateUI() override
 {
     float height = 90.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 140.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 140.0f, height ) );
 
-    ImGui::Begin( "Sensor Event", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Sensor Event", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::RadioButton( "donut", m_type == e_donut ) )
+    if ( ImGui.RadioButton( "donut", m_type == e_donut ) )
     {
         Clear();
         m_type = e_donut;
     }
 
-    if ( ImGui::RadioButton( "human", m_type == e_human ) )
+    if ( ImGui.RadioButton( "human", m_type == e_human ) )
     {
         Clear();
         m_type = e_human;
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -322,7 +322,7 @@ float m_side;
 
 static int sampleSensorBeginEvent = RegisterSample( "Events", "Sensor Funnel", SensorFunnel::Create );
 
-class SensorBookend : public Sample
+class SensorBookend : Sample
 {
 public:
 explicit SensorBookend( Settings& settings )
@@ -330,8 +330,8 @@ explicit SensorBookend( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 6.0f };
-        g_camera.m_zoom = 7.5f;
+        Draw.g_camera.m_center = { 0.0f, 6.0f };
+        Draw.g_camera.m_zoom = 7.5f;
     }
 
     {
@@ -373,7 +373,7 @@ void CreateVisitor()
 {
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.position = { -4.0f, 1.0f };
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     m_visitorBodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -386,21 +386,21 @@ void CreateVisitor()
 void UpdateUI() override
 {
     float height = 90.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 140.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 140.0f, height ) );
 
-    ImGui::Begin( "Sensor Bookend", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Sensor Bookend", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
     if ( B2_IS_NULL( m_visitorBodyId ) )
     {
-        if ( ImGui::Button( "create visitor" ) )
+        if ( ImGui.Button( "create visitor" ) )
         {
             CreateVisitor();
         }
     }
     else
     {
-        if ( ImGui::Button( "destroy visitor" ) )
+        if ( ImGui.Button( "destroy visitor" ) )
         {
             b2DestroyBody( m_visitorBodyId );
             m_visitorBodyId = b2_nullBodyId;
@@ -410,14 +410,14 @@ void UpdateUI() override
 
     if ( B2_IS_NULL( m_sensorBodyId ) )
     {
-        if ( ImGui::Button( "create sensor" ) )
+        if ( ImGui.Button( "create sensor" ) )
         {
             CreateSensor();
         }
     }
     else
     {
-        if ( ImGui::Button( "destroy sensor" ) )
+        if ( ImGui.Button( "destroy sensor" ) )
         {
             b2DestroyBody( m_sensorBodyId );
             m_sensorBodyId = b2_nullBodyId;
@@ -425,7 +425,7 @@ void UpdateUI() override
         }
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -475,7 +475,7 @@ bool m_isVisiting;
 
 static int sampleSensorBookendEvent = RegisterSample( "Events", "Sensor Bookend", SensorBookend::Create );
 
-class FootSensor : public Sample
+class FootSensor : Sample
 {
 public:
 enum CollisionBits
@@ -492,8 +492,8 @@ explicit FootSensor( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 6.0f };
-        g_camera.m_zoom = 7.5f;
+        Draw.g_camera.m_center = { 0.0f, 6.0f };
+        Draw.g_camera.m_zoom = 7.5f;
     }
 
     {
@@ -520,7 +520,7 @@ explicit FootSensor( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.fixedRotation = true;
         bodyDef.position = { 0.0f, 1.0f };
         m_playerId = b2CreateBody( m_worldId, &bodyDef );
@@ -614,7 +614,7 @@ struct BodyUserData
     int index;
 };
 
-class ContactEvent : public Sample
+class ContactEvent : Sample
 {
 public:
 enum
@@ -627,8 +627,8 @@ explicit ContactEvent( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 0.0f };
-        g_camera.m_zoom = 25.0f * 1.75f;
+        Draw.g_camera.m_center = { 0.0f, 0.0f };
+        Draw.g_camera.m_zoom = 25.0f * 1.75f;
     }
 
     {
@@ -648,7 +648,7 @@ explicit ContactEvent( Settings& settings )
     // Player
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 0.0f;
         bodyDef.linearDamping = 0.5f;
         bodyDef.angularDamping = 0.5f;
@@ -693,7 +693,7 @@ void SpawnDebris()
 
     // Debris
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.position = { RandomFloatRange( -38.0f, 38.0f ), RandomFloatRange( -38.0f, 38.0f ) };
     bodyDef.rotation = b2MakeRot( RandomFloatRange( -B2_PI, B2_PI ) );
     bodyDef.linearVelocity = { RandomFloatRange( -5.0f, 5.0f ), RandomFloatRange( -5.0f, 5.0f ) };
@@ -728,14 +728,14 @@ void SpawnDebris()
 void UpdateUI() override
 {
     float height = 60.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Contact Event", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Contact Event", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-    ImGui::SliderFloat( "force", &m_force, 100.0f, 500.0f, "%.1f" );
+    ImGui.SliderFloat( "force", &m_force, 100.0f, 500.0f, "%.1f" );
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -1028,7 +1028,7 @@ static int sampleWeeble = RegisterSample( "Events", "Contact", ContactEvent::Cre
 
 // Shows how to make a rigid body character mover and use the pre-solve callback. In this
 // case the platform should get the pre-solve event, not the player.
-class Platformer : public Sample
+class Platformer : Sample
 {
 public:
 explicit Platformer( Settings& settings )
@@ -1036,8 +1036,8 @@ explicit Platformer( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.5f, 7.5f };
-        g_camera.m_zoom = 25.0f * 0.4f;
+        Draw.g_camera.m_center = { 0.5f, 7.5f };
+        Draw.g_camera.m_zoom = 25.0f * 0.4f;
     }
 
     b2World_SetPreSolveCallback( m_worldId, PreSolveStatic, this );
@@ -1055,7 +1055,7 @@ explicit Platformer( Settings& settings )
     // This tests pre-solve with continuous collision
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_staticBody;
+        bodyDef.type = b2BodyType.b2_staticBody;
         bodyDef.position = { -6.0f, 6.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -1071,7 +1071,7 @@ explicit Platformer( Settings& settings )
     // Moving Platform
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_kinematicBody;
+        bodyDef.type = b2BodyType.b2_kinematicBody;
         bodyDef.position = { 0.0f, 6.0f };
         bodyDef.linearVelocity = { 2.0f, 0.0f };
         m_movingPlatformId = b2CreateBody( m_worldId, &bodyDef );
@@ -1088,7 +1088,7 @@ explicit Platformer( Settings& settings )
     // Player
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.fixedRotation = true;
         bodyDef.linearDamping = 0.5f;
         bodyDef.position = { 0.0f, 1.0f };
@@ -1163,15 +1163,15 @@ bool PreSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold ) co
 void UpdateUI() override
 {
     float height = 100.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "One-Sided Platform", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "One-Sided Platform", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-    ImGui::SliderFloat( "force", &m_force, 0.0f, 50.0f, "%.1f" );
-    ImGui::SliderFloat( "impulse", &m_impulse, 0.0f, 50.0f, "%.1f" );
+    ImGui.SliderFloat( "force", &m_force, 0.0f, 50.0f, "%.1f" );
+    ImGui.SliderFloat( "impulse", &m_impulse, 0.0f, 50.0f, "%.1f" );
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -1281,7 +1281,7 @@ b2BodyId m_movingPlatformId;
 static int samplePlatformer = RegisterSample( "Events", "Platformer", Platformer::Create );
 
 // This shows how to process body events.
-class BodyMove : public Sample
+class BodyMove : Sample
 {
 public:
 enum
@@ -1294,8 +1294,8 @@ explicit BodyMove( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 2.0f, 8.0f };
-        g_camera.m_zoom = 25.0f * 0.55f;
+        Draw.g_camera.m_center = { 2.0f, 8.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.55f;
     }
 
     {
@@ -1338,7 +1338,7 @@ void CreateBodies()
     b2Polygon square = b2MakeSquare( 0.35f );
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     b2ShapeDef shapeDef = b2DefaultShapeDef();
 
     float x = -5.0f, y = 10.0f;
@@ -1377,12 +1377,12 @@ void CreateBodies()
 void UpdateUI() override
 {
     float height = 100.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Body Move", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Body Move", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-    if ( ImGui::Button( "Explode" ) )
+    if ( ImGui.Button( "Explode" ) )
     {
         b2ExplosionDef def = b2DefaultExplosionDef();
         def.position = m_explosionPosition;
@@ -1392,9 +1392,9 @@ void UpdateUI() override
         b2World_Explode( m_worldId, &def );
     }
 
-    ImGui::SliderFloat( "Magnitude", &m_explosionMagnitude, -20.0f, 20.0f, "%.1f" );
+    ImGui.SliderFloat( "Magnitude", &m_explosionMagnitude, -20.0f, 20.0f, "%.1f" );
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -1456,7 +1456,7 @@ float m_explosionMagnitude;
 
 static int sampleBodyMove = RegisterSample( "Events", "Body Move", BodyMove::Create );
 
-class SensorTypes : public Sample
+class SensorTypes : Sample
 {
 public:
 enum CollisionBits
@@ -1473,8 +1473,8 @@ explicit SensorTypes( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 3.0f };
-        g_camera.m_zoom = 4.5f;
+        Draw.g_camera.m_center = { 0.0f, 3.0f };
+        Draw.g_camera.m_zoom = 4.5f;
     }
 
     {
@@ -1499,7 +1499,7 @@ explicit SensorTypes( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "static sensor";
-        bodyDef.type = b2_staticBody;
+        bodyDef.type = b2BodyType.b2_staticBody;
         bodyDef.position = { -3.0f, 0.8f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -1513,7 +1513,7 @@ explicit SensorTypes( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "kinematic sensor";
-        bodyDef.type = b2_kinematicBody;
+        bodyDef.type = b2BodyType.b2_kinematicBody;
         bodyDef.position = { 0.0f, 0.0f };
         bodyDef.linearVelocity = { 0.0f, 1.0f };
         m_kinematicBodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1528,7 +1528,7 @@ explicit SensorTypes( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "dynamic sensor";
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { 3.0f, 1.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -1549,7 +1549,7 @@ explicit SensorTypes( Settings& settings )
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "ball_01";
         bodyDef.position = { -5.0f, 1.0f };
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
 
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 

@@ -29,25 +29,22 @@ public class Draw
     public static Draw g_draw;
     public static Camera g_camera;
 
-    bool m_showUI;
+    public bool m_showUI;
 
-    GLBackground m_background;
-    GLPoints m_points;
-    GLLines m_lines;
-    GLTriangles m_triangles;
-    GLCircles m_circles;
-    GLSolidCircles m_solidCircles;
-    GLSolidCapsules m_solidCapsules;
-    GLSolidPolygons m_solidPolygons;
-    b2DebugDraw m_debugDraw;
+    public GLBackground m_background;
+    public GLPoints m_points;
+    public GLLines m_lines;
+    public GLTriangles m_triangles;
+    public GLCircles m_circles;
+    public GLSolidCircles m_solidCircles;
+    public GLSolidCapsules m_solidCapsules;
+    public GLSolidPolygons m_solidPolygons;
+    public b2DebugDraw m_debugDraw;
 
     ImFont* m_smallFont;
     ImFont* m_regularFont;
     ImFont* m_mediumFont;
     ImFont* m_largeFont;
-
-    extern Draw g_draw;
-    extern Camera g_camera;
 
     extern struct GLFWwindow* g_mainWindow;
 
@@ -232,29 +229,29 @@ public class Draw
 
         va_list arg;
         va_start(arg, string);
-        ImGui::Begin("Overlay", nullptr,
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-            ImGuiWindowFlags_NoScrollbar);
-        ImGui::PushFont(Draw.g_draw.m_regularFont);
-        ImGui::SetCursorPos(ImVec2(float(x), float(y)));
-        ImGui::TextColoredV(ImColor(230, 153, 153, 255), string, arg);
-        ImGui::PopFont();
-        ImGui::End();
+        ImGui.Begin("Overlay", nullptr,
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.PushFont(Draw.g_draw.m_regularFont);
+        ImGui.SetCursorPos(ImVec2(float(x), float(y)));
+        ImGui.TextColoredV(ImColor(230, 153, 153, 255), string, arg);
+        ImGui.PopFont();
+        ImGui.End();
         va_end(arg);
     }
 
     public void DrawString(b2Vec2 p,  const char*  string, ...)
     {
-        b2Vec2 ps = g_camera.ConvertWorldToScreen(p);
+        b2Vec2 ps = Draw.g_camera.ConvertWorldToScreen(p);
 
         va_list arg;
         va_start(arg, string);
-        ImGui::Begin("Overlay", nullptr,
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-            ImGuiWindowFlags_NoScrollbar);
-        ImGui::SetCursorPos(ImVec2(ps.x, ps.y));
-        ImGui::TextColoredV(ImColor(230, 230, 230, 255), string, arg);
-        ImGui::End();
+        ImGui.Begin("Overlay", nullptr,
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.SetCursorPos(ImVec2(ps.x, ps.y));
+        ImGui.TextColoredV(ImColor(230, 230, 230, 255), string, arg);
+        ImGui.End();
         va_end(arg);
     }
 

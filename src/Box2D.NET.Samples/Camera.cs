@@ -20,10 +20,10 @@ namespace Box2D.NET.Samples;
 
 public class Camera
 {
-    b2Vec2 m_center;
-    float m_zoom;
-    int m_width;
-    int m_height;
+    public b2Vec2 m_center;
+    public float m_zoom;
+    public int m_width;
+    public int m_height;
 
     public Camera()
     {

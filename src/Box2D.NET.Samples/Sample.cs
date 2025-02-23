@@ -127,6 +127,11 @@ public class Sample
         c += c;
     }
 
+    public virtual void UpdateUI()
+    {
+    }
+
+
     private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
     {
         Sample sample = userContext as Sample;
@@ -173,7 +178,7 @@ public class Sample
 
         b2BodyId bodyId = b2Shape_GetBody(shapeId);
         b2BodyType bodyType = b2Body_GetType(bodyId);
-        if (bodyType != b2_dynamicBody)
+        if (bodyType != b2BodyType.b2_dynamicBody)
         {
             // continue query
             return true;
@@ -190,7 +195,11 @@ public class Sample
         return true;
     }
 
-    public void MouseDown(b2Vec2 p, int button, int mod)
+    public virtual void Keyboard( int a)
+    {
+    }
+
+    public virtual void MouseDown(b2Vec2 p, int button, int mod)
     {
         if (B2_IS_NON_NULL(m_mouseJointId))
         {
@@ -228,7 +237,7 @@ public class Sample
         }
     }
 
-    public void MouseUp(b2Vec2 p, int button)
+    public virtual void MouseUp(b2Vec2 p, int button)
     {
         if (b2Joint_IsValid(m_mouseJointId) == false)
         {
@@ -246,7 +255,7 @@ public class Sample
         }
     }
 
-    public void MouseMove(b2Vec2 p)
+    public virtual void MouseMove(b2Vec2 p)
     {
         if (b2Joint_IsValid(m_mouseJointId) == false)
         {
@@ -266,14 +275,14 @@ public class Sample
     {
         va_list arg;
         va_start(arg, text);
-        ImGui::Begin("Overlay", nullptr,
-            ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-            ImGuiWindowFlags_NoScrollbar);
-        ImGui::PushFont(Draw.g_draw.m_regularFont);
-        ImGui::SetCursorPos(ImVec2(5.0f, float(m_textLine)));
-        ImGui::TextColoredV(ImColor(230, 153, 153, 255), text, arg);
-        ImGui::PopFont();
-        ImGui::End();
+        ImGui.Begin("Overlay", nullptr,
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoScrollbar);
+        ImGui.PushFont(Draw.g_draw.m_regularFont);
+        ImGui.SetCursorPos(ImVec2(5.0f, float(m_textLine)));
+        ImGui.TextColoredV(ImColor(230, 153, 153, 255), text, arg);
+        ImGui.PopFont();
+        ImGui.End();
         va_end(arg);
 
         m_textLine += m_textIncrement;
@@ -290,7 +299,7 @@ public class Sample
         m_stepCount = 0;
     }
 
-    public void Step(Settings settings)
+    public virtual void Step(Settings settings)
     {
         float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
 
@@ -312,7 +321,7 @@ public class Sample
             }
         }
 
-        Draw.g_draw.m_debugDraw.drawingBounds = g_camera.GetViewBounds();
+        Draw.g_draw.m_debugDraw.drawingBounds = Draw.g_camera.GetViewBounds();
         Draw.g_draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
         // todo testing

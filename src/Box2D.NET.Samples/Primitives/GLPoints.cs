@@ -111,7 +111,7 @@ public class GLPoints
             0.0f
         }
         ;
-        g_camera.BuildProjectionMatrix(proj, 0.0f);
+        Draw.g_camera.BuildProjectionMatrix(proj, 0.0f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
         glBindVertexArray(m_vaoId);

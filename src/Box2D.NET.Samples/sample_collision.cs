@@ -5,7 +5,7 @@ constexpr int SIMPLEX_CAPACITY = 20;
 
 namespace Box2D.NET.Samples
 {
-    class ShapeDistance : public Sample
+    class ShapeDistance : Sample
     {
     public:
     enum ShapeType
@@ -21,8 +21,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 0.0f };
-            g_camera.m_zoom = 3.0f;
+            Draw.g_camera.m_center = { 0.0f, 0.0f };
+            Draw.g_camera.m_zoom = 3.0f;
         }
 
         m_point = b2Vec2_zero;
@@ -150,65 +150,65 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 310.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Shape Distance", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Shape Distance", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
         const char* shapeTypes[] = { "point", "segment", "triangle", "box" };
         int shapeType = int( m_typeA );
-        if ( ImGui::Combo( "shape A", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
+        if ( ImGui.Combo( "shape A", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
         {
             m_typeA = ShapeType( shapeType );
             m_proxyA = MakeProxy( m_typeA, m_radiusA );
         }
 
-        if ( ImGui::SliderFloat( "radius A", &m_radiusA, 0.0f, 0.5f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "radius A", &m_radiusA, 0.0f, 0.5f, "%.2f" ) )
         {
             m_proxyA.radius = m_radiusA;
         }
 
         shapeType = int( m_typeB );
-        if ( ImGui::Combo( "shape B", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
+        if ( ImGui.Combo( "shape B", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
         {
             m_typeB = ShapeType( shapeType );
             m_proxyB = MakeProxy( m_typeB, m_radiusB );
         }
 
-        if ( ImGui::SliderFloat( "radius B", &m_radiusB, 0.0f, 0.5f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "radius B", &m_radiusB, 0.0f, 0.5f, "%.2f" ) )
         {
             m_proxyB.radius = m_radiusB;
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
-        ImGui::SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
 
-        if ( ImGui::SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
+        if ( ImGui.SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
         {
             m_transform.q = b2MakeRot( m_angle );
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Checkbox( "show indices", &m_showIndices );
-        ImGui::Checkbox( "use cache", &m_useCache );
+        ImGui.Checkbox( "show indices", &m_showIndices );
+        ImGui.Checkbox( "use cache", &m_useCache );
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        if ( ImGui::Checkbox( "draw simplex", &m_drawSimplex ) )
+        if ( ImGui.Checkbox( "draw simplex", &m_drawSimplex ) )
         {
             m_simplexIndex = 0;
         }
 
         if ( m_drawSimplex )
         {
-            ImGui::SliderInt( "index", &m_simplexIndex, 0, m_simplexCount - 1 );
+            ImGui.SliderInt( "index", &m_simplexIndex, 0, m_simplexCount - 1 );
             m_simplexIndex = b2ClampInt( m_simplexIndex, 0, m_simplexCount - 1 );
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
@@ -447,7 +447,7 @@ namespace Box2D.NET.Samples
 
 // Tests the Box2D bounding volume hierarchy (BVH). The dynamic tree
 // can be used independently as a spatial data structure.
-    class DynamicTree : public Sample
+    class DynamicTree : Sample
     {
     public:
     explicit DynamicTree( Settings& settings )
@@ -455,8 +455,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 500.0f, 500.0f };
-            g_camera.m_zoom = 25.0f * 21.0f;
+            Draw.g_camera.m_center = { 500.0f, 500.0f };
+            Draw.g_camera.m_zoom = 25.0f * 21.0f;
         }
 
         m_fill = 0.25f;
@@ -559,72 +559,72 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 320.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 200.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
 
-        ImGui::Begin( "Dynamic Tree", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Dynamic Tree", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        ImGui::PushItemWidth( 100.0f );
+        ImGui.PushItemWidth( 100.0f );
 
         bool changed = false;
-        if ( ImGui::SliderInt( "rows", &m_rowCount, 0, 1000, "%d" ) )
+        if ( ImGui.SliderInt( "rows", &m_rowCount, 0, 1000, "%d" ) )
         {
             changed = true;
         }
 
-        if ( ImGui::SliderInt( "columns", &m_columnCount, 0, 1000, "%d" ) )
+        if ( ImGui.SliderInt( "columns", &m_columnCount, 0, 1000, "%d" ) )
         {
             changed = true;
         }
 
-        if ( ImGui::SliderFloat( "fill", &m_fill, 0.0f, 1.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "fill", &m_fill, 0.0f, 1.0f, "%.2f" ) )
         {
             changed = true;
         }
 
-        if ( ImGui::SliderFloat( "grid", &m_grid, 0.5f, 2.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "grid", &m_grid, 0.5f, 2.0f, "%.2f" ) )
         {
             changed = true;
         }
 
-        if ( ImGui::SliderFloat( "ratio", &m_ratio, 1.0f, 10.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "ratio", &m_ratio, 1.0f, 10.0f, "%.2f" ) )
         {
             changed = true;
         }
 
-        if ( ImGui::SliderFloat( "move", &m_moveFraction, 0.0f, 1.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "move", &m_moveFraction, 0.0f, 1.0f, "%.2f" ) )
         {
         }
 
-        if ( ImGui::SliderFloat( "delta", &m_moveDelta, 0.0f, 1.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "delta", &m_moveDelta, 0.0f, 1.0f, "%.2f" ) )
         {
         }
 
-        if ( ImGui::RadioButton( "Incremental", m_updateType == Update_Incremental ) )
+        if ( ImGui.RadioButton( "Incremental", m_updateType == Update_Incremental ) )
         {
             m_updateType = Update_Incremental;
             changed = true;
         }
 
-        if ( ImGui::RadioButton( "Full Rebuild", m_updateType == Update_FullRebuild ) )
+        if ( ImGui.RadioButton( "Full Rebuild", m_updateType == Update_FullRebuild ) )
         {
             m_updateType = Update_FullRebuild;
             changed = true;
         }
 
-        if ( ImGui::RadioButton( "Partial Rebuild", m_updateType == Update_PartialRebuild ) )
+        if ( ImGui.RadioButton( "Partial Rebuild", m_updateType == Update_PartialRebuild ) )
         {
             m_updateType = Update_PartialRebuild;
             changed = true;
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "mouse button 1: ray cast" );
-        ImGui::Text( "mouse button 1 + shift: query" );
+        ImGui.Text( "mouse button 1: ray cast" );
+        ImGui.Text( "mouse button 1 + shift: query" );
 
-        ImGui::PopItemWidth();
-        ImGui::End();
+        ImGui.PopItemWidth();
+        ImGui.End();
 
         if ( changed )
         {
@@ -862,7 +862,7 @@ namespace Box2D.NET.Samples
 
     static int sampleDynamicTree = RegisterSample( "Collision", "Dynamic Tree", DynamicTree::Create );
 
-    class RayCast : public Sample
+    class RayCast : Sample
     {
     public:
     explicit RayCast( Settings& settings )
@@ -870,8 +870,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 20.0f };
-            g_camera.m_zoom = 17.5f;
+            Draw.g_camera.m_center = { 0.0f, 20.0f };
+            Draw.g_camera.m_zoom = 17.5f;
         }
 
         m_circle = { { 0.0f, 0.0f }, 2.0f };
@@ -904,42 +904,42 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 230.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 200.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
 
-        ImGui::Begin( "Ray-cast", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Ray-cast", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        ImGui::PushItemWidth( 100.0f );
+        ImGui.PushItemWidth( 100.0f );
 
-        ImGui::SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
-        ImGui::SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
 
-        if ( ImGui::SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
+        if ( ImGui.SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
         {
             m_transform.q = b2MakeRot( m_angle );
         }
 
-        // if (ImGui::SliderFloat("ray radius", &m_rayRadius, 0.0f, 1.0f, "%.1f"))
+        // if (ImGui.SliderFloat("ray radius", &m_rayRadius, 0.0f, 1.0f, "%.1f"))
         //{
         // }
 
-        ImGui::Checkbox( "show fraction", &m_showFraction );
+        ImGui.Checkbox( "show fraction", &m_showFraction );
 
-        if ( ImGui::Button( "Reset" ) )
+        if ( ImGui.Button( "Reset" ) )
         {
             m_transform = b2Transform_identity;
             m_angle = 0.0f;
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "mouse btn 1: ray cast" );
-        ImGui::Text( "mouse btn 1 + shft: translate" );
-        ImGui::Text( "mouse btn 1 + ctrl: rotate" );
+        ImGui.Text( "mouse btn 1: ray cast" );
+        ImGui.Text( "mouse btn 1 + shft: translate" );
+        ImGui.Text( "mouse btn 1 + ctrl: rotate" );
 
-        ImGui::PopItemWidth();
+        ImGui.PopItemWidth();
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
@@ -1349,7 +1349,7 @@ namespace Box2D.NET.Samples
         return 1.0f;
     }
 
-    class RayCastWorld : public Sample
+    class RayCastWorld : Sample
     {
     public:
     enum Mode
@@ -1378,8 +1378,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 2.0f, 14.0f };
-            g_camera.m_zoom = 25.0f * 0.75f;
+            Draw.g_camera.m_center = { 2.0f, 14.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.75f;
         }
 
         // Ground body
@@ -1465,15 +1465,15 @@ namespace Box2D.NET.Samples
         int mod = m_bodyIndex % 3;
         if ( mod == 0 )
         {
-            bodyDef.type = b2_staticBody;
+            bodyDef.type = b2BodyType.b2_staticBody;
         }
         else if ( mod == 1 )
         {
-            bodyDef.type = b2_kinematicBody;
+            bodyDef.type = b2BodyType.b2_kinematicBody;
         }
         else if ( mod == 2 )
         {
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.gravityScale = 0.0f;
         }
 
@@ -1572,83 +1572,83 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 300.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 200.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
 
-        ImGui::Begin( "Ray-cast World", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Ray-cast World", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        ImGui::Checkbox( "Simple", &m_simple );
+        ImGui.Checkbox( "Simple", &m_simple );
 
         if ( m_simple == false )
         {
             const char* castTypes[] = { "Ray", "Circle", "Capsule", "Polygon" };
             int castType = int( m_castType );
-            if ( ImGui::Combo( "Type", &castType, castTypes, IM_ARRAYSIZE( castTypes ) ) )
+            if ( ImGui.Combo( "Type", &castType, castTypes, IM_ARRAYSIZE( castTypes ) ) )
             {
                 m_castType = CastType( castType );
             }
 
             if ( m_castType != e_rayCast )
             {
-                ImGui::SliderFloat( "Radius", &m_castRadius, 0.0f, 2.0f, "%.1f" );
+                ImGui.SliderFloat( "Radius", &m_castRadius, 0.0f, 2.0f, "%.1f" );
             }
 
             const char* modes[] = { "Any", "Closest", "Multiple", "Sorted" };
             int mode = int( m_mode );
-            if ( ImGui::Combo( "Mode", &mode, modes, IM_ARRAYSIZE( modes ) ) )
+            if ( ImGui.Combo( "Mode", &mode, modes, IM_ARRAYSIZE( modes ) ) )
             {
                 m_mode = Mode( mode );
             }
         }
 
-        if ( ImGui::Button( "Polygon 1" ) )
+        if ( ImGui.Button( "Polygon 1" ) )
             Create( 0 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly1" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly1" ) )
             CreateN( 0, 10 );
 
-        if ( ImGui::Button( "Polygon 2" ) )
+        if ( ImGui.Button( "Polygon 2" ) )
             Create( 1 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly2" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly2" ) )
             CreateN( 1, 10 );
 
-        if ( ImGui::Button( "Polygon 3" ) )
+        if ( ImGui.Button( "Polygon 3" ) )
             Create( 2 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly3" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly3" ) )
             CreateN( 2, 10 );
 
-        if ( ImGui::Button( "Box" ) )
+        if ( ImGui.Button( "Box" ) )
             Create( 3 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Box" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Box" ) )
             CreateN( 3, 10 );
 
-        if ( ImGui::Button( "Circle" ) )
+        if ( ImGui.Button( "Circle" ) )
             Create( 4 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Circle" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Circle" ) )
             CreateN( 4, 10 );
 
-        if ( ImGui::Button( "Capsule" ) )
+        if ( ImGui.Button( "Capsule" ) )
             Create( 5 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Capsule" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Capsule" ) )
             CreateN( 5, 10 );
 
-        if ( ImGui::Button( "Segment" ) )
+        if ( ImGui.Button( "Segment" ) )
             Create( 6 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Segment" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Segment" ) )
             CreateN( 6, 10 );
 
-        if ( ImGui::Button( "Destroy Shape" ) )
+        if ( ImGui.Button( "Destroy Shape" ) )
         {
             DestroyBody();
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -1847,7 +1847,7 @@ namespace Box2D.NET.Samples
 
     static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", RayCastWorld::Create );
 
-    class OverlapWorld : public Sample
+    class OverlapWorld : Sample
     {
     public:
     enum
@@ -1890,8 +1890,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 10.0f };
-            g_camera.m_zoom = 25.0f * 0.7f;
+            Draw.g_camera.m_center = { 0.0f, 10.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
         {
@@ -2058,65 +2058,65 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 330.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 140.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 140.0f, height ) );
 
-        ImGui::Begin( "Overlap World", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Overlap World", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        if ( ImGui::Button( "Polygon 1" ) )
+        if ( ImGui.Button( "Polygon 1" ) )
             Create( 0 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly1" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly1" ) )
             CreateN( 0, 10 );
 
-        if ( ImGui::Button( "Polygon 2" ) )
+        if ( ImGui.Button( "Polygon 2" ) )
             Create( 1 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly2" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly2" ) )
             CreateN( 1, 10 );
 
-        if ( ImGui::Button( "Polygon 3" ) )
+        if ( ImGui.Button( "Polygon 3" ) )
             Create( 2 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Poly3" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Poly3" ) )
             CreateN( 2, 10 );
 
-        if ( ImGui::Button( "Box" ) )
+        if ( ImGui.Button( "Box" ) )
             Create( 3 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Box" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Box" ) )
             CreateN( 3, 10 );
 
-        if ( ImGui::Button( "Circle" ) )
+        if ( ImGui.Button( "Circle" ) )
             Create( 4 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Circle" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Circle" ) )
             CreateN( 4, 10 );
 
-        if ( ImGui::Button( "Capsule" ) )
+        if ( ImGui.Button( "Capsule" ) )
             Create( 5 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Capsule" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Capsule" ) )
             CreateN( 5, 10 );
 
-        if ( ImGui::Button( "Segment" ) )
+        if ( ImGui.Button( "Segment" ) )
             Create( 6 );
-        ImGui::SameLine();
-        if ( ImGui::Button( "10x##Segment" ) )
+        ImGui.SameLine();
+        if ( ImGui.Button( "10x##Segment" ) )
             CreateN( 6, 10 );
 
-        if ( ImGui::Button( "Destroy Shape" ) )
+        if ( ImGui.Button( "Destroy Shape" ) )
         {
             DestroyBody();
         }
 
-        ImGui::Separator();
-        ImGui::Text( "Overlap Shape" );
-        ImGui::RadioButton( "Circle##Overlap", &m_shapeType, e_circleShape );
-        ImGui::RadioButton( "Capsule##Overlap", &m_shapeType, e_capsuleShape );
-        ImGui::RadioButton( "Box##Overlap", &m_shapeType, e_boxShape );
+        ImGui.Separator();
+        ImGui.Text( "Overlap Shape" );
+        ImGui.RadioButton( "Circle##Overlap", &m_shapeType, e_circleShape );
+        ImGui.RadioButton( "Capsule##Overlap", &m_shapeType, e_capsuleShape );
+        ImGui.RadioButton( "Box##Overlap", &m_shapeType, e_boxShape );
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -2221,7 +2221,7 @@ namespace Box2D.NET.Samples
     static int sampleOverlapWorld = RegisterSample( "Collision", "Overlap World", OverlapWorld::Create );
 
 // Tests manifolds and contact points
-    class Manifold : public Sample
+    class Manifold : Sample
     {
     public:
     explicit Manifold( Settings& settings )
@@ -2229,9 +2229,9 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            // g_camera.m_center = {1.8f, 15.0f};
-            g_camera.m_center = { 1.8f, 0.0f };
-            g_camera.m_zoom = 25.0f * 0.45f;
+            // Draw.g_camera.m_center = {1.8f, 15.0f};
+            Draw.g_camera.m_center = { 1.8f, 0.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.45f;
         }
 
         m_smgroxCache1 = b2_emptySimplexCache;
@@ -2264,37 +2264,37 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 300.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Manifold", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Manifold", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        ImGui::SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
-        ImGui::SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "x offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "y offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
 
-        if ( ImGui::SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
+        if ( ImGui.SliderFloat( "angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
         {
             m_transform.q = b2MakeRot( m_angle );
         }
 
-        ImGui::SliderFloat( "round", &m_round, 0.0f, 0.4f, "%.1f" );
-        ImGui::Checkbox( "show ids", &m_showIds );
-        ImGui::Checkbox( "show separation", &m_showSeparation );
-        ImGui::Checkbox( "show anchors", &m_showAnchors );
-        ImGui::Checkbox( "enable caching", &m_enableCaching );
+        ImGui.SliderFloat( "round", &m_round, 0.0f, 0.4f, "%.1f" );
+        ImGui.Checkbox( "show ids", &m_showIds );
+        ImGui.Checkbox( "show separation", &m_showSeparation );
+        ImGui.Checkbox( "show anchors", &m_showAnchors );
+        ImGui.Checkbox( "enable caching", &m_enableCaching );
 
-        if ( ImGui::Button( "Reset" ) )
+        if ( ImGui.Button( "Reset" ) )
         {
             m_transform = b2Transform_identity;
             m_angle = 0.0f;
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "mouse button 1: drag" );
-        ImGui::Text( "mouse button 1 + shift: rotate" );
+        ImGui.Text( "mouse button 1: drag" );
+        ImGui.Text( "mouse button 1 + shift: rotate" );
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
@@ -2855,7 +2855,7 @@ namespace Box2D.NET.Samples
 
     static int sampleManifoldIndex = RegisterSample( "Collision", "Manifold", Manifold::Create );
 
-    class SmoothManifold : public Sample
+    class SmoothManifold : Sample
     {
     public:
     enum ShapeType
@@ -2869,8 +2869,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 2.0f, 20.0f };
-            g_camera.m_zoom = 21.0f;
+            Draw.g_camera.m_center = { 2.0f, 20.0f };
+            Draw.g_camera.m_zoom = 21.0f;
         }
 
         m_shapeType = e_boxShape;
@@ -2955,45 +2955,45 @@ namespace Box2D.NET.Samples
     void UpdateUI() override
     {
         float height = 290.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-        ImGui::Begin( "Smooth Manifold", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
-        ImGui::PushItemWidth( 100.0f );
+        ImGui.Begin( "Smooth Manifold", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
+        ImGui.PushItemWidth( 100.0f );
 
         {
             const char* shapeTypes[] = { "Circle", "Box" };
             int shapeType = int( m_shapeType );
-            ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
+            ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
             m_shapeType = ShapeType( shapeType );
         }
 
-        ImGui::SliderFloat( "x Offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
-        ImGui::SliderFloat( "y Offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "x Offset", &m_transform.p.x, -2.0f, 2.0f, "%.2f" );
+        ImGui.SliderFloat( "y Offset", &m_transform.p.y, -2.0f, 2.0f, "%.2f" );
 
-        if ( ImGui::SliderFloat( "Angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
+        if ( ImGui.SliderFloat( "Angle", &m_angle, -B2_PI, B2_PI, "%.2f" ) )
         {
             m_transform.q = b2MakeRot( m_angle );
         }
 
-        ImGui::SliderFloat( "Round", &m_round, 0.0f, 0.4f, "%.1f" );
-        ImGui::Checkbox( "Show Ids", &m_showIds );
-        ImGui::Checkbox( "Show Separation", &m_showSeparation );
-        ImGui::Checkbox( "Show Anchors", &m_showAnchors );
+        ImGui.SliderFloat( "Round", &m_round, 0.0f, 0.4f, "%.1f" );
+        ImGui.Checkbox( "Show Ids", &m_showIds );
+        ImGui.Checkbox( "Show Separation", &m_showSeparation );
+        ImGui.Checkbox( "Show Anchors", &m_showAnchors );
 
-        if ( ImGui::Button( "Reset" ) )
+        if ( ImGui.Button( "Reset" ) )
         {
             m_transform = b2Transform_identity;
             m_angle = 0.0f;
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "mouse button 1: drag" );
-        ImGui::Text( "mouse button 1 + shift: rotate" );
+        ImGui.Text( "mouse button 1: drag" );
+        ImGui.Text( "mouse button 1 + shift: rotate" );
 
-        ImGui::PopItemWidth();
-        ImGui::End();
+        ImGui.PopItemWidth();
+        ImGui.End();
     }
 
     void MouseDown( b2Vec2 p, int button, int mods ) override
@@ -3147,7 +3147,7 @@ namespace Box2D.NET.Samples
 
     static int sampleSmoothManifoldIndex = RegisterSample( "Collision", "Smooth Manifold", SmoothManifold::Create );
 
-    class ShapeCast : public Sample
+    class ShapeCast : Sample
     {
     public:
     enum
@@ -3160,8 +3160,8 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { -1.5f, 1.0f };
-            g_camera.m_zoom = 25.0f * 0.2f;
+            Draw.g_camera.m_center = { -1.5f, 1.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.2f;
         }
 
 #if 0
@@ -3410,7 +3410,7 @@ namespace Box2D.NET.Samples
 
     static int sampleShapeCast = RegisterSample( "Collision", "Shape Cast", ShapeCast::Create );
 
-    class TimeOfImpact : public Sample
+    class TimeOfImpact : Sample
     {
     public:
     explicit TimeOfImpact( Settings& settings )
@@ -3418,9 +3418,9 @@ namespace Box2D.NET.Samples
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.6f, 2.0f };
-            g_camera.m_center = { -16, 45 };
-            g_camera.m_zoom = 5.0f;
+            Draw.g_camera.m_center = { 0.6f, 2.0f };
+            Draw.g_camera.m_center = { -16, 45 };
+            Draw.g_camera.m_zoom = 5.0f;
         }
     }
 

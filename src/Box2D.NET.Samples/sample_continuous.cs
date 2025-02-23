@@ -3,7 +3,7 @@
 
 namespace Box2D.NET.Samples;
 
-class BounceHouse : public Sample
+class BounceHouse : Sample
 {
 public:
 enum ShapeType
@@ -25,8 +25,8 @@ explicit BounceHouse( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 0.0f };
-        g_camera.m_zoom = 25.0f * 0.45f;
+        Draw.g_camera.m_center = { 0.0f, 0.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.45f;
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
@@ -70,7 +70,7 @@ void Launch()
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.linearVelocity = { 10.0f, 20.0f };
     bodyDef.position = { 0.0f, 0.0f };
     bodyDef.gravityScale = 0.0f;
@@ -107,25 +107,25 @@ void Launch()
 void UpdateUI() override
 {
     float height = 100.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Bounce House", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Bounce House", nullptr, ImGuiWindowFlags.NoResize );
 
     const char* shapeTypes[] = { "Circle", "Capsule", "Box" };
     int shapeType = int( m_shapeType );
-    if ( ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
+    if ( ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
     {
         m_shapeType = ShapeType( shapeType );
         Launch();
     }
 
-    if ( ImGui::Checkbox( "hit events", &m_enableHitEvents ) )
+    if ( ImGui.Checkbox( "hit events", &m_enableHitEvents ) )
     {
         b2Body_EnableHitEvents( m_bodyId, m_enableHitEvents );
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -180,14 +180,14 @@ bool m_enableHitEvents;
 
 static int sampleBounceHouse = RegisterSample( "Continuous", "Bounce House", BounceHouse::Create );
 
-class BounceHumans : public Sample
+class BounceHumans : Sample
 {
 public:
 explicit BounceHumans( Settings& settings )
     : Sample( settings )
 {
-    g_camera.m_center = { 0.0f, 0.0f };
-    g_camera.m_zoom = 12.0f;
+    Draw.g_camera.m_center = { 0.0f, 0.0f };
+    Draw.g_camera.m_zoom = 12.0f;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
     b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
@@ -263,7 +263,7 @@ float m_time = 0.0f;
 
 static int sampleBounceHumans = RegisterSample( "Continuous", "Bounce Humans", BounceHumans::Create );
 
-class ChainDrop : public Sample
+class ChainDrop : Sample
 {
 public:
 explicit ChainDrop( Settings& settings )
@@ -271,8 +271,8 @@ explicit ChainDrop( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 0.0f };
-        g_camera.m_zoom = 25.0f * 0.35f;
+        Draw.g_camera.m_center = { 0.0f, 0.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.35f;
     }
 
     // 
@@ -306,7 +306,7 @@ void Launch()
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.linearVelocity = { 0.0f, m_speed };
     bodyDef.position = { 0.0f, 10.0f + m_yOffset };
     bodyDef.rotation = b2MakeRot( 0.5f * B2_PI );
@@ -329,20 +329,20 @@ void Launch()
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-    ImGui::Begin( "Chain Drop", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Chain Drop", nullptr, ImGuiWindowFlags.NoResize );
 
-    ImGui::SliderFloat( "Speed", &m_speed, -100.0f, 0.0f, "%.0f" );
-    ImGui::SliderFloat( "Y Offset", &m_yOffset, -1.0f, 1.0f, "%.1f" );
+    ImGui.SliderFloat( "Speed", &m_speed, -100.0f, 0.0f, "%.0f" );
+    ImGui.SliderFloat( "Y Offset", &m_yOffset, -1.0f, 1.0f, "%.1f" );
 
-    if ( ImGui::Button( "Launch" ) )
+    if ( ImGui.Button( "Launch" ) )
     {
         Launch();
     }
 
-    ImGui::End();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -358,7 +358,7 @@ float m_speed;
 
 static int sampleChainDrop = RegisterSample( "Continuous", "Chain Drop", ChainDrop::Create );
 
-class ChainSlide : public Sample
+class ChainSlide : Sample
 {
 public:
 explicit ChainSlide( Settings& settings )
@@ -366,8 +366,8 @@ explicit ChainSlide( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 10.0f };
-        g_camera.m_zoom = 15.0f;
+        Draw.g_camera.m_center = { 0.0f, 10.0f };
+        Draw.g_camera.m_zoom = 15.0f;
     }
 
 #ifndef NDEBUG
@@ -418,7 +418,7 @@ explicit ChainSlide( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.linearVelocity = { 100.0f, 0.0f };
         bodyDef.position = { -19.5f, 0.0f + 0.5f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -448,7 +448,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleChainSlide = RegisterSample( "Continuous", "Chain Slide", ChainSlide::Create );
 
-class SkinnyBox : public Sample
+class SkinnyBox : Sample
 {
 public:
 explicit SkinnyBox( Settings& settings )
@@ -456,8 +456,8 @@ explicit SkinnyBox( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 1.0f, 5.0f };
-        g_camera.m_zoom = 25.0f * 0.25f;
+        Draw.g_camera.m_center = { 1.0f, 5.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.25f;
     }
 
     {
@@ -499,7 +499,7 @@ void Launch()
     // m_angularVelocity = -30.6695766f;
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.position = { 0.0f, 8.0f };
     bodyDef.angularVelocity = m_angularVelocity;
     bodyDef.linearVelocity = { 0.0f, -100.0f };
@@ -535,21 +535,21 @@ void Launch()
 void UpdateUI() override
 {
     float height = 110.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 140.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 140.0f, height ) );
 
-    ImGui::Begin( "Skinny Box", nullptr, ImGuiWindowFlags_NoResize );
+    ImGui.Begin( "Skinny Box", nullptr, ImGuiWindowFlags.NoResize );
 
-    ImGui::Checkbox( "Capsule", &m_capsule );
+    ImGui.Checkbox( "Capsule", &m_capsule );
 
-    if ( ImGui::Button( "Launch" ) )
+    if ( ImGui.Button( "Launch" ) )
     {
         Launch();
     }
 
-    ImGui::Checkbox( "Auto Test", &m_autoTest );
+    ImGui.Checkbox( "Auto Test", &m_autoTest );
 
-    ImGui::End();
+    ImGui.End();
 }
 
 void Step( Settings& settings ) override
@@ -578,7 +578,7 @@ bool m_bullet;
 static int sampleSkinnyBox = RegisterSample( "Continuous", "Skinny Box", SkinnyBox::Create );
 
 // This sample shows ghost bumps
-class GhostBumps : public Sample
+class GhostBumps : Sample
 {
 public:
 enum ShapeType
@@ -593,8 +593,8 @@ explicit GhostBumps( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 1.5f, 16.0f };
-        g_camera.m_zoom = 25.0f * 0.8f;
+        Draw.g_camera.m_center = { 1.5f, 16.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.8f;
     }
 
     m_groundId = b2_nullBodyId;
@@ -774,7 +774,7 @@ void Launch()
     }
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.position = { -28.0f, 18.0f };
     bodyDef.linearVelocity = { 0.0f, 0.0f };
     m_bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -804,20 +804,20 @@ void Launch()
 void UpdateUI() override
 {
     float height = 140.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-    ImGui::Begin( "Ghost Bumps", nullptr, ImGuiWindowFlags_NoResize );
-    ImGui::PushItemWidth( 100.0f );
+    ImGui.Begin( "Ghost Bumps", nullptr, ImGuiWindowFlags.NoResize );
+    ImGui.PushItemWidth( 100.0f );
 
-    if ( ImGui::Checkbox( "Chain", &m_useChain ) )
+    if ( ImGui.Checkbox( "Chain", &m_useChain ) )
     {
         CreateScene();
     }
 
     if ( m_useChain == false )
     {
-        if ( ImGui::SliderFloat( "Bevel", &m_bevel, 0.0f, 1.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "Bevel", &m_bevel, 0.0f, 1.0f, "%.2f" ) )
         {
             CreateScene();
         }
@@ -826,16 +826,16 @@ void UpdateUI() override
     {
         const char* shapeTypes[] = { "Circle", "Capsule", "Box" };
         int shapeType = int( m_shapeType );
-        ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
+        ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
         m_shapeType = ShapeType( shapeType );
     }
 
     if ( m_shapeType == e_boxShape )
     {
-        ImGui::SliderFloat( "Round", &m_round, 0.0f, 0.4f, "%.1f" );
+        ImGui.SliderFloat( "Round", &m_round, 0.0f, 0.4f, "%.1f" );
     }
 
-    if ( ImGui::SliderFloat( "Friction", &m_friction, 0.0f, 1.0f, "%.1f" ) )
+    if ( ImGui.SliderFloat( "Friction", &m_friction, 0.0f, 1.0f, "%.1f" ) )
     {
         if ( B2_IS_NON_NULL( m_shapeId ) )
         {
@@ -845,13 +845,13 @@ void UpdateUI() override
         CreateScene();
     }
 
-    if ( ImGui::Button( "Launch" ) )
+    if ( ImGui.Button( "Launch" ) )
     {
         Launch();
     }
 
-    ImGui::PopItemWidth();
-    ImGui::End();
+    ImGui.PopItemWidth();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )
@@ -873,7 +873,7 @@ static int sampleGhostCollision = RegisterSample( "Continuous", "Ghost Bumps", G
 
 // Speculative collision failure case suggested by Dirk Gregorius. This uses
 // a simple fallback scheme to prevent tunneling.
-class SpeculativeFallback : public Sample
+class SpeculativeFallback : Sample
 {
 public:
 explicit SpeculativeFallback( Settings& settings )
@@ -881,8 +881,8 @@ explicit SpeculativeFallback( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 1.0f, 5.0f };
-        g_camera.m_zoom = 25.0f * 0.25f;
+        Draw.g_camera.m_center = { 1.0f, 5.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.25f;
     }
 
     {
@@ -903,7 +903,7 @@ explicit SpeculativeFallback( Settings& settings )
     {
         float offset = 8.0f;
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { offset, 12.0f };
         bodyDef.linearVelocity = { 0.0f, -100.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -923,7 +923,7 @@ static Sample* Create( Settings& settings )
 static int sampleSpeculativeFallback = RegisterSample( "Continuous", "Speculative Fallback", SpeculativeFallback::Create );
 
 // This shows that while Box2D uses speculative collision, it does not lead to speculative ghost collisions at small distances
-class SpeculativeGhost : public Sample
+class SpeculativeGhost : Sample
 {
 public:
 explicit SpeculativeGhost( Settings& settings )
@@ -931,8 +931,8 @@ explicit SpeculativeGhost( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 1.75f };
-        g_camera.m_zoom = 2.0f;
+        Draw.g_camera.m_center = { 0.0f, 1.75f };
+        Draw.g_camera.m_zoom = 2.0f;
     }
 
     {
@@ -949,7 +949,7 @@ explicit SpeculativeGhost( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
 
         // The speculative distance is 0.02 meters, so this avoid it
         bodyDef.position = { 0.015f, 2.515f };
@@ -972,7 +972,7 @@ static Sample* Create( Settings& settings )
 static int sampleSpeculativeGhost = RegisterSample( "Continuous", "Speculative Ghost", SpeculativeGhost::Create );
 
 // This shows that Box2D does not have pixel perfect collision.
-class PixelImperfect : public Sample
+class PixelImperfect : Sample
 {
 public:
 explicit PixelImperfect( Settings& settings )
@@ -980,15 +980,15 @@ explicit PixelImperfect( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 7.0f, 5.0f };
-        g_camera.m_zoom = 6.0f;
+        Draw.g_camera.m_center = { 7.0f, 5.0f };
+        Draw.g_camera.m_zoom = 6.0f;
     }
 
     float pixelsPerMeter = 30.f;
 
     {
         b2BodyDef block4BodyDef = b2DefaultBodyDef();
-        block4BodyDef.type = b2_staticBody;
+        block4BodyDef.type = b2BodyType.b2_staticBody;
         block4BodyDef.position = { 175.f / pixelsPerMeter, 150.f / pixelsPerMeter };
         b2BodyId block4BodyId = b2CreateBody( m_worldId, &block4BodyDef );
         b2Polygon block4Shape = b2MakeBox( 20.f / pixelsPerMeter, 10.f / pixelsPerMeter );
@@ -999,7 +999,7 @@ explicit PixelImperfect( Settings& settings )
 
     {
         b2BodyDef ballBodyDef = b2DefaultBodyDef();
-        ballBodyDef.type = b2_dynamicBody;
+        ballBodyDef.type = b2BodyType.b2_dynamicBody;
         ballBodyDef.position = { 200.0f / pixelsPerMeter, 275.f / pixelsPerMeter };
         ballBodyDef.gravityScale = 0.0f;
 
@@ -1039,7 +1039,7 @@ b2BodyId m_ballId;
 
 static int samplePixelImperfect = RegisterSample( "Continuous", "Pixel Imperfect", PixelImperfect::Create );
 
-class RestitutionThreshold : public Sample
+class RestitutionThreshold : Sample
 {
 public:
 explicit RestitutionThreshold( Settings& settings )
@@ -1047,8 +1047,8 @@ explicit RestitutionThreshold( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 7.0f, 5.0f };
-        g_camera.m_zoom = 6.0f;
+        Draw.g_camera.m_center = { 7.0f, 5.0f };
+        Draw.g_camera.m_zoom = 6.0f;
     }
 
     float pixelsPerMeter = 30.f;
@@ -1058,7 +1058,7 @@ explicit RestitutionThreshold( Settings& settings )
 
     {
         b2BodyDef block0BodyDef = b2DefaultBodyDef();
-        block0BodyDef.type = b2_staticBody;
+        block0BodyDef.type = b2BodyType.b2_staticBody;
         block0BodyDef.position = { 205.f / pixelsPerMeter, 120.f / pixelsPerMeter };
         block0BodyDef.rotation = b2MakeRot( 70.f * 3.14f / 180.f );
         b2BodyId block0BodyId = b2CreateBody( m_worldId, &block0BodyDef );
@@ -1071,7 +1071,7 @@ explicit RestitutionThreshold( Settings& settings )
     {
         // Make a ball
         b2BodyDef ballBodyDef = b2DefaultBodyDef();
-        ballBodyDef.type = b2_dynamicBody;
+        ballBodyDef.type = b2BodyType.b2_dynamicBody;
         ballBodyDef.position = { 200.f / pixelsPerMeter, 250.f / pixelsPerMeter };
         m_ballId = b2CreateBody( m_worldId, &ballBodyDef );
 
@@ -1110,7 +1110,7 @@ b2BodyId m_ballId;
 
 static int sampleRestitutionThreshold = RegisterSample( "Continuous", "Restitution Threshold", RestitutionThreshold::Create );
 
-class Drop : public Sample
+class Drop : Sample
 {
 public:
 explicit Drop( Settings& settings )
@@ -1118,8 +1118,8 @@ explicit Drop( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 1.5f };
-        g_camera.m_zoom = 3.0f;
+        Draw.g_camera.m_center = { 0.0f, 1.5f };
+        Draw.g_camera.m_zoom = 3.0f;
         settings.enableSleep = false;
         settings.drawJoints = false;
     }
@@ -1248,7 +1248,7 @@ void Scene1()
     CreateGround2();
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.position = { 0.0f, 4.0f };
     bodyDef.linearVelocity = { 0.0f, -100.0f };
 
@@ -1269,7 +1269,7 @@ void Scene2()
     CreateGround1();
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
     bodyDef.position = { 0.0f, 4.0f };
     bodyDef.rotation = b2MakeRot( 0.5f * B2_PI );
     bodyDef.linearVelocity = { 0.0f, 0.0f };
@@ -1316,7 +1316,7 @@ void Scene4()
     for ( int i = 0; i < 5; ++i )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
 
         float shift = ( i % 2 == 0 ? -offset : offset );
         bodyDef.position = { 2.5f + shift, a + 2.0f * a * i };
@@ -1331,7 +1331,7 @@ void Scene4()
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -7.7f, 1.9f };
         bodyDef.linearVelocity = { 200.0f, 0.0f };
         bodyDef.isBullet = true;
@@ -1388,14 +1388,14 @@ void Keyboard( int key ) override
 void Step( Settings& settings ) override
 {
 #if 0
-    ImGui::SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
-    ImGui::SetNextWindowSize( ImVec2( float( g_camera.m_width ), float( g_camera.m_height ) ) );
-    ImGui::SetNextWindowBgAlpha( 0.0f );
-    ImGui::Begin( "DropBackground", nullptr,
-        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_AlwaysAutoResize |
-        ImGuiWindowFlags_NoScrollbar );
+    ImGui.SetNextWindowPos( ImVec2( 0.0f, 0.0f ) );
+    ImGui.SetNextWindowSize( ImVec2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+    ImGui.SetNextWindowBgAlpha( 0.0f );
+    ImGui.Begin( "DropBackground", nullptr,
+        ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+        ImGuiWindowFlags.NoScrollbar );
 
-    ImDrawList* drawList = ImGui::GetWindowDrawList();
+    ImDrawList* drawList = ImGui.GetWindowDrawList();
 
     const char* ContinuousText = m_continuous && m_speculative ? "Continuous ON" : "Continuous OFF";
     drawList->AddText( Draw.g_draw.m_largeFont, Draw.g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
@@ -1406,7 +1406,7 @@ void Step( Settings& settings ) override
         IM_COL32( 200, 200, 200, 255 ), "Slow Time" );
     }
 
-    ImGui::End();
+    ImGui.End();
 #endif
 
     //if (m_frameCount == 165)
@@ -1450,7 +1450,7 @@ static int sampleDrop = RegisterSample( "Continuous", "Drop", Drop::Create );
 
 // This shows a fast moving body that uses continuous collision versus static and dynamic bodies.
 // This is achieved by setting the ball body as a *bullet*.
-class Pinball : public Sample
+class Pinball : Sample
 {
 public:
 explicit Pinball( Settings& settings )
@@ -1458,8 +1458,8 @@ explicit Pinball( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 9.0f };
-        g_camera.m_zoom = 25.0f * 0.5f;
+        Draw.g_camera.m_center = { 0.0f, 9.0f };
+        Draw.g_camera.m_zoom = 25.0f * 0.5f;
     }
 
     settings.drawJoints = false;
@@ -1484,7 +1484,7 @@ explicit Pinball( Settings& settings )
         b2Vec2 p1 = { -2.0f, 0.0f }, p2 = { 2.0f, 0.0f };
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.enableSleep = false;
 
         bodyDef.position = p1;
@@ -1525,7 +1525,7 @@ explicit Pinball( Settings& settings )
     // Spinners
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -4.0f, 17.0f };
 
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -1577,7 +1577,7 @@ explicit Pinball( Settings& settings )
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = { 1.0f, 15.0f };
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.isBullet = true;
 
         m_ballId = b2CreateBody( m_worldId, &bodyDef );
@@ -1618,7 +1618,7 @@ static int samplePinball = RegisterSample( "Continuous", "Pinball", Pinball::Cre
 
 // This shows the importance of secondary collisions in continuous physics.
 // This also shows a difficult setup for the solver with an acute angle.
-class Wedge : public Sample
+class Wedge : Sample
 {
 public:
 explicit Wedge( Settings& settings )
@@ -1626,8 +1626,8 @@ explicit Wedge( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 5.5f };
-        g_camera.m_zoom = 6.0f;
+        Draw.g_camera.m_center = { 0.0f, 5.5f };
+        Draw.g_camera.m_zoom = 6.0f;
     }
 
     {
@@ -1642,7 +1642,7 @@ explicit Wedge( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -0.45f, 10.75f };
         bodyDef.linearVelocity = { 0.0f, -200.0f };
 

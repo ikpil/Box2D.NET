@@ -11,8 +11,8 @@ explicit HighMassRatio1( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 3.0f, 14.0f };
-        g_camera.m_zoom = 25.0f;
+        Draw.g_camera.m_center = { 3.0f, 14.0f };
+        Draw.g_camera.m_zoom = 25.0f;
     }
 
     float extent = 1.0f;
@@ -27,7 +27,7 @@ explicit HighMassRatio1( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2Polygon box = b2MakeBox( extent, extent );
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -66,7 +66,7 @@ static Sample* Create( Settings& settings )
 static int sampleIndex1 = RegisterSample( "Robustness", "HighMassRatio1", HighMassRatio1::Create );
 
 // Big box on small boxes
-class HighMassRatio2 : public Sample
+class HighMassRatio2 : Sample
 {
 public:
 explicit HighMassRatio2( Settings& settings )
@@ -74,8 +74,8 @@ explicit HighMassRatio2( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 16.5f };
-        g_camera.m_zoom = 25.0f;
+        Draw.g_camera.m_center = { 0.0f, 16.5f };
+        Draw.g_camera.m_zoom = 25.0f;
     }
 
     {
@@ -88,7 +88,7 @@ explicit HighMassRatio2( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
         float extent = 1.0f;
@@ -124,7 +124,7 @@ static Sample* Create( Settings& settings )
 static int sampleIndex2 = RegisterSample( "Robustness", "HighMassRatio2", HighMassRatio2::Create );
 
 // Big box on small triangles
-class HighMassRatio3 : public Sample
+class HighMassRatio3 : Sample
 {
 public:
 explicit HighMassRatio3( Settings& settings )
@@ -132,8 +132,8 @@ explicit HighMassRatio3( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 16.5f };
-        g_camera.m_zoom = 25.0f;
+        Draw.g_camera.m_center = { 0.0f, 16.5f };
+        Draw.g_camera.m_zoom = 25.0f;
     }
 
     {
@@ -146,7 +146,7 @@ explicit HighMassRatio3( Settings& settings )
 
     {
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
         float extent = 1.0f;
@@ -183,7 +183,7 @@ static Sample* Create( Settings& settings )
 
 static int sampleIndex3 = RegisterSample( "Robustness", "HighMassRatio3", HighMassRatio3::Create );
 
-class OverlapRecovery : public Sample
+class OverlapRecovery : Sample
 {
 public:
 explicit OverlapRecovery( Settings& settings )
@@ -191,8 +191,8 @@ explicit OverlapRecovery( Settings& settings )
 {
     if ( settings.restart == false )
     {
-        g_camera.m_center = { 0.0f, 2.5f };
-        g_camera.m_zoom = 25.0f * 0.15f;
+        Draw.g_camera.m_center = { 0.0f, 2.5f };
+        Draw.g_camera.m_zoom = 25.0f * 0.15f;
     }
 
     m_bodyIds = nullptr;
@@ -232,7 +232,7 @@ void CreateScene()
     b2World_SetContactTuning( m_worldId, m_hertz, m_dampingRatio, m_pushout );
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2_dynamicBody;
+    bodyDef.type = b2BodyType.b2_dynamicBody;
 
     b2Polygon box = b2MakeBox( m_extent, m_extent );
     b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -268,28 +268,28 @@ void CreateScene()
 void UpdateUI() override
 {
     float height = 210.0f;
-    ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-    ImGui::SetNextWindowSize( ImVec2( 220.0f, height ) );
+    ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+    ImGui.SetNextWindowSize( ImVec2( 220.0f, height ) );
 
-    ImGui::Begin( "Overlap Recovery", nullptr, ImGuiWindowFlags_NoResize );
-    ImGui::PushItemWidth( 100.0f );
+    ImGui.Begin( "Overlap Recovery", nullptr, ImGuiWindowFlags.NoResize );
+    ImGui.PushItemWidth( 100.0f );
 
     bool changed = false;
-    changed = changed || ImGui::SliderFloat( "Extent", &m_extent, 0.1f, 1.0f, "%.1f" );
-    changed = changed || ImGui::SliderInt( "Base Count", &m_baseCount, 1, 10 );
-    changed = changed || ImGui::SliderFloat( "Overlap", &m_overlap, 0.0f, 1.0f, "%.2f" );
-    changed = changed || ImGui::SliderFloat( "Pushout", &m_pushout, 0.0f, 10.0f, "%.1f" );
-    changed = changed || ImGui::SliderFloat( "Hertz", &m_hertz, 0.0f, 120.0f, "%.f" );
-    changed = changed || ImGui::SliderFloat( "Damping Ratio", &m_dampingRatio, 0.0f, 20.0f, "%.1f" );
-    changed = changed || ImGui::Button( "Reset Scene" );
+    changed = changed || ImGui.SliderFloat( "Extent", &m_extent, 0.1f, 1.0f, "%.1f" );
+    changed = changed || ImGui.SliderInt( "Base Count", &m_baseCount, 1, 10 );
+    changed = changed || ImGui.SliderFloat( "Overlap", &m_overlap, 0.0f, 1.0f, "%.2f" );
+    changed = changed || ImGui.SliderFloat( "Pushout", &m_pushout, 0.0f, 10.0f, "%.1f" );
+    changed = changed || ImGui.SliderFloat( "Hertz", &m_hertz, 0.0f, 120.0f, "%.f" );
+    changed = changed || ImGui.SliderFloat( "Damping Ratio", &m_dampingRatio, 0.0f, 20.0f, "%.1f" );
+    changed = changed || ImGui.Button( "Reset Scene" );
 
     if ( changed )
     {
         CreateScene();
     }
 
-    ImGui::PopItemWidth();
-    ImGui::End();
+    ImGui.PopItemWidth();
+    ImGui.End();
 }
 
 static Sample* Create( Settings& settings )

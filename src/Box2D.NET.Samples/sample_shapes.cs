@@ -17,8 +17,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 0.0f };
-            g_camera.m_zoom = 25.0f * 1.75f;
+            Draw.g_camera.m_center = { 0.0f, 0.0f };
+            Draw.g_camera.m_zoom = 25.0f * 1.75f;
         }
 
         m_groundId = b2_nullBodyId;
@@ -122,7 +122,7 @@ namespace Box2D.NET.Samples;
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { -55.0f, 13.5f };
         m_bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -159,36 +159,36 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 155.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Chain Shape", nullptr, ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Chain Shape", nullptr, ImGuiWindowFlags.NoResize );
 
         const char* shapeTypes[] = { "Circle", "Capsule", "Box" };
         int shapeType = int( m_shapeType );
-        if ( ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
+        if ( ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
         {
             m_shapeType = ShapeType( shapeType );
             Launch();
         }
 
-        if ( ImGui::SliderFloat( "Friction", &m_friction, 0.0f, 1.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "Friction", &m_friction, 0.0f, 1.0f, "%.2f" ) )
         {
             b2Shape_SetFriction( m_shapeId, m_friction );
             b2Chain_SetFriction( m_chainId, m_friction );
         }
 
-        if ( ImGui::SliderFloat( "Restitution", &m_restitution, 0.0f, 2.0f, "%.1f" ) )
+        if ( ImGui.SliderFloat( "Restitution", &m_restitution, 0.0f, 2.0f, "%.1f" ) )
         {
             b2Shape_SetRestitution( m_shapeId, m_restitution );
         }
 
-        if ( ImGui::Button( "Launch" ) )
+        if ( ImGui.Button( "Launch" ) )
         {
             Launch();
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -222,7 +222,7 @@ namespace Box2D.NET.Samples;
 // This sample shows how careful creation of compound shapes leads to better simulation and avoids
 // objects getting stuck.
 // This also shows how to get the combined AABB for the body.
-    class CompoundShapes : public Sample
+    class CompoundShapes : Sample
     {
     public:
     explicit CompoundShapes( Settings& settings )
@@ -230,8 +230,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 6.0f };
-            g_camera.m_zoom = 25.0f * 0.5f;
+            Draw.g_camera.m_center = { 0.0f, 6.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         {
@@ -245,7 +245,7 @@ namespace Box2D.NET.Samples;
         // Table 1
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { -15.0f, 1.0f };
             m_table1Id = b2CreateBody( m_worldId, &bodyDef );
 
@@ -262,7 +262,7 @@ namespace Box2D.NET.Samples;
         // Table 2
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { -5.0f, 1.0f };
             m_table2Id = b2CreateBody( m_worldId, &bodyDef );
 
@@ -279,7 +279,7 @@ namespace Box2D.NET.Samples;
         // Spaceship 1
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { 5.0f, 1.0f };
             m_ship1Id = b2CreateBody( m_worldId, &bodyDef );
 
@@ -305,7 +305,7 @@ namespace Box2D.NET.Samples;
         // Spaceship 2
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { 15.0f, 1.0f };
             m_ship2Id = b2CreateBody( m_worldId, &bodyDef );
 
@@ -336,7 +336,7 @@ namespace Box2D.NET.Samples;
         // Table 1 obstruction
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition( m_table1Id );
             bodyDef.rotation = b2Body_GetRotation( m_table1Id );
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -349,7 +349,7 @@ namespace Box2D.NET.Samples;
         // Table 2 obstruction
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition( m_table2Id );
             bodyDef.rotation = b2Body_GetRotation( m_table2Id );
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
@@ -362,7 +362,7 @@ namespace Box2D.NET.Samples;
         // Ship 1 obstruction
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition( m_ship1Id );
             bodyDef.rotation = b2Body_GetRotation( m_ship1Id );
             // bodyDef.gravityScale = 0.0f;
@@ -376,7 +376,7 @@ namespace Box2D.NET.Samples;
         // Ship 2 obstruction
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition( m_ship2Id );
             bodyDef.rotation = b2Body_GetRotation( m_ship2Id );
             // bodyDef.gravityScale = 0.0f;
@@ -391,19 +391,19 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 100.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 180.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 180.0f, height ) );
 
-        ImGui::Begin( "Compound Shapes", nullptr, ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Compound Shapes", nullptr, ImGuiWindowFlags.NoResize );
 
-        if ( ImGui::Button( "Intrude" ) )
+        if ( ImGui.Button( "Intrude" ) )
         {
             Spawn();
         }
 
-        ImGui::Checkbox( "Body AABBs", &m_drawBodyAABBs );
+        ImGui.Checkbox( "Body AABBs", &m_drawBodyAABBs );
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -440,7 +440,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleCompoundShape = RegisterSample( "Shapes", "Compound Shapes", CompoundShapes::Create );
 
-    class ShapeFilter : public Sample
+    class ShapeFilter : Sample
     {
     public:
     enum CollisionBits
@@ -458,8 +458,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_zoom = 25.0f * 0.5f;
-            g_camera.m_center = { 0.0f, 5.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.5f;
+            Draw.g_camera.m_center = { 0.0f, 5.0f };
         }
 
         {
@@ -476,7 +476,7 @@ namespace Box2D.NET.Samples;
 
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
 
             bodyDef.position = { 0.0f, 2.0f };
             m_player1Id = b2CreateBody( m_worldId, &bodyDef );
@@ -508,16 +508,16 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 240.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Shape Filter", nullptr, ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Shape Filter", nullptr, ImGuiWindowFlags.NoResize );
 
-        ImGui::Text( "Player 1 Collides With" );
+        ImGui.Text( "Player 1 Collides With" );
         {
             b2Filter filter1 = b2Shape_GetFilter( m_shape1Id );
             bool team2 = ( filter1.maskBits & TEAM2 ) == TEAM2;
-            if ( ImGui::Checkbox( "Team 2##1", &team2 ) )
+            if ( ImGui.Checkbox( "Team 2##1", &team2 ) )
             {
                 if ( team2 )
                 {
@@ -532,7 +532,7 @@ namespace Box2D.NET.Samples;
             }
 
             bool team3 = ( filter1.maskBits & TEAM3 ) == TEAM3;
-            if ( ImGui::Checkbox( "Team 3##1", &team3 ) )
+            if ( ImGui.Checkbox( "Team 3##1", &team3 ) )
             {
                 if ( team3 )
                 {
@@ -547,13 +547,13 @@ namespace Box2D.NET.Samples;
             }
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "Player 2 Collides With" );
+        ImGui.Text( "Player 2 Collides With" );
         {
             b2Filter filter2 = b2Shape_GetFilter( m_shape2Id );
             bool team1 = ( filter2.maskBits & TEAM1 ) == TEAM1;
-            if ( ImGui::Checkbox( "Team 1##2", &team1 ) )
+            if ( ImGui.Checkbox( "Team 1##2", &team1 ) )
             {
                 if ( team1 )
                 {
@@ -568,7 +568,7 @@ namespace Box2D.NET.Samples;
             }
 
             bool team3 = ( filter2.maskBits & TEAM3 ) == TEAM3;
-            if ( ImGui::Checkbox( "Team 3##2", &team3 ) )
+            if ( ImGui.Checkbox( "Team 3##2", &team3 ) )
             {
                 if ( team3 )
                 {
@@ -583,13 +583,13 @@ namespace Box2D.NET.Samples;
             }
         }
 
-        ImGui::Separator();
+        ImGui.Separator();
 
-        ImGui::Text( "Player 3 Collides With" );
+        ImGui.Text( "Player 3 Collides With" );
         {
             b2Filter filter3 = b2Shape_GetFilter( m_shape3Id );
             bool team1 = ( filter3.maskBits & TEAM1 ) == TEAM1;
-            if ( ImGui::Checkbox( "Team 1##3", &team1 ) )
+            if ( ImGui.Checkbox( "Team 1##3", &team1 ) )
             {
                 if ( team1 )
                 {
@@ -604,7 +604,7 @@ namespace Box2D.NET.Samples;
             }
 
             bool team2 = ( filter3.maskBits & TEAM2 ) == TEAM2;
-            if ( ImGui::Checkbox( "Team 2##3", &team2 ) )
+            if ( ImGui.Checkbox( "Team 2##3", &team2 ) )
             {
                 if ( team2 )
                 {
@@ -619,7 +619,7 @@ namespace Box2D.NET.Samples;
             }
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -653,7 +653,7 @@ namespace Box2D.NET.Samples;
     static int sampleShapeFilter = RegisterSample( "Shapes", "Filter", ShapeFilter::Create );
 
 // This shows how to use custom filtering
-    class CustomFilter : public Sample
+    class CustomFilter : Sample
     {
     public:
     enum
@@ -666,8 +666,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 5.0f };
-            g_camera.m_zoom = 10.0f;
+            Draw.g_camera.m_center = { 0.0f, 5.0f };
+            Draw.g_camera.m_zoom = 10.0f;
         }
 
         // Register custom filter
@@ -684,7 +684,7 @@ namespace Box2D.NET.Samples;
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         b2Polygon box = b2MakeSquare( 1.0f );
         float x = -e_count;
@@ -748,7 +748,7 @@ namespace Box2D.NET.Samples;
     static int sampleCustomFilter = RegisterSample( "Shapes", "Custom Filter", CustomFilter::Create );
 
 // Restitution is approximate since Box2D uses speculative collision
-    class Restitution : public Sample
+    class Restitution : Sample
     {
     public:
     enum
@@ -767,8 +767,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 4.0f, 17.0f };
-            g_camera.m_zoom = 27.5f;
+            Draw.g_camera.m_center = { 4.0f, 17.0f };
+            Draw.g_camera.m_zoom = 27.5f;
         }
 
         {
@@ -812,7 +812,7 @@ namespace Box2D.NET.Samples;
         shapeDef.restitution = 0.0f;
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
 
         float dr = 1.0f / ( e_count > 1 ? e_count - 1 : 1 );
         float x = -1.0f * ( e_count - 1 );
@@ -842,26 +842,26 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 100.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Restitution", nullptr, ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Restitution", nullptr, ImGuiWindowFlags.NoResize );
 
         bool changed = false;
         const char* shapeTypes[] = { "Circle", "Box" };
 
         int shapeType = int( m_shapeType );
-        changed = changed || ImGui::Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
+        changed = changed || ImGui.Combo( "Shape", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) );
         m_shapeType = ShapeType( shapeType );
 
-        changed = changed || ImGui::Button( "Reset" );
+        changed = changed || ImGui.Button( "Reset" );
 
         if ( changed )
         {
             CreateBodies();
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     static Sample* Create( Settings& settings )
@@ -875,7 +875,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleIndex = RegisterSample( "Shapes", "Restitution", Restitution::Create );
 
-    class Friction : public Sample
+    class Friction : Sample
     {
     public:
     explicit Friction( Settings& settings )
@@ -883,8 +883,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 14.0f };
-            g_camera.m_zoom = 25.0f * 0.6f;
+            Draw.g_camera.m_center = { 0.0f, 14.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.6f;
         }
 
         {
@@ -924,7 +924,7 @@ namespace Box2D.NET.Samples;
             for ( int i = 0; i < 5; ++i )
             {
                 b2BodyDef bodyDef = b2DefaultBodyDef();
-                bodyDef.type = b2_dynamicBody;
+                bodyDef.type = b2BodyType.b2_dynamicBody;
                 bodyDef.position = { -15.0f + 4.0f * i, 28.0f };
                 b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -942,7 +942,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleFriction = RegisterSample( "Shapes", "Friction", Friction::Create );
 
-    class RollingResistance : public Sample
+    class RollingResistance : Sample
     {
     public:
     explicit RollingResistance( Settings& settings )
@@ -950,8 +950,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 5.0f, 20.0f };
-            g_camera.m_zoom = 27.5f;
+            Draw.g_camera.m_center = { 5.0f, 20.0f };
+            Draw.g_camera.m_zoom = 27.5f;
         }
 
         m_lift = 0.0f;
@@ -973,7 +973,7 @@ namespace Box2D.NET.Samples;
             b2Segment segment = { { -40.0f, 2.0f * i }, { 40.0f, 2.0f * i + m_lift } };
             b2CreateSegmentShape( groundId, &shapeDef, &segment );
 
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { -39.5f, 2.0f * i + 0.75f };
             bodyDef.angularVelocity = -10.0f;
             bodyDef.linearVelocity = { 5.0f, 0.0f };
@@ -1033,7 +1033,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleRollingResistance = RegisterSample( "Shapes", "Rolling Resistance", RollingResistance::Create );
 
-    class ConveyorBelt : public Sample
+    class ConveyorBelt : Sample
     {
     public:
     explicit ConveyorBelt( Settings& settings )
@@ -1041,8 +1041,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 2.0f, 7.5f };
-            g_camera.m_zoom = 12.0f;
+            Draw.g_camera.m_center = { 2.0f, 7.5f };
+            Draw.g_camera.m_zoom = 12.0f;
         }
 
         // Ground
@@ -1076,7 +1076,7 @@ namespace Box2D.NET.Samples;
         for ( int i = 0; i < 5; ++i )
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { -10.0f + 2.0f * i, 7.0f };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -1092,7 +1092,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleConveyorBelt = RegisterSample( "Shapes", "Conveyor Belt", ConveyorBelt::Create );
 
-    class TangentSpeed : public Sample
+    class TangentSpeed : Sample
     {
     public:
     explicit TangentSpeed( Settings& settings )
@@ -1100,8 +1100,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 60.0f, -15.0f };
-            g_camera.m_zoom = 38.0f;
+            Draw.g_camera.m_center = { 60.0f, -15.0f };
+            Draw.g_camera.m_zoom = 38.0f;
         }
 
         {
@@ -1159,7 +1159,7 @@ namespace Box2D.NET.Samples;
         b2Circle circle = { { 0.0f, 0.0f }, 0.5f };
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { 110.0f, -30.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
@@ -1194,7 +1194,7 @@ namespace Box2D.NET.Samples;
 
 // This sample shows how to modify the geometry on an existing shape. This is only supported on
 // dynamic and kinematic shapes because static shapes don't look for new collisions.
-    class ModifyGeometry : public Sample
+    class ModifyGeometry : Sample
     {
     public:
     explicit ModifyGeometry( Settings& settings )
@@ -1202,8 +1202,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_zoom = 25.0f * 0.25f;
-            g_camera.m_center = { 0.0f, 5.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.25f;
+            Draw.g_camera.m_center = { 0.0f, 5.0f };
         }
 
         {
@@ -1216,7 +1216,7 @@ namespace Box2D.NET.Samples;
 
         {
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             bodyDef.position = { 0.0f, 4.0f };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -1229,7 +1229,7 @@ namespace Box2D.NET.Samples;
             m_scale = 1.0f;
             m_circle = { { 0.0f, 0.0f }, 0.5f };
             b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2_kinematicBody;
+            bodyDef.type = b2BodyType.b2_kinematicBody;
             bodyDef.position = { 0.0f, 1.0f };
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -1273,36 +1273,36 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 230.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 200.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 200.0f, height ) );
 
-        ImGui::Begin( "Modify Geometry", nullptr, ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Modify Geometry", nullptr, ImGuiWindowFlags.NoResize );
 
-        if ( ImGui::RadioButton( "Circle", m_shapeType == b2_circleShape ) )
+        if ( ImGui.RadioButton( "Circle", m_shapeType == b2_circleShape ) )
         {
             m_shapeType = b2_circleShape;
             UpdateShape();
         }
 
-        if ( ImGui::RadioButton( "Capsule", m_shapeType == b2_capsuleShape ) )
+        if ( ImGui.RadioButton( "Capsule", m_shapeType == b2_capsuleShape ) )
         {
             m_shapeType = b2_capsuleShape;
             UpdateShape();
         }
 
-        if ( ImGui::RadioButton( "Segment", m_shapeType == b2_segmentShape ) )
+        if ( ImGui.RadioButton( "Segment", m_shapeType == b2_segmentShape ) )
         {
             m_shapeType = b2_segmentShape;
             UpdateShape();
         }
 
-        if ( ImGui::RadioButton( "Polygon", m_shapeType == b2_polygonShape ) )
+        if ( ImGui.RadioButton( "Polygon", m_shapeType == b2_polygonShape ) )
         {
             m_shapeType = b2_polygonShape;
             UpdateShape();
         }
 
-        if ( ImGui::SliderFloat( "Scale", &m_scale, 0.1f, 10.0f, "%.2f" ) )
+        if ( ImGui.SliderFloat( "Scale", &m_scale, 0.1f, 10.0f, "%.2f" ) )
         {
             UpdateShape();
         }
@@ -1310,22 +1310,22 @@ namespace Box2D.NET.Samples;
         b2BodyId bodyId = b2Shape_GetBody( m_shapeId );
         b2BodyType bodyType = b2Body_GetType( bodyId );
 
-        if ( ImGui::RadioButton( "Static", bodyType == b2_staticBody ) )
+        if ( ImGui.RadioButton( "Static", bodyType == b2BodyType.b2_staticBody ) )
         {
-            b2Body_SetType( bodyId, b2_staticBody );
+            b2Body_SetType( bodyId, b2BodyType.b2_staticBody );
         }
 
-        if ( ImGui::RadioButton( "Kinematic", bodyType == b2_kinematicBody ) )
+        if ( ImGui.RadioButton( "Kinematic", bodyType == b2BodyType.b2_kinematicBody ) )
         {
-            b2Body_SetType( bodyId, b2_kinematicBody );
+            b2Body_SetType( bodyId, b2BodyType.b2_kinematicBody );
         }
 
-        if ( ImGui::RadioButton( "Dynamic", bodyType == b2_dynamicBody ) )
+        if ( ImGui.RadioButton( "Dynamic", bodyType == b2BodyType.b2_dynamicBody ) )
         {
-            b2Body_SetType( bodyId, b2_dynamicBody );
+            b2Body_SetType( bodyId, b2BodyType.b2_dynamicBody );
         }
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -1354,7 +1354,7 @@ namespace Box2D.NET.Samples;
     static int sampleModifyGeometry = RegisterSample( "Shapes", "Modify Geometry", ModifyGeometry::Create );
 
 // Shows how to link to chain shapes together. This is a useful technique for building large game levels with smooth collision.
-    class ChainLink : public Sample
+    class ChainLink : Sample
     {
     public:
     explicit ChainLink( Settings& settings )
@@ -1362,8 +1362,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 5.0f };
-            g_camera.m_zoom = 25.0f * 0.5f;
+            Draw.g_camera.m_center = { 0.0f, 5.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         b2Vec2 points1[] = { { 40.0f, 1.0f },	{ 0.0f, 0.0f },	 { -40.0f, 0.0f },
@@ -1393,7 +1393,7 @@ namespace Box2D.NET.Samples;
             b2CreateChain( groundId, &chainDef );
         }
 
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
         {
@@ -1435,7 +1435,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleChainLink = RegisterSample( "Shapes", "Chain Link", ChainLink::Create );
 
-    class RoundedShapes : public Sample
+    class RoundedShapes : Sample
     {
     public:
     explicit RoundedShapes( Settings& settings )
@@ -1443,8 +1443,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_zoom = 25.0f * 0.55f;
-            g_camera.m_center = { 2.0f, 8.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.55f;
+            Draw.g_camera.m_center = { 2.0f, 8.0f };
         }
 
         {
@@ -1471,7 +1471,7 @@ namespace Box2D.NET.Samples;
         // b2Polygon wedge = b2MakePolygon(&wedgeHull, 0.0f);
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
         float y = 2.0f;
@@ -1504,7 +1504,7 @@ namespace Box2D.NET.Samples;
 
     static int sampleRoundedShapes = RegisterSample( "Shapes", "Rounded", RoundedShapes::Create );
 
-    class OffsetShapes : public Sample
+    class OffsetShapes : Sample
     {
     public:
     explicit OffsetShapes( Settings& settings )
@@ -1512,8 +1512,8 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_zoom = 25.0f * 0.55f;
-            g_camera.m_center = { 2.0f, 8.0f };
+            Draw.g_camera.m_zoom = 25.0f * 0.55f;
+            Draw.g_camera.m_center = { 2.0f, 8.0f };
         }
 
         {
@@ -1530,7 +1530,7 @@ namespace Box2D.NET.Samples;
             b2Capsule capsule = { { -5.0f, 1.0f }, { -4.0f, 1.0f }, 0.25f };
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = { 13.5f, -0.75f };
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreateCapsuleShape( bodyId, &shapeDef, &capsule );
@@ -1540,7 +1540,7 @@ namespace Box2D.NET.Samples;
             b2Polygon box = b2MakeOffsetBox( 0.75f, 0.5f, { 9.0f, 2.0f }, b2MakeRot( 0.5f * B2_PI ) );
             b2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = { 0.0f, 0.0f };
-            bodyDef.type = b2_dynamicBody;
+            bodyDef.type = b2BodyType.b2_dynamicBody;
             b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
             b2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape( bodyId, &shapeDef, &box );
@@ -1563,7 +1563,7 @@ namespace Box2D.NET.Samples;
     static int sampleOffsetShapes = RegisterSample( "Shapes", "Offset", OffsetShapes::Create );
 
 // This shows how to use explosions and demonstrates the projected perimeter
-    class Explosion : public Sample
+    class Explosion : Sample
     {
     public:
     explicit Explosion( Settings& settings )
@@ -1571,14 +1571,14 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 0.0f };
-            g_camera.m_zoom = 14.0f;
+            Draw.g_camera.m_center = { 0.0f, 0.0f };
+            Draw.g_camera.m_zoom = 14.0f;
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
         b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
 
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 0.0f;
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -1617,12 +1617,12 @@ namespace Box2D.NET.Samples;
     void UpdateUI() override
     {
         float height = 160.0f;
-        ImGui::SetNextWindowPos( ImVec2( 10.0f, g_camera.m_height - height - 50.0f ), ImGuiCond_Once );
-        ImGui::SetNextWindowSize( ImVec2( 240.0f, height ) );
+        ImGui.SetNextWindowPos( ImVec2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( ImVec2( 240.0f, height ) );
 
-        ImGui::Begin( "Explosion", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize );
+        ImGui.Begin( "Explosion", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        if ( ImGui::Button( "Explode" ) )
+        if ( ImGui.Button( "Explode" ) )
         {
             b2ExplosionDef def = b2DefaultExplosionDef();
             def.position = b2Vec2_zero;
@@ -1632,11 +1632,11 @@ namespace Box2D.NET.Samples;
             b2World_Explode( m_worldId, &def );
         }
 
-        ImGui::SliderFloat( "radius", &m_radius, 0.0f, 20.0f, "%.1f" );
-        ImGui::SliderFloat( "falloff", &m_falloff, 0.0f, 20.0f, "%.1f" );
-        ImGui::SliderFloat( "impulse", &m_impulse, -20.0f, 20.0f, "%.1f" );
+        ImGui.SliderFloat( "radius", &m_radius, 0.0f, 20.0f, "%.1f" );
+        ImGui.SliderFloat( "falloff", &m_falloff, 0.0f, 20.0f, "%.1f" );
+        ImGui.SliderFloat( "impulse", &m_impulse, -20.0f, 20.0f, "%.1f" );
 
-        ImGui::End();
+        ImGui.End();
     }
 
     void Step( Settings& settings ) override
@@ -1677,7 +1677,7 @@ namespace Box2D.NET.Samples;
     static int sampleExplosion = RegisterSample( "Shapes", "Explosion", Explosion::Create );
 
 // This sample tests a static shape being recreated every step.
-    class RecreateStatic : public Sample
+    class RecreateStatic : Sample
     {
     public:
     explicit RecreateStatic( Settings& settings )
@@ -1685,13 +1685,13 @@ namespace Box2D.NET.Samples;
     {
         if ( settings.restart == false )
         {
-            g_camera.m_center = { 0.0f, 2.5f };
-            g_camera.m_zoom = 3.5f;
+            Draw.g_camera.m_center = { 0.0f, 2.5f };
+            Draw.g_camera.m_zoom = 3.5f;
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
         b2ShapeDef shapeDef = b2DefaultShapeDef();
-        bodyDef.type = b2_dynamicBody;
+        bodyDef.type = b2BodyType.b2_dynamicBody;
         bodyDef.position = { 0.0f, 1.0f };
         b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
