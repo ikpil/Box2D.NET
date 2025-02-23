@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Box2D.NET\Box2D.NET.csproj"/>
+    <ProjectReference Include="..\Box2D.NET\Box2D.NET.Shared.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
