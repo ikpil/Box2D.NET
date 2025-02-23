@@ -1,7 +1,7 @@
 ﻿namespace Box2D.NET.Primitives
 {
     /// A line segment with two-sided collision.
-    public class b2Segment
+    public class b2Segment // todo: @ikpil class or struct?
     {
         /// The first point
         public b2Vec2 point1;

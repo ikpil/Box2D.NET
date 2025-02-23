@@ -168,7 +168,7 @@ public class Draw
         }
     }
 
-    public void DrawSolidPolygon(b2Transform transform,  const b2Vec2* vertices,  int vertexCount, float radius, b2HexColor color )
+    public void DrawSolidPolygon(b2Transform transform,  b2Vec2[] vertices,  int vertexCount, float radius, b2HexColor color )
     {
         m_solidPolygons.AddPolygon(transform, vertices, vertexCount, radius, color);
     }
