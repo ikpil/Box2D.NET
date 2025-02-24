@@ -11,15 +11,14 @@ using Serilog;
 using static Box2D.NET.core;
 
 
-#define _CRTDBG_MAP_ALLOC
-#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS 1
 
 using Box2D.NET.Samples;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 
-public class Program
+public static class Program
 {
+    public const int IMGUI_DISABLE_OBSOLETE_FUNCTIONS = 1; // todo: @ikpil check!?
 
     private static void InitializeLogger()
     {
@@ -76,12 +75,12 @@ static b2Vec2 s_clickPointWS = b2Vec2_zero;
 static float s_windowScale = 1.0f;
 static float s_framebufferScale = 1.0f;
 
-inline bool IsPowerOfTwo( int x )
+public static bool IsPowerOfTwo( int x )
 {
 	return ( x != 0 ) && ( ( x & ( x - 1 ) ) == 0 );
 }
 
-void* AllocFcn( uint size, int alignment )
+public static void* AllocFcn( uint size, int alignment )
 {
 	// Allocation must be a multiple of alignment or risk a seg fault
 	// https://en.cppreference.com/w/c/memory/aligned_alloc
@@ -98,7 +97,7 @@ void* AllocFcn( uint size, int alignment )
 	return ptr;
 }
 
-void FreeFcn( void* mem )
+public static void FreeFcn( void* mem )
 {
 #if defined( _WIN64 ) || defined( _WIN32 )
 	_aligned_free( mem );
@@ -107,18 +106,18 @@ void FreeFcn( void* mem )
 #endif
 }
 
-int AssertFcn( string condition, string fileName, int lineNumber )
+public static int AssertFcn( string condition, string fileName, int lineNumber )
 {
 	printf( "SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber );
 	return 1;
 }
 
-void glfwErrorCallback( int error, string description )
+public static void glfwErrorCallback( int error, string description )
 {
 	fprintf( stderr, "GLFW error occurred. Code: %d. Description: %s\n", error, description );
 }
 
-static int CompareSamples( const void* a, const void* b )
+public static int CompareSamples( const void* a, const void* b )
 {
 	SampleEntry* sa = (SampleEntry*)a;
 	SampleEntry* sb = (SampleEntry*)b;
@@ -132,12 +131,12 @@ static int CompareSamples( const void* a, const void* b )
 	return result;
 }
 
-static void SortSamples()
+public static void SortSamples()
 {
 	qsort( g_sampleEntries, g_sampleCount, sizeof( SampleEntry ), CompareSamples );
 }
 
-static void RestartSample()
+public static void RestartSample()
 {
 	delete s_sample;
 	s_sample = nullptr;
@@ -146,7 +145,7 @@ static void RestartSample()
 	s_settings.restart = false;
 }
 
-static void CreateUI( GLFWwindow* window, string glslVersion )
+public static void CreateUI( GLFWwindow* window, string glslVersion )
 {
 	IMGUI_CHECKVERSION();
 	ImGui.CreateContext();
@@ -184,14 +183,14 @@ static void CreateUI( GLFWwindow* window, string glslVersion )
 	}
 }
 
-static void DestroyUI()
+public static void DestroyUI()
 {
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui.DestroyContext();
 }
 
-static void ResizeWindowCallback( GLFWwindow*, int width, int height )
+public static void ResizeWindowCallback( GLFWwindow*, int width, int height )
 {
 	Draw.g_camera.m_width = int( width / s_windowScale );
 	Draw.g_camera.m_height = int( height / s_windowScale );
