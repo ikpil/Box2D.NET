@@ -193,7 +193,7 @@ class ShapeDistance : Sample
 
         ImGui.Begin( "Shape Distance", nullptr, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        const char* shapeTypes[] = { "point", "segment", "triangle", "box" };
+        string[] shapeTypes = new string[] { "point", "segment", "triangle", "box" };
         int shapeType = int( m_typeA );
         if ( ImGui.Combo( "shape A", &shapeType, shapeTypes, IM_ARRAYSIZE( shapeTypes ) ) )
         {
