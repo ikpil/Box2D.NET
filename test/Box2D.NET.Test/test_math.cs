@@ -115,7 +115,7 @@ public class test_math
 
         b2Transform transform = b2MulTransforms(transform2, transform1);
 
-        v = b2TransformPoint(transform2, b2TransformPoint(ref transform1, two));
+        v = b2TransformPoint(ref transform2, b2TransformPoint(ref transform1, two));
 
         b2Vec2 u = b2TransformPoint(ref transform, two);
 
