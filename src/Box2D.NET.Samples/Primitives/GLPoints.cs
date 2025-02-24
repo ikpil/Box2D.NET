@@ -15,7 +15,7 @@ public class GLPoints
 
     public void Create()
     {
-        const char* vs = "#version 330\n"
+        string vs = "#version 330\n"
         "uniform mat4 projectionMatrix;\n"
         "layout(location = 0) in vec2 v_position;\n"
         "layout(location = 1) in float v_size;\n"
@@ -28,7 +28,7 @@ public class GLPoints
         "	gl_PointSize = v_size;\n"
         "}\n";
 
-        const char* fs = "#version 330\n"
+        string fs = "#version 330\n"
         "in vec4 f_color;\n"
         "out vec4 color;\n"
         "void main(void)\n"

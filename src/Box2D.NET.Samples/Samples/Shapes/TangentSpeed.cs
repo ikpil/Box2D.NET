@@ -29,7 +29,7 @@ public class TangentSpeed : Sample
             b2BodyDef bodyDef = b2DefaultBodyDef();
             b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            //const char* path = "M 613.8334,185.20833 H 500.06255 L 470.95838,182.5625 444.50004,174.625 418.04171,161.39583 "
+            //string path = "M 613.8334,185.20833 H 500.06255 L 470.95838,182.5625 444.50004,174.625 418.04171,161.39583 "
             //				   "394.2292,140.22917 h "
             //				   "-13.22916 v 44.97916 H 68.791712 V 0 h -21.16671 v 206.375 l 566.208398,-1e-5 z";
 

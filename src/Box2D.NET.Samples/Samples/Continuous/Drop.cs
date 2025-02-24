@@ -315,7 +315,7 @@ public class Drop : Sample
 
     ImDrawList* drawList = ImGui.GetWindowDrawList();
 
-    const char* ContinuousText = m_continuous && m_speculative ? "Continuous ON" : "Continuous OFF";
+    string ContinuousText = m_continuous && m_speculative ? "Continuous ON" : "Continuous OFF";
     drawList->AddText( Draw.g_draw.m_largeFont, Draw.g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
 
     if ( m_frameSkip > 0 )

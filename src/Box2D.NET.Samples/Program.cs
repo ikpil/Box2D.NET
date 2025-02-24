@@ -107,13 +107,13 @@ void FreeFcn( void* mem )
 #endif
 }
 
-int AssertFcn( const char* condition, const char* fileName, int lineNumber )
+int AssertFcn( string condition, string fileName, int lineNumber )
 {
 	printf( "SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber );
 	return 1;
 }
 
-void glfwErrorCallback( int error, const char* description )
+void glfwErrorCallback( int error, string description )
 {
 	fprintf( stderr, "GLFW error occurred. Code: %d. Description: %s\n", error, description );
 }
@@ -146,7 +146,7 @@ static void RestartSample()
 	s_settings.restart = false;
 }
 
-static void CreateUI( GLFWwindow* window, const char* glslVersion )
+static void CreateUI( GLFWwindow* window, string glslVersion )
 {
 	IMGUI_CHECKVERSION();
 	ImGui.CreateContext();
@@ -165,7 +165,7 @@ static void CreateUI( GLFWwindow* window, const char* glslVersion )
 		Debug.Assert( false );
 	}
 
-	const char* fontPath = "samples/data/droid_sans.ttf";
+	string fontPath = "samples/data/droid_sans.ttf";
 	FILE* file = fopen( fontPath, "rb" );
 
 	if ( file != nullptr )
@@ -489,7 +489,7 @@ static void UpdateUI()
 			if ( ImGui.BeginTabItem( "Samples" ) )
 			{
 				int categoryIndex = 0;
-				const char* category = g_sampleEntries[categoryIndex].category;
+				string category = g_sampleEntries[categoryIndex].category;
 				int i = 0;
 				while ( i < g_sampleCount )
 				{
@@ -584,9 +584,9 @@ public static void Main(string[] args)
 	}
 
 #if __APPLE__
-	const char* glslVersion = "#version 150";
+	string glslVersion = "#version 150";
 #else
-	const char* glslVersion = nullptr;
+	string glslVersion = nullptr;
 #endif
 
 	glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );

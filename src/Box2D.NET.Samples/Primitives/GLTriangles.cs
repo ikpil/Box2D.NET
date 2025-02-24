@@ -18,7 +18,7 @@ public class GLTriangles
 
     public void Create()
     {
-        const char* vs = "#version 330\n"
+        string vs = "#version 330\n"
         "uniform mat4 projectionMatrix;\n"
         "layout(location = 0) in vec2 v_position;\n"
         "layout(location = 1) in vec4 v_color;\n"
@@ -29,7 +29,7 @@ public class GLTriangles
         "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
         "}\n";
 
-        const char* fs = "#version 330\n"
+        string fs = "#version 330\n"
         "in vec4 f_color;\n"
         "out vec4 color;\n"
         "void main(void)\n"

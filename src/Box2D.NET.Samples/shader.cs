@@ -5,8 +5,8 @@
 public static class shader
 {
     
-uint CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath );
-uint CreateProgramFromStrings( const char* vertexString, const char* fragmentString );
+uint CreateProgramFromFiles( string vertexPath, string fragmentPath );
+uint CreateProgramFromStrings( string vertexString, string fragmentString );
 
 void CheckErrorGL();
 void DumpInfoGL();
@@ -15,10 +15,10 @@ void PrintLogGL( int object );
 
 void DumpInfoGL()
 {
-	const char* renderer = (const char*)glGetString( GL_RENDERER );
-	const char* vendor = (const char*)glGetString( GL_VENDOR );
-	const char* version = (const char*)glGetString( GL_VERSION );
-	const char* glslVersion = (const char*)glGetString( GL_SHADING_LANGUAGE_VERSION );
+	string renderer = (string)glGetString( GL_RENDERER );
+	string vendor = (string)glGetString( GL_VENDOR );
+	string version = (string)glGetString( GL_VERSION );
+	string glslVersion = (string)glGetString( GL_SHADING_LANGUAGE_VERSION );
 
 	int major, minor;
 	glGetIntegerv( GL_MAJOR_VERSION, &major );
@@ -75,10 +75,10 @@ void PrintLogGL( uint object )
 	free( log );
 }
 
-static GLuint sCreateShaderFromString( const char* source, GLenum type )
+static GLuint sCreateShaderFromString( string source, GLenum type )
 {
 	GLuint shader = glCreateShader( type );
-	const char* sources[] = { source };
+	string sources[] = { source };
 
 	glShaderSource( shader, 1, sources, nullptr );
 	glCompileShader( shader );
@@ -97,7 +97,7 @@ static GLuint sCreateShaderFromString( const char* source, GLenum type )
 	return shader;
 }
 
-uint CreateProgramFromStrings( const char* vertexString, const char* fragmentString )
+uint CreateProgramFromStrings( string vertexString, string fragmentString )
 {
 	GLuint vertex = sCreateShaderFromString( vertexString, GL_VERTEX_SHADER );
 	if ( vertex == 0 )
@@ -132,7 +132,7 @@ uint CreateProgramFromStrings( const char* vertexString, const char* fragmentStr
 	return program;
 }
 
-static GLuint sCreateShaderFromFile( const char* filename, GLenum type )
+static GLuint sCreateShaderFromFile( string filename, GLenum type )
 {
 	FILE* file = fopen( filename, "rb" );
 	if ( file == nullptr )
@@ -153,7 +153,7 @@ static GLuint sCreateShaderFromFile( const char* filename, GLenum type )
 	source[size] = 0;
 
 	GLuint shader = glCreateShader( type );
-	const char* sources[] = { source };
+	string sources[] = { source };
 
 	glShaderSource( shader, 1, sources, nullptr );
 	glCompileShader( shader );
@@ -171,7 +171,7 @@ static GLuint sCreateShaderFromFile( const char* filename, GLenum type )
 	return shader;
 }
 
-uint CreateProgramFromFiles( const char* vertexPath, const char* fragmentPath )
+uint CreateProgramFromFiles( string vertexPath, string fragmentPath )
 {
 	GLuint vertex = sCreateShaderFromFile( vertexPath, GL_VERTEX_SHADER );
 	if ( vertex == 0 )

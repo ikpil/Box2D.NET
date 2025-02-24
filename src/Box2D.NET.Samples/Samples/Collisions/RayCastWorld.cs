@@ -446,7 +446,7 @@ public class RayCastWorld : Sample
                 ImGui.SliderFloat( "Radius", &m_castRadius, 0.0f, 2.0f, "%.1f" );
             }
 
-            const char* modes[] = { "Any", "Closest", "Multiple", "Sorted" };
+            string modes[] = { "Any", "Closest", "Multiple", "Sorted" };
             int mode = int( m_mode );
             if ( ImGui.Combo( "Mode", &mode, modes, IM_ARRAYSIZE( modes ) ) )
             {

@@ -128,7 +128,7 @@ public SensorTypes( Settings settings )
     }
 }
 
-void PrintOverlaps( b2ShapeId sensorShapeId, const char* prefix )
+void PrintOverlaps( b2ShapeId sensorShapeId, string prefix )
 {
     char buffer[256] = {};
 
@@ -150,7 +150,7 @@ void PrintOverlaps( b2ShapeId sensorShapeId, const char* prefix )
         }
 
         b2BodyId bodyId = b2Shape_GetBody( visitorId );
-        const char* name = b2Body_GetName( bodyId );
+        string name = b2Body_GetName( bodyId );
         if ( name == nullptr )
         {
             continue;
