@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Box2D.NET.Primitives;
 
 namespace Box2D.NET.Samples.Primitives;
@@ -10,7 +11,7 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
-    std::vector<VertexData> m_points;
+    List<VertexData> m_points;
 
     GLuint m_vaoId;
     GLuint m_vboId;
@@ -19,24 +20,24 @@ public class GLLines
 
     public void Create()
     {
-        const char* vs = "#version 330\n"
-        "uniform mat4 projectionMatrix;\n"
-        "layout(location = 0) in vec2 v_position;\n"
-        "layout(location = 1) in vec4 v_color;\n"
-        "out vec4 f_color;\n"
-        "void main(void)\n"
-        "{\n"
-        "	f_color = v_color;\n"
-        "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
-        "}\n";
+        string vs = "#version 330\n"
+        + "uniform mat4 projectionMatrix;\n"
+        + "layout(location = 0) in vec2 v_position;\n"
+        + "layout(location = 1) in vec4 v_color;\n"
+        + "out vec4 f_color;\n"
+        + "void main(void)\n"
+        + "{\n"
+        + "	f_color = v_color;\n"
+        + "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
+        + "}\n";
 
-        const char* fs = "#version 330\n"
-        "in vec4 f_color;\n"
-        "out vec4 color;\n"
-        "void main(void)\n"
-        "{\n"
-        "	color = f_color;\n"
-        "}\n";
+        string fs = "#version 330\n"
+        + "in vec4 f_color;\n"
+        + "out vec4 color;\n"
+        + "void main(void)\n"
+        + "{\n"
+        + "	color = f_color;\n"
+        + "}\n";
 
         m_programId = CreateProgramFromStrings(vs, fs);
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
@@ -87,13 +88,9 @@ public class GLLines
 
     public void AddLine(b2Vec2 p1, b2Vec2 p2, b2HexColor c)
     {
-        RGBA8 rgba = MakeRGBA8(c, 1.0f);
-        m_points.push_back( {
-            p1, rgba
-        } );
-        m_points.push_back( {
-            p2, rgba
-        } );
+        RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
+        m_points.Add( new VertexData( p1, rgba ));
+        m_points.Add( new VertexData( p2, rgba ));
     }
 
     public void Flush()

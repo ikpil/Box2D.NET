@@ -9,7 +9,7 @@ public class GLSolidCircles
 {
     public const int e_batchSize = 2048;
 
-    std::vector<SolidCircleData> m_circles;
+    List<SolidCircleData> m_circles;
 
     GLuint m_vaoId;
     GLuint m_vboIds[2];
@@ -102,7 +102,7 @@ public class GLSolidCircles
 
     public void AddCircle(ref b2Transform transform, float radius, b2HexColor color)
     {
-        RGBA8 rgba = MakeRGBA8(color, 1.0f);
+        RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         m_circles.push_back( {
             transform, radius, rgba
         } );

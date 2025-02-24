@@ -9,7 +9,7 @@ public class GLTriangles
     // must be multiple of 3
     public const int e_batchSize = 3 * 512;
 
-    std::vector<VertexData> m_points;
+    List<VertexData> m_points;
 
     GLuint m_vaoId;
     GLuint m_vboId;
@@ -86,7 +86,7 @@ public class GLTriangles
 
     public void AddTriangle(b2Vec2 p1, b2Vec2 p2, b2Vec2 p3, b2HexColor c)
     {
-        RGBA8 rgba = MakeRGBA8(c, 1.0f);
+        RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
         m_points.push_back( {
             p1, rgba
         } );

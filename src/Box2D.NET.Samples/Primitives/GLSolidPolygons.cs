@@ -8,7 +8,7 @@ public class GLSolidPolygons
 {
     public const int e_batchSize = 512;
 
-    std::vector<PolygonData> m_polygons;
+    List<PolygonData> m_polygons;
 
     GLuint m_vaoId;
     GLuint m_vboIds[2];
@@ -121,7 +121,7 @@ public class GLSolidPolygons
 
         data.count = n;
         data.radius = radius;
-        data.color = MakeRGBA8( color, 1.0f );
+        data.color = RGBA8.MakeRGBA8( color, 1.0f );
 
         m_polygons.push_back( data );
     }

@@ -6,7 +6,7 @@ public class GLPoints
 {
     public const int e_batchSize = 2048;
 
-    std::vector<PointData> m_points;
+    List<PointData> m_points;
 
     GLuint m_vaoId;
     GLuint m_vboId;
@@ -91,7 +91,7 @@ public class GLPoints
 
     public void AddPoint(b2Vec2 v, float size, b2HexColor c)
     {
-        RGBA8 rgba = MakeRGBA8(c, 1.0f);
+        RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
         m_points.push_back( {
             v, size, rgba
         } );

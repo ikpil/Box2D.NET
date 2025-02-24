@@ -186,7 +186,7 @@ public override void Step(Settings settings)
     int attachCount = 0;
     int destroyCount = 0;
 
-    std::vector<b2ContactData> contactData;
+    List<b2ContactData> contactData;
 
     // Process contact begin touch events.
     b2ContactEvents contactEvents = b2World_GetContactEvents( m_worldId );

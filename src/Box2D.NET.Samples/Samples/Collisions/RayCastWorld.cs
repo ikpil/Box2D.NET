@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using ImGuiNET;
@@ -191,15 +193,12 @@ public class RayCastWorld : Sample
         e_polygonCast = 3
     };
 
-    enum
-    {
-        e_maxCount = 64
-    };
+    public const int e_maxCount = 64;
 
     int m_bodyIndex;
-    b2BodyId m_bodyIds[e_maxCount] = {};
-    ShapeUserData m_userData[e_maxCount] = {};
-    b2Polygon m_polygons[4] = {};
+    b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
+    ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
+    b2Polygon[] m_polygons = new b2Polygon[4];
     b2Capsule m_capsule;
     b2Circle m_circle;
     b2Segment m_segment;
@@ -221,15 +220,14 @@ public class RayCastWorld : Sample
     b2Vec2 m_rayEnd;
     bool m_dragging;
 
-    static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", RayCastWorld::Create );
+    static int sampleRayCastWorld = RegisterSample( "Collision", "Ray Cast World", Create );
     static Sample Create( Settings settings )
     {
         return new RayCastWorld( settings );
     }
 
 
-    public RayCastWorld( Settings settings )
-        : base( settings )
+    public RayCastWorld( Settings settings ) : base( settings )
     {
         if ( settings.restart == false )
         {
@@ -436,7 +434,7 @@ public class RayCastWorld : Sample
 
         if ( m_simple == false )
         {
-            const char* castTypes[] = { "Ray", "Circle", "Capsule", "Polygon" };
+            string[] castTypes = ["Ray", "Circle", "Capsule", "Polygon"];
             int castType = int( m_castType );
             if ( ImGui.Combo( "Type", &castType, castTypes, IM_ARRAYSIZE( castTypes ) ) )
             {

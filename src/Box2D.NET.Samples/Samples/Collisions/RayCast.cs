@@ -6,8 +6,36 @@ using static Box2D.NET.math_function;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-    public class RayCast : Sample
+public class RayCast : Sample
+{
+    b2Polygon m_box;
+    b2Polygon m_triangle;
+    b2Circle m_circle;
+    b2Capsule m_capsule;
+    b2Segment m_segment;
+
+    b2Transform m_transform;
+    float m_angle;
+
+    b2Vec2 m_rayStart;
+    b2Vec2 m_rayEnd;
+
+    b2Vec2 m_basePosition;
+    float m_baseAngle;
+
+    b2Vec2 m_startPosition;
+
+    bool m_rayDrag;
+    bool m_translating;
+    bool m_rotating;
+    bool m_showFraction;
+    
+    static int sampleIndex = RegisterSample( "Collision", "Ray Cast", Create );
+    static Sample Create( Settings settings )
     {
+        return new RayCast( settings );
+    }
+
     public RayCast( Settings settings )
         : base ( settings )
     {
@@ -303,32 +331,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
         DrawRay( &output );
     }
 
-    static Sample Create( Settings settings )
-    {
-        return new RayCast( settings );
-    }
 
-    b2Polygon m_box;
-    b2Polygon m_triangle;
-    b2Circle m_circle;
-    b2Capsule m_capsule;
-    b2Segment m_segment;
 
-    b2Transform m_transform;
-    float m_angle;
+}
 
-    b2Vec2 m_rayStart;
-    b2Vec2 m_rayEnd;
-
-    b2Vec2 m_basePosition;
-    float m_baseAngle;
-
-    b2Vec2 m_startPosition;
-
-    bool m_rayDrag;
-    bool m_translating;
-    bool m_rotating;
-    bool m_showFraction;
-    };
-
-    static int sampleIndex = RegisterSample( "Collision", "Ray Cast", RayCast::Create );

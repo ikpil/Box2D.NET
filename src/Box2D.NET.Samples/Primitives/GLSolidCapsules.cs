@@ -1,4 +1,5 @@
-﻿using Box2D.NET.Primitives;
+﻿using System.Collections.Generic;
+using Box2D.NET.Primitives;
 
 namespace Box2D.NET.Samples.Primitives;
 
@@ -7,7 +8,7 @@ public class GLSolidCapsules
 {
     public const int e_batchSize = 2048;
 
-    std::vector<CapsuleData> m_capsules;
+    List<CapsuleData> m_capsules;
 
     GLuint m_vaoId;
     GLuint m_vboIds[2];
@@ -120,7 +121,7 @@ public class GLSolidCapsules
         transform.q.c = axis.x;
         transform.q.s = axis.y;
 
-        RGBA8 rgba = MakeRGBA8(c, 1.0f);
+        RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
 
         m_capsules.push_back( {
             transform, radius, length, rgba

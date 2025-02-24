@@ -6,7 +6,7 @@ public class GLCircles
 {
     public const int e_batchSize = 2048;
 
-    std::vector<CircleData> m_circles;
+    List<CircleData> m_circles;
 
     GLuint m_vaoId;
     GLuint m_vboIds[2];
@@ -99,7 +99,7 @@ public class GLCircles
 
     public void AddCircle(b2Vec2 center, float radius, b2HexColor color)
     {
-        RGBA8 rgba = MakeRGBA8(color, 1.0f);
+        RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         m_circles.push_back( {
             center, radius, rgba
         } );

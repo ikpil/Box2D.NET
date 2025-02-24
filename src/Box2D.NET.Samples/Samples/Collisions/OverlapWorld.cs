@@ -63,7 +63,7 @@ public class OverlapWorld : Sample
 
     static bool OverlapResultFcn( b2ShapeId shapeId, object context )
     {
-        ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
+        ShapeUserData* userData = (ShapeUserData)b2Shape_GetUserData( shapeId );
         if ( userData != nullptr && userData.ignore )
         {
             // continue the query
