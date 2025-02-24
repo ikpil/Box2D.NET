@@ -123,7 +123,7 @@ public class GLSolidPolygons
         data.radius = radius;
         data.color = RGBA8.MakeRGBA8( color, 1.0f );
 
-        m_polygons.push_back( data );
+        m_polygons.Add( data );
     }
 
     public void Flush()

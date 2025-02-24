@@ -103,7 +103,7 @@ public class GLSolidCircles
     public void AddCircle(ref b2Transform transform, float radius, b2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
-        m_circles.push_back( {
+        m_circles.Add( {
             transform, radius, rgba
         } );
     }

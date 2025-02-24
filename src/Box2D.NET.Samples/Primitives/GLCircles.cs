@@ -100,7 +100,7 @@ public class GLCircles
     public void AddCircle(b2Vec2 center, float radius, b2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
-        m_circles.push_back( {
+        m_circles.Add( {
             center, radius, rgba
         } );
     }

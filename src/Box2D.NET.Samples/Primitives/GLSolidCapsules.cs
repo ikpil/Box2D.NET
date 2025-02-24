@@ -123,7 +123,7 @@ public class GLSolidCapsules
 
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
 
-        m_capsules.push_back( {
+        m_capsules.Add( {
             transform, radius, length, rgba
         } );
     }

@@ -92,7 +92,7 @@ public class GLPoints
     public void AddPoint(b2Vec2 v, float size, b2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
-        m_points.push_back( {
+        m_points.Add( {
             v, size, rgba
         } );
     }
