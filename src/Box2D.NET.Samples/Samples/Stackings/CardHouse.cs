@@ -17,8 +17,7 @@ public class CardHouse : Sample
         return new CardHouse(settings);
     }
 
-    public CardHouse(Settings settings)
-        : base(settings)
+    public CardHouse(Settings settings) : base(settings)
     {
         if (settings.restart == false)
         {
