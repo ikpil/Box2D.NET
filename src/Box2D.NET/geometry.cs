@@ -738,7 +738,7 @@ namespace Box2D.NET
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
         // Ray vs line segment
-        public static b2CastOutput b2RayCastSegment(b2RayCastInput input, b2Segment shape, bool oneSided)
+        public static b2CastOutput b2RayCastSegment(ref b2RayCastInput input, b2Segment shape, bool oneSided)
         {
             if (oneSided)
             {
@@ -820,7 +820,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
-        public static b2CastOutput b2RayCastPolygon(b2RayCastInput input, b2Polygon shape)
+        public static b2CastOutput b2RayCastPolygon(ref b2RayCastInput input, b2Polygon shape)
         {
             Debug.Assert(b2IsValidRay(input));
 
