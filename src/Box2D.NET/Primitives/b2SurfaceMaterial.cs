@@ -4,7 +4,7 @@ namespace Box2D.NET.Primitives
 {
     /// Surface materials allow chain shapes to have per segment surface properties.
     /// @ingroup shape
-    public class b2SurfaceMaterial
+    public class b2SurfaceMaterial // todo: @ikpil, class or struct
     {
         /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
         public float friction;
