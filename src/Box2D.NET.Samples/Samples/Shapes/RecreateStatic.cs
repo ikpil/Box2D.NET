@@ -11,43 +11,43 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 public class RecreateStatic : Sample
 {
     b2BodyId m_groundId;
-    static int sampleSingleBox = RegisterSample( "Shapes", "Recreate Static", Create );
-    static Sample Create( Settings settings )
+    static int sampleSingleBox = RegisterSample("Shapes", "Recreate Static", Create);
+
+    static Sample Create(Settings settings)
     {
-        return new RecreateStatic( settings );
+        return new RecreateStatic(settings);
     }
 
-    public RecreateStatic( Settings settings )
-        : base( settings )
+    public RecreateStatic(Settings settings) : base(settings)
     {
-        if ( settings.restart == false )
+        if (settings.restart == false)
         {
-            Draw.g_camera.m_center = { 0.0f, 2.5f };
+            Draw.g_camera.m_center = new b2Vec2(0.0f, 2.5f);
             Draw.g_camera.m_zoom = 3.5f;
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
         b2ShapeDef shapeDef = b2DefaultShapeDef();
         bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.position = { 0.0f, 1.0f };
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        bodyDef.position = new b2Vec2(0.0f, 1.0f);
+        b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-        b2Polygon box = b2MakeBox( 1.0f, 1.0f );
-        b2CreatePolygonShape( bodyId, &shapeDef, &box );
+        b2Polygon box = b2MakeBox(1.0f, 1.0f);
+        b2CreatePolygonShape(bodyId, shapeDef, box);
 
-        m_groundId = {};
+        m_groundId = new b2BodyId();
     }
 
     public override void Step(Settings settings)
     {
-        if ( B2_IS_NON_NULL( m_groundId ) )
+        if (B2_IS_NON_NULL(m_groundId))
         {
-            b2DestroyBody( m_groundId );
-            m_groundId = {};
+            b2DestroyBody(m_groundId);
+            m_groundId = new b2BodyId();
         }
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody( m_worldId, &bodyDef );
+        m_groundId = b2CreateBody(m_worldId, bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -55,10 +55,9 @@ public class RecreateStatic : Sample
         // on a static body.
         shapeDef.invokeContactCreation = true;
 
-        b2Segment segment = { { -10.0f, 0.0f }, { 10.0f, 0.0f } };
-        b2CreateSegmentShape( m_groundId, &shapeDef, &segment );
+        b2Segment segment = new b2Segment(new b2Vec2(-10.0f, 0.0f), new b2Vec2(10.0f, 0.0f));
+        b2CreateSegmentShape(m_groundId, shapeDef, segment);
 
-        base.Step( settings );
+        base.Step(settings);
     }
 }
-
