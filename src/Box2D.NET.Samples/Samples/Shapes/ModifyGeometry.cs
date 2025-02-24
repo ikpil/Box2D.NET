@@ -16,14 +16,50 @@ public class ModifyGeometry : Sample
 {
     b2ShapeId m_shapeId;
     b2ShapeType m_shapeType;
+    object m_shape;
     float m_scale;
 
     //union
     //{
-    b2Circle m_circle;
-    b2Capsule m_capsule;
-    b2Segment m_segment;
-    b2Polygon m_polygon;
+    b2Circle m_circle
+    {
+        get => b2ShapeType.b2_circleShape == m_shapeType ? (b2Circle)m_shape : null;
+        set
+        {
+            m_shape = value;
+            m_shapeType = b2ShapeType.b2_circleShape;
+        }
+    }
+
+    b2Capsule m_capsule
+    {
+        get => b2ShapeType.b2_capsuleShape == m_shapeType ? (b2Capsule)m_shape : null;
+        set
+        {
+            m_shape = value;
+            m_shapeType = b2ShapeType.b2_capsuleShape;
+        }
+    }
+
+    b2Segment m_segment
+    {
+        get => b2ShapeType.b2_segmentShape == m_shapeType ? (b2Segment)m_shape : null;
+        set
+        {
+            m_shape = value;
+            m_shapeType = b2ShapeType.b2_segmentShape;
+        }
+    }
+
+    b2Polygon m_polygon
+    {
+        get => b2ShapeType.b2_polygonShape == m_shapeType ? (b2Polygon)m_shape : null;
+        set
+        {
+            m_shape = value;
+            m_shapeType = b2ShapeType.b2_polygonShape;
+        }
+    }
     //}
 
     static int sampleModifyGeometry = RegisterSample("Shapes", "Modify Geometry", Create);
@@ -31,6 +67,10 @@ public class ModifyGeometry : Sample
     static Sample Create(Settings settings)
     {
         return new ModifyGeometry(settings);
+    }
+
+    private void SetCircle(b2Circle circle)
+    {
     }
 
     public ModifyGeometry(Settings settings)
