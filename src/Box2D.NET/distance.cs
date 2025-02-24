@@ -496,7 +496,7 @@ namespace Box2D.NET
         /// Compute the closest points between two shapes represented as point clouds.
         /// b2SimplexCache cache is input/output. On the first call set b2SimplexCache.count to zero.
         /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
-        public static b2DistanceOutput b2ShapeDistance(ref b2SimplexCache cache, b2DistanceInput input, b2Simplex[] simplexes, int simplexCapacity)
+        public static b2DistanceOutput b2ShapeDistance(ref b2SimplexCache cache, ref b2DistanceInput input, b2Simplex[] simplexes, int simplexCapacity)
         {
             b2DistanceOutput output = new b2DistanceOutput();
 

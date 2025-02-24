@@ -431,7 +431,7 @@ namespace Box2D.NET
         }
 
         /// Transform a point (e.g. local space to world space)
-        public static b2Vec2 b2TransformPoint(b2Transform t, b2Vec2 p)
+        public static b2Vec2 b2TransformPoint(ref b2Transform t, b2Vec2 p)
         {
             float x = (t.q.c * p.x - t.q.s * p.y) + t.p.x;
             float y = (t.q.s * p.x + t.q.c * p.y) + t.p.y;
