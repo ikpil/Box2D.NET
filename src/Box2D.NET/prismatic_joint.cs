@@ -154,8 +154,8 @@ namespace Box2D.NET
 
             b2PrismaticJoint joint = jointSim.prismaticJoint;
             b2Vec2 axisA = b2RotateVector(transformA.q, joint.localAxisA);
-            b2Vec2 pA = b2TransformPoint(transformA, jointSim.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, jointSim.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localOriginAnchorB);
             b2Vec2 d = b2Sub(pB, pA);
             float translation = b2Dot(d, axisA);
             return translation;
@@ -626,8 +626,8 @@ void b2PrismaticJoint::Dump()
 
             b2PrismaticJoint joint = @base.prismaticJoint;
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
 
             b2Vec2 axis = b2RotateVector(transformA.q, joint.localAxisA);
 

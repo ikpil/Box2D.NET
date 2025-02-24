@@ -822,8 +822,8 @@ namespace Box2D.NET
                 case b2ShapeType.b2_capsuleShape:
                 {
                     b2Capsule capsule = shape.capsule;
-                    b2Vec2 p1 = b2TransformPoint(xf, capsule.center1);
-                    b2Vec2 p2 = b2TransformPoint(xf, capsule.center2);
+                    b2Vec2 p1 = b2TransformPoint(ref xf, capsule.center1);
+                    b2Vec2 p2 = b2TransformPoint(ref xf, capsule.center2);
                     draw.DrawSolidCapsule(p1, p2, capsule.radius, color, draw.context);
                 }
                     break;
@@ -831,7 +831,7 @@ namespace Box2D.NET
                 case b2ShapeType.b2_circleShape:
                 {
                     b2Circle circle = shape.circle;
-                    xf.p = b2TransformPoint(xf, circle.center);
+                    xf.p = b2TransformPoint(ref xf, circle.center);
                     draw.DrawSolidCircle(ref xf, circle.radius, color, draw.context);
                 }
                     break;
@@ -846,8 +846,8 @@ namespace Box2D.NET
                 case b2ShapeType.b2_segmentShape:
                 {
                     b2Segment segment = shape.segment;
-                    b2Vec2 p1 = b2TransformPoint(xf, segment.point1);
-                    b2Vec2 p2 = b2TransformPoint(xf, segment.point2);
+                    b2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
+                    b2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);
                 }
                     break;
@@ -855,8 +855,8 @@ namespace Box2D.NET
                 case b2ShapeType.b2_chainSegmentShape:
                 {
                     b2Segment segment = shape.chainSegment.segment;
-                    b2Vec2 p1 = b2TransformPoint(xf, segment.point1);
-                    b2Vec2 p2 = b2TransformPoint(xf, segment.point2);
+                    b2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
+                    b2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);
                     draw.DrawPoint(p2, 4.0f, color, draw.context);
                     draw.DrawSegment(p1, b2Lerp(p1, p2, 0.1f), b2HexColor.b2_colorPaleGreen, draw.context);
@@ -1018,7 +1018,7 @@ namespace Box2D.NET
                         b2Transform transform = new b2Transform(bodySim.center, bodySim.transform.q);
                         draw.DrawTransform(transform, draw.context);
 
-                        b2Vec2 p = b2TransformPoint(transform, offset);
+                        b2Vec2 p = b2TransformPoint(ref transform, offset);
 
                         draw.DrawString(p, body.name, b2HexColor.b2_colorBlueViolet, draw.context);
                     }
@@ -1031,7 +1031,7 @@ namespace Box2D.NET
                         b2Transform transform = new b2Transform(bodySim.center, bodySim.transform.q);
                         draw.DrawTransform(transform, draw.context);
 
-                        b2Vec2 p = b2TransformPoint(transform, offset);
+                        b2Vec2 p = b2TransformPoint(ref transform, offset);
 
                         string buffer = string.Format("{0:F2}", body.mass);
                         draw.DrawString(p, buffer, b2HexColor.b2_colorWhite, draw.context);
@@ -1321,7 +1321,7 @@ namespace Box2D.NET
                     }
 
                     b2Transform transform = b2GetBodyTransformQuick(world, body);
-                    b2Vec2 p = b2TransformPoint(transform, offset);
+                    b2Vec2 p = b2TransformPoint(ref transform, offset);
 
                     draw.DrawString(p, body.name, b2HexColor.b2_colorBlueViolet, draw.context);
                 }
@@ -1342,7 +1342,7 @@ namespace Box2D.NET
                         b2Transform transform = new b2Transform(bodySim.center, bodySim.transform.q);
                         draw.DrawTransform(transform, draw.context);
 
-                        b2Vec2 p = b2TransformPoint(transform, offset);
+                        b2Vec2 p = b2TransformPoint(ref transform, offset);
 
                         float mass = bodySim.invMass > 0.0f ? 1.0f / bodySim.invMass : 0.0f;
                         string buffer = $"{mass:F2}";
@@ -2079,7 +2079,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
 
             if (output.distance > 0.0f)
             {
@@ -2382,7 +2382,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(translation));
 
             b2ShapeCastInput input = new b2ShapeCastInput();
-            input.points[0] = b2TransformPoint(originTransform, circle.center);
+            input.points[0] = b2TransformPoint(ref originTransform, circle.center);
             input.count = 1;
             input.radius = circle.radius;
             input.translation = translation;
@@ -2425,8 +2425,8 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(translation));
 
             b2ShapeCastInput input = new b2ShapeCastInput();
-            input.points[0] = b2TransformPoint(originTransform, capsule.center1);
-            input.points[1] = b2TransformPoint(originTransform, capsule.center2);
+            input.points[0] = b2TransformPoint(ref originTransform, capsule.center1);
+            input.points[1] = b2TransformPoint(ref originTransform, capsule.center2);
             input.count = 2;
             input.radius = capsule.radius;
             input.translation = translation;
@@ -2471,7 +2471,7 @@ namespace Box2D.NET
             b2ShapeCastInput input = new b2ShapeCastInput();
             for (int i = 0; i < polygon.count; ++i)
             {
-                input.points[i] = b2TransformPoint(originTransform, polygon.vertices[i]);
+                input.points[i] = b2TransformPoint(ref originTransform, polygon.vertices[i]);
             }
 
             input.count = polygon.count;
@@ -2654,7 +2654,7 @@ void b2World_Dump()
             input.useRadii = true;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
 
             float radius = explosionContext.radius;
             float falloff = explosionContext.falloff;
@@ -2674,7 +2674,7 @@ void b2World_Dump()
             if (output.distance == 0.0f)
             {
                 b2Vec2 localCentroid = b2GetShapeCentroid(shape);
-                closestPoint = b2TransformPoint(transform, localCentroid);
+                closestPoint = b2TransformPoint(ref transform, localCentroid);
             }
 
             b2Vec2 direction = b2Sub(closestPoint, explosionContext.position);

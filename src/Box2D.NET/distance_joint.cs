@@ -90,8 +90,8 @@ namespace Box2D.NET
             b2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
             b2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
             b2Vec2 d = b2Sub(pB, pA);
             float length = b2Length(d);
             return length;
@@ -189,8 +189,8 @@ namespace Box2D.NET
             b2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
             b2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
             b2Vec2 d = b2Sub(pB, pA);
             b2Vec2 axis = b2Normalize(d);
             float force = (joint.impulse + joint.lowerImpulse - joint.upperImpulse + joint.motorImpulse) * world.inv_h;
@@ -515,8 +515,8 @@ namespace Box2D.NET
 
             b2DistanceJoint joint = @base.distanceJoint;
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
 
             b2Vec2 axis = b2Normalize(b2Sub(pB, pA));
 

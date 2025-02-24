@@ -622,7 +622,7 @@ namespace Box2D.NET
             // Move center of mass.
             b2Vec2 oldCenter = bodySim.center;
             bodySim.localCenter = localCenter;
-            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformPoint(ref bodySim.transform, bodySim.localCenter);
 
             // Update center of mass velocity
             b2BodyState state = b2GetBodyState(world, body);
@@ -682,7 +682,7 @@ namespace Box2D.NET
             b2World world = b2GetWorld(bodyId.world0);
             b2Body body = b2GetBodyFullId(world, bodyId);
             b2Transform transform = b2GetBodyTransformQuick(world, body);
-            return b2TransformPoint(transform, localPoint);
+            return b2TransformPoint(ref transform, localPoint);
         }
 
         public static b2Vec2 b2Body_GetLocalVector(b2BodyId bodyId, b2Vec2 worldVector)
@@ -714,7 +714,7 @@ namespace Box2D.NET
 
             bodySim.transform.p = position;
             bodySim.transform.q = rotation;
-            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformPoint(ref bodySim.transform, bodySim.localCenter);
 
             bodySim.rotation0 = bodySim.transform.q;
             bodySim.center0 = bodySim.center;
@@ -1333,7 +1333,7 @@ namespace Box2D.NET
             body.inertia = massData.rotationalInertia;
             bodySim.localCenter = massData.center;
 
-            b2Vec2 center = b2TransformPoint(bodySim.transform, massData.center);
+            b2Vec2 center = b2TransformPoint(ref bodySim.transform, massData.center);
             bodySim.center = center;
             bodySim.center0 = center;
 

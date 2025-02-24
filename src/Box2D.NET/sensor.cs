@@ -74,7 +74,7 @@ namespace Box2D.NET
             input.transformB = otherTransform;
             input.useRadii = true;
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
 
             bool overlaps = output.distance < 10.0f * FLT_EPSILON;
             if (overlaps == false)

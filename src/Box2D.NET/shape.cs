@@ -843,19 +843,19 @@ namespace Box2D.NET
                     output = b2RayCastCircle(localInput, shape.circle);
                     break;
                 case b2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(localInput, shape.polygon);
+                    output = b2RayCastPolygon(ref localInput, shape.polygon);
                     break;
                 case b2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(localInput, shape.segment, false);
+                    output = b2RayCastSegment(ref localInput, shape.segment, false);
                     break;
                 case b2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(localInput, shape.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, shape.chainSegment.segment, true);
                     break;
                 default:
                     return output;
             }
 
-            output.point = b2TransformPoint(transform, output.point);
+            output.point = b2TransformPoint(ref transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
         }
@@ -893,7 +893,7 @@ namespace Box2D.NET
                     return output;
             }
 
-            output.point = b2TransformPoint(transform, output.point);
+            output.point = b2TransformPoint(ref transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
         }
@@ -1026,15 +1026,15 @@ namespace Box2D.NET
                     break;
 
                 case b2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(localInput, shape.segment, false);
+                    output = b2RayCastSegment(ref localInput, shape.segment, false);
                     break;
 
                 case b2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(localInput, shape.polygon);
+                    output = b2RayCastPolygon(ref localInput, shape.polygon);
                     break;
 
                 case b2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(localInput, shape.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, shape.chainSegment.segment, true);
                     break;
 
                 default:
@@ -1046,7 +1046,7 @@ namespace Box2D.NET
             {
                 // convert to world coordinates
                 output.normal = b2RotateVector(transform.q, output.normal);
-                output.point = b2TransformPoint(transform, output.point);
+                output.point = b2TransformPoint(ref transform, output.point);
             }
 
             return output;
@@ -1685,7 +1685,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
+            b2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
 
             return output.pointA;
         }

@@ -54,7 +54,7 @@ public class test_distance
         input.useRadii = false;
 
         b2SimplexCache cache = new b2SimplexCache();
-        b2DistanceOutput output = b2ShapeDistance(ref cache, input, null, 0);
+        b2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
 
         Assert.That(output.distance - 1.0f, Is.LessThan(FLT_EPSILON));
     }

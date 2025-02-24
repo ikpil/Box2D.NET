@@ -521,8 +521,8 @@ namespace Box2D.NET
 
             b2WheelJoint joint = @base.wheelJoint;
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
             b2Vec2 axis = b2RotateVector(transformA.q, joint.localAxisA);
 
             b2HexColor c1 = b2HexColor.b2_colorGray;

@@ -282,8 +282,8 @@ namespace Box2D.NET
             if (shape.type == b2ShapeType.b2_chainSegmentShape)
             {
                 b2Transform transform = bodySim.transform;
-                b2Vec2 p1 = b2TransformPoint(transform, shape.chainSegment.segment.point1);
-                b2Vec2 p2 = b2TransformPoint(transform, shape.chainSegment.segment.point2);
+                b2Vec2 p1 = b2TransformPoint(ref transform, shape.chainSegment.segment.point1);
+                b2Vec2 p2 = b2TransformPoint(ref transform, shape.chainSegment.segment.point2);
                 b2Vec2 e = b2Sub(p2, p1);
                 float length = 0;
                 e = b2GetLengthAndNormalize(ref length, e);
@@ -420,8 +420,8 @@ namespace Box2D.NET
                 shapeId = fastShape.nextShapeId;
 
                 context.fastShape = fastShape;
-                context.centroid1 = b2TransformPoint(xf1, fastShape.localCentroid);
-                context.centroid2 = b2TransformPoint(xf2, fastShape.localCentroid);
+                context.centroid1 = b2TransformPoint(ref xf1, fastShape.localCentroid);
+                context.centroid2 = b2TransformPoint(ref xf2, fastShape.localCentroid);
 
                 b2AABB box1 = fastShape.aabb;
                 b2AABB box2 = b2ComputeShapeAABB(fastShape, xf2);

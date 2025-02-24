@@ -1214,8 +1214,8 @@ namespace Box2D.NET
 
             b2Transform transformA = b2GetBodyTransformQuick(world, bodyA);
             b2Transform transformB = b2GetBodyTransformQuick(world, bodyB);
-            b2Vec2 pA = b2TransformPoint(transformA, jointSim.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, jointSim.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localOriginAnchorB);
 
             b2HexColor color = b2HexColor.b2_colorDarkSeaGreen;
 

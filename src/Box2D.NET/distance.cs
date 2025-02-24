@@ -200,8 +200,8 @@ namespace Box2D.NET
                 v.indexB = cache.indexB[i];
                 b2Vec2 wALocal = proxyA.points[v.indexA];
                 b2Vec2 wBLocal = proxyB.points[v.indexB];
-                v.wA = b2TransformPoint(transformA, wALocal);
-                v.wB = b2TransformPoint(transformB, wBLocal);
+                v.wA = b2TransformPoint(ref transformA, wALocal);
+                v.wB = b2TransformPoint(ref transformB, wBLocal);
                 v.w = b2Sub(v.wB, v.wA);
 
                 // invalid
@@ -216,8 +216,8 @@ namespace Box2D.NET
                 v.indexB = 0;
                 b2Vec2 wALocal = proxyA.points[0];
                 b2Vec2 wBLocal = proxyB.points[0];
-                v.wA = b2TransformPoint(transformA, wALocal);
-                v.wB = b2TransformPoint(transformB, wBLocal);
+                v.wA = b2TransformPoint(ref transformA, wALocal);
+                v.wB = b2TransformPoint(ref transformB, wBLocal);
                 v.w = b2Sub(v.wB, v.wA);
                 v.a = 1.0f;
                 s.count = 1;
@@ -584,9 +584,9 @@ namespace Box2D.NET
                 // support = support(b, d) - support(a, -d)
                 b2SimplexVertex vertex = vertices[simplex.count];
                 vertex.indexA = b2FindSupport(ref proxyA, b2InvRotateVector(transformA.q, b2Neg(d)));
-                vertex.wA = b2TransformPoint(transformA, proxyA.points[vertex.indexA]);
+                vertex.wA = b2TransformPoint(ref transformA, proxyA.points[vertex.indexA]);
                 vertex.indexB = b2FindSupport(ref proxyB, b2InvRotateVector(transformB.q, d));
-                vertex.wB = b2TransformPoint(transformB, proxyB.points[vertex.indexB]);
+                vertex.wB = b2TransformPoint(ref transformB, proxyB.points[vertex.indexB]);
                 vertex.w = b2Sub(vertex.wB, vertex.wA);
 
                 // Iteration count is equated to the number of support point calls.
@@ -682,7 +682,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < proxyB.count; ++i)
             {
-                proxyB.points[i] = b2TransformPoint(xf, input.proxyB.points[i]);
+                proxyB.points[i] = b2TransformPoint(ref xf, input.proxyB.points[i]);
             }
 
             float radius = proxyA.radius + proxyB.radius;
@@ -809,7 +809,7 @@ namespace Box2D.NET
             b2Vec2 n = b2Normalize(b2Neg(v));
             b2Vec2 point = new b2Vec2(pointA.x + proxyA.radius * n.x, pointA.y + proxyA.radius * n.y);
 
-            output.point = b2TransformPoint(xfA, point);
+            output.point = b2TransformPoint(ref xfA, point);
             output.normal = b2RotateVector(xfA.q, n);
             output.fraction = lambda;
             output.iterations = iter;
@@ -840,8 +840,8 @@ namespace Box2D.NET
                 f.type = b2SeparationType.b2_pointsType;
                 b2Vec2 localPointA = proxyA.points[cache.indexA[0]];
                 b2Vec2 localPointB = proxyB.points[cache.indexB[0]];
-                b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
-                b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
+                b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
                 f.axis = b2Normalize(b2Sub(pointB, pointA));
                 f.localPoint = b2Vec2_zero;
                 return f;
@@ -859,10 +859,10 @@ namespace Box2D.NET
                 b2Vec2 normal = b2RotateVector(xfB.q, f.axis);
 
                 f.localPoint = new b2Vec2(0.5f * (localPointB1.x + localPointB2.x), 0.5f * (localPointB1.y + localPointB2.y));
-                b2Vec2 pointB = b2TransformPoint(xfB, f.localPoint);
+                b2Vec2 pointB = b2TransformPoint(ref xfB, f.localPoint);
 
                 b2Vec2 localPointA = proxyA.points[cache.indexA[0]];
-                b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
+                b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
 
                 float s = b2Dot(b2Sub(pointA, pointB), normal);
                 if (s < 0.0f)
@@ -884,10 +884,10 @@ namespace Box2D.NET
                 b2Vec2 normal = b2RotateVector(xfA.q, f.axis);
 
                 f.localPoint = new b2Vec2(0.5f * (localPointA1.x + localPointA2.x), 0.5f * (localPointA1.y + localPointA2.y));
-                b2Vec2 pointA = b2TransformPoint(xfA, f.localPoint);
+                b2Vec2 pointA = b2TransformPoint(ref xfA, f.localPoint);
 
                 b2Vec2 localPointB = proxyB.points[cache.indexB[0]];
-                b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
 
                 float s = b2Dot(b2Sub(pointB, pointA), normal);
                 if (s < 0.0f)
@@ -917,8 +917,8 @@ namespace Box2D.NET
                     b2Vec2 localPointA = f.proxyA.points[indexA];
                     b2Vec2 localPointB = f.proxyB.points[indexB];
 
-                    b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
-                    b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
 
                     float separation = b2Dot(b2Sub(pointB, pointA), f.axis);
                     return separation;
@@ -927,7 +927,7 @@ namespace Box2D.NET
                 case b2SeparationType.b2_faceAType:
                 {
                     b2Vec2 normal = b2RotateVector(xfA.q, f.axis);
-                    b2Vec2 pointA = b2TransformPoint(xfA, f.localPoint);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, f.localPoint);
 
                     b2Vec2 axisB = b2InvRotateVector(xfB.q, b2Neg(normal));
 
@@ -935,7 +935,7 @@ namespace Box2D.NET
                     indexB = b2FindSupport(ref f.proxyB, axisB);
 
                     b2Vec2 localPointB = f.proxyB.points[indexB];
-                    b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
 
                     float separation = b2Dot(b2Sub(pointB, pointA), normal);
                     return separation;
@@ -944,7 +944,7 @@ namespace Box2D.NET
                 case b2SeparationType.b2_faceBType:
                 {
                     b2Vec2 normal = b2RotateVector(xfB.q, f.axis);
-                    b2Vec2 pointB = b2TransformPoint(xfB, f.localPoint);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, f.localPoint);
 
                     b2Vec2 axisA = b2InvRotateVector(xfA.q, b2Neg(normal));
 
@@ -952,7 +952,7 @@ namespace Box2D.NET
                     indexA = b2FindSupport(ref f.proxyA, axisA);
 
                     b2Vec2 localPointA = f.proxyA.points[indexA];
-                    b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
 
                     float separation = b2Dot(b2Sub(pointA, pointB), normal);
                     return separation;
@@ -979,8 +979,8 @@ namespace Box2D.NET
                     b2Vec2 localPointA = f.proxyA.points[indexA];
                     b2Vec2 localPointB = f.proxyB.points[indexB];
 
-                    b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
-                    b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
 
                     float separation = b2Dot(b2Sub(pointB, pointA), f.axis);
                     return separation;
@@ -989,10 +989,10 @@ namespace Box2D.NET
                 case b2SeparationType.b2_faceAType:
                 {
                     b2Vec2 normal = b2RotateVector(xfA.q, f.axis);
-                    b2Vec2 pointA = b2TransformPoint(xfA, f.localPoint);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, f.localPoint);
 
                     b2Vec2 localPointB = f.proxyB.points[indexB];
-                    b2Vec2 pointB = b2TransformPoint(xfB, localPointB);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, localPointB);
 
                     float separation = b2Dot(b2Sub(pointB, pointA), normal);
                     return separation;
@@ -1001,10 +1001,10 @@ namespace Box2D.NET
                 case b2SeparationType.b2_faceBType:
                 {
                     b2Vec2 normal = b2RotateVector(xfB.q, f.axis);
-                    b2Vec2 pointB = b2TransformPoint(xfB, f.localPoint);
+                    b2Vec2 pointB = b2TransformPoint(ref xfB, f.localPoint);
 
                     b2Vec2 localPointA = f.proxyA.points[indexA];
-                    b2Vec2 pointA = b2TransformPoint(xfA, localPointA);
+                    b2Vec2 pointA = b2TransformPoint(ref xfA, localPointA);
 
                     float separation = b2Dot(b2Sub(pointA, pointB), normal);
                     return separation;
@@ -1076,7 +1076,7 @@ namespace Box2D.NET
                 // to get a separating axis.
                 distanceInput.transformA = xfA;
                 distanceInput.transformB = xfB;
-                b2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, distanceInput, null, 0);
+                b2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
 
                 distanceIterations += 1;
 #if B2_SNOOP_TOI_COUNTERS

@@ -142,7 +142,7 @@ public class test_shape
         }
 
         {
-            b2CastOutput output = b2RayCastPolygon(input, box);
+            b2CastOutput output = b2RayCastPolygon(ref input, box);
             Assert.That(output.hit);
             Assert.That(output.normal.x + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.y, Is.LessThan(FLT_EPSILON));
@@ -150,7 +150,7 @@ public class test_shape
         }
 
         {
-            b2CastOutput output = b2RayCastSegment(input, segment, true);
+            b2CastOutput output = b2RayCastSegment(ref input, segment, true);
             Assert.That(output.hit);
             Assert.That(output.normal.x + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.y, Is.LessThan(FLT_EPSILON));

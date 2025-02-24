@@ -488,8 +488,8 @@ namespace Box2D.NET
 
             b2RevoluteJoint joint = @base.revoluteJoint;
 
-            b2Vec2 pA = b2TransformPoint(transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(transformB, @base.localOriginAnchorB);
+            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
 
             b2HexColor c1 = b2HexColor.b2_colorGray;
             b2HexColor c2 = b2HexColor.b2_colorGreen;
