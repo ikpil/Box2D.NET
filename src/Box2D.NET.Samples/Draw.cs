@@ -13,7 +13,6 @@ using static Box2D.NET.math_function;
 namespace Box2D.NET.Samples;
 
 #define BUFFER_OFFSET( x ) ( (const void*)( x ) )
-#define SHADER_TEXT( x ) "#version 330\n" #x
 
 
 // This class implements Box2D debug drawing callbacks
@@ -34,10 +33,10 @@ public class Draw
     public GLSolidPolygons m_solidPolygons;
     public b2DebugDraw m_debugDraw;
 
-    ImFont m_smallFont;
-    ImFont m_regularFont;
-    ImFont m_mediumFont;
-    ImFont m_largeFont;
+    public ImFontPtr m_smallFont;
+    public ImFontPtr m_regularFont;
+    public ImFontPtr m_mediumFont;
+    public ImFontPtr m_largeFont;
 
     GLFWwindow g_mainWindow;
 
@@ -236,9 +235,8 @@ public class Draw
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
-        ImGui.TextColoredV(new Vector4(230, 230, 230, 255), message, arg);
+        ImGui.TextColored(new Vector4(230, 230, 230, 255), string.Format(message, arg));
         ImGui.End();
-        va_end(arg);
     }
 
     public void DrawAABB(b2AABB aabb, b2HexColor c)

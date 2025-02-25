@@ -3,7 +3,9 @@
 
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Numerics;
+using System.Text;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -20,7 +22,7 @@ using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples;
 
-public class Sample
+public class Sample : IDisposable
 {
 #if NDEBUG
     public const bool g_sampleDebug = false;
@@ -99,13 +101,13 @@ public class Sample
         TestMathCpp();
     }
 
-    ~Sample()
+    public virtual void Dispose()
     {
         // By deleting the world, we delete the bomb, mouse joint, etc.
         b2DestroyWorld(m_worldId);
 
-        delete m_scheduler;
-        delete[] m_tasks;
+        // delete m_scheduler;
+        // delete[] m_tasks;
     }
 
     public void CreateWorld()
@@ -195,13 +197,13 @@ public class Sample
     public void DrawTitle(string title)
     {
         Draw.g_draw.DrawString(5, 5, title);
-        m_textLine = int(26.0f);
+        m_textLine = (int)26.0f;
     }
 
 
-    public bool QueryCallback(b2ShapeId shapeId, void* context)
+    public bool QueryCallback(b2ShapeId shapeId, object context)
     {
-        QueryContext* queryContext = static_cast<QueryContext*>(context);
+        QueryContext queryContext = context as QueryContext;
 
         b2BodyId bodyId = b2Shape_GetBody(shapeId);
         b2BodyType bodyType = b2Body_GetType(bodyId);
@@ -222,7 +224,7 @@ public class Sample
         return true;
     }
 
-    public virtual void Keyboard( int a)
+    public virtual void Keyboard(int a)
     {
     }
 
@@ -237,18 +239,18 @@ public class Sample
         {
             // Make a small box.
             b2AABB box;
-            b2Vec2 d = { 0.001f, 0.001f };
+            b2Vec2 d = new b2Vec2(0.001f, 0.001f);
             box.lowerBound = b2Sub(p, d);
             box.upperBound = b2Add(p, d);
 
             // Query the world for overlapping shapes.
-            QueryContext queryContext = { p, b2_nullBodyId };
-            b2World_OverlapAABB(m_worldId, box, b2DefaultQueryFilter(), QueryCallback, &queryContext);
+            QueryContext queryContext = new QueryContext(p, b2_nullBodyId);
+            b2World_OverlapAABB(m_worldId, box, b2DefaultQueryFilter(), QueryCallback, queryContext);
 
             if (B2_IS_NON_NULL(queryContext.bodyId))
             {
                 b2BodyDef bodyDef = b2DefaultBodyDef();
-                m_groundBodyId = b2CreateBody(m_worldId, &bodyDef);
+                m_groundBodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2MouseJointDef mouseDef = b2DefaultMouseJointDef();
                 mouseDef.bodyIdA = m_groundBodyId;
@@ -257,7 +259,7 @@ public class Sample
                 mouseDef.hertz = 5.0f;
                 mouseDef.dampingRatio = 0.7f;
                 mouseDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId);
-                m_mouseJointId = b2CreateMouseJoint(m_worldId, &mouseDef);
+                m_mouseJointId = b2CreateMouseJoint(m_worldId, mouseDef);
 
                 b2Body_SetAwake(queryContext.bodyId, true);
             }
@@ -300,27 +302,23 @@ public class Sample
 
     public void DrawTextLine(string text, params object[] arg)
     {
-        ImGui.Begin("Overlay", nullptr,
+        bool open = false;
+        ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
-        ImGui.SetCursorPos(new Vector2(5.0f, float(m_textLine)));
-        ImGui.TextColoredV(new Vector4(230, 153, 153, 255), text, arg);
+        ImGui.SetCursorPos(new Vector2(5.0f, (float)m_textLine));
+        ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(text, arg));
         ImGui.PopFont();
         ImGui.End();
-        va_end(arg);
 
         m_textLine += m_textIncrement;
     }
 
     public void ResetProfile()
     {
-        m_totalProfile =  {
-        }
-        ;
-        m_maxProfile =  {
-        }
-        ;
+        m_totalProfile = new b2Profile();
+        m_maxProfile = new b2Profile();
         m_stepCount = 0;
     }
 
@@ -377,7 +375,7 @@ public class Sample
             m_taskCount = 0;
         }
 
-        b2World_Draw(m_worldId, &Draw.g_draw.m_debugDraw);
+        b2World_Draw(m_worldId, Draw.g_draw.m_debugDraw);
 
         if (timeStep > 0.0f)
         {
@@ -399,22 +397,19 @@ public class Sample
             m_textLine += m_textIncrement;
 
             int totalCount = 0;
-            char buffer[256] =  {
-                0
-            }
-            ;
-            static_assert(std::size(s.colorCounts) == 12);
+            var buffer = new StringBuilder();
+            Debug.Assert(s.colorCounts.Length == 12);
 
             // todo fix this
-            int offset = snprintf(buffer, 256, "colors: ");
+            buffer.Append("colors: ");
             for (int i = 0; i < 12; ++i)
             {
-                offset += snprintf(buffer + offset, 256 - offset, "%d/", s.colorCounts[i]);
+                buffer.Append($"{s.colorCounts[i]}/");
                 totalCount += s.colorCounts[i];
             }
 
-            snprintf(buffer + offset, 256 - offset, "[%d]", totalCount);
-            Draw.g_draw.DrawString(5, m_textLine, buffer);
+            buffer.Append($"[{totalCount}]");
+            Draw.g_draw.DrawString(5, m_textLine, buffer.ToString());
             m_textLine += m_textIncrement;
 
             Draw.g_draw.DrawString(5, m_textLine, "stack allocator size = %d K", s.stackUsed / 1024);
@@ -478,7 +473,7 @@ public class Sample
         {
             b2Profile p = b2World_GetProfile(m_worldId);
 
-            b2Profile aveProfile = { };
+            b2Profile aveProfile = new b2Profile();
             if (m_stepCount > 0)
             {
                 float scale = 1.0f / m_stepCount;
@@ -554,24 +549,24 @@ public class Sample
     // Parse an SVG path element with only straight lines. Example:
     // "M 47.625004,185.20833 H 161.39585 l 29.10417,-2.64583 26.45834,-7.9375 26.45833,-13.22917 23.81251,-21.16666 h "
     // "13.22916 v 44.97916 H 592.66669 V 0 h 21.16671 v 206.375 l -566.208398,-1e-5 z"
-    public static int ParsePath( string svgPath, b2Vec2 offset, Span<b2Vec2> points, int capacity, float scale, bool reverseOrder )
+    public static int ParsePath(string svgPath, b2Vec2 offset, Span<b2Vec2> points, int capacity, float scale, bool reverseOrder)
     {
         int pointCount = 0;
         b2Vec2 currentPoint = new b2Vec2();
-        string ptr = svgPath;
-        char command = ptr[0];
+        int ptrIndex = 0;
+        char command = svgPath[ptrIndex];
 
-        while (*ptr != '\0')
+        while (ptrIndex < svgPath.Length)
         {
-            if (isdigit(*ptr) == 0 && *ptr != '-')
+            if (!char.IsDigit(svgPath[ptrIndex]) && svgPath[ptrIndex] != '-')
             {
                 // note: command can be implicitly repeated
-                command = *ptr;
+                command = svgPath[ptrIndex];
 
                 if (command == 'M' || command == 'L' || command == 'H' || command == 'V' || command == 'm' || command == 'l' ||
                     command == 'h' || command == 'v')
                 {
-                    ptr += 2; // Skip the command character and space
+                    ptrIndex += 2; // Skip the command character and space
                 }
 
                 if (command == 'z')
@@ -580,14 +575,16 @@ public class Sample
                 }
             }
 
-            Debug.Assert(isdigit(*ptr) != 0 || *ptr == '-');
+            Debug.Assert(!char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '-');
 
-            float x = 0.0f, y = 0.0f;
+
+            float x = 0.0f;
+            float y = 0.0f;
             switch (command)
             {
                 case 'M':
                 case 'L':
-                    if (sscanf(ptr, "%f,%f", &x, &y) == 2)
+                    if (Sscanf(svgPath, ref ptrIndex, out x, out y))
                     {
                         currentPoint.x = x;
                         currentPoint.y = y;
@@ -599,7 +596,7 @@ public class Sample
 
                     break;
                 case 'H':
-                    if (sscanf(ptr, "%f", &x) == 1)
+                    if (Sscanf(svgPath, ref ptrIndex, out x))
                     {
                         currentPoint.x = x;
                     }
@@ -610,7 +607,7 @@ public class Sample
 
                     break;
                 case 'V':
-                    if (sscanf(ptr, "%f", &y) == 1)
+                    if (Sscanf(svgPath, ref ptrIndex, out y))
                     {
                         currentPoint.y = y;
                     }
@@ -622,7 +619,7 @@ public class Sample
                     break;
                 case 'm':
                 case 'l':
-                    if (sscanf(ptr, "%f,%f", &x, &y) == 2)
+                    if (Sscanf(svgPath, ref ptrIndex, out x, out y))
                     {
                         currentPoint.x += x;
                         currentPoint.y += y;
@@ -634,7 +631,7 @@ public class Sample
 
                     break;
                 case 'h':
-                    if (sscanf(ptr, "%f", &x) == 1)
+                    if (Sscanf(svgPath, ref ptrIndex, out x))
                     {
                         currentPoint.x += x;
                     }
@@ -645,7 +642,7 @@ public class Sample
 
                     break;
                 case 'v':
-                    if (sscanf(ptr, "%f", &y) == 1)
+                    if (Sscanf(svgPath, ref ptrIndex, out y))
                     {
                         currentPoint.y += y;
                     }
@@ -661,10 +658,7 @@ public class Sample
                     break;
             }
 
-            points[pointCount] =  {
-                scale * (currentPoint.x + offset.x), -scale * (currentPoint.y + offset.y)
-            }
-            ;
+            points[pointCount] = new b2Vec2(scale * (currentPoint.x + offset.x), -scale * (currentPoint.y + offset.y));
             pointCount += 1;
             if (pointCount == capacity)
             {
@@ -672,18 +666,18 @@ public class Sample
             }
 
             // Move to the next space or end of string
-            while (*ptr != '\0' && isspace(*ptr) == 0)
+            while (ptrIndex < svgPath.Length && !char.IsWhiteSpace(svgPath[ptrIndex]))
             {
-                ptr++;
+                ptrIndex++;
             }
 
             // Skip contiguous spaces
-            while (isspace(*ptr))
+            while (char.IsWhiteSpace(svgPath[ptrIndex]))
             {
-                ptr++;
+                ptrIndex++;
             }
 
-            ptr += 0;
+            ptrIndex += 0;
         }
 
         if (pointCount == 0)
@@ -693,10 +687,41 @@ public class Sample
 
         if (reverseOrder)
         {
-
         }
 
         return pointCount;
     }
-}
 
+    private static bool Sscanf(string svgPath, ref int ptrIndex, out float x, out float y)
+    {
+        // Parse the coordinates in the form "x,y"
+        x = 0;
+        y = 0;
+        int startIdx = ptrIndex;
+        while (ptrIndex < svgPath.Length && (char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '.' || svgPath[ptrIndex] == '-' || svgPath[ptrIndex] == ','))
+        {
+            ptrIndex++;
+        }
+
+        var segment = svgPath.Substring(startIdx, ptrIndex - startIdx).Split(',');
+        if (segment.Length == 2)
+        {
+            return float.TryParse(segment[0], CultureInfo.InvariantCulture, out x) && float.TryParse(segment[1], CultureInfo.InvariantCulture, out y);
+        }
+
+        return false;
+    }
+
+    private static bool Sscanf(string svgPath, ref int ptrIndex, out float value)
+    {
+        value = 0;
+        int startIdx = ptrIndex;
+        while (ptrIndex < svgPath.Length && (char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '.' || svgPath[ptrIndex] == '-'))
+        {
+            ptrIndex++;
+        }
+
+        var segment = svgPath.Substring(startIdx, ptrIndex - startIdx);
+        return float.TryParse(segment, CultureInfo.InvariantCulture, out value);
+    }
+}
