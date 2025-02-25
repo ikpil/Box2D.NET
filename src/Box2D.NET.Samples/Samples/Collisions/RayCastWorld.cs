@@ -5,6 +5,7 @@ using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.id;
 using static Box2D.NET.hull;
 using static Box2D.NET.geometry;
@@ -124,10 +125,10 @@ public class RayCastWorld : Sample
             m_bodyIds[i] = b2_nullBodyId;
         }
 
-        m_mode = e_closest;
+        m_mode = (int)Mode.e_closest;
         m_ignoreIndex = 7;
 
-        m_castType = e_rayCast;
+        m_castType = CastType.e_rayCast;
         m_castRadius = 0.5f;
 
         m_rayStart = { -20.0f, 10.0f };
@@ -283,7 +284,7 @@ public class RayCastWorld : Sample
                 m_castType = CastType( castType );
             }
 
-            if ( m_castType != e_rayCast )
+            if ( m_castType != CastType.e_rayCast )
             {
                 ImGui.SliderFloat( "Radius", &m_castRadius, 0.0f, 2.0f, "%.1f" );
             }
@@ -386,32 +387,31 @@ public class RayCastWorld : Sample
         }
         else
         {
-            switch ( m_mode )
+            switch ( (Mode)m_mode )
             {
-                case e_any:
+                case Mode.e_any:
                     Draw.g_draw.DrawString( 5, m_textLine, "Cast mode: any - check for obstruction - unsorted" );
                     break;
 
-                case e_closest:
+                case Mode.e_closest:
                     Draw.g_draw.DrawString( 5, m_textLine, "Cast mode: closest - find closest shape along the cast" );
                     break;
 
-                case e_multiple:
+                case Mode.e_multiple:
                     Draw.g_draw.DrawString( 5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted" );
                     break;
 
-                case e_sorted:
+                case Mode.e_sorted:
                     Draw.g_draw.DrawString( 5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness" );
                     break;
             }
 
             m_textLine += m_textIncrement;
 
-            b2CastResultFcn* fcns[] = { RayCastAnyCallback, RayCastClosestCallback, RayCastMultipleCallback,
-                RayCastSortedCallback };
-            b2CastResultFcn* modeFcn = fcns[m_mode];
+            b2CastResultFcn[] fcns = [RayCastAnyCallback, RayCastClosestCallback, RayCastMultipleCallback,RayCastSortedCallback];
+            b2CastResultFcn modeFcn = fcns[m_mode];
 
-            RayCastContext context = { };
+            RayCastContext context = new RayCastContext();
 
             // Must initialize fractions for sorting
             context.fractions[0] = float.MaxValue;
@@ -425,29 +425,27 @@ public class RayCastWorld : Sample
 
             switch ( m_castType )
             {
-                case e_rayCast:
-                    b2World_CastRay( m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter(), modeFcn, &context );
+                case CastType.e_rayCast:
+                    b2World_CastRay( m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter(), modeFcn, context );
                     break;
 
-                case e_circleCast:
-                    b2World_CastCircle( m_worldId, &circle, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn,
-                        &context );
+                case CastType.e_circleCast:
+                    b2World_CastCircle( m_worldId, circle, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context );
                     break;
 
-                case e_capsuleCast:
-                    b2World_CastCapsule( m_worldId, &capsule, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn,
-                        &context );
+                case CastType.e_capsuleCast:
+                    b2World_CastCapsule( m_worldId, capsule, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context );
                     break;
 
-                case e_polygonCast:
-                    b2World_CastPolygon( m_worldId, &box, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, &context );
+                case CastType.e_polygonCast:
+                    b2World_CastPolygon( m_worldId, box, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context );
                     break;
             }
 
             if ( context.count > 0 )
             {
                 Debug.Assert( context.count <= 3 );
-                b2HexColor colors[3] = { b2_colorRed, b2HexColor.b2_colorGreen, b2HexColor.b2_colorBlue };
+                b2HexColor[] colors = new b2HexColor[3]  { b2HexColor.b2_colorRed, b2HexColor.b2_colorGreen, b2HexColor.b2_colorBlue };
                 for ( int i = 0; i < context.count; ++i )
                 {
                     b2Vec2 c = b2MulAdd( m_rayStart, context.fractions[i], rayTranslation );
@@ -459,42 +457,42 @@ public class RayCastWorld : Sample
                     Draw.g_draw.DrawSegment( p, head, color3 );
 
                     b2Vec2 t = b2MulSV( context.fractions[i], rayTranslation );
-                    b2Transform shiftedTransform = { b2Add( transform.p, t ), transform.q };
+                    b2Transform shiftedTransform = new b2Transform(b2Add(transform.p, t), transform.q);
 
-                    if ( m_castType == e_circleCast )
+                    if ( m_castType == CastType.e_circleCast )
                     {
-                        Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorYellow );
+                        Draw.g_draw.DrawSolidCircle( ref shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorYellow );
                     }
-                    else if ( m_castType == e_capsuleCast )
+                    else if ( m_castType == CastType.e_capsuleCast )
                     {
-                        b2Vec2 p1 = b2Add( b2TransformPoint( transform, capsule.center1 ), t );
-                        b2Vec2 p2 = b2Add( b2TransformPoint( transform, capsule.center2 ), t );
+                        b2Vec2 p1 = b2Add( b2TransformPoint( ref transform, capsule.center1 ), t );
+                        b2Vec2 p2 = b2Add( b2TransformPoint( ref transform, capsule.center2 ), t );
                         Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2HexColor.b2_colorYellow );
                     }
-                    else if ( m_castType == e_polygonCast )
+                    else if ( m_castType == CastType.e_polygonCast )
                     {
-                        Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
+                        Draw.g_draw.DrawSolidPolygon( ref shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
                     }
                 }
             }
             else
             {
-                b2Transform shiftedTransform = { b2Add( transform.p, rayTranslation ), transform.q };
+                b2Transform shiftedTransform = new b2Transform(b2Add(transform.p, rayTranslation), transform.q);
                 Draw.g_draw.DrawSegment( m_rayStart, m_rayEnd, color2 );
 
-                if ( m_castType == e_circleCast )
+                if ( m_castType == CastType.e_circleCast )
                 {
-                    Draw.g_draw.DrawSolidCircle( shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorGray );
+                    Draw.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorGray );
                 }
-                else if ( m_castType == e_capsuleCast )
+                else if ( m_castType == CastType.e_capsuleCast )
                 {
-                    b2Vec2 p1 = b2Add( b2TransformPoint( transform, capsule.center1 ), rayTranslation );
-                    b2Vec2 p2 = b2Add( b2TransformPoint( transform, capsule.center2 ), rayTranslation );
+                    b2Vec2 p1 = b2Add( b2TransformPoint(ref transform, capsule.center1 ), rayTranslation );
+                    b2Vec2 p2 = b2Add( b2TransformPoint(ref transform, capsule.center2 ), rayTranslation );
                     Draw.g_draw.DrawSolidCapsule( p1, p2, m_castRadius, b2HexColor.b2_colorYellow );
                 }
-                else if ( m_castType == e_polygonCast )
+                else if ( m_castType == CastType.e_polygonCast )
                 {
-                    Draw.g_draw.DrawSolidPolygon( shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
+                    Draw.g_draw.DrawSolidPolygon( ref shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow );
                 }
             }
         }
