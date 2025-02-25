@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System;
@@ -13,9 +13,6 @@ public static class Program
     private static readonly string LineBreak = Environment.NewLine;
 
     private static readonly string HeaderPattern = @"// SPDX-FileCopyrightText:\s*(\d{4})\s+([A-Za-z\s]+(?:\([^\)]+\))?)";
-    private static readonly string NoticeTemplate = $"// Copyright (c) Microsoft. All rights reserved.{LineBreak}" +
-                                                    $"// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com){LineBreak}" +
-                                                    $"// SPDX-License-Identifier: MIT{LineBreak}{LineBreak}";
 
     private static int Main(string[] args)
     {
@@ -28,7 +25,7 @@ public static class Program
         }
 
         var parent = Directory.GetParent(sulutionFilePath)!.FullName;
-        
+
         ProcessFiles(Path.Combine(parent, "src"), "*.cs");
         ProcessFiles(Path.Combine(parent, "test"), "*.cs");
         ProcessFiles(Path.Combine(parent, "tools"), "*.cs");
@@ -65,36 +62,76 @@ public static class Program
             .Where(x => !x.Contains($"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}"))
             .Where(x => !x.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
             .ToList();
-            
-                
+
+
         foreach (var file in files)
         {
             AddHeaderToSourceFile(file);
         }
     }
 
-    private static bool SourceFileContainsNotice(string sourcePath)
+    private static bool TryParseYears(string sourcePath, out string erinYear, out string ikpilYear)
     {
         string content = File.ReadAllText(sourcePath);
-        return Regex.IsMatch(content, HeaderPattern);
+
+        erinYear = string.Empty;
+        ikpilYear = string.Empty;
+
+        MatchCollection matches = Regex.Matches(content, HeaderPattern);
+        foreach (Match match in matches)
+        {
+            string year = match.Groups[1].Value;
+            string author = match.Groups[2].Value;
+            if (author.Contains("Erin", StringComparison.OrdinalIgnoreCase) || author.Contains("Catto", StringComparison.OrdinalIgnoreCase))
+            {
+                erinYear = year;
+            }
+            else if (author.Contains("ikpil", StringComparison.OrdinalIgnoreCase))
+            {
+                ikpilYear = year;
+            }
+        }
+
+        return !string.IsNullOrEmpty(ikpilYear);
     }
 
     private static void AddHeaderToSourceFile(string sourcePath)
     {
-        var containsNotice = SourceFileContainsNotice(sourcePath);
+        var hasCopyright = TryParseYears(sourcePath, out var erinYear, out var ikpilYear);
 
         Console.WriteLine($"{sourcePath}");
-        if (containsNotice)
+        if (hasCopyright)
         {
-            Console.WriteLine("Source file already contains notice -- not adding");
+            Console.WriteLine("Source file already contains notice");
+            return;
         }
-        else
-        {
-            Console.WriteLine("Source file does not contain notice -- adding");
-            var fileLines = File.ReadAllText(sourcePath);
-            var content = NoticeTemplate + fileLines;
 
-            File.WriteAllText(sourcePath, content);
+        var year = "" + DateTime.UtcNow.Year;
+        if (string.IsNullOrEmpty(erinYear))
+        {
+            erinYear = year;
         }
+
+        if (string.IsNullOrEmpty(ikpilYear))
+        {
+            ikpilYear = year;
+        }
+
+        Console.WriteLine("Source file does not contain notice -- adding");
+        var source = File.ReadAllText(sourcePath);
+
+        // remove lines
+        string pattern = @"^// SPDX-.*\r?\n?";
+        string result = Regex.Replace(source, pattern, string.Empty, RegexOptions.Multiline);
+
+
+        string copyright = string.Empty;
+        copyright += $"// SPDX-FileCopyrightText: {erinYear} Erin Catto{LineBreak}";
+        copyright += $"// SPDX-FileCopyrightText: {ikpilYear} Ikpil Choi(ikpil@naver.com){LineBreak}";
+        copyright += $"// SPDX-License-Identifier: MIT{LineBreak}{LineBreak}";
+
+        var content = copyright + result;
+
+        File.WriteAllText(sourcePath, content);
     }
 }
