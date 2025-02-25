@@ -9,7 +9,7 @@ using static Box2D.NET.math_function;
 using static Box2D.NET.body;
 using static Box2D.NET.shape;
 
-namespace Box2D.NET.Samples;
+namespace Box2D.NET.Samples.Samples;
 
 public class Doohickey
 {

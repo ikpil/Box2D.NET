@@ -13,7 +13,7 @@ using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.wheel_joint;
 
-namespace Box2D.NET.Samples;
+namespace Box2D.NET.Samples.Samples;
 
 public class Truck
 {

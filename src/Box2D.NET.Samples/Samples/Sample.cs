@@ -20,7 +20,7 @@ using static Box2D.NET.world;
 using static Box2D.NET.mouse_joint;
 using static Box2D.NET.Shared.random;
 
-namespace Box2D.NET.Samples;
+namespace Box2D.NET.Samples.Samples;
 
 public class Sample : IDisposable
 {
