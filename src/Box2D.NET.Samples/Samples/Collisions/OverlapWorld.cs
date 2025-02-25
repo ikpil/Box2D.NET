@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
-using Box2D.NET.Samples;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.id;
@@ -14,6 +13,7 @@ using static Box2D.NET.body;
 using static Box2D.NET.shape;
 using static Box2D.NET.world;
 using static Box2D.NET.Shared.random;
+using static Box2D.NET.constants;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -24,7 +24,7 @@ public class OverlapWorld : Sample
     public const int e_boxShape = 2;
     public const int e_maxCount = 64;
     public const int e_maxDoomed = 16;
-    
+
     int m_bodyIndex;
     b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
     ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
@@ -53,26 +53,27 @@ public class OverlapWorld : Sample
 
     bool m_dragging;
     bool m_rotating;
-    
-    static int sampleOverlapWorld = RegisterSample( "Collision", "Overlap World", Create );
-    static Sample Create( Settings settings )
+
+    static int sampleOverlapWorld = RegisterSample("Collision", "Overlap World", Create);
+
+    static Sample Create(Settings settings)
     {
-        return new OverlapWorld( settings );
+        return new OverlapWorld(settings);
     }
 
 
-    static bool OverlapResultFcn( b2ShapeId shapeId, object context )
+    static bool OverlapResultFcn(b2ShapeId shapeId, object context)
     {
-        ShapeUserData* userData = (ShapeUserData)b2Shape_GetUserData( shapeId );
-        if ( userData != nullptr && userData.ignore )
+        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        if (userData != nullptr && userData.ignore)
         {
             // continue the query
             return true;
         }
 
-        OverlapWorld* sample = (OverlapWorld*)context;
+        OverlapWorld sample = (OverlapWorld)context;
 
-        if ( sample.m_doomCount < e_maxDoomed )
+        if (sample.m_doomCount < e_maxDoomed)
         {
             int index = sample.m_doomCount;
             sample.m_doomIds[index] = shapeId;
@@ -83,46 +84,55 @@ public class OverlapWorld : Sample
         return true;
     }
 
-    public OverlapWorld( Settings settings ) : base( settings )
+    public OverlapWorld(Settings settings) : base(settings)
     {
-        if ( settings.restart == false )
+        if (settings.restart == false)
         {
             Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
         {
-            b2Vec2 vertices[3] = { { -0.5f, 0.0f }, { 0.5f, 0.0f }, { 0.0f, 1.5f } };
-            b2Hull hull = b2ComputeHull( vertices, 3 );
-            m_polygons[0] = b2MakePolygon( &hull, 0.0f );
+            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), new b2Vec2(0.0f, 1.5f), };
+            b2Hull hull = b2ComputeHull(vertices, 3);
+            m_polygons[0] = b2MakePolygon(hull, 0.0f);
         }
 
         {
-            b2Vec2 vertices[3] = { { -0.1f, 0.0f }, { 0.1f, 0.0f }, { 0.0f, 1.5f } };
-            b2Hull hull = b2ComputeHull( vertices, 3 );
-            m_polygons[1] = b2MakePolygon( &hull, 0.0f );
+            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.1f, 0.0f), new b2Vec2(0.1f, 0.0f), new b2Vec2(0.0f, 1.5f) };
+            b2Hull hull = b2ComputeHull(vertices, 3);
+            m_polygons[1] = b2MakePolygon(hull, 0.0f);
         }
 
         {
             float w = 1.0f;
-            float b = w / ( 2.0f + MathF.Sqrt( 2.0f ) );
-            float s = MathF.Sqrt( 2.0f ) * b;
+            float b = w / (2.0f + MathF.Sqrt(2.0f));
+            float s = MathF.Sqrt(2.0f) * b;
 
-            b2Vec2 vertices[8] = { { 0.5f * s, 0.0f }, { 0.5f * w, b },		 { 0.5f * w, b + s }, { 0.5f * s, w },
-                { -0.5f * s, w },   { -0.5f * w, b + s }, { -0.5f * w, b },	  { -0.5f * s, 0.0f } };
+            b2Vec2[] vertices = new b2Vec2[8]
+            {
+                new b2Vec2(0.5f * s, 0.0f),
+                new b2Vec2(0.5f * w, b),
+                new b2Vec2(0.5f * w, b + s),
+                new b2Vec2(0.5f * s, w),
+                new b2Vec2(-0.5f * s, w),
+                new b2Vec2(-0.5f * w, b + s),
+                new b2Vec2(-0.5f * w, b),
+                new b2Vec2(-0.5f * s, 0.0f),
+            };
 
-            b2Hull hull = b2ComputeHull( vertices, 8 );
-            m_polygons[2] = b2MakePolygon( &hull, 0.0f );
+            b2Hull hull = b2ComputeHull(vertices, 8);
+            m_polygons[2] = b2MakePolygon(hull, 0.0f);
         }
 
-        m_polygons[3] = b2MakeBox( 0.5f, 0.5f );
-        m_capsule = { { -0.5f, 0.0f }, { 0.5f, 0.0f }, 0.25f };
-        m_circle = { { 0.0f, 0.0f }, 0.5f };
-        m_segment = { { -1.0f, 0.0f }, { 1.0f, 0.0f } };
+        m_polygons[3] = b2MakeBox(0.5f, 0.5f);
+        m_capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
+        m_circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+        m_segment = new b2Segment(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f));
 
         m_bodyIndex = 0;
 
-        for ( int i = 0; i < e_maxCount; ++i )
+        for (int i = 0; i < e_maxCount; ++i)
         {
             m_bodyIds[i] = b2_nullBodyId;
         }
@@ -131,97 +141,97 @@ public class OverlapWorld : Sample
 
         m_shapeType = e_circleShape;
 
-        m_queryCircle = { { 0.0f, 0.0f }, 1.0f };
-        m_queryCapsule = { { -1.0f, 0.0f }, { 1.0f, 0.0f }, 0.5f };
-        m_queryBox = b2MakeBox( 2.0f, 0.5f );
+        m_queryCircle = new b2Circle(new b2Vec2(0.0f, 0.0f), 1.0f);
+        m_queryCapsule = new b2Capsule(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f), 0.5f);
+        m_queryBox = b2MakeBox(2.0f, 0.5f);
 
-        m_position = { 0.0f, 10.0f };
+        m_position = new b2Vec2(.0f, 10.0f);
         m_angle = 0.0f;
         m_dragging = false;
         m_rotating = false;
 
         m_doomCount = 0;
 
-        CreateN( 0, 10 );
+        CreateN(0, 10);
     }
 
-    void Create( int index )
+    void Create(int index)
     {
-        if ( B2_IS_NON_NULL( m_bodyIds[m_bodyIndex] ) )
+        if (B2_IS_NON_NULL(m_bodyIds[m_bodyIndex]))
         {
-            b2DestroyBody( m_bodyIds[m_bodyIndex] );
+            b2DestroyBody(m_bodyIds[m_bodyIndex]);
             m_bodyIds[m_bodyIndex] = b2_nullBodyId;
         }
 
-        float x = RandomFloatRange( -20.0f, 20.0f );
-        float y = RandomFloatRange( 0.0f, 20.0f );
+        float x = RandomFloatRange(-20.0f, 20.0f);
+        float y = RandomFloatRange(0.0f, 20.0f);
 
         b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = { x, y };
-        bodyDef.rotation = b2MakeRot( RandomFloatRange( -B2_PI, B2_PI ) );
+        bodyDef.position = new b2Vec2(x, y);
+        bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
-        m_bodyIds[m_bodyIndex] = b2CreateBody( m_worldId, &bodyDef );
+        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
         b2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.userData = m_userData + m_bodyIndex;
+        shapeDef.userData = m_userData[m_bodyIndex];
         m_userData[m_bodyIndex].index = m_bodyIndex;
         m_userData[m_bodyIndex].ignore = false;
-        if ( m_bodyIndex == m_ignoreIndex )
+        if (m_bodyIndex == m_ignoreIndex)
         {
             m_userData[m_bodyIndex].ignore = true;
         }
 
-        if ( index < 4 )
+        if (index < 4)
         {
-            b2CreatePolygonShape( m_bodyIds[m_bodyIndex], &shapeDef, m_polygons + index );
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], shapeDef, m_polygons[index]);
         }
-        else if ( index == 4 )
+        else if (index == 4)
         {
-            b2CreateCircleShape( m_bodyIds[m_bodyIndex], &shapeDef, &m_circle );
+            b2CreateCircleShape(m_bodyIds[m_bodyIndex], shapeDef, m_circle);
         }
-        else if ( index == 5 )
+        else if (index == 5)
         {
-            b2CreateCapsuleShape( m_bodyIds[m_bodyIndex], &shapeDef, &m_capsule );
+            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], shapeDef, m_capsule);
         }
         else
         {
-            b2CreateSegmentShape( m_bodyIds[m_bodyIndex], &shapeDef, &m_segment );
+            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], shapeDef, m_segment);
         }
 
-        m_bodyIndex = ( m_bodyIndex + 1 ) % e_maxCount;
+        m_bodyIndex = (m_bodyIndex + 1) % e_maxCount;
     }
 
-    void CreateN( int index, int count )
+    void CreateN(int index, int count)
     {
-        for ( int i = 0; i < count; ++i )
+        for (int i = 0; i < count; ++i)
         {
-            Create( index );
+            Create(index);
         }
     }
 
     void DestroyBody()
     {
-        for ( int i = 0; i < e_maxCount; ++i )
+        for (int i = 0; i < e_maxCount; ++i)
         {
-            if ( B2_IS_NON_NULL( m_bodyIds[i] ) )
+            if (B2_IS_NON_NULL(m_bodyIds[i]))
             {
-                b2DestroyBody( m_bodyIds[i] );
+                b2DestroyBody(m_bodyIds[i]);
                 m_bodyIds[i] = b2_nullBodyId;
                 return;
             }
         }
     }
 
-    public override void MouseDown( b2Vec2 p, int button, int mods )
+    public override void MouseDown(b2Vec2 p, int button, int mods)
     {
-        if ( button == (int)MouseButton.Left )
+        if (button == (int)MouseButton.Left)
         {
-            if ( mods == 0 && m_rotating == false )
+            if (mods == 0 && m_rotating == false)
             {
                 m_dragging = true;
                 m_position = p;
             }
-            else if ( mods == GLFW_MOD_SHIFT && m_dragging == false )
+            else if (0 != (mods & (uint)Keys.ShiftLeft) && m_dragging == false)
             {
                 m_rotating = true;
                 m_startPosition = p;
@@ -230,22 +240,22 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void MouseUp( b2Vec2 _, int button )
+    public override void MouseUp(b2Vec2 _, int button)
     {
-        if ( button == (int)MouseButton.Left )
+        if (button == (int)MouseButton.Left)
         {
             m_dragging = false;
             m_rotating = false;
         }
     }
 
-    public override void MouseMove( b2Vec2 p )
+    public override void MouseMove(b2Vec2 p)
     {
-        if ( m_dragging )
+        if (m_dragging)
         {
             m_position = p;
         }
-        else if ( m_rotating )
+        else if (m_rotating)
         {
             float dx = p.x - m_startPosition.x;
             m_angle = m_baseAngle + 1.0f * dx;
@@ -256,132 +266,126 @@ public class OverlapWorld : Sample
     {
         bool open = false;
         float height = 330.0f;
-        ImGui.SetNextWindowPos( new Vector2( 10.0f, Draw.g_camera.m_height - height - 50.0f ), ImGuiCond.Once );
-        ImGui.SetNextWindowSize( new Vector2( 140.0f, height ) );
+        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
-        ImGui.Begin( "Overlap World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
+        ImGui.Begin("Overlap World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-        if ( ImGui.Button( "Polygon 1" ) )
-            Create( 0 );
+        if (ImGui.Button("Polygon 1"))
+            Create(0);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Poly1" ) )
-            CreateN( 0, 10 );
+        if (ImGui.Button("10x##Poly1"))
+            CreateN(0, 10);
 
-        if ( ImGui.Button( "Polygon 2" ) )
-            Create( 1 );
+        if (ImGui.Button("Polygon 2"))
+            Create(1);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Poly2" ) )
-            CreateN( 1, 10 );
+        if (ImGui.Button("10x##Poly2"))
+            CreateN(1, 10);
 
-        if ( ImGui.Button( "Polygon 3" ) )
-            Create( 2 );
+        if (ImGui.Button("Polygon 3"))
+            Create(2);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Poly3" ) )
-            CreateN( 2, 10 );
+        if (ImGui.Button("10x##Poly3"))
+            CreateN(2, 10);
 
-        if ( ImGui.Button( "Box" ) )
-            Create( 3 );
+        if (ImGui.Button("Box"))
+            Create(3);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Box" ) )
-            CreateN( 3, 10 );
+        if (ImGui.Button("10x##Box"))
+            CreateN(3, 10);
 
-        if ( ImGui.Button( "Circle" ) )
-            Create( 4 );
+        if (ImGui.Button("Circle"))
+            Create(4);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Circle" ) )
-            CreateN( 4, 10 );
+        if (ImGui.Button("10x##Circle"))
+            CreateN(4, 10);
 
-        if ( ImGui.Button( "Capsule" ) )
-            Create( 5 );
+        if (ImGui.Button("Capsule"))
+            Create(5);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Capsule" ) )
-            CreateN( 5, 10 );
+        if (ImGui.Button("10x##Capsule"))
+            CreateN(5, 10);
 
-        if ( ImGui.Button( "Segment" ) )
-            Create( 6 );
+        if (ImGui.Button("Segment"))
+            Create(6);
         ImGui.SameLine();
-        if ( ImGui.Button( "10x##Segment" ) )
-            CreateN( 6, 10 );
+        if (ImGui.Button("10x##Segment"))
+            CreateN(6, 10);
 
-        if ( ImGui.Button( "Destroy Shape" ) )
+        if (ImGui.Button("Destroy Shape"))
         {
             DestroyBody();
         }
 
         ImGui.Separator();
-        ImGui.Text( "Overlap Shape" );
-        ImGui.RadioButton( "Circle##Overlap", &m_shapeType, e_circleShape );
-        ImGui.RadioButton( "Capsule##Overlap", &m_shapeType, e_capsuleShape );
-        ImGui.RadioButton( "Box##Overlap", &m_shapeType, e_boxShape );
+        ImGui.Text("Overlap Shape");
+        ImGui.RadioButton("Circle##Overlap", ref m_shapeType, e_circleShape);
+        ImGui.RadioButton("Capsule##Overlap", ref m_shapeType, e_capsuleShape);
+        ImGui.RadioButton("Box##Overlap", ref m_shapeType, e_boxShape);
 
         ImGui.End();
     }
 
     public override void Step(Settings settings)
     {
-        base.Step( settings );
+        base.Step(settings);
 
-        Draw.g_draw.DrawString( 5, m_textLine, "left mouse button: drag query shape" );
+        Draw.g_draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
         m_textLine += m_textIncrement;
-        Draw.g_draw.DrawString( 5, m_textLine, "left mouse button + shift: rotate query shape" );
+        Draw.g_draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
         m_textLine += m_textIncrement;
 
         m_doomCount = 0;
 
-        b2Transform transform = { m_position, b2MakeRot( m_angle ) };
+        b2Transform transform = new b2Transform(m_position, b2MakeRot(m_angle));
 
-        if ( m_shapeType == e_circleShape )
+        if (m_shapeType == e_circleShape)
         {
-            b2World_OverlapCircle( m_worldId, &m_queryCircle, transform, b2DefaultQueryFilter(), OverlapWorld::OverlapResultFcn,
-                this );
-            Draw.g_draw.DrawSolidCircle( transform, b2Vec2_zero, m_queryCircle.radius, b2HexColor.b2_colorWhite );
+            b2World_OverlapCircle(m_worldId, m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            Draw.g_draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, b2HexColor.b2_colorWhite);
         }
-        else if ( m_shapeType == e_capsuleShape )
+        else if (m_shapeType == e_capsuleShape)
         {
-            b2World_OverlapCapsule( m_worldId, &m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapWorld::OverlapResultFcn,
-                this );
-            b2Vec2 p1 = b2TransformPoint( transform, m_queryCapsule.center1 );
-            b2Vec2 p2 = b2TransformPoint( transform, m_queryCapsule.center2 );
-            Draw.g_draw.DrawSolidCapsule( p1, p2, m_queryCapsule.radius, b2HexColor.b2_colorWhite );
+            b2World_OverlapCapsule(m_worldId, m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            b2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
+            b2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
+            Draw.g_draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, b2HexColor.b2_colorWhite);
         }
-        else if ( m_shapeType == e_boxShape )
+        else if (m_shapeType == e_boxShape)
         {
-            b2World_OverlapPolygon( m_worldId, &m_queryBox, transform, b2DefaultQueryFilter(), OverlapWorld::OverlapResultFcn,
-                this );
-            b2Vec2 points[B2_MAX_POLYGON_VERTICES] = { };
-            for ( int i = 0; i < m_queryBox.count; ++i )
+            b2World_OverlapPolygon(m_worldId, m_queryBox, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            b2Vec2[] points = new b2Vec2[B2_MAX_POLYGON_VERTICES];
+            for (int i = 0; i < m_queryBox.count; ++i)
             {
-                points[i] = b2TransformPoint( transform, m_queryBox.vertices[i] );
+                points[i] = b2TransformPoint(ref transform, m_queryBox.vertices[i]);
             }
-            Draw.g_draw.DrawPolygon( points, m_queryBox.count, b2HexColor.b2_colorWhite );
+
+            Draw.g_draw.DrawPolygon(points, m_queryBox.count, b2HexColor.b2_colorWhite);
         }
 
-        if ( B2_IS_NON_NULL( m_bodyIds[m_ignoreIndex] ) )
+        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
-            b2Vec2 p = b2Body_GetPosition( m_bodyIds[m_ignoreIndex] );
+            b2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.x -= 0.2f;
-            Draw.g_draw.DrawString( p, "skip" );
+            Draw.g_draw.DrawString(p, "skip");
         }
 
-        for ( int i = 0; i < m_doomCount; ++i )
+        for (int i = 0; i < m_doomCount; ++i)
         {
             b2ShapeId shapeId = m_doomIds[i];
-            ShapeUserData* userData = (ShapeUserData*)b2Shape_GetUserData( shapeId );
-            if ( userData == nullptr )
+            ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+            if (userData == nullptr)
             {
                 continue;
             }
 
             int index = userData.index;
-            Debug.Assert( 0 <= index && index < e_maxCount );
-            Debug.Assert( B2_IS_NON_NULL( m_bodyIds[index] ) );
+            Debug.Assert(0 <= index && index < e_maxCount);
+            Debug.Assert(B2_IS_NON_NULL(m_bodyIds[index]));
 
-            b2DestroyBody( m_bodyIds[index] );
+            b2DestroyBody(m_bodyIds[index]);
             m_bodyIds[index] = b2_nullBodyId;
         }
     }
-
-
-
 }
-

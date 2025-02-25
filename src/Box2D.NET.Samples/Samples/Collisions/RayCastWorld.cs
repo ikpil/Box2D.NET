@@ -19,17 +19,17 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 // This shows how to filter a specific shape using using data.
 struct ShapeUserData
 {
-    int index;
-    bool ignore;
+    public int index;
+    public bool ignore;
 };
 
 // Context for ray cast callbacks. Do what you want with this.
 struct RayCastContext
 {
-    b2Vec2 points[3];
-    b2Vec2 normals[3];
-    float fractions[3];
-    int count;
+    public b2Vec2 points[3];
+    public b2Vec2 normals[3];
+    public float fractions[3];
+    public int count;
 };
 
 // This callback finds the closest hit. This is the most common callback used in games.
