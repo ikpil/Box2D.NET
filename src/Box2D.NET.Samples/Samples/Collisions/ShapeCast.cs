@@ -1,6 +1,9 @@
 ﻿using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
+using Silk.NET.GLFW;
 using static Box2D.NET.math_function;
+using static Box2D.NET.constants;
+using static Box2D.NET.distance;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -8,11 +11,11 @@ public class ShapeCast : Sample
 {
     public const int e_vertexCount = 8;
     
-    b2Vec2 m_vAs[B2_MAX_POLYGON_VERTICES];
+    b2Vec2[] m_vAs = new b2Vec2[B2_MAX_POLYGON_VERTICES];
     int m_countA;
     float m_radiusA;
 
-    b2Vec2 m_vBs[B2_MAX_POLYGON_VERTICES];
+    b2Vec2[] m_vBs = new b2Vec2[B2_MAX_POLYGON_VERTICES];
     int m_countB;
     float m_radiusB;
 
@@ -21,7 +24,7 @@ public class ShapeCast : Sample
     b2Vec2 m_translationB;
     bool m_rayDrag;
 
-    static int sampleShapeCast = RegisterSample( "Collision", "Shape Cast", ShapeCast::Create );
+    static int sampleShapeCast = RegisterSample( "Collision", "Shape Cast", Create );
     static Sample Create( Settings settings )
     {
         return new ShapeCast( settings );
@@ -33,7 +36,7 @@ public class ShapeCast : Sample
     {
         if ( settings.restart == false )
         {
-            Draw.g_camera.m_center = { -1.5f, 1.0f };
+            Draw.g_camera.m_center = new b2Vec2(-1.5f, 1.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.2f;
         }
 
@@ -57,26 +60,26 @@ public class ShapeCast : Sample
         m_transformB.p = {-4.0f, 0.0f};
         m_transformB.q = b2Rot_identity;
         m_translationB = {8.0f, 0.0f};
-    #elif 1
+    #elif ENABLED
         // box swept against a segment
-        m_vAs[0] = { -2.0f, 0.0f };
-        m_vAs[1] = { 2.0f, 0.0f };
+        m_vAs[0] = new b2Vec2(-2.0f, 0.0f);
+        m_vAs[1] = new b2Vec2(2.0f, 0.0f);
         m_countA = 2;
         m_radiusA = 0.0f;
 
-        m_vBs[0] = { -0.25f, -0.25f };
-        m_vBs[1] = { 0.25f, -0.25f };
-        m_vBs[2] = { 0.25f, 0.25f };
-        m_vBs[3] = { -0.25f, 0.25f };
+        m_vBs[0] = new b2Vec2( -0.25f, -0.25f );
+        m_vBs[1] = new b2Vec2( 0.25f, -0.25f );
+        m_vBs[2] = new b2Vec2( 0.25f, 0.25f );
+        m_vBs[3] = new b2Vec2( -0.25f, 0.25f );
         m_countB = 4;
         m_radiusB = 0.25f;
 
-        m_transformA.p = { 0.0f, 0.0 };
+        m_transformA.p = new b2Vec2(0.0f, 0.0f);
         m_transformA.q = b2MakeRot( 0.25f * B2_PI );
-        m_transformB.p = { -8.0f, 0.0f };
+        m_transformB.p = new b2Vec2(-8.0f, 0.0f);
         m_transformB.q = b2Rot_identity;
-        m_translationB = { 8.0f, 0.0f };
-    #elif 0
+        m_translationB = new b2Vec2(8.0f, 0.0f);
+    #elif FALSE
         // A point swept against a box
         m_vAs[0] = { -0.5f, -0.5f };
         m_vAs[1] = { 0.5f, -0.5f };
@@ -94,7 +97,7 @@ public class ShapeCast : Sample
         m_transformB.p = { -1.0f, 0.0f };
         m_transformB.q = b2Rot_identity;
         m_translationB = { 1.0f, 0.0f };
-    #elif 0
+    #elif FALSE
         m_vAs[0] = { 0.0f, 0.0f };
         m_countA = 1;
         m_radiusA = 0.5f;
@@ -159,7 +162,7 @@ public class ShapeCast : Sample
     {
         base.Step( settings );
 
-        b2ShapeCastPairInput input = { };
+        b2ShapeCastPairInput input = new b2ShapeCastPairInput();
         input.proxyA = b2MakeProxy( m_vAs, m_countA, m_radiusA );
         input.proxyB = b2MakeProxy( m_vBs, m_countB, m_radiusB );
         input.transformA = m_transformA;
@@ -167,7 +170,7 @@ public class ShapeCast : Sample
         input.translationB = m_translationB;
         input.maxFraction = 1.0f;
 
-        b2CastOutput output = b2ShapeCast( &input );
+        b2CastOutput output = b2ShapeCast(ref input );
 
         b2Transform transformB2;
         transformB2.q = m_transformB.q;

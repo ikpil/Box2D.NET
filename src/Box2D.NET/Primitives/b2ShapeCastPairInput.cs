@@ -1,7 +1,7 @@
 ﻿namespace Box2D.NET.Primitives
 {
     /// Input parameters for b2ShapeCast
-    public class b2ShapeCastPairInput
+    public struct b2ShapeCastPairInput
     {
         public b2ShapeProxy proxyA; // The proxy for shape A
         public b2ShapeProxy proxyB; // The proxy for shape B

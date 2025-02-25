@@ -903,7 +903,7 @@ namespace Box2D.NET
             castInput.transformB = b2Transform_identity;
             castInput.translationB = input.translation;
             castInput.maxFraction = input.maxFraction;
-            return b2ShapeCast(castInput);
+            return b2ShapeCast(ref castInput);
         }
 
         /// Shape cast versus a circle. Initial overlap is treated as a miss.
@@ -917,7 +917,7 @@ namespace Box2D.NET
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
 
-            b2CastOutput output = b2ShapeCast(pairInput);
+            b2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
         }
 
@@ -932,7 +932,7 @@ namespace Box2D.NET
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
 
-            b2CastOutput output = b2ShapeCast(pairInput);
+            b2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
         }
 
@@ -947,7 +947,7 @@ namespace Box2D.NET
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
 
-            b2CastOutput output = b2ShapeCast(pairInput);
+            b2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
         }
 
@@ -962,7 +962,7 @@ namespace Box2D.NET
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
 
-            b2CastOutput output = b2ShapeCast(pairInput);
+            b2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
         }
     }

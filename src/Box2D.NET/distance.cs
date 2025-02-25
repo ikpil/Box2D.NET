@@ -663,7 +663,7 @@ namespace Box2D.NET
         // "Smooth Mesh Contacts with GJK" in Game Physics Pearls. 2010
         // todo this is failing when used to raycast a box
         // todo this converges slowly with a radius
-        public static b2CastOutput b2ShapeCast(b2ShapeCastPairInput input)
+        public static b2CastOutput b2ShapeCast(ref b2ShapeCastPairInput input)
         {
             b2CastOutput output = new b2CastOutput();
             output.fraction = input.maxFraction;
