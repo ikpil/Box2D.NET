@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     /// Counters that give details of the simulation size.
     public class b2Counters

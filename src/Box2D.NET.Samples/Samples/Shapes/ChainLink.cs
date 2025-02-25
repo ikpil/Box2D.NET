@@ -1,4 +1,8 @@
-﻿using Box2D.NET.Primitives;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using Box2D.NET.Primitives;
 using static Box2D.NET.geometry;
 using static Box2D.NET.types;
 using static Box2D.NET.body;

@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     /// An end touch event is generated when two shapes stop touching.
     ///	You will get an end event if you do anything that destroys contacts previous to the last

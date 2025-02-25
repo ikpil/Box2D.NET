@@ -1,4 +1,5 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System.IO;

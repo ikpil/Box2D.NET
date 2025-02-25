@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     /// This is used to filter collision on shapes. It affects shape-vs-shape collision
     /// and shape-versus-query collision (such as b2World_CastRay).

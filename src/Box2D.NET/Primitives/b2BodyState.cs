@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     // The body state is designed for fast conversion to and from SIMD via scatter-gather.
     // Only awake dynamic and kinematic bodies have a body state.

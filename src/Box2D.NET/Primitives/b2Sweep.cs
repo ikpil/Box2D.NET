@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     /// This describes the motion of a body/shape for TOI computation. Shapes are defined with respect to the body origin,
     /// which may not coincide with the center of mass. However, to support dynamics we must interpolate the center of mass

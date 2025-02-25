@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET.Primitives
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET.Primitives
 {
     // Each block of work has a sync index that gets incremented when a worker claims the block. This ensures only a single worker
     // claims a block, yet lets work be distributed dynamically across multiple workers (work stealing). This also reduces contention

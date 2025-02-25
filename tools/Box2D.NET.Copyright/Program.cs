@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Box2D.NET.Copyright;
@@ -123,15 +124,34 @@ public static class Program
         // remove lines
         string pattern = @"^// SPDX-.*\r?\n?";
         string result = Regex.Replace(source, pattern, string.Empty, RegexOptions.Multiline);
+        
+        // RemoveEmptyLinesUntilNonEmpty
+        bool foundNonEmptyLine = false;
+        string[] lines = result.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        var output = new StringBuilder();
 
+        foreach (var line in lines)
+        {
+            if (!foundNonEmptyLine)
+            {
+                // If the line is empty (only whitespace), skip it
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+                
+                // Once a non-empty line is found, start adding to the output
+                foundNonEmptyLine = true;
+            }
+
+            output.AppendLine(line);
+        }
 
         string copyright = string.Empty;
         copyright += $"// SPDX-FileCopyrightText: {erinYear} Erin Catto{LineBreak}";
         copyright += $"// SPDX-FileCopyrightText: {ikpilYear} Ikpil Choi(ikpil@naver.com){LineBreak}";
         copyright += $"// SPDX-License-Identifier: MIT{LineBreak}{LineBreak}";
 
-        var content = copyright + result;
+        var content = copyright + output;
 
-        File.WriteAllText(sourcePath, content);
+        File.WriteAllText(sourcePath, content, Encoding.UTF8);
     }
 }

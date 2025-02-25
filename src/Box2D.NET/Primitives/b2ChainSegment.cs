@@ -1,4 +1,8 @@
-﻿using static Box2D.NET.math_function;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using static Box2D.NET.math_function;
 
 namespace Box2D.NET.Primitives
 {

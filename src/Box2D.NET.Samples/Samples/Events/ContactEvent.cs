@@ -1,4 +1,8 @@
-﻿using System.Diagnostics;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using System.Diagnostics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using ImGuiNET;
@@ -427,5 +431,6 @@ public override void Step(Settings settings)
 
 
 }
+
 
 
