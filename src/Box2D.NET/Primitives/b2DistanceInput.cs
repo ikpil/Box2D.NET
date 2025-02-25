@@ -1,7 +1,7 @@
 ﻿namespace Box2D.NET.Primitives
 {
     /// Input for b2ShapeDistance
-    public class b2DistanceInput
+    public struct b2DistanceInput
     {
         /// The proxy for shape A
         public b2ShapeProxy proxyA;
