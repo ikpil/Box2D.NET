@@ -71,7 +71,7 @@ public class TimeOfImpact : Sample
         b2Transform transformA = b2GetSweepTransform(sweepA, 0.0f);
         for (int i = 0; i < m_countA; ++i)
         {
-            vertices[i] = b2TransformPoint(transformA, m_verticesA[i]);
+            vertices[i] = b2TransformPoint(ref transformA, m_verticesA[i]);
         }
 
         Draw.g_draw.DrawPolygon(vertices, m_countA, b2HexColor.b2_colorGray);
@@ -80,7 +80,7 @@ public class TimeOfImpact : Sample
         b2Transform transformB = b2GetSweepTransform(sweepB, 0.0f);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
         Draw.g_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, b2HexColor.b2_colorGreen);
@@ -90,7 +90,7 @@ public class TimeOfImpact : Sample
         transformB = b2GetSweepTransform(sweepB, output.fraction);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
         Draw.g_draw.DrawPolygon(vertices, m_countB, b2HexColor.b2_colorOrange);
@@ -99,7 +99,7 @@ public class TimeOfImpact : Sample
         transformB = b2GetSweepTransform(sweepB, 1.0f);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
         Draw.g_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, b2HexColor.b2_colorRed);
@@ -114,7 +114,7 @@ public class TimeOfImpact : Sample
             distanceInput.transformB = b2GetSweepTransform(sweepB, output.fraction);
             distanceInput.useRadii = false;
             b2SimplexCache cache = new b2SimplexCache();
-            b2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, distanceInput, null, 0);
+            b2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
             Draw.g_draw.DrawString(5, m_textLine, "distance = %g", distanceOutput.distance);
             m_textLine += m_textIncrement;
         }

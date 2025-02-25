@@ -269,8 +269,8 @@ public class SmoothManifold : Sample
         for (int i = 0; i < m_count; ++i)
         {
             b2ChainSegment segment = m_segments[i];
-            b2Vec2 p1 = b2TransformPoint(transform1, segment.segment.point1);
-            b2Vec2 p2 = b2TransformPoint(transform1, segment.segment.point2);
+            b2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
+            b2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
             Draw.g_draw.DrawSegment(p1, p2, color1);
             Draw.g_draw.DrawPoint(p1, 4.0f, color1);
         }

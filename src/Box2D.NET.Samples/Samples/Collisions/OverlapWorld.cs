@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.id;
@@ -65,7 +66,7 @@ public class OverlapWorld : Sample
     static bool OverlapResultFcn(b2ShapeId shapeId, object context)
     {
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-        if (userData != nullptr && userData.ignore)
+        if (userData != null && userData.ignore)
         {
             // continue the query
             return true;
@@ -375,7 +376,7 @@ public class OverlapWorld : Sample
         {
             b2ShapeId shapeId = m_doomIds[i];
             ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-            if (userData == nullptr)
+            if (userData == null)
             {
                 continue;
             }
