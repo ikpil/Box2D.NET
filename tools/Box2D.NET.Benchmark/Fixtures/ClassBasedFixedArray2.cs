@@ -1,4 +1,7 @@
-﻿using System.Runtime.CompilerServices;
+﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using System.Runtime.CompilerServices;
 
 namespace Box2D.NET.Benchmark.Fixtures;
 

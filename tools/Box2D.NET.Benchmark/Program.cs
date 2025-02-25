@@ -1,4 +1,7 @@
-﻿using System.Reflection;
+﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using System.Reflection;
 using BenchmarkDotNet.Running;
 
 public static class Program
