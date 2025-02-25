@@ -1,4 +1,3 @@
-
 // SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-License-Identifier: MIT
 
@@ -13,7 +12,6 @@ using static Box2D.NET.math_function;
 namespace Box2D.NET.Samples;
 
 #define BUFFER_OFFSET( x ) ( (const void*)( x ) )
-
 
 // This class implements Box2D debug drawing callbacks
 public class Draw
@@ -51,7 +49,7 @@ public class Draw
         m_solidCapsules = null;
         m_solidPolygons = null;
         m_debugDraw = null;
-        
+
         m_smallFont = default;
         m_mediumFont = default;
         m_largeFont = default;
@@ -90,7 +88,7 @@ public class Draw
         m_solidPolygons = new GLSolidPolygons();
         m_solidPolygons.Create();
 
-        b2AABB bounds = new b2AABB( new b2Vec2( -float.MaxValue, -float.MaxValue ), new b2Vec2( float.MaxValue, float.MaxValue ) );
+        b2AABB bounds = new b2AABB(new b2Vec2(-float.MaxValue, -float.MaxValue), new b2Vec2(float.MaxValue, float.MaxValue));
 
         m_debugDraw = new b2DebugDraw();
 
@@ -155,7 +153,7 @@ public class Draw
         m_solidPolygons = nullptr;
     }
 
-    public void DrawPolygon( ReadOnlySpan<b2Vec2> vertices,  int vertexCount, b2HexColor color )
+    public void DrawPolygon(ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color)
     {
         b2Vec2 p1 = vertices[vertexCount - 1];
         for (int i = 0; i < vertexCount; ++i)
@@ -166,7 +164,7 @@ public class Draw
         }
     }
 
-    public void DrawSolidPolygon(ref b2Transform transform,  ReadOnlySpan<b2Vec2> vertices,  int vertexCount, float radius, b2HexColor color )
+    public void DrawSolidPolygon(ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color)
     {
         m_solidPolygons.AddPolygon(ref transform, vertices, vertexCount, radius, color);
     }
@@ -215,23 +213,24 @@ public class Draw
         //{
         //	return;
         // }
+        bool open = false;
 
-        ImGui.Begin("Overlay", nullptr,
+        ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(Draw.g_draw.m_regularFont);
-        ImGui.SetCursorPos(new Vector2(float(x), float(y)));
-        ImGui.TextColoredV(new Vector4(230, 153, 153, 255), message, arg);
+        ImGui.SetCursorPos(new Vector2(x, y));
+        ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(message, arg));
         ImGui.PopFont();
         ImGui.End();
-        va_end(arg);
     }
 
-    public void DrawString(b2Vec2 p,  string message, params object[] arg)
+    public void DrawString(b2Vec2 p, string message, params object[] arg)
     {
         b2Vec2 ps = Draw.g_camera.ConvertWorldToScreen(p);
 
-        ImGui.Begin("Overlay", nullptr,
+        bool open = false;
+        ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
@@ -268,50 +267,49 @@ public class Draw
     {
         m_background.Draw();
     }
-    
-    public static void DrawPolygonFcn( ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color, object context )
+
+    public static void DrawPolygonFcn(ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color, object context)
     {
-        (context as Draw).DrawPolygon( vertices, vertexCount, color );
+        (context as Draw).DrawPolygon(vertices, vertexCount, color);
     }
 
-    public static void DrawSolidPolygonFcn( ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context )
+    public static void DrawSolidPolygonFcn(ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context)
     {
-        (context as Draw).DrawSolidPolygon( ref transform, vertices, vertexCount, radius, color );
+        (context as Draw).DrawSolidPolygon(ref transform, vertices, vertexCount, radius, color);
     }
 
-    public static void DrawCircleFcn( b2Vec2 center, float radius, b2HexColor color, object context )
+    public static void DrawCircleFcn(b2Vec2 center, float radius, b2HexColor color, object context)
     {
-        (context as Draw).DrawCircle( center, radius, color );
+        (context as Draw).DrawCircle(center, radius, color);
     }
 
-    public static void DrawSolidCircleFcn( ref b2Transform transform, float radius, b2HexColor color, object context )
+    public static void DrawSolidCircleFcn(ref b2Transform transform, float radius, b2HexColor color, object context)
     {
-        (context as Draw).DrawSolidCircle( ref transform, b2Vec2_zero, radius, color );
+        (context as Draw).DrawSolidCircle(ref transform, b2Vec2_zero, radius, color);
     }
 
-    public static void DrawSolidCapsuleFcn( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, object context )
+    public static void DrawSolidCapsuleFcn(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, object context)
     {
-        (context as Draw).DrawSolidCapsule( p1, p2, radius, color );
+        (context as Draw).DrawSolidCapsule(p1, p2, radius, color);
     }
 
-    public static void DrawSegmentFcn( b2Vec2 p1, b2Vec2 p2, b2HexColor color, object context )
+    public static void DrawSegmentFcn(b2Vec2 p1, b2Vec2 p2, b2HexColor color, object context)
     {
-        (context as Draw).DrawSegment( p1, p2, color );
+        (context as Draw).DrawSegment(p1, p2, color);
     }
 
-    public static void DrawTransformFcn( b2Transform transform, object context )
+    public static void DrawTransformFcn(b2Transform transform, object context)
     {
-        (context as Draw).DrawTransform( transform );
+        (context as Draw).DrawTransform(transform);
     }
 
-    public static void DrawPointFcn( b2Vec2 p, float size, b2HexColor color, object context )
+    public static void DrawPointFcn(b2Vec2 p, float size, b2HexColor color, object context)
     {
-        (context as Draw).DrawPoint( p, size, color );
+        (context as Draw).DrawPoint(p, size, color);
     }
 
-    public static void DrawStringFcn( b2Vec2 p, string s, b2HexColor color, object context )
+    public static void DrawStringFcn(b2Vec2 p, string s, b2HexColor color, object context)
     {
-        (context as Draw).DrawString( p, s );
+        (context as Draw).DrawString(p, s);
     }
-
 }
