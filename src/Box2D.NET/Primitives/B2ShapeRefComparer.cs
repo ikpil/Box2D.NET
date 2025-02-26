@@ -16,7 +16,7 @@ namespace Box2D.NET.Primitives
 
         public int Compare(B2ShapeRef a, B2ShapeRef b)
         {
-            return sensor.b2CompareShapeRefs(a, b);
+            return B2Sensors.b2CompareShapeRefs(a, b);
         }
     }
 }

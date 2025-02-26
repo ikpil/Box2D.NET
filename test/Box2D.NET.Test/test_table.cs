@@ -5,9 +5,9 @@
 using System;
 using Box2D.NET.Primitives;
 using NUnit.Framework;
-using static Box2D.NET.ctz;
-using static Box2D.NET.table;
-using static Box2D.NET.timer;
+using static Box2D.NET.B2CTZs;
+using static Box2D.NET.B2Tables;
+using static Box2D.NET.B2Timers;
 
 namespace Box2D.NET.Test;
 

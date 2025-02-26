@@ -8,7 +8,7 @@ using ImGuiNET;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Samples.Samples;
-using static Box2D.NET.core;
+using static Box2D.NET.B2Cores;
 
 
 namespace Box2D.NET.Samples;

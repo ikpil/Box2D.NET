@@ -4,8 +4,8 @@
 
 using Box2D.NET.Primitives;
 using NUnit.Framework;
-using static Box2D.NET.aabb;
-using static Box2D.NET.math_function;
+using static Box2D.NET.B2AABBs;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Test;
 

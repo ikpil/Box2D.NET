@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 using Box2D.NET.Primitives;
-using static Box2D.NET.math_function;
-using static Box2D.NET.distance;
-using static Box2D.NET.constants;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Distances;
+using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 

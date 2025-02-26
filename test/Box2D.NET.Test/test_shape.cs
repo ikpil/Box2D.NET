@@ -5,9 +5,9 @@
 using System;
 using Box2D.NET.Primitives;
 using NUnit.Framework;
-using static Box2D.NET.geometry;
-using static Box2D.NET.math_function;
-using static Box2D.NET.hull;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Hulls;
 
 namespace Box2D.NET.Test;
 

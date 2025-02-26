@@ -5,13 +5,13 @@
 using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
-using static Box2D.NET.joint;
-using static Box2D.NET.geometry;
-using static Box2D.NET.types;
-using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
-using static Box2D.NET.prismatic_joint;
+using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2PrismaticJoints;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 

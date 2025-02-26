@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using Box2D.NET.Primitives;
 using Box2D.NET.Shared.Primitives;
 using Silk.NET.GLFW;
-using static Box2D.NET.geometry;
-using static Box2D.NET.types;
-using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
-using static Box2D.NET.world;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.human;
 
 namespace Box2D.NET.Samples.Samples.Continuous;

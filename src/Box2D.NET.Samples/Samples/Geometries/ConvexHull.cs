@@ -4,9 +4,9 @@
 
 using Box2D.NET.Primitives;
 using Silk.NET.GLFW;
-using static Box2D.NET.hull;
-using static Box2D.NET.math_function;
-using static Box2D.NET.constants;
+using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Constants;
 using static Box2D.NET.Shared.random;
 
 namespace Box2D.NET.Samples.Samples.Geometries;

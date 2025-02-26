@@ -32,7 +32,7 @@ namespace Box2D.NET.Primitives
                 {
                     if (null == _shared)
                     {
-                        _shared = arena_allocator.b2CreateArenaAllocator<T>(16); // TODO: @ikpil, test
+                        _shared = B2ArenaAllocators.b2CreateArenaAllocator<T>(16); // TODO: @ikpil, test
                         allocator.Add(_shared);
                     }
                 }

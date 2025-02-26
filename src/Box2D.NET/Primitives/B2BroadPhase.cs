@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using static Box2D.NET.array;
+using static Box2D.NET.B2Arrays;
 
 namespace Box2D.NET.Primitives
 {

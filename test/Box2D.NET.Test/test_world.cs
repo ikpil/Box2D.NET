@@ -5,16 +5,16 @@
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using NUnit.Framework;
-using static Box2D.NET.world;
-using static Box2D.NET.types;
-using static Box2D.NET.body;
-using static Box2D.NET.geometry;
-using static Box2D.NET.shape;
-using static Box2D.NET.math_function;
-using static Box2D.NET.id;
-using static Box2D.NET.constants;
-using static Box2D.NET.joint;
-using static Box2D.NET.core;
+using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2Constants;
+using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Cores;
 
 
 namespace Box2D.NET.Test;

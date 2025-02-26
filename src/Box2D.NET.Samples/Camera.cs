@@ -4,7 +4,7 @@
 
 using System;
 using Box2D.NET.Primitives;
-using static Box2D.NET.math_function;
+using static Box2D.NET.B2MathFunction;
 
 
 namespace Box2D.NET.Samples;

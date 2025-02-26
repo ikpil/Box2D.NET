@@ -6,11 +6,11 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
-using static Box2D.NET.hull;
-using static Box2D.NET.geometry;
-using static Box2D.NET.math_function;
-using static Box2D.NET.manifold;
-using static Box2D.NET.collision;
+using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Manifolds;
+using static Box2D.NET.B2Collisions;
 using MouseButton = Silk.NET.GLFW.MouseButton;
 
 namespace Box2D.NET.Samples.Samples.Collisions;

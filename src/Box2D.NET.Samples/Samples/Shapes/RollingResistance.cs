@@ -4,10 +4,10 @@
 
 using Box2D.NET.Primitives;
 using Silk.NET.GLFW;
-using static Box2D.NET.types;
-using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 

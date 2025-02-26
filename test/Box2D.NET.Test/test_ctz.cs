@@ -4,7 +4,7 @@
 
 using System.Numerics;
 using NUnit.Framework;
-using static Box2D.NET.ctz;
+using static Box2D.NET.B2CTZs;
 
 namespace Box2D.NET.Test;
 

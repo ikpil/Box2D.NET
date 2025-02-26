@@ -4,7 +4,7 @@
 
 using Box2D.NET.Primitives;
 using NUnit.Framework;
-using static Box2D.NET.id;
+using static Box2D.NET.B2Ids;
 
 namespace Box2D.NET.Test;
 

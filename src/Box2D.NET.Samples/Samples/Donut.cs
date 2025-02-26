@@ -5,12 +5,12 @@
 using System;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
-using static Box2D.NET.joint;
-using static Box2D.NET.id;
-using static Box2D.NET.types;
-using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
+using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples;
 

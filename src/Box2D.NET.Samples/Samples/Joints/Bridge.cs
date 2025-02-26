@@ -7,14 +7,14 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using ImGuiNET;
-using static Box2D.NET.joint;
-using static Box2D.NET.id;
-using static Box2D.NET.hull;
-using static Box2D.NET.geometry;
-using static Box2D.NET.types;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
-using static Box2D.NET.revolute_joint;
+using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2RevoluteJoints;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 

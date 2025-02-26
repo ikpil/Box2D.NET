@@ -5,13 +5,13 @@
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
-using static Box2D.NET.id;
-using static Box2D.NET.geometry;
-using static Box2D.NET.types;
-using static Box2D.NET.math_function;
-using static Box2D.NET.body;
-using static Box2D.NET.shape;
-using static Box2D.NET.world;
+using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -141,16 +141,16 @@ bool PreSolve( B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Manifold* manifold ) co
         return true;
     }
 
-    B2Vec2 normal = manifold->normal;
+    B2Vec2 normal = B2Manifolds->normal;
     if ( sign * normal.y > 0.95f )
     {
         return true;
     }
 
     float separation = 0.0f;
-    for ( int i = 0; i < manifold->pointCount; ++i )
+    for ( int i = 0; i < B2Manifolds->pointCount; ++i )
     {
-        float s = manifold->points[i].separation;
+        float s = B2Manifolds->points[i].separation;
         separation = separation < s ? separation : s;
     }
 

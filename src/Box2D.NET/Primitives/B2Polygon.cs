@@ -15,10 +15,10 @@ namespace Box2D.NET.Primitives
     public class B2Polygon
     {
         /// The polygon vertices
-        public readonly B2Vec2[] vertices = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];
+        public readonly B2Vec2[] vertices = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
 
         /// The outward normal vectors of the polygon sides
-        public readonly B2Vec2[] normals = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];
+        public readonly B2Vec2[] normals = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
 
         /// The centroid of the polygon
         public B2Vec2 centroid;

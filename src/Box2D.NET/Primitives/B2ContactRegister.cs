@@ -6,7 +6,7 @@ namespace Box2D.NET.Primitives
 {
     public struct B2ContactRegister
     {
-        public contact.b2ManifoldFcn fcn;
+        public B2Contacts.b2ManifoldFcn fcn;
         public bool primary;
     }
 }

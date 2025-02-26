@@ -4,9 +4,9 @@
 
 using System;
 using Box2D.NET.Primitives;
-using static Box2D.NET.constants;
-using static Box2D.NET.geometry;
-using static Box2D.NET.hull;
+using static Box2D.NET.B2Constants;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Hulls;
 
 
 namespace Box2D.NET.Shared

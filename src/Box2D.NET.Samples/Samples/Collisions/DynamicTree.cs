@@ -9,11 +9,11 @@ using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
-using static Box2D.NET.math_function;
-using static Box2D.NET.timer;
-using static Box2D.NET.dynamic_tree;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Timers;
+using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.Shared.random;
-using static Box2D.NET.constants;
+using static Box2D.NET.B2Constants;
 
 
 namespace Box2D.NET.Samples.Samples.Collisions;

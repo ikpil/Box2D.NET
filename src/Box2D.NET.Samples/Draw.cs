@@ -8,7 +8,7 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
-using static Box2D.NET.math_function;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples;
 
