@@ -31,7 +31,7 @@ namespace Box2D.NET.Primitives
         public int count;
 
         /// Surface materials for each segment. These are cloned.
-        public B2SurfaceMaterial[] materials;
+        public B2SurfaceMaterial[] materials; // todo: @ikpil, check Memory or ArraySegment
 
         /// The material count. Must be 1 or count. This allows you to provide one
         /// material for all segments or a unique material per segment.
