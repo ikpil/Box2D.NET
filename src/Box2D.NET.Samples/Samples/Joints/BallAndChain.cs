@@ -41,7 +41,7 @@ public class BallAndChain : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, &bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         m_frictionTorque = 100.0f;

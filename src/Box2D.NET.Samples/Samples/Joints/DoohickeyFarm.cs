@@ -20,8 +20,7 @@ public class DoohickeyFarm : Sample
         return new DoohickeyFarm(settings);
     }
 
-    public DoohickeyFarm(Settings settings)
-        : base(settings)
+    public DoohickeyFarm(Settings settings) : base(settings)
     {
         if (settings.restart == false)
         {
