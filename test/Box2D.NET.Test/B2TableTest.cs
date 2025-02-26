@@ -11,7 +11,7 @@ using static Box2D.NET.B2Timers;
 
 namespace Box2D.NET.Test;
 
-public class test_table
+public class B2TableTest
 {
     public const int SET_SPAN = 317;
     public const int ITEM_COUNT = ((SET_SPAN * SET_SPAN - SET_SPAN) / 2);

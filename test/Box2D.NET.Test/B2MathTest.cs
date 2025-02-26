@@ -9,7 +9,7 @@ using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Test;
 
-public class test_math
+public class B2MathTest
 {
     // 0.0023 degrees
     public const float ATAN_TOL = 0.00004f;

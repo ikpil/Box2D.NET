@@ -8,7 +8,7 @@ using static Box2D.NET.B2Ids;
 
 namespace Box2D.NET.Test;
 
-public class test_id
+public class B2IdTest
 {
     [Test]
     public void IdTest()

@@ -19,7 +19,7 @@ using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Test;
 
-public class test_world
+public class B2WorldTest
 {
     // This is a simple example of building and running a simulation
     // using Box2D. Here we create a large ground box and a small dynamic

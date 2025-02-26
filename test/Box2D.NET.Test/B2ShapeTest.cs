@@ -11,7 +11,7 @@ using static Box2D.NET.B2Hulls;
 
 namespace Box2D.NET.Test;
 
-public class test_shape
+public class B2ShapeTest
 {
     private B2Capsule capsule = new B2Capsule(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 1.0f);
     private B2Circle circle = new B2Circle(new B2Vec2(1.0f, 0.0f), 1.0f);

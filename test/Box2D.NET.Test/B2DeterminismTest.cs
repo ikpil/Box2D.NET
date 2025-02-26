@@ -132,7 +132,7 @@ public class b2TaskTester : IDisposable
     }
 }
 
-public class test_determinism
+public class B2DeterminismTest
 {
     private const int e_columns = 10;
     private const int e_rows = 10;

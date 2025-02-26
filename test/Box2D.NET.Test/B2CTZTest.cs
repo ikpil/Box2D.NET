@@ -8,7 +8,7 @@ using static Box2D.NET.B2CTZs;
 
 namespace Box2D.NET.Test;
 
-public class test_ctz
+public class B2CTZTest
 {
     // uint에 대해 trailing zero count (CTZ)
     public static uint CTZ32(uint block)

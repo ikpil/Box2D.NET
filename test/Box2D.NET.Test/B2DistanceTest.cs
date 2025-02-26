@@ -10,7 +10,7 @@ using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Test;
 
-public class test_distance
+public class B2DistanceTest
 {
     [Test]
     public void SegmentDistanceTest()

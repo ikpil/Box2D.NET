@@ -9,7 +9,7 @@ using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Test;
 
-public class test_collision
+public class B2CollisionTest
 {
     [Test]
     public void AABBTest()

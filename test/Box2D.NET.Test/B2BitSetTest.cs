@@ -9,7 +9,7 @@ namespace Box2D.NET.Test;
 
 using static NET.B2BitSets;
 
-public class test_bitset
+public class B2BitSetTest
 {
     private const int COUNT = 169;
 
