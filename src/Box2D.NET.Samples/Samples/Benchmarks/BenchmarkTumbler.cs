@@ -21,7 +21,7 @@ public class BenchmarkTumbler : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(1.5f, 10.0f);
+            Draw.g_camera.m_center = new B2Vec2(1.5f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.6f;
         }
 

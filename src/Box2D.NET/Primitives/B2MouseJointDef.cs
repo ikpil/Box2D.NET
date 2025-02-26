@@ -9,16 +9,16 @@ namespace Box2D.NET.Primitives
     /// This a soft constraint and allows the constraint to stretch without
     /// applying huge forces. This also applies rotation constraint heuristic to improve control.
     /// @ingroup mouse_joint
-    public class b2MouseJointDef
+    public class B2MouseJointDef
     {
         /// The first attached body. This is assumed to be static.
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body.
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// The initial target point in world space
-        public b2Vec2 target;
+        public B2Vec2 target;
 
         /// Stiffness in hertz
         public float hertz;

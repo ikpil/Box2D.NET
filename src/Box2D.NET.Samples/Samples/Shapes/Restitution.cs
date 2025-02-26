@@ -25,7 +25,7 @@ public class Restitution : Sample
     public const int e_count = 40;
 
 
-    b2BodyId[] m_bodyIds = new b2BodyId[e_count];
+    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     ShapeType m_shapeType;
 
     static int sampleIndex = RegisterSample("Shapes", "Restitution", Create);
@@ -41,17 +41,17 @@ public class Restitution : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(4.0f, 17.0f);
+            Draw.g_camera.m_center = new B2Vec2(4.0f, 17.0f);
             Draw.g_camera.m_zoom = 27.5f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             float h = 1.0f * e_count;
-            b2Segment segment = new b2Segment(new b2Vec2(-h, 0.0f), new b2Vec2(h, 0.0f));
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-h, 0.0f), new B2Vec2(h, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
@@ -76,17 +76,17 @@ public class Restitution : Sample
             }
         }
 
-        b2Circle circle = new b2Circle(new b2Vec2(), 0.0f);
+        B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
         circle.radius = 0.5f;
 
-        b2Polygon box = b2MakeBox(0.5f, 0.5f);
+        B2Polygon box = b2MakeBox(0.5f, 0.5f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.restitution = 0.0f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
 
         float dr = 1.0f / (e_count > 1 ? e_count - 1 : 1);
         float x = -1.0f * (e_count - 1);
@@ -94,8 +94,8 @@ public class Restitution : Sample
 
         for (int i = 0; i < e_count; ++i)
         {
-            bodyDef.position = new b2Vec2(x, 40.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            bodyDef.position = new B2Vec2(x, 40.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             m_bodyIds[i] = bodyId;
 

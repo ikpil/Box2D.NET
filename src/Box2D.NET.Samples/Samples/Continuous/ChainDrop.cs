@@ -15,8 +15,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class ChainDrop : Sample
 {
-    b2BodyId m_bodyId;
-    b2ShapeId m_shapeId;
+    B2BodyId m_bodyId;
+    B2ShapeId m_shapeId;
     float m_yOffset;
     float m_speed;
 
@@ -32,20 +32,20 @@ public class ChainDrop : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.35f;
         }
 
         // 
         //b2World_SetContactTuning( m_worldId, 30.0f, 1.0f, 100.0f );
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new b2Vec2(0.0f, -6.0f);
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Vec2(0.0f, -6.0f);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-        b2Vec2[] points = new b2Vec2[4] { new b2Vec2(-10.0f, -2.0f), new b2Vec2(10.0f, -2.0f), new b2Vec2(10.0f, 1.0f), new b2Vec2(-10.0f, 1.0f) };
+        B2Vec2[] points = new B2Vec2[4] { new B2Vec2(-10.0f, -2.0f), new B2Vec2(10.0f, -2.0f), new B2Vec2(10.0f, 1.0f), new B2Vec2(-10.0f, 1.0f) };
 
-        b2ChainDef chainDef = b2DefaultChainDef();
+        B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
         chainDef.count = 4;
         chainDef.isLoop = true;
@@ -66,17 +66,17 @@ public class ChainDrop : Sample
             b2DestroyBody(m_bodyId);
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.linearVelocity = new b2Vec2(0.0f, m_speed);
-        bodyDef.position = new b2Vec2(0.0f, 10.0f + m_yOffset);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.linearVelocity = new B2Vec2(0.0f, m_speed);
+        bodyDef.position = new B2Vec2(0.0f, 10.0f + m_yOffset);
         bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
         bodyDef.fixedRotation = true;
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
         m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
 
         //b2Capsule capsule = { { -0.5f, 0.0f }, { 0.5f, 0.0 }, 0.25f };

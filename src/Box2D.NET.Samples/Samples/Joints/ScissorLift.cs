@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class ScissorLift : Sample
 {
-    b2JointId m_liftJointId;
+    B2JointId m_liftJointId;
     float m_motorForce;
     float m_motorSpeed;
     bool m_enableMotor;
@@ -35,52 +35,52 @@ public class ScissorLift : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 9.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 9.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         // Need 8 sub-steps for smoother operation
         settings.subStepCount = 8;
 
-        b2BodyId groundId;
+        B2BodyId groundId;
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Segment segment = new b2Segment(new b2Vec2(-20.0f, 0.0f), new b2Vec2(20.0f, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.sleepThreshold = 0.01f;
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-2.5f, 0.0f), new b2Vec2(2.5f, 0.0f), 0.15f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-2.5f, 0.0f), new B2Vec2(2.5f, 0.0f), 0.15f);
 
-            b2BodyId baseId1 = groundId;
-            b2BodyId baseId2 = groundId;
-            b2Vec2 baseAnchor1 = new b2Vec2(-2.5f, 0.2f);
-            b2Vec2 baseAnchor2 = new b2Vec2(2.5f, 0.2f);
+            B2BodyId baseId1 = groundId;
+            B2BodyId baseId2 = groundId;
+            B2Vec2 baseAnchor1 = new B2Vec2(-2.5f, 0.2f);
+            B2Vec2 baseAnchor2 = new B2Vec2(2.5f, 0.2f);
             float y = 0.5f;
 
-            b2BodyId linkId1 = new b2BodyId();
+            B2BodyId linkId1 = new B2BodyId();
             int N = 3;
 
             for (int i = 0; i < N; ++i)
             {
-                bodyDef.position = new b2Vec2(0.0f, y);
+                bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(0.15f);
-                b2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId1, shapeDef, capsule);
 
-                bodyDef.position = new b2Vec2(0.0f, y);
+                bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(-0.15f);
 
-                b2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId2, shapeDef, capsule);
 
                 if (i == 1)
@@ -88,13 +88,13 @@ public class ScissorLift : Sample
                     linkId1 = bodyId2;
                 }
 
-                b2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
+                B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 
                 // left pin
                 revoluteDef.bodyIdA = baseId1;
                 revoluteDef.bodyIdB = bodyId1;
                 revoluteDef.localAnchorA = baseAnchor1;
-                revoluteDef.localAnchorB = new b2Vec2(-2.5f, 0.0f);
+                revoluteDef.localAnchorB = new B2Vec2(-2.5f, 0.0f);
                 revoluteDef.enableMotor = false;
                 revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = (i == 0) ? true : false;
@@ -104,12 +104,12 @@ public class ScissorLift : Sample
                 // right pin
                 if (i == 0)
                 {
-                    b2WheelJointDef wheelDef = b2DefaultWheelJointDef();
+                    B2WheelJointDef wheelDef = b2DefaultWheelJointDef();
                     wheelDef.bodyIdA = baseId2;
                     wheelDef.bodyIdB = bodyId2;
-                    wheelDef.localAxisA = new b2Vec2(1.0f, 0.0f);
+                    wheelDef.localAxisA = new B2Vec2(1.0f, 0.0f);
                     wheelDef.localAnchorA = baseAnchor2;
-                    wheelDef.localAnchorB = new b2Vec2(2.5f, 0.0f);
+                    wheelDef.localAnchorB = new B2Vec2(2.5f, 0.0f);
                     wheelDef.enableSpring = false;
                     wheelDef.collideConnected = true;
 
@@ -120,7 +120,7 @@ public class ScissorLift : Sample
                     revoluteDef.bodyIdA = baseId2;
                     revoluteDef.bodyIdB = bodyId2;
                     revoluteDef.localAnchorA = baseAnchor2;
-                    revoluteDef.localAnchorB = new b2Vec2(2.5f, 0.0f);
+                    revoluteDef.localAnchorB = new B2Vec2(2.5f, 0.0f);
                     revoluteDef.enableMotor = false;
                     revoluteDef.maxMotorTorque = 1.0f;
                     revoluteDef.collideConnected = false;
@@ -131,8 +131,8 @@ public class ScissorLift : Sample
                 // middle pin
                 revoluteDef.bodyIdA = bodyId1;
                 revoluteDef.bodyIdB = bodyId2;
-                revoluteDef.localAnchorA = new b2Vec2(0.0f, 0.0f);
-                revoluteDef.localAnchorB = new b2Vec2(0.0f, 0.0f);
+                revoluteDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
+                revoluteDef.localAnchorB = new B2Vec2(0.0f, 0.0f);
                 revoluteDef.enableMotor = false;
                 revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = false;
@@ -141,24 +141,24 @@ public class ScissorLift : Sample
 
                 baseId1 = bodyId2;
                 baseId2 = bodyId1;
-                baseAnchor1 = new b2Vec2(-2.5f, 0.0f);
-                baseAnchor2 = new b2Vec2(2.5f, 0.0f);
+                baseAnchor1 = new B2Vec2(-2.5f, 0.0f);
+                baseAnchor2 = new B2Vec2(2.5f, 0.0f);
                 y += 1.0f;
             }
 
-            bodyDef.position = new b2Vec2(0.0f, y);
+            bodyDef.position = new B2Vec2(0.0f, y);
             bodyDef.rotation = b2Rot_identity;
-            b2BodyId platformId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId platformId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Polygon box = b2MakeBox(3.0f, 0.2f);
+            B2Polygon box = b2MakeBox(3.0f, 0.2f);
             b2CreatePolygonShape(platformId, shapeDef, box);
 
             // left pin
             {
-                b2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
+                B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
                 revoluteDef.bodyIdA = platformId;
                 revoluteDef.bodyIdB = baseId1;
-                revoluteDef.localAnchorA = new b2Vec2(-2.5f, -0.4f);
+                revoluteDef.localAnchorA = new B2Vec2(-2.5f, -0.4f);
                 revoluteDef.localAnchorB = baseAnchor1;
                 revoluteDef.enableMotor = false;
                 revoluteDef.maxMotorTorque = 1.0f;
@@ -168,11 +168,11 @@ public class ScissorLift : Sample
 
             // right pin
             {
-                b2WheelJointDef wheelDef = b2DefaultWheelJointDef();
+                B2WheelJointDef wheelDef = b2DefaultWheelJointDef();
                 wheelDef.bodyIdA = platformId;
                 wheelDef.bodyIdB = baseId2;
-                wheelDef.localAxisA = new b2Vec2(1.0f, 0.0f);
-                wheelDef.localAnchorA = new b2Vec2(2.5f, -0.4f);
+                wheelDef.localAxisA = new B2Vec2(1.0f, 0.0f);
+                wheelDef.localAnchorA = new B2Vec2(2.5f, -0.4f);
                 wheelDef.localAnchorB = baseAnchor2;
                 wheelDef.enableSpring = false;
                 wheelDef.collideConnected = true;
@@ -183,11 +183,11 @@ public class ScissorLift : Sample
             m_motorSpeed = 0.25f;
             m_motorForce = 2000.0f;
 
-            b2DistanceJointDef distanceDef = b2DefaultDistanceJointDef();
+            B2DistanceJointDef distanceDef = b2DefaultDistanceJointDef();
             distanceDef.bodyIdA = groundId;
             distanceDef.bodyIdB = linkId1;
-            distanceDef.localAnchorA = new b2Vec2(-2.5f, 0.2f);
-            distanceDef.localAnchorB = new b2Vec2(0.5f, 0.0f);
+            distanceDef.localAnchorA = new B2Vec2(-2.5f, 0.2f);
+            distanceDef.localAnchorB = new B2Vec2(0.5f, 0.0f);
             distanceDef.enableSpring = true;
             distanceDef.minLength = 0.2f;
             distanceDef.maxLength = 5.5f;
@@ -198,7 +198,7 @@ public class ScissorLift : Sample
             m_liftJointId = b2CreateDistanceJoint(m_worldId, distanceDef);
 
             Car car = new Car();
-            car.Spawn(m_worldId, new b2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, null);
+            car.Spawn(m_worldId, new B2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, null);
         }
     }
 

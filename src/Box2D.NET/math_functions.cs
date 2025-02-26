@@ -25,10 +25,10 @@ namespace Box2D.NET
 
         public const float FLT_EPSILON = 1.1920929e-7f;
 
-        public static readonly b2Vec2 b2Vec2_zero = new b2Vec2(0.0f, 0.0f);
-        public static readonly b2Rot b2Rot_identity = new b2Rot(1.0f, 0.0f);
-        public static readonly b2Transform b2Transform_identity = new b2Transform(new b2Vec2(0.0f, 0.0f), new b2Rot(1.0f, 0.0f));
-        public static readonly b2Mat22 b2Mat22_zero = new b2Mat22(new b2Vec2(0.0f, 0.0f), new b2Vec2(0.0f, 0.0f));
+        public static readonly B2Vec2 b2Vec2_zero = new B2Vec2(0.0f, 0.0f);
+        public static readonly B2Rot b2Rot_identity = new B2Rot(1.0f, 0.0f);
+        public static readonly B2Transform b2Transform_identity = new B2Transform(new B2Vec2(0.0f, 0.0f), new B2Rot(1.0f, 0.0f));
+        public static readonly B2Mat22 b2Mat22_zero = new B2Mat22(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f));
 
         /// @return the minimum of two integers
         public static int b2MinInt(int a, int b)
@@ -80,134 +80,134 @@ namespace Box2D.NET
 
 
         /// Vector dot product
-        public static float b2Dot(b2Vec2 a, b2Vec2 b)
+        public static float b2Dot(B2Vec2 a, B2Vec2 b)
         {
             return a.x * b.x + a.y * b.y;
         }
 
         /// Vector cross product. In 2D this yields a scalar.
-        public static float b2Cross(b2Vec2 a, b2Vec2 b)
+        public static float b2Cross(B2Vec2 a, B2Vec2 b)
         {
             return a.x * b.y - a.y * b.x;
         }
 
         /// Perform the cross product on a vector and a scalar. In 2D this produces a vector.
-        public static b2Vec2 b2CrossVS(b2Vec2 v, float s)
+        public static B2Vec2 b2CrossVS(B2Vec2 v, float s)
         {
-            return new b2Vec2(s * v.y, -s * v.x);
+            return new B2Vec2(s * v.y, -s * v.x);
         }
 
         /// Perform the cross product on a scalar and a vector. In 2D this produces a vector.
-        public static b2Vec2 b2CrossSV(float s, b2Vec2 v)
+        public static B2Vec2 b2CrossSV(float s, B2Vec2 v)
         {
-            return new b2Vec2(-s * v.y, s * v.x);
+            return new B2Vec2(-s * v.y, s * v.x);
         }
 
         /// Get a left pointing perpendicular vector. Equivalent to b2CrossSV(1.0f, v)
-        public static b2Vec2 b2LeftPerp(b2Vec2 v)
+        public static B2Vec2 b2LeftPerp(B2Vec2 v)
         {
-            return new b2Vec2(-v.y, v.x);
+            return new B2Vec2(-v.y, v.x);
         }
 
         /// Get a right pointing perpendicular vector. Equivalent to b2CrossVS(v, 1.0f)
-        public static b2Vec2 b2RightPerp(b2Vec2 v)
+        public static B2Vec2 b2RightPerp(B2Vec2 v)
         {
-            return new b2Vec2(v.y, -v.x);
+            return new B2Vec2(v.y, -v.x);
         }
 
         /// Vector addition
-        public static b2Vec2 b2Add(b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Add(B2Vec2 a, B2Vec2 b)
         {
-            return new b2Vec2(a.x + b.x, a.y + b.y);
+            return new B2Vec2(a.x + b.x, a.y + b.y);
         }
 
         /// Vector subtraction
-        public static b2Vec2 b2Sub(b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Sub(B2Vec2 a, B2Vec2 b)
         {
-            return new b2Vec2(a.x - b.x, a.y - b.y);
+            return new B2Vec2(a.x - b.x, a.y - b.y);
         }
 
         /// Vector negation
-        public static b2Vec2 b2Neg(b2Vec2 a)
+        public static B2Vec2 b2Neg(B2Vec2 a)
         {
-            return new b2Vec2(-a.x, -a.y);
+            return new B2Vec2(-a.x, -a.y);
         }
 
         /// Vector linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-        public static b2Vec2 b2Lerp(b2Vec2 a, b2Vec2 b, float t)
+        public static B2Vec2 b2Lerp(B2Vec2 a, B2Vec2 b, float t)
         {
-            return new b2Vec2((1.0f - t) * a.x + t * b.x, (1.0f - t) * a.y + t * b.y);
+            return new B2Vec2((1.0f - t) * a.x + t * b.x, (1.0f - t) * a.y + t * b.y);
         }
 
         /// Component-wise multiplication
-        public static b2Vec2 b2Mul(b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Mul(B2Vec2 a, B2Vec2 b)
         {
-            return new b2Vec2(a.x * b.x, a.y * b.y);
+            return new B2Vec2(a.x * b.x, a.y * b.y);
         }
 
         /// Multiply a scalar and vector
-        public static b2Vec2 b2MulSV(float s, b2Vec2 v)
+        public static B2Vec2 b2MulSV(float s, B2Vec2 v)
         {
-            return new b2Vec2(s * v.x, s * v.y);
+            return new B2Vec2(s * v.x, s * v.y);
         }
 
         /// a + s * b
-        public static b2Vec2 b2MulAdd(b2Vec2 a, float s, b2Vec2 b)
+        public static B2Vec2 b2MulAdd(B2Vec2 a, float s, B2Vec2 b)
         {
-            return new b2Vec2(a.x + s * b.x, a.y + s * b.y);
+            return new B2Vec2(a.x + s * b.x, a.y + s * b.y);
         }
 
         /// a - s * b
-        public static b2Vec2 b2MulSub(b2Vec2 a, float s, b2Vec2 b)
+        public static B2Vec2 b2MulSub(B2Vec2 a, float s, B2Vec2 b)
         {
-            return new b2Vec2(a.x - s * b.x, a.y - s * b.y);
+            return new B2Vec2(a.x - s * b.x, a.y - s * b.y);
         }
 
         /// Component-wise absolute vector
-        public static b2Vec2 b2Abs(b2Vec2 a)
+        public static B2Vec2 b2Abs(B2Vec2 a)
         {
-            b2Vec2 b;
+            B2Vec2 b;
             b.x = b2AbsFloat(a.x);
             b.y = b2AbsFloat(a.y);
             return b;
         }
 
         /// Component-wise minimum vector
-        public static b2Vec2 b2Min(b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Min(B2Vec2 a, B2Vec2 b)
         {
-            b2Vec2 c;
+            B2Vec2 c;
             c.x = b2MinFloat(a.x, b.x);
             c.y = b2MinFloat(a.y, b.y);
             return c;
         }
 
         /// Component-wise maximum vector
-        public static b2Vec2 b2Max(b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Max(B2Vec2 a, B2Vec2 b)
         {
-            b2Vec2 c;
+            B2Vec2 c;
             c.x = b2MaxFloat(a.x, b.x);
             c.y = b2MaxFloat(a.y, b.y);
             return c;
         }
 
         /// Component-wise clamp vector v into the range [a, b]
-        public static b2Vec2 b2Clamp(b2Vec2 v, b2Vec2 a, b2Vec2 b)
+        public static B2Vec2 b2Clamp(B2Vec2 v, B2Vec2 a, B2Vec2 b)
         {
-            b2Vec2 c;
+            B2Vec2 c;
             c.x = b2ClampFloat(v.x, a.x, b.x);
             c.y = b2ClampFloat(v.y, a.y, b.y);
             return c;
         }
 
         /// Get the length of this vector (the norm)
-        public static float b2Length(b2Vec2 v)
+        public static float b2Length(B2Vec2 v)
         {
             return MathF.Sqrt(v.x * v.x + v.y * v.y);
         }
 
         /// Get the distance between two points
-        public static float b2Distance(b2Vec2 a, b2Vec2 b)
+        public static float b2Distance(B2Vec2 a, B2Vec2 b)
         {
             float dx = b.x - a.x;
             float dy = b.y - a.y;
@@ -215,7 +215,7 @@ namespace Box2D.NET
         }
 
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector.
-        public static b2Vec2 b2Normalize(b2Vec2 v)
+        public static B2Vec2 b2Normalize(B2Vec2 v)
         {
             float length = MathF.Sqrt(v.x * v.x + v.y * v.y);
             if (length < FLT_EPSILON)
@@ -224,13 +224,13 @@ namespace Box2D.NET
             }
 
             float invLength = 1.0f / length;
-            b2Vec2 n = new b2Vec2(invLength * v.x, invLength * v.y);
+            B2Vec2 n = new B2Vec2(invLength * v.x, invLength * v.y);
             return n;
         }
 
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector. Also
         /// outputs the length.
-        public static b2Vec2 b2GetLengthAndNormalize(ref float length, b2Vec2 v)
+        public static B2Vec2 b2GetLengthAndNormalize(ref float length, B2Vec2 v)
         {
             length = b2Length(v);
             if (length < FLT_EPSILON)
@@ -239,58 +239,58 @@ namespace Box2D.NET
             }
 
             float invLength = 1.0f / length;
-            b2Vec2 n = new b2Vec2(invLength * v.x, invLength * v.y);
+            B2Vec2 n = new B2Vec2(invLength * v.x, invLength * v.y);
             return n;
         }
 
         /// Normalize rotation
-        public static b2Rot b2NormalizeRot(b2Rot q)
+        public static B2Rot b2NormalizeRot(B2Rot q)
         {
             float mag = MathF.Sqrt(q.s * q.s + q.c * q.c);
             float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
-            b2Rot qn = new b2Rot(q.c * invMag, q.s * invMag);
+            B2Rot qn = new B2Rot(q.c * invMag, q.s * invMag);
             return qn;
         }
 
         /// Integrate rotation from angular velocity
         /// @param q1 initial rotation
         /// @param deltaAngle the angular displacement in radians
-        public static b2Rot b2IntegrateRotation(b2Rot q1, float deltaAngle)
+        public static B2Rot b2IntegrateRotation(B2Rot q1, float deltaAngle)
         {
             // dc/dt = -omega * sin(t)
             // ds/dt = omega * cos(t)
             // c2 = c1 - omega * h * s1
             // s2 = s1 + omega * h * c1
-            b2Rot q2 = new b2Rot(q1.c - deltaAngle * q1.s, q1.s + deltaAngle * q1.c);
+            B2Rot q2 = new B2Rot(q1.c - deltaAngle * q1.s, q1.s + deltaAngle * q1.c);
             float mag = MathF.Sqrt(q2.s * q2.s + q2.c * q2.c);
             float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
-            b2Rot qn = new b2Rot(q2.c * invMag, q2.s * invMag);
+            B2Rot qn = new B2Rot(q2.c * invMag, q2.s * invMag);
             return qn;
         }
 
         /// Get the length squared of this vector
-        public static float b2LengthSquared(b2Vec2 v)
+        public static float b2LengthSquared(B2Vec2 v)
         {
             return v.x * v.x + v.y * v.y;
         }
 
         /// Get the distance squared between points
-        public static float b2DistanceSquared(b2Vec2 a, b2Vec2 b)
+        public static float b2DistanceSquared(B2Vec2 a, B2Vec2 b)
         {
-            b2Vec2 c = new b2Vec2(b.x - a.x, b.y - a.y);
+            B2Vec2 c = new B2Vec2(b.x - a.x, b.y - a.y);
             return c.x * c.x + c.y * c.y;
         }
 
         /// Make a rotation using an angle in radians
-        public static b2Rot b2MakeRot(float radians)
+        public static B2Rot b2MakeRot(float radians)
         {
-            b2CosSin cs = b2ComputeCosSin(radians);
-            return new b2Rot(cs.cosine, cs.sine);
+            B2CosSin cs = b2ComputeCosSin(radians);
+            return new B2Rot(cs.cosine, cs.sine);
         }
 
 
         /// Is this rotation normalized?
-        public static bool b2IsNormalized(b2Rot q)
+        public static bool b2IsNormalized(B2Rot q)
         {
             // larger tolerance due to failure on mingw 32-bit
             float qq = q.s * q.s + q.c * q.c;
@@ -300,10 +300,10 @@ namespace Box2D.NET
         /// Normalized linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
         ///	https://web.archive.org/web/20170825184056/http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
-        public static b2Rot b2NLerp(b2Rot q1, b2Rot q2, float t)
+        public static B2Rot b2NLerp(B2Rot q1, B2Rot q2, float t)
         {
             float omt = 1.0f - t;
-            b2Rot q = new b2Rot
+            B2Rot q = new B2Rot
             {
                 c = omt * q1.c + t * q2.c,
                 s = omt * q1.s + t * q2.s,
@@ -316,7 +316,7 @@ namespace Box2D.NET
         /// @param q1 initial rotation
         /// @param q2 final rotation
         /// @param inv_h inverse time step
-        public static float b2ComputeAngularVelocity(b2Rot q1, b2Rot q2, float inv_h)
+        public static float b2ComputeAngularVelocity(B2Rot q1, B2Rot q2, float inv_h)
         {
             // ds/dt = omega * cos(t)
             // dc/dt = -omega * sin(t)
@@ -333,53 +333,53 @@ namespace Box2D.NET
         }
 
         /// Get the angle in radians in the range [-pi, pi]
-        public static float b2Rot_GetAngle(b2Rot q)
+        public static float b2Rot_GetAngle(B2Rot q)
         {
             return b2Atan2(q.s, q.c);
         }
 
         /// Get the x-axis
-        public static b2Vec2 b2Rot_GetXAxis(b2Rot q)
+        public static B2Vec2 b2Rot_GetXAxis(B2Rot q)
         {
-            b2Vec2 v = new b2Vec2(q.c, q.s);
+            B2Vec2 v = new B2Vec2(q.c, q.s);
             return v;
         }
 
         /// Get the y-axis
-        public static b2Vec2 b2Rot_GetYAxis(b2Rot q)
+        public static B2Vec2 b2Rot_GetYAxis(B2Rot q)
         {
-            b2Vec2 v = new b2Vec2(-q.s, q.c);
+            B2Vec2 v = new B2Vec2(-q.s, q.c);
             return v;
         }
 
         /// Multiply two rotations: q * r
-        public static b2Rot b2MulRot(b2Rot q, b2Rot r)
+        public static B2Rot b2MulRot(B2Rot q, B2Rot r)
         {
             // [qc -qs] * [rc -rs] = [qc*rc-qs*rs -qc*rs-qs*rc]
             // [qs  qc]   [rs  rc]   [qs*rc+qc*rs -qs*rs+qc*rc]
             // s(q + r) = qs * rc + qc * rs
             // c(q + r) = qc * rc - qs * rs
-            b2Rot qr;
+            B2Rot qr;
             qr.s = q.s * r.c + q.c * r.s;
             qr.c = q.c * r.c - q.s * r.s;
             return qr;
         }
 
         /// Transpose multiply two rotations: qT * r
-        public static b2Rot b2InvMulRot(b2Rot q, b2Rot r)
+        public static B2Rot b2InvMulRot(B2Rot q, B2Rot r)
         {
             // [ qc qs] * [rc -rs] = [qc*rc+qs*rs -qc*rs+qs*rc]
             // [-qs qc]   [rs  rc]   [-qs*rc+qc*rs qs*rs+qc*rc]
             // s(q - r) = qc * rs - qs * rc
             // c(q - r) = qc * rc + qs * rs
-            b2Rot qr;
+            B2Rot qr;
             qr.s = q.c * r.s - q.s * r.c;
             qr.c = q.c * r.c + q.s * r.s;
             return qr;
         }
 
         /// relative angle between b and a (rot_b * inv(rot_a))
-        public static float b2RelativeAngle(b2Rot b, b2Rot a)
+        public static float b2RelativeAngle(B2Rot b, B2Rot a)
         {
             // sin(b - a) = bs * ac - bc * as
             // cos(b - a) = bc * ac + bs * as
@@ -420,32 +420,32 @@ namespace Box2D.NET
         }
 
         /// Rotate a vector
-        public static b2Vec2 b2RotateVector(b2Rot q, b2Vec2 v)
+        public static B2Vec2 b2RotateVector(B2Rot q, B2Vec2 v)
         {
-            return new b2Vec2(q.c * v.x - q.s * v.y, q.s * v.x + q.c * v.y);
+            return new B2Vec2(q.c * v.x - q.s * v.y, q.s * v.x + q.c * v.y);
         }
 
         /// Inverse rotate a vector
-        public static b2Vec2 b2InvRotateVector(b2Rot q, b2Vec2 v)
+        public static B2Vec2 b2InvRotateVector(B2Rot q, B2Vec2 v)
         {
-            return new b2Vec2(q.c * v.x + q.s * v.y, -q.s * v.x + q.c * v.y);
+            return new B2Vec2(q.c * v.x + q.s * v.y, -q.s * v.x + q.c * v.y);
         }
 
         /// Transform a point (e.g. local space to world space)
-        public static b2Vec2 b2TransformPoint(ref b2Transform t, b2Vec2 p)
+        public static B2Vec2 b2TransformPoint(ref B2Transform t, B2Vec2 p)
         {
             float x = (t.q.c * p.x - t.q.s * p.y) + t.p.x;
             float y = (t.q.s * p.x + t.q.c * p.y) + t.p.y;
 
-            return new b2Vec2(x, y);
+            return new B2Vec2(x, y);
         }
 
         /// Inverse transform a point (e.g. world space to local space)
-        public static b2Vec2 b2InvTransformPoint(b2Transform t, b2Vec2 p)
+        public static B2Vec2 b2InvTransformPoint(B2Transform t, B2Vec2 p)
         {
             float vx = p.x - t.p.x;
             float vy = p.y - t.p.y;
-            return new b2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
+            return new B2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
         }
 
         /// Multiply two transforms. If the result is applied to a point p local to frame B,
@@ -453,9 +453,9 @@ namespace Box2D.NET
         /// in the world frame.
         /// v2 = A.q.Rot(B.q.Rot(v1) + B.p) + A.p
         ///    = (A.q * B.q).Rot(v1) + A.q.Rot(B.p) + A.p
-        public static b2Transform b2MulTransforms(b2Transform A, b2Transform B)
+        public static B2Transform b2MulTransforms(B2Transform A, B2Transform B)
         {
-            b2Transform C;
+            B2Transform C;
             C.q = b2MulRot(A.q, B.q);
             C.p = b2Add(b2RotateVector(A.q, B.p), A.p);
             return C;
@@ -464,18 +464,18 @@ namespace Box2D.NET
         /// Creates a transform that converts a local point in frame B to a local point in frame A.
         /// v2 = A.q' * (B.q * v1 + B.p - A.p)
         ///    = A.q' * B.q * v1 + A.q' * (B.p - A.p)
-        public static b2Transform b2InvMulTransforms(b2Transform A, b2Transform B)
+        public static B2Transform b2InvMulTransforms(B2Transform A, B2Transform B)
         {
-            b2Transform C;
+            B2Transform C;
             C.q = b2InvMulRot(A.q, B.q);
             C.p = b2InvRotateVector(A.q, b2Sub(B.p, A.p));
             return C;
         }
 
         /// Multiply a 2-by-2 matrix times a 2D vector
-        public static b2Vec2 b2MulMV(b2Mat22 A, b2Vec2 v)
+        public static B2Vec2 b2MulMV(B2Mat22 A, B2Vec2 v)
         {
-            b2Vec2 u = new b2Vec2
+            B2Vec2 u = new B2Vec2
             {
                 x = A.cx.x * v.x + A.cy.x * v.y,
                 y = A.cx.y * v.x + A.cy.y * v.y,
@@ -484,7 +484,7 @@ namespace Box2D.NET
         }
 
         /// Get the inverse of a 2-by-2 matrix
-        public static b2Mat22 b2GetInverse22(b2Mat22 A)
+        public static B2Mat22 b2GetInverse22(B2Mat22 A)
         {
             float a = A.cx.x, b = A.cy.x, c = A.cx.y, d = A.cy.y;
             float det = a * d - b * c;
@@ -493,13 +493,13 @@ namespace Box2D.NET
                 det = 1.0f / det;
             }
 
-            b2Mat22 B = new b2Mat22(new b2Vec2(det * d, -det * c), new b2Vec2(-det * b, det * a));
+            B2Mat22 B = new B2Mat22(new B2Vec2(det * d, -det * c), new B2Vec2(-det * b, det * a));
             return B;
         }
 
         /// Solve A * x = b, where b is a column vector. This is more efficient
         /// than computing the inverse in one-shot cases.
-        public static b2Vec2 b2Solve22(b2Mat22 A, b2Vec2 b)
+        public static B2Vec2 b2Solve22(B2Mat22 A, B2Vec2 b)
         {
             float a11 = A.cx.x, a12 = A.cy.x, a21 = A.cx.y, a22 = A.cy.y;
             float det = a11 * a22 - a12 * a21;
@@ -508,12 +508,12 @@ namespace Box2D.NET
                 det = 1.0f / det;
             }
 
-            b2Vec2 x = new b2Vec2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
+            B2Vec2 x = new B2Vec2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
             return x;
         }
 
         /// Does a fully contain b
-        public static bool b2AABB_Contains(b2AABB a, b2AABB b)
+        public static bool b2AABB_Contains(B2AABB a, B2AABB b)
         {
             bool s = true;
             s = s && a.lowerBound.x <= b.lowerBound.x;
@@ -524,23 +524,23 @@ namespace Box2D.NET
         }
 
         /// Get the center of the AABB.
-        public static b2Vec2 b2AABB_Center(b2AABB a)
+        public static B2Vec2 b2AABB_Center(B2AABB a)
         {
-            b2Vec2 b = new b2Vec2(0.5f * (a.lowerBound.x + a.upperBound.x), 0.5f * (a.lowerBound.y + a.upperBound.y));
+            B2Vec2 b = new B2Vec2(0.5f * (a.lowerBound.x + a.upperBound.x), 0.5f * (a.lowerBound.y + a.upperBound.y));
             return b;
         }
 
         /// Get the extents of the AABB (half-widths).
-        public static b2Vec2 b2AABB_Extents(b2AABB a)
+        public static B2Vec2 b2AABB_Extents(B2AABB a)
         {
-            b2Vec2 b = new b2Vec2(0.5f * (a.upperBound.x - a.lowerBound.x), 0.5f * (a.upperBound.y - a.lowerBound.y));
+            B2Vec2 b = new B2Vec2(0.5f * (a.upperBound.x - a.lowerBound.x), 0.5f * (a.upperBound.y - a.lowerBound.y));
             return b;
         }
 
         /// Union of two AABBs
-        public static b2AABB b2AABB_Union(b2AABB a, b2AABB b)
+        public static B2AABB b2AABB_Union(B2AABB a, B2AABB b)
         {
-            b2AABB c;
+            B2AABB c;
             c.lowerBound.x = b2MinFloat(a.lowerBound.x, b.lowerBound.x);
             c.lowerBound.y = b2MinFloat(a.lowerBound.y, b.lowerBound.y);
             c.upperBound.x = b2MaxFloat(a.upperBound.x, b.upperBound.x);
@@ -571,7 +571,7 @@ namespace Box2D.NET
         }
 
         /// Is this a valid vector? Not NaN or infinity.
-        public static bool b2IsValidVec2(b2Vec2 v)
+        public static bool b2IsValidVec2(B2Vec2 v)
         {
             if (float.IsNaN(v.x) || float.IsNaN(v.y))
             {
@@ -587,7 +587,7 @@ namespace Box2D.NET
         }
 
         /// Is this a valid rotation? Not NaN or infinity. Is normalized.
-        public static bool b2IsValidRotation(b2Rot q)
+        public static bool b2IsValidRotation(B2Rot q)
         {
             if (float.IsNaN(q.s) || float.IsNaN(q.c))
             {
@@ -655,7 +655,7 @@ namespace Box2D.NET
         // the same results on x64 and ARM using MSVC, GCC, and Clang. However, I don't trust
         // this result.
         // https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
-        public static b2CosSin b2ComputeCosSin(float radians)
+        public static B2CosSin b2ComputeCosSin(float radians)
         {
             float x = b2UnwindLargeAngle(radians);
             float pi2 = B2_PI * B2_PI;
@@ -694,18 +694,18 @@ namespace Box2D.NET
 
             float mag = MathF.Sqrt(s * s + c * c);
             float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
-            b2CosSin cs = new b2CosSin { cosine = c * invMag, sine = s * invMag };
+            B2CosSin cs = new B2CosSin { cosine = c * invMag, sine = s * invMag };
             return cs;
         }
 
 
         /// Compute the rotation between two unit vectors
-        public static b2Rot b2ComputeRotationBetweenUnitVectors(b2Vec2 v1, b2Vec2 v2)
+        public static B2Rot b2ComputeRotationBetweenUnitVectors(B2Vec2 v1, B2Vec2 v2)
         {
             Debug.Assert(b2AbsFloat(1.0f - b2Length(v1)) < 100.0f * FLT_EPSILON);
             Debug.Assert(b2AbsFloat(1.0f - b2Length(v2)) < 100.0f * FLT_EPSILON);
 
-            b2Rot rot;
+            B2Rot rot;
             rot.c = b2Dot(v1, v2);
             rot.s = b2Cross(v1, v2);
             return b2NormalizeRot(rot);

@@ -26,21 +26,21 @@ public class RoundedShapes : Sample
         if (settings.restart == false)
         {
             Draw.g_camera.m_zoom = 25.0f * 0.55f;
-            Draw.g_camera.m_center = new b2Vec2(2.0f, 8.0f);
+            Draw.g_camera.m_center = new B2Vec2(2.0f, 8.0f);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeOffsetBox(20.0f, 1.0f, new b2Vec2(0.0f, -1.0f), b2Rot_identity);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeOffsetBox(20.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            box = b2MakeOffsetBox(1.0f, 5.0f, new b2Vec2(19.0f, 5.0f), b2Rot_identity);
+            box = b2MakeOffsetBox(1.0f, 5.0f, new B2Vec2(19.0f, 5.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            box = b2MakeOffsetBox(1.0f, 5.0f, new b2Vec2(-19.0f, 5.0f), b2Rot_identity);
+            box = b2MakeOffsetBox(1.0f, 5.0f, new B2Vec2(-19.0f, 5.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
@@ -53,9 +53,9 @@ public class RoundedShapes : Sample
             // b2Hull wedgeHull = b2ComputeHull(points, 3);
             // b2Polygon wedge = b2MakePolygon(wedgeHull, 0.0f);
 
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             float y = 2.0f;
             int xcount = 10, ycount = 10;
@@ -65,10 +65,10 @@ public class RoundedShapes : Sample
                 float x = -5.0f;
                 for (int j = 0; j < xcount; ++j)
                 {
-                    bodyDef.position = new b2Vec2(x, y);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    bodyDef.position = new B2Vec2(x, y);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-                    b2Polygon poly = RandomPolygon(0.5f);
+                    B2Polygon poly = RandomPolygon(0.5f);
                     poly.radius = RandomFloatRange(0.05f, 0.25f);
                     b2CreatePolygonShape(bodyId, shapeDef, poly);
 

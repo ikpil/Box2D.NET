@@ -4,9 +4,9 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class DrawContext
+    public class B2DrawContext
     {
-        public b2World world;
-        public b2DebugDraw draw;
+        public B2World world;
+        public B2DebugDraw draw;
     }
 }

@@ -4,9 +4,9 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2HashSet
+    public class B2HashSet
     {
-        public b2SetItem[] items;
+        public B2SetItem[] items;
         public int capacity;
         public uint count;
     }

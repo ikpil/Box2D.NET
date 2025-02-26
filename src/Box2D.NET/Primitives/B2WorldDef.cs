@@ -7,10 +7,10 @@ namespace Box2D.NET.Primitives
     /// World definition used to create a simulation world.
     /// Must be initialized using b2DefaultWorldDef().
     /// @ingroup world
-    public class b2WorldDef
+    public class B2WorldDef
     {
         /// Gravity vector. Box2D has no up-vector defined.
-        public b2Vec2 gravity;
+        public B2Vec2 gravity;
 
         /// Restitution speed threshold, usually in m/s. Collisions above this
         /// speed have restitution applied (will bounce).

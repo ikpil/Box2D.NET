@@ -41,7 +41,7 @@ public class GLCircles
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        b2Vec2 vertices[] =  {
+        B2Vec2 vertices[] =  {
             {
                 -a, -a
             }, {
@@ -101,7 +101,7 @@ public class GLCircles
         }
     }
 
-    public void AddCircle(b2Vec2 center, float radius, b2HexColor color)
+    public void AddCircle(B2Vec2 center, float radius, B2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         m_circles.Add( {

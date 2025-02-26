@@ -32,18 +32,18 @@ namespace Box2D.NET
         // is touching many other bodies.
         public const int B2_OVERFLOW_INDEX = B2_GRAPH_COLOR_COUNT - 1;
 
-        public static void b2CreateGraph(ref b2ConstraintGraph graph, int bodyCapacity)
+        public static void b2CreateGraph(ref B2ConstraintGraph graph, int bodyCapacity)
         {
             Debug.Assert(B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12");
             Debug.Assert(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
             Debug.Assert(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
 
             // @ikpil, new b2ConstraintGraph
-            graph = new b2ConstraintGraph();
-            graph.colors = new b2GraphColor[B2_GRAPH_COLOR_COUNT];
+            graph = new B2ConstraintGraph();
+            graph.colors = new B2GraphColor[B2_GRAPH_COLOR_COUNT];
             for (int i = 0; i < graph.colors.Length; ++i)
             {
-                graph.colors[i] = new b2GraphColor();
+                graph.colors[i] = new B2GraphColor();
             }
 
             bodyCapacity = b2MaxInt(bodyCapacity, 8);
@@ -52,10 +52,10 @@ namespace Box2D.NET
             // No bitset for overflow color.
             for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
             {
-                b2GraphColor color = graph.colors[i];
+                B2GraphColor color = graph.colors[i];
                 color.bodySet = b2CreateBitSet(bodyCapacity);
-                color.contactSims = b2Array_Create<b2ContactSim>();
-                color.jointSims = b2Array_Create<b2JointSim>();
+                color.contactSims = b2Array_Create<B2ContactSim>();
+                color.jointSims = b2Array_Create<B2JointSim>();
 
                 b2SetBitCountAndClear(color.bodySet, bodyCapacity);
             }
@@ -64,17 +64,17 @@ namespace Box2D.NET
             for (int i = B2_OVERFLOW_INDEX; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
                 var color = graph.colors[i];
-                color.bodySet = new b2BitSet();
-                color.contactSims = b2Array_Create<b2ContactSim>();
-                color.jointSims = b2Array_Create<b2JointSim>();
+                color.bodySet = new B2BitSet();
+                color.contactSims = b2Array_Create<B2ContactSim>();
+                color.jointSims = b2Array_Create<B2JointSim>();
             }
         }
 
-        public static void b2DestroyGraph(b2ConstraintGraph graph)
+        public static void b2DestroyGraph(B2ConstraintGraph graph)
         {
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
-                b2GraphColor color = graph.colors[i];
+                B2GraphColor color = graph.colors[i];
 
                 // The bit set should never be used on the overflow color
                 Debug.Assert(i != B2_OVERFLOW_INDEX || color.bodySet.bits == null);
@@ -89,21 +89,21 @@ namespace Box2D.NET
         // Contacts are always created as non-touching. They get cloned into the constraint
         // graph once they are found to be touching.
         // todo maybe kinematic bodies should not go into graph
-        public static void b2AddContactToGraph(b2World world, b2ContactSim contactSim, b2Contact contact)
+        public static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
         {
             Debug.Assert(contactSim.manifold.pointCount > 0);
-            Debug.Assert(0 != (contactSim.simFlags & (uint)b2ContactSimFlags.b2_simTouchingFlag));
-            Debug.Assert(0 != (contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag));
+            Debug.Assert(0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag));
+            Debug.Assert(0 != (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag));
 
-            b2ConstraintGraph graph = world.constraintGraph;
+            B2ConstraintGraph graph = world.constraintGraph;
             int colorIndex = B2_OVERFLOW_INDEX;
 
             int bodyIdA = contact.edges[0].bodyId;
             int bodyIdB = contact.edges[1].bodyId;
-            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
-            bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
+            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+            bool staticA = bodyA.setIndex == (int)B2SetType.b2_staticSet;
+            bool staticB = bodyB.setIndex == (int)B2SetType.b2_staticSet;
             Debug.Assert(staticA == false || staticB == false);
 
 #if B2_FORCE_OVERFLOW
@@ -111,7 +111,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color0 = graph.colors[i];
+                    B2GraphColor color0 = graph.colors[i];
                     if (b2GetBit(color0.bodySet, bodyIdA) || b2GetBit(color0.bodySet, bodyIdB))
                     {
                         continue;
@@ -128,7 +128,7 @@ namespace Box2D.NET
                 // No static contacts in color 0
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color0 = graph.colors[i];
+                    B2GraphColor color0 = graph.colors[i];
                     if (b2GetBit(color0.bodySet, bodyIdA))
                     {
                         continue;
@@ -144,7 +144,7 @@ namespace Box2D.NET
                 // No static contacts in color 0
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color0 = graph.colors[i];
+                    B2GraphColor color0 = graph.colors[i];
                     if (b2GetBit(color0.bodySet, bodyIdB))
                     {
                         continue;
@@ -157,11 +157,11 @@ namespace Box2D.NET
             }
 #endif
 
-            b2GraphColor color = graph.colors[colorIndex];
+            B2GraphColor color = graph.colors[colorIndex];
             contact.colorIndex = colorIndex;
             contact.localIndex = color.contactSims.count;
 
-            ref b2ContactSim newContact = ref b2Array_Add(ref color.contactSims);
+            ref B2ContactSim newContact = ref b2Array_Add(ref color.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
             newContact.CopyFrom(contactSim);
 
@@ -175,13 +175,13 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet);
-                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet);
+                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
 
                 int localIndex = bodyA.localIndex;
                 newContact.bodySimIndexA = localIndex;
 
-                b2BodySim bodySimA = b2Array_Get(ref awakeSet.bodySims, localIndex);
+                B2BodySim bodySimA = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassA = bodySimA.invMass;
                 newContact.invIA = bodySimA.invInertia;
             }
@@ -194,24 +194,24 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-                b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+                Debug.Assert(bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
 
                 int localIndex = bodyB.localIndex;
                 newContact.bodySimIndexB = localIndex;
 
-                b2BodySim bodySimB = b2Array_Get(ref awakeSet.bodySims, localIndex);
+                B2BodySim bodySimB = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassB = bodySimB.invMass;
                 newContact.invIB = bodySimB.invInertia;
             }
         }
 
-        public static void b2RemoveContactFromGraph(b2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
+        public static void b2RemoveContactFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
-            b2ConstraintGraph graph = world.constraintGraph;
+            B2ConstraintGraph graph = world.constraintGraph;
 
             Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-            b2GraphColor color = graph.colors[colorIndex];
+            B2GraphColor color = graph.colors[colorIndex];
 
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
@@ -224,19 +224,19 @@ namespace Box2D.NET
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix index on swapped contact
-                b2ContactSim movedContactSim = color.contactSims.data[localIndex];
+                B2ContactSim movedContactSim = color.contactSims.data[localIndex];
 
                 // Fix moved contact
                 int movedId = movedContactSim.contactId;
-                b2Contact movedContact = b2Array_Get(ref world.contacts, movedId);
-                Debug.Assert(movedContact.setIndex == (int)b2SetType.b2_awakeSet);
+                B2Contact movedContact = b2Array_Get(ref world.contacts, movedId);
+                Debug.Assert(movedContact.setIndex == (int)B2SetType.b2_awakeSet);
                 Debug.Assert(movedContact.colorIndex == colorIndex);
                 Debug.Assert(movedContact.localIndex == movedIndex);
                 movedContact.localIndex = localIndex;
             }
         }
 
-        public static int b2AssignJointColor(b2ConstraintGraph graph, int bodyIdA, int bodyIdB, bool staticA, bool staticB)
+        public static int b2AssignJointColor(B2ConstraintGraph graph, int bodyIdA, int bodyIdB, bool staticA, bool staticB)
         {
             Debug.Assert(staticA == false || staticB == false);
 
@@ -245,7 +245,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color = graph.colors[i];
+                    B2GraphColor color = graph.colors[i];
                     if (b2GetBit(color.bodySet, bodyIdA) || b2GetBit(color.bodySet, bodyIdB))
                     {
                         continue;
@@ -260,7 +260,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color = graph.colors[i];
+                    B2GraphColor color = graph.colors[i];
                     if (b2GetBit(color.bodySet, bodyIdA))
                     {
                         continue;
@@ -274,7 +274,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    b2GraphColor color = graph.colors[i];
+                    B2GraphColor color = graph.colors[i];
                     if (b2GetBit(color.bodySet, bodyIdB))
                     {
                         continue;
@@ -291,20 +291,20 @@ namespace Box2D.NET
             return B2_OVERFLOW_INDEX;
         }
 
-        public static ref b2JointSim b2CreateJointInGraph(b2World world, b2Joint joint)
+        public static ref B2JointSim b2CreateJointInGraph(B2World world, B2Joint joint)
         {
-            b2ConstraintGraph graph = world.constraintGraph;
+            B2ConstraintGraph graph = world.constraintGraph;
 
             int bodyIdA = joint.edges[0].bodyId;
             int bodyIdB = joint.edges[1].bodyId;
-            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.setIndex == (int)b2SetType.b2_staticSet;
-            bool staticB = bodyB.setIndex == (int)b2SetType.b2_staticSet;
+            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+            bool staticA = bodyA.setIndex == (int)B2SetType.b2_staticSet;
+            bool staticB = bodyB.setIndex == (int)B2SetType.b2_staticSet;
 
             int colorIndex = b2AssignJointColor(graph, bodyIdA, bodyIdB, staticA, staticB);
 
-            ref b2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
+            ref B2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
             jointSim.Clear();
 
@@ -313,19 +313,19 @@ namespace Box2D.NET
             return ref jointSim;
         }
 
-        public static void b2AddJointToGraph(b2World world, b2JointSim jointSim, b2Joint joint)
+        public static void b2AddJointToGraph(B2World world, B2JointSim jointSim, B2Joint joint)
         {
-            b2JointSim jointDst = b2CreateJointInGraph(world, joint);
+            B2JointSim jointDst = b2CreateJointInGraph(world, joint);
             //memcpy( jointDst, jointSim, sizeof( b2JointSim ) );
             jointDst.CopyFrom(jointSim);
         }
 
-        public static void b2RemoveJointFromGraph(b2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
+        public static void b2RemoveJointFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
-            b2ConstraintGraph graph = world.constraintGraph;
+            B2ConstraintGraph graph = world.constraintGraph;
 
             Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-            b2GraphColor color = graph.colors[colorIndex];
+            B2GraphColor color = graph.colors[colorIndex];
 
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
@@ -338,10 +338,10 @@ namespace Box2D.NET
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix moved joint
-                b2JointSim movedJointSim = color.jointSims.data[localIndex];
+                B2JointSim movedJointSim = color.jointSims.data[localIndex];
                 int movedId = movedJointSim.jointId;
-                b2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
-                Debug.Assert(movedJoint.setIndex == (int)b2SetType.b2_awakeSet);
+                B2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
+                Debug.Assert(movedJoint.setIndex == (int)B2SetType.b2_awakeSet);
                 Debug.Assert(movedJoint.colorIndex == colorIndex);
                 Debug.Assert(movedJoint.localIndex == movedIndex);
                 movedJoint.localIndex = localIndex;

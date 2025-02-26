@@ -5,9 +5,9 @@
 namespace Box2D.NET.Primitives
 {
     // Wide rotation
-    public struct b2RotW
+    public struct B2RotW
     {
-        public b2FloatW C;
-        public b2FloatW S;
+        public B2FloatW C;
+        public B2FloatW S;
     }
 }

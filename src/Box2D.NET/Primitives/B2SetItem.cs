@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     // @ikpil, must be strcut
-    public struct b2SetItem
+    public struct B2SetItem
     {
         public ulong key;
         public uint hash;

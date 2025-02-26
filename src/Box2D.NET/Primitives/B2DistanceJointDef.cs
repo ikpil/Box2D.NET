@@ -11,19 +11,19 @@ namespace Box2D.NET.Primitives
     /// local anchor points so that the initial configuration can violate the
     /// constraint slightly. This helps when saving and loading a game.
     /// @ingroup distance_joint
-    public class b2DistanceJointDef
+    public class B2DistanceJointDef
     {
         /// The first attached body
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// The local anchor point relative to bodyA's origin
-        public b2Vec2 localAnchorA;
+        public B2Vec2 localAnchorA;
 
         /// The local anchor point relative to bodyB's origin
-        public b2Vec2 localAnchorB;
+        public B2Vec2 localAnchorB;
 
         /// The rest length of this joint. Clamped to a stable minimum value.
         public float length;

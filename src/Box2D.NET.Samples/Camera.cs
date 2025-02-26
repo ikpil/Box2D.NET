@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples;
 
 public class Camera
 {
-    public b2Vec2 m_center;
+    public B2Vec2 m_center;
     public float m_zoom;
     public int m_width;
     public int m_height;
@@ -25,11 +25,11 @@ public class Camera
 
     public void ResetView()
     {
-        m_center = new b2Vec2(0.0f, 20.0f);
+        m_center = new B2Vec2(0.0f, 20.0f);
         m_zoom = 1.0f;
     }
 
-    public b2Vec2 ConvertScreenToWorld(b2Vec2 ps)
+    public B2Vec2 ConvertScreenToWorld(B2Vec2 ps)
     {
         float w = m_width;
         float h = m_height;
@@ -37,30 +37,30 @@ public class Camera
         float v = (h - ps.y) / h;
 
         float ratio = w / h;
-        b2Vec2 extents = new b2Vec2(m_zoom * ratio, m_zoom);
+        B2Vec2 extents = new B2Vec2(m_zoom * ratio, m_zoom);
 
-        b2Vec2 lower = b2Sub(m_center, extents);
-        b2Vec2 upper = b2Add(m_center, extents);
+        B2Vec2 lower = b2Sub(m_center, extents);
+        B2Vec2 upper = b2Add(m_center, extents);
 
-        b2Vec2 pw = new b2Vec2((1.0f - u) * lower.x + u * upper.x, (1.0f - v) * lower.y + v * upper.y);
+        B2Vec2 pw = new B2Vec2((1.0f - u) * lower.x + u * upper.x, (1.0f - v) * lower.y + v * upper.y);
         return pw;
     }
 
-    public b2Vec2 ConvertWorldToScreen(b2Vec2 pw)
+    public B2Vec2 ConvertWorldToScreen(B2Vec2 pw)
     {
         float w = m_width;
         float h = m_height;
         float ratio = w / h;
 
-        b2Vec2 extents = new b2Vec2(m_zoom * ratio, m_zoom);
+        B2Vec2 extents = new B2Vec2(m_zoom * ratio, m_zoom);
 
-        b2Vec2 lower = b2Sub(m_center, extents);
-        b2Vec2 upper = b2Add(m_center, extents);
+        B2Vec2 lower = b2Sub(m_center, extents);
+        B2Vec2 upper = b2Add(m_center, extents);
 
         float u = (pw.x - lower.x) / (upper.x - lower.x);
         float v = (pw.y - lower.y) / (upper.y - lower.y);
 
-        b2Vec2 ps = new b2Vec2(u * w, (1.0f - v) * h);
+        B2Vec2 ps = new B2Vec2(u * w, (1.0f - v) * h);
         return ps;
     }
 
@@ -70,10 +70,10 @@ public class Camera
     public void BuildProjectionMatrix(Span<float> m, float zBias)
     {
         float ratio = (float)m_width / (float)m_height;
-        b2Vec2 extents = new b2Vec2(m_zoom * ratio, m_zoom);
+        B2Vec2 extents = new B2Vec2(m_zoom * ratio, m_zoom);
 
-        b2Vec2 lower = b2Sub(m_center, extents);
-        b2Vec2 upper = b2Add(m_center, extents);
+        B2Vec2 lower = b2Sub(m_center, extents);
+        B2Vec2 upper = b2Add(m_center, extents);
         float w = upper.x - lower.x;
         float h = upper.y - lower.y;
 
@@ -98,11 +98,11 @@ public class Camera
         m[15] = 1.0f;
     }
 
-    public b2AABB GetViewBounds()
+    public B2AABB GetViewBounds()
     {
-        b2AABB bounds;
-        bounds.lowerBound = ConvertScreenToWorld(new b2Vec2(0.0f, (float)m_height));
-        bounds.upperBound = ConvertScreenToWorld(new b2Vec2((float)m_width, 0.0f));
+        B2AABB bounds;
+        bounds.lowerBound = ConvertScreenToWorld(new B2Vec2(0.0f, (float)m_height));
+        bounds.upperBound = ConvertScreenToWorld(new B2Vec2((float)m_width, 0.0f));
         return bounds;
     }
 }

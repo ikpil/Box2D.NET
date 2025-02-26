@@ -27,15 +27,15 @@ namespace Box2D.NET
     {
         public const int B2_CONTACT_REMOVE_THRESHOLD = 1;
 
-        public static b2Island b2CreateIsland(b2World world, int setIndex)
+        public static B2Island b2CreateIsland(B2World world, int setIndex)
         {
-            Debug.Assert(setIndex == (int)b2SetType.b2_awakeSet || setIndex >= (int)b2SetType.b2_firstSleepingSet);
+            Debug.Assert(setIndex == (int)B2SetType.b2_awakeSet || setIndex >= (int)B2SetType.b2_firstSleepingSet);
 
             int islandId = b2AllocId(world.islandIdPool);
 
             if (islandId == world.islands.count)
             {
-                b2Island emptyIsland = new b2Island();
+                B2Island emptyIsland = new B2Island();
                 b2Array_Push(ref world.islands, emptyIsland);
             }
             else
@@ -43,9 +43,9 @@ namespace Box2D.NET
                 Debug.Assert(world.islands.data[islandId].setIndex == B2_NULL_INDEX);
             }
 
-            b2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
+            B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
 
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
             island.setIndex = setIndex;
             island.localIndex = set.islandSims.count;
             island.islandId = islandId;
@@ -61,24 +61,24 @@ namespace Box2D.NET
             island.parentIsland = B2_NULL_INDEX;
             island.constraintRemoveCount = 0;
 
-            ref b2IslandSim islandSim = ref b2Array_Add(ref set.islandSims);
+            ref B2IslandSim islandSim = ref b2Array_Add(ref set.islandSims);
             islandSim.islandId = islandId;
 
             return island;
         }
 
-        public static void b2DestroyIsland(b2World world, int islandId)
+        public static void b2DestroyIsland(B2World world, int islandId)
         {
             // assume island is empty
-            b2Island island = b2Array_Get(ref world.islands, islandId);
-            b2SolverSet set = b2Array_Get(ref world.solverSets, island.setIndex);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
+            B2SolverSet set = b2Array_Get(ref world.solverSets, island.setIndex);
             int movedIndex = b2Array_RemoveSwap(ref set.islandSims, island.localIndex);
             if (movedIndex != B2_NULL_INDEX)
             {
                 // Fix index on moved element
-                b2IslandSim movedElement = set.islandSims.data[island.localIndex];
+                B2IslandSim movedElement = set.islandSims.data[island.localIndex];
                 int movedId = movedElement.islandId;
-                b2Island movedIsland = b2Array_Get(ref world.islands, movedId);
+                B2Island movedIsland = b2Array_Get(ref world.islands, movedId);
                 Debug.Assert(movedIsland.localIndex == movedIndex);
                 movedIsland.localIndex = island.localIndex;
             }
@@ -90,18 +90,18 @@ namespace Box2D.NET
             b2FreeId(world.islandIdPool, islandId);
         }
 
-        public static void b2AddContactToIsland(b2World world, int islandId, b2Contact contact)
+        public static void b2AddContactToIsland(B2World world, int islandId, B2Contact contact)
         {
             Debug.Assert(contact.islandId == B2_NULL_INDEX);
             Debug.Assert(contact.islandPrev == B2_NULL_INDEX);
             Debug.Assert(contact.islandNext == B2_NULL_INDEX);
 
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
 
             if (island.headContact != B2_NULL_INDEX)
             {
                 contact.islandNext = island.headContact;
-                b2Contact headContact = b2Array_Get(ref world.contacts, island.headContact);
+                B2Contact headContact = b2Array_Get(ref world.contacts, island.headContact);
                 headContact.islandPrev = contact.contactId;
             }
 
@@ -121,27 +121,27 @@ namespace Box2D.NET
 // Link a contact into an island.
 // This performs union-find and path compression to join islands.
 // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
-        public static void b2LinkContact(b2World world, b2Contact contact)
+        public static void b2LinkContact(B2World world, B2Contact contact)
         {
-            Debug.Assert((contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag) != 0);
+            Debug.Assert((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0);
 
             int bodyIdA = contact.edges[0].bodyId;
             int bodyIdB = contact.edges[1].bodyId;
 
-            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
 
-            Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_disabledSet && bodyB.setIndex != (int)b2SetType.b2_disabledSet);
-            Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_staticSet || bodyB.setIndex != (int)b2SetType.b2_staticSet);
+            Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_disabledSet && bodyB.setIndex != (int)B2SetType.b2_disabledSet);
+            Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
 
             // Wake bodyB if bodyA is awake and bodyB is sleeping
-            if (bodyA.setIndex == (int)b2SetType.b2_awakeSet && bodyB.setIndex >= (int)b2SetType.b2_firstSleepingSet)
+            if (bodyA.setIndex == (int)B2SetType.b2_awakeSet && bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyB.setIndex);
             }
 
             // Wake bodyA if bodyB is awake and bodyA is sleeping
-            if (bodyB.setIndex == (int)b2SetType.b2_awakeSet && bodyA.setIndex >= (int)b2SetType.b2_firstSleepingSet)
+            if (bodyB.setIndex == (int)B2SetType.b2_awakeSet && bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyA.setIndex);
             }
@@ -150,8 +150,8 @@ namespace Box2D.NET
             int islandIdB = bodyB.islandId;
 
             // Static bodies have null island indices.
-            Debug.Assert(bodyA.setIndex != (int)b2SetType.b2_staticSet || islandIdA == B2_NULL_INDEX);
-            Debug.Assert(bodyB.setIndex != (int)b2SetType.b2_staticSet || islandIdB == B2_NULL_INDEX);
+            Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_staticSet || islandIdA == B2_NULL_INDEX);
+            Debug.Assert(bodyB.setIndex != (int)B2SetType.b2_staticSet || islandIdB == B2_NULL_INDEX);
             Debug.Assert(islandIdA != B2_NULL_INDEX || islandIdB != B2_NULL_INDEX);
 
             if (islandIdA == islandIdB)
@@ -162,14 +162,14 @@ namespace Box2D.NET
             }
 
             // Union-find root of islandA
-            b2Island islandA = null;
+            B2Island islandA = null;
             if (islandIdA != B2_NULL_INDEX)
             {
                 islandA = b2Array_Get(ref world.islands, islandIdA);
                 int parentId = islandA.parentIsland;
                 while (parentId != B2_NULL_INDEX)
                 {
-                    b2Island parent = b2Array_Get(ref world.islands, parentId);
+                    B2Island parent = b2Array_Get(ref world.islands, parentId);
                     if (parent.parentIsland != B2_NULL_INDEX)
                     {
                         // path compression
@@ -183,14 +183,14 @@ namespace Box2D.NET
             }
 
             // Union-find root of islandB
-            b2Island islandB = null;
+            B2Island islandB = null;
             if (islandIdB != B2_NULL_INDEX)
             {
                 islandB = b2Array_Get(ref world.islands, islandIdB);
                 int parentId = islandB.parentIsland;
                 while (islandB.parentIsland != B2_NULL_INDEX)
                 {
-                    b2Island parent = b2Array_Get(ref world.islands, parentId);
+                    B2Island parent = b2Array_Get(ref world.islands, parentId);
                     if (parent.parentIsland != B2_NULL_INDEX)
                     {
                         // path compression
@@ -225,24 +225,24 @@ namespace Box2D.NET
 
 // Unlink contact from the island graph when it stops having contact points
 // This is called when a contact no longer has contact points or when a contact is destroyed.
-        public static void b2UnlinkContact(b2World world, b2Contact contact)
+        public static void b2UnlinkContact(B2World world, B2Contact contact)
         {
             Debug.Assert(contact.islandId != B2_NULL_INDEX);
 
             // remove from island
             int islandId = contact.islandId;
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
 
             if (contact.islandPrev != B2_NULL_INDEX)
             {
-                b2Contact prevContact = b2Array_Get(ref world.contacts, contact.islandPrev);
+                B2Contact prevContact = b2Array_Get(ref world.contacts, contact.islandPrev);
                 Debug.Assert(prevContact.islandNext == contact.contactId);
                 prevContact.islandNext = contact.islandNext;
             }
 
             if (contact.islandNext != B2_NULL_INDEX)
             {
-                b2Contact nextContact = b2Array_Get(ref world.contacts, contact.islandNext);
+                B2Contact nextContact = b2Array_Get(ref world.contacts, contact.islandNext);
                 Debug.Assert(nextContact.islandPrev == contact.contactId);
                 nextContact.islandPrev = contact.islandPrev;
             }
@@ -268,18 +268,18 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-        public static void b2AddJointToIsland(b2World world, int islandId, b2Joint joint)
+        public static void b2AddJointToIsland(B2World world, int islandId, B2Joint joint)
         {
             Debug.Assert(joint.islandId == B2_NULL_INDEX);
             Debug.Assert(joint.islandPrev == B2_NULL_INDEX);
             Debug.Assert(joint.islandNext == B2_NULL_INDEX);
 
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
 
             if (island.headJoint != B2_NULL_INDEX)
             {
                 joint.islandNext = island.headJoint;
-                b2Joint headJoint = b2Array_Get(ref world.joints, island.headJoint);
+                B2Joint headJoint = b2Array_Get(ref world.joints, island.headJoint);
                 headJoint.islandPrev = joint.jointId;
             }
 
@@ -296,16 +296,16 @@ namespace Box2D.NET
         }
 
         // Link a joint into the island graph when it is created
-        public static void b2LinkJoint(b2World world, b2Joint joint, bool mergeIslands)
+        public static void b2LinkJoint(B2World world, B2Joint joint, bool mergeIslands)
         {
-            b2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
-            b2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
+            B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
+            B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
-            if (bodyA.setIndex == (int)b2SetType.b2_awakeSet && bodyB.setIndex >= (int)b2SetType.b2_firstSleepingSet)
+            if (bodyA.setIndex == (int)B2SetType.b2_awakeSet && bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyB.setIndex);
             }
-            else if (bodyB.setIndex == (int)b2SetType.b2_awakeSet && bodyA.setIndex >= (int)b2SetType.b2_firstSleepingSet)
+            else if (bodyB.setIndex == (int)B2SetType.b2_awakeSet && bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyA.setIndex);
             }
@@ -323,13 +323,13 @@ namespace Box2D.NET
             }
 
             // Union-find root of islandA
-            b2Island islandA = null;
+            B2Island islandA = null;
             if (islandIdA != B2_NULL_INDEX)
             {
                 islandA = b2Array_Get(ref world.islands, islandIdA);
                 while (islandA.parentIsland != B2_NULL_INDEX)
                 {
-                    b2Island parent = b2Array_Get(ref world.islands, islandA.parentIsland);
+                    B2Island parent = b2Array_Get(ref world.islands, islandA.parentIsland);
                     if (parent.parentIsland != B2_NULL_INDEX)
                     {
                         // path compression
@@ -342,13 +342,13 @@ namespace Box2D.NET
             }
 
             // Union-find root of islandB
-            b2Island islandB = null;
+            B2Island islandB = null;
             if (islandIdB != B2_NULL_INDEX)
             {
                 islandB = b2Array_Get(ref world.islands, islandIdB);
                 while (islandB.parentIsland != B2_NULL_INDEX)
                 {
-                    b2Island parent = b2Array_Get(ref world.islands, islandB.parentIsland);
+                    B2Island parent = b2Array_Get(ref world.islands, islandB.parentIsland);
                     if (parent.parentIsland != B2_NULL_INDEX)
                     {
                         // path compression
@@ -390,24 +390,24 @@ namespace Box2D.NET
         }
 
 // Unlink a joint from the island graph when it is destroyed
-        public static void b2UnlinkJoint(b2World world, b2Joint joint)
+        public static void b2UnlinkJoint(B2World world, B2Joint joint)
         {
             Debug.Assert(joint.islandId != B2_NULL_INDEX);
 
             // remove from island
             int islandId = joint.islandId;
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
 
             if (joint.islandPrev != B2_NULL_INDEX)
             {
-                b2Joint prevJoint = b2Array_Get(ref world.joints, joint.islandPrev);
+                B2Joint prevJoint = b2Array_Get(ref world.joints, joint.islandPrev);
                 Debug.Assert(prevJoint.islandNext == joint.jointId);
                 prevJoint.islandNext = joint.islandNext;
             }
 
             if (joint.islandNext != B2_NULL_INDEX)
             {
-                b2Joint nextJoint = b2Array_Get(ref world.joints, joint.islandNext);
+                B2Joint nextJoint = b2Array_Get(ref world.joints, joint.islandNext);
                 Debug.Assert(nextJoint.islandPrev == joint.jointId);
                 nextJoint.islandPrev = joint.islandPrev;
             }
@@ -435,19 +435,19 @@ namespace Box2D.NET
 
 // Merge an island into its root island.
 // todo we can assume all islands are awake here
-        public static void b2MergeIsland(b2World world, b2Island island)
+        public static void b2MergeIsland(B2World world, B2Island island)
         {
             Debug.Assert(island.parentIsland != B2_NULL_INDEX);
 
             int rootId = island.parentIsland;
-            b2Island rootIsland = b2Array_Get(ref world.islands, rootId);
+            B2Island rootIsland = b2Array_Get(ref world.islands, rootId);
             Debug.Assert(rootIsland.parentIsland == B2_NULL_INDEX);
 
             // remap island indices
             int bodyId = island.headBody;
             while (bodyId != B2_NULL_INDEX)
             {
-                b2Body body = b2Array_Get(ref world.bodies, bodyId);
+                B2Body body = b2Array_Get(ref world.bodies, bodyId);
                 body.islandId = rootId;
                 bodyId = body.islandNext;
             }
@@ -455,7 +455,7 @@ namespace Box2D.NET
             int contactId = island.headContact;
             while (contactId != B2_NULL_INDEX)
             {
-                b2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
                 contact.islandId = rootId;
                 contactId = contact.islandNext;
             }
@@ -463,19 +463,19 @@ namespace Box2D.NET
             int jointId = island.headJoint;
             while (jointId != B2_NULL_INDEX)
             {
-                b2Joint joint = b2Array_Get(ref world.joints, jointId);
+                B2Joint joint = b2Array_Get(ref world.joints, jointId);
                 joint.islandId = rootId;
                 jointId = joint.islandNext;
             }
 
             // connect body lists
             Debug.Assert(rootIsland.tailBody != B2_NULL_INDEX);
-            b2Body tailBody = b2Array_Get(ref world.bodies, rootIsland.tailBody);
+            B2Body tailBody = b2Array_Get(ref world.bodies, rootIsland.tailBody);
             Debug.Assert(tailBody.islandNext == B2_NULL_INDEX);
             tailBody.islandNext = island.headBody;
 
             Debug.Assert(island.headBody != B2_NULL_INDEX);
-            b2Body headBody = b2Array_Get(ref world.bodies, island.headBody);
+            B2Body headBody = b2Array_Get(ref world.bodies, island.headBody);
             Debug.Assert(headBody.islandPrev == B2_NULL_INDEX);
             headBody.islandPrev = rootIsland.tailBody;
 
@@ -497,11 +497,11 @@ namespace Box2D.NET
                 Debug.Assert(island.tailContact != B2_NULL_INDEX && island.contactCount > 0);
                 Debug.Assert(rootIsland.tailContact != B2_NULL_INDEX && rootIsland.contactCount > 0);
 
-                b2Contact tailContact = b2Array_Get(ref world.contacts, rootIsland.tailContact);
+                B2Contact tailContact = b2Array_Get(ref world.contacts, rootIsland.tailContact);
                 Debug.Assert(tailContact.islandNext == B2_NULL_INDEX);
                 tailContact.islandNext = island.headContact;
 
-                b2Contact headContact = b2Array_Get(ref world.contacts, island.headContact);
+                B2Contact headContact = b2Array_Get(ref world.contacts, island.headContact);
                 Debug.Assert(headContact.islandPrev == B2_NULL_INDEX);
                 headContact.islandPrev = rootIsland.tailContact;
 
@@ -523,11 +523,11 @@ namespace Box2D.NET
                 Debug.Assert(island.tailJoint != B2_NULL_INDEX && island.jointCount > 0);
                 Debug.Assert(rootIsland.tailJoint != B2_NULL_INDEX && rootIsland.jointCount > 0);
 
-                b2Joint tailJoint = b2Array_Get(ref world.joints, rootIsland.tailJoint);
+                B2Joint tailJoint = b2Array_Get(ref world.joints, rootIsland.tailJoint);
                 Debug.Assert(tailJoint.islandNext == B2_NULL_INDEX);
                 tailJoint.islandNext = island.headJoint;
 
-                b2Joint headJoint = b2Array_Get(ref world.joints, island.headJoint);
+                B2Joint headJoint = b2Array_Get(ref world.joints, island.headJoint);
                 Debug.Assert(headJoint.islandPrev == B2_NULL_INDEX);
                 headJoint.islandPrev = rootIsland.tailJoint;
 
@@ -545,12 +545,12 @@ namespace Box2D.NET
 // Islands that get merged into a root island will be removed from the awake island array
 // and returned to the pool.
 // todo this might be faster if b2IslandSim held the connectivity data
-        public static void b2MergeAwakeIslands(b2World world)
+        public static void b2MergeAwakeIslands(B2World world)
         {
-            b2TracyCZoneNC(b2TracyCZone.merge_islands, "Merge Islands", b2HexColor.b2_colorMediumTurquoise, true);
+            b2TracyCZoneNC(B2TracyCZone.merge_islands, "Merge Islands", B2HexColor.b2_colorMediumTurquoise, true);
 
-            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
-            b2IslandSim[] islandSims = awakeSet.islandSims.data;
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2IslandSim[] islandSims = awakeSet.islandSims.data;
             int awakeIslandCount = awakeSet.islandSims.count;
 
             // Step 1: Ensure every child island points to its root island. This avoids merging a child island with
@@ -559,14 +559,14 @@ namespace Box2D.NET
             {
                 int islandId = islandSims[i].islandId;
 
-                b2Island island = b2Array_Get(ref world.islands, islandId);
+                B2Island island = b2Array_Get(ref world.islands, islandId);
 
                 // find the root island
                 int rootId = islandId;
-                b2Island rootIsland = island;
+                B2Island rootIsland = island;
                 while (rootIsland.parentIsland != B2_NULL_INDEX)
                 {
-                    b2Island parent = b2Array_Get(ref world.islands, rootIsland.parentIsland);
+                    B2Island parent = b2Array_Get(ref world.islands, rootIsland.parentIsland);
                     if (parent.parentIsland != B2_NULL_INDEX)
                     {
                         // path compression
@@ -588,7 +588,7 @@ namespace Box2D.NET
             for (int i = awakeIslandCount - 1; i >= 0; --i)
             {
                 int islandId = islandSims[i].islandId;
-                b2Island island = b2Array_Get(ref world.islands, islandId);
+                B2Island island = b2Array_Get(ref world.islands, islandId);
 
                 if (island.parentIsland == B2_NULL_INDEX)
                 {
@@ -603,16 +603,16 @@ namespace Box2D.NET
 
             b2ValidateConnectivity(world);
 
-            b2TracyCZoneEnd(b2TracyCZone.merge_islands);
+            b2TracyCZoneEnd(B2TracyCZone.merge_islands);
         }
 
 
-        public static void b2SplitIsland(b2World world, int baseId)
+        public static void b2SplitIsland(B2World world, int baseId)
         {
-            b2Island baseIsland = b2Array_Get(ref world.islands, baseId);
+            B2Island baseIsland = b2Array_Get(ref world.islands, baseId);
             int setIndex = baseIsland.setIndex;
 
-            if (setIndex != (int)b2SetType.b2_awakeSet)
+            if (setIndex != (int)B2SetType.b2_awakeSet)
             {
                 // can only split awake island
                 return;
@@ -628,8 +628,8 @@ namespace Box2D.NET
 
             int bodyCount = baseIsland.bodyCount;
 
-            b2Body[] bodies = world.bodies.data;
-            b2ArenaAllocator alloc = world.stackAllocator;
+            B2Body[] bodies = world.bodies.data;
+            B2ArenaAllocator alloc = world.stackAllocator;
 
             // No lock is needed because I ensure the allocator is not used while this task is active.
             ArraySegment<int> stack = b2AllocateArenaItem<int>(alloc, bodyCount * sizeof(int), "island stack");
@@ -642,7 +642,7 @@ namespace Box2D.NET
             while (nextBody != B2_NULL_INDEX)
             {
                 bodyIds[index++] = nextBody;
-                b2Body body = bodies[nextBody];
+                B2Body body = bodies[nextBody];
 
                 // Clear visitation mark
                 body.isMarked = false;
@@ -657,7 +657,7 @@ namespace Box2D.NET
             int nextContactId = baseIsland.headContact;
             while (nextContactId != B2_NULL_INDEX)
             {
-                b2Contact contact = b2Array_Get(ref world.contacts, nextContactId);
+                B2Contact contact = b2Array_Get(ref world.contacts, nextContactId);
                 contact.isMarked = false;
                 nextContactId = contact.islandNext;
             }
@@ -666,7 +666,7 @@ namespace Box2D.NET
             int nextJoint = baseIsland.headJoint;
             while (nextJoint != B2_NULL_INDEX)
             {
-                b2Joint joint = b2Array_Get(ref world.joints, nextJoint);
+                B2Joint joint = b2Array_Get(ref world.joints, nextJoint);
                 joint.isMarked = false;
                 nextJoint = joint.islandNext;
             }
@@ -678,7 +678,7 @@ namespace Box2D.NET
             for (int i = 0; i < bodyCount; ++i)
             {
                 int seedIndex = bodyIds[i];
-                b2Body seed = bodies[seedIndex];
+                B2Body seed = bodies[seedIndex];
                 Debug.Assert(seed.setIndex == setIndex);
 
                 if (seed.isMarked == true)
@@ -694,7 +694,7 @@ namespace Box2D.NET
                 // Create new island
                 // No lock needed because only a single island can split per time step. No islands are being used during the constraint
                 // solve. However, islands are touched during body finalization.
-                b2Island island = b2CreateIsland(world, setIndex);
+                B2Island island = b2CreateIsland(world, setIndex);
 
                 int islandId = island.islandId;
 
@@ -703,8 +703,8 @@ namespace Box2D.NET
                 {
                     // Grab the next body off the stack and add it to the island.
                     int bodyId = stack[--stackCount];
-                    b2Body body = bodies[bodyId];
-                    Debug.Assert(body.setIndex == (int)b2SetType.b2_awakeSet);
+                    B2Body body = bodies[bodyId];
+                    Debug.Assert(body.setIndex == (int)B2SetType.b2_awakeSet);
                     Debug.Assert(body.isMarked == true);
 
                     // Add body to island
@@ -732,7 +732,7 @@ namespace Box2D.NET
                         int contactId = contactKey >> 1;
                         int edgeIndex = contactKey & 1;
 
-                        b2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                        B2Contact contact = b2Array_Get(ref world.contacts, contactId);
                         Debug.Assert(contact.contactId == contactId);
 
                         // Next key
@@ -745,7 +745,7 @@ namespace Box2D.NET
                         }
 
                         // Is this contact enabled and touching?
-                        if ((contact.flags & (uint)b2ContactFlags.b2_contactTouchingFlag) == 0)
+                        if ((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0)
                         {
                             continue;
                         }
@@ -754,10 +754,10 @@ namespace Box2D.NET
 
                         int otherEdgeIndex = edgeIndex ^ 1;
                         int otherBodyId = contact.edges[otherEdgeIndex].bodyId;
-                        b2Body otherBody = bodies[otherBodyId];
+                        B2Body otherBody = bodies[otherBodyId];
 
                         // Maybe add other body to stack
-                        if (otherBody.isMarked == false && otherBody.setIndex != (int)b2SetType.b2_staticSet)
+                        if (otherBody.isMarked == false && otherBody.setIndex != (int)B2SetType.b2_staticSet)
                         {
                             Debug.Assert(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;
@@ -768,7 +768,7 @@ namespace Box2D.NET
                         contact.islandId = islandId;
                         if (island.tailContact != B2_NULL_INDEX)
                         {
-                            b2Contact tailContact = b2Array_Get(ref world.contacts, island.tailContact);
+                            B2Contact tailContact = b2Array_Get(ref world.contacts, island.tailContact);
                             tailContact.islandNext = contactId;
                         }
 
@@ -791,7 +791,7 @@ namespace Box2D.NET
                         int jointId = jointKey >> 1;
                         int edgeIndex = jointKey & 1;
 
-                        b2Joint joint = b2Array_Get(ref world.joints, jointId);
+                        B2Joint joint = b2Array_Get(ref world.joints, jointId);
                         Debug.Assert(joint.jointId == jointId);
 
                         // Next key
@@ -807,16 +807,16 @@ namespace Box2D.NET
 
                         int otherEdgeIndex = edgeIndex ^ 1;
                         int otherBodyId = joint.edges[otherEdgeIndex].bodyId;
-                        b2Body otherBody = bodies[otherBodyId];
+                        B2Body otherBody = bodies[otherBodyId];
 
                         // Don't simulate joints connected to disabled bodies.
-                        if (otherBody.setIndex == (int)b2SetType.b2_disabledSet)
+                        if (otherBody.setIndex == (int)B2SetType.b2_disabledSet)
                         {
                             continue;
                         }
 
                         // Maybe add other body to stack
-                        if (otherBody.isMarked == false && otherBody.setIndex == (int)b2SetType.b2_awakeSet)
+                        if (otherBody.isMarked == false && otherBody.setIndex == (int)B2SetType.b2_awakeSet)
                         {
                             Debug.Assert(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;
@@ -827,7 +827,7 @@ namespace Box2D.NET
                         joint.islandId = islandId;
                         if (island.tailJoint != B2_NULL_INDEX)
                         {
-                            b2Joint tailJoint = b2Array_Get(ref world.joints, island.tailJoint);
+                            B2Joint tailJoint = b2Array_Get(ref world.joints, island.tailJoint);
                             tailJoint.islandNext = jointId;
                         }
 
@@ -860,25 +860,25 @@ namespace Box2D.NET
 // are interacting with these data structures.
         public static void b2SplitIslandTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
-            b2TracyCZoneNC(b2TracyCZone.split, "Split Island", b2HexColor.b2_colorOlive, true);
+            b2TracyCZoneNC(B2TracyCZone.split, "Split Island", B2HexColor.b2_colorOlive, true);
 
             B2_UNUSED(startIndex, endIndex, threadIndex);
 
             ulong ticks = b2GetTicks();
-            b2World world = context as b2World;
+            B2World world = context as B2World;
 
             Debug.Assert(world.splitIslandId != B2_NULL_INDEX);
 
             b2SplitIsland(world, world.splitIslandId);
 
             world.profile.splitIslands += b2GetMilliseconds(ticks);
-            b2TracyCZoneEnd(b2TracyCZone.split);
+            b2TracyCZoneEnd(B2TracyCZone.split);
         }
 
 #if B2_VALIDATE
-        public static void b2ValidateIsland(b2World world, int islandId)
+        public static void b2ValidateIsland(B2World world, int islandId)
         {
-            b2Island island = b2Array_Get(ref world.islands, islandId);
+            B2Island island = b2Array_Get(ref world.islands, islandId);
             Debug.Assert(island.islandId == islandId);
             Debug.Assert(island.setIndex != B2_NULL_INDEX);
             Debug.Assert(island.headBody != B2_NULL_INDEX);
@@ -897,7 +897,7 @@ namespace Box2D.NET
                 int bodyId = island.headBody;
                 while (bodyId != B2_NULL_INDEX)
                 {
-                    b2Body body = b2Array_Get(ref world.bodies, bodyId);
+                    B2Body body = b2Array_Get(ref world.bodies, bodyId);
                     Debug.Assert(body.islandId == islandId);
                     Debug.Assert(body.setIndex == island.setIndex);
                     count += 1;
@@ -928,7 +928,7 @@ namespace Box2D.NET
                 int contactId = island.headContact;
                 while (contactId != B2_NULL_INDEX)
                 {
-                    b2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                    B2Contact contact = b2Array_Get(ref world.contacts, contactId);
                     Debug.Assert(contact.setIndex == island.setIndex);
                     Debug.Assert(contact.islandId == islandId);
                     count += 1;
@@ -964,7 +964,7 @@ namespace Box2D.NET
                 int jointId = island.headJoint;
                 while (jointId != B2_NULL_INDEX)
                 {
-                    b2Joint joint = b2Array_Get(ref world.joints, jointId);
+                    B2Joint joint = b2Array_Get(ref world.joints, jointId);
                     Debug.Assert(joint.setIndex == island.setIndex);
                     count += 1;
 

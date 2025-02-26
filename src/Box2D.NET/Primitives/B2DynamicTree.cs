@@ -24,10 +24,10 @@ namespace Box2D.NET.Primitives
      */
     /// The dynamic tree structure. This should be considered private data.
     /// It is placed here for performance reasons.
-    public class b2DynamicTree
+    public class B2DynamicTree
     {
         /// The tree nodes
-        public b2TreeNode[] nodes;
+        public B2TreeNode[] nodes;
 
         /// The root index
         public int root;
@@ -48,10 +48,10 @@ namespace Box2D.NET.Primitives
         public int[] leafIndices;
 
         /// Leaf bounding boxes for rebuild
-        public b2AABB[] leafBoxes;
+        public B2AABB[] leafBoxes;
 
         /// Leaf bounding box centers for rebuild
-        public b2Vec2[] leafCenters;
+        public B2Vec2[] leafCenters;
 
         /// Bins for sorting during rebuild
         public int[] binIndices;

@@ -31,28 +31,28 @@ public class OverlapWorld : Sample
     public const int e_maxDoomed = 16;
 
     int m_bodyIndex;
-    b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
+    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
     ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
-    b2Polygon[] m_polygons = new b2Polygon[4];
-    b2Capsule m_capsule;
-    b2Circle m_circle;
-    b2Segment m_segment;
+    B2Polygon[] m_polygons = new B2Polygon[4];
+    B2Capsule m_capsule;
+    B2Circle m_circle;
+    B2Segment m_segment;
     int m_ignoreIndex;
 
-    b2ShapeId[] m_doomIds = new b2ShapeId[e_maxDoomed];
+    B2ShapeId[] m_doomIds = new B2ShapeId[e_maxDoomed];
     int m_doomCount;
 
-    b2Circle m_queryCircle;
-    b2Capsule m_queryCapsule;
-    b2Polygon m_queryBox;
+    B2Circle m_queryCircle;
+    B2Capsule m_queryCapsule;
+    B2Polygon m_queryBox;
 
     int m_shapeType;
-    b2Transform m_transform;
+    B2Transform m_transform;
 
-    b2Vec2 m_startPosition;
+    B2Vec2 m_startPosition;
 
-    b2Vec2 m_position;
-    b2Vec2 m_basePosition;
+    B2Vec2 m_position;
+    B2Vec2 m_basePosition;
     float m_angle;
     float m_baseAngle;
 
@@ -67,7 +67,7 @@ public class OverlapWorld : Sample
     }
 
 
-    static bool OverlapResultFcn(b2ShapeId shapeId, object context)
+    static bool OverlapResultFcn(B2ShapeId shapeId, object context)
     {
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)
@@ -93,19 +93,19 @@ public class OverlapWorld : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
         {
-            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), new b2Vec2(0.0f, 1.5f), };
-            b2Hull hull = b2ComputeHull(vertices, 3);
+            B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f), };
+            B2Hull hull = b2ComputeHull(vertices, 3);
             m_polygons[0] = b2MakePolygon(hull, 0.0f);
         }
 
         {
-            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.1f, 0.0f), new b2Vec2(0.1f, 0.0f), new b2Vec2(0.0f, 1.5f) };
-            b2Hull hull = b2ComputeHull(vertices, 3);
+            B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.1f, 0.0f), new B2Vec2(0.1f, 0.0f), new B2Vec2(0.0f, 1.5f) };
+            B2Hull hull = b2ComputeHull(vertices, 3);
             m_polygons[1] = b2MakePolygon(hull, 0.0f);
         }
 
@@ -114,26 +114,26 @@ public class OverlapWorld : Sample
             float b = w / (2.0f + MathF.Sqrt(2.0f));
             float s = MathF.Sqrt(2.0f) * b;
 
-            b2Vec2[] vertices = new b2Vec2[8]
+            B2Vec2[] vertices = new B2Vec2[8]
             {
-                new b2Vec2(0.5f * s, 0.0f),
-                new b2Vec2(0.5f * w, b),
-                new b2Vec2(0.5f * w, b + s),
-                new b2Vec2(0.5f * s, w),
-                new b2Vec2(-0.5f * s, w),
-                new b2Vec2(-0.5f * w, b + s),
-                new b2Vec2(-0.5f * w, b),
-                new b2Vec2(-0.5f * s, 0.0f),
+                new B2Vec2(0.5f * s, 0.0f),
+                new B2Vec2(0.5f * w, b),
+                new B2Vec2(0.5f * w, b + s),
+                new B2Vec2(0.5f * s, w),
+                new B2Vec2(-0.5f * s, w),
+                new B2Vec2(-0.5f * w, b + s),
+                new B2Vec2(-0.5f * w, b),
+                new B2Vec2(-0.5f * s, 0.0f),
             };
 
-            b2Hull hull = b2ComputeHull(vertices, 8);
+            B2Hull hull = b2ComputeHull(vertices, 8);
             m_polygons[2] = b2MakePolygon(hull, 0.0f);
         }
 
         m_polygons[3] = b2MakeBox(0.5f, 0.5f);
-        m_capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
-        m_circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
-        m_segment = new b2Segment(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f));
+        m_capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
+        m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+        m_segment = new B2Segment(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f));
 
         m_bodyIndex = 0;
 
@@ -146,11 +146,11 @@ public class OverlapWorld : Sample
 
         m_shapeType = e_circleShape;
 
-        m_queryCircle = new b2Circle(new b2Vec2(0.0f, 0.0f), 1.0f);
-        m_queryCapsule = new b2Capsule(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f), 0.5f);
+        m_queryCircle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
+        m_queryCapsule = new B2Capsule(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.5f);
         m_queryBox = b2MakeBox(2.0f, 0.5f);
 
-        m_position = new b2Vec2(.0f, 10.0f);
+        m_position = new B2Vec2(.0f, 10.0f);
         m_angle = 0.0f;
         m_dragging = false;
         m_rotating = false;
@@ -171,13 +171,13 @@ public class OverlapWorld : Sample
         float x = RandomFloatRange(-20.0f, 20.0f);
         float y = RandomFloatRange(0.0f, 20.0f);
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new b2Vec2(x, y);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Vec2(x, y);
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
         m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];
         m_userData[m_bodyIndex].index = m_bodyIndex;
         m_userData[m_bodyIndex].ignore = false;
@@ -227,7 +227,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void MouseDown(b2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, int button, int mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -245,7 +245,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void MouseUp(b2Vec2 _, int button)
+    public override void MouseUp(B2Vec2 _, int button)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -254,7 +254,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void MouseMove(b2Vec2 p)
+    public override void MouseMove(B2Vec2 p)
     {
         if (m_dragging)
         {
@@ -343,42 +343,42 @@ public class OverlapWorld : Sample
 
         m_doomCount = 0;
 
-        b2Transform transform = new b2Transform(m_position, b2MakeRot(m_angle));
+        B2Transform transform = new B2Transform(m_position, b2MakeRot(m_angle));
 
         if (m_shapeType == e_circleShape)
         {
             b2World_OverlapCircle(m_worldId, m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            Draw.g_draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, b2HexColor.b2_colorWhite);
+            Draw.g_draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)
         {
             b2World_OverlapCapsule(m_worldId, m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            b2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
-            b2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
-            Draw.g_draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, b2HexColor.b2_colorWhite);
+            B2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
+            B2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
+            Draw.g_draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_boxShape)
         {
             b2World_OverlapPolygon(m_worldId, m_queryBox, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            b2Vec2[] points = new b2Vec2[B2_MAX_POLYGON_VERTICES];
+            B2Vec2[] points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
             for (int i = 0; i < m_queryBox.count; ++i)
             {
                 points[i] = b2TransformPoint(ref transform, m_queryBox.vertices[i]);
             }
 
-            Draw.g_draw.DrawPolygon(points, m_queryBox.count, b2HexColor.b2_colorWhite);
+            Draw.g_draw.DrawPolygon(points, m_queryBox.count, B2HexColor.b2_colorWhite);
         }
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
-            b2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.x -= 0.2f;
             Draw.g_draw.DrawString(p, "skip");
         }
 
         for (int i = 0; i < m_doomCount; ++i)
         {
-            b2ShapeId shapeId = m_doomIds[i];
+            B2ShapeId shapeId = m_doomIds[i];
             ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
             if (userData == null)
             {

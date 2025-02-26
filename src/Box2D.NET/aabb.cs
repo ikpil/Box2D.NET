@@ -10,7 +10,7 @@ namespace Box2D.NET
     public static class aabb
     {
         // Get surface area of an AABB (the perimeter length)
-        public static float b2Perimeter(b2AABB a)
+        public static float b2Perimeter(B2AABB a)
         {
             float wx = a.upperBound.x - a.lowerBound.x;
             float wy = a.upperBound.y - a.lowerBound.y;
@@ -19,7 +19,7 @@ namespace Box2D.NET
 
         /// Enlarge a to contain b
         /// @return true if the AABB grew
-        public static bool b2EnlargeAABB(ref b2AABB a, b2AABB b)
+        public static bool b2EnlargeAABB(ref B2AABB a, B2AABB b)
         {
             bool changed = false;
             if (b.lowerBound.x < a.lowerBound.x)
@@ -50,7 +50,7 @@ namespace Box2D.NET
         }
 
         /// Do a and b overlap
-        public static bool b2AABB_Overlaps(b2AABB a, b2AABB b)
+        public static bool b2AABB_Overlaps(B2AABB a, B2AABB b)
         {
             return !(b.lowerBound.x > a.upperBound.x || b.lowerBound.y > a.upperBound.y || a.lowerBound.x > b.upperBound.x ||
                      a.lowerBound.y > b.upperBound.y);
@@ -58,9 +58,9 @@ namespace Box2D.NET
 
 
         /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.
-        public static bool b2IsValidAABB(b2AABB a)
+        public static bool b2IsValidAABB(B2AABB a)
         {
-            b2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
+            B2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
             bool valid = d.x >= 0.0f && d.y >= 0.0f;
             valid = valid && b2IsValidVec2(a.lowerBound) && b2IsValidVec2(a.upperBound);
             return valid;
@@ -68,19 +68,19 @@ namespace Box2D.NET
 
         // Ray cast an AABB
         // From Real-time Collision Detection, p179.
-        public static b2CastOutput b2AABB_RayCast(b2AABB a, b2Vec2 p1, b2Vec2 p2)
+        public static B2CastOutput b2AABB_RayCast(B2AABB a, B2Vec2 p1, B2Vec2 p2)
         {
             // Radius not handled
-            b2CastOutput output = new b2CastOutput();
+            B2CastOutput output = new B2CastOutput();
 
             float tmin = -float.MaxValue;
             float tmax = float.MaxValue;
 
-            b2Vec2 p = p1;
-            b2Vec2 d = b2Sub(p2, p1);
-            b2Vec2 absD = b2Abs(d);
+            B2Vec2 p = p1;
+            B2Vec2 d = b2Sub(p2, p1);
+            B2Vec2 absD = b2Abs(d);
 
-            b2Vec2 normal = b2Vec2_zero;
+            B2Vec2 normal = b2Vec2_zero;
 
             // x-coordinate
             if (absD.x < FLT_EPSILON)

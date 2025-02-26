@@ -15,7 +15,7 @@ public class ConvexHull : Sample
 {
     public const int e_count = B2_MAX_POLYGON_VERTICES;
 
-    b2Vec2[] m_points = new b2Vec2[B2_MAX_POLYGON_VERTICES];
+    B2Vec2[] m_points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
     int m_count;
     int m_generation;
     bool m_auto;
@@ -33,7 +33,7 @@ public class ConvexHull : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.5f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.5f, 0.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.3f;
         }
 
@@ -77,10 +77,10 @@ public class ConvexHull : Sample
 #else
 
         float angle = B2_PI * RandomFloat();
-        b2Rot r = b2MakeRot(angle);
+        B2Rot r = b2MakeRot(angle);
 
-        b2Vec2 lowerBound = new b2Vec2(-4.0f, -4.0f);
-        b2Vec2 upperBound = new b2Vec2(4.0f, 4.0f);
+        B2Vec2 lowerBound = new B2Vec2(-4.0f, -4.0f);
+        B2Vec2 upperBound = new B2Vec2(4.0f, 4.0f);
 
         for (int i = 0; i < e_count; ++i)
         {
@@ -89,7 +89,7 @@ public class ConvexHull : Sample
 
             // Clamp onto a square to help create collinearities.
             // This will stress the convex hull algorithm.
-            b2Vec2 v = b2Clamp(new b2Vec2(x, y), lowerBound, upperBound);
+            B2Vec2 v = b2Clamp(new B2Vec2(x, y), lowerBound, upperBound);
             m_points[i] = b2RotateVector(r, v);
         }
 
@@ -127,7 +127,7 @@ public class ConvexHull : Sample
         Draw.g_draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
         m_textLine += m_textIncrement;
 
-        b2Hull hull = new b2Hull();
+        B2Hull hull = new B2Hull();
         bool valid = false;
         float milliseconds = 0.0f;
 
@@ -202,17 +202,17 @@ public class ConvexHull : Sample
 
         m_textLine += m_textIncrement;
 
-        Draw.g_draw.DrawPolygon(hull.points, hull.count, b2HexColor.b2_colorGray);
+        Draw.g_draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
 
         for (int i = 0; i < m_count; ++i)
         {
-            Draw.g_draw.DrawPoint(m_points[i], 5.0f, b2HexColor.b2_colorBlue);
-            Draw.g_draw.DrawString(b2Add(m_points[i], new b2Vec2(0.1f, 0.1f)), "%d", i);
+            Draw.g_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
+            Draw.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), "%d", i);
         }
 
         for (int i = 0; i < hull.count; ++i)
         {
-            Draw.g_draw.DrawPoint(hull.points[i], 6.0f, b2HexColor.b2_colorGreen);
+            Draw.g_draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }

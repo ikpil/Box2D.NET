@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class SkinnyBox : Sample
 {
-    b2BodyId m_bodyId, m_bulletId;
+    B2BodyId m_bodyId, m_bulletId;
     float m_angularVelocity;
     float m_x;
     bool m_capsule;
@@ -35,20 +35,20 @@ public class SkinnyBox : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(1.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(1.0f, 5.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.25f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Segment segment = new b2Segment(new b2Vec2(-10.0f, 0.0f), new b2Vec2(10.0f, 0.0f));
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.9f;
             b2CreateSegmentShape(groundId, shapeDef, segment);
 
-            b2Polygon box = b2MakeOffsetBox(0.1f, 1.0f, new b2Vec2(0.0f, 1.0f), b2Rot_identity);
+            B2Polygon box = b2MakeOffsetBox(0.1f, 1.0f, new B2Vec2(0.0f, 1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
@@ -77,13 +77,13 @@ public class SkinnyBox : Sample
         m_angularVelocity = RandomFloatRange(-50.0f, 50.0f);
         // m_angularVelocity = -30.6695766f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.position = new b2Vec2(0.0f, 8.0f);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Vec2(0.0f, 8.0f);
         bodyDef.angularVelocity = m_angularVelocity;
-        bodyDef.linearVelocity = new b2Vec2(0.0f, -100.0f);
+        bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.friction = 0.9f;
 
@@ -91,21 +91,21 @@ public class SkinnyBox : Sample
 
         if (m_capsule)
         {
-            b2Capsule capsule = new b2Capsule(new b2Vec2(0.0f, -1.0f), new b2Vec2(0.0f, 1.0f), 0.1f);
+            B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 0.1f);
             b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
-            b2Polygon polygon = b2MakeBox(2.0f, 0.05f);
+            B2Polygon polygon = b2MakeBox(2.0f, 0.05f);
             b2CreatePolygonShape(m_bodyId, shapeDef, polygon);
         }
 
         if (m_bullet)
         {
-            b2Polygon polygon = b2MakeBox(0.25f, 0.25f);
+            B2Polygon polygon = b2MakeBox(0.25f, 0.25f);
             m_x = RandomFloatRange(-1.0f, 1.0f);
-            bodyDef.position = new b2Vec2(m_x, 10.0f);
-            bodyDef.linearVelocity = new b2Vec2(0.0f, -50.0f);
+            bodyDef.position = new B2Vec2(m_x, 10.0f);
+            bodyDef.linearVelocity = new B2Vec2(0.0f, -50.0f);
             m_bulletId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bulletId, shapeDef, polygon);
         }

@@ -4,9 +4,9 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2WheelJoint
+    public class B2WheelJoint
     {
-        public b2Vec2 localAxisA;
+        public B2Vec2 localAxisA;
         public float perpImpulse;
         public float motorImpulse;
         public float springImpulse;
@@ -21,14 +21,14 @@ namespace Box2D.NET.Primitives
 
         public int indexA;
         public int indexB;
-        public b2Vec2 anchorA;
-        public b2Vec2 anchorB;
-        public b2Vec2 axisA;
-        public b2Vec2 deltaCenter;
+        public B2Vec2 anchorA;
+        public B2Vec2 anchorB;
+        public B2Vec2 axisA;
+        public B2Vec2 deltaCenter;
         public float perpMass;
         public float motorMass;
         public float axialMass;
-        public b2Softness springSoftness;
+        public B2Softness springSoftness;
 
         public bool enableSpring;
         public bool enableMotor;

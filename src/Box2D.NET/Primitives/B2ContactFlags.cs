@@ -9,7 +9,7 @@ namespace Box2D.NET.Primitives
     // is an edge. A contact edge belongs to a doubly linked list
     // maintained in each attached body. Each contact has two contact
     // edges, one for each attached body.
-    public enum b2ContactFlags
+    public enum B2ContactFlags
     {
         // Set when the solid shapes are touching.
         b2_contactTouchingFlag = 0x00000001,

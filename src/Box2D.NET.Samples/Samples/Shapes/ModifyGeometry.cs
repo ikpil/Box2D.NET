@@ -18,50 +18,50 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // dynamic and kinematic shapes because static shapes don't look for new collisions.
 public class ModifyGeometry : Sample
 {
-    b2ShapeId m_shapeId;
-    b2ShapeType m_shapeType;
+    B2ShapeId m_shapeId;
+    B2ShapeType m_shapeType;
     object m_shape;
     float m_scale;
 
     //union
     //{
-    b2Circle m_circle
+    B2Circle m_circle
     {
-        get => b2ShapeType.b2_circleShape == m_shapeType ? (b2Circle)m_shape : null;
+        get => B2ShapeType.b2_circleShape == m_shapeType ? (B2Circle)m_shape : null;
         set
         {
             m_shape = value;
-            m_shapeType = b2ShapeType.b2_circleShape;
+            m_shapeType = B2ShapeType.b2_circleShape;
         }
     }
 
-    b2Capsule m_capsule
+    B2Capsule m_capsule
     {
-        get => b2ShapeType.b2_capsuleShape == m_shapeType ? (b2Capsule)m_shape : null;
+        get => B2ShapeType.b2_capsuleShape == m_shapeType ? (B2Capsule)m_shape : null;
         set
         {
             m_shape = value;
-            m_shapeType = b2ShapeType.b2_capsuleShape;
+            m_shapeType = B2ShapeType.b2_capsuleShape;
         }
     }
 
-    b2Segment m_segment
+    B2Segment m_segment
     {
-        get => b2ShapeType.b2_segmentShape == m_shapeType ? (b2Segment)m_shape : null;
+        get => B2ShapeType.b2_segmentShape == m_shapeType ? (B2Segment)m_shape : null;
         set
         {
             m_shape = value;
-            m_shapeType = b2ShapeType.b2_segmentShape;
+            m_shapeType = B2ShapeType.b2_segmentShape;
         }
     }
 
-    b2Polygon m_polygon
+    B2Polygon m_polygon
     {
-        get => b2ShapeType.b2_polygonShape == m_shapeType ? (b2Polygon)m_shape : null;
+        get => B2ShapeType.b2_polygonShape == m_shapeType ? (B2Polygon)m_shape : null;
         set
         {
             m_shape = value;
-            m_shapeType = b2ShapeType.b2_polygonShape;
+            m_shapeType = B2ShapeType.b2_polygonShape;
         }
     }
     //}
@@ -73,7 +73,7 @@ public class ModifyGeometry : Sample
         return new ModifyGeometry(settings);
     }
 
-    private void SetCircle(b2Circle circle)
+    private void SetCircle(B2Circle circle)
     {
     }
 
@@ -83,36 +83,36 @@ public class ModifyGeometry : Sample
         if (settings.restart == false)
         {
             Draw.g_camera.m_zoom = 25.0f * 0.25f;
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeOffsetBox(10.0f, 1.0f, new b2Vec2(0.0f, -1.0f), b2Rot_identity);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeOffsetBox(10.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.position = new b2Vec2(0.0f, 4.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeBox(1.0f, 1.0f);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(0.0f, 4.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(1.0f, 1.0f);
             b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         {
-            m_shapeType = b2ShapeType.b2_circleShape;
+            m_shapeType = B2ShapeType.b2_circleShape;
             m_scale = 1.0f;
-            m_circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_kinematicBody;
-            bodyDef.position = new b2Vec2(0.0f, 1.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_kinematicBody;
+            bodyDef.position = new B2Vec2(0.0f, 1.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             m_shapeId = b2CreateCircleShape(bodyId, shapeDef, m_circle);
         }
     }
@@ -121,22 +121,22 @@ public class ModifyGeometry : Sample
     {
         switch (m_shapeType)
         {
-            case b2ShapeType.b2_circleShape:
-                m_circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f * m_scale);
+            case B2ShapeType.b2_circleShape:
+                m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f * m_scale);
                 b2Shape_SetCircle(m_shapeId, m_circle);
                 break;
 
-            case b2ShapeType.b2_capsuleShape:
-                m_capsule = new b2Capsule(new b2Vec2(-0.5f * m_scale, 0.0f), new b2Vec2(0.0f, 0.5f * m_scale), 0.5f * m_scale);
+            case B2ShapeType.b2_capsuleShape:
+                m_capsule = new B2Capsule(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.0f, 0.5f * m_scale), 0.5f * m_scale);
                 b2Shape_SetCapsule(m_shapeId, m_capsule);
                 break;
 
-            case b2ShapeType.b2_segmentShape:
-                m_segment = new b2Segment(new b2Vec2(-0.5f * m_scale, 0.0f), new b2Vec2(0.75f * m_scale, 0.0f));
+            case B2ShapeType.b2_segmentShape:
+                m_segment = new B2Segment(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.75f * m_scale, 0.0f));
                 b2Shape_SetSegment(m_shapeId, m_segment);
                 break;
 
-            case b2ShapeType.b2_polygonShape:
+            case B2ShapeType.b2_polygonShape:
                 m_polygon = b2MakeBox(0.5f * m_scale, 0.75f * m_scale);
                 b2Shape_SetPolygon(m_shapeId, m_polygon);
                 break;
@@ -146,7 +146,7 @@ public class ModifyGeometry : Sample
                 break;
         }
 
-        b2BodyId bodyId = b2Shape_GetBody(m_shapeId);
+        B2BodyId bodyId = b2Shape_GetBody(m_shapeId);
         b2Body_ApplyMassFromShapes(bodyId);
     }
 
@@ -159,27 +159,27 @@ public class ModifyGeometry : Sample
 
         ImGui.Begin("Modify Geometry", ref open, ImGuiWindowFlags.NoResize);
 
-        if (ImGui.RadioButton("Circle", m_shapeType == b2ShapeType.b2_circleShape))
+        if (ImGui.RadioButton("Circle", m_shapeType == B2ShapeType.b2_circleShape))
         {
-            m_shapeType = b2ShapeType.b2_circleShape;
+            m_shapeType = B2ShapeType.b2_circleShape;
             UpdateShape();
         }
 
-        if (ImGui.RadioButton("Capsule", m_shapeType == b2ShapeType.b2_capsuleShape))
+        if (ImGui.RadioButton("Capsule", m_shapeType == B2ShapeType.b2_capsuleShape))
         {
-            m_shapeType = b2ShapeType.b2_capsuleShape;
+            m_shapeType = B2ShapeType.b2_capsuleShape;
             UpdateShape();
         }
 
-        if (ImGui.RadioButton("Segment", m_shapeType == b2ShapeType.b2_segmentShape))
+        if (ImGui.RadioButton("Segment", m_shapeType == B2ShapeType.b2_segmentShape))
         {
-            m_shapeType = b2ShapeType.b2_segmentShape;
+            m_shapeType = B2ShapeType.b2_segmentShape;
             UpdateShape();
         }
 
-        if (ImGui.RadioButton("Polygon", m_shapeType == b2ShapeType.b2_polygonShape))
+        if (ImGui.RadioButton("Polygon", m_shapeType == B2ShapeType.b2_polygonShape))
         {
-            m_shapeType = b2ShapeType.b2_polygonShape;
+            m_shapeType = B2ShapeType.b2_polygonShape;
             UpdateShape();
         }
 
@@ -188,22 +188,22 @@ public class ModifyGeometry : Sample
             UpdateShape();
         }
 
-        b2BodyId bodyId = b2Shape_GetBody(m_shapeId);
-        b2BodyType bodyType = b2Body_GetType(bodyId);
+        B2BodyId bodyId = b2Shape_GetBody(m_shapeId);
+        B2BodyType bodyType = b2Body_GetType(bodyId);
 
-        if (ImGui.RadioButton("Static", bodyType == b2BodyType.b2_staticBody))
+        if (ImGui.RadioButton("Static", bodyType == B2BodyType.b2_staticBody))
         {
-            b2Body_SetType(bodyId, b2BodyType.b2_staticBody);
+            b2Body_SetType(bodyId, B2BodyType.b2_staticBody);
         }
 
-        if (ImGui.RadioButton("Kinematic", bodyType == b2BodyType.b2_kinematicBody))
+        if (ImGui.RadioButton("Kinematic", bodyType == B2BodyType.b2_kinematicBody))
         {
-            b2Body_SetType(bodyId, b2BodyType.b2_kinematicBody);
+            b2Body_SetType(bodyId, B2BodyType.b2_kinematicBody);
         }
 
-        if (ImGui.RadioButton("Dynamic", bodyType == b2BodyType.b2_dynamicBody))
+        if (ImGui.RadioButton("Dynamic", bodyType == B2BodyType.b2_dynamicBody))
         {
-            b2Body_SetType(bodyId, b2BodyType.b2_dynamicBody);
+            b2Body_SetType(bodyId, B2BodyType.b2_dynamicBody);
         }
 
         ImGui.End();

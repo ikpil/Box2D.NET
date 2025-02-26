@@ -4,21 +4,21 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2MouseJoint
+    public class B2MouseJoint
     {
-        public b2Vec2 targetA;
+        public B2Vec2 targetA;
         public float hertz;
         public float dampingRatio;
         public float maxForce;
 
-        public b2Vec2 linearImpulse;
+        public B2Vec2 linearImpulse;
         public float angularImpulse;
 
-        public b2Softness linearSoftness;
-        public b2Softness angularSoftness;
+        public B2Softness linearSoftness;
+        public B2Softness angularSoftness;
         public int indexB;
-        public b2Vec2 anchorB;
-        public b2Vec2 deltaCenter;
-        public b2Mat22 linearMass;
+        public B2Vec2 anchorB;
+        public B2Vec2 deltaCenter;
+        public B2Mat22 linearMass;
     }
 }

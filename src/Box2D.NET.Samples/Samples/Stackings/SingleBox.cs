@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class SingleBox : Sample
 {
-    b2BodyId m_bodyId;
+    B2BodyId m_bodyId;
     static int sampleSingleBox = RegisterSample("Stacking", "Single Box", Create);
 
     static Sample Create(Settings settings)
@@ -24,26 +24,26 @@ public class SingleBox : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 2.5f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
             Draw.g_camera.m_zoom = 3.5f;
         }
 
         float extent = 1.0f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         float groundWidth = 66.0f * extent;
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         //shapeDef.friction = 0.5f;
 
-        b2Segment segment = new b2Segment(new b2Vec2(-0.5f * 2.0f * groundWidth, 0.0f), new b2Vec2(0.5f * 2.0f * groundWidth, 0.0f));
+        B2Segment segment = new B2Segment(new B2Vec2(-0.5f * 2.0f * groundWidth, 0.0f), new B2Vec2(0.5f * 2.0f * groundWidth, 0.0f));
         b2CreateSegmentShape(groundId, shapeDef, segment);
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        bodyDef.type = B2BodyType.b2_dynamicBody;
 
-        b2Polygon box = b2MakeBox(extent, extent);
-        bodyDef.position = new b2Vec2(0.0f, 1.0f);
-        bodyDef.linearVelocity = new b2Vec2(5.0f, 0.0f);
+        B2Polygon box = b2MakeBox(extent, extent);
+        bodyDef.position = new B2Vec2(0.0f, 1.0f);
+        bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
         b2CreatePolygonShape(m_bodyId, shapeDef, box);
     }
@@ -54,7 +54,7 @@ public class SingleBox : Sample
 
         // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
-        b2Vec2 position = b2Body_GetPosition(m_bodyId);
+        B2Vec2 position = b2Body_GetPosition(m_bodyId);
         DrawTextLine("(x, y) = (%.2g, %.2g)", position.x, position.y);
     }
 }

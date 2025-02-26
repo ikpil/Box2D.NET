@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     /// Counters that give details of the simulation size.
-    public class b2Counters
+    public class B2Counters
     {
         public int bodyCount;
         public int shapeCount;

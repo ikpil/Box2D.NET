@@ -7,7 +7,7 @@ using Box2D.NET.Core;
 namespace Box2D.NET.Primitives
 {
     // Map from b2JointId to b2Joint in the solver sets
-    public class b2Joint
+    public class B2Joint
     {
         public object userData;
 
@@ -23,7 +23,7 @@ namespace Box2D.NET.Primitives
         // B2_NULL_INDEX when slot is free
         public int localIndex;
 
-        public UnsafeArray2<b2JointEdge> edges;
+        public UnsafeArray2<B2JointEdge> edges;
 
         public int jointId;
         public int islandId;
@@ -32,7 +32,7 @@ namespace Box2D.NET.Primitives
 
         public float drawSize;
 
-        public b2JointType type;
+        public B2JointType type;
 
         // This is monotonically advanced when a body is allocated in this slot
         // Used to check for invalid b2JointId

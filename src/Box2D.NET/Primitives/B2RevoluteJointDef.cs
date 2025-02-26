@@ -16,19 +16,19 @@ namespace Box2D.NET.Primitives
     /// 1. you might not know where the center of mass will be
     /// 2. if you add/remove shapes from a body and recompute the mass, the joints will be broken
     /// @ingroup revolute_joint
-    public class b2RevoluteJointDef
+    public class B2RevoluteJointDef
     {
         /// The first attached body
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// The local anchor point relative to bodyA's origin
-        public b2Vec2 localAnchorA;
+        public B2Vec2 localAnchorA;
 
         /// The local anchor point relative to bodyB's origin
-        public b2Vec2 localAnchorB;
+        public B2Vec2 localAnchorB;
 
         /// The bodyB angle minus bodyA angle in the reference state (radians).
         /// This defines the zero angle for the joint limit.

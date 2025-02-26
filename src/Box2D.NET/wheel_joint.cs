@@ -17,9 +17,9 @@ namespace Box2D.NET
 {
     public static class wheel_joint
     {
-        public static void b2WheelJoint_EnableSpring(b2JointId jointId, bool enableSpring)
+        public static void b2WheelJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
 
             if (enableSpring != joint.wheelJoint.enableSpring)
             {
@@ -28,39 +28,39 @@ namespace Box2D.NET
             }
         }
 
-        public static bool b2WheelJoint_IsSpringEnabled(b2JointId jointId)
+        public static bool b2WheelJoint_IsSpringEnabled(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.enableSpring;
         }
 
-        public static void b2WheelJoint_SetSpringHertz(b2JointId jointId, float hertz)
+        public static void b2WheelJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.wheelJoint.hertz = hertz;
         }
 
-        public static float b2WheelJoint_GetSpringHertz(b2JointId jointId)
+        public static float b2WheelJoint_GetSpringHertz(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.hertz;
         }
 
-        public static void b2WheelJoint_SetSpringDampingRatio(b2JointId jointId, float dampingRatio)
+        public static void b2WheelJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.wheelJoint.dampingRatio = dampingRatio;
         }
 
-        public static float b2WheelJoint_GetSpringDampingRatio(b2JointId jointId)
+        public static float b2WheelJoint_GetSpringDampingRatio(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.dampingRatio;
         }
 
-        public static void b2WheelJoint_EnableLimit(b2JointId jointId, bool enableLimit)
+        public static void b2WheelJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             if (joint.wheelJoint.enableLimit != enableLimit)
             {
                 joint.wheelJoint.lowerImpulse = 0.0f;
@@ -69,27 +69,27 @@ namespace Box2D.NET
             }
         }
 
-        public static bool b2WheelJoint_IsLimitEnabled(b2JointId jointId)
+        public static bool b2WheelJoint_IsLimitEnabled(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.enableLimit;
         }
 
-        public static float b2WheelJoint_GetLowerLimit(b2JointId jointId)
+        public static float b2WheelJoint_GetLowerLimit(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.lowerTranslation;
         }
 
-        public static float b2WheelJoint_GetUpperLimit(b2JointId jointId)
+        public static float b2WheelJoint_GetUpperLimit(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.upperTranslation;
         }
 
-        public static void b2WheelJoint_SetLimits(b2JointId jointId, float lower, float upper)
+        public static void b2WheelJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             if (lower != joint.wheelJoint.lowerTranslation || upper != joint.wheelJoint.upperTranslation)
             {
                 joint.wheelJoint.lowerTranslation = b2MinFloat(lower, upper);
@@ -99,9 +99,9 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WheelJoint_EnableMotor(b2JointId jointId, bool enableMotor)
+        public static void b2WheelJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             if (joint.wheelJoint.enableMotor != enableMotor)
             {
                 joint.wheelJoint.motorImpulse = 0.0f;
@@ -109,59 +109,59 @@ namespace Box2D.NET
             }
         }
 
-        public static bool b2WheelJoint_IsMotorEnabled(b2JointId jointId)
+        public static bool b2WheelJoint_IsMotorEnabled(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.enableMotor;
         }
 
-        public static void b2WheelJoint_SetMotorSpeed(b2JointId jointId, float motorSpeed)
+        public static void b2WheelJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.wheelJoint.motorSpeed = motorSpeed;
         }
 
-        public static float b2WheelJoint_GetMotorSpeed(b2JointId jointId)
+        public static float b2WheelJoint_GetMotorSpeed(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.motorSpeed;
         }
 
-        public static float b2WheelJoint_GetMotorTorque(b2JointId jointId)
+        public static float b2WheelJoint_GetMotorTorque(B2JointId jointId)
         {
-            b2World world = b2GetWorld(jointId.world0);
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2World world = b2GetWorld(jointId.world0);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return world.inv_h * joint.wheelJoint.motorImpulse;
         }
 
-        public static void b2WheelJoint_SetMaxMotorTorque(b2JointId jointId, float torque)
+        public static void b2WheelJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.wheelJoint.maxMotorTorque = torque;
         }
 
-        public static float b2WheelJoint_GetMaxMotorTorque(b2JointId jointId)
+        public static float b2WheelJoint_GetMaxMotorTorque(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_wheelJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.wheelJoint.maxMotorTorque;
         }
 
-        public static b2Vec2 b2GetWheelJointForce(b2World world, b2JointSim @base)
+        public static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
-            b2WheelJoint joint = @base.wheelJoint;
+            B2WheelJoint joint = @base.wheelJoint;
 
             // This is a frame behind
-            b2Vec2 axisA = joint.axisA;
-            b2Vec2 perpA = b2LeftPerp(axisA);
+            B2Vec2 axisA = joint.axisA;
+            B2Vec2 perpA = b2LeftPerp(axisA);
 
             float perpForce = world.inv_h * joint.perpImpulse;
             float axialForce = world.inv_h * (joint.springImpulse + joint.lowerImpulse - joint.upperImpulse);
 
-            b2Vec2 force = b2Add(b2MulSV(perpForce, perpA), b2MulSV(axialForce, axisA));
+            B2Vec2 force = b2Add(b2MulSV(perpForce, perpA), b2MulSV(axialForce, axisA));
             return force;
         }
 
-        public static float b2GetWheelJointTorque(b2World world, b2JointSim @base)
+        public static float b2GetWheelJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * @base.wheelJoint.motorImpulse;
         }
@@ -182,28 +182,28 @@ namespace Box2D.NET
 // Cdot = wB - wA
 // J = [0 0 -1 0 0 1]
 
-        public static void b2PrepareWheelJoint(b2JointSim @base, b2StepContext context)
+        public static void b2PrepareWheelJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == b2JointType.b2_wheelJoint);
+            Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
             int idB = @base.bodyIdB;
 
-            b2World world = context.world;
+            B2World world = context.world;
 
-            b2Body bodyA = b2Array_Get(ref world.bodies, idA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, idB);
+            B2Body bodyA = b2Array_Get(ref world.bodies, idA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet || bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-            b2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
-            b2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
+            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
+            B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
             int localIndexA = bodyA.localIndex;
             int localIndexB = bodyB.localIndex;
 
-            b2BodySim bodySimA = b2Array_Get(ref setA.bodySims, localIndexA);
-            b2BodySim bodySimB = b2Array_Get(ref setB.bodySims, localIndexB);
+            B2BodySim bodySimA = b2Array_Get(ref setA.bodySims, localIndexA);
+            B2BodySim bodySimB = b2Array_Get(ref setB.bodySims, localIndexB);
 
             float mA = bodySimA.invMass;
             float iA = bodySimA.invInertia;
@@ -215,25 +215,25 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            b2WheelJoint joint = @base.wheelJoint;
+            B2WheelJoint joint = @base.wheelJoint;
 
-            joint.indexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
-            joint.indexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
+            joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
+            joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
-            b2Rot qA = bodySimA.transform.q;
-            b2Rot qB = bodySimB.transform.q;
+            B2Rot qA = bodySimA.transform.q;
+            B2Rot qB = bodySimB.transform.q;
 
             joint.anchorA = b2RotateVector(qA, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
             joint.anchorB = b2RotateVector(qB, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
             joint.axisA = b2RotateVector(qA, joint.localAxisA);
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
 
-            b2Vec2 rA = joint.anchorA;
-            b2Vec2 rB = joint.anchorB;
+            B2Vec2 rA = joint.anchorA;
+            B2Vec2 rB = joint.anchorB;
 
-            b2Vec2 d = b2Add(joint.deltaCenter, b2Sub(rB, rA));
-            b2Vec2 axisA = joint.axisA;
-            b2Vec2 perpA = b2LeftPerp(axisA);
+            B2Vec2 d = b2Add(joint.deltaCenter, b2Sub(rB, rA));
+            B2Vec2 axisA = joint.axisA;
+            B2Vec2 perpA = b2LeftPerp(axisA);
 
             // perpendicular constraint (keep wheel on line)
             float s1 = b2Cross(b2Add(d, rA), perpA);
@@ -264,9 +264,9 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartWheelJoint(b2JointSim @base, b2StepContext context)
+        public static void b2WarmStartWheelJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == b2JointType.b2_wheelJoint);
+            Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -274,19 +274,19 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            b2WheelJoint joint = @base.wheelJoint;
+            B2WheelJoint joint = @base.wheelJoint;
 
-            b2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            b2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
+            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            b2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            b2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
 
-            b2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
-            b2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
-            b2Vec2 perpA = b2LeftPerp(axisA);
+            B2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
+            B2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
+            B2Vec2 perpA = b2LeftPerp(axisA);
 
             float a1 = b2Cross(b2Add(d, rA), axisA);
             float a2 = b2Cross(rB, axisA);
@@ -295,7 +295,7 @@ namespace Box2D.NET
 
             float axialImpulse = joint.springImpulse + joint.lowerImpulse - joint.upperImpulse;
 
-            b2Vec2 P = b2Add(b2MulSV(axialImpulse, axisA), b2MulSV(joint.perpImpulse, perpA));
+            B2Vec2 P = b2Add(b2MulSV(axialImpulse, axisA), b2MulSV(joint.perpImpulse, perpA));
             float LA = axialImpulse * a1 + joint.perpImpulse * s1 + joint.motorImpulse;
             float LB = axialImpulse * a2 + joint.perpImpulse * s2 + joint.motorImpulse;
 
@@ -305,9 +305,9 @@ namespace Box2D.NET
             stateB.angularVelocity += iB * LB;
         }
 
-        public static void b2SolveWheelJoint(b2JointSim @base, b2StepContext context, bool useBias)
+        public static void b2SolveWheelJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == b2JointType.b2_wheelJoint);
+            Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -315,26 +315,26 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            b2WheelJoint joint = @base.wheelJoint;
+            B2WheelJoint joint = @base.wheelJoint;
 
-            b2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            b2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
+            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            b2Vec2 vA = stateA.linearVelocity;
+            B2Vec2 vA = stateA.linearVelocity;
             float wA = stateA.angularVelocity;
-            b2Vec2 vB = stateB.linearVelocity;
+            B2Vec2 vB = stateB.linearVelocity;
             float wB = stateB.angularVelocity;
 
             bool fixedRotation = (iA + iB == 0.0f);
 
             // current anchors
-            b2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            b2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
 
-            b2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
-            b2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
+            B2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
+            B2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
             float translation = b2Dot(axisA, d);
 
             float a1 = b2Cross(b2Add(d, rA), axisA);
@@ -367,7 +367,7 @@ namespace Box2D.NET
                 float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
                 joint.springImpulse += impulse;
 
-                b2Vec2 P = b2MulSV(impulse, axisA);
+                B2Vec2 P = b2MulSV(impulse, axisA);
                 float LA = impulse * a1;
                 float LB = impulse * a2;
 
@@ -404,7 +404,7 @@ namespace Box2D.NET
                     joint.lowerImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
                     impulse = joint.lowerImpulse - oldImpulse;
 
-                    b2Vec2 P = b2MulSV(impulse, axisA);
+                    B2Vec2 P = b2MulSV(impulse, axisA);
                     float LA = impulse * a1;
                     float LB = impulse * a2;
 
@@ -443,7 +443,7 @@ namespace Box2D.NET
                     joint.upperImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
                     impulse = joint.upperImpulse - oldImpulse;
 
-                    b2Vec2 P = b2MulSV(impulse, axisA);
+                    B2Vec2 P = b2MulSV(impulse, axisA);
                     float LA = impulse * a1;
                     float LB = impulse * a2;
 
@@ -457,7 +457,7 @@ namespace Box2D.NET
 
             // point to line constraint
             {
-                b2Vec2 perpA = b2LeftPerp(axisA);
+                B2Vec2 perpA = b2LeftPerp(axisA);
 
                 float bias = 0.0f;
                 float massScale = 1.0f;
@@ -477,7 +477,7 @@ namespace Box2D.NET
                 float impulse = -massScale * joint.perpMass * (Cdot + bias) - impulseScale * joint.perpImpulse;
                 joint.perpImpulse += impulse;
 
-                b2Vec2 P = b2MulSV(impulse, perpA);
+                B2Vec2 P = b2MulSV(impulse, perpA);
                 float LA = impulse * s1;
                 float LB = impulse * s2;
 
@@ -516,29 +516,29 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawWheelJoint(b2DebugDraw draw, b2JointSim @base, b2Transform transformA, b2Transform transformB)
+        public static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
         {
-            Debug.Assert(@base.type == b2JointType.b2_wheelJoint);
+            Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
-            b2WheelJoint joint = @base.wheelJoint;
+            B2WheelJoint joint = @base.wheelJoint;
 
-            b2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            b2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
-            b2Vec2 axis = b2RotateVector(transformA.q, joint.localAxisA);
+            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
+            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
+            B2Vec2 axis = b2RotateVector(transformA.q, joint.localAxisA);
 
-            b2HexColor c1 = b2HexColor.b2_colorGray;
-            b2HexColor c2 = b2HexColor.b2_colorGreen;
-            b2HexColor c3 = b2HexColor.b2_colorRed;
-            b2HexColor c4 = b2HexColor.b2_colorDimGray;
-            b2HexColor c5 = b2HexColor.b2_colorBlue;
+            B2HexColor c1 = B2HexColor.b2_colorGray;
+            B2HexColor c2 = B2HexColor.b2_colorGreen;
+            B2HexColor c3 = B2HexColor.b2_colorRed;
+            B2HexColor c4 = B2HexColor.b2_colorDimGray;
+            B2HexColor c5 = B2HexColor.b2_colorBlue;
 
             draw.DrawSegment(pA, pB, c5, draw.context);
 
             if (joint.enableLimit)
             {
-                b2Vec2 lower = b2MulAdd(pA, joint.lowerTranslation, axis);
-                b2Vec2 upper = b2MulAdd(pA, joint.upperTranslation, axis);
-                b2Vec2 perp = b2LeftPerp(axis);
+                B2Vec2 lower = b2MulAdd(pA, joint.lowerTranslation, axis);
+                B2Vec2 upper = b2MulAdd(pA, joint.upperTranslation, axis);
+                B2Vec2 perp = b2LeftPerp(axis);
                 draw.DrawSegment(lower, upper, c1, draw.context);
                 draw.DrawSegment(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
                 draw.DrawSegment(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);

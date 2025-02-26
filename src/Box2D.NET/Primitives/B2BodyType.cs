@@ -7,7 +7,7 @@ namespace Box2D.NET.Primitives
     /// The body simulation type.
     /// Each body is one of these three types. The type determines how the body behaves in the simulation.
     /// @ingroup body
-    public enum b2BodyType
+    public enum B2BodyType
     {
         /// zero mass, zero velocity, may be manually moved
         b2_staticBody = 0,

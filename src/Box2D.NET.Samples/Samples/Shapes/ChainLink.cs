@@ -24,29 +24,29 @@ public class ChainLink : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
-        b2Vec2[] points1 = new b2Vec2[]
+        B2Vec2[] points1 = new B2Vec2[]
         {
-            new b2Vec2(40.0f, 1.0f), new b2Vec2(0.0f, 0.0f), new b2Vec2(-40.0f, 0.0f),
-            new b2Vec2(-40.0f, -1.0f), new b2Vec2(0.0f, -1.0f), new b2Vec2(40.0f, -1.0f),
+            new B2Vec2(40.0f, 1.0f), new B2Vec2(0.0f, 0.0f), new B2Vec2(-40.0f, 0.0f),
+            new B2Vec2(-40.0f, -1.0f), new B2Vec2(0.0f, -1.0f), new B2Vec2(40.0f, -1.0f),
         };
-        b2Vec2[] points2 = new b2Vec2[]
+        B2Vec2[] points2 = new B2Vec2[]
         {
-            new b2Vec2(-40.0f, -1.0f), new b2Vec2(0.0f, -1.0f), new b2Vec2(40.0f, -1.0f),
-            new b2Vec2(40.0f, 0.0f), new b2Vec2(0.0f, 0.0f), new b2Vec2(-40.0f, 0.0f),
+            new B2Vec2(-40.0f, -1.0f), new B2Vec2(0.0f, -1.0f), new B2Vec2(40.0f, -1.0f),
+            new B2Vec2(40.0f, 0.0f), new B2Vec2(0.0f, 0.0f), new B2Vec2(-40.0f, 0.0f),
         };
 
         int count1 = points1.Length;
         int count2 = points2.Length;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         {
-            b2ChainDef chainDef = b2DefaultChainDef();
+            B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points1;
             chainDef.count = count1;
             chainDef.isLoop = false;
@@ -54,35 +54,35 @@ public class ChainLink : Sample
         }
 
         {
-            b2ChainDef chainDef = b2DefaultChainDef();
+            B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points2;
             chainDef.count = count2;
             chainDef.isLoop = false;
             b2CreateChain(groundId, chainDef);
         }
 
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         {
-            bodyDef.position = new b2Vec2(-5.0f, 2.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+            bodyDef.position = new B2Vec2(-5.0f, 2.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         {
-            bodyDef.position = new b2Vec2(0.0f, 2.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
+            bodyDef.position = new B2Vec2(0.0f, 2.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
             b2CreateCapsuleShape(bodyId, shapeDef, capsule);
         }
 
         {
-            bodyDef.position = new b2Vec2(5.0f, 2.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            bodyDef.position = new B2Vec2(5.0f, 2.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             float h = 0.5f;
-            b2Polygon box = b2MakeBox(h, h);
+            B2Polygon box = b2MakeBox(h, h);
             b2CreatePolygonShape(bodyId, shapeDef, box);
         }
     }

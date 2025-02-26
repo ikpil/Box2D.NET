@@ -26,7 +26,7 @@ public class RollingResistance : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(5.0f, 20.0f);
+            Draw.g_camera.m_center = new B2Vec2(5.0f, 20.0f);
             Draw.g_camera.m_zoom = 27.5f;
         }
 
@@ -37,24 +37,24 @@ public class RollingResistance : Sample
 
     void CreateScene()
     {
-        b2Circle circle = new b2Circle(b2Vec2_zero, 0.5f);
+        B2Circle circle = new B2Circle(b2Vec2_zero, 0.5f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         for (int i = 0; i < 20; ++i)
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Segment segment = new b2Segment(new b2Vec2(-40.0f, 2.0f * i), new b2Vec2(40.0f, 2.0f * i + m_lift));
+            B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 2.0f * i), new B2Vec2(40.0f, 2.0f * i + m_lift));
             b2CreateSegmentShape(groundId, shapeDef, segment);
 
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.position = new b2Vec2(-39.5f, 2.0f * i + 0.75f);
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(-39.5f, 2.0f * i + 0.75f);
             bodyDef.angularVelocity = -10.0f;
-            bodyDef.linearVelocity = new b2Vec2(5.0f, 0.0f);
+            bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
 
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             shapeDef.rollingResistance = m_resistScale * i;
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }
@@ -94,7 +94,7 @@ public class RollingResistance : Sample
 
         for (int i = 0; i < 20; ++i)
         {
-            Draw.g_draw.DrawString(new b2Vec2(-41.5f, 2.0f * i + 1.0f), "%.2f", m_resistScale * i);
+            Draw.g_draw.DrawString(new B2Vec2(-41.5f, 2.0f * i + 1.0f), "%.2f", m_resistScale * i);
         }
     }
 }

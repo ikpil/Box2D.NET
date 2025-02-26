@@ -31,7 +31,7 @@ public class test_table
 
         for (int iter = 0; iter < 1; ++iter)
         {
-            b2HashSet set = b2CreateSet(16);
+            B2HashSet set = b2CreateSet(16);
 
             // Fill set
             for (int i = 0; i < N; ++i)

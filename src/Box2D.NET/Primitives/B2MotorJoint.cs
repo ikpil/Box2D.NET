@@ -4,11 +4,11 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2MotorJoint
+    public class B2MotorJoint
     {
-        public b2Vec2 linearOffset;
+        public B2Vec2 linearOffset;
         public float angularOffset;
-        public b2Vec2 linearImpulse;
+        public B2Vec2 linearImpulse;
         public float angularImpulse;
         public float maxForce;
         public float maxTorque;
@@ -16,11 +16,11 @@ namespace Box2D.NET.Primitives
 
         public int indexA;
         public int indexB;
-        public b2Vec2 anchorA;
-        public b2Vec2 anchorB;
-        public b2Vec2 deltaCenter;
+        public B2Vec2 anchorA;
+        public B2Vec2 anchorB;
+        public B2Vec2 deltaCenter;
         public float deltaAngle;
-        public b2Mat22 linearMass;
+        public B2Mat22 linearMass;
         public float angularMass;
     }
 }

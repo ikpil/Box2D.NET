@@ -15,19 +15,19 @@ namespace Box2D.NET.Primitives
     /// Box2D uses speculative collision so some contact points may be separated.
     /// You may use the maxNormalImpulse to determine if there was an interaction during
     /// the time step.
-    public struct b2ManifoldPoint
+    public struct B2ManifoldPoint
     {
         /// Location of the contact point in world space. Subject to precision loss at large coordinates.
         /// @note Should only be used for debugging.
-        public b2Vec2 point;
+        public B2Vec2 point;
 
         /// Location of the contact point relative to shapeA's origin in world space
         /// @note When used internally to the Box2D solver, this is relative to the body center of mass.
-        public b2Vec2 anchorA;
+        public B2Vec2 anchorA;
 
         /// Location of the contact point relative to shapeB's origin in world space
         /// @note When used internally to the Box2D solver, this is relative to the body center of mass.
-        public b2Vec2 anchorB;
+        public B2Vec2 anchorB;
 
         /// The separation of the contact point, negative if penetrating
         public float separation;

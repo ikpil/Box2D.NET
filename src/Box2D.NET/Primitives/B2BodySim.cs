@@ -6,23 +6,23 @@ namespace Box2D.NET.Primitives
 {
     // Body simulation data used for integration of position and velocity
     // Transform data used for collision and solver preparation.
-    public class b2BodySim
+    public class B2BodySim
     {
         // todo better to have transform in sim or in @base body? Try both!
         // transform for body origin
-        public b2Transform transform;
+        public B2Transform transform;
 
         // center of mass position in world space
-        public b2Vec2 center;
+        public B2Vec2 center;
 
         // previous rotation and COM for TOI
-        public b2Rot rotation0;
-        public b2Vec2 center0;
+        public B2Rot rotation0;
+        public B2Vec2 center0;
 
         // location of center of mass relative to the body origin
-        public b2Vec2 localCenter;
+        public B2Vec2 localCenter;
 
-        public b2Vec2 force;
+        public B2Vec2 force;
         public float torque;
 
         // inverse inertia
@@ -48,16 +48,16 @@ namespace Box2D.NET.Primitives
 
         public void Clear()
         {
-            transform = new b2Transform();
+            transform = new B2Transform();
 
-            center = new b2Vec2();
+            center = new B2Vec2();
 
-            rotation0 = new b2Rot();
-            center0 = new b2Vec2();
+            rotation0 = new B2Rot();
+            center0 = new B2Vec2();
 
-            localCenter = new b2Vec2();
+            localCenter = new B2Vec2();
 
-            force = new b2Vec2();
+            force = new B2Vec2();
             torque = 0.0f;
 
             invMass = 0.0f;
@@ -79,7 +79,7 @@ namespace Box2D.NET.Primitives
             enlargeAABB = false;
         }
 
-        public void CopyFrom(b2BodySim other)
+        public void CopyFrom(B2BodySim other)
         {
             transform = other.transform;
 

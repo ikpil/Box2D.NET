@@ -35,82 +35,82 @@ namespace Box2D.NET
     {
         /// Use these to make your identifiers null.
         /// You may also use zero initialization to get null.
-        public static readonly b2WorldId b2_nullWorldId = new b2WorldId(0, 0);
+        public static readonly B2WorldId b2_nullWorldId = new B2WorldId(0, 0);
 
-        public static readonly b2BodyId b2_nullBodyId = new b2BodyId(0, 0, 0);
-        public static readonly b2ShapeId b2_nullShapeId = new b2ShapeId(0, 0, 0);
-        public static readonly b2ChainId b2_nullChainId = new b2ChainId(0, 0, 0);
-        public static readonly b2JointId b2_nullJointId = new b2JointId(0, 0, 0);
+        public static readonly B2BodyId b2_nullBodyId = new B2BodyId(0, 0, 0);
+        public static readonly B2ShapeId b2_nullShapeId = new B2ShapeId(0, 0, 0);
+        public static readonly B2ChainId b2_nullChainId = new B2ChainId(0, 0, 0);
+        public static readonly B2JointId b2_nullJointId = new B2JointId(0, 0, 0);
 
         /// Macro to determine if any id is null.
-        public static bool B2_IS_NULL(b2WorldId id) => id.index1 == 0;
+        public static bool B2_IS_NULL(B2WorldId id) => id.index1 == 0;
 
-        public static bool B2_IS_NULL(b2BodyId id) => id.index1 == 0;
-        public static bool B2_IS_NULL(b2ShapeId id) => id.index1 == 0;
-        public static bool B2_IS_NULL(b2ChainId id) => id.index1 == 0;
-        public static bool B2_IS_NULL(b2JointId id) => id.index1 == 0;
+        public static bool B2_IS_NULL(B2BodyId id) => id.index1 == 0;
+        public static bool B2_IS_NULL(B2ShapeId id) => id.index1 == 0;
+        public static bool B2_IS_NULL(B2ChainId id) => id.index1 == 0;
+        public static bool B2_IS_NULL(B2JointId id) => id.index1 == 0;
 
         /// Macro to determine if any id is non-null.
-        public static bool B2_IS_NON_NULL(b2WorldId id) => id.index1 != 0;
+        public static bool B2_IS_NON_NULL(B2WorldId id) => id.index1 != 0;
 
-        public static bool B2_IS_NON_NULL(b2BodyId id) => id.index1 != 0;
-        public static bool B2_IS_NON_NULL(b2ShapeId id) => id.index1 != 0;
-        public static bool B2_IS_NON_NULL(b2ChainId id) => id.index1 != 0;
-        public static bool B2_IS_NON_NULL(b2JointId id) => id.index1 != 0;
+        public static bool B2_IS_NON_NULL(B2BodyId id) => id.index1 != 0;
+        public static bool B2_IS_NON_NULL(B2ShapeId id) => id.index1 != 0;
+        public static bool B2_IS_NON_NULL(B2ChainId id) => id.index1 != 0;
+        public static bool B2_IS_NON_NULL(B2JointId id) => id.index1 != 0;
 
         /// Compare two ids for equality. Doesn't work for b2WorldId.
-        public static bool B2_ID_EQUALS(b2BodyId id1, b2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
-        public static bool B2_ID_EQUALS(b2ShapeId id1, b2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+        public static bool B2_ID_EQUALS(B2BodyId id1, B2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+        public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         /// Store a body id into a ulong.
-        public static ulong b2StoreBodyId(b2BodyId id)
+        public static ulong b2StoreBodyId(B2BodyId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a body id.
-        public static b2BodyId b2LoadBodyId(ulong x)
+        public static B2BodyId b2LoadBodyId(ulong x)
         {
-            b2BodyId id = new b2BodyId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
+            B2BodyId id = new B2BodyId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
             return id;
         }
 
         /// Store a shape id into a ulong.
-        public static ulong b2StoreShapeId(b2ShapeId id)
+        public static ulong b2StoreShapeId(B2ShapeId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a shape id.
-        public static b2ShapeId b2LoadShapeId(ulong x)
+        public static B2ShapeId b2LoadShapeId(ulong x)
         {
-            b2ShapeId id = new b2ShapeId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
+            B2ShapeId id = new B2ShapeId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
             return id;
         }
 
         /// Store a chain id into a ulong.
-        public static ulong b2StoreChainId(b2ChainId id)
+        public static ulong b2StoreChainId(B2ChainId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a chain id.
-        public static b2ChainId b2LoadChainId(ulong x)
+        public static B2ChainId b2LoadChainId(ulong x)
         {
-            b2ChainId id = new b2ChainId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
+            B2ChainId id = new B2ChainId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
             return id;
         }
 
         /// Store a joint id into a ulong.
-        public static ulong b2StoreJointId(b2JointId id)
+        public static ulong b2StoreJointId(B2JointId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a joint id.
-        public static b2JointId b2LoadJointId(ulong x)
+        public static B2JointId b2LoadJointId(ulong x)
         {
-            b2JointId id = new b2JointId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
+            B2JointId id = new B2JointId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
             return id;
         }
 

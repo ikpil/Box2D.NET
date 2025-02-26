@@ -26,9 +26,9 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-b2BodyId m_playerId;
-b2ShapeId m_sensorId;
-List<b2ShapeId> m_overlaps;
+B2BodyId m_playerId;
+B2ShapeId m_sensorId;
+List<B2ShapeId> m_overlaps;
 int m_overlapCount;
 static int sampleCharacterSensor = RegisterSample( "Events", "Foot Sensor", Create );
 static Sample Create( Settings settings )
@@ -47,10 +47,10 @@ public FootSensor( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2Vec2 points[20];
+        B2Vec2 points[20];
         float x = 10.0f;
         for ( int i = 0; i < 20; ++i )
         {
@@ -58,7 +58,7 @@ public FootSensor( Settings settings )
             x -= 1.0f;
         }
 
-        b2ChainDef chainDef = b2DefaultChainDef();
+        B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
         chainDef.count = 20;
         chainDef.filter.categoryBits = GROUND;
@@ -69,19 +69,19 @@ public FootSensor( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.fixedRotation = true;
         bodyDef.position = { 0.0f, 1.0f };
         m_playerId = b2CreateBody( m_worldId, &bodyDef );
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = PLAYER;
         shapeDef.filter.maskBits = GROUND;
         shapeDef.friction = 0.3f;
-        b2Capsule capsule = { { 0.0f, -0.5f }, { 0.0f, 0.5f }, 0.5f };
+        B2Capsule capsule = { { 0.0f, -0.5f }, { 0.0f, 0.5f }, 0.5f };
         b2CreateCapsuleShape( m_playerId, &shapeDef, &capsule );
 
-        b2Polygon box = b2MakeOffsetBox( 0.5f, 0.25f, { 0.0f, -1.0f }, b2Rot_identity );
+        B2Polygon box = b2MakeOffsetBox( 0.5f, 0.25f, { 0.0f, -1.0f }, b2Rot_identity );
         shapeDef.filter.categoryBits = FOOT;
         shapeDef.filter.maskBits = GROUND;
         shapeDef.isSensor = true;
@@ -105,10 +105,10 @@ public override void Step(Settings settings)
 
     base.Step( settings );
 
-    b2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
+    B2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
     for ( int i = 0; i < sensorEvents.beginCount; ++i )
     {
-        b2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
+        B2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
 
         Debug.Assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
 
@@ -120,7 +120,7 @@ public override void Step(Settings settings)
 
     for ( int i = 0; i < sensorEvents.endCount; ++i )
     {
-        b2SensorEndTouchEvent event = sensorEvents.endEvents[i];
+        B2SensorEndTouchEvent event = sensorEvents.endEvents[i];
 
         Debug.Assert( B2_ID_EQUALS( event.visitorShapeId, m_sensorId ) == false );
 
@@ -139,10 +139,10 @@ public override void Step(Settings settings)
     int count = b2Shape_GetSensorOverlaps( m_sensorId, m_overlaps.data(), capacity );
     for ( int i = 0; i < count; ++i )
     {
-        b2ShapeId shapeId = m_overlaps[i];
-        b2AABB aabb = b2Shape_GetAABB( shapeId );
-        b2Vec2 point = b2AABB_Center( aabb );
-        Draw.g_draw.DrawPoint( point, 10.0f, b2HexColor.b2_colorWhite );
+        B2ShapeId shapeId = m_overlaps[i];
+        B2AABB aabb = b2Shape_GetAABB( shapeId );
+        B2Vec2 point = b2AABB_Center( aabb );
+        Draw.g_draw.DrawPoint( point, 10.0f, B2HexColor.b2_colorWhite );
     }
 }
 

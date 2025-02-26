@@ -30,23 +30,23 @@ public class Confined : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Capsule capsule;
-            capsule = new b2Capsule(new b2Vec2(-10.5f, 0.0f), new b2Vec2(10.5f, 0.0f), 0.5f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Capsule capsule;
+            capsule = new B2Capsule(new B2Vec2(-10.5f, 0.0f), new B2Vec2(10.5f, 0.0f), 0.5f);
             b2CreateCapsuleShape(groundId, shapeDef, capsule);
-            capsule = new b2Capsule(new b2Vec2(-10.5f, 0.0f), new b2Vec2(-10.5f, 20.5f), 0.5f);
+            capsule = new B2Capsule(new B2Vec2(-10.5f, 0.0f), new B2Vec2(-10.5f, 20.5f), 0.5f);
             b2CreateCapsuleShape(groundId, shapeDef, capsule);
-            capsule = new b2Capsule(new b2Vec2(10.5f, 0.0f), new b2Vec2(10.5f, 20.5f), 0.5f);
+            capsule = new B2Capsule(new B2Vec2(10.5f, 0.0f), new B2Vec2(10.5f, 20.5f), 0.5f);
             b2CreateCapsuleShape(groundId, shapeDef, capsule);
-            capsule = new b2Capsule(new b2Vec2(-10.5f, 20.5f), new b2Vec2(10.5f, 20.5f), 0.5f);
+            capsule = new B2Capsule(new B2Vec2(-10.5f, 20.5f), new B2Vec2(10.5f, 20.5f), 0.5f);
             b2CreateCapsuleShape(groundId, shapeDef, capsule);
         }
 
@@ -55,12 +55,12 @@ public class Confined : Sample
         m_count = 0;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.gravityScale = 0.0f;
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
 
             while (m_count < e_maxCount)
             {
@@ -70,8 +70,8 @@ public class Confined : Sample
                     float x = -8.75f + m_column * 18.0f / e_gridCount;
                     float y = 1.5f + m_row * 18.0f / e_gridCount;
 
-                    bodyDef.position = new b2Vec2(x, y);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    bodyDef.position = new B2Vec2(x, y);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreateCircleShape(bodyId, shapeDef, circle);
 
                     m_count += 1;

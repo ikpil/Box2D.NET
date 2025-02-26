@@ -5,13 +5,13 @@
 namespace Box2D.NET.Primitives
 {
     /// Low level ray cast or shape-cast output data
-    public class b2CastOutput
+    public class B2CastOutput
     {
         /// The surface normal at the hit point
-        public b2Vec2 normal;
+        public B2Vec2 normal;
 
         /// The surface hit point
-        public b2Vec2 point;
+        public B2Vec2 point;
 
         /// The fraction of the input translation at collision
         public float fraction;

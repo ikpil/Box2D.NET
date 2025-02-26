@@ -17,8 +17,8 @@ public class CustomFilter : Sample
 {
     public const int e_count = 10;
 
-    b2BodyId[] m_bodyIds = new b2BodyId[e_count];
-    b2ShapeId[] m_shapeIds = new b2ShapeId[e_count];
+    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
     static int sampleCustomFilter = RegisterSample("Shapes", "Custom Filter", Create);
 
     static Sample Create(Settings settings)
@@ -30,7 +30,7 @@ public class CustomFilter : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
             Draw.g_camera.m_zoom = 10.0f;
         }
 
@@ -38,25 +38,25 @@ public class CustomFilter : Sample
         b2World_SetCustomFilterCallback(m_worldId, CustomFilterStatic, this);
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
-            b2Segment segment = new b2Segment(new b2Vec2(-40.0f, 0.0f), new b2Vec2(40.0f, 0.0f));
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeSquare(1.0f);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeSquare(1.0f);
             float x = -e_count;
 
             for (int i = 0; i < e_count; ++i)
             {
-                bodyDef.position = new b2Vec2(x, 5.0f);
+                bodyDef.position = new B2Vec2(x, 5.0f);
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.userData = i + 1;
@@ -75,12 +75,12 @@ public class CustomFilter : Sample
 
         for (int i = 0; i < e_count; ++i)
         {
-            b2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            Draw.g_draw.DrawString(new b2Vec2(p.x, p.y), "%d", i);
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
+            Draw.g_draw.DrawString(new B2Vec2(p.x, p.y), "%d", i);
         }
     }
 
-    bool ShouldCollide(b2ShapeId shapeIdA, b2ShapeId shapeIdB)
+    bool ShouldCollide(B2ShapeId shapeIdA, B2ShapeId shapeIdB)
     {
         object userDataA = b2Shape_GetUserData(shapeIdA);
         object userDataB = b2Shape_GetUserData(shapeIdB);
@@ -96,7 +96,7 @@ public class CustomFilter : Sample
         return ((indexA & 1) + (indexB & 1)) != 1;
     }
 
-    static bool CustomFilterStatic(b2ShapeId shapeIdA, b2ShapeId shapeIdB, object context)
+    static bool CustomFilterStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context)
     {
         CustomFilter customFilter = context as CustomFilter;
 

@@ -26,34 +26,34 @@ public class NullJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 7.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 7.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         {
-            b2BodyId groundId;
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Segment segment = new b2Segment(new b2Vec2(-20.0f, 0.0f), new b2Vec2(20.0f, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.position = new b2Vec2(-4.0f, 2.0f);
-            b2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(-4.0f, 2.0f);
+            B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
 
-            b2Polygon box = b2MakeSquare(2.0f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeSquare(2.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(bodyId1, shapeDef, box);
 
-            bodyDef.position = new b2Vec2(4.0f, 2.0f);
-            b2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
+            bodyDef.position = new B2Vec2(4.0f, 2.0f);
+            B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId2, shapeDef, box);
 
-            b2NullJointDef jointDef = b2DefaultNullJointDef();
+            B2NullJointDef jointDef = b2DefaultNullJointDef();
             jointDef.bodyIdA = bodyId1;
             jointDef.bodyIdB = bodyId2;
 

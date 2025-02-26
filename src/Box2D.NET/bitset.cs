@@ -11,14 +11,14 @@ namespace Box2D.NET
 {
     public static class bitset
     {
-        public static void b2SetBit(b2BitSet bitSet, int bitIndex)
+        public static void b2SetBit(B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
             Debug.Assert(blockIndex < bitSet.blockCount);
             bitSet.bits[blockIndex] |= ((ulong)1 << (bitIndex % 64));
         }
 
-        public static void b2SetBitGrow(b2BitSet bitSet, int bitIndex)
+        public static void b2SetBitGrow(B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
@@ -29,7 +29,7 @@ namespace Box2D.NET
             bitSet.bits[blockIndex] |= ((ulong)1 << (int)(bitIndex % 64));
         }
 
-        public static void b2ClearBit(b2BitSet bitSet, uint bitIndex)
+        public static void b2ClearBit(B2BitSet bitSet, uint bitIndex)
         {
             uint blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
@@ -40,7 +40,7 @@ namespace Box2D.NET
             bitSet.bits[blockIndex] &= ~((ulong)1 << (int)(bitIndex % 64));
         }
 
-        public static bool b2GetBit(b2BitSet bitSet, int bitIndex)
+        public static bool b2GetBit(B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
@@ -51,15 +51,15 @@ namespace Box2D.NET
             return (bitSet.bits[blockIndex] & ((ulong)1 << (int)(bitIndex % 64))) != 0;
         }
 
-        public static int b2GetBitSetBytes(b2BitSet bitSet)
+        public static int b2GetBitSetBytes(B2BitSet bitSet)
         {
             return (int)(bitSet.blockCapacity * sizeof(ulong));
         }
 
 
-        public static b2BitSet b2CreateBitSet(int bitCapacity)
+        public static B2BitSet b2CreateBitSet(int bitCapacity)
         {
-            b2BitSet bitSet = new b2BitSet();
+            B2BitSet bitSet = new B2BitSet();
 
             bitSet.blockCapacity = (bitCapacity + sizeof(ulong) * 8 - 1) / (sizeof(ulong) * 8);
             bitSet.blockCount = 0;
@@ -69,7 +69,7 @@ namespace Box2D.NET
             return bitSet;
         }
 
-        public static void b2DestroyBitSet(b2BitSet bitSet)
+        public static void b2DestroyBitSet(B2BitSet bitSet)
         {
             b2Free(bitSet.bits, bitSet.blockCapacity * sizeof(ulong));
             bitSet.blockCapacity = 0;
@@ -77,7 +77,7 @@ namespace Box2D.NET
             bitSet.bits = null;
         }
 
-        public static void b2SetBitCountAndClear(b2BitSet bitSet, int bitCount)
+        public static void b2SetBitCountAndClear(B2BitSet bitSet, int bitCount)
         {
             int blockCount = (bitCount + sizeof(ulong) * 8 - 1) / (sizeof(ulong) * 8);
             if (bitSet.blockCapacity < blockCount)
@@ -92,7 +92,7 @@ namespace Box2D.NET
             Array.Fill(bitSet.bits, 0UL, 0, bitSet.blockCount);
         }
 
-        public static void b2GrowBitSet(b2BitSet bitSet, int blockCount)
+        public static void b2GrowBitSet(B2BitSet bitSet, int blockCount)
         {
             Debug.Assert(blockCount > bitSet.blockCount);
             if (blockCount > bitSet.blockCapacity)
@@ -112,7 +112,7 @@ namespace Box2D.NET
             bitSet.blockCount = blockCount;
         }
 
-        public static void b2InPlaceUnion(b2BitSet setA, b2BitSet setB)
+        public static void b2InPlaceUnion(B2BitSet setA, B2BitSet setB)
         {
             Debug.Assert(setA.blockCount == setB.blockCount);
             int blockCount = setA.blockCount;

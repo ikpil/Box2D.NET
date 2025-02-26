@@ -21,9 +21,9 @@ namespace Box2D.NET
     public static class board_phase
     {
         // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
-        public static b2BodyType B2_PROXY_TYPE(int KEY)
+        public static B2BodyType B2_PROXY_TYPE(int KEY)
         {
-            return ((b2BodyType)((KEY) & 3));
+            return ((B2BodyType)((KEY) & 3));
         }
 
         public static int B2_PROXY_ID(int KEY)
@@ -31,7 +31,7 @@ namespace Box2D.NET
             return ((KEY) >> 2);
         }
 
-        public static int B2_PROXY_KEY(int ID, b2BodyType TYPE)
+        public static int B2_PROXY_KEY(int ID, B2BodyType TYPE)
         {
             return (ID << 2) | (int)TYPE;
         }
@@ -39,7 +39,7 @@ namespace Box2D.NET
 
         // This is what triggers new contact pairs to be created
         // Warning: this must be called in deterministic order
-        public static void b2BufferMove(b2BroadPhase bp, int queryProxy)
+        public static void b2BufferMove(B2BroadPhase bp, int queryProxy)
         {
             // Adding 1 because 0 is the sentinel
             bool alreadyAdded = b2AddKey(bp.moveSet, (ulong)(queryProxy + 1));
@@ -52,17 +52,17 @@ namespace Box2D.NET
 
         // 
         // static FILE* s_file = NULL;
-        public static void b2CreateBroadPhase(ref b2BroadPhase bp)
+        public static void b2CreateBroadPhase(ref B2BroadPhase bp)
         {
-            Debug.Assert((int)b2BodyType.b2_bodyTypeCount == 3, "must be three body types");
+            Debug.Assert((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");
 
             // if (s_file == NULL)
             //{
             //	s_file = fopen("pairs01.txt", "a");
             //	fprintf(s_file, "============\n\n");
             // }
-            bp = new b2BroadPhase();
-            bp.trees = new b2DynamicTree[(int)b2BodyType.b2_bodyTypeCount];
+            bp = new B2BroadPhase();
+            bp.trees = new B2DynamicTree[(int)B2BodyType.b2_bodyTypeCount];
             bp.proxyCount = 0;
             bp.moveSet = b2CreateSet(16);
             bp.moveArray = b2Array_Create<int>(16);
@@ -72,15 +72,15 @@ namespace Box2D.NET
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
             bp.pairSet = b2CreateSet(32);
 
-            for (int i = 0; i < (int)b2BodyType.b2_bodyTypeCount; ++i)
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 bp.trees[i] = b2DynamicTree_Create();
             }
         }
 
-        public static void b2DestroyBroadPhase(b2BroadPhase bp)
+        public static void b2DestroyBroadPhase(B2BroadPhase bp)
         {
-            for (int i = 0; i < (int)b2BodyType.b2_bodyTypeCount; ++i)
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 b2DynamicTree_Destroy(bp.trees[i]);
             }
@@ -99,7 +99,7 @@ namespace Box2D.NET
             // }
         }
 
-        public static void b2UnBufferMove(b2BroadPhase bp, int proxyKey)
+        public static void b2UnBufferMove(B2BroadPhase bp, int proxyKey)
         {
             bool found = b2RemoveKey(bp.moveSet, (ulong)(proxyKey + 1));
 
@@ -119,12 +119,12 @@ namespace Box2D.NET
             }
         }
 
-        public static int b2BroadPhase_CreateProxy(b2BroadPhase bp, b2BodyType proxyType, b2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
+        public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
         {
-            Debug.Assert(0 <= proxyType && proxyType < b2BodyType.b2_bodyTypeCount);
+            Debug.Assert(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
             int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, shapeIndex);
             int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
-            if (proxyType != b2BodyType.b2_staticBody || forcePairCreation)
+            if (proxyType != B2BodyType.b2_staticBody || forcePairCreation)
             {
                 b2BufferMove(bp, proxyKey);
             }
@@ -132,36 +132,36 @@ namespace Box2D.NET
             return proxyKey;
         }
 
-        public static void b2BroadPhase_DestroyProxy(b2BroadPhase bp, int proxyKey)
+        public static void b2BroadPhase_DestroyProxy(B2BroadPhase bp, int proxyKey)
         {
             Debug.Assert(bp.moveArray.count == (int)bp.moveSet.count);
             b2UnBufferMove(bp, proxyKey);
 
             --bp.proxyCount;
 
-            b2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            Debug.Assert(0 <= proxyType && proxyType <= b2BodyType.b2_bodyTypeCount);
+            Debug.Assert(0 <= proxyType && proxyType <= B2BodyType.b2_bodyTypeCount);
             b2DynamicTree_DestroyProxy(bp.trees[(int)proxyType], proxyId);
         }
 
-        public static void b2BroadPhase_MoveProxy(b2BroadPhase bp, int proxyKey, b2AABB aabb)
+        public static void b2BroadPhase_MoveProxy(B2BroadPhase bp, int proxyKey, B2AABB aabb)
         {
-            b2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
             b2DynamicTree_MoveProxy(bp.trees[(int)proxyType], proxyId, aabb);
             b2BufferMove(bp, proxyKey);
         }
 
-        public static void b2BroadPhase_EnlargeProxy(b2BroadPhase bp, int proxyKey, b2AABB aabb)
+        public static void b2BroadPhase_EnlargeProxy(B2BroadPhase bp, int proxyKey, B2AABB aabb)
         {
             Debug.Assert(proxyKey != B2_NULL_INDEX);
-            b2BodyType typeIndex = B2_PROXY_TYPE(proxyKey);
+            B2BodyType typeIndex = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            Debug.Assert(typeIndex != b2BodyType.b2_staticBody);
+            Debug.Assert(typeIndex != B2BodyType.b2_staticBody);
 
             b2DynamicTree_EnlargeProxy(bp.trees[(int)typeIndex], proxyId, aabb);
             b2BufferMove(bp, proxyKey);
@@ -171,8 +171,8 @@ namespace Box2D.NET
         // This is called from b2DynamicTree::Query when we are gathering pairs.
         public static bool b2PairQueryCallback(int proxyId, int shapeId, object context)
         {
-            b2QueryPairContext queryContext = context as b2QueryPairContext;
-            b2BroadPhase broadPhase = queryContext.world.broadPhase;
+            B2QueryPairContext queryContext = context as B2QueryPairContext;
+            B2BroadPhase broadPhase = queryContext.world.broadPhase;
 
             int proxyKey = B2_PROXY_KEY(proxyId, queryContext.queryTreeType);
             int queryProxyKey = queryContext.queryProxyKey;
@@ -183,8 +183,8 @@ namespace Box2D.NET
                 return true;
             }
 
-            b2BodyType treeType = queryContext.queryTreeType;
-            b2BodyType queryProxyType = B2_PROXY_TYPE(queryProxyKey);
+            B2BodyType treeType = queryContext.queryTreeType;
+            B2BodyType queryProxyType = B2_PROXY_TYPE(queryProxyKey);
 
             // De-duplication
             // It is important to prevent duplicate contacts from being created. Ideally I can prevent duplicates
@@ -199,9 +199,9 @@ namespace Box2D.NET
             // I could have some flag to indicate that there are any static bodies in the moveSet.
 
             // Is this proxy also moving?
-            if (queryProxyType == b2BodyType.b2_dynamicBody)
+            if (queryProxyType == B2BodyType.b2_dynamicBody)
             {
-                if (treeType == b2BodyType.b2_dynamicBody && proxyKey < queryProxyKey)
+                if (treeType == B2BodyType.b2_dynamicBody && proxyKey < queryProxyKey)
                 {
                     bool moved = b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1));
                     if (moved)
@@ -213,7 +213,7 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(treeType == b2BodyType.b2_dynamicBody);
+                Debug.Assert(treeType == B2BodyType.b2_dynamicBody);
                 bool moved = b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1));
                 if (moved)
                 {
@@ -241,10 +241,10 @@ namespace Box2D.NET
                 shapeIdB = shapeId;
             }
 
-            b2World world = queryContext.world;
+            B2World world = queryContext.world;
 
-            b2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
-            b2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
+            B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+            B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
 
             int bodyIdA = shapeA.bodyId;
             int bodyIdB = shapeB.bodyId;
@@ -267,8 +267,8 @@ namespace Box2D.NET
             }
 
             // Does a joint override collision?
-            b2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
             if (b2ShouldBodiesCollide(world, bodyA, bodyB) == false)
             {
                 return true;
@@ -278,8 +278,8 @@ namespace Box2D.NET
             b2CustomFilterFcn customFilterFcn = queryContext.world.customFilterFcn;
             if (customFilterFcn != null)
             {
-                b2ShapeId idA = new b2ShapeId(shapeIdA + 1, world.worldId, shapeA.generation);
-                b2ShapeId idB = new b2ShapeId(shapeIdB + 1, world.worldId, shapeB.generation);
+                B2ShapeId idA = new B2ShapeId(shapeIdA + 1, world.worldId, shapeA.generation);
+                B2ShapeId idB = new B2ShapeId(shapeIdB + 1, world.worldId, shapeB.generation);
                 bool shouldCollide = customFilterFcn(idA, idB, queryContext.world.customFilterContext);
                 if (shouldCollide == false)
                 {
@@ -290,7 +290,7 @@ namespace Box2D.NET
             // todo per thread to eliminate atomic?
             int pairIndex = b2AtomicFetchAddInt(ref broadPhase.movePairIndex, 1);
 
-            b2MovePair pair;
+            B2MovePair pair;
             if (pairIndex < broadPhase.movePairCapacity)
             {
                 pair = broadPhase.movePairs[pairIndex];
@@ -300,7 +300,7 @@ namespace Box2D.NET
             {
                 // TODO: @ikpil, check
                 //pair = b2Alloc<b2MovePair>(1);( sizeof(  ) );
-                pair = new b2MovePair();
+                pair = new B2MovePair();
                 pair.heap = true;
             }
 
@@ -322,14 +322,14 @@ b2TreeStats b2_staticStats;
 
         public static void b2FindPairsTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
-            b2TracyCZoneNC(b2TracyCZone.pair_task, "Pair", b2HexColor.b2_colorMediumSlateBlue, true);
+            b2TracyCZoneNC(B2TracyCZone.pair_task, "Pair", B2HexColor.b2_colorMediumSlateBlue, true);
 
             B2_UNUSED(threadIndex);
 
-            b2World world = context as b2World;
-            b2BroadPhase bp = world.broadPhase;
+            B2World world = context as B2World;
+            B2BroadPhase bp = world.broadPhase;
 
-            b2QueryPairContext queryContext = new b2QueryPairContext();
+            B2QueryPairContext queryContext = new B2QueryPairContext();
             queryContext.world = world;
 
             for (int i = startIndex; i < endIndex; ++i)
@@ -345,49 +345,49 @@ b2TreeStats b2_staticStats;
                     continue;
                 }
 
-                b2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+                B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
 
                 int proxyId = B2_PROXY_ID(proxyKey);
                 queryContext.queryProxyKey = proxyKey;
 
-                b2DynamicTree baseTree = bp.trees[(int)proxyType];
+                B2DynamicTree baseTree = bp.trees[(int)proxyType];
 
                 // We have to query the tree with the fat AABB so that
                 // we don't fail to create a contact that may touch later.
-                b2AABB fatAABB = b2DynamicTree_GetAABB(baseTree, proxyId);
+                B2AABB fatAABB = b2DynamicTree_GetAABB(baseTree, proxyId);
                 queryContext.queryShapeIndex = b2DynamicTree_GetUserData(baseTree, proxyId);
 
                 // Query trees. Only dynamic proxies collide with kinematic and static proxies.
                 // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
-                b2TreeStats stats = new b2TreeStats();
-                if (proxyType == b2BodyType.b2_dynamicBody)
+                B2TreeStats stats = new B2TreeStats();
+                if (proxyType == B2BodyType.b2_dynamicBody)
                 {
                     // consider using bits = groupIndex > 0 ? B2_DEFAULT_MASK_BITS : maskBits
-                    queryContext.queryTreeType = b2BodyType.b2_kinematicBody;
-                    b2TreeStats statsKinematic = b2DynamicTree_Query(bp.trees[(int)b2BodyType.b2_kinematicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                    queryContext.queryTreeType = B2BodyType.b2_kinematicBody;
+                    B2TreeStats statsKinematic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_kinematicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
                     stats.nodeVisits += statsKinematic.nodeVisits;
                     stats.leafVisits += statsKinematic.leafVisits;
 
-                    queryContext.queryTreeType = b2BodyType.b2_staticBody;
-                    b2TreeStats statsStatic = b2DynamicTree_Query(bp.trees[(int)b2BodyType.b2_staticBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                    queryContext.queryTreeType = B2BodyType.b2_staticBody;
+                    B2TreeStats statsStatic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_staticBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
                     stats.nodeVisits += statsStatic.nodeVisits;
                     stats.leafVisits += statsStatic.leafVisits;
                 }
 
                 // All proxies collide with dynamic proxies
                 // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
-                queryContext.queryTreeType = b2BodyType.b2_dynamicBody;
-                b2TreeStats statsDynamic = b2DynamicTree_Query(bp.trees[(int)b2BodyType.b2_dynamicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                queryContext.queryTreeType = B2BodyType.b2_dynamicBody;
+                B2TreeStats statsDynamic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_dynamicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
                 stats.nodeVisits += statsDynamic.nodeVisits;
                 stats.leafVisits += statsDynamic.leafVisits;
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.pair_task);
+            b2TracyCZoneEnd(B2TracyCZone.pair_task);
         }
 
-        public static void b2UpdateBroadPhasePairs(b2World world)
+        public static void b2UpdateBroadPhasePairs(B2World world)
         {
-            b2BroadPhase bp = world.broadPhase;
+            B2BroadPhase bp = world.broadPhase;
 
             int moveCount = bp.moveArray.count;
             Debug.Assert(moveCount == (int)bp.moveSet.count);
@@ -397,14 +397,14 @@ b2TreeStats b2_staticStats;
                 return;
             }
 
-            b2TracyCZoneNC(b2TracyCZone.update_pairs, "Find Pairs", b2HexColor.b2_colorMediumSlateBlue, true);
+            b2TracyCZoneNC(B2TracyCZone.update_pairs, "Find Pairs", B2HexColor.b2_colorMediumSlateBlue, true);
 
-            b2ArenaAllocator alloc = world.stackAllocator;
+            B2ArenaAllocator alloc = world.stackAllocator;
 
             // todo these could be in the step context
-            bp.moveResults = b2AllocateArenaItem<b2MoveResult>(alloc, moveCount, "move results");
+            bp.moveResults = b2AllocateArenaItem<B2MoveResult>(alloc, moveCount, "move results");
             bp.movePairCapacity = 16 * moveCount;
-            bp.movePairs = b2AllocateArenaItem<b2MovePair>(alloc, bp.movePairCapacity, "move pairs");
+            bp.movePairs = b2AllocateArenaItem<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
 
 #if B2_SNOOP_TABLE_COUNTERS
@@ -422,15 +422,15 @@ b2TreeStats b2_staticStats;
 
             // todo_erin could start tree rebuild here
 
-            b2TracyCZoneNC(b2TracyCZone.create_contacts, "Create Contacts", b2HexColor.b2_colorCoral, true);
+            b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
 
             // Single-threaded work
             // - Clear move flags
             // - Create contacts in deterministic order
             for (int i = 0; i < moveCount; ++i)
             {
-                b2MoveResult result = bp.moveResults[i];
-                b2MovePair pair = result.pairList;
+                B2MoveResult result = bp.moveResults[i];
+                B2MovePair pair = result.pairList;
                 while (pair != null)
                 {
                     int shapeIdA = pair.shapeIndexA;
@@ -441,14 +441,14 @@ b2TreeStats b2_staticStats;
                     //	fprintf(s_file, "%d %d\n", shapeIdA, shapeIdB);
                     // }
 
-                    b2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
-                    b2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
+                    B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+                    B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
 
                     b2CreateContact(world, shapeA, shapeB);
 
                     if (pair.heap)
                     {
-                        b2MovePair temp = pair;
+                        B2MovePair temp = pair;
                         pair = pair.next;
                         b2Free(temp, 1);
                     }
@@ -480,30 +480,30 @@ b2TreeStats b2_staticStats;
 
             b2ValidateSolverSets(world);
 
-            b2TracyCZoneEnd(b2TracyCZone.create_contacts);
+            b2TracyCZoneEnd(B2TracyCZone.create_contacts);
 
-            b2TracyCZoneEnd(b2TracyCZone.update_pairs);
+            b2TracyCZoneEnd(B2TracyCZone.update_pairs);
         }
 
-        public static bool b2BroadPhase_TestOverlap(b2BroadPhase bp, int proxyKeyA, int proxyKeyB)
+        public static bool b2BroadPhase_TestOverlap(B2BroadPhase bp, int proxyKeyA, int proxyKeyB)
         {
             int typeIndexA = (int)B2_PROXY_TYPE(proxyKeyA);
             int proxyIdA = B2_PROXY_ID(proxyKeyA);
             int typeIndexB = (int)B2_PROXY_TYPE(proxyKeyB);
             int proxyIdB = B2_PROXY_ID(proxyKeyB);
 
-            b2AABB aabbA = b2DynamicTree_GetAABB(bp.trees[typeIndexA], proxyIdA);
-            b2AABB aabbB = b2DynamicTree_GetAABB(bp.trees[typeIndexB], proxyIdB);
+            B2AABB aabbA = b2DynamicTree_GetAABB(bp.trees[typeIndexA], proxyIdA);
+            B2AABB aabbB = b2DynamicTree_GetAABB(bp.trees[typeIndexB], proxyIdB);
             return b2AABB_Overlaps(aabbA, aabbB);
         }
 
-        public static void b2BroadPhase_RebuildTrees(b2BroadPhase bp)
+        public static void b2BroadPhase_RebuildTrees(B2BroadPhase bp)
         {
-            b2DynamicTree_Rebuild(bp.trees[(int)b2BodyType.b2_dynamicBody], false);
-            b2DynamicTree_Rebuild(bp.trees[(int)b2BodyType.b2_kinematicBody], false);
+            b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_dynamicBody], false);
+            b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_kinematicBody], false);
         }
 
-        public static int b2BroadPhase_GetShapeIndex(b2BroadPhase bp, int proxyKey)
+        public static int b2BroadPhase_GetShapeIndex(B2BroadPhase bp, int proxyKey)
         {
             int typeIndex = (int)B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
@@ -511,20 +511,20 @@ b2TreeStats b2_staticStats;
             return b2DynamicTree_GetUserData(bp.trees[typeIndex], proxyId);
         }
 
-        public static void b2ValidateBroadphase(b2BroadPhase bp)
+        public static void b2ValidateBroadphase(B2BroadPhase bp)
         {
-            b2DynamicTree_Validate(bp.trees[(int)b2BodyType.b2_dynamicBody]);
-            b2DynamicTree_Validate(bp.trees[(int)b2BodyType.b2_kinematicBody]);
+            b2DynamicTree_Validate(bp.trees[(int)B2BodyType.b2_dynamicBody]);
+            b2DynamicTree_Validate(bp.trees[(int)B2BodyType.b2_kinematicBody]);
 
             // TODO_ERIN validate every shape AABB is contained in tree AABB
         }
 
-        public static void b2ValidateNoEnlarged(b2BroadPhase bp)
+        public static void b2ValidateNoEnlarged(B2BroadPhase bp)
         {
 #if B2_VALIDATE
-            for ( int j = 0; j < (int)b2BodyType.b2_bodyTypeCount; ++j )
+            for ( int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j )
             {
-                b2DynamicTree tree = bp.trees[j];
+                B2DynamicTree tree = bp.trees[j];
                 b2DynamicTree_ValidateNoEnlarged( tree );
             }
 #else

@@ -8,7 +8,7 @@ using Box2D.NET.Core;
 namespace Box2D.NET.Primitives
 {
     // Context for a time step. Recreated each time step.
-    public class b2StepContext // TODO: @ikpil, check struct or class
+    public class B2StepContext // TODO: @ikpil, check struct or class
     {
         // time step
         public float dt;
@@ -22,21 +22,21 @@ namespace Box2D.NET.Primitives
 
         public int subStepCount;
 
-        public b2Softness jointSoftness;
-        public b2Softness contactSoftness;
-        public b2Softness staticSoftness;
+        public B2Softness jointSoftness;
+        public B2Softness contactSoftness;
+        public B2Softness staticSoftness;
 
         public float restitutionThreshold;
         public float maxLinearVelocity;
 
-        public b2World world;
-        public b2ConstraintGraph graph;
+        public B2World world;
+        public B2ConstraintGraph graph;
 
         // shortcut to body states from awake set
-        public b2BodyState[] states;
+        public B2BodyState[] states;
 
         // shortcut to body sims from awake set
-        public b2BodySim[] sims;
+        public B2BodySim[] sims;
 
         // array of all shape ids for shapes that have enlarged AABBs
         public int[] enlargedShapes;
@@ -44,23 +44,23 @@ namespace Box2D.NET.Primitives
 
         // Array of bullet bodies that need continuous collision handling
         public ArraySegment<int> bulletBodies;
-        public b2AtomicInt bulletBodyCount;
+        public B2AtomicInt bulletBodyCount;
 
         // joint pointers for simplified parallel-for access.
-        public ArraySegment<b2JointSim> joints;
+        public ArraySegment<B2JointSim> joints;
 
         // contact pointers for simplified parallel-for access.
         // - parallel-for collide with no gaps
         // - parallel-for prepare and store contacts with NULL gaps for SIMD remainders
         // despite being an array of pointers, these are contiguous sub-arrays corresponding
         // to constraint graph colors
-        public ArraySegment<b2ContactSim> contacts;
+        public ArraySegment<B2ContactSim> contacts;
 
-        public ArraySegment<b2ContactConstraintSIMD> simdContactConstraints;
+        public ArraySegment<B2ContactConstraintSIMD> simdContactConstraints;
         public int activeColorCount;
         public int workerCount;
 
-        public ArraySegment<b2SolverStage> stages;
+        public ArraySegment<B2SolverStage> stages;
         public int stageCount;
         public bool enableWarmStarting;
 
@@ -68,7 +68,7 @@ namespace Box2D.NET.Primitives
         public UnsafeArray64<byte> dummy1;
 
         // sync index (16-bits) | stage type (16-bits)
-        public b2AtomicU32 atomicSyncBits;
+        public B2AtomicU32 atomicSyncBits;
 
         public UnsafeArray64<byte> dummy2;
     }

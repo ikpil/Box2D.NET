@@ -24,7 +24,7 @@ public class BenchmarkKinematic : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 150.0f;
         }
 
@@ -36,18 +36,18 @@ public class BenchmarkKinematic : Sample
         int span = 20;
 #endif
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_kinematicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_kinematicBody;
         bodyDef.angularVelocity = 1.0f;
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = 1;
         shapeDef.filter.maskBits = 2;
 
         // defer mass properties to avoid n-squared mass computations
         shapeDef.updateBodyMass = false;
 
-        b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
         for (int i = -span; i < span; ++i)
         {
@@ -55,7 +55,7 @@ public class BenchmarkKinematic : Sample
             for (int j = -span; j < span; ++j)
             {
                 float x = j * grid;
-                b2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new b2Vec2(x, y), b2Rot_identity);
+                B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
                 b2CreatePolygonShape(bodyId, shapeDef, square);
             }
         }

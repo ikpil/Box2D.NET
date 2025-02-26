@@ -6,7 +6,7 @@ namespace Box2D.NET.Primitives
 {
     /// Shape type
     /// @ingroup shape
-    public enum b2ShapeType
+    public enum B2ShapeType
     {
         /// A circle with an offset
         b2_circleShape,

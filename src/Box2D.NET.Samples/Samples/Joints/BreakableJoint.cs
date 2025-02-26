@@ -23,7 +23,7 @@ public class BreakableJoint : Sample
 {
     public const int e_count = 6;
 
-    b2JointId[] m_jointIds = new b2JointId[e_count];
+    B2JointId[] m_jointIds = new B2JointId[e_count];
     float m_breakForce;
 
     static int sampleBreakableJoint = RegisterSample("Joints", "Breakable", Create);
@@ -38,15 +38,15 @@ public class BreakableJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 8.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2Segment segment = new b2Segment(new b2Vec2(-40.0f, 0.0f), new b2Vec2(40.0f, 0.0f));
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
         b2CreateSegmentShape(groundId, shapeDef, segment);
 
         for (int i = 0; i < e_count; ++i)
@@ -54,11 +54,11 @@ public class BreakableJoint : Sample
             m_jointIds[i] = b2_nullJointId;
         }
 
-        b2Vec2 position = new b2Vec2(-12.5f, 10.0f);
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2Vec2 position = new B2Vec2(-12.5f, 10.0f);
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.enableSleep = false;
 
-        b2Polygon box = b2MakeBox(1.0f, 1.0f);
+        B2Polygon box = b2MakeBox(1.0f, 1.0f);
 
         int index = 0;
 
@@ -67,13 +67,13 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             float length = 2.0f;
-            b2Vec2 pivot1 = new b2Vec2(position.x, position.y + 1.0f + length);
-            b2Vec2 pivot2 = new b2Vec2(position.x, position.y + 1.0f);
-            b2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
+            B2Vec2 pivot1 = new B2Vec2(position.x, position.y + 1.0f + length);
+            B2Vec2 pivot2 = new B2Vec2(position.x, position.y + 1.0f);
+            B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot1);
@@ -91,10 +91,10 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2MotorJointDef jointDef = b2DefaultMotorJointDef();
+            B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.linearOffset = position;
@@ -112,16 +112,16 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2Vec2 pivot = new b2Vec2(position.x - 1.0f, position.y);
-            b2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
+            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new b2Vec2(1.0f, 0.0f));
+            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new B2Vec2(1.0f, 0.0f));
             jointDef.collideConnected = true;
             m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
@@ -134,11 +134,11 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2Vec2 pivot = new b2Vec2(position.x - 1.0f, position.y);
-            b2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
+            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -155,11 +155,11 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2Vec2 pivot = new b2Vec2(position.x - 1.0f, position.y);
-            b2WeldJointDef jointDef = b2DefaultWeldJointDef();
+            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2WeldJointDef jointDef = b2DefaultWeldJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -180,16 +180,16 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2Vec2 pivot = new b2Vec2(position.x - 1.0f, position.y);
-            b2WheelJointDef jointDef = b2DefaultWheelJointDef();
+            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new b2Vec2(1.0f, 0.0f));
+            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new B2Vec2(1.0f, 0.0f));
             jointDef.hertz = 1.0f;
             jointDef.dampingRatio = 0.7f;
             jointDef.lowerTranslation = -1.0f;
@@ -219,7 +219,7 @@ public class BreakableJoint : Sample
 
         ImGui.SliderFloat("break force", ref m_breakForce, 0.0f, 10000.0f, "%.1f");
 
-        b2Vec2 gravity = b2World_GetGravity(m_worldId);
+        B2Vec2 gravity = b2World_GetGravity(m_worldId);
         if (ImGui.SliderFloat("gravity", ref gravity.y, -50.0f, 50.0f, "%.1f"))
         {
             b2World_SetGravity(m_worldId, gravity);
@@ -237,7 +237,7 @@ public class BreakableJoint : Sample
                 continue;
             }
 
-            b2Vec2 force = b2Joint_GetConstraintForce(m_jointIds[i]);
+            B2Vec2 force = b2Joint_GetConstraintForce(m_jointIds[i]);
             if (b2LengthSquared(force) > m_breakForce * m_breakForce)
             {
                 b2DestroyJoint(m_jointIds[i]);
@@ -245,7 +245,7 @@ public class BreakableJoint : Sample
             }
             else
             {
-                b2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
+                B2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
                 Draw.g_draw.DrawString(point, "(%.1f, %.1f)", force.x, force.y);
             }
         }

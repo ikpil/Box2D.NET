@@ -4,8 +4,8 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2SensorTaskContext
+    public class B2SensorTaskContext
     {
-        public b2BitSet eventBits;
+        public B2BitSet eventBits;
     }
 }

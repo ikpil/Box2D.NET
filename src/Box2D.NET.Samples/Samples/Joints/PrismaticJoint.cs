@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class PrismaticJoint : Sample
 {
-    b2JointId m_jointId;
+    B2JointId m_jointId;
     float m_motorSpeed;
     float m_motorForce;
     float m_hertz;
@@ -36,13 +36,13 @@ public class PrismaticJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 8.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
-        b2BodyId groundId;
+        B2BodyId groundId;
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -55,19 +55,19 @@ public class PrismaticJoint : Sample
         m_dampingRatio = 0.5f;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new b2Vec2(0.0f, 10.0f);
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(0.0f, 10.0f);
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeBox(0.5f, 2.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(0.5f, 2.0f);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            b2Vec2 pivot = new b2Vec2(0.0f, 9.0f);
+            B2Vec2 pivot = new B2Vec2(0.0f, 9.0f);
             // b2Vec2 axis = b2Normalize({1.0f, 0.0f});
-            b2Vec2 axis = b2Normalize(new b2Vec2(1.0f, 1.0f));
-            b2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
+            B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));
+            B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);

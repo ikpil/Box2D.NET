@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public enum b2RotateType
+    public enum B2RotateType
     {
         b2_rotateNone,
         b2_rotateBF,

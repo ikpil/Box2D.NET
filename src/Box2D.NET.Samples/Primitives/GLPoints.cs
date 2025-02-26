@@ -93,7 +93,7 @@ public class GLPoints
     // todo instead of flushing, keep a growable array of data
     // this will prevent sorting problems.
 
-    public void AddPoint(b2Vec2 v, float size, b2HexColor c)
+    public void AddPoint(B2Vec2 v, float size, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
         m_points.Add( {

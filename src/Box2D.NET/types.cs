@@ -67,7 +67,7 @@ namespace Box2D.NET
     /// @see b2ShapeDef
     /// @warning Do not attempt to modify the world inside this callback
     /// @ingroup world
-    public delegate bool b2CustomFilterFcn(b2ShapeId shapeIdA, b2ShapeId shapeIdB, object context);
+    public delegate bool b2CustomFilterFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context);
 
     /// Prototype for a pre-solve callback.
     /// This is called after a contact is updated. This allows you to inspect a
@@ -82,14 +82,14 @@ namespace Box2D.NET
     /// Return false if you want to disable the contact this step
     /// @warning Do not attempt to modify the world inside this callback
     /// @ingroup world
-    public delegate bool b2PreSolveFcn(b2ShapeId shapeIdA, b2ShapeId shapeIdB, ref b2Manifold manifold, object context);
+    public delegate bool b2PreSolveFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context);
 
     /// Prototype callback for overlap queries.
     /// Called for each shape found in the query.
     /// @see b2World_OverlapABB
     /// @return false to terminate the query.
     /// @ingroup world
-    public delegate bool b2OverlapResultFcn(b2ShapeId shapeId, object context);
+    public delegate bool b2OverlapResultFcn(B2ShapeId shapeId, object context);
 
     /// Prototype callback for ray casts.
     /// Called for each shape found in the query. You control how the ray cast
@@ -106,16 +106,16 @@ namespace Box2D.NET
     /// @return -1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue
     /// @see b2World_CastRay
     /// @ingroup world
-    public delegate float b2CastResultFcn(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context);
+    public delegate float b2CastResultFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context);
 
 
     public static class types
     {
         /// Use this to initialize your world definition
         /// @ingroup world
-        public static b2WorldDef b2DefaultWorldDef()
+        public static B2WorldDef b2DefaultWorldDef()
         {
-            b2WorldDef def = new b2WorldDef();
+            B2WorldDef def = new B2WorldDef();
             def.gravity.x = 0.0f;
             def.gravity.y = -10.0f;
             def.hitEventThreshold = 1.0f * b2_lengthUnitsPerMeter;
@@ -135,10 +135,10 @@ namespace Box2D.NET
 
         /// Use this to initialize your body definition
         /// @ingroup body
-        public static b2BodyDef b2DefaultBodyDef()
+        public static B2BodyDef b2DefaultBodyDef()
         {
-            b2BodyDef def = new b2BodyDef();
-            def.type = b2BodyType.b2_staticBody;
+            B2BodyDef def = new B2BodyDef();
+            def.type = B2BodyType.b2_staticBody;
             def.rotation = b2Rot_identity;
             def.sleepThreshold = 0.05f * b2_lengthUnitsPerMeter;
             def.gravityScale = 1.0f;
@@ -151,25 +151,25 @@ namespace Box2D.NET
 
         /// Use this to initialize your filter
         /// @ingroup shape
-        public static b2Filter b2DefaultFilter()
+        public static B2Filter b2DefaultFilter()
         {
-            b2Filter filter = new b2Filter(B2_DEFAULT_CATEGORY_BITS, B2_DEFAULT_MASK_BITS, 0);
+            B2Filter filter = new B2Filter(B2_DEFAULT_CATEGORY_BITS, B2_DEFAULT_MASK_BITS, 0);
             return filter;
         }
 
         /// Use this to initialize your query filter
         /// @ingroup shape
-        public static b2QueryFilter b2DefaultQueryFilter()
+        public static B2QueryFilter b2DefaultQueryFilter()
         {
-            b2QueryFilter filter = new b2QueryFilter(B2_DEFAULT_CATEGORY_BITS, B2_DEFAULT_MASK_BITS);
+            B2QueryFilter filter = new B2QueryFilter(B2_DEFAULT_CATEGORY_BITS, B2_DEFAULT_MASK_BITS);
             return filter;
         }
 
         /// Use this to initialize your shape definition
         /// @ingroup shape
-        public static b2ShapeDef b2DefaultShapeDef()
+        public static B2ShapeDef b2DefaultShapeDef()
         {
-            b2ShapeDef def = new b2ShapeDef();
+            B2ShapeDef def = new B2ShapeDef();
             def.friction = 0.6f;
             def.density = 1.0f;
             def.filter = b2DefaultFilter();
@@ -180,9 +180,9 @@ namespace Box2D.NET
 
         /// Use this to initialize your surface material
         /// @ingroup shape
-        public static b2SurfaceMaterial b2DefaultSurfaceMaterial()
+        public static B2SurfaceMaterial b2DefaultSurfaceMaterial()
         {
-            b2SurfaceMaterial material = new b2SurfaceMaterial();
+            B2SurfaceMaterial material = new B2SurfaceMaterial();
             material.friction = 0.6f;
 
             return material;
@@ -190,69 +190,69 @@ namespace Box2D.NET
 
         /// Use this to initialize your chain definition
         /// @ingroup shape
-        public static b2ChainDef b2DefaultChainDef()
+        public static B2ChainDef b2DefaultChainDef()
         {
-            b2SurfaceMaterial defaultMaterial = new b2SurfaceMaterial();
+            B2SurfaceMaterial defaultMaterial = new B2SurfaceMaterial();
             defaultMaterial.friction = 0.6f;
 
-            b2ChainDef def = new b2ChainDef();
-            def.materials = new b2SurfaceMaterial[] { defaultMaterial };
+            B2ChainDef def = new B2ChainDef();
+            def.materials = new B2SurfaceMaterial[] { defaultMaterial };
             def.materialCount = 1;
             def.filter = b2DefaultFilter();
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
 
-        public static void b2EmptyDrawPolygon(ReadOnlySpan<b2Vec2> vertices, int vertexCount, b2HexColor color, object context)
+        public static void b2EmptyDrawPolygon(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context)
         {
-            B2_UNUSED((b2Vec2[])null, vertexCount, color, context);
+            B2_UNUSED((B2Vec2[])null, vertexCount, color, context);
         }
 
-        public static void b2EmptyDrawSolidPolygon(ref b2Transform transform, ReadOnlySpan<b2Vec2> vertices, int vertexCount, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawSolidPolygon(ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
         {
-            B2_UNUSED(transform, (b2Vec2[])null, vertexCount, radius, color, context);
+            B2_UNUSED(transform, (B2Vec2[])null, vertexCount, radius, color, context);
         }
 
-        public static void b2EmptyDrawCircle(b2Vec2 center, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawCircle(B2Vec2 center, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(center, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCircle(ref b2Transform transform, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawSolidCircle(ref B2Transform transform, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(transform, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, object context)
+        public static void b2EmptyDrawSolidCapsule(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, radius, color, context);
         }
 
-        public static void b2EmptyDrawSegment(b2Vec2 p1, b2Vec2 p2, b2HexColor color, object context)
+        public static void b2EmptyDrawSegment(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, color, context);
         }
 
-        public static void b2EmptyDrawTransform(b2Transform transform, object context)
+        public static void b2EmptyDrawTransform(B2Transform transform, object context)
         {
             B2_UNUSED(transform, context);
         }
 
-        public static void b2EmptyDrawPoint(b2Vec2 p, float size, b2HexColor color, object context)
+        public static void b2EmptyDrawPoint(B2Vec2 p, float size, B2HexColor color, object context)
         {
             B2_UNUSED(p, size, color, context);
         }
 
-        public static void b2EmptyDrawString(b2Vec2 p, string s, b2HexColor color, object context)
+        public static void b2EmptyDrawString(B2Vec2 p, string s, B2HexColor color, object context)
         {
             B2_UNUSED(p, s, color, context);
         }
 
         /// Use this to initialize your drawing interface. This allows you to implement a sub-set
         /// of the drawing functions.
-        public static b2DebugDraw b2DefaultDebugDraw()
+        public static B2DebugDraw b2DefaultDebugDraw()
         {
-            b2DebugDraw draw = new b2DebugDraw();
+            B2DebugDraw draw = new B2DebugDraw();
 
             // These allow the user to skip some implementations and not hit null exceptions.
             draw.DrawPolygon = b2EmptyDrawPolygon;

@@ -27,21 +27,21 @@ namespace Box2D.NET
     public static class array
     {
         /* Resize */
-        public static void b2Array_Resize<T>(ref b2Array<T> a, int count) where T : new()
+        public static void b2Array_Resize<T>(ref B2Array<T> a, int count) where T : new()
         {
             b2Array_Reserve(ref a, count);
             a.count = count;
         }
 
         /* Get */
-        public static ref T b2Array_Get<T>(ref b2Array<T> a, int index)
+        public static ref T b2Array_Get<T>(ref B2Array<T> a, int index)
         {
             Debug.Assert(0 <= index && index < a.count);
             return ref a.data[index];
         }
 
         /* Add */
-        public static ref T b2Array_Add<T>(ref b2Array<T> a) where T : new()
+        public static ref T b2Array_Add<T>(ref B2Array<T> a) where T : new()
         {
             if (a.count == a.capacity)
             {
@@ -54,7 +54,7 @@ namespace Box2D.NET
         }
 
         /* Push */
-        public static void b2Array_Push<T>(ref b2Array<T> a, T value) where T : new()
+        public static void b2Array_Push<T>(ref B2Array<T> a, T value) where T : new()
         {
             if (a.count == a.capacity)
             {
@@ -67,14 +67,14 @@ namespace Box2D.NET
         }
 
         /* Set */
-        public static void b2Array_Set<T>(ref b2Array<T> a, int index, T value)
+        public static void b2Array_Set<T>(ref B2Array<T> a, int index, T value)
         {
             Debug.Assert(0 <= index && index < a.count);
             a.data[index] = value;
         }
 
         /* RemoveSwap */
-        public static int b2Array_RemoveSwap<T>(ref b2Array<T> a, int index) where T : new()
+        public static int b2Array_RemoveSwap<T>(ref B2Array<T> a, int index) where T : new()
         {
             Debug.Assert(0 <= index && index < a.count);
             int movedIndex = B2_NULL_INDEX;
@@ -95,7 +95,7 @@ namespace Box2D.NET
         }
 
         /* Pop */
-        public static T b2Array_Pop<T>(ref b2Array<T> a) where T : new()
+        public static T b2Array_Pop<T>(ref B2Array<T> a) where T : new()
         {
             Debug.Assert(a.count > 0);
             T value = a.data[a.count - 1];
@@ -110,13 +110,13 @@ namespace Box2D.NET
         }
 
         /* Clear */
-        public static void b2Array_Clear<T>(ref b2Array<T> a)
+        public static void b2Array_Clear<T>(ref B2Array<T> a)
         {
             a.count = 0;
         }
 
         /* ByteCount */
-        public static int b2Array_ByteCount<T>(ref b2Array<T> a)
+        public static int b2Array_ByteCount<T>(ref B2Array<T> a)
         {
             // TODO: @ikpil, check
             //return (int)( a.capacity * sizeof( T ) );                                                                               
@@ -125,9 +125,9 @@ namespace Box2D.NET
 
         // Array implementations to be instantiated in a source file where the type T is known
         /* Create */
-        public static b2Array<T> b2Array_Create<T>(int capacity = 0) where T : new()
+        public static B2Array<T> b2Array_Create<T>(int capacity = 0) where T : new()
         {
-            b2Array<T> a = new b2Array<T>();
+            B2Array<T> a = new B2Array<T>();
             if (capacity > 0)
             {
                 a.data = new T[capacity];
@@ -146,7 +146,7 @@ namespace Box2D.NET
         }
 
         /* Reserve */
-        public static void b2Array_Reserve<T>(ref b2Array<T> a, int newCapacity) where T : new()
+        public static void b2Array_Reserve<T>(ref B2Array<T> a, int newCapacity) where T : new()
         {
             if (newCapacity <= a.capacity)
             {
@@ -158,7 +158,7 @@ namespace Box2D.NET
         }
 
         /* Destroy */
-        public static void b2Array_Destroy<T>(ref b2Array<T> a)
+        public static void b2Array_Destroy<T>(ref B2Array<T> a)
         {
             b2Free(a.data, a.capacity);
             a.data = null;

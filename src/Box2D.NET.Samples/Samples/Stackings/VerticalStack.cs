@@ -27,8 +27,8 @@ public class VerticalStack : Sample
         e_boxShape
     };
 
-    b2BodyId[] m_bullets = new b2BodyId[e_maxBullets];
-    b2BodyId[] m_bodies = new b2BodyId[e_maxRows * e_maxColumns];
+    B2BodyId[] m_bullets = new B2BodyId[e_maxBullets];
+    B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
     int m_columnCount;
     int m_rowCount;
     int m_bulletCount;
@@ -48,20 +48,20 @@ public class VerticalStack : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(-7.0f, 9.0f);
+            Draw.g_camera.m_center = new B2Vec2(-7.0f, 9.0f);
             Draw.g_camera.m_zoom = 14.0f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new b2Vec2(0.0f, -1.0f);
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Polygon box = b2MakeBox(100.0f, 1.0f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(100.0f, 1.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            b2Segment segment = new b2Segment(new b2Vec2(10.0f, 1.0f), new b2Vec2(10.0f, 21.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(10.0f, 1.0f), new B2Vec2(10.0f, 21.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
@@ -95,13 +95,13 @@ public class VerticalStack : Sample
             }
         }
 
-        b2Circle circle = new b2Circle(new b2Vec2(), 0.0f);
+        B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
         circle.radius = 0.5f;
 
-        b2Polygon box = b2MakeBox(0.5f, 0.5f);
+        B2Polygon box = b2MakeBox(0.5f, 0.5f);
         // b2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.friction = 0.3f;
 
@@ -125,15 +125,15 @@ public class VerticalStack : Sample
 
             for (int i = 0; i < m_rowCount; ++i)
             {
-                b2BodyDef bodyDef = b2DefaultBodyDef();
-                bodyDef.type = b2BodyType.b2_dynamicBody;
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_dynamicBody;
 
                 int n = j * m_rowCount + i;
 
                 float shift = (i % 2 == 0 ? -offset : offset);
-                bodyDef.position = new b2Vec2(x + shift, 0.5f + 1.0f * i);
+                bodyDef.position = new B2Vec2(x + shift, 0.5f + 1.0f * i);
                 // bodyDef.position = {x + shift, 1.0f + 1.51f * i};
-                b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 m_bodies[n] = bodyId;
 
@@ -171,7 +171,7 @@ public class VerticalStack : Sample
     {
         for (int i = 0; i < e_maxBullets; ++i)
         {
-            b2BodyId bullet = m_bullets[i];
+            B2BodyId bullet = m_bullets[i];
 
             if (B2_IS_NON_NULL(bullet))
             {
@@ -183,22 +183,22 @@ public class VerticalStack : Sample
 
     void FireBullets()
     {
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.25f);
-        b2Polygon box = b2MakeBox(0.25f, 0.25f);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.25f);
+        B2Polygon box = b2MakeBox(0.25f, 0.25f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 4.0f;
 
         for (int i = 0; i < m_bulletCount; ++i)
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.position = new b2Vec2(-25.0f - i, 6.0f);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(-25.0f - i, 6.0f);
             float speed = RandomFloatRange(200.0f, 300.0f);
-            bodyDef.linearVelocity = new b2Vec2(speed, 0.0f);
+            bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
             bodyDef.isBullet = true;
 
-            b2BodyId bullet = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bullet = b2CreateBody(m_worldId, bodyDef);
 
             if (m_bulletType == ShapeType.e_boxShape)
             {

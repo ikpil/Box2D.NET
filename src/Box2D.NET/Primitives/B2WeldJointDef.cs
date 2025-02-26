@@ -10,19 +10,19 @@ namespace Box2D.NET.Primitives
     /// soft-body simulation.
     /// @note The approximate solver in Box2D cannot hold many bodies together rigidly
     /// @ingroup weld_joint
-    public class b2WeldJointDef
+    public class B2WeldJointDef
     {
         /// The first attached body
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// The local anchor point relative to bodyA's origin
-        public b2Vec2 localAnchorA;
+        public B2Vec2 localAnchorA;
 
         /// The local anchor point relative to bodyB's origin
-        public b2Vec2 localAnchorB;
+        public B2Vec2 localAnchorB;
 
         /// The bodyB angle minus bodyA angle in the reference state (radians)
         public float referenceAngle;

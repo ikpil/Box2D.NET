@@ -8,17 +8,17 @@ namespace Box2D.NET.Primitives
 {
 #if B2_SIMD_AVX2
     // wide float holds 8 numbers
-    typedef __m256 b2FloatW;
+    typedef __m256 B2FloatW;
 #elif B2_SIMD_NEON
     // wide float holds 4 numbers
-    typedef float32x4_t b2FloatW;
+    typedef float32x4_t B2FloatW;
 #elif B2_SIMD_SSE2
     // wide float holds 4 numbers
-    typedef __m128 b2FloatW;
+    typedef __m128 B2FloatW;
 #else
     // scalar math
     // TODO: @ikpil, check SIMD
-    public struct b2FloatW
+    public struct B2FloatW
     {
         private UnsafeArray4<float> _array;
         public float x { get => _array.v0000; set => _array.v0000 = value; }
@@ -27,7 +27,7 @@ namespace Box2D.NET.Primitives
         public float w { get => _array.v0003; set => _array.v0003 = value; }
 
 
-        public b2FloatW(float x, float y, float z, float w)
+        public B2FloatW(float x, float y, float z, float w)
         {
             _array.v0000 = x;
             _array.v0001 = y;

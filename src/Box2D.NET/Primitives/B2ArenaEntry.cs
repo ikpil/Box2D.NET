@@ -6,7 +6,7 @@ using System;
 
 namespace Box2D.NET.Primitives
 {
-    public class b2ArenaEntry<T>
+    public class B2ArenaEntry<T>
     {
         public ArraySegment<T> data;
         public string name;

@@ -12,38 +12,38 @@ namespace Box2D.NET
 {
     public class arena_allocator
     {
-        public static b2ArenaAllocator b2CreateArenaAllocator(int capacity)
+        public static B2ArenaAllocator b2CreateArenaAllocator(int capacity)
         {
-            var allocator = new b2ArenaAllocator();
+            var allocator = new B2ArenaAllocator();
             return allocator;
         }
 
-        public static void b2DestroyArenaAllocator(b2ArenaAllocator allocator)
+        public static void b2DestroyArenaAllocator(B2ArenaAllocator allocator)
         {
             // Array_Destroy(allocator.entries);
             // b2Free(allocator.data, allocator.capacity);
         }
 
-        public static b2ArenaAllocatorImpl<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
+        public static B2ArenaAllocatorImpl<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
         {
             Debug.Assert(capacity >= 0);
-            b2ArenaAllocatorImpl<T> allocatorImpl = new b2ArenaAllocatorImpl<T>();
+            B2ArenaAllocatorImpl<T> allocatorImpl = new B2ArenaAllocatorImpl<T>();
             allocatorImpl.capacity = capacity;
             allocatorImpl.data = b2Alloc<T>(capacity);
             allocatorImpl.allocation = 0;
             allocatorImpl.maxAllocation = 0;
             allocatorImpl.index = 0;
-            allocatorImpl.entries = b2Array_Create<b2ArenaEntry<T>>(32);
+            allocatorImpl.entries = b2Array_Create<B2ArenaEntry<T>>(32);
             return allocatorImpl;
         }
 
-        public static ArraySegment<T> b2AllocateArenaItem<T>(b2ArenaAllocator allocator, int size, string name) where T : new()
+        public static ArraySegment<T> b2AllocateArenaItem<T>(B2ArenaAllocator allocator, int size, string name) where T : new()
         {
             var alloc = allocator.Touch<T>();
             // ensure allocation is 32 byte aligned to support 256-bit SIMD
             int size32 = ((size - 1) | 0x1F) + 1;
 
-            b2ArenaEntry<T> entry = new b2ArenaEntry<T>();
+            B2ArenaEntry<T> entry = new B2ArenaEntry<T>();
             entry.size = size32;
             entry.name = name;
             if (alloc.index + size32 > alloc.capacity)
@@ -73,12 +73,12 @@ namespace Box2D.NET
             return entry.data;
         }
 
-        public static void b2FreeArenaItem<T>(b2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
+        public static void b2FreeArenaItem<T>(B2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
         {
             var alloc = allocator.Touch<T>();
             int entryCount = alloc.entries.count;
             Debug.Assert(entryCount > 0);
-            b2ArenaEntry<T> entry = alloc.entries.data[entryCount - 1];
+            B2ArenaEntry<T> entry = alloc.entries.data[entryCount - 1];
             Debug.Assert(mem == entry.data);
             if (entry.usedMalloc)
             {
@@ -93,7 +93,7 @@ namespace Box2D.NET
             b2Array_Pop(ref alloc.entries);
         }
 
-        public static void b2GrowArena(b2ArenaAllocator allocator)
+        public static void b2GrowArena(B2ArenaAllocator allocator)
         {
             var allocs = allocator.AsArray();
 
@@ -114,7 +114,7 @@ namespace Box2D.NET
         }
 
         // Grow the arena based on usage
-        public static int b2GetArenaCapacity(b2ArenaAllocator allocator)
+        public static int b2GetArenaCapacity(B2ArenaAllocator allocator)
         {
             int capacity = 0;
             var allocs = allocator.AsArray();
@@ -126,7 +126,7 @@ namespace Box2D.NET
             return capacity;
         }
 
-        public static int b2GetArenaAllocation(b2ArenaAllocator allocator)
+        public static int b2GetArenaAllocation(B2ArenaAllocator allocator)
         {
             int allocation = 0;
             var allocs = allocator.AsArray();
@@ -138,7 +138,7 @@ namespace Box2D.NET
             return allocation;
         }
 
-        public static int b2GetMaxArenaAllocation(b2ArenaAllocator allocator)
+        public static int b2GetMaxArenaAllocation(B2ArenaAllocator allocator)
         {
             int maxAllocation = 0;
             var allocs = allocator.AsArray();

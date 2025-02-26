@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public struct b2ContactEdge
+    public struct B2ContactEdge
     {
         public int bodyId;
         public int prevKey;

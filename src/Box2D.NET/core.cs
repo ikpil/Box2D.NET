@@ -13,7 +13,7 @@ namespace Box2D.NET
 {
     public static class core
     {
-        private static b2AtomicInt b2_byteCount;
+        private static B2AtomicInt b2_byteCount;
 
         // TODO: @ikpil. check SIMD
 // // Define SIMD
@@ -132,9 +132,9 @@ namespace Box2D.NET
 
 
         /// Get the current version of Box2D
-        public static b2Version b2GetVersion()
+        public static B2Version b2GetVersion()
         {
-            return new b2Version(3, 1, 0);
+            return new B2Version(3, 1, 0);
         }
 
 
@@ -156,15 +156,15 @@ namespace Box2D.NET
         TracyCZoneEnd(ctx);
     }
 #else
-        public static void b2TracyCZoneC(b2TracyCZone ctx, b2HexColor color, bool active)
+        public static void b2TracyCZoneC(B2TracyCZone ctx, B2HexColor color, bool active)
         {
         }
 
-        public static void b2TracyCZoneNC(b2TracyCZone ctx, string name, b2HexColor color, bool active)
+        public static void b2TracyCZoneNC(B2TracyCZone ctx, string name, B2HexColor color, bool active)
         {
         }
 
-        public static void b2TracyCZoneEnd(b2TracyCZone ctx)
+        public static void b2TracyCZoneEnd(B2TracyCZone ctx)
         {
         }
 
@@ -179,64 +179,64 @@ namespace Box2D.NET
             return A.Length;
         }
 
-        public static void B2_CHECK_DEF(b2WheelJointDef DEF)
+        public static void B2_CHECK_DEF(B2WheelJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
 
-        public static void B2_CHECK_DEF(b2WeldJointDef DEF)
+        public static void B2_CHECK_DEF(B2WeldJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2PrismaticJointDef DEF)
+        public static void B2_CHECK_DEF(B2PrismaticJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2RevoluteJointDef DEF)
+        public static void B2_CHECK_DEF(B2RevoluteJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
 
-        public static void B2_CHECK_DEF(b2NullJointDef DEF)
+        public static void B2_CHECK_DEF(B2NullJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2MouseJointDef DEF)
+        public static void B2_CHECK_DEF(B2MouseJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2MotorJointDef DEF)
+        public static void B2_CHECK_DEF(B2MotorJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2DistanceJointDef DEF)
+        public static void B2_CHECK_DEF(B2DistanceJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2ChainDef DEF)
+        public static void B2_CHECK_DEF(B2ChainDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2BodyDef DEF)
+        public static void B2_CHECK_DEF(B2BodyDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2WorldDef DEF)
+        public static void B2_CHECK_DEF(B2WorldDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(b2ShapeDef DEF)
+        public static void B2_CHECK_DEF(B2ShapeDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }

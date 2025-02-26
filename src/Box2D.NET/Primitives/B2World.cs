@@ -9,79 +9,79 @@ namespace Box2D.NET.Primitives
 {
     // The world struct manages all physics entities, dynamic simulation,  and asynchronous queries.
     // The world also contains efficient memory management facilities.
-    public class b2World
+    public class B2World
     {
-        public b2ArenaAllocator stackAllocator;
-        public b2BroadPhase broadPhase;
-        public b2ConstraintGraph constraintGraph;
+        public B2ArenaAllocator stackAllocator;
+        public B2BroadPhase broadPhase;
+        public B2ConstraintGraph constraintGraph;
 
         // The body id pool is used to allocate and recycle body ids. Body ids
         // provide a stable identifier for users, but incur caches misses when used
         // to access body data. Aligns with b2Body.
-        public b2IdPool bodyIdPool;
+        public B2IdPool bodyIdPool;
 
         // This is a sparse array that maps body ids to the body data
         // stored in solver sets. As sims move within a set or across set.
         // Indices come from id pool.
-        public b2Array<b2Body> bodies;
+        public B2Array<B2Body> bodies;
 
         // Provides free list for solver sets.
-        public b2IdPool solverSetIdPool;
+        public B2IdPool solverSetIdPool;
 
         // Solvers sets allow sims to be stored in contiguous arrays. The first
         // set is all static sims. The second set is active sims. The third set is disabled
         // sims. The remaining sets are sleeping islands.
-        public b2Array<b2SolverSet> solverSets;
+        public B2Array<B2SolverSet> solverSets;
 
         // Used to create stable ids for joints
-        public b2IdPool jointIdPool;
+        public B2IdPool jointIdPool;
 
         // This is a sparse array that maps joint ids to the joint data stored in the constraint graph
         // or in the solver sets.
-        public b2Array<b2Joint> joints;
+        public B2Array<B2Joint> joints;
 
         // Used to create stable ids for contacts
-        public b2IdPool contactIdPool;
+        public B2IdPool contactIdPool;
 
         // This is a sparse array that maps contact ids to the contact data stored in the constraint graph
         // or in the solver sets.
-        public b2Array<b2Contact> contacts;
+        public B2Array<B2Contact> contacts;
 
         // Used to create stable ids for islands
-        public b2IdPool islandIdPool;
+        public B2IdPool islandIdPool;
 
         // This is a sparse array that maps island ids to the island data stored in the solver sets.
-        public b2Array<b2Island> islands;
+        public B2Array<B2Island> islands;
 
-        public b2IdPool shapeIdPool;
-        public b2IdPool chainIdPool;
+        public B2IdPool shapeIdPool;
+        public B2IdPool chainIdPool;
 
         // These are sparse arrays that point into the pools above
-        public b2Array<b2Shape> shapes;
-        public b2Array<b2ChainShape> chainShapes;
+        public B2Array<B2Shape> shapes;
+        public B2Array<B2ChainShape> chainShapes;
 
         // This is a dense array of sensor data.
-        public b2Array<b2Sensor> sensors;
+        public B2Array<B2Sensor> sensors;
 
         // Per thread storage
-        public b2Array<b2TaskContext> taskContexts;
-        public b2Array<b2SensorTaskContext> sensorTaskContexts;
+        public B2Array<B2TaskContext> taskContexts;
+        public B2Array<B2SensorTaskContext> sensorTaskContexts;
 
-        public b2Array<b2BodyMoveEvent> bodyMoveEvents;
-        public b2Array<b2SensorBeginTouchEvent> sensorBeginEvents;
-        public b2Array<b2ContactBeginTouchEvent> contactBeginEvents;
+        public B2Array<B2BodyMoveEvent> bodyMoveEvents;
+        public B2Array<B2SensorBeginTouchEvent> sensorBeginEvents;
+        public B2Array<B2ContactBeginTouchEvent> contactBeginEvents;
 
         // End events are double buffered so that the user doesn't need to flush events
-        public b2Array<b2SensorEndTouchEvent>[] sensorEndEvents = new b2Array<b2SensorEndTouchEvent>[2];
-        public b2Array<b2ContactEndTouchEvent>[] contactEndEvents = new b2Array<b2ContactEndTouchEvent>[2];
+        public B2Array<B2SensorEndTouchEvent>[] sensorEndEvents = new B2Array<B2SensorEndTouchEvent>[2];
+        public B2Array<B2ContactEndTouchEvent>[] contactEndEvents = new B2Array<B2ContactEndTouchEvent>[2];
         public int endEventArrayIndex;
 
-        public b2Array<b2ContactHitEvent> contactHitEvents;
+        public B2Array<B2ContactHitEvent> contactHitEvents;
 
         // Used to track debug draw
-        public b2BitSet debugBodySet;
-        public b2BitSet debugJointSet;
-        public b2BitSet debugContactSet;
+        public B2BitSet debugBodySet;
+        public B2BitSet debugJointSet;
+        public B2BitSet debugContactSet;
 
         // Id that is incremented every time step
         public ulong stepIndex;
@@ -95,7 +95,7 @@ namespace Box2D.NET.Primitives
         // - if no bodies want to sleep then there is no reason to perform island splitting
         public int splitIslandId;
 
-        public b2Vec2 gravity;
+        public B2Vec2 gravity;
         public float hitEventThreshold;
         public float restitutionThreshold;
         public float maxLinearSpeed;
@@ -110,7 +110,7 @@ namespace Box2D.NET.Primitives
 
         public ushort generation;
 
-        public b2Profile profile;
+        public B2Profile profile;
 
         public b2PreSolveFcn preSolveFcn;
         public object preSolveContext;
@@ -142,7 +142,7 @@ namespace Box2D.NET.Primitives
         public bool inUse;
 
         // TODO: @ikpil for b2Solve 
-        public readonly b2WorkerContext[] tempWorkerContext = b2Alloc<b2WorkerContext>(B2_MAX_WORKERS);
+        public readonly B2WorkerContext[] tempWorkerContext = b2Alloc<B2WorkerContext>(B2_MAX_WORKERS);
 
         public void Clear()
         {
@@ -152,46 +152,46 @@ namespace Box2D.NET.Primitives
 
             bodyIdPool = null;
 
-            bodies = new b2Array<b2Body>();
+            bodies = new B2Array<B2Body>();
 
             solverSetIdPool = null;
 
-            solverSets = new b2Array<b2SolverSet>();
+            solverSets = new B2Array<B2SolverSet>();
 
             jointIdPool = null;
 
-            joints = new b2Array<b2Joint>();
+            joints = new B2Array<B2Joint>();
 
             contactIdPool = null;
 
-            contacts = new b2Array<b2Contact>();
+            contacts = new B2Array<B2Contact>();
 
             islandIdPool = null;
 
-            islands = new b2Array<b2Island>();
+            islands = new B2Array<B2Island>();
 
             shapeIdPool = null;
             chainIdPool = null;
 
-            shapes = new b2Array<b2Shape>();
-            chainShapes = new b2Array<b2ChainShape>();
+            shapes = new B2Array<B2Shape>();
+            chainShapes = new B2Array<B2ChainShape>();
 
-            sensors = new b2Array<b2Sensor>();
+            sensors = new B2Array<B2Sensor>();
 
-            taskContexts = new b2Array<b2TaskContext>();
-            sensorTaskContexts = new b2Array<b2SensorTaskContext>();
+            taskContexts = new B2Array<B2TaskContext>();
+            sensorTaskContexts = new B2Array<B2SensorTaskContext>();
 
-            bodyMoveEvents = new b2Array<b2BodyMoveEvent>();
-            sensorBeginEvents = new b2Array<b2SensorBeginTouchEvent>();
-            contactBeginEvents = new b2Array<b2ContactBeginTouchEvent>();
+            bodyMoveEvents = new B2Array<B2BodyMoveEvent>();
+            sensorBeginEvents = new B2Array<B2SensorBeginTouchEvent>();
+            contactBeginEvents = new B2Array<B2ContactBeginTouchEvent>();
 
-            sensorEndEvents[0] = new b2Array<b2SensorEndTouchEvent>();
-            sensorEndEvents[1] = new b2Array<b2SensorEndTouchEvent>();
-            contactEndEvents[0] = new b2Array<b2ContactEndTouchEvent>();
-            contactEndEvents[1] = new b2Array<b2ContactEndTouchEvent>();
+            sensorEndEvents[0] = new B2Array<B2SensorEndTouchEvent>();
+            sensorEndEvents[1] = new B2Array<B2SensorEndTouchEvent>();
+            contactEndEvents[0] = new B2Array<B2ContactEndTouchEvent>();
+            contactEndEvents[1] = new B2Array<B2ContactEndTouchEvent>();
             endEventArrayIndex = 0;
 
-            contactHitEvents = new b2Array<b2ContactHitEvent>();
+            contactHitEvents = new B2Array<B2ContactHitEvent>();
 
             debugBodySet = null;
             debugJointSet = null;
@@ -201,7 +201,7 @@ namespace Box2D.NET.Primitives
 
             splitIslandId = 0;
 
-            gravity = new b2Vec2();
+            gravity = new B2Vec2();
             hitEventThreshold = 0.0f;
             restitutionThreshold = 0.0f;
             maxLinearSpeed = 0.0f;

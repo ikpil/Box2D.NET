@@ -5,15 +5,15 @@
 namespace Box2D.NET.Primitives
 {
     /// A solid circle
-    public class b2Circle
+    public class B2Circle
     {
         /// The local center
-        public b2Vec2 center;
+        public B2Vec2 center;
 
         /// The radius
         public float radius;
 
-        public b2Circle(b2Vec2 center, float radius)
+        public B2Circle(B2Vec2 center, float radius)
         {
             this.center = center;
             this.radius = radius;

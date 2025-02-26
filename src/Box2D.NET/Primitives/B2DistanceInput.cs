@@ -5,19 +5,19 @@
 namespace Box2D.NET.Primitives
 {
     /// Input for b2ShapeDistance
-    public struct b2DistanceInput
+    public struct B2DistanceInput
     {
         /// The proxy for shape A
-        public b2ShapeProxy proxyA;
+        public B2ShapeProxy proxyA;
 
         /// The proxy for shape B
-        public b2ShapeProxy proxyB;
+        public B2ShapeProxy proxyB;
 
         /// The world transform for shape A
-        public b2Transform transformA;
+        public B2Transform transformA;
 
         /// The world transform for shape B
-        public b2Transform transformB;
+        public B2Transform transformB;
 
         /// Should the proxy radius be considered?
         public bool useRadii;

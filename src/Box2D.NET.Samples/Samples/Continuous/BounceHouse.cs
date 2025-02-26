@@ -26,7 +26,7 @@ public class BounceHouse : Sample
 
 
     HitEvent[] m_hitEvents = new HitEvent[4];
-    b2BodyId m_bodyId;
+    B2BodyId m_bodyId;
     ShapeType m_shapeType;
     bool m_enableHitEvents;
     static int sampleBounceHouse = RegisterSample("Continuous", "Bounce House", Create);
@@ -40,31 +40,31 @@ public class BounceHouse : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.45f;
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         {
-            b2Segment segment = new b2Segment(new b2Vec2(-10.0f, -10.0f), new b2Vec2(10.0f, -10.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(-10.0f, -10.0f), new B2Vec2(10.0f, -10.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2Segment segment = new b2Segment(new b2Vec2(10.0f, -10.0f), new b2Vec2(10.0f, 10.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(10.0f, -10.0f), new B2Vec2(10.0f, 10.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2Segment segment = new b2Segment(new b2Vec2(10.0f, 10.0f), new b2Vec2(-10.0f, 10.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(10.0f, 10.0f), new B2Vec2(-10.0f, 10.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2Segment segment = new b2Segment(new b2Vec2(-10.0f, 10.0f), new b2Vec2(-10.0f, -10.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 10.0f), new B2Vec2(-10.0f, -10.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
@@ -88,10 +88,10 @@ public class BounceHouse : Sample
             b2DestroyBody(m_bodyId);
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.linearVelocity = new b2Vec2(10.0f, 20.0f);
-        bodyDef.position = new b2Vec2(0.0f, 0.0f);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.linearVelocity = new B2Vec2(10.0f, 20.0f);
+        bodyDef.position = new B2Vec2(0.0f, 0.0f);
         bodyDef.gravityScale = 0.0f;
 
         // Circle shapes centered on the body can spin fast without risk of tunnelling.
@@ -99,7 +99,7 @@ public class BounceHouse : Sample
 
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.restitution = 1.2f;
         shapeDef.friction = 0.3f;
@@ -107,18 +107,18 @@ public class BounceHouse : Sample
 
         if (m_shapeType == ShapeType.e_circleShape)
         {
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(m_bodyId, shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
             b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
             float h = 0.1f;
-            b2Polygon box = b2MakeBox(20.0f * h, h);
+            B2Polygon box = b2MakeBox(20.0f * h, h);
             b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
     }
@@ -152,10 +152,10 @@ public class BounceHouse : Sample
     {
         base.Step(settings);
 
-        b2ContactEvents events = b2World_GetContactEvents(m_worldId);
+        B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
         {
-            b2ContactHitEvent @event = events.hitEvents[i];
+            B2ContactHitEvent @event = events.hitEvents[i];
 
             ref HitEvent e = ref m_hitEvents[0];
             for (int j = 1; j < 4; ++j)
@@ -176,7 +176,7 @@ public class BounceHouse : Sample
             ref HitEvent e = ref m_hitEvents[i];
             if (e.stepIndex > 0 && m_stepCount <= e.stepIndex + 30)
             {
-                Draw.g_draw.DrawCircle(e.point, 0.1f, b2HexColor.b2_colorOrangeRed);
+                Draw.g_draw.DrawCircle(e.point, 0.1f, B2HexColor.b2_colorOrangeRed);
                 Draw.g_draw.DrawString(e.point, "%.1f", e.speed);
             }
         }

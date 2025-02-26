@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public enum b2TracyCZone
+    public enum B2TracyCZone
     {
         pair_task,
         update_pairs,

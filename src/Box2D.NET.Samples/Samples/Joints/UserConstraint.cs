@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This shows how you can implement a constraint outside of Box2D
 public class UserConstraint : Sample
 {
-    b2BodyId m_bodyId;
+    B2BodyId m_bodyId;
     float[] m_impulses = new float[2];
     static int sampleUserConstraintIndex = RegisterSample("Joints", "User Constraint", Create);
 
@@ -27,17 +27,17 @@ public class UserConstraint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(3.0f, -1.0f);
+            Draw.g_camera.m_center = new B2Vec2(3.0f, -1.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.15f;
         }
 
-        b2Polygon box = b2MakeBox(1.0f, 0.5f);
+        B2Polygon box = b2MakeBox(1.0f, 0.5f);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 20.0f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 1.0f;
         bodyDef.angularDamping = 0.5f;
         bodyDef.linearDamping = 0.2f;
@@ -52,7 +52,7 @@ public class UserConstraint : Sample
     {
         base.Step(settings);
 
-        b2Transform axes = b2Transform_identity;
+        B2Transform axes = b2Transform_identity;
         Draw.g_draw.DrawTransform(axes);
 
         if (settings.pause)
@@ -79,40 +79,40 @@ public class UserConstraint : Sample
         float massCoefficient = s * impulseCoefficient;
         float biasCoefficient = omega / sigma;
 
-        b2Vec2[] localAnchors = new b2Vec2[2]
+        B2Vec2[] localAnchors = new B2Vec2[2]
         {
-            new b2Vec2(1.0f, -0.5f), new b2Vec2(1.0f, 0.5f)
+            new B2Vec2(1.0f, -0.5f), new B2Vec2(1.0f, 0.5f)
         };
         float mass = b2Body_GetMass(m_bodyId);
         float invMass = mass < 0.0001f ? 0.0f : 1.0f / mass;
         float inertiaTensor = b2Body_GetRotationalInertia(m_bodyId);
         float invI = inertiaTensor < 0.0001f ? 0.0f : 1.0f / inertiaTensor;
 
-        b2Vec2 vB = b2Body_GetLinearVelocity(m_bodyId);
+        B2Vec2 vB = b2Body_GetLinearVelocity(m_bodyId);
         float omegaB = b2Body_GetAngularVelocity(m_bodyId);
-        b2Vec2 pB = b2Body_GetWorldCenterOfMass(m_bodyId);
+        B2Vec2 pB = b2Body_GetWorldCenterOfMass(m_bodyId);
 
         for (int i = 0; i < 2; ++i)
         {
-            b2Vec2 anchorA = new b2Vec2(3.0f, 0.0f);
-            b2Vec2 anchorB = b2Body_GetWorldPoint(m_bodyId, localAnchors[i]);
+            B2Vec2 anchorA = new B2Vec2(3.0f, 0.0f);
+            B2Vec2 anchorB = b2Body_GetWorldPoint(m_bodyId, localAnchors[i]);
 
-            b2Vec2 deltaAnchor = b2Sub(anchorB, anchorA);
+            B2Vec2 deltaAnchor = b2Sub(anchorB, anchorA);
 
             float slackLength = 1.0f;
             float length = b2Length(deltaAnchor);
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                Draw.g_draw.DrawSegment(anchorA, anchorB, b2HexColor.b2_colorLightCyan);
+                Draw.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            Draw.g_draw.DrawSegment(anchorA, anchorB, b2HexColor.b2_colorViolet);
-            b2Vec2 axis = b2Normalize(deltaAnchor);
+            Draw.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            B2Vec2 axis = b2Normalize(deltaAnchor);
 
-            b2Vec2 rB = b2Sub(anchorB, pB);
+            B2Vec2 rB = b2Sub(anchorB, pB);
             float Jb = b2Cross(rB, axis);
             float K = invMass + Jb * invI * Jb;
             float invK = K < 0.0001f ? 0.0f : 1.0f / K;

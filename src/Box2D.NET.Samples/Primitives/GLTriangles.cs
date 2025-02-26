@@ -88,7 +88,7 @@ public class GLTriangles
         }
     }
 
-    public void AddTriangle(b2Vec2 p1, b2Vec2 p2, b2Vec2 p3, b2HexColor c)
+    public void AddTriangle(B2Vec2 p1, B2Vec2 p2, B2Vec2 p3, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
         m_points.Add( {

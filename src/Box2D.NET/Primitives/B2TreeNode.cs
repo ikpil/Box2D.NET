@@ -5,10 +5,10 @@
 namespace Box2D.NET.Primitives
 {
     /// A node in the dynamic tree. This is private data placed here for performance reasons.
-    public class b2TreeNode
+    public class B2TreeNode
     {
         /// The node bounding box
-        public b2AABB aabb; // 16
+        public B2AABB aabb; // 16
 
         /// Category bits for collision filtering
         public ulong categoryBits; // 8
@@ -45,7 +45,7 @@ namespace Box2D.NET.Primitives
 
         public void Clear()
         {
-            aabb = new b2AABB(); // 16
+            aabb = new B2AABB(); // 16
             categoryBits = 0; // 8
             parent = 0;
             next = 0;
@@ -56,7 +56,7 @@ namespace Box2D.NET.Primitives
             flags = 0; // 2
         }
 
-        public void CopyFrom(b2TreeNode other)
+        public void CopyFrom(B2TreeNode other)
         {
             aabb = other.aabb;
             categoryBits = other.categoryBits;

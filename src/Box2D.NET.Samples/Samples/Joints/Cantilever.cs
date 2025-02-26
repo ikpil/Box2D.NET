@@ -25,9 +25,9 @@ public class Cantilever : Sample
     float m_angularHertz;
     float m_angularDampingRatio;
     float m_gravityScale;
-    b2BodyId m_tipId;
-    b2BodyId[] m_bodyIds = new b2BodyId[e_count];
-    b2JointId[] m_jointIds = new b2JointId[e_count];
+    B2BodyId m_tipId;
+    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    B2JointId[] m_jointIds = new B2JointId[e_count];
     bool m_collideConnected;
 
     static int sampleCantileverIndex = RegisterSample("Joints", "Cantilever", Create);
@@ -43,13 +43,13 @@ public class Cantilever : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.35f;
         }
 
-        b2BodyId groundId = b2_nullBodyId;
+        B2BodyId groundId = b2_nullBodyId;
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -62,24 +62,24 @@ public class Cantilever : Sample
             m_collideConnected = false;
 
             float hx = 0.5f;
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-hx, 0.0f), new b2Vec2(hx, 0.0f), 0.125f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-hx, 0.0f), new B2Vec2(hx, 0.0f), 0.125f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
 
-            b2WeldJointDef jointDef = b2DefaultWeldJointDef();
+            B2WeldJointDef jointDef = b2DefaultWeldJointDef();
 
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.isAwake = false;
 
-            b2BodyId prevBodyId = groundId;
+            B2BodyId prevBodyId = groundId;
             for (int i = 0; i < e_count; ++i)
             {
-                bodyDef.position = new b2Vec2((1.0f + 2.0f * i) * hx, 0.0f);
+                bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, 0.0f);
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
 
-                b2Vec2 pivot = new b2Vec2((2.0f * i) * hx, 0.0f);
+                B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, 0.0f);
                 jointDef.bodyIdA = prevBodyId;
                 jointDef.bodyIdB = m_bodyIds[i];
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -164,7 +164,7 @@ public class Cantilever : Sample
     {
         base.Step(settings);
 
-        b2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
+        B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
         Draw.g_draw.DrawString(5, m_textLine, "tip-y = %.2f", tipPosition.y);
         m_textLine += m_textIncrement;
     }

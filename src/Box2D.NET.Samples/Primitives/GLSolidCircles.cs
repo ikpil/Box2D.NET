@@ -44,7 +44,7 @@ public class GLSolidCircles
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        b2Vec2 vertices[] =  {
+        B2Vec2 vertices[] =  {
             {
                 -a, -a
             }, {
@@ -104,7 +104,7 @@ public class GLSolidCircles
         }
     }
 
-    public void AddCircle(ref b2Transform transform, float radius, b2HexColor color)
+    public void AddCircle(ref B2Transform transform, float radius, B2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         m_circles.Add( {

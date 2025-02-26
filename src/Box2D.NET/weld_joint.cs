@@ -16,78 +16,78 @@ namespace Box2D.NET
 {
     public static class weld_joint
     {
-        public static float b2WeldJoint_GetReferenceAngle(b2JointId jointId)
+        public static float b2WeldJoint_GetReferenceAngle(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             return joint.weldJoint.referenceAngle;
         }
 
-        public static void b2WeldJoint_SetReferenceAngle(b2JointId jointId, float angleInRadians)
+        public static void b2WeldJoint_SetReferenceAngle(B2JointId jointId, float angleInRadians)
         {
             Debug.Assert(b2IsValidFloat(angleInRadians));
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
         }
 
-        public static void b2WeldJoint_SetLinearHertz(b2JointId jointId, float hertz)
+        public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
             Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.weldJoint.linearHertz = hertz;
         }
 
-        public static float b2WeldJoint_GetLinearHertz(b2JointId jointId)
+        public static float b2WeldJoint_GetLinearHertz(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             return joint.weldJoint.linearHertz;
         }
 
-        public static void b2WeldJoint_SetLinearDampingRatio(b2JointId jointId, float dampingRatio)
+        public static void b2WeldJoint_SetLinearDampingRatio(B2JointId jointId, float dampingRatio)
         {
             Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.weldJoint.linearDampingRatio = dampingRatio;
         }
 
-        public static float b2WeldJoint_GetLinearDampingRatio(b2JointId jointId)
+        public static float b2WeldJoint_GetLinearDampingRatio(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             return joint.weldJoint.linearDampingRatio;
         }
 
-        public static void b2WeldJoint_SetAngularHertz(b2JointId jointId, float hertz)
+        public static void b2WeldJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
             Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.weldJoint.angularHertz = hertz;
         }
 
-        public static float b2WeldJoint_GetAngularHertz(b2JointId jointId)
+        public static float b2WeldJoint_GetAngularHertz(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             return joint.weldJoint.angularHertz;
         }
 
-        public static void b2WeldJoint_SetAngularDampingRatio(b2JointId jointId, float dampingRatio)
+        public static void b2WeldJoint_SetAngularDampingRatio(B2JointId jointId, float dampingRatio)
         {
             Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.weldJoint.angularDampingRatio = dampingRatio;
         }
 
-        public static float b2WeldJoint_GetAngularDampingRatio(b2JointId jointId)
+        public static float b2WeldJoint_GetAngularDampingRatio(B2JointId jointId)
         {
-            b2JointSim joint = b2GetJointSimCheckType(jointId, b2JointType.b2_weldJoint);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             return joint.weldJoint.angularDampingRatio;
         }
 
-        public static b2Vec2 b2GetWeldJointForce(b2World world, b2JointSim @base)
+        public static B2Vec2 b2GetWeldJointForce(B2World world, B2JointSim @base)
         {
-            b2Vec2 force = b2MulSV(world.inv_h, @base.weldJoint.linearImpulse);
+            B2Vec2 force = b2MulSV(world.inv_h, @base.weldJoint.linearImpulse);
             return force;
         }
 
-        public static float b2GetWeldJointTorque(b2World world, b2JointSim @base)
+        public static float b2GetWeldJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * @base.weldJoint.angularImpulse;
         }
@@ -106,28 +106,28 @@ namespace Box2D.NET
 // J = [0 0 -1 0 0 1]
 // K = invI1 + invI2
 
-        public static void b2PrepareWeldJoint(b2JointSim @base, b2StepContext context)
+        public static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == b2JointType.b2_weldJoint);
+            Debug.Assert(@base.type == B2JointType.b2_weldJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
             int idB = @base.bodyIdB;
 
-            b2World world = context.world;
+            B2World world = context.world;
 
-            b2Body bodyA = b2Array_Get(ref world.bodies, idA);
-            b2Body bodyB = b2Array_Get(ref world.bodies, idB);
+            B2Body bodyA = b2Array_Get(ref world.bodies, idA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)b2SetType.b2_awakeSet || bodyB.setIndex == (int)b2SetType.b2_awakeSet);
-            b2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
-            b2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
+            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
+            B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
             int localIndexA = bodyA.localIndex;
             int localIndexB = bodyB.localIndex;
 
-            b2BodySim bodySimA = b2Array_Get(ref setA.bodySims, localIndexA);
-            b2BodySim bodySimB = b2Array_Get(ref setB.bodySims, localIndexB);
+            B2BodySim bodySimA = b2Array_Get(ref setA.bodySims, localIndexA);
+            B2BodySim bodySimB = b2Array_Get(ref setB.bodySims, localIndexB);
 
             float mA = bodySimA.invMass;
             float iA = bodySimA.invInertia;
@@ -139,12 +139,12 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            b2WeldJoint joint = @base.weldJoint;
-            joint.indexA = bodyA.setIndex == (int)b2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
-            joint.indexB = bodyB.setIndex == (int)b2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
+            B2WeldJoint joint = @base.weldJoint;
+            joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
+            joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
-            b2Rot qA = bodySimA.transform.q;
-            b2Rot qB = bodySimB.transform.q;
+            B2Rot qA = bodySimA.transform.q;
+            B2Rot qB = bodySimB.transform.q;
 
             joint.anchorA = b2RotateVector(qA, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
             joint.anchorB = b2RotateVector(qB, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
@@ -180,7 +180,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartWeldJoint(b2JointSim @base, b2StepContext context)
+        public static void b2WarmStartWeldJoint(B2JointSim @base, B2StepContext context)
         {
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -188,15 +188,15 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            b2WeldJoint joint = @base.weldJoint;
+            B2WeldJoint joint = @base.weldJoint;
 
-            b2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            b2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
+            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            b2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            b2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
 
             stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, joint.linearImpulse);
             stateA.angularVelocity -= iA * (b2Cross(rA, joint.linearImpulse) + joint.angularImpulse);
@@ -205,9 +205,9 @@ namespace Box2D.NET
             stateB.angularVelocity += iB * (b2Cross(rB, joint.linearImpulse) + joint.angularImpulse);
         }
 
-        public static void b2SolveWeldJoint(b2JointSim @base, b2StepContext context, bool useBias)
+        public static void b2SolveWeldJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == b2JointType.b2_weldJoint);
+            Debug.Assert(@base.type == B2JointType.b2_weldJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -215,16 +215,16 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            b2BodyState dummyState = b2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            b2WeldJoint joint = @base.weldJoint;
+            B2WeldJoint joint = @base.weldJoint;
 
-            b2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            b2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
+            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            b2Vec2 vA = stateA.linearVelocity;
+            B2Vec2 vA = stateA.linearVelocity;
             float wA = stateA.angularVelocity;
-            b2Vec2 vB = stateB.linearVelocity;
+            B2Vec2 vB = stateB.linearVelocity;
             float wB = stateB.angularVelocity;
 
             // angular constraint
@@ -250,33 +250,33 @@ namespace Box2D.NET
 
             // linear constraint
             {
-                b2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-                b2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
+                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
 
-                b2Vec2 bias = b2Vec2_zero;
+                B2Vec2 bias = b2Vec2_zero;
                 float massScale = 1.0f;
                 float impulseScale = 0.0f;
                 if (useBias || joint.linearHertz > 0.0f)
                 {
-                    b2Vec2 dcA = stateA.deltaPosition;
-                    b2Vec2 dcB = stateB.deltaPosition;
-                    b2Vec2 C = b2Add(b2Add(b2Sub(dcB, dcA), b2Sub(rB, rA)), joint.deltaCenter);
+                    B2Vec2 dcA = stateA.deltaPosition;
+                    B2Vec2 dcB = stateB.deltaPosition;
+                    B2Vec2 C = b2Add(b2Add(b2Sub(dcB, dcA), b2Sub(rB, rA)), joint.deltaCenter);
 
                     bias = b2MulSV(joint.linearSoftness.biasRate, C);
                     massScale = joint.linearSoftness.massScale;
                     impulseScale = joint.linearSoftness.impulseScale;
                 }
 
-                b2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
+                B2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
 
-                b2Mat22 K;
+                B2Mat22 K;
                 K.cx.x = mA + mB + rA.y * rA.y * iA + rB.y * rB.y * iB;
                 K.cy.x = -rA.y * rA.x * iA - rB.y * rB.x * iB;
                 K.cx.y = K.cy.x;
                 K.cy.y = mA + mB + rA.x * rA.x * iA + rB.x * rB.x * iB;
-                b2Vec2 b = b2Solve22(K, b2Add(Cdot, bias));
+                B2Vec2 b = b2Solve22(K, b2Add(Cdot, bias));
 
-                b2Vec2 impulse = new b2Vec2(
+                B2Vec2 impulse = new B2Vec2(
                     -massScale * b.x - impulseScale * joint.linearImpulse.x,
                     -massScale * b.y - impulseScale * joint.linearImpulse.y
                 );

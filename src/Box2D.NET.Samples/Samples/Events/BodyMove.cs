@@ -22,11 +22,11 @@ public class BodyMove : Sample
 {
     public const int e_count = 50;
 
-    b2BodyId[] m_bodyIds = new b2BodyId[e_count];
+    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     bool[] m_sleeping = new bool[e_count];
     int m_count;
     int m_sleepCount;
-    b2Vec2 m_explosionPosition;
+    B2Vec2 m_explosionPosition;
     float m_explosionRadius;
     float m_explosionMagnitude;
 
@@ -41,57 +41,57 @@ public class BodyMove : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(2.0f, 8.0f);
+            Draw.g_camera.m_center = new B2Vec2(2.0f, 8.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.55f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.1f;
 
-            b2Polygon box = b2MakeOffsetBox(12.0f, 0.1f, new b2Vec2(-10.0f, -0.1f), b2MakeRot(-0.15f * B2_PI));
+            B2Polygon box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(-10.0f, -0.1f), b2MakeRot(-0.15f * B2_PI));
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            box = b2MakeOffsetBox(12.0f, 0.1f, new b2Vec2(10.0f, -0.1f), b2MakeRot(0.15f * B2_PI));
+            box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(10.0f, -0.1f), b2MakeRot(0.15f * B2_PI));
             b2CreatePolygonShape(groundId, shapeDef, box);
 
             shapeDef.restitution = 0.8f;
 
-            box = b2MakeOffsetBox(0.1f, 10.0f, new b2Vec2(19.9f, 10.0f), b2Rot_identity);
+            box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(19.9f, 10.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            box = b2MakeOffsetBox(0.1f, 10.0f, new b2Vec2(-19.9f, 10.0f), b2Rot_identity);
+            box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(-19.9f, 10.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
 
-            box = b2MakeOffsetBox(20.0f, 0.1f, new b2Vec2(0.0f, 20.1f), b2Rot_identity);
+            box = b2MakeOffsetBox(20.0f, 0.1f, new B2Vec2(0.0f, 20.1f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         m_sleepCount = 0;
         m_count = 0;
 
-        m_explosionPosition = new b2Vec2(0.0f, -5.0f);
+        m_explosionPosition = new B2Vec2(0.0f, -5.0f);
         m_explosionRadius = 10.0f;
         m_explosionMagnitude = 10.0f;
     }
 
     void CreateBodies()
     {
-        b2Capsule capsule = new b2Capsule(new b2Vec2(-0.25f, 0.0f), new b2Vec2(0.25f, 0.0f), 0.25f);
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.35f);
-        b2Polygon square = b2MakeSquare(0.35f);
+        B2Capsule capsule = new B2Capsule(new B2Vec2(-0.25f, 0.0f), new B2Vec2(0.25f, 0.0f), 0.25f);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.35f);
+        B2Polygon square = b2MakeSquare(0.35f);
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         float x = -5.0f, y = 10.0f;
         for (int i = 0; i < 10 && m_count < e_count; ++i)
         {
-            bodyDef.position = new b2Vec2(x, y);
+            bodyDef.position = new B2Vec2(x, y);
             bodyDef.userData = m_bodyIds[m_count];
             m_bodyIds[m_count] = b2CreateBody(m_worldId, bodyDef);
             m_sleeping[m_count] = false;
@@ -111,7 +111,7 @@ public class BodyMove : Sample
             }
             else
             {
-                b2Polygon poly = RandomPolygon(0.75f);
+                B2Polygon poly = RandomPolygon(0.75f);
                 poly.radius = 0.1f;
                 b2CreatePolygonShape(m_bodyIds[m_count], shapeDef, poly);
             }
@@ -132,7 +132,7 @@ public class BodyMove : Sample
 
         if (ImGui.Button("Explode"))
         {
-            b2ExplosionDef def = b2DefaultExplosionDef();
+            B2ExplosionDef def = b2DefaultExplosionDef();
             def.position = m_explosionPosition;
             def.radius = m_explosionRadius;
             def.falloff = 0.1f;
@@ -155,15 +155,15 @@ public class BodyMove : Sample
         base.Step(settings);
 
         // Process body events
-        b2BodyEvents events = b2World_GetBodyEvents(m_worldId);
+        B2BodyEvents events = b2World_GetBodyEvents(m_worldId);
         for (int i = 0; i < events.moveCount; ++i)
         {
             // draw the transform of every body that moved (not sleeping)
-            b2BodyMoveEvent @event = events.moveEvents[i];
+            B2BodyMoveEvent @event = events.moveEvents[i];
             Draw.g_draw.DrawTransform(@event.transform);
 
             // this shows a somewhat contrived way to track body sleeping
-            b2BodyId bodyId = (b2BodyId)@event.userData; // todo: @ikpil check struct casting
+            B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
             ptrdiff_t diff = bodyId - m_bodyIds;
             bool* sleeping = m_sleeping + diff;
 
@@ -182,7 +182,7 @@ public class BodyMove : Sample
             }
         }
 
-        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, b2HexColor.b2_colorAzure);
+        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         Draw.g_draw.DrawString(5, m_textLine, "sleep count: %d", m_sleepCount);
         m_textLine += m_textIncrement;

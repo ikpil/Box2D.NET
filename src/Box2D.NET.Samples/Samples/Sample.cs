@@ -59,16 +59,16 @@ public class Sample : IDisposable
     public int m_taskCount;
     public int m_threadCount;
 
-    public b2BodyId m_groundBodyId;
+    public B2BodyId m_groundBodyId;
 
     // DestructionListener m_destructionListener;
     public int m_textLine;
-    public b2WorldId m_worldId;
-    public b2JointId m_mouseJointId;
+    public B2WorldId m_worldId;
+    public B2JointId m_mouseJointId;
     public int m_stepCount;
     public int m_textIncrement;
-    public b2Profile m_maxProfile;
-    public b2Profile m_totalProfile;
+    public B2Profile m_maxProfile;
+    public B2Profile m_totalProfile;
 
 
     public Sample(Settings settings)
@@ -91,8 +91,8 @@ public class Sample : IDisposable
 
         m_groundBodyId = b2_nullBodyId;
 
-        m_maxProfile = new b2Profile();
-        m_totalProfile = new b2Profile();
+        m_maxProfile = new B2Profile();
+        m_totalProfile = new B2Profile();
 
         g_seed = RAND_SEED;
 
@@ -119,7 +119,7 @@ public class Sample : IDisposable
             m_worldId = b2_nullWorldId;
         }
 
-        b2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.workerCount = m_settings.workerCount;
         worldDef.enqueueTask = EnqueueTask;
         worldDef.finishTask = FinishTask;
@@ -131,10 +131,10 @@ public class Sample : IDisposable
 
     public void TestMathCpp()
     {
-        b2Vec2 a = new b2Vec2(1.0f, 2.0f);
-        b2Vec2 b = new b2Vec2(3.0f, 4.0f);
+        B2Vec2 a = new B2Vec2(1.0f, 2.0f);
+        B2Vec2 b = new B2Vec2(3.0f, 4.0f);
 
-        b2Vec2 c = a;
+        B2Vec2 c = a;
         c += b;
         c -= b;
         c *= 2.0f;
@@ -202,13 +202,13 @@ public class Sample : IDisposable
     }
 
 
-    public bool QueryCallback(b2ShapeId shapeId, object context)
+    public bool QueryCallback(B2ShapeId shapeId, object context)
     {
         QueryContext queryContext = context as QueryContext;
 
-        b2BodyId bodyId = b2Shape_GetBody(shapeId);
-        b2BodyType bodyType = b2Body_GetType(bodyId);
-        if (bodyType != b2BodyType.b2_dynamicBody)
+        B2BodyId bodyId = b2Shape_GetBody(shapeId);
+        B2BodyType bodyType = b2Body_GetType(bodyId);
+        if (bodyType != B2BodyType.b2_dynamicBody)
         {
             // continue query
             return true;
@@ -229,7 +229,7 @@ public class Sample : IDisposable
     {
     }
 
-    public virtual void MouseDown(b2Vec2 p, int button, int mod)
+    public virtual void MouseDown(B2Vec2 p, int button, int mod)
     {
         if (B2_IS_NON_NULL(m_mouseJointId))
         {
@@ -239,8 +239,8 @@ public class Sample : IDisposable
         if (button == (int)MouseButton.Left)
         {
             // Make a small box.
-            b2AABB box;
-            b2Vec2 d = new b2Vec2(0.001f, 0.001f);
+            B2AABB box;
+            B2Vec2 d = new B2Vec2(0.001f, 0.001f);
             box.lowerBound = b2Sub(p, d);
             box.upperBound = b2Add(p, d);
 
@@ -250,10 +250,10 @@ public class Sample : IDisposable
 
             if (B2_IS_NON_NULL(queryContext.bodyId))
             {
-                b2BodyDef bodyDef = b2DefaultBodyDef();
+                B2BodyDef bodyDef = b2DefaultBodyDef();
                 m_groundBodyId = b2CreateBody(m_worldId, bodyDef);
 
-                b2MouseJointDef mouseDef = b2DefaultMouseJointDef();
+                B2MouseJointDef mouseDef = b2DefaultMouseJointDef();
                 mouseDef.bodyIdA = m_groundBodyId;
                 mouseDef.bodyIdB = queryContext.bodyId;
                 mouseDef.target = p;
@@ -267,7 +267,7 @@ public class Sample : IDisposable
         }
     }
 
-    public virtual void MouseUp(b2Vec2 p, int button)
+    public virtual void MouseUp(B2Vec2 p, int button)
     {
         if (b2Joint_IsValid(m_mouseJointId) == false)
         {
@@ -285,7 +285,7 @@ public class Sample : IDisposable
         }
     }
 
-    public virtual void MouseMove(b2Vec2 p)
+    public virtual void MouseMove(B2Vec2 p)
     {
         if (b2Joint_IsValid(m_mouseJointId) == false)
         {
@@ -296,7 +296,7 @@ public class Sample : IDisposable
         if (B2_IS_NON_NULL(m_mouseJointId))
         {
             b2MouseJoint_SetTarget(m_mouseJointId, p);
-            b2BodyId bodyIdB = b2Joint_GetBodyB(m_mouseJointId);
+            B2BodyId bodyIdB = b2Joint_GetBodyB(m_mouseJointId);
             b2Body_SetAwake(bodyIdB, true);
         }
     }
@@ -318,8 +318,8 @@ public class Sample : IDisposable
 
     public void ResetProfile()
     {
-        m_totalProfile = new b2Profile();
-        m_maxProfile = new b2Profile();
+        m_totalProfile = new B2Profile();
+        m_maxProfile = new B2Profile();
         m_stepCount = 0;
     }
 
@@ -385,7 +385,7 @@ public class Sample : IDisposable
 
         if (settings.drawCounters)
         {
-            b2Counters s = b2World_GetCounters(m_worldId);
+            B2Counters s = b2World_GetCounters(m_worldId);
 
             Draw.g_draw.DrawString(5, m_textLine, "bodies/shapes/contacts/joints = %d/%d/%d/%d", s.bodyCount, s.shapeCount,
                 s.contactCount, s.jointCount);
@@ -422,7 +422,7 @@ public class Sample : IDisposable
 
         // Track maximum profile times
         {
-            b2Profile p = b2World_GetProfile(m_worldId);
+            B2Profile p = b2World_GetProfile(m_worldId);
             m_maxProfile.step = b2MaxFloat(m_maxProfile.step, p.step);
             m_maxProfile.pairs = b2MaxFloat(m_maxProfile.pairs, p.pairs);
             m_maxProfile.collide = b2MaxFloat(m_maxProfile.collide, p.collide);
@@ -472,9 +472,9 @@ public class Sample : IDisposable
 
         if (settings.drawProfile)
         {
-            b2Profile p = b2World_GetProfile(m_worldId);
+            B2Profile p = b2World_GetProfile(m_worldId);
 
-            b2Profile aveProfile = new b2Profile();
+            B2Profile aveProfile = new B2Profile();
             if (m_stepCount > 0)
             {
                 float scale = 1.0f / m_stepCount;
@@ -542,7 +542,7 @@ public class Sample : IDisposable
         }
     }
 
-    public void ShiftOrigin(b2Vec2 newOrigin)
+    public void ShiftOrigin(B2Vec2 newOrigin)
     {
         // m_world.ShiftOrigin(newOrigin);
     }
@@ -550,10 +550,10 @@ public class Sample : IDisposable
     // Parse an SVG path element with only straight lines. Example:
     // "M 47.625004,185.20833 H 161.39585 l 29.10417,-2.64583 26.45834,-7.9375 26.45833,-13.22917 23.81251,-21.16666 h "
     // "13.22916 v 44.97916 H 592.66669 V 0 h 21.16671 v 206.375 l -566.208398,-1e-5 z"
-    public static int ParsePath(string svgPath, b2Vec2 offset, Span<b2Vec2> points, int capacity, float scale, bool reverseOrder)
+    public static int ParsePath(string svgPath, B2Vec2 offset, Span<B2Vec2> points, int capacity, float scale, bool reverseOrder)
     {
         int pointCount = 0;
-        b2Vec2 currentPoint = new b2Vec2();
+        B2Vec2 currentPoint = new B2Vec2();
         int ptrIndex = 0;
         char command = svgPath[ptrIndex];
 
@@ -659,7 +659,7 @@ public class Sample : IDisposable
                     break;
             }
 
-            points[pointCount] = new b2Vec2(scale * (currentPoint.x + offset.x), -scale * (currentPoint.y + offset.y));
+            points[pointCount] = new B2Vec2(scale * (currentPoint.x + offset.x), -scale * (currentPoint.y + offset.y));
             pointCount += 1;
             if (pointCount == capacity)
             {

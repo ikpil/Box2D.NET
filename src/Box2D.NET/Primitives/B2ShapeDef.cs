@@ -9,7 +9,7 @@ namespace Box2D.NET.Primitives
     /// the same shape definition to create multiple shapes.
     /// Must be initialized using b2DefaultShapeDef().
     /// @ingroup shape
-    public class b2ShapeDef
+    public class B2ShapeDef
     {
         /// Use this to store application specific shape data.
         public object userData;
@@ -35,7 +35,7 @@ namespace Box2D.NET.Primitives
         public float density;
 
         /// Collision filtering data.
-        public b2Filter filter;
+        public B2Filter filter;
 
         /// Custom debug draw color.
         public uint customColor;

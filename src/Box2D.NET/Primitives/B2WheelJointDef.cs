@@ -11,22 +11,22 @@ namespace Box2D.NET.Primitives
     /// configuration can violate the constraint slightly. The joint translation is zero
     /// when the local anchor points coincide in world space.
     /// @ingroup wheel_joint
-    public class b2WheelJointDef
+    public class B2WheelJointDef
     {
         /// The first attached body
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// The local anchor point relative to bodyA's origin
-        public b2Vec2 localAnchorA;
+        public B2Vec2 localAnchorA;
 
         /// The local anchor point relative to bodyB's origin
-        public b2Vec2 localAnchorB;
+        public B2Vec2 localAnchorB;
 
         /// The local translation unit axis in bodyA
-        public b2Vec2 localAxisA;
+        public B2Vec2 localAxisA;
 
         /// Enable a linear spring along the local axis
         public bool enableSpring;

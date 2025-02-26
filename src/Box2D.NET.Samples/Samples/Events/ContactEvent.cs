@@ -25,9 +25,9 @@ public class ContactEvent : Sample
 {
     public const int e_count = 20;
     
-    b2BodyId m_playerId;
-    b2ShapeId m_coreShapeId;
-    b2BodyId m_debrisIds[e_count];
+    B2BodyId m_playerId;
+    B2ShapeId m_coreShapeId;
+    B2BodyId m_debrisIds[e_count];
     BodyUserData m_bodyUserData[e_count];
     float m_force;
     float m_wait;
@@ -49,12 +49,12 @@ public ContactEvent( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2Vec2 points[] = { { 40.0f, -40.0f }, { -40.0f, -40.0f }, { -40.0f, 40.0f }, { 40.0f, 40.0f } };
+        B2Vec2 points[] = { { 40.0f, -40.0f }, { -40.0f, -40.0f }, { -40.0f, 40.0f }, { 40.0f, 40.0f } };
 
-        b2ChainDef chainDef = b2DefaultChainDef();
+        B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.count = 4;
         chainDef.points = points;
         chainDef.isLoop = true;
@@ -64,16 +64,16 @@ public ContactEvent( Settings settings )
 
     // Player
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 0.0f;
         bodyDef.linearDamping = 0.5f;
         bodyDef.angularDamping = 0.5f;
         bodyDef.isBullet = true;
         m_playerId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2Circle circle = { { 0.0f, 0.0f }, 1.0f };
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Circle circle = { { 0.0f, 0.0f }, 1.0f };
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         // Enable contact events for the player shape
         shapeDef.enableContactEvents = true;
@@ -109,8 +109,8 @@ void SpawnDebris()
     }
 
     // Debris
-    b2BodyDef bodyDef = b2DefaultBodyDef();
-    bodyDef.type = b2BodyType.b2_dynamicBody;
+    B2BodyDef bodyDef = b2DefaultBodyDef();
+    bodyDef.type = B2BodyType.b2_dynamicBody;
     bodyDef.position = { RandomFloatRange( -38.0f, 38.0f ), RandomFloatRange( -38.0f, 38.0f ) };
     bodyDef.rotation = b2MakeRot( RandomFloatRange( -B2_PI, B2_PI ) );
     bodyDef.linearVelocity = { RandomFloatRange( -5.0f, 5.0f ), RandomFloatRange( -5.0f, 5.0f ) };
@@ -119,7 +119,7 @@ void SpawnDebris()
     bodyDef.userData = m_bodyUserData + index;
     m_debrisIds[index] = b2CreateBody( m_worldId, &bodyDef );
 
-    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    B2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.restitution = 0.8f;
 
     // No events when debris hits debris
@@ -127,17 +127,17 @@ void SpawnDebris()
 
     if ( ( index + 1 ) % 3 == 0 )
     {
-        b2Circle circle = { { 0.0f, 0.0f }, 0.5f };
+        B2Circle circle = { { 0.0f, 0.0f }, 0.5f };
         b2CreateCircleShape( m_debrisIds[index], &shapeDef, &circle );
     }
     else if ( ( index + 1 ) % 2 == 0 )
     {
-        b2Capsule capsule = { { 0.0f, -0.25f }, { 0.0f, 0.25f }, 0.25f };
+        B2Capsule capsule = { { 0.0f, -0.25f }, { 0.0f, 0.25f }, 0.25f };
         b2CreateCapsuleShape( m_debrisIds[index], &shapeDef, &capsule );
     }
     else
     {
-        b2Polygon box = b2MakeBox( 0.4f, 0.6f );
+        B2Polygon box = b2MakeBox( 0.4f, 0.6f );
         b2CreatePolygonShape( m_debrisIds[index], &shapeDef, &box );
     }
 }
@@ -160,7 +160,7 @@ public override void Step(Settings settings)
     Draw.g_draw.DrawString( 5, m_textLine, "move using WASD" );
     m_textLine += m_textIncrement;
 
-    b2Vec2 position = b2Body_GetPosition( m_playerId );
+    B2Vec2 position = b2Body_GetPosition( m_playerId );
 
     if ( glfwGetKey( g_mainWindow, GLFW_KEY_A ) == GLFW_PRESS )
     {
@@ -186,19 +186,19 @@ public override void Step(Settings settings)
 
     // Discover rings that touch the bottom sensor
     int debrisToAttach[e_count] = {};
-    b2ShapeId shapesToDestroy[e_count] = { b2_nullShapeId };
+    B2ShapeId shapesToDestroy[e_count] = { b2_nullShapeId };
     int attachCount = 0;
     int destroyCount = 0;
 
-    List<b2ContactData> contactData;
+    List<B2ContactData> contactData;
 
     // Process contact begin touch events.
-    b2ContactEvents contactEvents = b2World_GetContactEvents( m_worldId );
+    B2ContactEvents contactEvents = b2World_GetContactEvents( m_worldId );
     for ( int i = 0; i < contactEvents.beginCount; ++i )
     {
-        b2ContactBeginTouchEvent event = contactEvents.beginEvents[i];
-        b2BodyId bodyIdA = b2Shape_GetBody( event.shapeIdA );
-        b2BodyId bodyIdB = b2Shape_GetBody( event.shapeIdB );
+        B2ContactBeginTouchEvent event = contactEvents.beginEvents[i];
+        B2BodyId bodyIdA = b2Shape_GetBody( event.shapeIdA );
+        B2BodyId bodyIdB = b2Shape_GetBody( event.shapeIdB );
 
         // The begin touch events have the contact manifolds, but the impulses are zero. This is because the manifolds
         // are gathered before the contact solver is run.
@@ -219,21 +219,21 @@ public override void Step(Settings settings)
 
             for ( int j = 0; j < countA; ++j )
             {
-                b2ShapeId idA = contactData[j].shapeIdA;
-                b2ShapeId idB = contactData[j].shapeIdB;
+                B2ShapeId idA = contactData[j].shapeIdA;
+                B2ShapeId idB = contactData[j].shapeIdB;
                 if ( B2_ID_EQUALS( idA, event.shapeIdB ) || B2_ID_EQUALS( idB, event.shapeIdB ) )
                 {
                     Debug.Assert( B2_ID_EQUALS( idA, event.shapeIdA ) || B2_ID_EQUALS( idB, event.shapeIdA ) );
 
-                    b2Manifold manifold = contactData[j].manifold;
-                    b2Vec2 normal = manifold.normal;
+                    B2Manifold manifold = contactData[j].manifold;
+                    B2Vec2 normal = manifold.normal;
                     Debug.Assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
 
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
-                        b2ManifoldPoint point = manifold.points[k];
-                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2HexColor.b2_colorBlueViolet );
-                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2HexColor.b2_colorWhite );
+                        B2ManifoldPoint point = manifold.points[k];
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, B2HexColor.b2_colorWhite );
                     }
                 }
             }
@@ -248,22 +248,22 @@ public override void Step(Settings settings)
 
             for ( int j = 0; j < countB; ++j )
             {
-                b2ShapeId idA = contactData[j].shapeIdA;
-                b2ShapeId idB = contactData[j].shapeIdB;
+                B2ShapeId idA = contactData[j].shapeIdA;
+                B2ShapeId idB = contactData[j].shapeIdB;
 
                 if ( B2_ID_EQUALS( idA, event.shapeIdA ) || B2_ID_EQUALS( idB, event.shapeIdA ) )
                 {
                     Debug.Assert( B2_ID_EQUALS( idA, event.shapeIdB ) || B2_ID_EQUALS( idB, event.shapeIdB ) );
 
-                    b2Manifold manifold = contactData[j].manifold;
-                    b2Vec2 normal = manifold.normal;
+                    B2Manifold manifold = contactData[j].manifold;
+                    B2Vec2 normal = manifold.normal;
                     Debug.Assert( b2AbsFloat( b2Length( normal ) - 1.0f ) < 4.0f * FLT_EPSILON );
 
                     for ( int k = 0; k < manifold.pointCount; ++k )
                     {
-                        b2ManifoldPoint point = manifold.points[k];
-                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, b2HexColor.b2_colorYellowGreen );
-                        Draw.g_draw.DrawPoint( point.point, 10.0f, b2HexColor.b2_colorWhite );
+                        B2ManifoldPoint point = manifold.points[k];
+                        Draw.g_draw.DrawSegment( point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen );
+                        Draw.g_draw.DrawPoint( point.point, 10.0f, B2HexColor.b2_colorWhite );
                     }
                 }
             }
@@ -343,15 +343,15 @@ public override void Step(Settings settings)
     for ( int i = 0; i < attachCount; ++i )
     {
         int index = debrisToAttach[i];
-        b2BodyId debrisId = m_debrisIds[index];
+        B2BodyId debrisId = m_debrisIds[index];
         if ( B2_IS_NULL( debrisId ) )
         {
             continue;
         }
 
-        b2Transform playerTransform = b2Body_GetTransform( m_playerId );
-        b2Transform debrisTransform = b2Body_GetTransform( debrisId );
-        b2Transform relativeTransform = b2InvMulTransforms( playerTransform, debrisTransform );
+        B2Transform playerTransform = b2Body_GetTransform( m_playerId );
+        B2Transform debrisTransform = b2Body_GetTransform( debrisId );
+        B2Transform relativeTransform = b2InvMulTransforms( playerTransform, debrisTransform );
 
         int shapeCount = b2Body_GetShapeCount( debrisId );
         if ( shapeCount == 0 )
@@ -359,19 +359,19 @@ public override void Step(Settings settings)
             continue;
         }
 
-        b2ShapeId shapeId;
+        B2ShapeId shapeId;
         b2Body_GetShapes( debrisId, &shapeId, 1 );
 
-        b2ShapeType type = b2Shape_GetType( shapeId );
+        B2ShapeType type = b2Shape_GetType( shapeId );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.enableContactEvents = true;
 
         switch ( type )
         {
             case b2_circleShape:
             {
-                b2Circle circle = b2Shape_GetCircle( shapeId );
+                B2Circle circle = b2Shape_GetCircle( shapeId );
                 circle.center = b2TransformPoint( relativeTransform, circle.center );
 
                 b2CreateCircleShape( m_playerId, &shapeDef, &circle );
@@ -380,7 +380,7 @@ public override void Step(Settings settings)
 
             case b2_capsuleShape:
             {
-                b2Capsule capsule = b2Shape_GetCapsule( shapeId );
+                B2Capsule capsule = b2Shape_GetCapsule( shapeId );
                 capsule.center1 = b2TransformPoint( relativeTransform, capsule.center1 );
                 capsule.center2 = b2TransformPoint( relativeTransform, capsule.center2 );
 
@@ -390,8 +390,8 @@ public override void Step(Settings settings)
 
             case b2_polygonShape:
             {
-                b2Polygon originalPolygon = b2Shape_GetPolygon( shapeId );
-                b2Polygon polygon = b2TransformPolygon( relativeTransform, &originalPolygon );
+                B2Polygon originalPolygon = b2Shape_GetPolygon( shapeId );
+                B2Polygon polygon = b2TransformPolygon( relativeTransform, &originalPolygon );
 
                 b2CreatePolygonShape( m_playerId, &shapeDef, &polygon );
             }

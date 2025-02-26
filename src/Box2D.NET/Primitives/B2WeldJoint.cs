@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2WeldJoint
+    public class B2WeldJoint
     {
         public float referenceAngle;
         public float linearHertz;
@@ -12,16 +12,16 @@ namespace Box2D.NET.Primitives
         public float angularHertz;
         public float angularDampingRatio;
 
-        public b2Softness linearSoftness;
-        public b2Softness angularSoftness;
-        public b2Vec2 linearImpulse;
+        public B2Softness linearSoftness;
+        public B2Softness angularSoftness;
+        public B2Vec2 linearImpulse;
         public float angularImpulse;
 
         public int indexA;
         public int indexB;
-        public b2Vec2 anchorA;
-        public b2Vec2 anchorB;
-        public b2Vec2 deltaCenter;
+        public B2Vec2 anchorA;
+        public B2Vec2 anchorB;
+        public B2Vec2 deltaCenter;
         public float deltaAngle;
         public float axialMass;
     }

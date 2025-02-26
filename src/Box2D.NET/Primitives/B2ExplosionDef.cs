@@ -7,13 +7,13 @@ namespace Box2D.NET.Primitives
     /// The explosion definition is used to configure options for explosions. Explosions
     /// consider shape geometry when computing the impulse.
     /// @ingroup world
-    public class b2ExplosionDef
+    public class B2ExplosionDef
     {
         /// Mask bits to filter shapes
         public ulong maskBits;
 
         /// The center of the explosion in world space
-        public b2Vec2 position;
+        public B2Vec2 position;
 
         /// The radius of the explosion
         public float radius;

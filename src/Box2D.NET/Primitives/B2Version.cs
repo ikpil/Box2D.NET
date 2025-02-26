@@ -6,7 +6,7 @@ namespace Box2D.NET.Primitives
 {
     /// Version numbering scheme.
     /// See https://semver.org/
-    public struct b2Version
+    public struct B2Version
     {
         /// Significant changes
         public int major;
@@ -17,7 +17,7 @@ namespace Box2D.NET.Primitives
         /// Bug fixes
         public int revision;
 
-        public b2Version(int major, int minor, int revision)
+        public B2Version(int major, int minor, int revision)
         {
             this.major = major;
             this.minor = minor;

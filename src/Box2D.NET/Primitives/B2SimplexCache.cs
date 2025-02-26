@@ -10,7 +10,7 @@ namespace Box2D.NET.Primitives
     /// transforms this might improve performance. Otherwise you can zero initialize this.
     /// The distance cache must be initialized to zero on the first call.
     /// Users should generally just zero initialize this structure for each call.
-    public struct b2SimplexCache
+    public struct B2SimplexCache
     {
         /// The number of stored simplex points
         public ushort count;

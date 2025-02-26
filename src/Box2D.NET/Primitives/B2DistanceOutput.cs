@@ -5,11 +5,11 @@
 namespace Box2D.NET.Primitives
 {
     /// Output for b2ShapeDistance
-    public class b2DistanceOutput
+    public class B2DistanceOutput
     {
-        public b2Vec2 pointA; // Closest point on shapeA
+        public B2Vec2 pointA; // Closest point on shapeA
 
-        public b2Vec2 pointB; // Closest point on shapeB
+        public B2Vec2 pointB; // Closest point on shapeB
 
         // todo_erin implement this
         // b2Vec2 normal;			// Normal vector that points from A to B

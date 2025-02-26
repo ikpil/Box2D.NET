@@ -25,18 +25,18 @@ public class CardHouse : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.75f, 0.9f);
+            Draw.g_camera.m_center = new B2Vec2(0.75f, 0.9f);
             Draw.g_camera.m_zoom = 25.0f * 0.05f;
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new b2Vec2(0.0f, -2.0f);
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Vec2(0.0f, -2.0f);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.friction = 0.7f;
 
-        b2Polygon groundBox = b2MakeBox(40.0f, 2.0f);
+        B2Polygon groundBox = b2MakeBox(40.0f, 2.0f);
         b2CreatePolygonShape(groundId, shapeDef, groundBox);
 
         float cardHeight = 0.2f;
@@ -46,8 +46,8 @@ public class CardHouse : Sample
         float angle1 = -25.0f * B2_PI / 180.0f;
         float angle2 = 0.5f * B2_PI;
 
-        b2Polygon cardBox = b2MakeBox(cardThickness, cardHeight);
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2Polygon cardBox = b2MakeBox(cardThickness, cardHeight);
+        bodyDef.type = B2BodyType.b2_dynamicBody;
 
         int Nb = 5;
         float z0 = 0.0f;
@@ -59,21 +59,21 @@ public class CardHouse : Sample
             {
                 if (i != Nb - 1)
                 {
-                    bodyDef.position = new b2Vec2(z + 0.25f, y + cardHeight - 0.015f);
+                    bodyDef.position = new B2Vec2(z + 0.25f, y + cardHeight - 0.015f);
                     bodyDef.rotation = b2MakeRot(angle2);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);
                 }
 
                 {
-                    bodyDef.position = new b2Vec2(z, y);
+                    bodyDef.position = new B2Vec2(z, y);
                     bodyDef.rotation = b2MakeRot(angle1);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);
 
                     z += 0.175f;
 
-                    bodyDef.position = new b2Vec2(z, y);
+                    bodyDef.position = new B2Vec2(z, y);
                     bodyDef.rotation = b2MakeRot(angle0);
                     bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);

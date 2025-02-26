@@ -36,7 +36,7 @@ public class SampleApp
     static Sample s_sample = nullptr;
     static Settings s_settings;
     static bool s_rightMouseDown = false;
-    static b2Vec2 s_clickPointWS = b2Vec2_zero;
+    static B2Vec2 s_clickPointWS = b2Vec2_zero;
     static float s_windowScale = 1.0f;
     static float s_framebufferScale = 1.0f;
 
@@ -78,7 +78,7 @@ public class SampleApp
         // MSAA
         glfwWindowHint( GLFW_SAMPLES, 4 );
 
-        b2Version version = b2GetVersion();
+        B2Version version = b2GetVersion();
         snprintf( buffer, 128, "Box2D Version %d.%d.%d", version.major, version.minor, version.revision );
 
         if ( GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor() )
@@ -424,7 +424,7 @@ public class SampleApp
                     // Pan left
                     if ( mods == GLFW_MOD_CONTROL )
                     {
-                        b2Vec2 newOrigin = { 2.0f, 0.0f };
+                        B2Vec2 newOrigin = { 2.0f, 0.0f };
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -437,7 +437,7 @@ public class SampleApp
                     // Pan right
                     if ( mods == GLFW_MOD_CONTROL )
                     {
-                        b2Vec2 newOrigin = { -2.0f, 0.0f };
+                        B2Vec2 newOrigin = { -2.0f, 0.0f };
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -450,7 +450,7 @@ public class SampleApp
                     // Pan down
                     if ( mods == GLFW_MOD_CONTROL )
                     {
-                        b2Vec2 newOrigin = { 0.0f, 2.0f };
+                        B2Vec2 newOrigin = { 0.0f, 2.0f };
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -463,7 +463,7 @@ public class SampleApp
                     // Pan up
                     if ( mods == GLFW_MOD_CONTROL )
                     {
-                        b2Vec2 newOrigin = { 0.0f, -2.0f };
+                        B2Vec2 newOrigin = { 0.0f, -2.0f };
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -534,12 +534,12 @@ public class SampleApp
 
         double xd, yd;
         glfwGetCursorPos( g_mainWindow, &xd, &yd );
-        b2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
+        B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
 
         // Use the mouse to move things around.
         if ( button == (int)MouseButton.Left )
         {
-            b2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
+            B2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
             if ( action == GLFW_PRESS )
             {
                 s_sample.MouseDown( pw, button, mods );
@@ -567,16 +567,16 @@ public class SampleApp
 
     static void MouseMotionCallback( GLFWwindow* window, double xd, double yd )
     {
-        b2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
+        B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
 
         ImGui_ImplGlfw_CursorPosCallback( window, ps.x, ps.y );
 
-        b2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
+        B2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
         s_sample.MouseMove( pw );
 
         if ( s_rightMouseDown )
         {
-            b2Vec2 diff = b2Sub( pw, s_clickPointWS );
+            B2Vec2 diff = b2Sub( pw, s_clickPointWS );
             Draw.g_camera.m_center.x -= diff.x;
             Draw.g_camera.m_center.y -= diff.y;
             s_clickPointWS = Draw.g_camera.ConvertScreenToWorld( ps );

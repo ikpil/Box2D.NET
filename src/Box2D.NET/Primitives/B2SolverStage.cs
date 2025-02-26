@@ -8,15 +8,15 @@ namespace Box2D.NET.Primitives
 {
     // Each stage must be completed before going to the next stage.
     // Non-iterative stages use a stage instance once while iterative stages re-use the same instance each iteration.
-    public class b2SolverStage
+    public class B2SolverStage
     {
-        public b2SolverStageType type;
-        public ArraySegment<b2SolverBlock> blocks;
+        public B2SolverStageType type;
+        public ArraySegment<B2SolverBlock> blocks;
         public int blockCount;
 
         public int colorIndex;
 
         // todo consider false sharing of this atomic
-        public b2AtomicInt completionCount;
+        public B2AtomicInt completionCount;
     }
 }

@@ -7,7 +7,7 @@ namespace Box2D.NET.Primitives
     /// This is used to filter collision on shapes. It affects shape-vs-shape collision
     /// and shape-versus-query collision (such as b2World_CastRay).
     /// @ingroup shape
-    public struct b2Filter
+    public struct B2Filter
     {
         /// The collision category bits. Normally you would just set one bit. The category bits should
         /// represent your application object types. For example:
@@ -40,7 +40,7 @@ namespace Box2D.NET.Primitives
         /// and apply that group index to all shapes on the ragdoll.
         public int groupIndex;
 
-        public b2Filter(ulong categoryBits, ulong maskBits, int groupIndex)
+        public B2Filter(ulong categoryBits, ulong maskBits, int groupIndex)
         {
             this.categoryBits = categoryBits;
             this.maskBits = maskBits;

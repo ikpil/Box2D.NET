@@ -25,9 +25,9 @@ public class Platformer : Sample
     float m_force;
     float m_impulse;
     float m_jumpDelay;
-    b2BodyId m_playerId;
-    b2ShapeId m_playerShapeId;
-    b2BodyId m_movingPlatformId;
+    B2BodyId m_playerId;
+    B2ShapeId m_playerShapeId;
+    B2BodyId m_movingPlatformId;
 
     static int samplePlatformer = RegisterSample( "Events", "Platformer", Create );
     static Sample Create( Settings settings )
@@ -48,59 +48,59 @@ public Platformer( Settings settings )
 
     // Ground
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2Segment segment = { { -20.0f, 0.0f }, { 20.0f, 0.0f } };
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Segment segment = { { -20.0f, 0.0f }, { 20.0f, 0.0f } };
         b2CreateSegmentShape( groundId, &shapeDef, &segment );
     }
 
     // Static Platform
     // This tests pre-solve with continuous collision
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_staticBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_staticBody;
         bodyDef.position = { -6.0f, 6.0f };
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         // Need to turn this on to get the callback
         shapeDef.enablePreSolveEvents = true;
 
-        b2Polygon box = b2MakeBox( 2.0f, 0.5f );
+        B2Polygon box = b2MakeBox( 2.0f, 0.5f );
         b2CreatePolygonShape( bodyId, &shapeDef, &box );
     }
 
     // Moving Platform
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_kinematicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_kinematicBody;
         bodyDef.position = { 0.0f, 6.0f };
         bodyDef.linearVelocity = { 2.0f, 0.0f };
         m_movingPlatformId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         // Need to turn this on to get the callback
         shapeDef.enablePreSolveEvents = true;
 
-        b2Polygon box = b2MakeBox( 3.0f, 0.5f );
+        B2Polygon box = b2MakeBox( 3.0f, 0.5f );
         b2CreatePolygonShape( m_movingPlatformId, &shapeDef, &box );
     }
 
     // Player
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.fixedRotation = true;
         bodyDef.linearDamping = 0.5f;
         bodyDef.position = { 0.0f, 1.0f };
         m_playerId = b2CreateBody( m_worldId, &bodyDef );
 
         m_radius = 0.5f;
-        b2Capsule capsule = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, m_radius };
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Capsule capsule = { { 0.0f, 0.0f }, { 0.0f, 1.0f }, m_radius };
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.friction = 0.1f;
 
         m_playerShapeId = b2CreateCapsuleShape( m_playerId, &shapeDef, &capsule );
@@ -112,7 +112,7 @@ public Platformer( Settings settings )
     m_jumping = false;
 }
 
-static bool PreSolveStatic( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold, void* context )
+static bool PreSolveStatic( B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Manifold* manifold, void* context )
 {
     Platformer* platformer = static_cast<Platformer*>( context );
     return platformer->PreSolve( shapeIdA, shapeIdB, manifold );
@@ -121,7 +121,7 @@ static bool PreSolveStatic( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* 
 // This callback must be thread-safe. It may be called multiple times simultaneously.
 // Notice how this method is constant and doesn't change any data. It also
 // does not try to access any values in the world that may be changing, such as contact data.
-bool PreSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold ) const
+bool PreSolve( B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Manifold* manifold ) const
 {
     Debug.Assert( b2Shape_IsValid( shapeIdA ) );
     Debug.Assert( b2Shape_IsValid( shapeIdB ) );
@@ -141,7 +141,7 @@ bool PreSolve( b2ShapeId shapeIdA, b2ShapeId shapeIdB, b2Manifold* manifold ) co
         return true;
     }
 
-    b2Vec2 normal = manifold->normal;
+    B2Vec2 normal = manifold->normal;
     if ( sign * normal.y > 0.95f )
     {
         return true;
@@ -181,16 +181,16 @@ public override void UpdateUI()
 public override void Step(Settings settings)
 {
     bool canJump = false;
-    b2Vec2 velocity = b2Body_GetLinearVelocity( m_playerId );
+    B2Vec2 velocity = b2Body_GetLinearVelocity( m_playerId );
     if ( m_jumpDelay == 0.0f && m_jumping == false && velocity.y < 0.01f )
     {
         int capacity = b2Body_GetContactCapacity( m_playerId );
         capacity = b2MinInt( capacity, 4 );
-        b2ContactData contactData[4];
+        B2ContactData contactData[4];
         int count = b2Body_GetContactData( m_playerId, contactData, capacity );
         for ( int i = 0; i < count; ++i )
         {
-            b2BodyId bodyIdA = b2Shape_GetBody( contactData[i].shapeIdA );
+            B2BodyId bodyIdA = b2Shape_GetBody( contactData[i].shapeIdA );
             float sign = 0.0f;
             if ( B2_ID_EQUALS( bodyIdA, m_playerId ) )
             {
@@ -212,7 +212,7 @@ public override void Step(Settings settings)
 
     // A kinematic body is moved by setting its velocity. This
     // ensure friction works correctly.
-    b2Vec2 platformPosition = b2Body_GetPosition( m_movingPlatformId );
+    B2Vec2 platformPosition = b2Body_GetPosition( m_movingPlatformId );
     if ( platformPosition.x < -15.0f )
     {
         b2Body_SetLinearVelocity( m_movingPlatformId, { 2.0f, 0.0f } );
@@ -249,7 +249,7 @@ public override void Step(Settings settings)
 
     base.Step( settings );
 
-    b2ContactData contactData = {};
+    B2ContactData contactData = {};
     int contactCount = b2Body_GetContactData( m_movingPlatformId, &contactData, 1 );
     Draw.g_draw.DrawString( 5, m_textLine, "Platform contact count = %d, point count = %d", contactCount,
         contactData.manifold.pointCount );

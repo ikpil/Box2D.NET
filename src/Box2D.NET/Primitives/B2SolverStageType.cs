@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public enum b2SolverStageType
+    public enum B2SolverStageType
     {
         b2_stagePrepareJoints,
         b2_stagePrepareContacts,

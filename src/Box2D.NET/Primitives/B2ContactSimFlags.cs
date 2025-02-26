@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     // Shifted to be distinct from b2ContactFlags
-    public enum b2ContactSimFlags
+    public enum B2ContactSimFlags
     {
         // Set when the shapes are touching, including sensors
         b2_simTouchingFlag = 0x00010000,

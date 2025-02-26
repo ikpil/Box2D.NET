@@ -23,13 +23,13 @@ enum CollisionBits
     ALL_BITS = ( ~0u )
 };
 
-b2ShapeId m_staticSensorId;
-b2ShapeId m_kinematicSensorId;
-b2ShapeId m_dynamicSensorId;
+B2ShapeId m_staticSensorId;
+B2ShapeId m_kinematicSensorId;
+B2ShapeId m_dynamicSensorId;
 
-b2BodyId m_kinematicBodyId;
+B2BodyId m_kinematicBodyId;
 
-List<b2ShapeId> m_overlaps;
+List<B2ShapeId> m_overlaps;
 
 static int sampleSensorTypes = RegisterSample( "Events", "Sensor Types", Create );
 static Sample Create( Settings settings )
@@ -48,15 +48,15 @@ public SensorTypes( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "ground";
 
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = GROUND;
         shapeDef.filter.maskBits = SENSOR | DEFAULT;
 
-        b2Segment groundSegment = { { -6.0f, 0.0f }, { 6.0f, 0.0f } };
+        B2Segment groundSegment = { { -6.0f, 0.0f }, { 6.0f, 0.0f } };
         b2CreateSegmentShape( groundId, &shapeDef, &groundSegment );
 
         groundSegment = { { -6.0f, 0.0f }, { -6.0f, 4.0f } };
@@ -67,45 +67,45 @@ public SensorTypes( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "static sensor";
-        bodyDef.type = b2BodyType.b2_staticBody;
+        bodyDef.type = B2BodyType.b2_staticBody;
         bodyDef.position = { -3.0f, 0.8f };
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = SENSOR;
         shapeDef.isSensor = true;
-        b2Polygon box = b2MakeSquare( 1.0f );
+        B2Polygon box = b2MakeSquare( 1.0f );
         m_staticSensorId = b2CreatePolygonShape( bodyId, &shapeDef, &box );
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "kinematic sensor";
-        bodyDef.type = b2BodyType.b2_kinematicBody;
+        bodyDef.type = B2BodyType.b2_kinematicBody;
         bodyDef.position = { 0.0f, 0.0f };
         bodyDef.linearVelocity = { 0.0f, 1.0f };
         m_kinematicBodyId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = SENSOR;
         shapeDef.isSensor = true;
-        b2Polygon box = b2MakeSquare( 1.0f );
+        B2Polygon box = b2MakeSquare( 1.0f );
         m_kinematicSensorId = b2CreatePolygonShape( m_kinematicBodyId, &shapeDef, &box );
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "dynamic sensor";
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = { 3.0f, 1.0f };
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = SENSOR;
         shapeDef.isSensor = true;
-        b2Polygon box = b2MakeSquare( 1.0f );
+        B2Polygon box = b2MakeSquare( 1.0f );
         m_dynamicSensorId = b2CreatePolygonShape( bodyId, &shapeDef, &box );
 
         // Add some real collision so the dynamic body is valid
@@ -116,23 +116,23 @@ public SensorTypes( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.name = "ball_01";
         bodyDef.position = { -5.0f, 1.0f };
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        bodyDef.type = B2BodyType.b2_dynamicBody;
 
-        b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.filter.categoryBits = DEFAULT;
         shapeDef.filter.maskBits = GROUND | DEFAULT | SENSOR;
 
-        b2Circle circle = { { 0.0f, 0.0f }, 0.5f };
+        B2Circle circle = { { 0.0f, 0.0f }, 0.5f };
         b2CreateCircleShape( bodyId, &shapeDef, &circle );
     }
 }
 
-void PrintOverlaps( b2ShapeId sensorShapeId, string prefix )
+void PrintOverlaps( B2ShapeId sensorShapeId, string prefix )
 {
     char buffer[256] = {};
 
@@ -147,13 +147,13 @@ void PrintOverlaps( b2ShapeId sensorShapeId, string prefix )
     int start = snprintf( buffer, sizeof( buffer ), "%s: ", prefix );
     for ( int i = 0; i < count && start < sizeof( buffer ); ++i )
     {
-        b2ShapeId visitorId = m_overlaps[i];
+        B2ShapeId visitorId = m_overlaps[i];
         if ( b2Shape_IsValid( visitorId ) == false )
         {
             continue;
         }
 
-        b2BodyId bodyId = b2Shape_GetBody( visitorId );
+        B2BodyId bodyId = b2Shape_GetBody( visitorId );
         string name = b2Body_GetName( bodyId );
         if ( name == nullptr )
         {
@@ -169,7 +169,7 @@ void PrintOverlaps( b2ShapeId sensorShapeId, string prefix )
 
 public override void Step(Settings settings)
 {
-    b2Vec2 position = b2Body_GetPosition( m_kinematicBodyId );
+    B2Vec2 position = b2Body_GetPosition( m_kinematicBodyId );
     if (position.y < 0.0f)
     {
         b2Body_SetLinearVelocity( m_kinematicBodyId, { 0.0f, 1.0f } );
@@ -186,14 +186,14 @@ public override void Step(Settings settings)
     PrintOverlaps( m_kinematicSensorId, "kinematic" );
     PrintOverlaps( m_dynamicSensorId, "dynamic" );
 
-    b2Vec2 origin = { 5.0f, 1.0f };
-    b2Vec2 translation = { -10.0f, 0.0f };
-    b2RayResult result = b2World_CastRayClosest( m_worldId, origin, translation, b2DefaultQueryFilter() );
-    Draw.g_draw.DrawSegment( origin, origin + translation, b2HexColor.b2_colorDimGray );
+    B2Vec2 origin = { 5.0f, 1.0f };
+    B2Vec2 translation = { -10.0f, 0.0f };
+    B2RayResult result = b2World_CastRayClosest( m_worldId, origin, translation, b2DefaultQueryFilter() );
+    Draw.g_draw.DrawSegment( origin, origin + translation, B2HexColor.b2_colorDimGray );
 
     if (result.hit)
     {
-        Draw.g_draw.DrawPoint( result.point, 10.0f, b2HexColor.b2_colorCyan );
+        Draw.g_draw.DrawPoint( result.point, 10.0f, B2HexColor.b2_colorCyan );
     }
 }
 

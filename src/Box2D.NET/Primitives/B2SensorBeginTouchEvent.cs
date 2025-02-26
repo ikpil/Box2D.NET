@@ -21,19 +21,19 @@ namespace Box2D.NET.Primitives
  * @{
  */
     /// A begin touch event is generated when a shape starts to overlap a sensor shape.
-    public class b2SensorBeginTouchEvent
+    public class B2SensorBeginTouchEvent
     {
         /// The id of the sensor shape
-        public b2ShapeId sensorShapeId;
+        public B2ShapeId sensorShapeId;
 
         /// The id of the dynamic shape that began touching the sensor shape
-        public b2ShapeId visitorShapeId;
+        public B2ShapeId visitorShapeId;
 
-        public b2SensorBeginTouchEvent()
+        public B2SensorBeginTouchEvent()
         {
         }
 
-        public b2SensorBeginTouchEvent(b2ShapeId sensorShapeId, b2ShapeId visitorShapeId)
+        public B2SensorBeginTouchEvent(B2ShapeId sensorShapeId, B2ShapeId visitorShapeId)
         {
             this.sensorShapeId = sensorShapeId;
             this.visitorShapeId = visitorShapeId;

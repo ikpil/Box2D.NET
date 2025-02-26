@@ -9,21 +9,21 @@ namespace Box2D.NET.Primitives
     /// Body definitions are temporary objects used to bundle creation parameters.
     /// Must be initialized using b2DefaultBodyDef().
     /// @ingroup body
-    public class b2BodyDef
+    public class B2BodyDef
     {
         /// The body type: static, kinematic, or dynamic.
-        public b2BodyType type;
+        public B2BodyType type;
 
         /// The initial world position of the body. Bodies should be created with the desired position.
         /// @note Creating bodies at the origin and then moving them nearly doubles the cost of body creation, especially
         /// if the body is moved after shapes have been added.
-        public b2Vec2 position;
+        public B2Vec2 position;
 
         /// The initial world rotation of the body. Use b2MakeRot() if you have an angle.
-        public b2Rot rotation;
+        public B2Rot rotation;
 
         /// The initial linear velocity of the body's origin. Usually in meters per second.
-        public b2Vec2 linearVelocity;
+        public B2Vec2 linearVelocity;
 
         /// The initial angular velocity of the body. Radians per second.
         public float angularVelocity;

@@ -4,8 +4,8 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2MoveResult
+    public class B2MoveResult
     {
-        public b2MovePair pairList;
+        public B2MovePair pairList;
     }
 }

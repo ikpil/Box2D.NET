@@ -17,7 +17,7 @@ public class TiltedStack : Sample
     public const int e_columns = 10;
     public const int e_rows = 10;
 
-    b2BodyId[] m_bodies = new b2BodyId[e_rows * e_columns];
+    B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
     static int sampleTiltedStack = RegisterSample("Stacking", "Tilted Stack", Create);
 
     static Sample Create(Settings settings)
@@ -30,17 +30,17 @@ public class TiltedStack : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(7.5f, 7.5f);
+            Draw.g_camera.m_center = new B2Vec2(7.5f, 7.5f);
             Draw.g_camera.m_zoom = 20.0f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new b2Vec2(0.0f, -1.0f);
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Polygon box = b2MakeBox(1000.0f, 1.0f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(1000.0f, 1.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
@@ -50,9 +50,9 @@ public class TiltedStack : Sample
         }
 
         {
-            b2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
+            B2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
             shapeDef.friction = 0.3f;
 
@@ -66,13 +66,13 @@ public class TiltedStack : Sample
 
                 for (int i = 0; i < e_rows; ++i)
                 {
-                    b2BodyDef bodyDef = b2DefaultBodyDef();
-                    bodyDef.type = b2BodyType.b2_dynamicBody;
+                    B2BodyDef bodyDef = b2DefaultBodyDef();
+                    bodyDef.type = B2BodyType.b2_dynamicBody;
 
                     int n = j * e_rows + i;
 
-                    bodyDef.position = new b2Vec2(x + offset * i, 0.5f + 1.0f * i);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    bodyDef.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     m_bodies[n] = bodyId;
 

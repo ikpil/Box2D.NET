@@ -19,9 +19,9 @@ public class DistanceJoint : Sample
 {
     public const int e_maxCount = 10;
 
-    b2BodyId m_groundId;
-    b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
-    b2JointId[] m_jointIds = new b2JointId[e_maxCount];
+    B2BodyId m_groundId;
+    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
+    B2JointId[] m_jointIds = new B2JointId[e_maxCount];
     int m_count;
     float m_hertz;
     float m_dampingRatio;
@@ -42,12 +42,12 @@ public class DistanceJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 12.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 12.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.35f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             m_groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -87,14 +87,14 @@ public class DistanceJoint : Sample
         m_count = newCount;
 
         float radius = 0.25f;
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), radius);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), radius);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 20.0f;
 
         float yOffset = 20.0f;
 
-        b2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
+        B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
         jointDef.hertz = m_hertz;
         jointDef.dampingRatio = m_dampingRatio;
         jointDef.length = m_length;
@@ -103,18 +103,18 @@ public class DistanceJoint : Sample
         jointDef.enableSpring = m_enableSpring;
         jointDef.enableLimit = m_enableLimit;
 
-        b2BodyId prevBodyId = m_groundId;
+        B2BodyId prevBodyId = m_groundId;
         for (int i = 0; i < m_count; ++i)
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.angularDamping = 0.1f;
-            bodyDef.position = new b2Vec2(m_length * (i + 1.0f), yOffset);
+            bodyDef.position = new B2Vec2(m_length * (i + 1.0f), yOffset);
             m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(m_bodyIds[i], shapeDef, circle);
 
-            b2Vec2 pivotA = new b2Vec2(m_length * i, yOffset);
-            b2Vec2 pivotB = new b2Vec2(m_length * (i + 1.0f), yOffset);
+            B2Vec2 pivotA = new B2Vec2(m_length * i, yOffset);
+            B2Vec2 pivotB = new B2Vec2(m_length * (i + 1.0f), yOffset);
             jointDef.bodyIdA = prevBodyId;
             jointDef.bodyIdB = m_bodyIds[i];
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivotA);

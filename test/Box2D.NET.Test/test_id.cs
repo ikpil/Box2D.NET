@@ -16,25 +16,25 @@ public class test_id
         ulong x = 0x0123456789ABCDEFul;
 
         {
-            b2BodyId id = b2LoadBodyId(x);
+            B2BodyId id = b2LoadBodyId(x);
             ulong y = b2StoreBodyId(id);
             Assert.That(x, Is.EqualTo(y));
         }
 
         {
-            b2ShapeId id = b2LoadShapeId(x);
+            B2ShapeId id = b2LoadShapeId(x);
             ulong y = b2StoreShapeId(id);
             Assert.That(x, Is.EqualTo(y));
         }
 
         {
-            b2ChainId id = b2LoadChainId(x);
+            B2ChainId id = b2LoadChainId(x);
             ulong y = b2StoreChainId(id);
             Assert.That(x, Is.EqualTo(y));
         }
 
         {
-            b2JointId id = b2LoadJointId(x);
+            B2JointId id = b2LoadJointId(x);
             ulong y = b2StoreJointId(id);
             Assert.That(x, Is.EqualTo(y));
         }

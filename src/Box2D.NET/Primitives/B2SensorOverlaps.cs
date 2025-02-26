@@ -11,8 +11,8 @@ namespace Box2D.NET.Primitives
     // The sensor overlaps don't get cleared until the next time step regardless of the overlapped
     // shapes being destroyed.
     // When a sensor is destroyed.
-    public struct b2SensorOverlaps
+    public struct B2SensorOverlaps
     {
-        public b2Array<int> overlaps;
+        public B2Array<int> overlaps;
     }
 }

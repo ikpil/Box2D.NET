@@ -9,10 +9,10 @@ namespace Box2D.NET.Samples.Primitives;
 
 public class QueryContext
 {
-    public b2Vec2 point;
-    public b2BodyId bodyId = b2_nullBodyId;
+    public B2Vec2 point;
+    public B2BodyId bodyId = b2_nullBodyId;
 
-    public QueryContext(b2Vec2 point, b2BodyId bodyId)
+    public QueryContext(B2Vec2 point, B2BodyId bodyId)
     {
         this.point = point;
         this.bodyId = bodyId;

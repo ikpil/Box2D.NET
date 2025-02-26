@@ -19,26 +19,26 @@ namespace Box2D.NET.Primitives
     /// Must be initialized using b2DefaultChainDef().
     /// @warning Do not use chain shapes unless you understand the limitations. This is an advanced feature.
     /// @ingroup shape
-    public class b2ChainDef
+    public class B2ChainDef
     {
         /// Use this to store application specific shape data.
         public object userData;
 
         /// An array of at least 4 points. These are cloned and may be temporary.
-        public b2Vec2[] points;
+        public B2Vec2[] points;
 
         /// The point count, must be 4 or more.
         public int count;
 
         /// Surface materials for each segment. These are cloned.
-        public b2SurfaceMaterial[] materials;
+        public B2SurfaceMaterial[] materials;
 
         /// The material count. Must be 1 or count. This allows you to provide one
         /// material for all segments or a unique material per segment.
         public int materialCount;
 
         /// Contact filtering data.
-        public b2Filter filter;
+        public B2Filter filter;
 
         /// Indicates a closed chain formed by connecting the first and last points
         public bool isLoop;

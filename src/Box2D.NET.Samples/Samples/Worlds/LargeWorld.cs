@@ -21,7 +21,7 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 public class LargeWorld : Sample
 {
     Car m_car = new Car();
-    b2Vec2 m_viewPosition;
+    B2Vec2 m_viewPosition;
     float m_period;
     int m_cycleCount;
     int m_cycleIndex;
@@ -29,7 +29,7 @@ public class LargeWorld : Sample
     float m_gridSize;
     float m_speed;
 
-    b2Vec2 m_explosionPosition;
+    B2Vec2 m_explosionPosition;
     bool m_explode;
     bool m_followCar;
 
@@ -50,7 +50,7 @@ public class LargeWorld : Sample
 
         float xStart = -0.5f * (m_cycleCount * m_period);
 
-        m_viewPosition = new b2Vec2(xStart, 15.0f);
+        m_viewPosition = new B2Vec2(xStart, 15.0f);
 
         if (settings.restart == false)
         {
@@ -61,8 +61,8 @@ public class LargeWorld : Sample
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             // Setting this to false significantly reduces the cost of creating
             // static bodies and shapes.
@@ -72,7 +72,7 @@ public class LargeWorld : Sample
             float xBody = xStart;
             float xShape = xStart;
 
-            b2BodyId groundId = new b2BodyId();
+            B2BodyId groundId = new B2BodyId();
 
             for (int i = 0; i < m_gridCount; ++i)
             {
@@ -93,7 +93,7 @@ public class LargeWorld : Sample
 
                 for (int j = 0; j < ycount; ++j)
                 {
-                    b2Polygon square = b2MakeOffsetBox(0.4f * m_gridSize, 0.4f * m_gridSize, new b2Vec2(xShape, y), b2Rot_identity);
+                    B2Polygon square = b2MakeOffsetBox(0.4f * m_gridSize, 0.4f * m_gridSize, new B2Vec2(xShape, y), b2Rot_identity);
                     square.radius = 0.1f;
                     b2CreatePolygonShape(groundId, shapeDef, square);
 
@@ -113,19 +113,19 @@ public class LargeWorld : Sample
             int remainder = cycleIndex % 3;
             if (remainder == 0)
             {
-                b2BodyDef bodyDef = b2DefaultBodyDef();
-                bodyDef.type = b2BodyType.b2_dynamicBody;
-                bodyDef.position = new b2Vec2(xbase - 3.0f, 10.0f);
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_dynamicBody;
+                bodyDef.position = new B2Vec2(xbase - 3.0f, 10.0f);
 
-                b2ShapeDef shapeDef = b2DefaultShapeDef();
-                b2Polygon box = b2MakeBox(0.3f, 0.2f);
+                B2ShapeDef shapeDef = b2DefaultShapeDef();
+                B2Polygon box = b2MakeBox(0.3f, 0.2f);
 
                 for (int i = 0; i < 10; ++i)
                 {
                     bodyDef.position.y = 10.0f;
                     for (int j = 0; j < 5; ++j)
                     {
-                        b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                         b2CreatePolygonShape(bodyId, shapeDef, box);
                         bodyDef.position.y += 0.5f;
                     }
@@ -135,7 +135,7 @@ public class LargeWorld : Sample
             }
             else if (remainder == 1)
             {
-                b2Vec2 position = new b2Vec2(xbase - 2.0f, 10.0f);
+                B2Vec2 position = new B2Vec2(xbase - 2.0f, 10.0f);
                 for (int i = 0; i < 5; ++i)
                 {
                     Human human = new Human();
@@ -146,7 +146,7 @@ public class LargeWorld : Sample
             }
             else
             {
-                b2Vec2 position = new b2Vec2(xbase - 4.0f, 12.0f);
+                B2Vec2 position = new B2Vec2(xbase - 4.0f, 12.0f);
 
                 for (int i = 0; i < 5; ++i)
                 {
@@ -157,11 +157,11 @@ public class LargeWorld : Sample
             }
         }
 
-        m_car.Spawn(m_worldId, new b2Vec2(xStart + 20.0f, 40.0f), 10.0f, 2.0f, 0.7f, 2000.0f, null);
+        m_car.Spawn(m_worldId, new B2Vec2(xStart + 20.0f, 40.0f), 10.0f, 2.0f, 0.7f, 2000.0f, null);
 
         m_cycleIndex = 0;
         m_speed = 0.0f;
-        m_explosionPosition = new b2Vec2((0.5f + m_cycleIndex) * m_period + xStart, 7.0f);
+        m_explosionPosition = new B2Vec2((0.5f + m_cycleIndex) * m_period + xStart, 7.0f);
         m_explode = true;
         m_followCar = false;
     }
@@ -216,7 +216,7 @@ public class LargeWorld : Sample
         {
             m_explosionPosition.x = (0.5f + m_cycleIndex) * m_period - span;
 
-            b2ExplosionDef def = b2DefaultExplosionDef();
+            B2ExplosionDef def = b2DefaultExplosionDef();
             def.position = m_explosionPosition;
             def.radius = radius;
             def.falloff = 0.1f;
@@ -228,7 +228,7 @@ public class LargeWorld : Sample
 
         if (m_explode)
         {
-            Draw.g_draw.DrawCircle(m_explosionPosition, radius, b2HexColor.b2_colorAzure);
+            Draw.g_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
         }
 
         if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)

@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public enum b2SetType
+    public enum B2SetType
     {
         b2_staticSet = 0,
         b2_disabledSet = 1,

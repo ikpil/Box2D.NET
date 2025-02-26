@@ -21,7 +21,7 @@ public class BenchmarkCreateDestroy : Sample
 
     float m_createTime;
     float m_destroyTime;
-    b2BodyId[] m_bodies = new b2BodyId[e_maxBodyCount];
+    B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
     int m_bodyCount;
     int m_baseCount;
     int m_iterations;
@@ -37,17 +37,17 @@ public class BenchmarkCreateDestroy : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 50.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 50.0f);
             Draw.g_camera.m_zoom = 25.0f * 2.2f;
         }
 
         float groundSize = 100.0f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-        b2Polygon box = b2MakeBox(groundSize, 1.0f);
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Polygon box = b2MakeBox(groundSize, 1.0f);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(groundId, shapeDef, box);
 
         for (int i = 0; i < e_maxBodyCount; ++i)
@@ -84,15 +84,15 @@ public class BenchmarkCreateDestroy : Sample
         float centerx = shift * count / 2.0f;
         float centery = shift / 2.0f + 1.0f;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.friction = 0.5f;
 
         float h = 0.5f;
-        b2Polygon box = b2MakeRoundedBox(h, h, 0.0f);
+        B2Polygon box = b2MakeRoundedBox(h, h, 0.0f);
 
         int index = 0;
 
@@ -103,7 +103,7 @@ public class BenchmarkCreateDestroy : Sample
             for (int j = i; j < count; ++j)
             {
                 float x = 0.5f * i * shift + (j - i) * shift - centerx;
-                bodyDef.position = new b2Vec2(x, y);
+                bodyDef.position = new B2Vec2(x, y);
 
                 Debug.Assert(index < e_maxBodyCount);
                 m_bodies[index] = b2CreateBody(m_worldId, bodyDef);

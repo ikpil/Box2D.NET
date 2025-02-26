@@ -46,7 +46,7 @@ public class GLSolidCapsules
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        b2Vec2 vertices[] =  {
+        B2Vec2 vertices[] =  {
             {
                 -a, -a
             }, {
@@ -109,9 +109,9 @@ public class GLSolidCapsules
         }
     }
 
-    public void AddCapsule(b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor c)
+    public void AddCapsule(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor c)
     {
-        b2Vec2 d = p2 - p1;
+        B2Vec2 d = p2 - p1;
         float length = b2Length(d);
         if (length < 0.001f)
         {
@@ -119,8 +119,8 @@ public class GLSolidCapsules
             return;
         }
 
-        b2Vec2 axis = { d.x / length, d.y / length };
-        b2Transform transform;
+        B2Vec2 axis = { d.x / length, d.y / length };
+        B2Transform transform;
         transform.p = 0.5f * (p1 + p2);
         transform.q.c = axis.x;
         transform.q.s = axis.y;

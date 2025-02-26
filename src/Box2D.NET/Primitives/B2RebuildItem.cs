@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     // Temporary data used to track the rebuild of a tree node
-    public class b2RebuildItem
+    public class B2RebuildItem
     {
         public int nodeIndex;
         public int childCount;

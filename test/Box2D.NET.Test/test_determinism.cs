@@ -139,8 +139,8 @@ public class test_determinism
     private const int e_count = e_columns * e_rows;
     private const int e_maxTasks = 128;
 
-    private b2Vec2[][] finalPositions = new b2Vec2[][] { new b2Vec2[e_count], new b2Vec2[e_count] };
-    private b2Rot[][] finalRotations = new b2Rot[][] { new b2Rot[e_count], new b2Rot[e_count] };
+    private B2Vec2[][] finalPositions = new B2Vec2[][] { new B2Vec2[e_count], new B2Vec2[e_count] };
+    private B2Rot[][] finalRotations = new B2Rot[][] { new B2Rot[e_count], new B2Rot[e_count] };
 
 
     // todo_erin move this to shared
@@ -148,29 +148,29 @@ public class test_determinism
     {
         var tester = new b2TaskTester(workerCount, e_maxTasks);
 
-        b2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.enqueueTask = tester.EnqueueTask;
         worldDef.finishTask = tester.FinishTask;
         worldDef.workerCount = workerCount;
         worldDef.enableSleep = false;
 
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
-        b2BodyId[] bodies = new b2BodyId[e_count];
+        B2BodyId[] bodies = new B2BodyId[e_count];
 
         {
-            b2BodyDef bd = b2DefaultBodyDef();
-            bd.position = new b2Vec2(0.0f, -1.0f);
-            b2BodyId groundId = b2CreateBody(worldId, bd);
+            B2BodyDef bd = b2DefaultBodyDef();
+            bd.position = new B2Vec2(0.0f, -1.0f);
+            B2BodyId groundId = b2CreateBody(worldId, bd);
 
-            b2Polygon box = b2MakeBox(1000.0f, 1.0f);
-            b2ShapeDef sd = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(1000.0f, 1.0f);
+            B2ShapeDef sd = b2DefaultShapeDef();
             b2CreatePolygonShape(groundId, sd, box);
         }
 
         {
-            b2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
-            b2ShapeDef sd = b2DefaultShapeDef();
+            B2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
+            B2ShapeDef sd = b2DefaultShapeDef();
             sd.density = 1.0f;
             sd.friction = 0.3f;
 
@@ -184,13 +184,13 @@ public class test_determinism
 
                 for (int i = 0; i < e_rows; ++i)
                 {
-                    b2BodyDef bd = b2DefaultBodyDef();
-                    bd.type = b2BodyType.b2_dynamicBody;
+                    B2BodyDef bd = b2DefaultBodyDef();
+                    bd.type = B2BodyType.b2_dynamicBody;
 
                     int n = j * e_rows + i;
 
-                    bd.position = new b2Vec2(x + offset * i, 0.5f + 1.0f * i);
-                    b2BodyId bodyId = b2CreateBody(worldId, bd);
+                    bd.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
+                    B2BodyId bodyId = b2CreateBody(worldId, bd);
                     bodies[n] = bodyId;
 
                     b2CreatePolygonShape(bodyId, sd, box);
@@ -230,10 +230,10 @@ public class test_determinism
         // Both runs should produce identical results
         for (int i = 0; i < e_count; ++i)
         {
-            b2Vec2 p1 = finalPositions[0][i];
-            b2Vec2 p2 = finalPositions[1][i];
-            b2Rot rot1 = finalRotations[0][i];
-            b2Rot rot2 = finalRotations[1][i];
+            B2Vec2 p1 = finalPositions[0][i];
+            B2Vec2 p2 = finalPositions[1][i];
+            B2Rot rot1 = finalRotations[0][i];
+            B2Rot rot2 = finalRotations[1][i];
 
             Assert.That(p1.x, Is.EqualTo(p2.x));
             Assert.That(p1.y, Is.EqualTo(p2.y));
@@ -246,16 +246,16 @@ public class test_determinism
     [Test]
     public void CrossPlatformTest()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new b2Vec2(0.0f, -1.0f);
-            b2BodyId groundId = b2CreateBody(worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            B2BodyId groundId = b2CreateBody(worldId, bodyDef);
 
-            b2Polygon box = b2MakeBox(20.0f, 1.0f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(20.0f, 1.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
@@ -264,28 +264,28 @@ public class test_determinism
             int rowCount = 30;
             int bodyCount = rowCount * columnCount;
 
-            b2BodyId[] bodies = new b2BodyId[bodyCount];
+            B2BodyId[] bodies = new B2BodyId[bodyCount];
 
             float h = 0.25f;
             float r = 0.1f * h;
-            b2Polygon box = b2MakeRoundedBox(h - r, h - r, r);
+            B2Polygon box = b2MakeRoundedBox(h - r, h - r, r);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.3f;
 
             float offset = 0.4f * h;
             float dx = 10.0f * h;
             float xroot = -0.5f * dx * (columnCount - 1.0f);
 
-            b2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
+            B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.enableLimit = true;
             jointDef.lowerAngle = -0.1f * B2_PI;
             jointDef.upperAngle = 0.2f * B2_PI;
             jointDef.enableSpring = true;
             jointDef.hertz = 0.5f;
             jointDef.dampingRatio = 0.5f;
-            jointDef.localAnchorA = new b2Vec2(h, h);
-            jointDef.localAnchorB = new b2Vec2(offset, -h);
+            jointDef.localAnchorA = new B2Vec2(h, h);
+            jointDef.localAnchorB = new B2Vec2(offset, -h);
             jointDef.drawSize = 0.1f;
 
             int bodyIndex = 0;
@@ -294,12 +294,12 @@ public class test_determinism
             {
                 float x = xroot + j * dx;
 
-                b2BodyId prevBodyId = b2_nullBodyId;
+                B2BodyId prevBodyId = b2_nullBodyId;
 
                 for (int i = 0; i < rowCount; ++i)
                 {
-                    b2BodyDef bodyDef = b2DefaultBodyDef();
-                    bodyDef.type = b2BodyType.b2_dynamicBody;
+                    B2BodyDef bodyDef = b2DefaultBodyDef();
+                    bodyDef.type = B2BodyType.b2_dynamicBody;
 
                     bodyDef.position.x = x + offset * i;
                     bodyDef.position.y = h + 2.0f * h * i;
@@ -307,7 +307,7 @@ public class test_determinism
                     // this tests the deterministic cosine and sine functions
                     bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
 
-                    b2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
                     if ((i & 1) == 0)
                     {
@@ -346,7 +346,7 @@ public class test_determinism
 
                 if (hash == 0)
                 {
-                    b2BodyEvents bodyEvents = b2World_GetBodyEvents(worldId);
+                    B2BodyEvents bodyEvents = b2World_GetBodyEvents(worldId);
 
                     if (bodyEvents.moveCount == 0)
                     {
@@ -356,7 +356,7 @@ public class test_determinism
                         hash = B2_HASH_INIT;
                         for (int i = 0; i < bodyCount; ++i)
                         {
-                            b2Transform xf = b2Body_GetTransform(bodies[i]);
+                            B2Transform xf = b2Body_GetTransform(bodies[i]);
                             byte[] bxf = new byte[sizeof(float) * 4];
                             xf.TryWriteBytes(bxf);
                             hash = b2Hash(hash, bxf, bxf.Length);

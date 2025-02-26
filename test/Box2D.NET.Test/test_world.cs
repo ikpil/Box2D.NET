@@ -30,41 +30,41 @@ public class test_world
     public void HelloWorld()
     {
         // Construct a world object, which will hold and simulate the rigid bodies.
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        worldDef.gravity = new b2Vec2(0.0f, -10.0f);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = new B2Vec2(0.0f, -10.0f);
 
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
         Assert.That(b2World_IsValid(worldId));
 
         // Define the ground body.
-        b2BodyDef groundBodyDef = b2DefaultBodyDef();
-        groundBodyDef.position = new b2Vec2(0.0f, -10.0f);
+        B2BodyDef groundBodyDef = b2DefaultBodyDef();
+        groundBodyDef.position = new B2Vec2(0.0f, -10.0f);
 
         // Call the body factory which allocates memory for the ground body
         // from a pool and creates the ground box shape (also from a pool).
         // The body is also added to the world.
-        b2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
+        B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
         Assert.That(b2Body_IsValid(groundId));
 
         // Define the ground box shape. The extents are the half-widths of the box.
-        b2Polygon groundBox = b2MakeBox(50.0f, 10.0f);
+        B2Polygon groundBox = b2MakeBox(50.0f, 10.0f);
 
         // Add the box shape to the ground body.
-        b2ShapeDef groundShapeDef = b2DefaultShapeDef();
+        B2ShapeDef groundShapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(groundId, groundShapeDef, groundBox);
 
         // Define the dynamic body. We set its position and call the body factory.
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.position = new b2Vec2(0.0f, 4.0f);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Vec2(0.0f, 4.0f);
 
-        b2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
         // Define another box shape for our dynamic body.
-        b2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f);
+        B2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f);
 
         // Define the dynamic body shape
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         // Set the box density to be non-zero, so it will be dynamic.
         shapeDef.density = 1.0f;
@@ -81,8 +81,8 @@ public class test_world
         float timeStep = 1.0f / 60.0f;
         int subStepCount = 4;
 
-        b2Vec2 position = b2Body_GetPosition(bodyId);
-        b2Rot rotation = b2Body_GetRotation(bodyId);
+        B2Vec2 position = b2Body_GetPosition(bodyId);
+        B2Rot rotation = b2Body_GetRotation(bodyId);
 
         // This is our little game loop.
         for (int i = 0; i < 90; ++i)
@@ -110,8 +110,8 @@ public class test_world
     [Test]
     public void EmptyWorld()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
         Assert.That(b2World_IsValid(worldId), Is.EqualTo(true));
 
         float timeStep = 1.0f / 60.0f;
@@ -132,17 +132,17 @@ public class test_world
     [Test]
     public void DestroyAllBodiesWorld()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
         Assert.That(b2World_IsValid(worldId), Is.EqualTo(true));
 
         int count = 0;
         bool creating = true;
 
-        b2BodyId[] bodyIds = new b2BodyId[BODY_COUNT];
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        b2Polygon square = b2MakeSquare(0.5f);
+        B2BodyId[] bodyIds = new B2BodyId[BODY_COUNT];
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        B2Polygon square = b2MakeSquare(0.5f);
 
         for (int i = 0; i < 2 * BODY_COUNT + 10; ++i)
         {
@@ -152,7 +152,7 @@ public class test_world
                 {
                     bodyIds[count] = b2CreateBody(worldId, bodyDef);
 
-                    b2ShapeDef shapeDef = b2DefaultShapeDef();
+                    B2ShapeDef shapeDef = b2DefaultShapeDef();
                     b2CreatePolygonShape(bodyIds[count], shapeDef, square);
                     count += 1;
                 }
@@ -171,7 +171,7 @@ public class test_world
             b2World_Step(worldId, 1.0f / 60.0f, 3);
         }
 
-        b2Counters counters = b2World_GetCounters(worldId);
+        B2Counters counters = b2World_GetCounters(worldId);
         Assert.That(counters.bodyCount, Is.EqualTo(0));
 
         b2DestroyWorld(worldId);
@@ -182,16 +182,16 @@ public class test_world
     [Test]
     public void TestIsValid()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
         Assert.That(b2World_IsValid(worldId));
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
 
-        b2BodyId bodyId1 = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId1 = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId1), Is.EqualTo(true));
 
-        b2BodyId bodyId2 = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId2 = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId2), Is.EqualTo(true));
 
         b2DestroyBody(bodyId1);
@@ -216,17 +216,17 @@ public class test_world
 
         int count = 100;
 
-        b2WorldId[] worldIds = new b2WorldId[WORLD_COUNT];
+        B2WorldId[] worldIds = new B2WorldId[WORLD_COUNT];
 
         for (int i = 0; i < count; ++i)
         {
-            b2WorldDef worldDef = b2DefaultWorldDef();
+            B2WorldDef worldDef = b2DefaultWorldDef();
             for (int j = 0; j < WORLD_COUNT; ++j)
             {
                 worldIds[j] = b2CreateWorld(worldDef);
                 Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true), $"i({i}) j({j})");
 
-                b2BodyDef bodyDef = b2DefaultBodyDef();
+                B2BodyDef bodyDef = b2DefaultBodyDef();
                 b2CreateBody(worldIds[j], bodyDef);
             }
 
@@ -250,7 +250,7 @@ public class test_world
         }
     }
 
-    public static bool CustomFilter(b2ShapeId shapeIdA, b2ShapeId shapeIdB, object context)
+    public static bool CustomFilter(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
@@ -258,7 +258,7 @@ public class test_world
         return true;
     }
 
-    public static bool PreSolveStatic(b2ShapeId shapeIdA, b2ShapeId shapeIdB, ref b2Manifold manifold, object context)
+    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
@@ -271,9 +271,9 @@ public class test_world
     [Test]
     public void TestWorldCoverage()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldDef worldDef = b2DefaultWorldDef();
 
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
         Assert.That(b2World_IsValid(worldId));
 
         b2World_EnableSleeping(worldId, true);
@@ -299,13 +299,13 @@ public class test_world
         b2World_SetCustomFilterCallback(worldId, CustomFilter, null);
         b2World_SetPreSolveCallback(worldId, PreSolveStatic, null);
 
-        b2Vec2 g = new b2Vec2(1.0f, 2.0f);
+        B2Vec2 g = new B2Vec2(1.0f, 2.0f);
         b2World_SetGravity(worldId, g);
-        b2Vec2 v = b2World_GetGravity(worldId);
+        B2Vec2 v = b2World_GetGravity(worldId);
         Assert.That(v.x, Is.EqualTo(g.x));
         Assert.That(v.y, Is.EqualTo(g.y));
 
-        b2ExplosionDef explosionDef = b2DefaultExplosionDef();
+        B2ExplosionDef explosionDef = b2DefaultExplosionDef();
         b2World_Explode(worldId, explosionDef);
 
         b2World_SetContactTuning(worldId, 10.0f, 2.0f, 4.0f);
@@ -334,30 +334,30 @@ public class test_world
     [Test]
     public void TestSensor()
     {
-        b2WorldDef worldDef = b2DefaultWorldDef();
-        b2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
         // Wall from x = 1 to x = 2
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_staticBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_staticBody;
         bodyDef.position.x = 1.5f;
         bodyDef.position.y = 11.0f;
-        b2BodyId wallId = b2CreateBody(worldId, bodyDef);
-        b2Polygon box = b2MakeBox(0.5f, 10.0f);
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2BodyId wallId = b2CreateBody(worldId, bodyDef);
+        B2Polygon box = b2MakeBox(0.5f, 10.0f);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(wallId, shapeDef, box);
 
         // Bullet fired towards the wall
         bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.isBullet = true;
         bodyDef.gravityScale = 0.0f;
-        bodyDef.position = new b2Vec2(7.39814f, 4.0f);
-        bodyDef.linearVelocity = new b2Vec2(-20.0f, 0.0f);
-        b2BodyId bulletId = b2CreateBody(worldId, bodyDef);
+        bodyDef.position = new B2Vec2(7.39814f, 4.0f);
+        bodyDef.linearVelocity = new B2Vec2(-20.0f, 0.0f);
+        B2BodyId bulletId = b2CreateBody(worldId, bodyDef);
         shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.1f);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.1f);
         b2CreateCircleShape(bulletId, shapeDef, circle);
 
         int beginCount = 0;
@@ -369,10 +369,10 @@ public class test_world
             int subStepCount = 4;
             b2World_Step(worldId, timeStep, subStepCount);
 
-            b2Vec2 bulletPos = b2Body_GetPosition(bulletId);
+            B2Vec2 bulletPos = b2Body_GetPosition(bulletId);
             //Console.Write( "Bullet pos: %g %g\n", bulletPos.x, bulletPos.y );
 
-            b2SensorEvents events = b2World_GetSensorEvents(worldId);
+            B2SensorEvents events = b2World_GetSensorEvents(worldId);
 
             if (events.beginCount > 0)
             {

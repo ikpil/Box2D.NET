@@ -53,7 +53,7 @@ public class GLSolidPolygons
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        b2Vec2 vertices[] = { { -a, -a }, { a, -a }, { -a, a }, { a, -a }, { a, a }, { -a, a } };
+        B2Vec2 vertices[] = { { -a, -a }, { a, -a }, { -a, a }, { a, -a }, { a, a }, { -a, a } };
         glBindBuffer( GL_ARRAY_BUFFER, m_vboIds[0] );
         glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
         glVertexAttribPointer( vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
@@ -111,13 +111,13 @@ public class GLSolidPolygons
         }
     }
 
-    public void AddPolygon( ref b2Transform transform, ReadOnlySpan<b2Vec2> points, int count, float radius, b2HexColor color )
+    public void AddPolygon( ref B2Transform transform, ReadOnlySpan<B2Vec2> points, int count, float radius, B2HexColor color )
     {
         PolygonData data = {};
         data.transform = transform;
 
         int n = count < 8 ? count : 8;
-        b2Vec2* ps = &data.p1;
+        B2Vec2* ps = &data.p1;
         for ( int i = 0; i < n; ++i )
         {
             ps[i] = points[i];

@@ -23,8 +23,8 @@ public class BenchmarkCast : Sample
 {
     QueryType m_queryType;
 
-    List<b2Vec2> m_origins = new List<b2Vec2>();
-    List<b2Vec2> m_translations = new List<b2Vec2>();
+    List<B2Vec2> m_origins = new List<B2Vec2>();
+    List<B2Vec2> m_translations = new List<B2Vec2>();
     float m_minTime;
     float m_buildTime;
 
@@ -48,7 +48,7 @@ public class BenchmarkCast : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(500.0f, 500.0f);
+            Draw.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
             Draw.g_camera.m_zoom = 25.0f * 21.0f;
             // settings.drawShapes = g_sampleDebug;
         }
@@ -74,8 +74,8 @@ public class BenchmarkCast : Sample
         // Pre-compute rays to avoid randomizer overhead
         for (int i = 0; i < sampleCount; ++i)
         {
-            b2Vec2 rayStart = RandomVec2(0.0f, extent);
-            b2Vec2 rayEnd = RandomVec2(0.0f, extent);
+            B2Vec2 rayStart = RandomVec2(0.0f, extent);
+            B2Vec2 rayEnd = RandomVec2(0.0f, extent);
 
             m_origins[i] = rayStart;
             m_translations[i] = rayEnd - rayStart;
@@ -88,13 +88,13 @@ public class BenchmarkCast : Sample
     {
         g_seed = 1234;
         b2DestroyWorld(m_worldId);
-        b2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldDef worldDef = b2DefaultWorldDef();
         m_worldId = b2CreateWorld(worldDef);
 
         ulong ticks = b2GetTicks();
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         float y = 0.0f;
 
@@ -107,13 +107,13 @@ public class BenchmarkCast : Sample
                 float fillTest = RandomFloatRange(0.0f, 1.0f);
                 if (fillTest <= m_fill)
                 {
-                    bodyDef.position = new b2Vec2(x, y);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    bodyDef.position = new B2Vec2(x, y);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     float ratio = RandomFloatRange(1.0f, m_ratio);
                     float halfWidth = RandomFloatRange(0.05f, 0.25f);
 
-                    b2Polygon box;
+                    B2Polygon box;
                     if (RandomFloat() > 0.0f)
                     {
                         box = b2MakeBox(ratio * halfWidth, halfWidth);
@@ -127,15 +127,15 @@ public class BenchmarkCast : Sample
                     shapeDef.filter.categoryBits = (ulong)(1 << category);
                     if (category == 0)
                     {
-                        shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DBlue;
+                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DBlue;
                     }
                     else if (category == 1)
                     {
-                        shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DYellow;
+                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DYellow;
                     }
                     else
                     {
-                        shapeDef.customColor = (uint)b2HexColor.b2_colorBox2DGreen;
+                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DGreen;
                     }
 
                     b2CreatePolygonShape(bodyId, shapeDef, box);
@@ -231,7 +231,7 @@ public class BenchmarkCast : Sample
     }
 
 
-    static float CastCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context)
+    static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         CastResult result = context as CastResult;
         result.point = point;
@@ -241,12 +241,12 @@ public class BenchmarkCast : Sample
     }
 
 
-    static bool OverlapCallback(b2ShapeId shapeId, object context)
+    static bool OverlapCallback(B2ShapeId shapeId, object context)
     {
         OverlapResult result = context as OverlapResult;
         if (result.count < 32)
         {
-            b2AABB aabb = b2Shape_GetAABB(shapeId);
+            B2AABB aabb = b2Shape_GetAABB(shapeId);
             result.points[result.count] = b2AABB_Center(aabb);
             result.count += 1;
         }
@@ -258,7 +258,7 @@ public class BenchmarkCast : Sample
     {
         base.Step(settings);
 
-        b2QueryFilter filter = b2DefaultQueryFilter();
+        B2QueryFilter filter = b2DefaultQueryFilter();
         filter.maskBits = 1;
         int hitCount = 0;
         int nodeVisits = 0;
@@ -270,14 +270,14 @@ public class BenchmarkCast : Sample
         {
             ulong ticks = b2GetTicks();
 
-            b2RayResult drawResult = new b2RayResult();
+            B2RayResult drawResult = new B2RayResult();
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                b2Vec2 origin = m_origins[i];
-                b2Vec2 translation = m_translations[i];
+                B2Vec2 origin = m_origins[i];
+                B2Vec2 translation = m_translations[i];
 
-                b2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, filter);
+                B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, filter);
 
                 if (i == m_drawIndex)
                 {
@@ -293,30 +293,30 @@ public class BenchmarkCast : Sample
 
             m_minTime = b2MinFloat(m_minTime, ms);
 
-            b2Vec2 p1 = m_origins[m_drawIndex];
-            b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            Draw.g_draw.DrawSegment(p1, p2, b2HexColor.b2_colorWhite);
-            Draw.g_draw.DrawPoint(p1, 5.0f, b2HexColor.b2_colorGreen);
-            Draw.g_draw.DrawPoint(p2, 5.0f, b2HexColor.b2_colorRed);
+            B2Vec2 p1 = m_origins[m_drawIndex];
+            B2Vec2 p2 = p1 + m_translations[m_drawIndex];
+            Draw.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            Draw.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            Draw.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, b2HexColor.b2_colorWhite);
+                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_circleCast)
         {
             ulong ticks = b2GetTicks();
 
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), m_radius);
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), m_radius);
             CastResult drawResult = new CastResult();
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                b2Transform origin = new b2Transform(m_origins[i], new b2Rot(1.0f, 0.0f));
-                b2Vec2 translation = m_translations[i];
+                B2Transform origin = new B2Transform(m_origins[i], new B2Rot(1.0f, 0.0f));
+                B2Vec2 translation = m_translations[i];
 
                 CastResult result = new CastResult();
-                b2TreeStats traversalResult = b2World_CastCircle(m_worldId, circle, origin, translation, filter, CastCallback, result);
+                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, circle, origin, translation, filter, CastCallback, result);
 
                 if (i == m_drawIndex)
                 {
@@ -332,16 +332,16 @@ public class BenchmarkCast : Sample
 
             m_minTime = b2MinFloat(m_minTime, ms);
 
-            b2Vec2 p1 = m_origins[m_drawIndex];
-            b2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            Draw.g_draw.DrawSegment(p1, p2, b2HexColor.b2_colorWhite);
-            Draw.g_draw.DrawPoint(p1, 5.0f, b2HexColor.b2_colorGreen);
-            Draw.g_draw.DrawPoint(p2, 5.0f, b2HexColor.b2_colorRed);
+            B2Vec2 p1 = m_origins[m_drawIndex];
+            B2Vec2 p2 = p1 + m_translations[m_drawIndex];
+            Draw.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            Draw.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            Draw.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                b2Vec2 t = b2Lerp(p1, p2, drawResult.fraction);
-                Draw.g_draw.DrawCircle(t, m_radius, b2HexColor.b2_colorWhite);
-                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, b2HexColor.b2_colorWhite);
+                B2Vec2 t = b2Lerp(p1, p2, drawResult.fraction);
+                Draw.g_draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
+                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_overlap)
@@ -349,16 +349,16 @@ public class BenchmarkCast : Sample
             ulong ticks = b2GetTicks();
 
             OverlapResult drawResult = new OverlapResult();
-            b2Vec2 extent = new b2Vec2(m_radius, m_radius);
+            B2Vec2 extent = new B2Vec2(m_radius, m_radius);
             OverlapResult result = new OverlapResult();
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                b2Vec2 origin = m_origins[i];
-                b2AABB aabb = new b2AABB(origin - extent, origin + extent);
+                B2Vec2 origin = m_origins[i];
+                B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
                 result.count = 0;
-                b2TreeStats traversalResult = b2World_OverlapAABB(m_worldId, aabb, filter, OverlapCallback, result);
+                B2TreeStats traversalResult = b2World_OverlapAABB(m_worldId, aabb, filter, OverlapCallback, result);
 
                 if (i == m_drawIndex)
                 {
@@ -375,15 +375,15 @@ public class BenchmarkCast : Sample
             m_minTime = b2MinFloat(m_minTime, ms);
 
             {
-                b2Vec2 origin = m_origins[m_drawIndex];
-                b2AABB aabb = new b2AABB(origin - extent, origin + extent);
+                B2Vec2 origin = m_origins[m_drawIndex];
+                B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
-                Draw.g_draw.DrawAABB(aabb, b2HexColor.b2_colorWhite);
+                Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
             }
 
             for (int i = 0; i < drawResult.count; ++i)
             {
-                Draw.g_draw.DrawPoint(drawResult.points[i], 5.0f, b2HexColor.b2_colorHotPink);
+                Draw.g_draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
             }
         }
 

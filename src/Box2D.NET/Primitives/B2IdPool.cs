@@ -4,14 +4,14 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2IdPool
+    public class B2IdPool
     {
-        public b2Array<int> freeArray;
+        public B2Array<int> freeArray;
         public int nextIndex;
 
         public void Clear()
         {
-            freeArray = new b2Array<int>();
+            freeArray = new B2Array<int>();
             nextIndex = 0;
         }
     }

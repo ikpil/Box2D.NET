@@ -11,10 +11,10 @@ namespace Box2D.NET.Primitives
     // if you try to interleave multiple allocate/free pairs.
     // This allocator uses the heap if space is insufficient.
     // I could remove the need to free entries individually.
-    public class b2ArenaAllocatorImpl<T> : IB2ArenaAllocatable where T : new()
+    public class B2ArenaAllocatorImpl<T> : IB2ArenaAllocatable where T : new()
     {
         private static readonly object _lock = new object();
-        private static b2ArenaAllocatorImpl<T> _shared;
+        private static B2ArenaAllocatorImpl<T> _shared;
 
         public ArraySegment<T> data;
         public int capacity { get; set; }
@@ -22,9 +22,9 @@ namespace Box2D.NET.Primitives
         public int allocation { get; set; }
         public int maxAllocation { get; set; }
 
-        public b2Array<b2ArenaEntry<T>> entries;
+        public B2Array<B2ArenaEntry<T>> entries;
 
-        public static b2ArenaAllocatorImpl<T> Touch(b2ArenaAllocator allocator)
+        public static B2ArenaAllocatorImpl<T> Touch(B2ArenaAllocator allocator)
         {
             if (null == _shared)
             {
@@ -42,23 +42,23 @@ namespace Box2D.NET.Primitives
         }
     }
 
-    public class b2ArenaAllocator
+    public class B2ArenaAllocator
     {
         private readonly object _lock;
         private IB2ArenaAllocatable[] _allocators;
 
-        public b2ArenaAllocator()
+        public B2ArenaAllocator()
         {
             _lock = new object();
             _allocators = Array.Empty<IB2ArenaAllocatable>();
         }
 
-        public b2ArenaAllocatorImpl<T> Touch<T>() where T : new()
+        public B2ArenaAllocatorImpl<T> Touch<T>() where T : new()
         {
-            return b2ArenaAllocatorImpl<T>.Touch(this);
+            return B2ArenaAllocatorImpl<T>.Touch(this);
         }
 
-        public void Add<T>(b2ArenaAllocatorImpl<T> alloc) where T : new()
+        public void Add<T>(B2ArenaAllocatorImpl<T> alloc) where T : new()
         {
             lock (_lock)
             {

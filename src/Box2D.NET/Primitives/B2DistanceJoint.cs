@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2DistanceJoint
+    public class B2DistanceJoint
     {
         public float length;
         public float hertz;
@@ -22,10 +22,10 @@ namespace Box2D.NET.Primitives
 
         public int indexA;
         public int indexB;
-        public b2Vec2 anchorA;
-        public b2Vec2 anchorB;
-        public b2Vec2 deltaCenter;
-        public b2Softness distanceSoftness;
+        public B2Vec2 anchorA;
+        public B2Vec2 anchorB;
+        public B2Vec2 deltaCenter;
+        public B2Softness distanceSoftness;
         public float axialMass;
 
         public bool enableSpring;

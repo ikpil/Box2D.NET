@@ -23,7 +23,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 /// like top-down dry friction.
 public class MotorJoint : Sample
 {
-    b2JointId m_jointId;
+    B2JointId m_jointId;
     float m_time;
     float m_maxForce;
     float m_maxTorque;
@@ -42,28 +42,28 @@ public class MotorJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 7.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 7.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
-        b2BodyId groundId;
+        B2BodyId groundId;
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Segment segment = new b2Segment(new b2Vec2(-20.0f, 0.0f), new b2Vec2(20.0f, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Define motorized body
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.position = new b2Vec2(0.0f, 8.0f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(0.0f, 8.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2Polygon box = b2MakeBox(2.0f, 0.5f);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox(2.0f, 0.5f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -71,7 +71,7 @@ public class MotorJoint : Sample
             m_maxTorque = 500.0f;
             m_correctionFactor = 0.3f;
 
-            b2MotorJointDef jointDef = b2DefaultMotorJointDef();
+            B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.maxForce = m_maxForce;
@@ -123,7 +123,7 @@ public class MotorJoint : Sample
             m_time += 1.0f / settings.hertz;
         }
 
-        b2Vec2 linearOffset;
+        B2Vec2 linearOffset;
         linearOffset.x = 6.0f * MathF.Sin(2.0f * m_time);
         linearOffset.y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
 
@@ -132,12 +132,12 @@ public class MotorJoint : Sample
         b2MotorJoint_SetLinearOffset(m_jointId, linearOffset);
         b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);
 
-        b2Transform transform = new b2Transform(linearOffset, b2MakeRot(angularOffset));
+        B2Transform transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
         Draw.g_draw.DrawTransform(transform);
 
         base.Step(settings);
 
-        b2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
+        B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
         Draw.g_draw.DrawString(5, m_textLine, "force = {%3.f, %3.f}, torque = %3.f", force.x, force.y, torque);

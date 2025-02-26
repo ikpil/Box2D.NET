@@ -16,11 +16,11 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class SensorBookend : Sample
 {
-    b2BodyId m_sensorBodyId;
-    b2ShapeId m_sensorShapeId;
+    B2BodyId m_sensorBodyId;
+    B2ShapeId m_sensorShapeId;
 
-    b2BodyId m_visitorBodyId;
-    b2ShapeId m_visitorShapeId;
+    B2BodyId m_visitorBodyId;
+    B2ShapeId m_visitorShapeId;
     bool m_isVisiting;
 
     static int sampleSensorBookendEvent = RegisterSample( "Events", "Sensor Bookend", Create );
@@ -39,11 +39,11 @@ public SensorBookend( Settings settings )
     }
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-        b2Segment groundSegment = { { -10.0f, 0.0f }, { 10.0f, 0.0f } };
+        B2Segment groundSegment = { { -10.0f, 0.0f }, { 10.0f, 0.0f } };
         b2CreateSegmentShape( groundId, &shapeDef, &groundSegment );
 
         groundSegment = { { -10.0f, 0.0f }, { -10.0f, 10.0f } };
@@ -62,28 +62,28 @@ public SensorBookend( Settings settings )
 
 void CreateSensor()
 {
-    b2BodyDef bodyDef = b2DefaultBodyDef();
+    B2BodyDef bodyDef = b2DefaultBodyDef();
 
     bodyDef.position = { 0.0f, 1.0f };
     m_sensorBodyId = b2CreateBody( m_worldId, &bodyDef );
 
-    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    B2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.isSensor = true;
-    b2Polygon box = b2MakeSquare( 1.0f );
+    B2Polygon box = b2MakeSquare( 1.0f );
     m_sensorShapeId = b2CreatePolygonShape( m_sensorBodyId, &shapeDef, &box );
 }
 
 void CreateVisitor()
 {
-    b2BodyDef bodyDef = b2DefaultBodyDef();
+    B2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.position = { -4.0f, 1.0f };
-    bodyDef.type = b2BodyType.b2_dynamicBody;
+    bodyDef.type = B2BodyType.b2_dynamicBody;
 
     m_visitorBodyId = b2CreateBody( m_worldId, &bodyDef );
 
-    b2ShapeDef shapeDef = b2DefaultShapeDef();
+    B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-    b2Circle circle = { { 0.0f, 0.0f }, 0.5f };
+    B2Circle circle = { { 0.0f, 0.0f }, 0.5f };
     m_visitorShapeId = b2CreateCircleShape( m_visitorBodyId, &shapeDef, &circle );
 }
 
@@ -136,10 +136,10 @@ public override void Step(Settings settings)
 {
     base.Step( settings );
 
-    b2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
+    B2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
     for ( int i = 0; i < sensorEvents.beginCount; ++i )
     {
-        b2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
+        B2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
 
         if ( B2_ID_EQUALS( event.visitorShapeId, m_visitorShapeId ) )
         {
@@ -150,7 +150,7 @@ public override void Step(Settings settings)
 
     for ( int i = 0; i < sensorEvents.endCount; ++i )
     {
-        b2SensorEndTouchEvent event = sensorEvents.endEvents[i];
+        B2SensorEndTouchEvent event = sensorEvents.endEvents[i];
 
         bool wasVisitorDestroyed = b2Shape_IsValid( event.visitorShapeId ) == false;
         if ( B2_ID_EQUALS( event.visitorShapeId, m_visitorShapeId ) || wasVisitorDestroyed )

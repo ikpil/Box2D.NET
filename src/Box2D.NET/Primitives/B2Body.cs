@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     // Body organizational details that are not used in the solver.
-    public class b2Body
+    public class B2Body
     {
         public string name;
 
@@ -53,7 +53,7 @@ namespace Box2D.NET.Primitives
 
         public int id;
 
-        public b2BodyType type;
+        public B2BodyType type;
 
         // This is monotonically advanced when a body is allocated in this slot
         // Used to check for invalid b2BodyId

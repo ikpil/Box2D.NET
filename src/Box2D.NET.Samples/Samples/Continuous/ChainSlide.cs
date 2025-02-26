@@ -23,7 +23,7 @@ public class ChainSlide : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 15.0f;
         }
 
@@ -32,40 +32,40 @@ public class ChainSlide : Sample
 #endif
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             const int count = 80;
-            b2Vec2[] points = new b2Vec2[count];
+            B2Vec2[] points = new B2Vec2[count];
 
             float w = 2.0f;
             float h = 1.0f;
             float x = 20.0f, y = 0.0f;
             for (int i = 0; i < 20; ++i)
             {
-                points[i] = new b2Vec2(x, y);
+                points[i] = new B2Vec2(x, y);
                 x -= w;
             }
 
             for (int i = 20; i < 40; ++i)
             {
-                points[i] = new b2Vec2(x, y);
+                points[i] = new B2Vec2(x, y);
                 y += h;
             }
 
             for (int i = 40; i < 60; ++i)
             {
-                points[i] = new b2Vec2(x, y);
+                points[i] = new B2Vec2(x, y);
                 x += w;
             }
 
             for (int i = 60; i < 80; ++i)
             {
-                points[i] = new b2Vec2(x, y);
+                points[i] = new B2Vec2(x, y);
                 y -= h;
             }
 
-            b2ChainDef chainDef = b2DefaultChainDef();
+            B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
             chainDef.count = count;
             chainDef.isLoop = true;
@@ -74,15 +74,15 @@ public class ChainSlide : Sample
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            bodyDef.linearVelocity = new b2Vec2(100.0f, 0.0f);
-            bodyDef.position = new b2Vec2(-19.5f, 0.0f + 0.5f);
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.linearVelocity = new B2Vec2(100.0f, 0.0f);
+            bodyDef.position = new B2Vec2(-19.5f, 0.0f + 0.5f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.0f;
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }

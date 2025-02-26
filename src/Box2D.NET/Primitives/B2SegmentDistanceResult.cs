@@ -15,13 +15,13 @@ namespace Box2D.NET.Primitives
      * @{
      */
     /// Result of computing the distance between two line segments
-    public class b2SegmentDistanceResult
+    public class B2SegmentDistanceResult
     {
         /// The closest point on the first segment
-        public b2Vec2 closest1;
+        public B2Vec2 closest1;
 
         /// The closest point on the second segment
-        public b2Vec2 closest2;
+        public B2Vec2 closest2;
 
         /// The barycentric coordinate on the first segment
         public float fraction1;

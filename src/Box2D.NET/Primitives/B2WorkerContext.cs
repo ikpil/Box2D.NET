@@ -4,9 +4,9 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2WorkerContext
+    public class B2WorkerContext
     {
-        public b2StepContext context;
+        public B2StepContext context;
         public int workerIndex;
         public object userTask;
 

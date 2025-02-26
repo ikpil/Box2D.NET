@@ -6,12 +6,12 @@ using Box2D.NET.Core;
 
 namespace Box2D.NET.Primitives
 {
-    public class b2ContactConstraint
+    public class B2ContactConstraint
     {
         public int indexA;
         public int indexB;
-        public UnsafeArray2<b2ContactConstraintPoint> points;
-        public b2Vec2 normal;
+        public UnsafeArray2<B2ContactConstraintPoint> points;
+        public B2Vec2 normal;
         public float invMassA, invMassB;
         public float invIA, invIB;
         public float friction;
@@ -20,7 +20,7 @@ namespace Box2D.NET.Primitives
         public float rollingResistance;
         public float rollingMass;
         public float rollingImpulse;
-        public b2Softness softness;
+        public B2Softness softness;
         public int pointCount;
     }
 }

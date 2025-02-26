@@ -6,12 +6,12 @@ namespace Box2D.NET.Primitives
 {
     /// 2D vector
     /// This can be used to represent a point or free vector
-    public struct b2Vec2
+    public struct B2Vec2
     {
         /// coordinates
         public float x, y;
 
-        public b2Vec2(float x, float y)
+        public B2Vec2(float x, float y)
         {
             this.x = x;
             this.y = y;
@@ -46,43 +46,43 @@ namespace Box2D.NET.Primitives
         // }
         
         /// Unary negate a vector
-        public static b2Vec2 operator-( b2Vec2 a )
+        public static B2Vec2 operator-( B2Vec2 a )
         {
-            return new b2Vec2(-a.x, -a.y);
+            return new B2Vec2(-a.x, -a.y);
         }
         
         /// Binary vector addition
-        public static b2Vec2 operator+( b2Vec2 a, b2Vec2 b )
+        public static B2Vec2 operator+( B2Vec2 a, B2Vec2 b )
         {
-            return new b2Vec2(a.x + b.x, a.y + b.y);
+            return new B2Vec2(a.x + b.x, a.y + b.y);
         }
         
         /// Binary vector subtraction
-        public static b2Vec2 operator-( b2Vec2 a, b2Vec2 b )
+        public static B2Vec2 operator-( B2Vec2 a, B2Vec2 b )
         {
-            return new b2Vec2(a.x - b.x, a.y - b.y);
+            return new B2Vec2(a.x - b.x, a.y - b.y);
         }
         
         /// Binary scalar and vector multiplication
-        public static b2Vec2 operator*( float a, b2Vec2 b )
+        public static B2Vec2 operator*( float a, B2Vec2 b )
         {
-            return new b2Vec2(a * b.x, a * b.y);
+            return new B2Vec2(a * b.x, a * b.y);
         }
         
         /// Binary scalar and vector multiplication
-        public static b2Vec2 operator*( b2Vec2 a, float b )
+        public static B2Vec2 operator*( B2Vec2 a, float b )
         {
-            return new b2Vec2(a.x * b, a.y * b);
+            return new B2Vec2(a.x * b, a.y * b);
         }
         
         /// Binary vector equality
-        public static bool operator==( b2Vec2 a, b2Vec2 b )
+        public static bool operator==( B2Vec2 a, B2Vec2 b )
         {
             return a.x == b.x && a.y == b.y;
         }
         
         /// Binary vector inequality
-        public static bool operator!=( b2Vec2 a, b2Vec2 b )
+        public static bool operator!=( B2Vec2 a, B2Vec2 b )
         {
             return a.x != b.x || a.y != b.y;
         }

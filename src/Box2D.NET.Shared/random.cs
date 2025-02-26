@@ -57,18 +57,18 @@ namespace Box2D.NET.Shared
         }
 
         // Random vector with coordinates in range [lo, hi]
-        public static b2Vec2 RandomVec2(float lo, float hi)
+        public static B2Vec2 RandomVec2(float lo, float hi)
         {
-            b2Vec2 v;
+            B2Vec2 v;
             v.x = RandomFloatRange(lo, hi);
             v.y = RandomFloatRange(lo, hi);
             return v;
         }
 
 
-        public static b2Polygon RandomPolygon(float extent)
+        public static B2Polygon RandomPolygon(float extent)
         {
-            Span<b2Vec2> points = stackalloc b2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> points = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             
             int count = 3 + RandomInt() % 6;
             for (int i = 0; i < count; ++i)
@@ -76,7 +76,7 @@ namespace Box2D.NET.Shared
                 points[i] = RandomVec2(-extent, extent);
             }
 
-            b2Hull hull = b2ComputeHull(points, count);
+            B2Hull hull = b2ComputeHull(points, count);
             if (hull.count > 0)
             {
                 return b2MakePolygon(hull, 0.0f);

@@ -25,19 +25,19 @@ public class SoftBody : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.25f;
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Segment segment = new b2Segment(new b2Vec2(-20.0f, 0.0f), new b2Vec2(20.0f, 0.0f));
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         m_donut = new();
-        m_donut.Spawn(m_worldId, new b2Vec2(0.0f, 10.0f), 2.0f, 0, null);
+        m_donut.Spawn(m_worldId, new B2Vec2(0.0f, 10.0f), 2.0f, 0, null);
     }
 }

@@ -37,37 +37,37 @@ public class CircleStack : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 5.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
             Draw.g_camera.m_zoom = 6.0f;
         }
 
         int shapeIndex = 0;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.userData = shapeIndex;
             shapeIndex += 1;
 
-            b2Segment segment = new b2Segment(new b2Vec2(-10.0f, 0.0f), new b2Vec2(10.0f, 0.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
-        b2World_SetGravity(m_worldId, new b2Vec2(0.0f, -20.0f));
+        b2World_SetGravity(m_worldId, new B2Vec2(0.0f, -20.0f));
         b2World_SetContactTuning(m_worldId, 0.25f * 360.0f, 10.0f, 3.0f);
 
-        b2Circle circle = new b2Circle(new b2Vec2(), 0.0f);
+        B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
         circle.radius = 0.25f;
 
         {
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.enableHitEvents = true;
             shapeDef.rollingResistance = 0.2f;
 
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
 
             float y = 0.5f;
 
@@ -75,7 +75,7 @@ public class CircleStack : Sample
             {
                 bodyDef.position.y = y;
 
-                b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.userData = shapeIndex;
                 shapeIndex += 1;
@@ -90,17 +90,17 @@ public class CircleStack : Sample
     {
         base.Step(settings);
 
-        b2ContactEvents events = b2World_GetContactEvents(m_worldId);
+        B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
         {
-            b2ContactHitEvent @event = events.hitEvents[i];
+            B2ContactHitEvent @event = events.hitEvents[i];
 
             object userDataA = b2Shape_GetUserData(@event.shapeIdA);
             object userDataB = b2Shape_GetUserData(@event.shapeIdB);
             int indexA = (int)userDataA;
             int indexB = (int)userDataB;
 
-            Draw.g_draw.DrawPoint(@event.point, 10.0f, b2HexColor.b2_colorWhite);
+            Draw.g_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }

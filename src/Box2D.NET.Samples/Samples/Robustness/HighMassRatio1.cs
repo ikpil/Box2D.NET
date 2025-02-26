@@ -25,25 +25,25 @@ public class HighMassRatio1 : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(3.0f, 14.0f);
+            Draw.g_camera.m_center = new B2Vec2(3.0f, 14.0f);
             Draw.g_camera.m_zoom = 25.0f;
         }
 
         float extent = 1.0f;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Polygon box = b2MakeOffsetBox(50.0f, 1.0f, new b2Vec2(0.0f, -1.0f), b2Rot_identity);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeOffsetBox(50.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            b2Polygon box = b2MakeBox(extent, extent);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            B2Polygon box = b2MakeBox(extent, extent);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             for (int j = 0; j < 3; ++j)
             {
@@ -57,8 +57,8 @@ public class HighMassRatio1 : Sample
                         float coeff = i - 0.5f * count;
 
                         float yy = count == 1 ? y + 2.0f : y;
-                        bodyDef.position = new b2Vec2(2.0f * coeff * extent + offset, yy);
-                        b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                        bodyDef.position = new B2Vec2(2.0f * coeff * extent + offset, yy);
+                        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                         shapeDef.density = count == 1 ? (j + 1.0f) * 100.0f : 1.0f;
                         b2CreatePolygonShape(bodyId, shapeDef, box);

@@ -10,37 +10,37 @@ namespace Box2D.NET
 {
     public static class id_pool
     {
-        public static int b2GetIdCount(b2IdPool pool)
+        public static int b2GetIdCount(B2IdPool pool)
         {
             return pool.nextIndex - pool.freeArray.count;
         }
 
-        public static int b2GetIdCapacity(b2IdPool pool)
+        public static int b2GetIdCapacity(B2IdPool pool)
         {
             return pool.nextIndex;
         }
 
-        public static int b2GetIdBytes(b2IdPool pool)
+        public static int b2GetIdBytes(B2IdPool pool)
         {
             return b2Array_ByteCount(ref pool.freeArray);
         }
 
 
-        public static b2IdPool b2CreateIdPool()
+        public static B2IdPool b2CreateIdPool()
         {
-            b2IdPool pool = new b2IdPool();
+            B2IdPool pool = new B2IdPool();
             pool.freeArray = b2Array_Create<int>(32);
             return pool;
         }
 
-        public static void b2DestroyIdPool(ref b2IdPool pool)
+        public static void b2DestroyIdPool(ref B2IdPool pool)
         {
             b2Array_Destroy(ref pool.freeArray);
             //*pool = ( b2IdPool ) {0}
             pool.Clear();
         }
 
-        public static int b2AllocId(b2IdPool pool)
+        public static int b2AllocId(B2IdPool pool)
         {
             int count = pool.freeArray.count;
             if (count > 0)
@@ -54,7 +54,7 @@ namespace Box2D.NET
             return nextId;
         }
 
-        public static void b2FreeId(b2IdPool pool, int id)
+        public static void b2FreeId(B2IdPool pool, int id)
         {
             Debug.Assert(pool.nextIndex > 0);
             Debug.Assert(0 <= id && id < pool.nextIndex);
@@ -69,7 +69,7 @@ namespace Box2D.NET
         }
 
 #if B2_VALIDATE
-        public static void b2ValidateFreeId(b2IdPool pool, int id)
+        public static void b2ValidateFreeId(B2IdPool pool, int id)
         {
             int freeCount = pool.freeArray.count;
             for (int i = 0; i < freeCount; ++i)

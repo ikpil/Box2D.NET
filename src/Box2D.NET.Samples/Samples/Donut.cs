@@ -18,14 +18,14 @@ public class Donut
 {
     public const int e_sides = 7;
 
-    private b2BodyId[] m_bodyIds;
-    private b2JointId[] m_jointIds;
+    private B2BodyId[] m_bodyIds;
+    private B2JointId[] m_jointIds;
     private bool m_isSpawned;
 
     public Donut()
     {
-        m_bodyIds = new b2BodyId[e_sides];
-        m_jointIds = new b2JointId[e_sides];
+        m_bodyIds = new B2BodyId[e_sides];
+        m_jointIds = new B2JointId[e_sides];
 
         for (int i = 0; i < e_sides; ++i)
         {
@@ -36,7 +36,7 @@ public class Donut
         m_isSpawned = false;
     }
 
-    public void Spawn(b2WorldId worldId, b2Vec2 position, float scale, int groupIndex, object userData)
+    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, object userData)
     {
         Debug.Assert(m_isSpawned == false);
 
@@ -50,15 +50,15 @@ public class Donut
         float deltaAngle = 2.0f * B2_PI / e_sides;
         float length = 2.0f * B2_PI * radius / e_sides;
 
-        b2Capsule capsule = new b2Capsule(new b2Vec2(0.0f, -0.5f * length), new b2Vec2(0.0f, 0.5f * length), 0.25f * scale);
+        B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f * length), new B2Vec2(0.0f, 0.5f * length), 0.25f * scale);
 
-        b2Vec2 center = position;
+        B2Vec2 center = position;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.userData = userData;
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.filter.groupIndex = -groupIndex;
         shapeDef.friction = 0.3f;
@@ -67,7 +67,7 @@ public class Donut
         float angle = 0.0f;
         for (int i = 0; i < e_sides; ++i)
         {
-            bodyDef.position = new b2Vec2(radius * MathF.Cos(angle) + center.x, radius * MathF.Sin(angle) + center.y);
+            bodyDef.position = new B2Vec2(radius * MathF.Cos(angle) + center.x, radius * MathF.Sin(angle) + center.y);
             bodyDef.rotation = b2MakeRot(angle);
 
             m_bodyIds[i] = b2CreateBody(worldId, bodyDef);
@@ -77,19 +77,19 @@ public class Donut
         }
 
         // Create joints
-        b2WeldJointDef weldDef = b2DefaultWeldJointDef();
+        B2WeldJointDef weldDef = b2DefaultWeldJointDef();
         weldDef.angularHertz = 5.0f;
         weldDef.angularDampingRatio = 0.0f;
-        weldDef.localAnchorA = new b2Vec2(0.0f, 0.5f * length);
-        weldDef.localAnchorB = new b2Vec2(0.0f, -0.5f * length);
+        weldDef.localAnchorA = new B2Vec2(0.0f, 0.5f * length);
+        weldDef.localAnchorB = new B2Vec2(0.0f, -0.5f * length);
 
-        b2BodyId prevBodyId = m_bodyIds[e_sides - 1];
+        B2BodyId prevBodyId = m_bodyIds[e_sides - 1];
         for (int i = 0; i < e_sides; ++i)
         {
             weldDef.bodyIdA = prevBodyId;
             weldDef.bodyIdB = m_bodyIds[i];
-            b2Rot rotA = b2Body_GetRotation(prevBodyId);
-            b2Rot rotB = b2Body_GetRotation(m_bodyIds[i]);
+            B2Rot rotA = b2Body_GetRotation(prevBodyId);
+            B2Rot rotB = b2Body_GetRotation(m_bodyIds[i]);
             weldDef.referenceAngle = b2RelativeAngle(rotB, rotA);
             m_jointIds[i] = b2CreateWeldJoint(worldId, weldDef);
             prevBodyId = weldDef.bodyIdB;

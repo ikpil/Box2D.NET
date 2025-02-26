@@ -8,8 +8,8 @@ namespace Box2D.NET.Shared.Primitives
 {
     public struct Bone
     {
-        public b2BodyId bodyId;
-        public b2JointId jointId;
+        public B2BodyId bodyId;
+        public B2JointId jointId;
         public float frictionScale;
         public int parentIndex;
     }

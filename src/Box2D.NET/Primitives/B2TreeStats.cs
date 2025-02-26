@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     /// These are performance results returned by dynamic tree queries.
-    public ref struct b2TreeStats
+    public ref struct B2TreeStats
     {
         /// Number of internal nodes visited during the query
         public int nodeVisits;

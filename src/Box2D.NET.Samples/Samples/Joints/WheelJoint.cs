@@ -16,7 +16,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class WheelJoint : Sample
 {
-    b2JointId m_jointId;
+    B2JointId m_jointId;
     float m_hertz;
     float m_dampingRatio;
     float m_motorSpeed;
@@ -36,14 +36,14 @@ public class WheelJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 10.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.15f;
         }
 
-        b2BodyId groundId;
+        B2BodyId groundId;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -56,18 +56,18 @@ public class WheelJoint : Sample
         m_dampingRatio = 0.7f;
 
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new b2Vec2(0.0f, 10.25f);
-            bodyDef.type = b2BodyType.b2_dynamicBody;
-            b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(0.0f, 10.25f);
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Capsule capsule = new b2Capsule(new b2Vec2(0.0f, -0.5f), new b2Vec2(0.0f, 0.5f), 0.5f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.5f);
             b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
-            b2Vec2 pivot = new b2Vec2(0.0f, 10.0f);
-            b2Vec2 axis = b2Normalize(new b2Vec2(1.0f, 1.0f));
-            b2WheelJointDef jointDef = b2DefaultWheelJointDef();
+            B2Vec2 pivot = new B2Vec2(0.0f, 10.0f);
+            B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));
+            B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = bodyId;
             jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);

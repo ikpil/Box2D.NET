@@ -24,7 +24,7 @@ public class BenchmarkCompound : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(18.0f, 115.0f);
+            Draw.g_camera.m_center = new B2Vec2(18.0f, 115.0f);
             Draw.g_camera.m_zoom = 25.0f * 5.5f;
         }
 
@@ -37,9 +37,9 @@ public class BenchmarkCompound : Sample
         int width = 100;
 #endif
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             for (int i = 0; i < height; ++i)
             {
@@ -47,7 +47,7 @@ public class BenchmarkCompound : Sample
                 for (int j = i; j < width; ++j)
                 {
                     float x = grid * j;
-                    b2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new b2Vec2(x, y), b2Rot_identity);
+                    B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
                     b2CreatePolygonShape(groundId, shapeDef, square);
                 }
             }
@@ -58,7 +58,7 @@ public class BenchmarkCompound : Sample
                 for (int j = i; j < width; ++j)
                 {
                     float x = -grid * j;
-                    b2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new b2Vec2(x, y), b2Rot_identity);
+                    B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
                     b2CreatePolygonShape(groundId, shapeDef, square);
                 }
             }
@@ -73,10 +73,10 @@ public class BenchmarkCompound : Sample
             int count = 5;
 #endif
 
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             // defer mass properties to avoid n-squared mass computations
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.updateBodyMass = false;
 
             for (int m = 0; m < count; ++m)
@@ -86,8 +86,8 @@ public class BenchmarkCompound : Sample
                 for (int n = 0; n < count; ++n)
                 {
                     float xbody = -0.5f * grid * count * span + n * span * grid;
-                    bodyDef.position = new b2Vec2(xbody, ybody);
-                    b2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    bodyDef.position = new B2Vec2(xbody, ybody);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     for (int i = 0; i < span; ++i)
                     {
@@ -95,7 +95,7 @@ public class BenchmarkCompound : Sample
                         for (int j = 0; j < span; ++j)
                         {
                             float x = j * grid;
-                            b2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new b2Vec2(x, y), b2Rot_identity);
+                            B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
                             b2CreatePolygonShape(bodyId, shapeDef, square);
                         }
                     }

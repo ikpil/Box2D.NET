@@ -19,18 +19,18 @@ namespace Box2D.NET.Samples.Samples;
 
 public class Car
 {
-    public b2BodyId m_chassisId;
-    public b2BodyId m_rearWheelId;
-    public b2BodyId m_frontWheelId;
-    public b2JointId m_rearAxleId;
-    public b2JointId m_frontAxleId;
+    public B2BodyId m_chassisId;
+    public B2BodyId m_rearWheelId;
+    public B2BodyId m_frontWheelId;
+    public B2JointId m_rearAxleId;
+    public B2JointId m_frontAxleId;
     public bool m_isSpawned;
 
     public Car()
     {
     }
 
-    public void Spawn(b2WorldId worldId, b2Vec2 position, float scale, float hertz, float dampingRatio, float torque, object userData)
+    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, object userData)
     {
         Debug.Assert(m_isSpawned == false);
 
@@ -38,9 +38,9 @@ public class Car
         Debug.Assert(B2_IS_NULL(m_frontWheelId));
         Debug.Assert(B2_IS_NULL(m_rearWheelId));
 
-        b2Vec2[] vertices = new b2Vec2[6]
+        B2Vec2[] vertices = new B2Vec2[6]
         {
-            new b2Vec2(-1.5f, -0.5f), new b2Vec2(1.5f, -0.5f), new b2Vec2(1.5f, 0.0f), new b2Vec2(0.0f, 0.9f), new b2Vec2(-1.15f, 0.9f), new b2Vec2(-1.5f, 0.2f)
+            new B2Vec2(-1.5f, -0.5f), new B2Vec2(1.5f, -0.5f), new B2Vec2(1.5f, 0.0f), new B2Vec2(0.0f, 0.9f), new B2Vec2(-1.15f, 0.9f), new B2Vec2(-1.5f, 0.2f)
         };
 
         for (int i = 0; i < 6; ++i)
@@ -49,18 +49,18 @@ public class Car
             vertices[i].y *= 0.85f * scale;
         }
 
-        b2Hull hull = b2ComputeHull(vertices, 6);
-        b2Polygon chassis = b2MakePolygon(hull, 0.15f * scale);
+        B2Hull hull = b2ComputeHull(vertices, 6);
+        B2Polygon chassis = b2MakePolygon(hull, 0.15f * scale);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f / scale;
         shapeDef.friction = 0.2f;
 
-        b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.4f * scale);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.position = b2Add(new b2Vec2(0.0f, 1.0f * scale), position);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
         m_chassisId = b2CreateBody(worldId, bodyDef);
         b2CreatePolygonShape(m_chassisId, shapeDef, chassis);
 
@@ -68,18 +68,18 @@ public class Car
         shapeDef.friction = 1.5f;
         shapeDef.rollingResistance = 0.1f;
 
-        bodyDef.position = b2Add(new b2Vec2(-1.0f * scale, 0.35f * scale), position);
+        bodyDef.position = b2Add(new B2Vec2(-1.0f * scale, 0.35f * scale), position);
         bodyDef.allowFastRotation = true;
         m_rearWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_rearWheelId, shapeDef, circle);
 
-        bodyDef.position = b2Add(new b2Vec2(1.0f * scale, 0.4f * scale), position);
+        bodyDef.position = b2Add(new B2Vec2(1.0f * scale, 0.4f * scale), position);
         bodyDef.allowFastRotation = true;
         m_frontWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_frontWheelId, shapeDef, circle);
 
-        b2Vec2 axis = new b2Vec2(0.0f, 1.0f);
-        b2Vec2 pivot = b2Body_GetPosition(m_rearWheelId);
+        B2Vec2 axis = new B2Vec2(0.0f, 1.0f);
+        B2Vec2 pivot = b2Body_GetPosition(m_rearWheelId);
 
         // float throttle = 0.0f;
         // float speed = 35.0f;
@@ -87,7 +87,7 @@ public class Car
         // float hertz = 5.0f;
         // float dampingRatio = 0.7f;
 
-        b2WheelJointDef jointDef = b2DefaultWheelJointDef();
+        B2WheelJointDef jointDef = b2DefaultWheelJointDef();
 
         jointDef.bodyIdA = m_chassisId;
         jointDef.bodyIdB = m_rearWheelId;

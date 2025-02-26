@@ -4,18 +4,22 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class WorldQueryContext
+    public class B2WorldOverlapContext
     {
-        public b2World world;
+        public B2World world;
         public b2OverlapResultFcn fcn;
-        public b2QueryFilter filter;
+        public B2QueryFilter filter;
+        public B2ShapeProxy proxy;
+        public B2Transform transform;
         public object userContext;
 
-        public WorldQueryContext(b2World world, b2OverlapResultFcn fcn, b2QueryFilter filter, object userContext)
+        public B2WorldOverlapContext(B2World world, b2OverlapResultFcn fcn, B2QueryFilter filter, B2ShapeProxy proxy, B2Transform transform, object userContext)
         {
             this.world = world;
             this.fcn = fcn;
             this.filter = filter;
+            this.proxy = proxy;
+            this.transform = transform;
             this.userContext = userContext;
         }
     }

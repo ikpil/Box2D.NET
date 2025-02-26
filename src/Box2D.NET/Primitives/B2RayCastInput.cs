@@ -12,18 +12,18 @@ namespace Box2D.NET.Primitives
      * @{
      */
     /// Low level ray cast input data
-    public struct b2RayCastInput // todo @ikpil, check! for class
+    public struct B2RayCastInput // todo @ikpil, check! for class
     {
         /// Start point of the ray cast
-        public b2Vec2 origin;
+        public B2Vec2 origin;
 
         /// Translation of the ray cast
-        public b2Vec2 translation;
+        public B2Vec2 translation;
 
         /// The maximum fraction of the translation to consider, typically 1
         public float maxFraction;
 
-        public b2RayCastInput(b2Vec2 origin, b2Vec2 translation, float maxFraction)
+        public B2RayCastInput(B2Vec2 origin, B2Vec2 translation, float maxFraction)
         {
             this.origin = origin;
             this.translation = translation;

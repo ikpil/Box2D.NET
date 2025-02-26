@@ -6,15 +6,15 @@ using System.Collections.Generic;
 
 namespace Box2D.NET.Primitives
 {
-    public class b2ShapeRefComparer : IComparer<b2ShapeRef>
+    public class B2ShapeRefComparer : IComparer<B2ShapeRef>
     {
-        public static readonly b2ShapeRefComparer Shared = new b2ShapeRefComparer();
+        public static readonly B2ShapeRefComparer Shared = new B2ShapeRefComparer();
 
-        private b2ShapeRefComparer()
+        private B2ShapeRefComparer()
         {
         }
 
-        public int Compare(b2ShapeRef a, b2ShapeRef b)
+        public int Compare(B2ShapeRef a, B2ShapeRef b)
         {
             return sensor.b2CompareShapeRefs(a, b);
         }

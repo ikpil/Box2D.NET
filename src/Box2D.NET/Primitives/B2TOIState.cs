@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     /// Describes the TOI output
-    public enum b2TOIState
+    public enum B2TOIState
     {
         b2_toiStateUnknown,
         b2_toiStateFailed,

@@ -6,7 +6,7 @@ namespace Box2D.NET.Primitives
 {
     //! @cond
     /// Profiling data. Times are in milliseconds.
-    public class b2Profile
+    public class B2Profile
     {
         public float step;
         public float pairs;

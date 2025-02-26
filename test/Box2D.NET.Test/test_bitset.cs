@@ -16,7 +16,7 @@ public class test_bitset
     [Test]
     public void BitSetTest()
     {
-        b2BitSet bitSet = b2CreateBitSet(COUNT);
+        B2BitSet bitSet = b2CreateBitSet(COUNT);
 
         b2SetBitCountAndClear(bitSet, COUNT);
         bool[] values = new bool[COUNT];

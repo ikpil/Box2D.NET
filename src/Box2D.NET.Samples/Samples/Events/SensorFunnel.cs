@@ -51,8 +51,8 @@ public SensorFunnel( Settings settings ) : base( settings )
     settings.drawJoints = false;
 
     {
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        b2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody( m_worldId, &bodyDef );
 
         // b2Vec2 points[] = {
         //{42.333, 44.979},	{177.271, 44.979},	{177.271, 100.542}, {142.875, 121.708}, {177.271, 121.708},
@@ -61,7 +61,7 @@ public SensorFunnel( Settings settings ) : base( settings )
         //{76.729, 193.146},	{42.333, 171.979},	{42.333, 121.708},	{76.729, 121.708},	{42.333, 100.542},
         //};
 
-        b2Vec2 points[] = {
+        B2Vec2 points[] = {
             { -16.8672504, 31.088623 },	 { 16.8672485, 31.088623 },		{ 16.8672485, 17.1978741 },
             { 8.26824951, 11.906374 },	 { 16.8672485, 11.906374 },		{ 16.8672485, -0.661376953 },
             { 8.26824951, -5.953125 },	 { 16.8672485, -5.953125 },		{ 16.8672485, -13.229126 },
@@ -105,10 +105,10 @@ public SensorFunnel( Settings settings ) : base( settings )
         // }
         // printf("};\n");
 
-        b2SurfaceMaterial material = {};
+        B2SurfaceMaterial material = {};
         material.friction = 0.2f;
 
-        b2ChainDef chainDef = b2DefaultChainDef();
+        B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
         chainDef.count = count;
         chainDef.isLoop = true;
@@ -121,19 +121,19 @@ public SensorFunnel( Settings settings ) : base( settings )
         for ( int i = 0; i < 3; ++i )
         {
             bodyDef.position = { 0.0f, y };
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            bodyDef.type = B2BodyType.b2_dynamicBody;
 
-            b2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
+            B2BodyId bodyId = b2CreateBody( m_worldId, &bodyDef );
 
-            b2Polygon box = b2MakeBox( 6.0f, 0.5f );
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeBox( 6.0f, 0.5f );
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.1f;
             shapeDef.restitution = 1.0f;
             shapeDef.density = 1.0f;
 
             b2CreatePolygonShape( bodyId, shapeDef, box );
 
-            b2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
+            B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             revoluteDef.bodyIdA = groundId;
             revoluteDef.bodyIdB = bodyId;
             revoluteDef.localAnchorA = bodyDef.position;
@@ -149,8 +149,8 @@ public SensorFunnel( Settings settings ) : base( settings )
         }
 
         {
-            b2Polygon box = b2MakeOffsetBox( 4.0f, 1.0f, { 0.0f, -30.5f }, b2Rot_identity );
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeOffsetBox( 4.0f, 1.0f, { 0.0f, -30.5f }, b2Rot_identity );
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.isSensor = true;
             b2CreatePolygonShape( groundId, &shapeDef, &box );
         }
@@ -187,7 +187,7 @@ void CreateElement()
         return;
     }
 
-    b2Vec2 center = { m_side, 29.5f };
+    B2Vec2 center = { m_side, 29.5f };
 
     if ( m_type == e_donut )
     {
@@ -280,12 +280,12 @@ public override void Step(Settings settings)
 
     // Discover rings that touch the bottom sensor
     bool deferredDestructions[e_count] = {};
-    b2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
+    B2SensorEvents sensorEvents = b2World_GetSensorEvents( m_worldId );
     for ( int i = 0; i < sensorEvents.beginCount; ++i )
     {
-        b2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
-        b2ShapeId visitorId = event.visitorShapeId;
-        b2BodyId bodyId = b2Shape_GetBody( visitorId );
+        B2SensorBeginTouchEvent event = sensorEvents.beginEvents[i];
+        B2ShapeId visitorId = event.visitorShapeId;
+        B2BodyId bodyId = b2Shape_GetBody( visitorId );
 
         if ( m_type == e_donut )
         {

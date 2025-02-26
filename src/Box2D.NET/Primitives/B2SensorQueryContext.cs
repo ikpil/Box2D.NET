@@ -4,12 +4,12 @@
 
 namespace Box2D.NET.Primitives
 {
-    public class b2SensorQueryContext
+    public class B2SensorQueryContext
     {
-        public b2World world;
-        public b2SensorTaskContext taskContext;
-        public b2Sensor sensor;
-        public b2Shape sensorShape;
-        public b2Transform transform;
+        public B2World world;
+        public B2SensorTaskContext taskContext;
+        public B2Sensor sensor;
+        public B2Shape sensorShape;
+        public B2Transform transform;
     }
 }

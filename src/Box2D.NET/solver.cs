@@ -48,18 +48,18 @@ namespace Box2D.NET
         public const int B2_SIMD_SHIFT = 0;
 //#endif
 
-        public static b2Softness b2MakeSoft(float hertz, float zeta, float h)
+        public static B2Softness b2MakeSoft(float hertz, float zeta, float h)
         {
             if (hertz == 0.0f)
             {
-                return new b2Softness(0.0f, 1.0f, 0.0f);
+                return new B2Softness(0.0f, 1.0f, 0.0f);
             }
 
             float omega = 2.0f * B2_PI * hertz;
             float a1 = 2.0f * zeta + h * omega;
             float a2 = h * omega * a1;
             float a3 = 1.0f / (1.0f + a2);
-            return new b2Softness(omega / a1, a2 * a3, a3);
+            return new B2Softness(omega / a1, a2 * a3, a3);
         }
 
 
@@ -71,14 +71,14 @@ namespace Box2D.NET
 
 
 // Integrate velocities and apply damping
-        public static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, b2StepContext context)
+        public static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, B2StepContext context)
         {
-            b2TracyCZoneNC(b2TracyCZone.integrate_velocity, "IntVel", b2HexColor.b2_colorDeepPink, true);
+            b2TracyCZoneNC(B2TracyCZone.integrate_velocity, "IntVel", B2HexColor.b2_colorDeepPink, true);
 
-            b2BodyState[] states = context.states;
-            b2BodySim[] sims = context.sims;
+            B2BodyState[] states = context.states;
+            B2BodySim[] sims = context.sims;
 
-            b2Vec2 gravity = context.world.gravity;
+            B2Vec2 gravity = context.world.gravity;
             float h = context.h;
             float maxLinearSpeed = context.maxLinearVelocity;
             float maxAngularSpeed = B2_MAX_ROTATION * context.inv_dt;
@@ -87,10 +87,10 @@ namespace Box2D.NET
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                b2BodySim sim = sims[i];
-                b2BodyState state = states[i];
+                B2BodySim sim = sims[i];
+                B2BodyState state = states[i];
 
-                b2Vec2 v = state.linearVelocity;
+                B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
 
                 // Apply forces, torque, gravity, and damping
@@ -108,7 +108,7 @@ namespace Box2D.NET
                 float gravityScale = sim.invMass > 0.0f ? sim.gravityScale : 0.0f;
 
                 // lvd = h * im * f + h * g
-                b2Vec2 linearVelocityDelta = b2Add(b2MulSV(h * sim.invMass, sim.force), b2MulSV(h * gravityScale, gravity));
+                B2Vec2 linearVelocityDelta = b2Add(b2MulSV(h * sim.invMass, sim.force), b2MulSV(h * gravityScale, gravity));
                 float angularVelocityDelta = h * sim.invInertia * sim.torque;
 
                 v = b2MulAdd(linearVelocityDelta, linearDamping, v);
@@ -134,78 +134,78 @@ namespace Box2D.NET
                 state.angularVelocity = w;
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.integrate_velocity);
+            b2TracyCZoneEnd(B2TracyCZone.integrate_velocity);
         }
 
-        public static void b2PrepareJointsTask(int startIndex, int endIndex, b2StepContext context)
+        public static void b2PrepareJointsTask(int startIndex, int endIndex, B2StepContext context)
         {
-            b2TracyCZoneNC(b2TracyCZone.prepare_joints, "PrepJoints", b2HexColor.b2_colorOldLace, true);
+            b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
-            ArraySegment<b2JointSim> joints = context.joints;
+            ArraySegment<B2JointSim> joints = context.joints;
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                b2JointSim joint = joints[i];
+                B2JointSim joint = joints[i];
                 b2PrepareJoint(joint, context);
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.prepare_joints);
+            b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        public static void b2WarmStartJointsTask(int startIndex, int endIndex, b2StepContext context, int colorIndex)
+        public static void b2WarmStartJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
         {
-            b2TracyCZoneNC(b2TracyCZone.warm_joints, "WarmJoints", b2HexColor.b2_colorGold, true);
+            b2TracyCZoneNC(B2TracyCZone.warm_joints, "WarmJoints", B2HexColor.b2_colorGold, true);
 
-            b2GraphColor color = context.graph.colors[colorIndex];
-            b2JointSim[] joints = color.jointSims.data;
+            B2GraphColor color = context.graph.colors[colorIndex];
+            B2JointSim[] joints = color.jointSims.data;
             Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
             Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                b2JointSim joint = joints[i];
+                B2JointSim joint = joints[i];
                 b2WarmStartJoint(joint, context);
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.warm_joints);
+            b2TracyCZoneEnd(B2TracyCZone.warm_joints);
         }
 
-        public static void b2SolveJointsTask(int startIndex, int endIndex, b2StepContext context, int colorIndex, bool useBias)
+        public static void b2SolveJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias)
         {
-            b2TracyCZoneNC(b2TracyCZone.solve_joints, "SolveJoints", b2HexColor.b2_colorLemonChiffon, true);
+            b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
 
-            b2GraphColor color = context.graph.colors[colorIndex];
-            b2JointSim[] joints = color.jointSims.data;
+            B2GraphColor color = context.graph.colors[colorIndex];
+            B2JointSim[] joints = color.jointSims.data;
             Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
             Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                b2JointSim joint = joints[i];
+                B2JointSim joint = joints[i];
                 b2SolveJoint(joint, context, useBias);
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.solve_joints);
+            b2TracyCZoneEnd(B2TracyCZone.solve_joints);
         }
 
 
-        public static void b2IntegratePositionsTask(int startIndex, int endIndex, b2StepContext context)
+        public static void b2IntegratePositionsTask(int startIndex, int endIndex, B2StepContext context)
         {
-            b2TracyCZoneNC(b2TracyCZone.integrate_positions, "IntPos", b2HexColor.b2_colorDarkSeaGreen, true);
+            b2TracyCZoneNC(B2TracyCZone.integrate_positions, "IntPos", B2HexColor.b2_colorDarkSeaGreen, true);
 
-            b2BodyState[] states = context.states;
+            B2BodyState[] states = context.states;
             float h = context.h;
 
             Debug.Assert(startIndex <= endIndex);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                b2BodyState state = states[i];
+                B2BodyState state = states[i];
                 state.deltaRotation = b2IntegrateRotation(state.deltaRotation, h * state.angularVelocity);
                 state.deltaPosition = b2MulAdd(state.deltaPosition, h, state.linearVelocity);
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.integrate_positions);
+            b2TracyCZoneEnd(B2TracyCZone.integrate_positions);
         }
 
 
@@ -214,9 +214,9 @@ namespace Box2D.NET
         {
             B2_UNUSED(proxyId);
 
-            b2ContinuousContext continuousContext = context as b2ContinuousContext;
-            b2Shape fastShape = continuousContext.fastShape;
-            b2BodySim fastBodySim = continuousContext.fastBodySim;
+            B2ContinuousContext continuousContext = context as B2ContinuousContext;
+            B2Shape fastShape = continuousContext.fastShape;
+            B2BodySim fastBodySim = continuousContext.fastBodySim;
 
             // Skip same shape
             if (shapeId == fastShape.id)
@@ -224,9 +224,9 @@ namespace Box2D.NET
                 return true;
             }
 
-            b2World world = continuousContext.world;
+            B2World world = continuousContext.world;
 
-            b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
             // Skip same body
             if (shape.bodyId == fastShape.bodyId)
@@ -247,10 +247,10 @@ namespace Box2D.NET
                 return true;
             }
 
-            b2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
+            B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
 
-            b2BodySim bodySim = b2GetBodySim(world, body);
-            Debug.Assert(body.type == b2BodyType.b2_staticBody || fastBodySim.isBullet);
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            Debug.Assert(body.type == B2BodyType.b2_staticBody || fastBodySim.isBullet);
 
             // Skip bullets
             if (bodySim.isBullet)
@@ -259,7 +259,7 @@ namespace Box2D.NET
             }
 
             // Skip filtered bodies
-            b2Body fastBody = b2Array_Get(ref world.bodies, fastBodySim.bodyId);
+            B2Body fastBody = b2Array_Get(ref world.bodies, fastBodySim.bodyId);
             canCollide = b2ShouldBodiesCollide(world, fastBody, body);
             if (canCollide == false)
             {
@@ -270,8 +270,8 @@ namespace Box2D.NET
             b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
             if (customFilterFcn != null)
             {
-                b2ShapeId idA = new b2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                b2ShapeId idB = new b2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
+                B2ShapeId idA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                B2ShapeId idB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
                 canCollide = customFilterFcn(idA, idB, world.customFilterContext);
                 if (canCollide == false)
                 {
@@ -280,19 +280,19 @@ namespace Box2D.NET
             }
 
             // Prevent pausing on chain segment junctions
-            if (shape.type == b2ShapeType.b2_chainSegmentShape)
+            if (shape.type == B2ShapeType.b2_chainSegmentShape)
             {
-                b2Transform transform = bodySim.transform;
-                b2Vec2 p1 = b2TransformPoint(ref transform, shape.chainSegment.segment.point1);
-                b2Vec2 p2 = b2TransformPoint(ref transform, shape.chainSegment.segment.point2);
-                b2Vec2 e = b2Sub(p2, p1);
+                B2Transform transform = bodySim.transform;
+                B2Vec2 p1 = b2TransformPoint(ref transform, shape.chainSegment.segment.point1);
+                B2Vec2 p2 = b2TransformPoint(ref transform, shape.chainSegment.segment.point2);
+                B2Vec2 e = b2Sub(p2, p1);
                 float length = 0;
                 e = b2GetLengthAndNormalize(ref length, e);
                 if (length > B2_LINEAR_SLOP)
                 {
-                    b2Vec2 c1 = continuousContext.centroid1;
+                    B2Vec2 c1 = continuousContext.centroid1;
                     float offset1 = b2Cross(b2Sub(c1, p1), e);
-                    b2Vec2 c2 = continuousContext.centroid2;
+                    B2Vec2 c2 = continuousContext.centroid2;
                     float offset2 = b2Cross(b2Sub(c2, p1), e);
 
                     const float allowedFraction = 0.25f;
@@ -331,7 +331,7 @@ namespace Box2D.NET
 	}
 #endif
 
-            b2TOIInput input = new b2TOIInput();
+            B2TOIInput input = new B2TOIInput();
             input.proxyA = b2MakeShapeDistanceProxy(shape);
             input.proxyB = b2MakeShapeDistanceProxy(fastShape);
             input.sweepA = b2MakeSweep(bodySim);
@@ -341,7 +341,7 @@ namespace Box2D.NET
             float hitFraction = continuousContext.fraction;
 
             bool didHit = false;
-            b2TOIOutput output = b2TimeOfImpact(input);
+            B2TOIOutput output = b2TimeOfImpact(input);
             if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
             {
                 hitFraction = output.fraction;
@@ -350,7 +350,7 @@ namespace Box2D.NET
             else if (0.0f == output.fraction)
             {
                 // fallback to TOI of a small circle around the fast shape centroid
-                b2Vec2 centroid = b2GetShapeCentroid(fastShape);
+                B2Vec2 centroid = b2GetShapeCentroid(fastShape);
                 input.proxyB = b2MakeProxy(centroid, 1, B2_SPECULATIVE_DISTANCE);
                 output = b2TimeOfImpact(input);
                 if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
@@ -363,11 +363,11 @@ namespace Box2D.NET
             if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents))
             {
                 // Pre-solve is expensive because I need to compute a temporary manifold
-                b2Transform transformA = b2GetSweepTransform(input.sweepA, hitFraction);
-                b2Transform transformB = b2GetSweepTransform(input.sweepB, hitFraction);
-                b2Manifold manifold = b2ComputeManifold(shape, transformA, fastShape, transformB);
-                b2ShapeId shapeIdA = new b2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                b2ShapeId shapeIdB = new b2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
+                B2Transform transformA = b2GetSweepTransform(input.sweepA, hitFraction);
+                B2Transform transformB = b2GetSweepTransform(input.sweepB, hitFraction);
+                B2Manifold manifold = b2ComputeManifold(shape, transformA, fastShape, transformB);
+                B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
 
                 // The user may modify the temporary manifold here but it doesn't matter. They will be able to
                 // modify the real manifold in the discrete solver.
@@ -383,30 +383,30 @@ namespace Box2D.NET
         }
 
 // Continuous collision of dynamic versus static
-        public static void b2SolveContinuous(b2World world, int bodySimIndex)
+        public static void b2SolveContinuous(B2World world, int bodySimIndex)
         {
-            b2TracyCZoneNC(b2TracyCZone.ccd, "CCD", b2HexColor.b2_colorDarkGoldenRod, true);
+            b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
 
-            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
-            b2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
             Debug.Assert(fastBodySim.isFast);
 
-            b2Sweep sweep = b2MakeSweep(fastBodySim);
+            B2Sweep sweep = b2MakeSweep(fastBodySim);
 
-            b2Transform xf1;
+            B2Transform xf1;
             xf1.q = sweep.q1;
             xf1.p = b2Sub(sweep.c1, b2RotateVector(sweep.q1, sweep.localCenter));
 
-            b2Transform xf2;
+            B2Transform xf2;
             xf2.q = sweep.q2;
             xf2.p = b2Sub(sweep.c2, b2RotateVector(sweep.q2, sweep.localCenter));
 
-            b2DynamicTree staticTree = world.broadPhase.trees[(int)b2BodyType.b2_staticBody];
-            b2DynamicTree kinematicTree = world.broadPhase.trees[(int)b2BodyType.b2_kinematicBody];
-            b2DynamicTree dynamicTree = world.broadPhase.trees[(int)b2BodyType.b2_dynamicBody];
-            b2Body fastBody = b2Array_Get(ref world.bodies, fastBodySim.bodyId);
+            B2DynamicTree staticTree = world.broadPhase.trees[(int)B2BodyType.b2_staticBody];
+            B2DynamicTree kinematicTree = world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody];
+            B2DynamicTree dynamicTree = world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody];
+            B2Body fastBody = b2Array_Get(ref world.bodies, fastBodySim.bodyId);
 
-            b2ContinuousContext context = new b2ContinuousContext();
+            B2ContinuousContext context = new B2ContinuousContext();
             context.world = world;
             context.sweep = sweep;
             context.fastBodySim = fastBodySim;
@@ -417,16 +417,16 @@ namespace Box2D.NET
             int shapeId = fastBody.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
-                b2Shape fastShape = b2Array_Get(ref world.shapes, shapeId);
+                B2Shape fastShape = b2Array_Get(ref world.shapes, shapeId);
                 shapeId = fastShape.nextShapeId;
 
                 context.fastShape = fastShape;
                 context.centroid1 = b2TransformPoint(ref xf1, fastShape.localCentroid);
                 context.centroid2 = b2TransformPoint(ref xf2, fastShape.localCentroid);
 
-                b2AABB box1 = fastShape.aabb;
-                b2AABB box2 = b2ComputeShapeAABB(fastShape, xf2);
-                b2AABB box = b2AABB_Union(box1, box2);
+                B2AABB box1 = fastShape.aabb;
+                B2AABB box2 = b2ComputeShapeAABB(fastShape, xf2);
+                B2AABB box = b2AABB_Union(box1, box2);
 
                 // Store this to avoid double computation in the case there is no impact event
                 fastShape.aabb = box2;
@@ -452,12 +452,12 @@ namespace Box2D.NET
             if (context.fraction < 1.0f)
             {
                 // Handle time of impact event
-                b2Rot q = b2NLerp(sweep.q1, sweep.q2, context.fraction);
-                b2Vec2 c = b2Lerp(sweep.c1, sweep.c2, context.fraction);
-                b2Vec2 origin = b2Sub(c, b2RotateVector(q, sweep.localCenter));
+                B2Rot q = b2NLerp(sweep.q1, sweep.q2, context.fraction);
+                B2Vec2 c = b2Lerp(sweep.c1, sweep.c2, context.fraction);
+                B2Vec2 origin = b2Sub(c, b2RotateVector(q, sweep.localCenter));
 
                 // Advance body
-                b2Transform transform = new b2Transform(origin, q);
+                B2Transform transform = new B2Transform(origin, q);
                 fastBodySim.transform = transform;
                 fastBodySim.center = c;
                 fastBodySim.rotation0 = q;
@@ -470,10 +470,10 @@ namespace Box2D.NET
                 shapeId = fastBody.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                     // Must recompute aabb at the interpolated transform
-                    b2AABB aabb = b2ComputeShapeAABB(shape, transform);
+                    B2AABB aabb = b2ComputeShapeAABB(shape, transform);
                     aabb.lowerBound.x -= speculativeDistance;
                     aabb.lowerBound.y -= speculativeDistance;
                     aabb.upperBound.x += speculativeDistance;
@@ -482,7 +482,7 @@ namespace Box2D.NET
 
                     if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                     {
-                        b2AABB fatAABB;
+                        B2AABB fatAABB;
                         fatAABB.lowerBound.x = aabb.lowerBound.x - aabbMargin;
                         fatAABB.lowerBound.y = aabb.lowerBound.y - aabbMargin;
                         fatAABB.upperBound.x = aabb.upperBound.x + aabbMargin;
@@ -508,13 +508,13 @@ namespace Box2D.NET
                 shapeId = fastBody.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                     // shape.aabb is still valid from above
 
                     if (b2AABB_Contains(shape.fatAABB, shape.aabb) == false)
                     {
-                        b2AABB fatAABB;
+                        B2AABB fatAABB;
                         fatAABB.lowerBound.x = shape.aabb.lowerBound.x - aabbMargin;
                         fatAABB.lowerBound.y = shape.aabb.lowerBound.y - aabbMargin;
                         fatAABB.upperBound.x = shape.aabb.upperBound.x + aabbMargin;
@@ -529,19 +529,19 @@ namespace Box2D.NET
                 }
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.ccd);
+            b2TracyCZoneEnd(B2TracyCZone.ccd);
         }
 
         public static void b2FinalizeBodiesTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
-            b2TracyCZoneNC(b2TracyCZone.finalize_transfprms, "Transforms", b2HexColor.b2_colorMediumSeaGreen, true);
+            b2TracyCZoneNC(B2TracyCZone.finalize_transfprms, "Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
 
-            b2StepContext stepContext = context as b2StepContext;
-            b2World world = stepContext.world;
+            B2StepContext stepContext = context as B2StepContext;
+            B2World world = stepContext.world;
             bool enableSleep = world.enableSleep;
-            b2BodyState[] states = stepContext.states;
-            b2BodySim[] sims = stepContext.sims;
-            b2Body[] bodies = world.bodies.data;
+            B2BodyState[] states = stepContext.states;
+            B2BodySim[] sims = stepContext.sims;
+            B2Body[] bodies = world.bodies.data;
             float timeStep = stepContext.dt;
             float invTimeStep = stepContext.inv_dt;
 
@@ -549,11 +549,11 @@ namespace Box2D.NET
 
             // The body move event array has should already have the correct size
             Debug.Assert(endIndex <= world.bodyMoveEvents.count);
-            b2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
+            B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 
-            b2BitSet enlargedSimBitSet = world.taskContexts.data[threadIndex].enlargedSimBitSet;
-            b2BitSet awakeIslandBitSet = world.taskContexts.data[threadIndex].awakeIslandBitSet;
-            b2TaskContext taskContext = world.taskContexts.data[threadIndex];
+            B2BitSet enlargedSimBitSet = world.taskContexts.data[threadIndex].enlargedSimBitSet;
+            B2BitSet awakeIslandBitSet = world.taskContexts.data[threadIndex].awakeIslandBitSet;
+            B2TaskContext taskContext = world.taskContexts.data[threadIndex];
 
             bool enableContinuous = world.enableContinuous;
 
@@ -564,10 +564,10 @@ namespace Box2D.NET
 
             for (int simIndex = startIndex; simIndex < endIndex; ++simIndex)
             {
-                b2BodyState state = states[simIndex];
-                b2BodySim sim = sims[simIndex];
+                B2BodyState state = states[simIndex];
+                B2BodySim sim = sims[simIndex];
 
-                b2Vec2 v = state.linearVelocity;
+                B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
 
                 Debug.Assert(b2IsValidVec2(v));
@@ -594,10 +594,10 @@ namespace Box2D.NET
                 sim.transform.p = b2Sub(sim.center, b2RotateVector(sim.transform.q, sim.localCenter));
 
                 // cache miss here, however I need the shape list below
-                b2Body body = bodies[sim.bodyId];
+                B2Body body = bodies[sim.bodyId];
                 body.bodyMoveIndex = simIndex;
                 moveEvents[simIndex].transform = sim.transform;
-                moveEvents[simIndex].bodyId = new b2BodyId(sim.bodyId + 1, worldId, body.generation);
+                moveEvents[simIndex].bodyId = new B2BodyId(sim.bodyId + 1, worldId, body.generation);
                 moveEvents[simIndex].userData = body.userData;
                 moveEvents[simIndex].fellAsleep = false;
 
@@ -615,7 +615,7 @@ namespace Box2D.NET
                     // Body is not sleepy
                     body.sleepTime = 0.0f;
 
-                    if (body.type == b2BodyType.b2_dynamicBody && enableContinuous && maxVelocity * timeStep > 0.5f * sim.minExtent)
+                    if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxVelocity * timeStep > 0.5f * sim.minExtent)
                     {
                         // This flag is only retained for debug draw
                         sim.isFast = true;
@@ -648,7 +648,7 @@ namespace Box2D.NET
                 }
 
                 // Any single body in an island can keep it awake
-                b2Island island = b2Array_Get(ref world.islands, body.islandId);
+                B2Island island = b2Array_Get(ref world.islands, body.islandId);
                 if (body.sleepTime < B2_TIME_TO_SLEEP)
                 {
                     // keep island awake
@@ -667,12 +667,12 @@ namespace Box2D.NET
                 }
 
                 // Update shapes AABBs
-                b2Transform transform = sim.transform;
+                B2Transform transform = sim.transform;
                 bool isFast = sim.isFast;
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
-                    b2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                     if (isFast)
                     {
@@ -685,7 +685,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        b2AABB aabb = b2ComputeShapeAABB(shape, transform);
+                        B2AABB aabb = b2ComputeShapeAABB(shape, transform);
                         aabb.lowerBound.x -= speculativeDistance;
                         aabb.lowerBound.y -= speculativeDistance;
                         aabb.upperBound.x += speculativeDistance;
@@ -696,7 +696,7 @@ namespace Box2D.NET
 
                         if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                         {
-                            b2AABB fatAABB;
+                            B2AABB fatAABB;
                             fatAABB.lowerBound.x = aabb.lowerBound.x - aabbMargin;
                             fatAABB.lowerBound.y = aabb.lowerBound.y - aabbMargin;
                             fatAABB.upperBound.x = aabb.upperBound.x + aabbMargin;
@@ -714,7 +714,7 @@ namespace Box2D.NET
                 }
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.finalize_transfprms);
+            b2TracyCZoneEnd(B2TracyCZone.finalize_transfprms);
         }
 
 /*
@@ -741,35 +741,35 @@ public enum b2SolverBlockType
 } b2SolverBlockType;
 */
 
-        public static void b2ExecuteBlock(b2SolverStage stage, b2StepContext context, b2SolverBlock block)
+        public static void b2ExecuteBlock(B2SolverStage stage, B2StepContext context, B2SolverBlock block)
         {
-            b2SolverStageType stageType = stage.type;
-            b2SolverBlockType blockType = (b2SolverBlockType)block.blockType;
+            B2SolverStageType stageType = stage.type;
+            B2SolverBlockType blockType = (B2SolverBlockType)block.blockType;
             int startIndex = block.startIndex;
             int endIndex = startIndex + block.count;
 
             switch (stageType)
             {
-                case b2SolverStageType.b2_stagePrepareJoints:
+                case B2SolverStageType.b2_stagePrepareJoints:
                     b2PrepareJointsTask(startIndex, endIndex, context);
                     break;
 
-                case b2SolverStageType.b2_stagePrepareContacts:
+                case B2SolverStageType.b2_stagePrepareContacts:
                     b2PrepareContactsTask(startIndex, endIndex, context);
                     break;
 
-                case b2SolverStageType.b2_stageIntegrateVelocities:
+                case B2SolverStageType.b2_stageIntegrateVelocities:
                     b2IntegrateVelocitiesTask(startIndex, endIndex, context);
                     break;
 
-                case b2SolverStageType.b2_stageWarmStart:
+                case B2SolverStageType.b2_stageWarmStart:
                     if (context.world.enableWarmStarting)
                     {
-                        if (blockType == b2SolverBlockType.b2_graphContactBlock)
+                        if (blockType == B2SolverBlockType.b2_graphContactBlock)
                         {
                             b2WarmStartContactsTask(startIndex, endIndex, context, stage.colorIndex);
                         }
-                        else if (blockType == b2SolverBlockType.b2_graphJointBlock)
+                        else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                         {
                             b2WarmStartJointsTask(startIndex, endIndex, context, stage.colorIndex);
                         }
@@ -777,43 +777,43 @@ public enum b2SolverBlockType
 
                     break;
 
-                case b2SolverStageType.b2_stageSolve:
-                    if (blockType == b2SolverBlockType.b2_graphContactBlock)
+                case B2SolverStageType.b2_stageSolve:
+                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
                         b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, true);
                     }
-                    else if (blockType == b2SolverBlockType.b2_graphJointBlock)
+                    else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
                         b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, true);
                     }
 
                     break;
 
-                case b2SolverStageType.b2_stageIntegratePositions:
+                case B2SolverStageType.b2_stageIntegratePositions:
                     b2IntegratePositionsTask(startIndex, endIndex, context);
                     break;
 
-                case b2SolverStageType.b2_stageRelax:
-                    if (blockType == b2SolverBlockType.b2_graphContactBlock)
+                case B2SolverStageType.b2_stageRelax:
+                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
                         b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, false);
                     }
-                    else if (blockType == b2SolverBlockType.b2_graphJointBlock)
+                    else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
                         b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, false);
                     }
 
                     break;
 
-                case b2SolverStageType.b2_stageRestitution:
-                    if (blockType == b2SolverBlockType.b2_graphContactBlock)
+                case B2SolverStageType.b2_stageRestitution:
+                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
                         b2ApplyRestitutionTask(startIndex, endIndex, context, stage.colorIndex);
                     }
 
                     break;
 
-                case b2SolverStageType.b2_stageStoreImpulses:
+                case B2SolverStageType.b2_stageStoreImpulses:
                     b2StoreImpulsesTask(startIndex, endIndex, context);
                     break;
             }
@@ -831,10 +831,10 @@ public enum b2SolverBlockType
             return blocksPerWorker * workerIndex + b2MinInt(remainder, workerIndex);
         }
 
-        public static void b2ExecuteStage(b2SolverStage stage, b2StepContext context, int previousSyncIndex, int syncIndex, int workerIndex)
+        public static void b2ExecuteStage(B2SolverStage stage, B2StepContext context, int previousSyncIndex, int syncIndex, int workerIndex)
         {
             int completedCount = 0;
-            ArraySegment<b2SolverBlock> blocks = stage.blocks;
+            ArraySegment<B2SolverBlock> blocks = stage.blocks;
             int blockCount = stage.blockCount;
 
             int expectedSyncIndex = previousSyncIndex;
@@ -851,7 +851,7 @@ public enum b2SolverBlockType
 
             while (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, expectedSyncIndex, syncIndex) == true)
             {
-                Debug.Assert(stage.type != b2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
+                Debug.Assert(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
 
                 Debug.Assert(completedCount < blockCount);
 
@@ -892,7 +892,7 @@ public enum b2SolverBlockType
             b2AtomicFetchAddInt(ref stage.completionCount, completedCount);
         }
 
-        public static void b2ExecuteMainStage(b2SolverStage stage, b2StepContext context, uint syncBits)
+        public static void b2ExecuteMainStage(B2SolverStage stage, B2StepContext context, uint syncBits)
         {
             int blockCount = stage.blockCount;
             if (blockCount == 0)
@@ -929,12 +929,12 @@ public enum b2SolverBlockType
         {
             B2_UNUSED(startIndex, endIndex, threadIndexIgnore);
 
-            b2WorkerContext workerContext = taskContext as b2WorkerContext;
+            B2WorkerContext workerContext = taskContext as B2WorkerContext;
             int workerIndex = workerContext.workerIndex;
-            b2StepContext context = workerContext.context;
+            B2StepContext context = workerContext.context;
             int activeColorCount = context.activeColorCount;
-            ArraySegment<b2SolverStage> stages = context.stages;
-            b2Profile profile = context.world.profile;
+            ArraySegment<B2SolverStage> stages = context.stages;
+            B2Profile profile = context.world.profile;
 
             if (workerIndex == 0)
             {
@@ -966,7 +966,7 @@ public enum b2SolverBlockType
                 // This stage loops over all awake joints
                 uint jointSyncIndex = 1;
                 uint syncBits = (jointSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == b2SolverStageType.b2_stagePrepareJoints);
+                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareJoints);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
                 stageIndex += 1;
                 jointSyncIndex += 1;
@@ -974,7 +974,7 @@ public enum b2SolverBlockType
                 // This stage loops over all contact constraints
                 uint contactSyncIndex = 1;
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == b2SolverStageType.b2_stagePrepareContacts);
+                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareContacts);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
                 stageIndex += 1;
                 contactSyncIndex += 1;
@@ -996,7 +996,7 @@ public enum b2SolverBlockType
 
                     // integrate velocities
                     syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
-                    Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageIntegrateVelocities);
+                    Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
                     b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                     iterStageIndex += 1;
                     bodySyncIndex += 1;
@@ -1010,7 +1010,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageWarmStart);
+                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageWarmStart);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1027,7 +1027,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageSolve);
+                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1037,7 +1037,7 @@ public enum b2SolverBlockType
                     profile.solveImpulses += b2GetMillisecondsAndReset(ref ticks);
 
                     // integrate positions
-                    Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageIntegratePositions);
+                    Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
                     syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
                     b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                     iterStageIndex += 1;
@@ -1053,7 +1053,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageRelax);
+                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1075,7 +1075,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == b2SolverStageType.b2_stageRestitution);
+                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageRestitution);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1089,7 +1089,7 @@ public enum b2SolverBlockType
                 b2StoreOverflowImpulses(context);
 
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == b2SolverStageType.b2_stageStoreImpulses);
+                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stageStoreImpulses);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
 
                 profile.storeImpulses += b2GetMillisecondsAndReset(ref ticks);
@@ -1148,7 +1148,7 @@ public enum b2SolverBlockType
 
                 int previousSyncIndex = syncIndex - 1;
 
-                b2SolverStage stage = stages[stageIndex];
+                B2SolverStage stage = stages[stageIndex];
                 b2ExecuteStage(stage, context, previousSyncIndex, syncIndex, workerIndex);
 
                 lastSyncBits = syncBits;
@@ -1159,9 +1159,9 @@ public enum b2SolverBlockType
         {
             B2_UNUSED(threadIndex);
 
-            b2TracyCZoneNC(b2TracyCZone.bullet_body_task, "Bullet", b2HexColor.b2_colorLightSkyBlue, true);
+            b2TracyCZoneNC(B2TracyCZone.bullet_body_task, "Bullet", B2HexColor.b2_colorLightSkyBlue, true);
 
-            b2StepContext stepContext = taskContext as b2StepContext;
+            B2StepContext stepContext = taskContext as B2StepContext;
 
             Debug.Assert(startIndex <= endIndex);
 
@@ -1171,28 +1171,28 @@ public enum b2SolverBlockType
                 b2SolveContinuous(stepContext.world, simIndex);
             }
 
-            b2TracyCZoneEnd(b2TracyCZone.bullet_body_task);
+            b2TracyCZoneEnd(B2TracyCZone.bullet_body_task);
         }
 
 
 // Solve with graph coloring
-        public static void b2Solve(b2World world, b2StepContext stepContext)
+        public static void b2Solve(B2World world, B2StepContext stepContext)
         {
             world.stepIndex += 1;
 
             // Merge islands
             {
-                b2TracyCZoneNC(b2TracyCZone.merge, "Merge", b2HexColor.b2_colorLightGoldenRodYellow, true);
+                b2TracyCZoneNC(B2TracyCZone.merge, "Merge", B2HexColor.b2_colorLightGoldenRodYellow, true);
                 ulong mergeTicks = b2GetTicks();
 
                 b2MergeAwakeIslands(world);
 
                 world.profile.mergeIslands = b2GetMilliseconds(mergeTicks);
-                b2TracyCZoneEnd(b2TracyCZone.merge);
+                b2TracyCZoneEnd(B2TracyCZone.merge);
             }
 
             // Are there any awake bodies? This scenario should not be important for profiling.
-            b2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)b2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
             int awakeBodyCount = awakeSet.bodySims.count;
             if (awakeBodyCount == 0)
             {
@@ -1214,11 +1214,11 @@ public enum b2SolverBlockType
                 b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
                 stepContext.bulletBodies = b2AllocateArenaItem<int>(world.stackAllocator, awakeBodyCount, "bullet bodies");
 
-                b2TracyCZoneNC(b2TracyCZone.prepare_stages, "Prepare Stages", b2HexColor.b2_colorDarkOrange, true);
+                b2TracyCZoneNC(B2TracyCZone.prepare_stages, "Prepare Stages", B2HexColor.b2_colorDarkOrange, true);
                 ulong prepareTicks = b2GetTicks();
 
-                b2ConstraintGraph graph = world.constraintGraph;
-                b2GraphColor[] colors = graph.colors;
+                B2ConstraintGraph graph = world.constraintGraph;
+                B2GraphColor[] colors = graph.colors;
 
                 stepContext.sims = awakeSet.bodySims.data;
                 stepContext.states = awakeSet.bodyStates.data;
@@ -1345,19 +1345,19 @@ public enum b2SolverBlockType
                 activeColorCount = c;
 
                 // Gather contact pointers for easy parallel-for traversal. Some may be NULL due to SIMD remainders.
-                ArraySegment<b2ContactSim> contacts = b2AllocateArenaItem<b2ContactSim>(
+                ArraySegment<B2ContactSim> contacts = b2AllocateArenaItem<B2ContactSim>(
                     world.stackAllocator, B2_SIMD_WIDTH * simdContactCount, "contact pointers");
 
                 // Gather joint pointers for easy parallel-for traversal.
-                ArraySegment<b2JointSim> joints =
-                    b2AllocateArenaItem<b2JointSim>(world.stackAllocator, awakeJointCount, "joint pointers");
+                ArraySegment<B2JointSim> joints =
+                    b2AllocateArenaItem<B2JointSim>(world.stackAllocator, awakeJointCount, "joint pointers");
 
                 int simdConstraintSize = b2GetContactConstraintSIMDByteCount();
-                ArraySegment<b2ContactConstraintSIMD> simdContactConstraints =
-                    b2AllocateArenaItem<b2ContactConstraintSIMD>(world.stackAllocator, simdContactCount /** simdConstraintSize */, "contact constraint");
+                ArraySegment<B2ContactConstraintSIMD> simdContactConstraints =
+                    b2AllocateArenaItem<B2ContactConstraintSIMD>(world.stackAllocator, simdContactCount /** simdConstraintSize */, "contact constraint");
 
                 int overflowContactCount = colors[B2_OVERFLOW_INDEX].contactSims.count;
-                ArraySegment<b2ContactConstraint> overflowContactConstraints = b2AllocateArenaItem<b2ContactConstraint>(
+                ArraySegment<B2ContactConstraint> overflowContactConstraints = b2AllocateArenaItem<B2ContactConstraint>(
                     world.stackAllocator, overflowContactCount, "overflow contact constraint");
 
                 graph.colors[B2_OVERFLOW_INDEX].overflowConstraints = overflowContactConstraints;
@@ -1369,7 +1369,7 @@ public enum b2SolverBlockType
                     for (int i = 0; i < activeColorCount; ++i)
                     {
                         int j = activeColorIndices[i];
-                        b2GraphColor color = colors[j];
+                        B2GraphColor color = colors[j];
 
                         int colorContactCount = color.contactSims.count;
 
@@ -1451,11 +1451,11 @@ public enum b2SolverBlockType
                 // b2_stageStoreImpulses
                 stageCount += 1;
 
-                ArraySegment<b2SolverStage> stages = b2AllocateArenaItem<b2SolverStage>(world.stackAllocator, stageCount, "stages");
-                ArraySegment<b2SolverBlock> bodyBlocks = b2AllocateArenaItem<b2SolverBlock>(world.stackAllocator, bodyBlockCount, "body blocks");
-                ArraySegment<b2SolverBlock> contactBlocks = b2AllocateArenaItem<b2SolverBlock>(world.stackAllocator, contactBlockCount, "contact blocks");
-                ArraySegment<b2SolverBlock> jointBlocks = b2AllocateArenaItem<b2SolverBlock>(world.stackAllocator, jointBlockCount, "joint blocks");
-                ArraySegment<b2SolverBlock> graphBlocks = b2AllocateArenaItem<b2SolverBlock>(world.stackAllocator, graphBlockCount, "graph blocks");
+                ArraySegment<B2SolverStage> stages = b2AllocateArenaItem<B2SolverStage>(world.stackAllocator, stageCount, "stages");
+                ArraySegment<B2SolverBlock> bodyBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, bodyBlockCount, "body blocks");
+                ArraySegment<B2SolverBlock> contactBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, contactBlockCount, "contact blocks");
+                ArraySegment<B2SolverBlock> jointBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, jointBlockCount, "joint blocks");
+                ArraySegment<B2SolverBlock> graphBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, graphBlockCount, "graph blocks");
 
                 // Split an awake island. This modifies:
                 // - stack allocator
@@ -1474,10 +1474,10 @@ public enum b2SolverBlockType
                 // Prepare body work blocks
                 for (int i = 0; i < bodyBlockCount; ++i)
                 {
-                    b2SolverBlock block = bodyBlocks[i];
+                    B2SolverBlock block = bodyBlocks[i];
                     block.startIndex = i * bodyBlockSize;
                     block.count = (short)bodyBlockSize;
-                    block.blockType = (short)b2SolverBlockType.b2_bodyBlock;
+                    block.blockType = (short)B2SolverBlockType.b2_bodyBlock;
                     b2AtomicStoreInt(ref block.syncIndex, 0);
                 }
 
@@ -1486,10 +1486,10 @@ public enum b2SolverBlockType
                 // Prepare joint work blocks
                 for (int i = 0; i < jointBlockCount; ++i)
                 {
-                    b2SolverBlock block = jointBlocks[i];
+                    B2SolverBlock block = jointBlocks[i];
                     block.startIndex = i * jointBlockSize;
                     block.count = (short)jointBlockSize;
-                    block.blockType = (int)b2SolverBlockType.b2_jointBlock;
+                    block.blockType = (int)B2SolverBlockType.b2_jointBlock;
                     b2AtomicStoreInt(ref block.syncIndex, 0);
                 }
 
@@ -1501,10 +1501,10 @@ public enum b2SolverBlockType
                 // Prepare contact work blocks
                 for (int i = 0; i < contactBlockCount; ++i)
                 {
-                    b2SolverBlock block = contactBlocks[i];
+                    B2SolverBlock block = contactBlocks[i];
                     block.startIndex = i * contactBlockSize;
                     block.count = (short)contactBlockSize;
-                    block.blockType = (int)b2SolverBlockType.b2_contactBlock;
+                    block.blockType = (int)B2SolverBlockType.b2_contactBlock;
                     b2AtomicStoreInt(ref block.syncIndex, 0);
                 }
 
@@ -1515,8 +1515,8 @@ public enum b2SolverBlockType
                 }
 
                 // Prepare graph work blocks
-                ArraySegment<b2SolverBlock>[] graphColorBlocks = new ArraySegment<b2SolverBlock>[B2_GRAPH_COLOR_COUNT];
-                ArraySegment<b2SolverBlock> baseGraphBlock = graphBlocks;
+                ArraySegment<B2SolverBlock>[] graphColorBlocks = new ArraySegment<B2SolverBlock>[B2_GRAPH_COLOR_COUNT];
+                ArraySegment<B2SolverBlock> baseGraphBlock = graphBlocks;
 
                 for (int i = 0; i < activeColorCount; ++i)
                 {
@@ -1526,10 +1526,10 @@ public enum b2SolverBlockType
                     int colorJointBlockSize = colorJointBlockSizes[i];
                     for (int j = 0; j < colorJointBlockCount; ++j)
                     {
-                        b2SolverBlock block = baseGraphBlock[j];
+                        B2SolverBlock block = baseGraphBlock[j];
                         block.startIndex = j * colorJointBlockSize;
                         block.count = (short)colorJointBlockSize;
-                        block.blockType = (short)b2SolverBlockType.b2_graphJointBlock;
+                        block.blockType = (short)B2SolverBlockType.b2_graphJointBlock;
                         b2AtomicStoreInt(ref block.syncIndex, 0);
                     }
 
@@ -1544,10 +1544,10 @@ public enum b2SolverBlockType
                     int colorContactBlockSize = colorContactBlockSizes[i];
                     for (int j = 0; j < colorContactBlockCount; ++j)
                     {
-                        b2SolverBlock block = baseGraphBlock[j];
+                        B2SolverBlock block = baseGraphBlock[j];
                         block.startIndex = j * colorContactBlockSize;
                         block.count = (short)colorContactBlockSize;
-                        block.blockType = (short)b2SolverBlockType.b2_graphContactBlock;
+                        block.blockType = (short)B2SolverBlockType.b2_graphContactBlock;
                         b2AtomicStoreInt(ref block.syncIndex, 0);
                     }
 
@@ -1563,10 +1563,10 @@ public enum b2SolverBlockType
                 Debug.Assert((baseGraphBlock.Offset - graphBlocks.Offset) == graphBlockCount);
 
                 int stageIdx = 0;
-                b2SolverStage stage = stages[stageIdx];
+                B2SolverStage stage = stages[stageIdx];
 
                 // Prepare joints
-                stage.type = b2SolverStageType.b2_stagePrepareJoints;
+                stage.type = B2SolverStageType.b2_stagePrepareJoints;
                 stage.blocks = jointBlocks;
                 stage.blockCount = jointBlockCount;
                 stage.colorIndex = -1;
@@ -1574,7 +1574,7 @@ public enum b2SolverBlockType
                 stage = stages[++stageIdx];
 
                 // Prepare contacts
-                stage.type = b2SolverStageType.b2_stagePrepareContacts;
+                stage.type = B2SolverStageType.b2_stagePrepareContacts;
                 stage.blocks = contactBlocks;
                 stage.blockCount = contactBlockCount;
                 stage.colorIndex = -1;
@@ -1582,7 +1582,7 @@ public enum b2SolverBlockType
                 stage = stages[++stageIdx];
 
                 // Integrate velocities
-                stage.type = b2SolverStageType.b2_stageIntegrateVelocities;
+                stage.type = B2SolverStageType.b2_stageIntegrateVelocities;
                 stage.blocks = bodyBlocks;
                 stage.blockCount = bodyBlockCount;
                 stage.colorIndex = -1;
@@ -1592,7 +1592,7 @@ public enum b2SolverBlockType
                 // Warm start
                 for (int i = 0; i < activeColorCount; ++i)
                 {
-                    stage.type = b2SolverStageType.b2_stageWarmStart;
+                    stage.type = B2SolverStageType.b2_stageWarmStart;
                     stage.blocks = graphColorBlocks[i];
                     stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
                     stage.colorIndex = activeColorIndices[i];
@@ -1603,7 +1603,7 @@ public enum b2SolverBlockType
                 // Solve graph
                 for (int i = 0; i < activeColorCount; ++i)
                 {
-                    stage.type = b2SolverStageType.b2_stageSolve;
+                    stage.type = B2SolverStageType.b2_stageSolve;
                     stage.blocks = graphColorBlocks[i];
                     stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
                     stage.colorIndex = activeColorIndices[i];
@@ -1612,7 +1612,7 @@ public enum b2SolverBlockType
                 }
 
                 // Integrate positions
-                stage.type = b2SolverStageType.b2_stageIntegratePositions;
+                stage.type = B2SolverStageType.b2_stageIntegratePositions;
                 stage.blocks = bodyBlocks;
                 stage.blockCount = bodyBlockCount;
                 stage.colorIndex = -1;
@@ -1622,7 +1622,7 @@ public enum b2SolverBlockType
                 // Relax constraints
                 for (int i = 0; i < activeColorCount; ++i)
                 {
-                    stage.type = b2SolverStageType.b2_stageRelax;
+                    stage.type = B2SolverStageType.b2_stageRelax;
                     stage.blocks = graphColorBlocks[i];
                     stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
                     stage.colorIndex = activeColorIndices[i];
@@ -1634,7 +1634,7 @@ public enum b2SolverBlockType
                 // Note: joint blocks mixed in, could have joint limit restitution
                 for (int i = 0; i < activeColorCount; ++i)
                 {
-                    stage.type = b2SolverStageType.b2_stageRestitution;
+                    stage.type = B2SolverStageType.b2_stageRestitution;
                     stage.blocks = graphColorBlocks[i];
                     stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
                     stage.colorIndex = activeColorIndices[i];
@@ -1643,7 +1643,7 @@ public enum b2SolverBlockType
                 }
 
                 // Store impulses
-                stage.type = b2SolverStageType.b2_stageStoreImpulses;
+                stage.type = B2SolverStageType.b2_stageStoreImpulses;
                 stage.blocks = contactBlocks;
                 stage.blockCount = contactBlockCount;
                 stage.colorIndex = -1;
@@ -1656,7 +1656,7 @@ public enum b2SolverBlockType
                 Debug.Assert(workerCount <= B2_MAX_WORKERS);
                 Debug.Assert(world.tempWorkerContext.Length <= B2_MAX_WORKERS);
                 //b2WorkerContext[] workerContext = new b2WorkerContext[B2_MAX_WORKERS];
-                Span<b2WorkerContext> workerContext = world.tempWorkerContext;
+                Span<B2WorkerContext> workerContext = world.tempWorkerContext;
                 for (int i = 0; i < workerContext.Length; ++i)
                 {
                     workerContext[i].Clear();
@@ -1673,9 +1673,9 @@ public enum b2SolverBlockType
                 b2AtomicStoreU32(ref stepContext.atomicSyncBits, 0);
 
                 world.profile.prepareStages = b2GetMillisecondsAndReset(ref prepareTicks);
-                b2TracyCZoneEnd(b2TracyCZone.prepare_stages);
+                b2TracyCZoneEnd(B2TracyCZone.prepare_stages);
 
-                b2TracyCZoneNC(b2TracyCZone.solve_constraints, "Solve Constraints", b2HexColor.b2_colorIndigo, true);
+                b2TracyCZoneNC(B2TracyCZone.solve_constraints, "Solve Constraints", B2HexColor.b2_colorIndigo, true);
                 ulong constraintTicks = b2GetTicks();
 
                 // Must use worker index because thread 0 can be assigned multiple tasks by enkiTS
@@ -1708,16 +1708,16 @@ public enum b2SolverBlockType
                 }
 
                 world.profile.solveConstraints = b2GetMillisecondsAndReset(ref constraintTicks);
-                b2TracyCZoneEnd(b2TracyCZone.solve_constraints);
+                b2TracyCZoneEnd(B2TracyCZone.solve_constraints);
 
-                b2TracyCZoneNC(b2TracyCZone.update_transforms, "Update Transforms", b2HexColor.b2_colorMediumSeaGreen, true);
+                b2TracyCZoneNC(B2TracyCZone.update_transforms, "Update Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
                 ulong transformTicks = b2GetTicks();
 
                 // Prepare contact, enlarged body, and island bit sets used in body finalization.
                 int awakeIslandCount = awakeSet.islandSims.count;
                 for (int i = 0; i < world.workerCount; ++i)
                 {
-                    b2TaskContext taskContext = world.taskContexts.data[i];
+                    B2TaskContext taskContext = world.taskContexts.data[i];
                     b2SetBitCountAndClear(taskContext.enlargedSimBitSet, awakeBodyCount);
                     b2SetBitCountAndClear(taskContext.awakeIslandBitSet, awakeIslandCount);
                     taskContext.splitIslandId = B2_NULL_INDEX;
@@ -1744,41 +1744,41 @@ public enum b2SolverBlockType
                 b2FreeArenaItem(world.stackAllocator, contacts);
 
                 world.profile.transforms = b2GetMilliseconds(transformTicks);
-                b2TracyCZoneEnd(b2TracyCZone.update_transforms);
+                b2TracyCZoneEnd(B2TracyCZone.update_transforms);
             }
 
             // Report hit events
             // todo_erin perhaps optimize this with a bitset
             // todo_erin perhaps do this in parallel with other work below
             {
-                b2TracyCZoneNC(b2TracyCZone.hit_events, "Hit Events", b2HexColor.b2_colorRosyBrown, true);
+                b2TracyCZoneNC(B2TracyCZone.hit_events, "Hit Events", B2HexColor.b2_colorRosyBrown, true);
                 ulong hitTicks = b2GetTicks();
 
                 Debug.Assert(world.contactHitEvents.count == 0);
 
                 float threshold = world.hitEventThreshold;
-                b2GraphColor[] colors = world.constraintGraph.colors;
+                B2GraphColor[] colors = world.constraintGraph.colors;
                 for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
                 {
-                    b2GraphColor color = colors[i];
+                    B2GraphColor color = colors[i];
                     int contactCount = color.contactSims.count;
-                    b2ContactSim[] contactSims = color.contactSims.data;
+                    B2ContactSim[] contactSims = color.contactSims.data;
                     for (int j = 0; j < contactCount; ++j)
                     {
-                        b2ContactSim contactSim = contactSims[j];
-                        if ((contactSim.simFlags & (uint)b2ContactSimFlags.b2_simEnableHitEvent) == 0)
+                        B2ContactSim contactSim = contactSims[j];
+                        if ((contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnableHitEvent) == 0)
                         {
                             continue;
                         }
 
-                        b2ContactHitEvent @event = new b2ContactHitEvent();
+                        B2ContactHitEvent @event = new B2ContactHitEvent();
                         @event.approachSpeed = threshold;
 
                         bool hit = false;
                         int pointCount = contactSim.manifold.pointCount;
                         for (int k = 0; k < pointCount; ++k)
                         {
-                            ref b2ManifoldPoint mp = ref contactSim.manifold.points[k];
+                            ref B2ManifoldPoint mp = ref contactSim.manifold.points[k];
                             float approachSpeed = -mp.normalVelocity;
 
                             // Need to check max impulse because the point may be speculative and not colliding
@@ -1794,11 +1794,11 @@ public enum b2SolverBlockType
                         {
                             @event.normal = contactSim.manifold.normal;
 
-                            b2Shape shapeA = b2Array_Get(ref world.shapes, contactSim.shapeIdA);
-                            b2Shape shapeB = b2Array_Get(ref world.shapes, contactSim.shapeIdB);
+                            B2Shape shapeA = b2Array_Get(ref world.shapes, contactSim.shapeIdA);
+                            B2Shape shapeB = b2Array_Get(ref world.shapes, contactSim.shapeIdB);
 
-                            @event.shapeIdA = new b2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
-                            @event.shapeIdB = new b2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
+                            @event.shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
+                            @event.shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
                             b2Array_Push(ref world.contactHitEvents, @event);
                         }
@@ -1806,11 +1806,11 @@ public enum b2SolverBlockType
                 }
 
                 world.profile.hitEvents = b2GetMillisecondsAndReset(ref hitTicks);
-                b2TracyCZoneEnd(b2TracyCZone.hit_events);
+                b2TracyCZoneEnd(B2TracyCZone.hit_events);
             }
 
             {
-                b2TracyCZoneNC(b2TracyCZone.refit_bvh, "Refit BVH", b2HexColor.b2_colorFireBrick, true);
+                b2TracyCZoneNC(B2TracyCZone.refit_bvh, "Refit BVH", B2HexColor.b2_colorFireBrick, true);
                 ulong refitTicks = b2GetTicks();
 
                 // Finish the user tree task that was queued earlier in the time step. This must be complete before touching the
@@ -1825,7 +1825,7 @@ public enum b2SolverBlockType
                 b2ValidateNoEnlarged(world.broadPhase);
 
                 // Gather bits for all sim bodies that have enlarged AABBs
-                b2BitSet enlargedBodyBitSet = world.taskContexts.data[0].enlargedSimBitSet;
+                B2BitSet enlargedBodyBitSet = world.taskContexts.data[0].enlargedSimBitSet;
                 for (int i = 1; i < world.workerCount; ++i)
                 {
                     b2InPlaceUnion(enlargedBodyBitSet, world.taskContexts.data[i].enlargedSimBitSet);
@@ -1836,14 +1836,14 @@ public enum b2SolverBlockType
                 // in deterministic order. I'm tracking sim bodies because the number of shape ids can be huge.
                 // This has to happen before bullets are processed.
                 {
-                    b2BroadPhase broadPhase = world.broadPhase;
+                    B2BroadPhase broadPhase = world.broadPhase;
                     uint wordCount = (uint)enlargedBodyBitSet.blockCount;
                     ulong[] bits = enlargedBodyBitSet.bits;
 
                     // Fast array access is important here
-                    b2Body[] bodyArray = world.bodies.data;
-                    b2BodySim[] bodySimArray = awakeSet.bodySims.data;
-                    b2Shape[] shapeArray = world.shapes.data;
+                    B2Body[] bodyArray = world.bodies.data;
+                    B2BodySim[] bodySimArray = awakeSet.bodySims.data;
+                    B2Shape[] shapeArray = world.shapes.data;
 
                     for (uint k = 0; k < wordCount; ++k)
                     {
@@ -1853,9 +1853,9 @@ public enum b2SolverBlockType
                             uint ctz = b2CTZ64(word);
                             uint bodySimIndex = 64 * k + ctz;
 
-                            b2BodySim bodySim = bodySimArray[bodySimIndex];
+                            B2BodySim bodySim = bodySimArray[bodySimIndex];
 
-                            b2Body body = bodyArray[bodySim.bodyId];
+                            B2Body body = bodyArray[bodySim.bodyId];
 
                             int shapeId = body.headShapeId;
                             if (bodySim.isBullet && bodySim.isFast)
@@ -1863,7 +1863,7 @@ public enum b2SolverBlockType
                                 // Fast bullet bodies don't have their final AABB yet
                                 while (shapeId != B2_NULL_INDEX)
                                 {
-                                    b2Shape shape = shapeArray[shapeId];
+                                    B2Shape shape = shapeArray[shapeId];
 
                                     // Shape is fast. It's aabb will be enlarged in continuous collision.
                                     // Update the move array here for determinism because bullets are processed
@@ -1877,7 +1877,7 @@ public enum b2SolverBlockType
                             {
                                 while (shapeId != B2_NULL_INDEX)
                                 {
-                                    b2Shape shape = shapeArray[shapeId];
+                                    B2Shape shape = shapeArray[shapeId];
 
                                     // The AABB may not have been enlarged, despite the body being flagged as enlarged.
                                     // For example, a body with multiple shapes may have not have all shapes enlarged.
@@ -1901,13 +1901,13 @@ public enum b2SolverBlockType
                 b2ValidateBroadphase(world.broadPhase);
 
                 world.profile.refit = b2GetMilliseconds(refitTicks);
-                b2TracyCZoneEnd(b2TracyCZone.refit_bvh);
+                b2TracyCZoneEnd(B2TracyCZone.refit_bvh);
             }
 
             int bulletBodyCount = b2AtomicLoadInt(ref stepContext.bulletBodyCount);
             if (bulletBodyCount > 0)
             {
-                b2TracyCZoneNC(b2TracyCZone.bullets, "Bullets", b2HexColor.b2_colorLightYellow, true);
+                b2TracyCZoneNC(B2TracyCZone.bullets, "Bullets", B2HexColor.b2_colorLightYellow, true);
                 ulong bulletTicks = b2GetTicks();
 
                 // Fast bullet bodies
@@ -1922,13 +1922,13 @@ public enum b2SolverBlockType
                 }
 
                 // Serially enlarge broad-phase proxies for bullet shapes
-                b2BroadPhase broadPhase = world.broadPhase;
-                b2DynamicTree dynamicTree = broadPhase.trees[(int)b2BodyType.b2_dynamicBody];
+                B2BroadPhase broadPhase = world.broadPhase;
+                B2DynamicTree dynamicTree = broadPhase.trees[(int)B2BodyType.b2_dynamicBody];
 
                 // Fast array access is important here
-                b2Body[] bodyArray = world.bodies.data;
-                b2BodySim[] bodySimArray = awakeSet.bodySims.data;
-                b2Shape[] shapeArray = world.shapes.data;
+                B2Body[] bodyArray = world.bodies.data;
+                B2BodySim[] bodySimArray = awakeSet.bodySims.data;
+                B2Shape[] shapeArray = world.shapes.data;
 
                 // Serially enlarge broad-phase proxies for bullet shapes
                 ArraySegment<int> bulletBodySimIndices = stepContext.bulletBodies;
@@ -1936,7 +1936,7 @@ public enum b2SolverBlockType
                 // This loop has non-deterministic order but it shouldn't affect the result
                 for (int i = 0; i < bulletBodyCount; ++i)
                 {
-                    b2BodySim bulletBodySim = bodySimArray[bulletBodySimIndices[i]];
+                    B2BodySim bulletBodySim = bodySimArray[bulletBodySimIndices[i]];
                     if (bulletBodySim.enlargeAABB == false)
                     {
                         continue;
@@ -1947,12 +1947,12 @@ public enum b2SolverBlockType
 
                     int bodyId = bulletBodySim.bodyId;
                     Debug.Assert(0 <= bodyId && bodyId < world.bodies.count);
-                    b2Body bulletBody = bodyArray[bodyId];
+                    B2Body bulletBody = bodyArray[bodyId];
 
                     int shapeId = bulletBody.headShapeId;
                     while (shapeId != B2_NULL_INDEX)
                     {
-                        b2Shape shape = shapeArray[shapeId];
+                        B2Shape shape = shapeArray[shapeId];
                         if (shape.enlargedAABB == false)
                         {
                             shapeId = shape.nextShapeId;
@@ -1964,7 +1964,7 @@ public enum b2SolverBlockType
 
                         int proxyKey = shape.proxyKey;
                         int proxyId = B2_PROXY_ID(proxyKey);
-                        Debug.Assert(B2_PROXY_TYPE(proxyKey) == b2BodyType.b2_dynamicBody);
+                        Debug.Assert(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
                         // all fast bullet shapes should already be in the move buffer
                         Debug.Assert(b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1)));
@@ -1976,7 +1976,7 @@ public enum b2SolverBlockType
                 }
 
                 world.profile.bullets = b2GetMilliseconds(bulletTicks);
-                b2TracyCZoneEnd(b2TracyCZone.bullets);
+                b2TracyCZoneEnd(B2TracyCZone.bullets);
             }
 
             // Need to free this even if no bullets got processed.
@@ -1989,7 +1989,7 @@ public enum b2SolverBlockType
             // todo_erin figure out how to do this in parallel with tree refit
             if (world.enableSleep == true)
             {
-                b2TracyCZoneNC(b2TracyCZone.sleep_islands, "Island Sleep", b2HexColor.b2_colorLightSlateGray, true);
+                b2TracyCZoneNC(B2TracyCZone.sleep_islands, "Island Sleep", B2HexColor.b2_colorLightSlateGray, true);
                 ulong sleepTicks = b2GetTicks();
 
                 // Collect split island candidate for the next time step. No need to split if sleeping is disabled.
@@ -1997,7 +1997,7 @@ public enum b2SolverBlockType
                 float splitSleepTimer = 0.0f;
                 for (int i = 0; i < world.workerCount; ++i)
                 {
-                    b2TaskContext taskContext = world.taskContexts.data[i];
+                    B2TaskContext taskContext = world.taskContexts.data[i];
                     if (taskContext.splitIslandId != B2_NULL_INDEX && taskContext.splitSleepTime >= splitSleepTimer)
                     {
                         Debug.Assert(taskContext.splitSleepTime > 0.0f);
@@ -2013,14 +2013,14 @@ public enum b2SolverBlockType
                     }
                 }
 
-                b2BitSet awakeIslandBitSet = world.taskContexts.data[0].awakeIslandBitSet;
+                B2BitSet awakeIslandBitSet = world.taskContexts.data[0].awakeIslandBitSet;
                 for (int i = 1; i < world.workerCount; ++i)
                 {
                     b2InPlaceUnion(awakeIslandBitSet, world.taskContexts.data[i].awakeIslandBitSet);
                 }
 
                 // Need to process in reverse because this moves islands to sleeping solver sets.
-                b2IslandSim[] islands = awakeSet.islandSims.data;
+                B2IslandSim[] islands = awakeSet.islandSims.data;
                 int count = awakeSet.islandSims.count;
                 for (int islandIndex = count - 1; islandIndex >= 0; islandIndex -= 1)
                 {
@@ -2030,7 +2030,7 @@ public enum b2SolverBlockType
                         continue;
                     }
 
-                    b2IslandSim island = islands[islandIndex];
+                    B2IslandSim island = islands[islandIndex];
                     int islandId = island.islandId;
 
                     b2TrySleepIsland(world, islandId);
@@ -2039,7 +2039,7 @@ public enum b2SolverBlockType
                 b2ValidateSolverSets(world);
 
                 world.profile.sleepIslands = b2GetMilliseconds(sleepTicks);
-                b2TracyCZoneEnd(b2TracyCZone.sleep_islands);
+                b2TracyCZoneEnd(B2TracyCZone.sleep_islands);
             }
         }
     }

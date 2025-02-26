@@ -8,10 +8,10 @@ namespace Box2D.NET.Samples.Primitives;
 
 public struct ContactPoint
 {
-    public b2ShapeId shapeIdA;
-    public b2ShapeId shapeIdB;
-    public b2Vec2 normal;
-    public b2Vec2 position;
+    public B2ShapeId shapeIdA;
+    public B2ShapeId shapeIdB;
+    public B2Vec2 normal;
+    public B2Vec2 position;
     public bool persisted;
     public float normalImpulse;
     public float tangentImpulse;

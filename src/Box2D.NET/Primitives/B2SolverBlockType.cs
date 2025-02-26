@@ -4,7 +4,7 @@
 
 namespace Box2D.NET.Primitives
 {
-    public enum b2SolverBlockType
+    public enum B2SolverBlockType
     {
         b2_bodyBlock,
         b2_jointBlock,

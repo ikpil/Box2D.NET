@@ -42,12 +42,12 @@ public class RayCastWorld : Sample
     public const int e_maxCount = 64;
 
     int m_bodyIndex;
-    b2BodyId[] m_bodyIds = new b2BodyId[e_maxCount];
+    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
     ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
-    b2Polygon[] m_polygons = new b2Polygon[4];
-    b2Capsule m_capsule;
-    b2Circle m_circle;
-    b2Segment m_segment;
+    B2Polygon[] m_polygons = new B2Polygon[4];
+    B2Capsule m_capsule;
+    B2Circle m_circle;
+    B2Segment m_segment;
 
     bool m_simple;
 
@@ -57,13 +57,13 @@ public class RayCastWorld : Sample
     CastType m_castType;
     float m_castRadius;
 
-    b2Vec2 m_angleAnchor;
+    B2Vec2 m_angleAnchor;
     float m_baseAngle;
     float m_angle;
     bool m_rotating;
 
-    b2Vec2 m_rayStart;
-    b2Vec2 m_rayEnd;
+    B2Vec2 m_rayStart;
+    B2Vec2 m_rayEnd;
     bool m_dragging;
 
     static int sampleRayCastWorld = RegisterSample("Collision", "Ray Cast World", Create);
@@ -78,29 +78,29 @@ public class RayCastWorld : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(2.0f, 14.0f);
+            Draw.g_camera.m_center = new B2Vec2(2.0f, 14.0f);
             Draw.g_camera.m_zoom = 25.0f * 0.75f;
         }
 
         // Ground body
         {
-            b2BodyDef bodyDef = b2DefaultBodyDef();
-            b2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            b2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2Segment segment = new b2Segment(new b2Vec2(-40.0f, 0.0f), new b2Vec2(40.0f, 0.0f));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
-            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), new b2Vec2(0.0f, 1.5f) };
-            b2Hull hull = b2ComputeHull(vertices, 3);
+            B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f) };
+            B2Hull hull = b2ComputeHull(vertices, 3);
             m_polygons[0] = b2MakePolygon(hull, 0.0f);
         }
 
         {
-            b2Vec2[] vertices = new b2Vec2[3] { new b2Vec2(-0.1f, 0.0f), new b2Vec2(0.1f, 0.0f), new b2Vec2(0.0f, 1.5f) };
-            b2Hull hull = b2ComputeHull(vertices, 3);
+            B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.1f, 0.0f), new B2Vec2(0.1f, 0.0f), new B2Vec2(0.0f, 1.5f) };
+            B2Hull hull = b2ComputeHull(vertices, 3);
             m_polygons[1] = b2MakePolygon(hull, 0.0f);
             m_polygons[1].radius = 0.5f;
         }
@@ -110,26 +110,26 @@ public class RayCastWorld : Sample
             float b = w / (2.0f + MathF.Sqrt(2.0f));
             float s = MathF.Sqrt(2.0f) * b;
 
-            b2Vec2[] vertices = new b2Vec2[8]
+            B2Vec2[] vertices = new B2Vec2[8]
             {
-                new b2Vec2(0.5f * s, 0.0f),
-                new b2Vec2(0.5f * w, b),
-                new b2Vec2(0.5f * w, b + s),
-                new b2Vec2(0.5f * s, w),
-                new b2Vec2(-0.5f * s, w),
-                new b2Vec2(-0.5f * w, b + s),
-                new b2Vec2(-0.5f * w, b),
-                new b2Vec2(-0.5f * s, 0.0f),
+                new B2Vec2(0.5f * s, 0.0f),
+                new B2Vec2(0.5f * w, b),
+                new B2Vec2(0.5f * w, b + s),
+                new B2Vec2(0.5f * s, w),
+                new B2Vec2(-0.5f * s, w),
+                new B2Vec2(-0.5f * w, b + s),
+                new B2Vec2(-0.5f * w, b),
+                new B2Vec2(-0.5f * s, 0.0f),
             };
 
-            b2Hull hull = b2ComputeHull(vertices, 8);
+            B2Hull hull = b2ComputeHull(vertices, 8);
             m_polygons[2] = b2MakePolygon(hull, 0.0f);
         }
 
         m_polygons[3] = b2MakeBox(0.5f, 0.5f);
-        m_capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
-        m_circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
-        m_segment = new b2Segment(new b2Vec2(-1.0f, 0.0f), new b2Vec2(1.0f, 0.0f));
+        m_capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
+        m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+        m_segment = new B2Segment(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f));
 
         m_bodyIndex = 0;
 
@@ -144,13 +144,13 @@ public class RayCastWorld : Sample
         m_castType = CastType.e_rayCast;
         m_castRadius = 0.5f;
 
-        m_rayStart = new b2Vec2(-20.0f, 10.0f);
-        m_rayEnd = new b2Vec2(20.0f, 10.0f);
+        m_rayStart = new B2Vec2(-20.0f, 10.0f);
+        m_rayEnd = new B2Vec2(20.0f, 10.0f);
         m_dragging = false;
 
         m_angle = 0.0f;
         m_baseAngle = 0.0f;
-        m_angleAnchor = new b2Vec2(0.0f, 0.0f);
+        m_angleAnchor = new B2Vec2(0.0f, 0.0f);
         m_rotating = false;
 
         m_simple = false;
@@ -167,28 +167,28 @@ public class RayCastWorld : Sample
         float x = RandomFloatRange(-20.0f, 20.0f);
         float y = RandomFloatRange(0.0f, 20.0f);
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new b2Vec2(x, y);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Vec2(x, y);
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
         int mod = m_bodyIndex % 3;
         if (mod == 0)
         {
-            bodyDef.type = b2BodyType.b2_staticBody;
+            bodyDef.type = B2BodyType.b2_staticBody;
         }
         else if (mod == 1)
         {
-            bodyDef.type = b2BodyType.b2_kinematicBody;
+            bodyDef.type = B2BodyType.b2_kinematicBody;
         }
         else if (mod == 2)
         {
-            bodyDef.type = b2BodyType.b2_dynamicBody;
+            bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.gravityScale = 0.0f;
         }
 
         m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];
         m_userData[m_bodyIndex].ignore = false;
         if (m_bodyIndex == m_ignoreIndex)
@@ -237,7 +237,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    public override void MouseDown(b2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, int button, int mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -256,7 +256,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    public override void MouseUp(b2Vec2 _, int button)
+    public override void MouseUp(B2Vec2 _, int button)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -265,7 +265,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    public override void MouseMove(b2Vec2 p)
+    public override void MouseMove(B2Vec2 p)
     {
         if (m_dragging)
         {
@@ -372,11 +372,11 @@ public class RayCastWorld : Sample
 
         m_textLine += m_textIncrement;
 
-        b2HexColor color1 = b2HexColor.b2_colorGreen;
-        b2HexColor color2 = b2HexColor.b2_colorLightGray;
-        b2HexColor color3 = b2HexColor.b2_colorMagenta;
+        B2HexColor color1 = B2HexColor.b2_colorGreen;
+        B2HexColor color2 = B2HexColor.b2_colorLightGray;
+        B2HexColor color3 = B2HexColor.b2_colorMagenta;
 
-        b2Vec2 rayTranslation = b2Sub(m_rayEnd, m_rayStart);
+        B2Vec2 rayTranslation = b2Sub(m_rayEnd, m_rayStart);
 
         if (m_simple)
         {
@@ -384,14 +384,14 @@ public class RayCastWorld : Sample
             m_textLine += m_textIncrement;
 
             // This version doesn't have a callback, but it doesn't skip the ignored shape
-            b2RayResult result = b2World_CastRayClosest(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter());
+            B2RayResult result = b2World_CastRayClosest(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter());
 
             if (result.hit == true)
             {
-                b2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
+                B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
                 Draw.g_draw.DrawPoint(result.point, 5.0f, color1);
                 Draw.g_draw.DrawSegment(m_rayStart, c, color2);
-                b2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
+                B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
                 Draw.g_draw.DrawSegment(result.point, head, color3);
             }
             else
@@ -432,10 +432,10 @@ public class RayCastWorld : Sample
             context.fractions[1] = float.MaxValue;
             context.fractions[2] = float.MaxValue;
 
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), m_castRadius);
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-0.25f, 0.0f), new b2Vec2(0.25f, 0.0f), m_castRadius);
-            b2Polygon box = b2MakeRoundedBox(0.25f, 0.5f, m_castRadius);
-            b2Transform transform = new b2Transform(m_rayStart, b2MakeRot(m_angle));
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), m_castRadius);
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-0.25f, 0.0f), new B2Vec2(0.25f, 0.0f), m_castRadius);
+            B2Polygon box = b2MakeRoundedBox(0.25f, 0.5f, m_castRadius);
+            B2Transform transform = new B2Transform(m_rayStart, b2MakeRot(m_angle));
 
             switch (m_castType)
             {
@@ -459,63 +459,63 @@ public class RayCastWorld : Sample
             if (context.count > 0)
             {
                 Debug.Assert(context.count <= 3);
-                b2HexColor[] colors = new b2HexColor[3] { b2HexColor.b2_colorRed, b2HexColor.b2_colorGreen, b2HexColor.b2_colorBlue };
+                B2HexColor[] colors = new B2HexColor[3] { B2HexColor.b2_colorRed, B2HexColor.b2_colorGreen, B2HexColor.b2_colorBlue };
                 for (int i = 0; i < context.count; ++i)
                 {
-                    b2Vec2 c = b2MulAdd(m_rayStart, context.fractions[i], rayTranslation);
-                    b2Vec2 p = context.points[i];
-                    b2Vec2 n = context.normals[i];
+                    B2Vec2 c = b2MulAdd(m_rayStart, context.fractions[i], rayTranslation);
+                    B2Vec2 p = context.points[i];
+                    B2Vec2 n = context.normals[i];
                     Draw.g_draw.DrawPoint(p, 5.0f, colors[i]);
                     Draw.g_draw.DrawSegment(m_rayStart, c, color2);
-                    b2Vec2 head = b2MulAdd(p, 0.5f, n);
+                    B2Vec2 head = b2MulAdd(p, 0.5f, n);
                     Draw.g_draw.DrawSegment(p, head, color3);
 
-                    b2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
-                    b2Transform shiftedTransform = new b2Transform(b2Add(transform.p, t), transform.q);
+                    B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
+                    B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, t), transform.q);
 
                     if (m_castType == CastType.e_circleCast)
                     {
-                        Draw.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorYellow);
+                        Draw.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_capsuleCast)
                     {
-                        b2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), t);
-                        b2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), t);
-                        Draw.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, b2HexColor.b2_colorYellow);
+                        B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), t);
+                        B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), t);
+                        Draw.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        Draw.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow);
+                        Draw.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
             else
             {
-                b2Transform shiftedTransform = new b2Transform(b2Add(transform.p, rayTranslation), transform.q);
+                B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, rayTranslation), transform.q);
                 Draw.g_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
 
                 if (m_castType == CastType.e_circleCast)
                 {
-                    Draw.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, b2HexColor.b2_colorGray);
+                    Draw.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
                 }
                 else if (m_castType == CastType.e_capsuleCast)
                 {
-                    b2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), rayTranslation);
-                    b2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), rayTranslation);
-                    Draw.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, b2HexColor.b2_colorYellow);
+                    B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), rayTranslation);
+                    B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), rayTranslation);
+                    Draw.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    Draw.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, b2HexColor.b2_colorYellow);
+                    Draw.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }
 
-        Draw.g_draw.DrawPoint(m_rayStart, 5.0f, b2HexColor.b2_colorGreen);
+        Draw.g_draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
-            b2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.x -= 0.2f;
             Draw.g_draw.DrawString(p, "ign");
         }
@@ -523,7 +523,7 @@ public class RayCastWorld : Sample
 
 
 // This callback finds the closest hit. This is the most common callback used in games.
-    static float RayCastClosestCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context)
+    static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
 
@@ -549,7 +549,7 @@ public class RayCastWorld : Sample
 // This callback finds any hit. For this type of query we are usually just checking for obstruction,
 // so the hit data is not relevant.
 // NOTE: shape hits are not ordered, so this may not return the closest hit
-    static float RayCastAnyCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context)
+    static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
 
@@ -577,7 +577,7 @@ public class RayCastWorld : Sample
 // NOTE: shape hits are not ordered, so this may return hits in any order. This means that
 // if you limit the number of results, you may discard the closest hit. You can see this
 // behavior in the sample.
-    static float RayCastMultipleCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context)
+    static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
 
@@ -609,7 +609,7 @@ public class RayCastWorld : Sample
     }
 
 // This ray cast collects multiple hits along the ray and sorts them.
-    static float RayCastSortedCallback(b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, object context)
+    static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
 

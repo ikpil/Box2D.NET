@@ -8,16 +8,16 @@ namespace Box2D.NET.Primitives
     ///
     /// A typical usage is to control the movement of a dynamic body with respect to the ground.
     /// @ingroup motor_joint
-    public class b2MotorJointDef
+    public class B2MotorJointDef
     {
         /// The first attached body
-        public b2BodyId bodyIdA;
+        public B2BodyId bodyIdA;
 
         /// The second attached body
-        public b2BodyId bodyIdB;
+        public B2BodyId bodyIdB;
 
         /// Position of bodyB minus the position of bodyA, in bodyA's frame
-        public b2Vec2 linearOffset;
+        public B2Vec2 linearOffset;
 
         /// The bodyB angle minus bodyA angle in radians
         public float angularOffset;

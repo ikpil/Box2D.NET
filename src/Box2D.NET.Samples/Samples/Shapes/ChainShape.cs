@@ -24,11 +24,11 @@ public class ChainShape : Sample
         e_boxShape
     };
 
-    b2BodyId m_groundId;
-    b2BodyId m_bodyId;
-    b2ChainId m_chainId;
+    B2BodyId m_groundId;
+    B2BodyId m_bodyId;
+    B2ChainId m_chainId;
     ShapeType m_shapeType;
-    b2ShapeId m_shapeId;
+    B2ShapeId m_shapeId;
     float m_restitution;
     float m_friction;
 
@@ -45,7 +45,7 @@ public class ChainShape : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new b2Vec2(0.0f, 0.0f);
+            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
             Draw.g_camera.m_zoom = 25.0f * 1.75f;
         }
 
@@ -82,13 +82,13 @@ public class ChainShape : Sample
         //				   {-4.70825005, 9.25},	  {-8.67700005, 9.25},		 {-11.323, 11.89575},
         //				   {-13.96875, 11.89575}, {-15.29175, 14.54175},	 {-19.2605, 14.54175}};
 
-        b2Vec2[] points = new b2Vec2[]
+        B2Vec2[] points = new B2Vec2[]
         {
-            new b2Vec2(-56.885498f, 12.8985004f), new b2Vec2(-56.885498f, 16.2057495f), new b2Vec2(56.885498f, 16.2057495f), new b2Vec2(56.885498f, -16.2057514f),
-            new b2Vec2(51.5935059f, -16.2057514f), new b2Vec2(43.6559982f, -10.9139996f), new b2Vec2(35.7184982f, -10.9139996f), new b2Vec2(27.7809982f, -10.9139996f),
-            new b2Vec2(21.1664963f, -14.2212505f), new b2Vec2(11.9059982f, -16.2057514f), new b2Vec2(0, -16.2057514f), new b2Vec2(-10.5835037f, -14.8827496f),
-            new b2Vec2(-17.1980019f, -13.5597477f), new b2Vec2(-21.1665001f, -12.2370014f), new b2Vec2(-25.1355019f, -9.5909977f), new b2Vec2(-31.75f, -3.63799858f),
-            new b2Vec2(-38.3644981f, 6.2840004f), new b2Vec2(-42.3334999f, 9.59125137f), new b2Vec2(-47.625f, 11.5755005f), new b2Vec2(-56.885498f, 12.8985004f),
+            new B2Vec2(-56.885498f, 12.8985004f), new B2Vec2(-56.885498f, 16.2057495f), new B2Vec2(56.885498f, 16.2057495f), new B2Vec2(56.885498f, -16.2057514f),
+            new B2Vec2(51.5935059f, -16.2057514f), new B2Vec2(43.6559982f, -10.9139996f), new B2Vec2(35.7184982f, -10.9139996f), new B2Vec2(27.7809982f, -10.9139996f),
+            new B2Vec2(21.1664963f, -14.2212505f), new B2Vec2(11.9059982f, -16.2057514f), new B2Vec2(0, -16.2057514f), new B2Vec2(-10.5835037f, -14.8827496f),
+            new B2Vec2(-17.1980019f, -13.5597477f), new B2Vec2(-21.1665001f, -12.2370014f), new B2Vec2(-25.1355019f, -9.5909977f), new B2Vec2(-31.75f, -3.63799858f),
+            new B2Vec2(-38.3644981f, 6.2840004f), new B2Vec2(-42.3334999f, 9.59125137f), new B2Vec2(-47.625f, 11.5755005f), new B2Vec2(-56.885498f, 12.8985004f),
         };
 
         int count = points.Length;
@@ -125,19 +125,19 @@ public class ChainShape : Sample
         // }
         // printf("};\n");
 
-        b2SurfaceMaterial material = new b2SurfaceMaterial();
+        B2SurfaceMaterial material = new B2SurfaceMaterial();
         material.friction = 0.2f;
-        material.customColor = (uint)b2HexColor.b2_colorSteelBlue;
+        material.customColor = (uint)B2HexColor.b2_colorSteelBlue;
         material.material = 42;
 
-        b2ChainDef chainDef = b2DefaultChainDef();
+        B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
         chainDef.count = count;
         chainDef.materials = [material];
         chainDef.materialCount = 1;
         chainDef.isLoop = true;
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyDef bodyDef = b2DefaultBodyDef();
         m_groundId = b2CreateBody(m_worldId, bodyDef);
 
         m_chainId = b2CreateChain(m_groundId, chainDef);
@@ -150,30 +150,30 @@ public class ChainShape : Sample
             b2DestroyBody(m_bodyId);
         }
 
-        b2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = b2BodyType.b2_dynamicBody;
-        bodyDef.position = new b2Vec2(-55.0f, 13.5f);
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Vec2(-55.0f, 13.5f);
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
-        b2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
         shapeDef.friction = m_friction;
         shapeDef.restitution = m_restitution;
 
         if (m_shapeType == ShapeType.e_circleShape)
         {
-            b2Circle circle = new b2Circle(new b2Vec2(0.0f, 0.0f), 0.5f);
+            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
-            b2Capsule capsule = new b2Capsule(new b2Vec2(-0.5f, 0.0f), new b2Vec2(0.5f, 0.0f), 0.25f);
+            B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
             m_shapeId = b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
             float h = 0.5f;
-            b2Polygon box = b2MakeBox(h, h);
+            B2Polygon box = b2MakeBox(h, h);
             m_shapeId = b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
 
@@ -225,8 +225,8 @@ public class ChainShape : Sample
     {
         base.Step(settings);
 
-        Draw.g_draw.DrawSegment(b2Vec2_zero, new b2Vec2(0.5f, 0.0f), b2HexColor.b2_colorRed);
-        Draw.g_draw.DrawSegment(b2Vec2_zero, new b2Vec2(0.0f, 0.5f), b2HexColor.b2_colorGreen);
+        Draw.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
+        Draw.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
 #if DEBUG
         DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);

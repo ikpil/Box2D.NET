@@ -8,7 +8,7 @@ namespace Box2D.NET.Primitives
     // https://en.wikipedia.org/wiki/Component_(graph_theory)
     // https://en.wikipedia.org/wiki/Dynamic_connectivity
     // map from int to solver set and index
-    public class b2Island
+    public class B2Island
     {
         // index of solver set stored in b2World
         // may be B2_NULL_INDEX

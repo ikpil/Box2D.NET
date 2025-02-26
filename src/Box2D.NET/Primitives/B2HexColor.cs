@@ -8,7 +8,7 @@ namespace Box2D.NET.Primitives
     /// See https://www.rapidtables.com/web/color/index.html
     /// https://johndecember.com/html/spec/colorsvg.html
     /// https://upload.wikimedia.org/wikipedia/commons/2/2b/SVG_Recognized_color_keyword_names.svg
-    public enum b2HexColor
+    public enum B2HexColor
     {
         b2_colorAliceBlue = 0xF0F8FF,
         b2_colorAntiqueWhite = 0xFAEBD7,

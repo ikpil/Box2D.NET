@@ -9,7 +9,7 @@ namespace Box2D.NET.Primitives
     /// is an edge. A joint edge belongs to a doubly linked list
     /// maintained in each attached body. Each joint has two joint
     /// nodes, one for each attached body.
-    public struct b2JointEdge
+    public struct B2JointEdge
     {
         public int bodyId;
         public int prevKey;
