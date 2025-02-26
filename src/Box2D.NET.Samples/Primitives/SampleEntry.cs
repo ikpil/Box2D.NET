@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Samples.Samples;
+
 namespace Box2D.NET.Samples.Primitives;
 
 public delegate Sample SampleCreateFcn(Settings settings);

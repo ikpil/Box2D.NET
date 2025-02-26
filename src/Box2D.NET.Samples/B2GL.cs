@@ -36,16 +36,16 @@ public static class B2GL
         }
     }
 
-    public static void PrintLogGL(uint object )
+    public static void PrintLogGL(uint obj )
     {
         GLint log_length = 0;
-        if (glIsShader(object))
+        if (glIsShader(obj))
         {
-            glGetShaderiv(object, GL_INFO_LOG_LENGTH, &log_length);
+            glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &log_length);
         }
-        else if (glIsProgram(object))
+        else if (glIsProgram(obj))
         {
-            glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
+            glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &log_length);
         }
         else
         {
@@ -55,13 +55,13 @@ public static class B2GL
 
         char* log = (char*)malloc(log_length);
 
-        if (glIsShader(object))
+        if (glIsShader(obj))
         {
-            glGetShaderInfoLog(object, log_length, nullptr, log);
+            glGetShaderInfoLog(obj, log_length, nullptr, log);
         }
-        else if (glIsProgram(object))
+        else if (glIsProgram(obj))
         {
-            glGetProgramInfoLog(object, log_length, nullptr, log);
+            glGetProgramInfoLog(obj, log_length, nullptr, log);
         }
 
         printf("PrintLogGL: %s", log);

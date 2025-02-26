@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.B2Arrays;
@@ -1769,7 +1770,7 @@ namespace Box2D.NET
             return body.shapeCount;
         }
 
-        public static int b2Body_GetShapes(B2BodyId bodyId, B2ShapeId[] shapeArray, int capacity)
+        public static int b2Body_GetShapes(B2BodyId bodyId, Span<B2ShapeId> shapeArray, int capacity)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);

@@ -1551,7 +1551,7 @@ namespace Box2D.NET
             return body.contactCount;
         }
 
-        public static int b2Shape_GetContactData(B2ShapeId shapeId, B2ContactData[] contactData, int capacity)
+        public static int b2Shape_GetContactData(B2ShapeId shapeId, Span<B2ContactData> contactData, int capacity)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1616,7 +1616,7 @@ namespace Box2D.NET
             return sensor.overlaps2.count;
         }
 
-        public static int b2Shape_GetSensorOverlaps(B2ShapeId shapeId, B2ShapeId[] overlaps, int capacity)
+        public static int b2Shape_GetSensorOverlaps(B2ShapeId shapeId, Span<B2ShapeId> overlaps, int capacity)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
