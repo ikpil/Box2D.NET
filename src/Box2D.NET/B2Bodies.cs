@@ -475,7 +475,7 @@ namespace Box2D.NET
 
         // todo what about sensors?
         // todo sample needed
-        public static int b2Body_GetContactData(B2BodyId bodyId, B2ContactData[] contactData, int capacity)
+        public static int b2Body_GetContactData(B2BodyId bodyId, Span<B2ContactData> contactData, int capacity)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1796,7 +1796,7 @@ namespace Box2D.NET
             return body.jointCount;
         }
 
-        public static int b2Body_GetJoints(B2BodyId bodyId, B2JointId[] jointArray, int capacity)
+        public static int b2Body_GetJoints(B2BodyId bodyId, Span<B2JointId> jointArray, int capacity)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
