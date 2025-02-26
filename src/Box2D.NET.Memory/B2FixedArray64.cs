@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 namespace Box2D.NET.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct UnsafeArray64<T> where T : unmanaged
+    public struct B2FixedArray64<T> where T : unmanaged
     {
         public const int Length = 64;
 

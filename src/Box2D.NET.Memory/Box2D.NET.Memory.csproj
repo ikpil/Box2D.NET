@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Box2D.NET.Core</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

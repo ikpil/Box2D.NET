@@ -16,9 +16,9 @@ namespace Box2D.NET.Primitives
         public ushort count;
 
         /// The cached simplex indices on shape A
-        public UnsafeArray3<byte> indexA;
+        public B2FixedArray3<byte> indexA;
 
         /// The cached simplex indices on shape B
-        public UnsafeArray3<byte> indexB;
+        public B2FixedArray3<byte> indexB;
     }
 }

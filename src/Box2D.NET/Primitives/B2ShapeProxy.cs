@@ -10,7 +10,7 @@ namespace Box2D.NET.Primitives
     public struct B2ShapeProxy
     {
         /// The point cloud
-        public UnsafeArray8<B2Vec2> points;
+        public B2FixedArray8<B2Vec2> points;
 
         /// The number of points
         public int count;

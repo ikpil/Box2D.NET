@@ -20,7 +20,7 @@ namespace Box2D.NET.Primitives
     // TODO: @ikpil, check SIMD
     public struct B2FloatW
     {
-        private UnsafeArray4<float> _array;
+        private B2FixedArray4<float> _array;
         public float x { get => _array.v0000; set => _array.v0000 = value; }
         public float y { get => _array.v0001; set => _array.v0001 = value; }
         public float z { get => _array.v0002; set => _array.v0002 = value; }

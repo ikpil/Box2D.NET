@@ -8,13 +8,14 @@ using System.Runtime.InteropServices;
 namespace Box2D.NET.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct UnsafeArray3<T> where T : unmanaged
+    public struct B2FixedArray4<T> where T : unmanaged
     {
-        public const int Length = 3;
+        public const int Length = 4;
         
         public T v0000;
         public T v0001;
         public T v0002;
+        public T v0003;
 
         public ref T this[int index]
         {

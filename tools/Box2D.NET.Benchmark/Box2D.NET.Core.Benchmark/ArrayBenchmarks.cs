@@ -110,7 +110,7 @@ public class ArrayBenchmarks
     [Benchmark]
     public void Benchmark_UnsafeArray()
     {
-        var array = new UnsafeArray2<int>();
+        var array = new B2FixedArray2<int>();
         array[0] = 3;
         array[1] = 4;
 
@@ -133,7 +133,7 @@ public class ArrayBenchmarks
     [Benchmark]
     public void Benchmark_UnsafeArray1024()
     {
-        var array = new UnsafeArray1024<int>();
+        var array = new B2FixedArray1024<int>();
         array[0] = 3;
         array[1] = 4;
 

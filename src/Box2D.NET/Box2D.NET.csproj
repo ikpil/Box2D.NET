@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Box2D.NET.Core\Box2D.NET.Core.csproj" />
+    <ProjectReference Include="..\Box2D.NET.Memory\Box2D.NET.Memory.csproj" />
   </ItemGroup>
 
 </Project>

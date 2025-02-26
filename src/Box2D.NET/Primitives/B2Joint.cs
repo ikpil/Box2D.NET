@@ -23,7 +23,7 @@ namespace Box2D.NET.Primitives
         // B2_NULL_INDEX when slot is free
         public int localIndex;
 
-        public UnsafeArray2<B2JointEdge> edges;
+        public B2FixedArray2<B2JointEdge> edges;
 
         public int jointId;
         public int islandId;

@@ -18,7 +18,7 @@ namespace Box2D.NET.Primitives
         public float rollingImpulse;
 
         /// The manifold points, up to two are possible in 2D
-        public UnsafeArray2<B2ManifoldPoint> points;
+        public B2FixedArray2<B2ManifoldPoint> points;
 
         private Vector<int> sda;
 

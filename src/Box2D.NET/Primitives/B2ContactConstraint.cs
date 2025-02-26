@@ -10,7 +10,7 @@ namespace Box2D.NET.Primitives
     {
         public int indexA;
         public int indexB;
-        public UnsafeArray2<B2ContactConstraintPoint> points;
+        public B2FixedArray2<B2ContactConstraintPoint> points;
         public B2Vec2 normal;
         public float invMassA, invMassB;
         public float invIA, invIB;
