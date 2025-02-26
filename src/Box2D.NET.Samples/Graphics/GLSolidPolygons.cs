@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Collections.Generic;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
 
-namespace Box2D.NET.Samples.Primitives;
+namespace Box2D.NET.Samples.Graphics;
 
 // Rounded and non-rounded convex polygons using an SDF-based shader.
 public class GLSolidPolygons

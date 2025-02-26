@@ -2,18 +2,18 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Collections.Generic;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
+using Silk.NET.Core.Contexts;
 
-namespace Box2D.NET.Samples.Primitives;
+namespace Box2D.NET.Samples.Graphics;
 
-// Draws SDF circles using quad instancing. Apparently instancing of quads can be slow on older GPUs.
-// https://www.reddit.com/r/opengl/comments/q7yikr/how_to_draw_several_quads_through_instancing/
-// https://www.g-truc.net/post-0666.html
-public class GLSolidCircles
+public class GLCircles
 {
     public const int e_batchSize = 2048;
 
-    List<SolidCircleData> m_circles;
+    List<CircleData> m_circles;
 
     uint m_vaoId;
     uint m_vboIds[2];
@@ -21,24 +21,25 @@ public class GLSolidCircles
     int m_projectionUniform;
     int m_pixelScaleUniform;
 
+
     public void Create()
     {
-        m_programId = CreateProgramFromFiles("samples/data/solid_circle.vs", "samples/data/solid_circle.fs");
+        IGLContext s = null;
+        m_programId = CreateProgramFromFiles("samples/data/circle.vs", "samples/data/circle.fs");
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = glGetUniformLocation(m_programId, "pixelScale");
+        int vertexAttribute = 0;
+        int positionInstance = 1;
+        int radiusInstance = 2;
+        int colorInstance = 3;
 
         // Generate
         glGenVertexArrays(1, &m_vaoId);
         glGenBuffers(2, m_vboIds);
 
         glBindVertexArray(m_vaoId);
-
-        int vertexAttribute = 0;
-        int transformInstance = 1;
-        int radiusInstance = 2;
-        int colorInstance = 3;
         glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(transformInstance);
+        glEnableVertexAttribArray(positionInstance);
         glEnableVertexAttribArray(radiusInstance);
         glEnableVertexAttribArray(colorInstance);
 
@@ -66,16 +67,16 @@ public class GLSolidCircles
 
         // Circle buffer
         glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(SolidCircleData), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(CircleData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
-            (void*)offsetof(SolidCircleData, transform));
-        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
-            (void*)offsetof(SolidCircleData, radius));
-        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidCircleData),
-            (void*)offsetof(SolidCircleData, rgba));
+        glVertexAttribPointer(positionInstance, 2, GL_FLOAT, GL_FALSE, sizeof(CircleData),
+            (void*)offsetof(CircleData, position));
+        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CircleData),
+            (void*)offsetof(CircleData, radius));
+        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CircleData),
+            (void*)offsetof(CircleData, rgba));
 
-        glVertexAttribDivisor(transformInstance, 1);
+        glVertexAttribDivisor(positionInstance, 1);
         glVertexAttribDivisor(radiusInstance, 1);
         glVertexAttribDivisor(colorInstance, 1);
 
@@ -104,11 +105,11 @@ public class GLSolidCircles
         }
     }
 
-    public void AddCircle(ref B2Transform transform, float radius, B2HexColor color)
+    public void AddCircle(B2Vec2 center, float radius, B2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         m_circles.Add( {
-            transform, radius, rgba
+            center, radius, rgba
         } );
     }
 
@@ -142,7 +143,7 @@ public class GLSolidCircles
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(SolidCircleData), &m_circles[base]);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(CircleData), &m_circles[base]);
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
 
             CheckErrorGL();

@@ -6,6 +6,7 @@ using System;
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2MathFunction;

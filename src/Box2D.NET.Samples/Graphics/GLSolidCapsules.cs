@@ -4,17 +4,16 @@
 
 using System.Collections.Generic;
 using Box2D.NET.Primitives;
-using Silk.NET.Core.Contexts;
-using Silk.NET.GLFW;
-using Silk.NET.OpenGL;
+using Box2D.NET.Samples.Primitives;
 
-namespace Box2D.NET.Samples.Primitives;
+namespace Box2D.NET.Samples.Graphics;
 
-public class GLCircles
+// Draw capsules using SDF-based shader
+public class GLSolidCapsules
 {
     public const int e_batchSize = 2048;
 
-    List<CircleData> m_circles;
+    List<CapsuleData> m_capsules;
 
     uint m_vaoId;
     uint m_vboIds[2];
@@ -22,17 +21,18 @@ public class GLCircles
     int m_projectionUniform;
     int m_pixelScaleUniform;
 
-
     public void Create()
     {
-        IGLContext s = null;
-        m_programId = CreateProgramFromFiles("samples/data/circle.vs", "samples/data/circle.fs");
+        m_programId = CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
+
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = glGetUniformLocation(m_programId, "pixelScale");
+
         int vertexAttribute = 0;
-        int positionInstance = 1;
+        int transformInstance = 1;
         int radiusInstance = 2;
-        int colorInstance = 3;
+        int lengthInstance = 3;
+        int colorInstance = 4;
 
         // Generate
         glGenVertexArrays(1, &m_vaoId);
@@ -40,8 +40,9 @@ public class GLCircles
 
         glBindVertexArray(m_vaoId);
         glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(positionInstance);
+        glEnableVertexAttribArray(transformInstance);
         glEnableVertexAttribArray(radiusInstance);
+        glEnableVertexAttribArray(lengthInstance);
         glEnableVertexAttribArray(colorInstance);
 
         // Vertex buffer for single quad
@@ -66,19 +67,22 @@ public class GLCircles
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
         glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
-        // Circle buffer
+        // Capsule buffer
         glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(CircleData), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(CapsuleData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(positionInstance, 2, GL_FLOAT, GL_FALSE, sizeof(CircleData),
-            (void*)offsetof(CircleData, position));
-        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CircleData),
-            (void*)offsetof(CircleData, radius));
-        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CircleData),
-            (void*)offsetof(CircleData, rgba));
+        glVertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+            (void*)offsetof(CapsuleData, transform));
+        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+            (void*)offsetof(CapsuleData, radius));
+        glVertexAttribPointer(lengthInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+            (void*)offsetof(CapsuleData, length));
+        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CapsuleData),
+            (void*)offsetof(CapsuleData, rgba));
 
-        glVertexAttribDivisor(positionInstance, 1);
+        glVertexAttribDivisor(transformInstance, 1);
         glVertexAttribDivisor(radiusInstance, 1);
+        glVertexAttribDivisor(lengthInstance, 1);
         glVertexAttribDivisor(colorInstance, 1);
 
         CheckErrorGL();
@@ -106,17 +110,32 @@ public class GLCircles
         }
     }
 
-    public void AddCircle(B2Vec2 center, float radius, B2HexColor color)
+    public void AddCapsule(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor c)
     {
-        RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
-        m_circles.Add( {
-            center, radius, rgba
+        B2Vec2 d = p2 - p1;
+        float length = b2Length(d);
+        if (length < 0.001f)
+        {
+            printf("WARNING: sample app: capsule too short!\n");
+            return;
+        }
+
+        B2Vec2 axis = { d.x / length, d.y / length };
+        B2Transform transform;
+        transform.p = 0.5f * (p1 + p2);
+        transform.q.c = axis.x;
+        transform.q.s = axis.y;
+
+        RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
+
+        m_capsules.Add( {
+            transform, radius, length, rgba
         } );
     }
 
     public void Flush()
     {
-        int count = (int)m_circles.size();
+        int count = (int)m_capsules.size();
         if (count == 0)
         {
             return;
@@ -144,7 +163,7 @@ public class GLCircles
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(CircleData), &m_circles[base]);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
             glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
 
             CheckErrorGL();
@@ -159,6 +178,6 @@ public class GLCircles
         glBindVertexArray(0);
         glUseProgram(0);
 
-        m_circles.clear();
+        m_capsules.clear();
     }
 }

@@ -186,7 +186,7 @@ namespace Box2D.NET
 
         public static B2ShapeId b2CreateShape(B2BodyId bodyId, B2ShapeDef def, object geometry, B2ShapeType shapeType)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
             Debug.Assert(b2IsValidFloat(def.friction) && def.friction >= 0.0f);
             Debug.Assert(b2IsValidFloat(def.restitution) && def.restitution >= 0.0f);
@@ -352,7 +352,7 @@ namespace Box2D.NET
 
         public static B2ChainId b2CreateChain(B2BodyId bodyId, B2ChainDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             Debug.Assert(def.count >= 4);
             Debug.Assert(def.materialCount == 1 || def.materialCount == def.count);
 

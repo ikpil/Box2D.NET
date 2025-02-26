@@ -201,42 +201,42 @@ namespace Box2D.NET
         }
 
 
-        public static void B2_CHECK_DEF(B2NullJointDef DEF)
+        public static void B2_CHECK_DEF(ref B2NullJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2MouseJointDef DEF)
+        public static void B2_CHECK_DEF(ref B2MouseJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2MotorJointDef DEF)
+        public static void B2_CHECK_DEF(ref B2MotorJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2DistanceJointDef DEF)
+        public static void B2_CHECK_DEF(ref B2DistanceJointDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2ChainDef DEF)
+        public static void B2_CHECK_DEF(ref B2ChainDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2BodyDef DEF)
+        public static void B2_CHECK_DEF(ref B2BodyDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2WorldDef DEF)
+        public static void B2_CHECK_DEF(ref B2WorldDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(B2ShapeDef DEF)
+        public static void B2_CHECK_DEF(ref B2ShapeDef DEF)
         {
             Debug.Assert(DEF.internalValue == B2_SECRET_COOKIE);
         }

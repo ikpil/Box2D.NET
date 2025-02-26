@@ -353,7 +353,7 @@ namespace Box2D.NET
 
         public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, B2DistanceJointDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
@@ -406,7 +406,7 @@ namespace Box2D.NET
 
         public static B2JointId b2CreateMotorJoint(B2WorldId worldId, B2MotorJointDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
@@ -444,7 +444,7 @@ namespace Box2D.NET
 
         public static B2JointId b2CreateMouseJoint(B2WorldId worldId, B2MouseJointDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
@@ -480,7 +480,7 @@ namespace Box2D.NET
 
         public static B2JointId b2CreateNullJoint(B2WorldId worldId, B2NullJointDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);

@@ -108,7 +108,7 @@ namespace Box2D.NET
         public static B2WorldId b2CreateWorld(B2WorldDef def)
         {
             Debug.Assert(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
 
             int worldId = B2_NULL_INDEX;
             for (int i = 0; i < B2_MAX_WORLDS; ++i)

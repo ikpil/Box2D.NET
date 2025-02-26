@@ -18,7 +18,7 @@ public struct RGBA8
         this.a = a;
     }
 
-    public static RGBA8 RGBA8.MakeRGBA8(B2HexColor c, float alpha)
+    public static RGBA8 MakeRGBA8(B2HexColor c, float alpha)
     {
         return new RGBA8((byte)((uint)c >> 16 & 0xFF), (byte)((uint)c >> 8 & 0xFF), (byte)((uint)c & 0xFF), (byte)(0xFF * alpha));
     }

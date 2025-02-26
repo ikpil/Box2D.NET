@@ -187,7 +187,7 @@ namespace Box2D.NET
 
         public static B2BodyId b2CreateBody(B2WorldId worldId, B2BodyDef def)
         {
-            B2_CHECK_DEF(def);
+            B2_CHECK_DEF(ref def);
             Debug.Assert(b2IsValidVec2(def.position));
             Debug.Assert(b2IsValidRotation(def.rotation));
             Debug.Assert(b2IsValidVec2(def.linearVelocity));

@@ -3,15 +3,19 @@
 // SPDX-License-Identifier: MIT
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Primitives;
 
-namespace Box2D.NET.Samples.Primitives;
+namespace Box2D.NET.Samples.Graphics;
 
-public class GLPoints
+// todo this is not used anymore and has untested changes
+public class GLTriangles
 {
-    public const int e_batchSize = 2048;
+    // must be multiple of 3
+    public const int e_batchSize = 3 * 512;
 
-    List<PointData> m_points;
+    List<VertexData> m_points;
 
     uint m_vaoId;
     uint m_vboId;
@@ -23,14 +27,12 @@ public class GLPoints
         string vs = "#version 330\n" +
                     "uniform mat4 projectionMatrix;\n" +
                     "layout(location = 0) in vec2 v_position;\n" +
-                    "layout(location = 1) in float v_size;\n" +
-                    "layout(location = 2) in vec4 v_color;\n" +
+                    "layout(location = 1) in vec4 v_color;\n" +
                     "out vec4 f_color;\n" +
                     "void main(void)\n" +
                     "{\n" +
                     "	f_color = v_color;\n" +
                     "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n" +
-                    "	gl_PointSize = v_size;\n" +
                     "}\n";
 
         string fs = "#version 330\n" +
@@ -44,8 +46,7 @@ public class GLPoints
         m_programId = CreateProgramFromStrings(vs, fs);
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
         int vertexAttribute = 0;
-        int sizeAttribute = 1;
-        int colorAttribute = 2;
+        int colorAttribute = 1;
 
         // Generate
         glGenVertexArrays(1, &m_vaoId);
@@ -53,19 +54,17 @@ public class GLPoints
 
         glBindVertexArray(m_vaoId);
         glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(sizeAttribute);
         glEnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
         glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(PointData), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(VertexData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(PointData),
-            (void*)offsetof(PointData, position));
-        glVertexAttribPointer(sizeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, size));
-        // save bandwidth by expanding color to floats in the shader
-        glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(PointData),
-            (void*)offsetof(PointData, rgba));
+        glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+            (void*)offsetof(VertexData, position));
+        // color will get automatically expanded to floats in the shader
+        glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexData),
+            (void*)offsetof(VertexData, rgba));
 
         CheckErrorGL();
 
@@ -91,52 +90,66 @@ public class GLPoints
         }
     }
 
-    // todo instead of flushing, keep a growable array of data
-    // this will prevent sorting problems.
-
-    public void AddPoint(B2Vec2 v, float size, B2HexColor c)
+    public void AddTriangle(B2Vec2 p1, B2Vec2 p2, B2Vec2 p3, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
-        m_points.Add(new PointData(v, size, rgba));
+        m_points.Add( {
+            p1, rgba
+        } );
+        m_points.Add( {
+            p2, rgba
+        } );
+        m_points.Add( {
+            p3, rgba
+        } );
     }
 
     public void Flush()
     {
-        int count = m_points.Count;
+        int count = (int)m_points.size();
         if (count == 0)
         {
             return;
         }
 
+        Debug.Assert(count % 3 == 0);
+
         glUseProgram(m_programId);
 
-        float[] proj = new float[16];
-        Draw.g_camera.BuildProjectionMatrix(proj, 0.0f);
+        float proj[16] =  {
+            0.0f
+        }
+        ;
+        Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+
         glBindVertexArray(m_vaoId);
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        glEnable(GL_PROGRAM_POINT_SIZE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        int @base = 0;
+        int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(PointData), &m_points[@base]);
-            glDrawArrays(GL_POINTS, 0, batchCount);
+
+            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(VertexData), &m_points[base]);
+            glDrawArrays(GL_TRIANGLES, 0, batchCount);
 
             CheckErrorGL();
 
             count -= e_batchSize;
-            @base += e_batchSize;
+            base += e_batchSize;
         }
 
-        glDisable(GL_PROGRAM_POINT_SIZE);
+        glDisable(GL_BLEND);
+
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
         glUseProgram(0);
 
-        m_points.Clear();
+        m_points.clear();
     }
 }
