@@ -2,7 +2,9 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
+using Silk.NET.OpenGL;
 
 public static class B2GL
 {
@@ -28,17 +30,17 @@ public static class B2GL
 
     public static void CheckErrorGL()
     {
-        GLenum errCode = glGetError();
+        GLEnum errCode = glGetError();
         if (errCode != GL_NO_ERROR)
         {
-            printf("OpenGL error = %d\n", errCode);
+            Console.WriteLine($"OpenGL error = {errCode}");
             Debug.Assert(false);
         }
     }
 
     public static void PrintLogGL(uint obj )
     {
-        GLint log_length = 0;
+        int log_length = 0;
         if (glIsShader(obj))
         {
             glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &log_length);
@@ -68,9 +70,9 @@ public static class B2GL
         free(log);
     }
 
-    public static GLuint sCreateShaderFromString(string source, GLenum type)
+    public static uint sCreateShaderFromString(string source, GLEnum type)
     {
-        GLuint shader = glCreateShader(type);
+        uint shader = glCreateShader(type);
         string sources[] =  {
             source
         }
@@ -95,19 +97,19 @@ public static class B2GL
 
     public static uint CreateProgramFromStrings(string vertexString, string fragmentString)
     {
-        GLuint vertex = sCreateShaderFromString(vertexString, GL_VERTEX_SHADER);
+        uint vertex = sCreateShaderFromString(vertexString, GL_VERTEX_SHADER);
         if (vertex == 0)
         {
             return 0;
         }
 
-        GLuint fragment = sCreateShaderFromString(fragmentString, GL_FRAGMENT_SHADER);
+        uint fragment = sCreateShaderFromString(fragmentString, GL_FRAGMENT_SHADER);
         if (fragment == 0)
         {
             return 0;
         }
 
-        GLuint program = glCreateProgram();
+        uint program = glCreateProgram();
         glAttachShader(program, vertex);
         glAttachShader(program, fragment);
 
@@ -128,7 +130,7 @@ public static class B2GL
         return program;
     }
 
-    public static GLuint sCreateShaderFromFile(string filename, GLenum type)
+    public static uint sCreateShaderFromFile(string filename, GLEnum type)
     {
         FILE* file = fopen(filename, "rb");
         if (file == nullptr)
@@ -148,7 +150,7 @@ public static class B2GL
 
         source[size] = 0;
 
-        GLuint shader = glCreateShader(type);
+        uint shader = glCreateShader(type);
         string sources[] =  {
             source
         }
@@ -172,19 +174,19 @@ public static class B2GL
 
     public static uint CreateProgramFromFiles(string vertexPath, string fragmentPath)
     {
-        GLuint vertex = sCreateShaderFromFile(vertexPath, GL_VERTEX_SHADER);
+        uint vertex = sCreateShaderFromFile(vertexPath, GL_VERTEX_SHADER);
         if (vertex == 0)
         {
             return 0;
         }
 
-        GLuint fragment = sCreateShaderFromFile(fragmentPath, GL_FRAGMENT_SHADER);
+        uint fragment = sCreateShaderFromFile(fragmentPath, GL_FRAGMENT_SHADER);
         if (fragment == 0)
         {
             return 0;
         }
 
-        GLuint program = glCreateProgram();
+        uint program = glCreateProgram();
         glAttachShader(program, vertex);
         glAttachShader(program, fragment);
 

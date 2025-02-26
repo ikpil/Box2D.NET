@@ -2,13 +2,16 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Samples.Samples;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2MathFunction;
 
 
 namespace Box2D.NET.Samples;
@@ -49,7 +52,7 @@ public class SampleApp
         char buffer[128];
 
         s_settings.Load();
-        s_settings.workerCount = b2MinInt( 8, (int)enki::GetNumHardwareThreads() / 2 );
+        s_settings.workerCount = b2MinInt( 8, Environment.ProcessorCount / 2);
 
         SortSamples();
 
@@ -285,7 +288,7 @@ public class SampleApp
         return ( x != 0 ) && ( ( x & ( x - 1 ) ) == 0 );
     }
 
-    public static void* AllocFcn( uint size, int alignment )
+    public static byte[] AllocFcn( uint size, int alignment )
     {
         // Allocation must be a multiple of alignment or risk a seg fault
         // https://en.cppreference.com/w/c/memory/aligned_alloc
@@ -302,7 +305,7 @@ public class SampleApp
         return ptr;
     }
 
-    public static void FreeFcn( void* mem )
+    public static void FreeFcn( byte[] mem )
     {
     #if defined( _WIN64 ) || defined( _WIN32 )
         _aligned_free( mem );
@@ -336,12 +339,12 @@ public class SampleApp
         return result;
     }
 
-    public static void SortSamples()
+    private static void SortSamples()
     {
         qsort( g_sampleEntries, g_sampleCount, sizeof( SampleEntry ), CompareSamples );
     }
 
-    public static void RestartSample()
+    private static void RestartSample()
     {
         delete s_sample;
         s_sample = nullptr;
@@ -350,7 +353,7 @@ public class SampleApp
         s_settings.restart = false;
     }
 
-    public static void CreateUI( GLFWwindow* window, string glslVersion )
+    private static void CreateUI( GLFWwindow* window, string glslVersion )
     {
         IMGUI_CHECKVERSION();
         ImGui.CreateContext();

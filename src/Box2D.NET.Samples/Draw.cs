@@ -177,7 +177,7 @@ public class Draw
 
     public void DrawSolidCircle(ref B2Transform transform, B2Vec2 center, float radius, B2HexColor color)
     {
-        transform.p = b2TransformPoint(transform, center);
+        transform.p = b2TransformPoint(ref transform, center);
         m_solidCircles.AddCircle(ref transform, radius, color);
     }
 

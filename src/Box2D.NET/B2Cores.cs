@@ -13,6 +13,8 @@ namespace Box2D.NET
 {
     public static class B2Cores
     {
+        private static b2AllocFcn b2_allocFcn;
+        private static b2FreeFcn b2_freeFcn;
         private static B2AtomicInt b2_byteCount;
 
         // TODO: @ikpil. check SIMD
@@ -114,11 +116,11 @@ namespace Box2D.NET
         /// Prototype for user allocation function
         /// @param size the allocation size in bytes
         /// @param alignment the required alignment, guaranteed to be a power of 2
-        public delegate T[] b2AllocFcn<T>(int size, int alignment);
+        public delegate byte[] b2AllocFcn(uint size, int alignment);
 
         /// Prototype for user free function
         /// @param mem the memory previously allocated through `b2AllocFcn`
-        public delegate void b2FreeFcn<T>(T[] mem);
+        public delegate void b2FreeFcn(byte[] mem);
 
         /// Prototype for the user assert callback. Return 0 to skip the debugger break.
         public delegate int b2AssertFcn(string condition, string fileName, int lineNumber);
@@ -136,8 +138,6 @@ namespace Box2D.NET
         {
             return new B2Version(3, 1, 0);
         }
-
-
 
 
 #if BOX2D_PROFILE
@@ -320,17 +320,14 @@ namespace Box2D.NET
             return b2AssertHandler(condition, fileName, lineNumber);
         }
 
-        // static b2AllocFcn* b2_allocFcn = NULL;
-        // static b2FreeFcn* b2_freeFcn = NULL;
-        //
-        //
         /// This allows the user to override the allocation functions. These should be
         /// set during application startup.
-        // public static void b2SetAllocator(b2AllocFcn* allocFcn, b2FreeFcn* freeFcn)
-        // {
-        //     b2_allocFcn = allocFcn;
-        //     b2_freeFcn = freeFcn;
-        // }
+        public static void b2SetAllocator(b2AllocFcn allocFcn, b2FreeFcn freeFcn)
+        {
+            b2_allocFcn = allocFcn;
+            b2_freeFcn = freeFcn;
+        }
+
         public static T[] b2Alloc<T>(int size) where T : new()
         {
             if (size == 0)

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Collections.Generic;
 using Box2D.NET.Primitives;
 
 namespace Box2D.NET.Samples.Primitives;
@@ -12,33 +13,33 @@ public class GLPoints
 
     List<PointData> m_points;
 
-    GLuint m_vaoId;
-    GLuint m_vboId;
-    GLuint m_programId;
-    GLint m_projectionUniform;
+    uint m_vaoId;
+    uint m_vboId;
+    uint m_programId;
+    int m_projectionUniform;
 
     public void Create()
     {
-        string vs = "#version 330\n"
-        "uniform mat4 projectionMatrix;\n"
-        "layout(location = 0) in vec2 v_position;\n"
-        "layout(location = 1) in float v_size;\n"
-        "layout(location = 2) in vec4 v_color;\n"
-        "out vec4 f_color;\n"
-        "void main(void)\n"
-        "{\n"
-        "	f_color = v_color;\n"
-        "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
-        "	gl_PointSize = v_size;\n"
-        "}\n";
+        string vs = "#version 330\n" +
+                    "uniform mat4 projectionMatrix;\n" +
+                    "layout(location = 0) in vec2 v_position;\n" +
+                    "layout(location = 1) in float v_size;\n" +
+                    "layout(location = 2) in vec4 v_color;\n" +
+                    "out vec4 f_color;\n" +
+                    "void main(void)\n" +
+                    "{\n" +
+                    "	f_color = v_color;\n" +
+                    "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n" +
+                    "	gl_PointSize = v_size;\n" +
+                    "}\n";
 
-        string fs = "#version 330\n"
-        "in vec4 f_color;\n"
-        "out vec4 color;\n"
-        "void main(void)\n"
-        "{\n"
-        "	color = f_color;\n"
-        "}\n";
+        string fs = "#version 330\n" +
+                    "in vec4 f_color;\n" +
+                    "out vec4 color;\n" +
+                    "void main(void)\n" +
+                    "{\n" +
+                    "	color = f_color;\n" +
+                    "}\n";
 
         m_programId = CreateProgramFromStrings(vs, fs);
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
@@ -96,14 +97,12 @@ public class GLPoints
     public void AddPoint(B2Vec2 v, float size, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
-        m_points.Add( {
-            v, size, rgba
-        } );
+        m_points.Add(new PointData(v, size, rgba));
     }
 
     public void Flush()
     {
-        int count = (int)m_points.size();
+        int count = m_points.Count;
         if (count == 0)
         {
             return;
@@ -111,10 +110,7 @@ public class GLPoints
 
         glUseProgram(m_programId);
 
-        float proj[16] =  {
-            0.0f
-        }
-        ;
+        float[] proj = new float[16];
         Draw.g_camera.BuildProjectionMatrix(proj, 0.0f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
@@ -123,17 +119,17 @@ public class GLPoints
         glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
         glEnable(GL_PROGRAM_POINT_SIZE);
 
-        int base = 0;
+        int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(PointData), &m_points[base]);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(PointData), &m_points[@base]);
             glDrawArrays(GL_POINTS, 0, batchCount);
 
             CheckErrorGL();
 
             count -= e_batchSize;
-            base += e_batchSize;
+            @base += e_batchSize;
         }
 
         glDisable(GL_PROGRAM_POINT_SIZE);
@@ -141,6 +137,6 @@ public class GLPoints
         glBindVertexArray(0);
         glUseProgram(0);
 
-        m_points.clear();
+        m_points.Clear();
     }
 }

@@ -2,7 +2,11 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Collections.Generic;
 using Box2D.NET.Primitives;
+using Silk.NET.Core.Contexts;
+using Silk.NET.GLFW;
+using Silk.NET.OpenGL;
 
 namespace Box2D.NET.Samples.Primitives;
 
@@ -12,15 +16,16 @@ public class GLCircles
 
     List<CircleData> m_circles;
 
-    GLuint m_vaoId;
-    GLuint m_vboIds[2];
-    GLuint m_programId;
-    GLint m_projectionUniform;
-    GLint m_pixelScaleUniform;
+    uint m_vaoId;
+    uint m_vboIds[2];
+    uint m_programId;
+    int m_projectionUniform;
+    int m_pixelScaleUniform;
 
 
     public void Create()
     {
+        IGLContext s = null;
         m_programId = CreateProgramFromFiles("samples/data/circle.vs", "samples/data/circle.fs");
         m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = glGetUniformLocation(m_programId, "pixelScale");

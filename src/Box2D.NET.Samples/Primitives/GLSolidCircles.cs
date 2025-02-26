@@ -15,11 +15,11 @@ public class GLSolidCircles
 
     List<SolidCircleData> m_circles;
 
-    GLuint m_vaoId;
-    GLuint m_vboIds[2];
-    GLuint m_programId;
-    GLint m_projectionUniform;
-    GLint m_pixelScaleUniform;
+    uint m_vaoId;
+    uint m_vboIds[2];
+    uint m_programId;
+    int m_projectionUniform;
+    int m_pixelScaleUniform;
 
     public void Create()
     {

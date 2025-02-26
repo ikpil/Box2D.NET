@@ -6,12 +6,12 @@ namespace Box2D.NET.Samples.Primitives;
 
 public class GLBackground
 {
-    GLuint m_vaoId;
-    GLuint m_vboId;
-    GLuint m_programId;
-    GLint m_timeUniform;
-    GLint m_resolutionUniform;
-    GLint m_baseColorUniform;
+    uint m_vaoId;
+    uint m_vboId;
+    uint m_programId;
+    int m_timeUniform;
+    int m_resolutionUniform;
+    int m_baseColorUniform;
     
     public void Create()
     {

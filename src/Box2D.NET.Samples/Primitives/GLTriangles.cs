@@ -15,10 +15,10 @@ public class GLTriangles
 
     List<VertexData> m_points;
 
-    GLuint m_vaoId;
-    GLuint m_vboId;
-    GLuint m_programId;
-    GLint m_projectionUniform;
+    uint m_vaoId;
+    uint m_vboId;
+    uint m_programId;
+    int m_projectionUniform;
 
     public void Create()
     {
