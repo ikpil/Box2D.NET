@@ -114,7 +114,7 @@ public class GLLines
             0.0f
         }
         ;
-        Draw.g_camera.BuildProjectionMatrix(proj, 0.1f);
+        B2.g_camera.BuildProjectionMatrix(proj, 0.1f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
 

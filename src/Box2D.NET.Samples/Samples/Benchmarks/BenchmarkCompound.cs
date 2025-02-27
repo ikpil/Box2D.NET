@@ -24,8 +24,8 @@ public class BenchmarkCompound : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(18.0f, 115.0f);
-            Draw.g_camera.m_zoom = 25.0f * 5.5f;
+            B2.g_camera.m_center = new B2Vec2(18.0f, 115.0f);
+            B2.g_camera.m_zoom = 25.0f * 5.5f;
         }
 
         float grid = 1.0f;

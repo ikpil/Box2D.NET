@@ -42,8 +42,8 @@ public class MotorJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 7.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.4f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 7.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         B2BodyId groundId;
@@ -89,7 +89,7 @@ public class MotorJoint : Sample
     {
         bool open = false;
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Motor Joint", ref open, ImGuiWindowFlags.NoResize);
@@ -133,14 +133,14 @@ public class MotorJoint : Sample
         b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);
 
         B2Transform transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
-        Draw.g_draw.DrawTransform(transform);
+        B2.g_draw.DrawTransform(transform);
 
         base.Step(settings);
 
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        Draw.g_draw.DrawString(5, m_textLine, "force = {%3.f, %3.f}, torque = %3.f", force.x, force.y, torque);
+        B2.g_draw.DrawString(5, m_textLine, "force = {%3.f, %3.f}, torque = %3.f", force.x, force.y, torque);
         m_textLine += 15;
     }
 }

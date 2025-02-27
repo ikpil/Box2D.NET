@@ -26,8 +26,8 @@ public class RollingResistance : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(5.0f, 20.0f);
-            Draw.g_camera.m_zoom = 27.5f;
+            B2.g_camera.m_center = new B2Vec2(5.0f, 20.0f);
+            B2.g_camera.m_zoom = 27.5f;
         }
 
         m_lift = 0.0f;
@@ -94,7 +94,7 @@ public class RollingResistance : Sample
 
         for (int i = 0; i < 20; ++i)
         {
-            Draw.g_draw.DrawString(new B2Vec2(-41.5f, 2.0f * i + 1.0f), "%.2f", m_resistScale * i);
+            B2.g_draw.DrawString(new B2Vec2(-41.5f, 2.0f * i + 1.0f), "%.2f", m_resistScale * i);
         }
     }
 }

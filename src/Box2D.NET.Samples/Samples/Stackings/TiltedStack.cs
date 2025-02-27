@@ -30,8 +30,8 @@ public class TiltedStack : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(7.5f, 7.5f);
-            Draw.g_camera.m_zoom = 20.0f;
+            B2.g_camera.m_center = new B2Vec2(7.5f, 7.5f);
+            B2.g_camera.m_zoom = 20.0f;
         }
 
         {

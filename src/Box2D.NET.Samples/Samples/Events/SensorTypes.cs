@@ -43,8 +43,8 @@ public class SensorTypes : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 3.0f);
-            Draw.g_camera.m_zoom = 4.5f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 3.0f);
+            B2.g_camera.m_zoom = 4.5f;
         }
 
         {
@@ -188,11 +188,11 @@ public class SensorTypes : Sample
         B2Vec2 origin = new B2Vec2(5.0f, 1.0f);
         B2Vec2 translation = new B2Vec2(-10.0f, 0.0f);
         B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, b2DefaultQueryFilter());
-        Draw.g_draw.DrawSegment(origin, origin + translation, B2HexColor.b2_colorDimGray);
+        B2.g_draw.DrawSegment(origin, origin + translation, B2HexColor.b2_colorDimGray);
 
         if (result.hit)
         {
-            Draw.g_draw.DrawPoint(result.point, 10.0f, B2HexColor.b2_colorCyan);
+            B2.g_draw.DrawPoint(result.point, 10.0f, B2HexColor.b2_colorCyan);
         }
     }
 }

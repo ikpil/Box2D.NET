@@ -24,8 +24,8 @@ public class SingleBox : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            Draw.g_camera.m_zoom = 3.5f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
+            B2.g_camera.m_zoom = 3.5f;
         }
 
         float extent = 1.0f;
@@ -52,7 +52,7 @@ public class SingleBox : Sample
     {
         base.Step(settings);
 
-        // Draw.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
+        // B2.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
         DrawTextLine("(x, y) = (%.2g, %.2g)", position.x, position.y);

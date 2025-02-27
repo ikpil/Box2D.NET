@@ -25,8 +25,8 @@ public class SoftBody : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.25f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.25f;
         }
 
         {

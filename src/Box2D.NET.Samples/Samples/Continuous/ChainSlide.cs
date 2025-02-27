@@ -23,8 +23,8 @@ public class ChainSlide : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
-            Draw.g_camera.m_zoom = 15.0f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
+            B2.g_camera.m_zoom = 15.0f;
         }
 
 #if DEBUG
@@ -92,7 +92,7 @@ public class ChainSlide : Sample
         base.Step(settings);
 
 #if DEBUG
-        Draw.g_draw.DrawString(5, m_textLine, "toi hits = %d", b2_toiHitCount);
+        B2.g_draw.DrawString(5, m_textLine, "toi hits = %d", b2_toiHitCount);
         m_textLine += m_textIncrement;
 #endif
     }

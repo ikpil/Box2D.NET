@@ -112,7 +112,7 @@ public class GLPoints
         B2.g_shader.Gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
-        Draw.g_camera.BuildProjectionMatrix(proj, 0.0f);
+        B2.g_camera.BuildProjectionMatrix(proj, 0.0f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
         B2.g_shader.Gl.BindVertexArray(m_vaoId);

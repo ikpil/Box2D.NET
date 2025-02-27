@@ -34,8 +34,8 @@ public class Sleep : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(3.0f, 50.0f);
-            Draw.g_camera.m_zoom = 25.0f * 2.2f;
+            B2.g_camera.m_center = new B2Vec2(3.0f, 50.0f);
+            B2.g_camera.m_zoom = 25.0f * 2.2f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -137,7 +137,7 @@ public class Sleep : Sample
     {
         bool open = false;
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
         ImGui.Begin("Sleep", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
@@ -204,7 +204,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            Draw.g_draw.DrawString(5, m_textLine, "sensor touch %d = %s", i, m_sensorTouching[i] ? "true" : "false");
+            B2.g_draw.DrawString(5, m_textLine, "sensor touch %d = %s", i, m_sensorTouching[i] ? "true" : "false");
             m_textLine += m_textIncrement;
         }
     }

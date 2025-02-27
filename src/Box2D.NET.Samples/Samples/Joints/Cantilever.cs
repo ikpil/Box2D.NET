@@ -43,8 +43,8 @@ public class Cantilever : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.35f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.35f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -102,7 +102,7 @@ public class Cantilever : Sample
     {
         bool open = false;
         float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Cantilever", ref open, ImGuiWindowFlags.NoResize);
@@ -165,7 +165,7 @@ public class Cantilever : Sample
         base.Step(settings);
 
         B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
-        Draw.g_draw.DrawString(5, m_textLine, "tip-y = %.2f", tipPosition.y);
+        B2.g_draw.DrawString(5, m_textLine, "tip-y = %.2f", tipPosition.y);
         m_textLine += m_textIncrement;
     }
 }

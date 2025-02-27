@@ -20,8 +20,8 @@ public class BenchmarkJointGrid : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(60.0f, -57.0f);
-            Draw.g_camera.m_zoom = 25.0f * 2.5f;
+            B2.g_camera.m_center = new B2Vec2(60.0f, -57.0f);
+            B2.g_camera.m_zoom = 25.0f * 2.5f;
             settings.enableSleep = false;
         }
 

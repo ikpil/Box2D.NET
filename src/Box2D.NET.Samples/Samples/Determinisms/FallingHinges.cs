@@ -47,8 +47,8 @@ public class FallingHinges : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 7.5f);
-            Draw.g_camera.m_zoom = 10.0f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 7.5f);
+            B2.g_camera.m_zoom = 10.0f;
         }
 
         {
@@ -185,7 +185,7 @@ public class FallingHinges : Sample
             }
         }
 
-        Draw.g_draw.DrawString(5, m_textLine, "sleep step = %d, hash = 0x%08x", m_sleepStep, m_hash);
+        B2.g_draw.DrawString(5, m_textLine, "sleep step = %d, hash = 0x%08x", m_sleepStep, m_hash);
         m_textLine += m_textIncrement;
     }
 }

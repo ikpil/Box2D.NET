@@ -33,8 +33,8 @@ public class Weeble : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(2.3f, 10.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.5f;
+            B2.g_camera.m_center = new B2Vec2(2.3f, 10.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         // Test friction and restitution callbacks
@@ -96,7 +96,7 @@ public class Weeble : Sample
     {
         bool open = false;
         float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
         ImGui.Begin("Weeble", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
         if (ImGui.Button("Teleport"))
@@ -126,7 +126,7 @@ public class Weeble : Sample
     {
         base.Step(settings);
 
-        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        B2.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         // This shows how to get the velocity of a point on a body
         B2Vec2 localPoint = new B2Vec2(0.0f, 2.0f);
@@ -136,7 +136,7 @@ public class Weeble : Sample
         B2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
 
         B2Vec2 offset = new B2Vec2(0.05f, 0.0f);
-        Draw.g_draw.DrawSegment(worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
-        Draw.g_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
+        B2.g_draw.DrawSegment(worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
+        B2.g_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
     }
 }

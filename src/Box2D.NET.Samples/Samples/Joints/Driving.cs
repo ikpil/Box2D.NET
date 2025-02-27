@@ -38,8 +38,8 @@ public class Driving : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center.y = 5.0f;
-            Draw.g_camera.m_zoom = 25.0f * 0.4f;
+            B2.g_camera.m_center.y = 5.0f;
+            B2.g_camera.m_zoom = 25.0f * 0.4f;
             settings.drawJoints = false;
         }
 
@@ -215,7 +215,7 @@ public class Driving : Sample
     {
         bool open = false;
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Driving", ref open, ImGuiWindowFlags.NoResize);
@@ -266,16 +266,16 @@ public class Driving : Sample
             m_car.SetSpeed(-m_speed);
         }
 
-        Draw.g_draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
+        B2.g_draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
         m_textLine += m_textIncrement;
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.x * 3.6f;
-        Draw.g_draw.DrawString(5, m_textLine, "speed in kph: %.2g", kph);
+        B2.g_draw.DrawString(5, m_textLine, "speed in kph: %.2g", kph);
         m_textLine += m_textIncrement;
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
-        Draw.g_camera.m_center.x = carPosition.x;
+        B2.g_camera.m_center.x = carPosition.x;
 
         base.Step(settings);
     }

@@ -31,8 +31,8 @@ public class Cliff : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_zoom = 25.0f * 0.5f;
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.5f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
         }
 
         {
@@ -147,7 +147,7 @@ public class Cliff : Sample
     {
         bool open = false;
         float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(160.0f, height));
 
         ImGui.Begin("Cliff", ref open, ImGuiWindowFlags.NoResize);

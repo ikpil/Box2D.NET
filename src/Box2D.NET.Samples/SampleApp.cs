@@ -58,8 +58,8 @@ public class SampleApp
 
         glfwSetErrorCallback( glfwErrorCallback );
 
-        Draw.g_camera.m_width = s_settings.windowWidth;
-        Draw.g_camera.m_height = s_settings.windowHeight;
+        B2.g_camera.m_width = s_settings.windowWidth;
+        B2.g_camera.m_height = s_settings.windowHeight;
 
         if ( glfwInit() == 0 )
         {
@@ -101,7 +101,7 @@ public class SampleApp
         }
         else
         {
-            g_mainWindow = glfwCreateWindow( int( Draw.g_camera.m_width * s_windowScale ), int( Draw.g_camera.m_height * s_windowScale ),
+            g_mainWindow = glfwCreateWindow( int( B2.g_camera.m_width * s_windowScale ), int( B2.g_camera.m_height * s_windowScale ),
                                              buffer, nullptr, nullptr );
         }
 
@@ -140,7 +140,7 @@ public class SampleApp
 
         // todo put this in s_settings
         CreateUI( g_mainWindow, glslVersion );
-        Draw.g_draw.Create();
+        B2.g_draw.Create();
 
         s_settings.sampleIndex = b2ClampInt( s_settings.sampleIndex, 0, g_sampleCount - 1 );
         s_selection = s_settings.sampleIndex;
@@ -156,17 +156,17 @@ public class SampleApp
             if ( glfwGetKey( g_mainWindow, GLFW_KEY_Z ) == GLFW_PRESS )
             {
                 // Zoom out
-                Draw.g_camera.m_zoom = b2MinFloat( 1.005f * Draw.g_camera.m_zoom, 100.0f );
+                B2.g_camera.m_zoom = b2MinFloat( 1.005f * B2.g_camera.m_zoom, 100.0f );
             }
             else if ( glfwGetKey( g_mainWindow, GLFW_KEY_X ) == GLFW_PRESS )
             {
                 // Zoom in
-                Draw.g_camera.m_zoom = b2MaxFloat( 0.995f * Draw.g_camera.m_zoom, 0.5f );
+                B2.g_camera.m_zoom = b2MaxFloat( 0.995f * B2.g_camera.m_zoom, 0.5f );
             }
 
-            glfwGetWindowSize( g_mainWindow, &Draw.g_camera.m_width, &Draw.g_camera.m_height );
-            Draw.g_camera.m_width = int( Draw.g_camera.m_width / s_windowScale );
-            Draw.g_camera.m_height = int( Draw.g_camera.m_height / s_windowScale );
+            glfwGetWindowSize( g_mainWindow, &B2.g_camera.m_width, &B2.g_camera.m_height );
+            B2.g_camera.m_width = int( B2.g_camera.m_width / s_windowScale );
+            B2.g_camera.m_height = int( B2.g_camera.m_height / s_windowScale );
 
             int bufferWidth, bufferHeight;
             glfwGetFramebufferSize( g_mainWindow, &bufferWidth, &bufferHeight );
@@ -174,7 +174,7 @@ public class SampleApp
 
             glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-            //Draw.g_draw.DrawBackground();
+            //B2.g_draw.DrawBackground();
 
             double cursorPosX = 0, cursorPosY = 0;
             glfwGetCursorPos( g_mainWindow, &cursorPosX, &cursorPosY );
@@ -184,15 +184,15 @@ public class SampleApp
             ImGui_ImplGlfw_CursorPosCallback( g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale );
 
             ImGuiIO& io = ImGui.GetIO();
-            io.DisplaySize.x = float( Draw.g_camera.m_width );
-            io.DisplaySize.y = float( Draw.g_camera.m_height );
-            io.DisplayFramebufferScale.x = bufferWidth / float( Draw.g_camera.m_width );
-            io.DisplayFramebufferScale.y = bufferHeight / float( Draw.g_camera.m_height );
+            io.DisplaySize.x = float( B2.g_camera.m_width );
+            io.DisplaySize.y = float( B2.g_camera.m_height );
+            io.DisplayFramebufferScale.x = bufferWidth / float( B2.g_camera.m_width );
+            io.DisplayFramebufferScale.y = bufferHeight / float( B2.g_camera.m_height );
 
             ImGui.NewFrame();
 
             ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
-            ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+            ImGui.SetNextWindowSize( new Vector2( float( B2.g_camera.m_width ), float( B2.g_camera.m_height ) ) );
             ImGui.SetNextWindowBgAlpha( 0.0f );
             ImGui.Begin( "Overlay", nullptr,
                           ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
@@ -205,7 +205,7 @@ public class SampleApp
                 s_sample = g_sampleEntries[s_settings.sampleIndex].createFcn( s_settings );
             }
 
-            if ( Draw.g_draw.m_showUI )
+            if ( B2.g_draw.m_showUI )
             {
                 const SampleEntry& entry = g_sampleEntries[s_settings.sampleIndex];
                 snprintf( buffer, 128, "%s : %s", entry.category, entry.name );
@@ -214,22 +214,22 @@ public class SampleApp
 
             s_sample.Step( s_settings );
 
-            Draw.g_draw.Flush();
+            B2.g_draw.Flush();
 
             UpdateUI();
 
             // ImGui.ShowDemoWindow();
 
-            if ( Draw.g_draw.m_showUI )
+            if ( B2.g_draw.m_showUI )
             {
                 snprintf( buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample.m_stepCount,
-                          Draw.g_camera.m_center.x, Draw.g_camera.m_center.y, Draw.g_camera.m_zoom );
+                          B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom );
                 // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
 
                 ImGui.Begin( "Overlay", nullptr,
                               ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
                                   ImGuiWindowFlags.NoScrollbar );
-                ImGui.SetCursorPos( new Vector2( 5.0f, Draw.g_camera.m_height - 20.0f ) );
+                ImGui.SetCursorPos( new Vector2( 5.0f, B2.g_camera.m_height - 20.0f ) );
                 ImGui.TextColored( new Vector4( 153, 230, 153, 255 ), "%s", buffer );
                 ImGui.End();
             }
@@ -244,7 +244,7 @@ public class SampleApp
 
             if ( s_selection != s_settings.sampleIndex )
             {
-                Draw.g_camera.ResetView();
+                B2.g_camera.ResetView();
                 s_settings.sampleIndex = s_selection;
 
                 // #todo restore all drawing settings that may have been overridden by a sample
@@ -274,7 +274,7 @@ public class SampleApp
         delete s_sample;
         s_sample = nullptr;
 
-        Draw.g_draw.Destroy();
+        B2.g_draw.Destroy();
 
         DestroyUI();
         glfwTerminate();
@@ -379,10 +379,10 @@ public class SampleApp
         {
             ImFontConfig fontConfig;
             fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-            Draw.g_draw.m_smallFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
-            Draw.g_draw.m_regularFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
-            Draw.g_draw.m_mediumFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
-            Draw.g_draw.m_largeFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
+            B2.g_draw.m_smallFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 14.0f, &fontConfig );
+            B2.g_draw.m_regularFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 18.0f, &fontConfig );
+            B2.g_draw.m_mediumFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 40.0f, &fontConfig );
+            B2.g_draw.m_largeFont = ImGui.GetIO().Fonts.AddFontFromFileTTF( fontPath, 64.0f, &fontConfig );
         }
         else
         {
@@ -400,8 +400,8 @@ public class SampleApp
 
     public static void ResizeWindowCallback( GLFWwindow*, int width, int height )
     {
-        Draw.g_camera.m_width = int( width / s_windowScale );
-        Draw.g_camera.m_height = int( height / s_windowScale );
+        B2.g_camera.m_width = int( width / s_windowScale );
+        B2.g_camera.m_height = int( height / s_windowScale );
         s_settings.windowWidth = int( width / s_windowScale );
         s_settings.windowHeight = int( height / s_windowScale );
     }
@@ -432,7 +432,7 @@ public class SampleApp
                     }
                     else
                     {
-                        Draw.g_camera.m_center.x -= 0.5f;
+                        B2.g_camera.m_center.x -= 0.5f;
                     }
                     break;
 
@@ -445,7 +445,7 @@ public class SampleApp
                     }
                     else
                     {
-                        Draw.g_camera.m_center.x += 0.5f;
+                        B2.g_camera.m_center.x += 0.5f;
                     }
                     break;
 
@@ -458,7 +458,7 @@ public class SampleApp
                     }
                     else
                     {
-                        Draw.g_camera.m_center.y -= 0.5f;
+                        B2.g_camera.m_center.y -= 0.5f;
                     }
                     break;
 
@@ -471,12 +471,12 @@ public class SampleApp
                     }
                     else
                     {
-                        Draw.g_camera.m_center.y += 0.5f;
+                        B2.g_camera.m_center.y += 0.5f;
                     }
                     break;
 
                 case GLFW_KEY_HOME:
-                    Draw.g_camera.ResetView();
+                    B2.g_camera.ResetView();
                     break;
 
                 case GLFW_KEY_R:
@@ -510,7 +510,7 @@ public class SampleApp
                     break;
 
                 case GLFW_KEY_TAB:
-                    Draw.g_draw.m_showUI = !Draw.g_draw.m_showUI;
+                    B2.g_draw.m_showUI = !B2.g_draw.m_showUI;
 
                 default:
                     if ( s_sample )
@@ -542,7 +542,7 @@ public class SampleApp
         // Use the mouse to move things around.
         if ( button == (int)MouseButton.Left )
         {
-            B2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
+            B2Vec2 pw = B2.g_camera.ConvertScreenToWorld( ps );
             if ( action == GLFW_PRESS )
             {
                 s_sample.MouseDown( pw, button, mods );
@@ -557,7 +557,7 @@ public class SampleApp
         {
             if ( action == GLFW_PRESS )
             {
-                s_clickPointWS = Draw.g_camera.ConvertScreenToWorld( ps );
+                s_clickPointWS = B2.g_camera.ConvertScreenToWorld( ps );
                 s_rightMouseDown = true;
             }
 
@@ -574,15 +574,15 @@ public class SampleApp
 
         ImGui_ImplGlfw_CursorPosCallback( window, ps.x, ps.y );
 
-        B2Vec2 pw = Draw.g_camera.ConvertScreenToWorld( ps );
+        B2Vec2 pw = B2.g_camera.ConvertScreenToWorld( ps );
         s_sample.MouseMove( pw );
 
         if ( s_rightMouseDown )
         {
             B2Vec2 diff = b2Sub( pw, s_clickPointWS );
-            Draw.g_camera.m_center.x -= diff.x;
-            Draw.g_camera.m_center.y -= diff.y;
-            s_clickPointWS = Draw.g_camera.ConvertScreenToWorld( ps );
+            B2.g_camera.m_center.x -= diff.x;
+            B2.g_camera.m_center.y -= diff.y;
+            s_clickPointWS = B2.g_camera.ConvertScreenToWorld( ps );
         }
     }
 
@@ -596,11 +596,11 @@ public class SampleApp
 
         if ( dy > 0 )
         {
-            Draw.g_camera.m_zoom /= 1.1f;
+            B2.g_camera.m_zoom /= 1.1f;
         }
         else
         {
-            Draw.g_camera.m_zoom *= 1.1f;
+            B2.g_camera.m_zoom *= 1.1f;
         }
     }
 
@@ -609,12 +609,12 @@ public class SampleApp
         int maxWorkers = enki::GetNumHardwareThreads();
 
         float menuWidth = 180.0f;
-        if ( Draw.g_draw.m_showUI )
+        if ( B2.g_draw.m_showUI )
         {
-            ImGui.SetNextWindowPos( { Draw.g_camera.m_width - menuWidth - 10.0f, 10.0f } );
-            ImGui.SetNextWindowSize( { menuWidth, Draw.g_camera.m_height - 20.0f } );
+            ImGui.SetNextWindowPos( { B2.g_camera.m_width - menuWidth - 10.0f, 10.0f } );
+            ImGui.SetNextWindowSize( { menuWidth, B2.g_camera.m_height - 20.0f } );
 
-            ImGui.Begin( "Tools", &Draw.g_draw.m_showUI,
+            ImGui.Begin( "Tools", &B2.g_draw.m_showUI,
                           ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse );
 
             if ( ImGui.BeginTabBar( "ControlTabs", ImGuiTabBarFlags.None ) )

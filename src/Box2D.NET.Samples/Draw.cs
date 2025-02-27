@@ -216,7 +216,7 @@ public class Draw
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PushFont(Draw.g_draw.m_regularFont);
+        ImGui.PushFont(B2.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(x, y));
         ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(message, arg));
         ImGui.PopFont();
@@ -225,7 +225,7 @@ public class Draw
 
     public void DrawString(B2Vec2 p, string message, params object[] arg)
     {
-        B2Vec2 ps = Draw.g_camera.ConvertWorldToScreen(p);
+        B2Vec2 ps = B2.g_camera.ConvertWorldToScreen(p);
 
         bool open = false;
         ImGui.Begin("Overlay", ref open,

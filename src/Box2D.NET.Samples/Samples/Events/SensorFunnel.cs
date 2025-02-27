@@ -47,8 +47,8 @@ public class SensorFunnel : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            Draw.g_camera.m_zoom = 25.0f * 1.333f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            B2.g_camera.m_zoom = 25.0f * 1.333f;
         }
 
         settings.drawJoints = false;
@@ -258,7 +258,7 @@ public class SensorFunnel : Sample
     {
         bool open = false;
         float height = 90.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Sensor Event", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

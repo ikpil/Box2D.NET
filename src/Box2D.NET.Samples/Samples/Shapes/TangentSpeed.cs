@@ -25,8 +25,8 @@ public class TangentSpeed : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(60.0f, -15.0f);
-            Draw.g_camera.m_zoom = 38.0f;
+            B2.g_camera.m_center = new B2Vec2(60.0f, -15.0f);
+            B2.g_camera.m_zoom = 38.0f;
         }
 
         {

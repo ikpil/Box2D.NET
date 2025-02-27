@@ -36,8 +36,8 @@ public class CompoundShapes : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 6.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.5f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 6.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         {
@@ -198,7 +198,7 @@ public class CompoundShapes : Sample
     {
         bool open = false;
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Compound Shapes", ref open, ImGuiWindowFlags.NoResize);
@@ -220,16 +220,16 @@ public class CompoundShapes : Sample
         if (m_drawBodyAABBs)
         {
             B2AABB aabb = b2Body_ComputeAABB(m_table1Id);
-            Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            B2.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_table2Id);
-            Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            B2.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship1Id);
-            Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            B2.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship2Id);
-            Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            B2.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
         }
     }
 }

@@ -23,8 +23,8 @@ public class BenchmarkRain : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 110.0f);
-            Draw.g_camera.m_zoom = 125.0f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 110.0f);
+            B2.g_camera.m_zoom = 125.0f;
             settings.enableSleep = true;
         }
 

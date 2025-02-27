@@ -127,10 +127,10 @@ public class GLSolidCircles
             0.0f
         }
         ;
-        Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
+        B2.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        B2.g_shader.Gl.Uniform1(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
+        B2.g_shader.Gl.Uniform1(m_pixelScaleUniform, B2.g_camera.m_height / B2.g_camera.m_zoom);
 
         B2.g_shader.Gl.BindVertexArray(m_vaoId);
 

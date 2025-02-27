@@ -41,8 +41,8 @@ public class BodyMove : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(2.0f, 8.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.55f;
+            B2.g_camera.m_center = new B2Vec2(2.0f, 8.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.55f;
         }
 
         {
@@ -125,7 +125,7 @@ public class BodyMove : Sample
     {
         bool open = false;
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Body Move", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -160,7 +160,7 @@ public class BodyMove : Sample
         {
             // draw the transform of every body that moved (not sleeping)
             B2BodyMoveEvent @event = events.moveEvents[i];
-            Draw.g_draw.DrawTransform(@event.transform);
+            B2.g_draw.DrawTransform(@event.transform);
 
             // this shows a somewhat contrived way to track body sleeping
             B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
@@ -182,9 +182,9 @@ public class BodyMove : Sample
             }
         }
 
-        Draw.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        B2.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
-        Draw.g_draw.DrawString(5, m_textLine, "sleep count: %d", m_sleepCount);
+        B2.g_draw.DrawString(5, m_textLine, "sleep count: %d", m_sleepCount);
         m_textLine += m_textIncrement;
     }
 }

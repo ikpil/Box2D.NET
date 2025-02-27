@@ -27,8 +27,8 @@ public class RestitutionThreshold : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(7.0f, 5.0f);
-            Draw.g_camera.m_zoom = 6.0f;
+            B2.g_camera.m_center = new B2Vec2(7.0f, 5.0f);
+            B2.g_camera.m_zoom = 6.0f;
         }
 
         float pixelsPerMeter = 30.0f;
@@ -74,7 +74,7 @@ public class RestitutionThreshold : Sample
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        Draw.g_draw.DrawString(5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y);
+        B2.g_draw.DrawString(5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y);
         m_textLine += m_textIncrement;
 
         base.Step(settings);

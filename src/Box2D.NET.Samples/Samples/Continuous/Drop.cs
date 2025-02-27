@@ -38,8 +38,8 @@ public class Drop : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 1.5f);
-            Draw.g_camera.m_zoom = 3.0f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 1.5f);
+            B2.g_camera.m_zoom = 3.0f;
             settings.enableSleep = false;
             settings.drawJoints = false;
         }
@@ -311,7 +311,7 @@ public class Drop : Sample
     {
 #if FALSE
     ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
-    ImGui.SetNextWindowSize( new Vector2( float( Draw.g_camera.m_width ), float( Draw.g_camera.m_height ) ) );
+    ImGui.SetNextWindowSize( new Vector2( float( B2.g_camera.m_width ), float( B2.g_camera.m_height ) ) );
     ImGui.SetNextWindowBgAlpha( 0.0f );
     ImGui.Begin( "DropBackground", nullptr,
         ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
@@ -320,11 +320,11 @@ public class Drop : Sample
     ImDrawList* drawList = ImGui.GetWindowDrawList();
 
     string ContinuousText = m_continuous && m_speculative ? "Continuous ON" : "Continuous OFF";
-    drawList->AddText( Draw.g_draw.m_largeFont, Draw.g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
+    drawList->AddText( B2.g_draw.m_largeFont, B2.g_draw.m_largeFont->FontSize, { 40.0f, 40.0f }, IM_COL32_WHITE, ContinuousText );
 
     if ( m_frameSkip > 0 )
     {
-        drawList->AddText( Draw.g_draw.m_mediumFont, Draw.g_draw.m_mediumFont->FontSize, { 40.0f, 40.0f + 64.0f + 20.0f },
+        drawList->AddText( B2.g_draw.m_mediumFont, B2.g_draw.m_mediumFont->FontSize, { 40.0f, 40.0f + 64.0f + 20.0f },
         IM_COL32( 200, 200, 200, 255 ), "Slow Time" );
     }
 

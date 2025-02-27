@@ -1099,7 +1099,7 @@ namespace Box2D.NET
                                         // graph color
                                         float pointSize = contact.colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
                                         draw.DrawPoint(point.point, pointSize, graphColors[contact.colorIndex], draw.context);
-                                        // Draw.g_draw.DrawString(point.position, "%d", point.color);
+                                        // B2.g_draw.DrawString(point.position, "%d", point.color);
                                     }
                                     else if (point.separation > linearSlop)
                                     {
@@ -1392,7 +1392,7 @@ namespace Box2D.NET
                                 // graph color
                                 float pointSize = colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
                                 draw.DrawPoint(point.point, pointSize, colors[colorIndex], draw.context);
-                                // Draw.g_draw.DrawString(point.position, "%d", point.color);
+                                // B2.g_draw.DrawString(point.position, "%d", point.color);
                             }
                             else if (point.separation > linearSlop)
                             {

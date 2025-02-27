@@ -197,7 +197,7 @@ public class Sample : IDisposable
 
     public void DrawTitle(string title)
     {
-        Draw.g_draw.DrawString(5, 5, title);
+        B2.g_draw.DrawString(5, 5, title);
         m_textLine = (int)26.0f;
     }
 
@@ -307,7 +307,7 @@ public class Sample : IDisposable
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PushFont(Draw.g_draw.m_regularFont);
+        ImGui.PushFont(B2.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(5.0f, (float)m_textLine));
         ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(text, arg));
         ImGui.PopFont();
@@ -338,33 +338,33 @@ public class Sample : IDisposable
                 timeStep = 0.0f;
             }
 
-            if (Draw.g_draw.m_showUI)
+            if (B2.g_draw.m_showUI)
             {
-                Draw.g_draw.DrawString(5, m_textLine, "****PAUSED****");
+                B2.g_draw.DrawString(5, m_textLine, "****PAUSED****");
                 m_textLine += m_textIncrement;
             }
         }
 
-        Draw.g_draw.m_debugDraw.drawingBounds = Draw.g_camera.GetViewBounds();
-        Draw.g_draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
+        B2.g_draw.m_debugDraw.drawingBounds = B2.g_camera.GetViewBounds();
+        B2.g_draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
         // todo testing
-        // b2Transform t1 = {Draw.g_draw.m_debugDraw.drawingBounds.lowerBound, b2Rot_identity};
-        // b2Transform t2 = {Draw.g_draw.m_debugDraw.drawingBounds.upperBound, b2Rot_identity};
-        // Draw.g_draw.DrawSolidCircle(ref t1, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
-        // Draw.g_draw.DrawSolidCircle(ref t2, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
+        // b2Transform t1 = {B2.g_draw.m_debugDraw.drawingBounds.lowerBound, b2Rot_identity};
+        // b2Transform t2 = {B2.g_draw.m_debugDraw.drawingBounds.upperBound, b2Rot_identity};
+        // B2.g_draw.DrawSolidCircle(ref t1, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
+        // B2.g_draw.DrawSolidCircle(ref t2, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
 
-        Draw.g_draw.m_debugDraw.drawShapes = settings.drawShapes;
-        Draw.g_draw.m_debugDraw.drawJoints = settings.drawJoints;
-        Draw.g_draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
-        Draw.g_draw.m_debugDraw.drawAABBs = settings.drawAABBs;
-        Draw.g_draw.m_debugDraw.drawMass = settings.drawMass;
-        Draw.g_draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
-        Draw.g_draw.m_debugDraw.drawContacts = settings.drawContactPoints;
-        Draw.g_draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
-        Draw.g_draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
-        Draw.g_draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
-        Draw.g_draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
+        B2.g_draw.m_debugDraw.drawShapes = settings.drawShapes;
+        B2.g_draw.m_debugDraw.drawJoints = settings.drawJoints;
+        B2.g_draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
+        B2.g_draw.m_debugDraw.drawAABBs = settings.drawAABBs;
+        B2.g_draw.m_debugDraw.drawMass = settings.drawMass;
+        B2.g_draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
+        B2.g_draw.m_debugDraw.drawContacts = settings.drawContactPoints;
+        B2.g_draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
+        B2.g_draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
+        B2.g_draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
+        B2.g_draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
 
         b2World_EnableSleeping(m_worldId, settings.enableSleep);
         b2World_EnableWarmStarting(m_worldId, settings.enableWarmStarting);
@@ -376,7 +376,7 @@ public class Sample : IDisposable
             m_taskCount = 0;
         }
 
-        b2World_Draw(m_worldId, Draw.g_draw.m_debugDraw);
+        b2World_Draw(m_worldId, B2.g_draw.m_debugDraw);
 
         if (timeStep > 0.0f)
         {
@@ -387,14 +387,14 @@ public class Sample : IDisposable
         {
             B2Counters s = b2World_GetCounters(m_worldId);
 
-            Draw.g_draw.DrawString(5, m_textLine, "bodies/shapes/contacts/joints = %d/%d/%d/%d", s.bodyCount, s.shapeCount,
+            B2.g_draw.DrawString(5, m_textLine, "bodies/shapes/contacts/joints = %d/%d/%d/%d", s.bodyCount, s.shapeCount,
                 s.contactCount, s.jointCount);
             m_textLine += m_textIncrement;
 
-            Draw.g_draw.DrawString(5, m_textLine, "islands/tasks = %d/%d", s.islandCount, s.taskCount);
+            B2.g_draw.DrawString(5, m_textLine, "islands/tasks = %d/%d", s.islandCount, s.taskCount);
             m_textLine += m_textIncrement;
 
-            Draw.g_draw.DrawString(5, m_textLine, "tree height static/movable = %d/%d", s.staticTreeHeight, s.treeHeight);
+            B2.g_draw.DrawString(5, m_textLine, "tree height static/movable = %d/%d", s.staticTreeHeight, s.treeHeight);
             m_textLine += m_textIncrement;
 
             int totalCount = 0;
@@ -410,13 +410,13 @@ public class Sample : IDisposable
             }
 
             buffer.Append($"[{totalCount}]");
-            Draw.g_draw.DrawString(5, m_textLine, buffer.ToString());
+            B2.g_draw.DrawString(5, m_textLine, buffer.ToString());
             m_textLine += m_textIncrement;
 
-            Draw.g_draw.DrawString(5, m_textLine, "stack allocator size = %d K", s.stackUsed / 1024);
+            B2.g_draw.DrawString(5, m_textLine, "stack allocator size = %d K", s.stackUsed / 1024);
             m_textLine += m_textIncrement;
 
-            Draw.g_draw.DrawString(5, m_textLine, "total allocation = %d K", s.byteCount / 1024);
+            B2.g_draw.DrawString(5, m_textLine, "total allocation = %d K", s.byteCount / 1024);
             m_textLine += m_textIncrement;
         }
 

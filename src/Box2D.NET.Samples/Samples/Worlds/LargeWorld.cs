@@ -54,8 +54,8 @@ public class LargeWorld : Sample
 
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = m_viewPosition;
-            Draw.g_camera.m_zoom = 25.0f * 1.0f;
+            B2.g_camera.m_center = m_viewPosition;
+            B2.g_camera.m_zoom = 25.0f * 1.0f;
             settings.drawJoints = false;
             settings.useCameraBounds = true;
         }
@@ -170,7 +170,7 @@ public class LargeWorld : Sample
     {
         bool open = false;
         float height = 160.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Large World", ref open, ImGuiWindowFlags.NoResize);
@@ -203,12 +203,12 @@ public class LargeWorld : Sample
 
         if (m_speed != 0.0f)
         {
-            Draw.g_camera.m_center = m_viewPosition;
+            B2.g_camera.m_center = m_viewPosition;
         }
 
         if (m_followCar)
         {
-            Draw.g_camera.m_center.x = b2Body_GetPosition(m_car.m_chassisId).x;
+            B2.g_camera.m_center.x = b2Body_GetPosition(m_car.m_chassisId).x;
         }
 
         float radius = 2.0f;
@@ -228,7 +228,7 @@ public class LargeWorld : Sample
 
         if (m_explode)
         {
-            Draw.g_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
+            B2.g_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
         }
 
         if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)

@@ -36,8 +36,8 @@ public class PrismaticJoint : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            Draw.g_camera.m_zoom = 25.0f * 0.5f;
+            B2.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
+            B2.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         B2BodyId groundId;
@@ -91,7 +91,7 @@ public class PrismaticJoint : Sample
     {
         bool open = false;
         float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Prismatic Joint", ref open, ImGuiWindowFlags.NoResize);
@@ -152,15 +152,15 @@ public class PrismaticJoint : Sample
         base.Step(settings);
 
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        Draw.g_draw.DrawString(5, m_textLine, "Motor Force = %4.1f", force);
+        B2.g_draw.DrawString(5, m_textLine, "Motor Force = %4.1f", force);
         m_textLine += m_textIncrement;
 
         float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        Draw.g_draw.DrawString(5, m_textLine, "Translation = %4.1f", translation);
+        B2.g_draw.DrawString(5, m_textLine, "Translation = %4.1f", translation);
         m_textLine += m_textIncrement;
 
         float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        Draw.g_draw.DrawString(5, m_textLine, "Speed = %4.8f", speed);
+        B2.g_draw.DrawString(5, m_textLine, "Speed = %4.8f", speed);
         m_textLine += m_textIncrement;
     }
 }

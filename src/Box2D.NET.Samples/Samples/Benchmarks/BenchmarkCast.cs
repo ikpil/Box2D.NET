@@ -48,8 +48,8 @@ public class BenchmarkCast : Sample
     {
         if (settings.restart == false)
         {
-            Draw.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            Draw.g_camera.m_zoom = 25.0f * 21.0f;
+            B2.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
+            B2.g_camera.m_zoom = 25.0f * 21.0f;
             // settings.drawShapes = g_sampleDebug;
         }
 
@@ -160,7 +160,7 @@ public class BenchmarkCast : Sample
     {
         bool open = false;
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, Draw.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Cast", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -295,12 +295,12 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            Draw.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
-            Draw.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            Draw.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            B2.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            B2.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            B2.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                B2.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_circleCast)
@@ -334,14 +334,14 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            Draw.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
-            Draw.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            Draw.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            B2.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            B2.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            B2.g_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
                 B2Vec2 t = b2Lerp(p1, p2, drawResult.fraction);
-                Draw.g_draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
-                Draw.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                B2.g_draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
+                B2.g_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_overlap)
@@ -378,29 +378,29 @@ public class BenchmarkCast : Sample
                 B2Vec2 origin = m_origins[m_drawIndex];
                 B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
-                Draw.g_draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
+                B2.g_draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
             }
 
             for (int i = 0; i < drawResult.count; ++i)
             {
-                Draw.g_draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
+                B2.g_draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
             }
         }
 
-        Draw.g_draw.DrawString(5, m_textLine, "build time ms = %g", m_buildTime);
+        B2.g_draw.DrawString(5, m_textLine, "build time ms = %g", m_buildTime);
         m_textLine += m_textIncrement;
 
-        Draw.g_draw.DrawString(5, m_textLine, "hit count = %d, node visits = %d, leaf visits = %d", hitCount, nodeVisits, leafVisits);
+        B2.g_draw.DrawString(5, m_textLine, "hit count = %d, node visits = %d, leaf visits = %d", hitCount, nodeVisits, leafVisits);
         m_textLine += m_textIncrement;
 
-        Draw.g_draw.DrawString(5, m_textLine, "total ms = %.3f", ms);
+        B2.g_draw.DrawString(5, m_textLine, "total ms = %.3f", ms);
         m_textLine += m_textIncrement;
 
-        Draw.g_draw.DrawString(5, m_textLine, "min total ms = %.3f", m_minTime);
+        B2.g_draw.DrawString(5, m_textLine, "min total ms = %.3f", m_minTime);
         m_textLine += m_textIncrement;
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
-        Draw.g_draw.DrawString(5, m_textLine, "average us = %.2f", aveRayCost);
+        B2.g_draw.DrawString(5, m_textLine, "average us = %.2f", aveRayCost);
         m_textLine += m_textIncrement;
     }
 }
