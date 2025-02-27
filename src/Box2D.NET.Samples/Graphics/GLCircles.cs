@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
@@ -46,25 +47,18 @@ public class GLCircles
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        B2Vec2 vertices[] =  {
-            {
-                -a, -a
-            }, {
-                a, -a
-            }, {
-                -a, a
-            }, {
-                a, -a
-            }, {
-                a, a
-            }, {
-                -a, a
-            }
-        }
-        ;
+        B2Vec2[] vertices = new B2Vec2[]
+        {
+            new B2Vec2(-a, -a),
+            new B2Vec2(a, -a),
+            new B2Vec2(-a, a),
+            new B2Vec2(a, -a),
+            new B2Vec2(a, a),
+            new B2Vec2(-a, a),
+        };
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[0]);
-        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, sizeof(vertices), vertices, GLEnum.StaticDraw);
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET(0));
+        B2GL.Shared.Gl.BufferData<B2Vec2>(GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw);
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
         // Circle buffer
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);

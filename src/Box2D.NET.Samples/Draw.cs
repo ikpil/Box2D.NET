@@ -13,8 +13,6 @@ using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples;
 
-#define BUFFER_OFFSET( x ) ( (const void*)( x ) )
-
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {

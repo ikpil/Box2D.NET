@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using Box2D.NET.Primitives;
 using Silk.NET.OpenGL;
 
@@ -33,9 +34,9 @@ public class GLBackground
 
         // Single quad
         B2Vec2[] vertices = new B2Vec2[] {new B2Vec2( -1.0f, 1.0f ), new B2Vec2( -1.0f, -1.0f ), new B2Vec2( 1.0f, 1.0f ), new B2Vec2( 1.0f, -1.0f ) };
-        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId );
-        B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
-        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId[0] );
+        B2GL.Shared.Gl.BufferData<B2Vec2>( GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw );
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
         B2GL.Shared.CheckErrorGL();
 
@@ -46,15 +47,15 @@ public class GLBackground
 
     public void Destroy()
     {
-        if ( m_vaoId )
+        if ( 0 != m_vaoId[0] )
         {
-            B2GL.Shared.Gl.DeleteVertexArrays( 1, &m_vaoId );
-            B2GL.Shared.Gl.DeleteBuffers( 1, &m_vboId );
-            m_vaoId = 0;
-            m_vboId = 0;
+            B2GL.Shared.Gl.DeleteVertexArrays( m_vaoId );
+            B2GL.Shared.Gl.DeleteBuffers( m_vboId );
+            m_vaoId[0] = 0;
+            m_vboId[0] = 0;
         }
 
-        if ( m_programId )
+        if ( 0 != m_programId )
         {
             B2GL.Shared.Gl.DeleteProgram( m_programId );
             m_programId = 0;
