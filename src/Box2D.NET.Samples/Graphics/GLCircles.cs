@@ -29,10 +29,10 @@ public class GLCircles
         m_programId = B2GL.Shared.CreateProgramFromFiles("samples/data/circle.vs", "samples/data/circle.fs");
         m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "pixelScale");
-        int vertexAttribute = 0;
-        int positionInstance = 1;
-        int radiusInstance = 2;
-        int colorInstance = 3;
+        uint vertexAttribute = 0;
+        uint positionInstance = 1;
+        uint radiusInstance = 2;
+        uint colorInstance = 3;
 
         // Generate
         B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
@@ -70,12 +70,9 @@ public class GLCircles
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
         B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(CircleData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData),
-            (void*)offsetof(CircleData, position));
-        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData),
-            (void*)offsetof(CircleData, radius));
-        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(CircleData),
-            (void*)offsetof(CircleData, rgba));
+        B2GL.Shared.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData), (void*)offsetof(CircleData, position));
+        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData), (void*)offsetof(CircleData, radius));
+        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(CircleData), (void*)offsetof(CircleData, rgba));
 
         B2GL.Shared.Gl.VertexAttribDivisor(positionInstance, 1);
         B2GL.Shared.Gl.VertexAttribDivisor(radiusInstance, 1);
@@ -131,7 +128,7 @@ public class GLCircles
         Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        glUniform1f(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
+        B2GL.Shared.Gl.Uniform1(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
 
         B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 

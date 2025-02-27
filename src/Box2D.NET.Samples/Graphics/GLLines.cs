@@ -48,8 +48,8 @@ public class GLLines
 
         m_programId = B2GL.Shared.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
-        int vertexAttribute = 0;
-        int colorAttribute = 1;
+        uint vertexAttribute = 0;
+        uint colorAttribute = 1;
 
         // Generate
         B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
@@ -63,11 +63,9 @@ public class GLLines
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
         B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(VertexData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(VertexData),
-            (void*)offsetof(VertexData, position));
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, position));
         // save bandwidth by expanding color to floats in the shader
-        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData),
-            (void*)offsetof(VertexData, rgba));
+        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData), (void*)offsetof(VertexData, rgba));
 
         CheckErrorGL();
 

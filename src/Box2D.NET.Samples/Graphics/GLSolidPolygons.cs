@@ -30,15 +30,15 @@ public class GLSolidPolygons
 
         m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "projectionMatrix" );
         m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "pixelScale" );
-        int vertexAttribute = 0;
-        int instanceTransform = 1;
-        int instancePoint12 = 2;
-        int instancePoint34 = 3;
-        int instancePoint56 = 4;
-        int instancePoint78 = 5;
-        int instancePointCount = 6;
-        int instanceRadius = 7;
-        int instanceColor = 8;
+        uint vertexAttribute = 0;
+        uint instanceTransform = 1;
+        uint instancePoint12 = 2;
+        uint instancePoint34 = 3;
+        uint instancePoint56 = 4;
+        uint instancePoint78 = 5;
+        uint instancePointCount = 6;
+        uint instanceRadius = 7;
+        uint instanceColor = 8;
 
         // Generate
         B2GL.Shared.Gl.GenVertexArrays( 1, &m_vaoId );
@@ -65,22 +65,15 @@ public class GLSolidPolygons
         // Polygon buffer
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
         B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, e_batchSize * sizeof( PolygonData ), nullptr, GLEnum.DynamicDraw );
-        B2GL.Shared.Gl.VertexAttribPointer( instanceTransform, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, transform ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint12, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, p1 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint34, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, p3 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint56, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, p5 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint78, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, p7 ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instanceTransform, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, transform ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint12, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p1 ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint34, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p3 ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint56, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p5 ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint78, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p7 ) );
         glVertexAttribIPointer( instancePointCount, 1, GL_INT, sizeof( PolygonData ), (void*)offsetof( PolygonData, count ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instanceRadius, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, radius ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instanceRadius, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, radius ) );
         // color will get automatically expanded to floats in the shader
-        B2GL.Shared.Gl.VertexAttribPointer( instanceColor, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof( PolygonData ),
-            (void*)offsetof( PolygonData, color ) );
+        B2GL.Shared.Gl.VertexAttribPointer( instanceColor, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof( PolygonData ), (void*)offsetof( PolygonData, color ) );
 
         // These divisors tell glsl how to distribute per instance data
         B2GL.Shared.Gl.VertexAttribDivisor( instanceTransform, 1 );
@@ -148,7 +141,7 @@ public class GLSolidPolygons
         Draw.g_camera.BuildProjectionMatrix( proj, 0.2f );
 
         glUniformMatrix4fv( m_projectionUniform, 1, GL_FALSE, proj );
-        glUniform1f( m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom );
+        B2GL.Shared.Gl.Uniform1( m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom );
 
         B2GL.Shared.Gl.BindVertexArray( m_vaoId );
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
