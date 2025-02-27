@@ -57,7 +57,7 @@ public class SensorFunnel : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            // b2Vec2 points[] = {
+            // B2Vec2 points[] = {
             //{42.333, 44.979},	{177.271, 44.979},	{177.271, 100.542}, {142.875, 121.708}, {177.271, 121.708},
             //{177.271, 171.979}, {142.875, 193.146}, {177.271, 193.146}, {177.271, 222.250}, {124.354, 261.938},
             //{124.354, 293.688}, {95.250, 293.688},	{95.250, 261.938},	{42.333, 222.250},	{42.333, 193.146},
@@ -78,8 +78,8 @@ public class SensorFunnel : Sample
             int count = points.Length;
 
             // float scale = 0.25f;
-            // b2Vec2 lower = {float.MaxValue, float.MaxValue};
-            // b2Vec2 upper = {-float.MaxValue, -float.MaxValue};
+            // B2Vec2 lower = {float.MaxValue, float.MaxValue};
+            // B2Vec2 upper = {-float.MaxValue, -float.MaxValue};
             // for (int i = 0; i < count; ++i)
             //{
             //	points[i].x = scale * points[i].x;
@@ -89,7 +89,7 @@ public class SensorFunnel : Sample
             //	upper = b2Max(upper, points[i]);
             //}
 
-            // b2Vec2 center = b2MulSV(0.5f, b2Add(lower, upper));
+            // B2Vec2 center = b2MulSV(0.5f, b2Add(lower, upper));
             // for (int i = 0; i < count; ++i)
             //{
             //	points[i] = b2Sub(points[i], center);
@@ -97,17 +97,17 @@ public class SensorFunnel : Sample
 
             // for (int i = 0; i < count / 2; ++i)
             //{
-            //	b2Vec2 temp = points[i];
+            //	B2Vec2 temp = points[i];
             //	points[i] = points[count - 1 - i];
             //	points[count - 1 - i] = temp;
             // }
 
-            // printf("{");
+            // Console.WriteLine("{");
             // for (int i = 0; i < count; ++i)
             //{
-            //	printf("{%.9g, %.9g},", points[i].x, points[i].y);
+            //	Console.WriteLine("{%.9g, %.9g},", points[i].x, points[i].y);
             // }
-            // printf("};\n");
+            // Console.WriteLine("};\n");
 
             B2SurfaceMaterial material = new B2SurfaceMaterial();
             material.friction = 0.2f;

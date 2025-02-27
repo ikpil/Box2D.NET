@@ -1041,7 +1041,7 @@ namespace Box2D.NET
 
             // todo_erin
             // c1 can be at the origin yet the points are far away
-            // b2Vec2 origin = b2Add(sweepA.c1, input.proxyA.points[0]);
+            // B2Vec2 origin = b2Add(sweepA.c1, input.proxyA.points[0]);
 
             ref B2ShapeProxy proxyA = ref input.proxyA;
             ref B2ShapeProxy proxyB = ref input.proxyB;

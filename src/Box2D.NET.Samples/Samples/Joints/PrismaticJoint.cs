@@ -65,7 +65,7 @@ public class PrismaticJoint : Sample
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(0.0f, 9.0f);
-            // b2Vec2 axis = b2Normalize({1.0f, 0.0f});
+            // B2Vec2 axis = b2Normalize({1.0f, 0.0f});
             B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.bodyIdA = groundId;

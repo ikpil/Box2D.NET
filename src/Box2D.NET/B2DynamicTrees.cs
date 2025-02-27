@@ -1063,7 +1063,7 @@ namespace Box2D.NET
         {
             // TODO: @ikpil, check
             // int size = sizeof( b2DynamicTree ) + sizeof( b2TreeNode ) * tree.nodeCapacity +
-            //               tree.rebuildCapacity * ( sizeof( int ) + sizeof( b2AABB ) + sizeof( b2Vec2 ) + sizeof( int ) );
+            //               tree.rebuildCapacity * ( sizeof( int ) + sizeof( b2AABB ) + sizeof( B2Vec2 ) + sizeof( int ) );
             //return (int)size;
             return -1;
         }

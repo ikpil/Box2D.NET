@@ -147,13 +147,13 @@ public class FallingHinges : Sample
         for (int i = 0; i < bodyCount; ++i)
         {
             B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-            //printf("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
+            //Console.WriteLine("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
             Console.WriteLine($"{i} {xf.p.x:F9} {xf.p.y:F9} {xf.q.c:F9} {xf.q.s:F9}");
             xf.TryWriteBytes(bxf);
             hash = b2Hash(hash, bxf, bxf.Length);
         }
 
-        //printf("hash = 0x%08x\n", hash);
+        //Console.WriteLine("hash = 0x%08x\n", hash);
         Console.WriteLine($"hash = 0x{hash:X8}");
     }
 
@@ -173,14 +173,14 @@ public class FallingHinges : Sample
                 for (int i = 0; i < bodyCount; ++i)
                 {
                     B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-                    //printf( "%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s );
+                    //Console.WriteLine( "%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s );
                     xf.TryWriteBytes(bxf);
                     hash = b2Hash(hash, bxf, bxf.Length);
                 }
 
                 m_sleepStep = m_stepCount - 1;
                 m_hash = hash;
-                //printf("sleep step = %d, hash = 0x%08x\n", m_sleepStep, m_hash);
+                //Console.WriteLine("sleep step = %d, hash = 0x%08x\n", m_sleepStep, m_hash);
                 Console.WriteLine($"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
             }
         }

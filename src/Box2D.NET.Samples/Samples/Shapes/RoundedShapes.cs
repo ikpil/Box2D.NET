@@ -49,7 +49,7 @@ public class RoundedShapes : Sample
             // b2Circle circle = {{0.0f, 0.0f}, 0.35f};
             // b2Polygon square = b2MakeSquare(0.35f);
 
-            // b2Vec2 points[3] = {{-0.1f, -0.5f}, {0.1f, -0.5f}, {0.0f, 0.5f}};
+            // B2Vec2 points[3] = {{-0.1f, -0.5f}, {0.1f, -0.5f}, {0.0f, 0.5f}};
             // b2Hull wedgeHull = b2ComputeHull(points, 3);
             // b2Polygon wedge = b2MakePolygon(wedgeHull, 0.0f);
 

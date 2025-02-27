@@ -12,7 +12,7 @@ namespace Box2D.NET.Primitives
     public class B2DebugDraw
     {
         /// Draw a closed polygon provided in CCW order.
-        //void ( *DrawPolygon )( const b2Vec2* vertices, int vertexCount, b2HexColor color, object context );
+        //void ( *DrawPolygon )( const B2Vec2* vertices, int vertexCount, b2HexColor color, object context );
         public delegate void DrawPolygonDelegate(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context);
 
         public DrawPolygonDelegate DrawPolygon;

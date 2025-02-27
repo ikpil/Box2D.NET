@@ -37,7 +37,7 @@ public class Truck
         Debug.Assert(B2_IS_NULL(m_frontWheelId));
         Debug.Assert(B2_IS_NULL(m_rearWheelId));
 
-        // b2Vec2 vertices[6] = {
+        // B2Vec2 vertices[6] = {
         //	{ -1.5f, -0.5f }, { 1.5f, -0.5f }, { 1.5f, 0.0f }, { 0.0f, 0.9f }, { -1.15f, 0.9f }, { -1.5f, 0.2f },
         // };
 

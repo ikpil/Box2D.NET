@@ -128,8 +128,8 @@ public class SampleApp
             return -1;
         }
 
-        printf( "GL %d.%d\n", GLVersion.major, GLVersion.minor );
-        printf( "OpenGL %s, GLSL %s\n", glGetString( GL_VERSION ), glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+        Console.WriteLine( "GL %d.%d\n", GLVersion.major, GLVersion.minor );
+        Console.WriteLine( "OpenGL %s, GLSL %s\n", glGetString( GL_VERSION ), glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
         glfwSetWindowSizeCallback( g_mainWindow, ResizeWindowCallback );
         glfwSetKeyCallback( g_mainWindow, KeyCallback );
@@ -316,7 +316,7 @@ public class SampleApp
 
     public static int AssertFcn( string condition, string fileName, int lineNumber )
     {
-        printf( "SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber );
+        Console.WriteLine( "SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber );
         return 1;
     }
 
@@ -361,14 +361,14 @@ public class SampleApp
         bool success = ImGui_ImplGlfw_InitForOpenGL( window, false );
         if ( success == false )
         {
-            printf( "ImGui_ImplGlfw_InitForOpenGL failed\n" );
+            Console.WriteLine( "ImGui_ImplGlfw_InitForOpenGL failed\n" );
             Debug.Assert( false );
         }
 
         success = ImGui_ImplOpenGL3_Init( glslVersion );
         if ( success == false )
         {
-            printf( "ImGui_ImplOpenGL3_Init failed\n" );
+            Console.WriteLine( "ImGui_ImplOpenGL3_Init failed\n" );
             Debug.Assert( false );
         }
 
@@ -386,7 +386,7 @@ public class SampleApp
         }
         else
         {
-            printf( "\n\nERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)\n\n" );
+            Console.WriteLine( "\n\nERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)\n\n" );
             exit( EXIT_FAILURE );
         }
     }

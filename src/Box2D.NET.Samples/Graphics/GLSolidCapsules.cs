@@ -114,7 +114,7 @@ public class GLSolidCapsules
         float length = b2Length(d);
         if (length < 0.001f)
         {
-            printf("WARNING: sample app: capsule too short!\n");
+            Console.WriteLine("WARNING: sample app: capsule too short!\n");
             return;
         }
 

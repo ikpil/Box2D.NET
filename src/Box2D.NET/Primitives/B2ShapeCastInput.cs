@@ -10,7 +10,7 @@ namespace Box2D.NET.Primitives
     public struct B2ShapeCastInput
     {
         /// A point cloud to cast
-        //public b2Vec2[] points = new b2Vec2[constants.B2_MAX_POLYGON_VERTICES];
+        //public B2Vec2[] points = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];
         public B2Vec2[] points;
 
         /// The number of points

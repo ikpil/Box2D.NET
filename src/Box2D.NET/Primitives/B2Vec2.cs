@@ -25,21 +25,21 @@ namespace Box2D.NET.Primitives
          */
 
         // /// Unary add one vector to another
-        // public static void operator+=( b2Vec2& a, b2Vec2 b )
+        // public static void operator+=( B2Vec2& a, B2Vec2 b )
         // {
         //     a.x += b.x;
         //     a.y += b.y;
         // }
         //
         // /// Unary subtract one vector from another
-        // public static void operator-=( b2Vec2& a, b2Vec2 b )
+        // public static void operator-=( B2Vec2& a, B2Vec2 b )
         // {
         //     a.x -= b.x;
         //     a.y -= b.y;
         // }
         //
         // /// Unary multiply a vector by a scalar
-        // public static void operator*=( b2Vec2& a, float b )
+        // public static void operator*=( B2Vec2& a, float b )
         // {
         //     a.x *= b;
         //     a.y *= b;

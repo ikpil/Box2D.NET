@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Primitives;
 using Silk.NET.OpenGL;
 
 namespace Box2D.NET.Samples.Graphics;
@@ -21,17 +22,17 @@ public class GLBackground
         m_timeUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "time" );
         m_resolutionUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "resolution" );
         m_baseColorUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "baseColor" );
-        int vertexAttribute = 0;
+        uint vertexAttribute = 0;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays( 1, &m_vaoId );
-        B2GL.Shared.Gl.GenBuffers( 1, &m_vboId );
+        B2GL.Shared.Gl.GenVertexArrays( m_vaoId );
+        B2GL.Shared.Gl.GenBuffers( m_vboId );
 
         B2GL.Shared.Gl.BindVertexArray( m_vaoId );
         B2GL.Shared.Gl.EnableVertexAttribArray( vertexAttribute );
 
         // Single quad
-        b2Vec2 vertices[] = { { -1.0f, 1.0f }, { -1.0f, -1.0f }, { 1.0f, 1.0f }, { 1.0f, -1.0f } };
+        B2Vec2 vertices[] = { { -1.0f, 1.0f }, { -1.0f, -1.0f }, { 1.0f, 1.0f }, { 1.0f, -1.0f } };
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId );
         B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
         B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );

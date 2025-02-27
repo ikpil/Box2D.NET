@@ -46,25 +46,25 @@ public class ConvexHull : Sample
     void Generate()
     {
 #if FALSE
-		m_points[0] = new b2Vec2( 5.65314484f, 0.204832315f );
-		m_points[1] = new b2Vec2(-5.65314484f, -0.204832315f );
-		m_points[2] = new b2Vec2(2.34463644f, 1.15731204f );
-		m_points[3] = new b2Vec2(0.0508846045f, 3.23230696f );
-		m_points[4] = new b2Vec2(-5.65314484f, -0.204832315f );
-		m_points[5] = new b2Vec2(-5.65314484f, -0.204832315f );
-		m_points[6] = new b2Vec2(3.73758054f, -1.11098099f );
-		m_points[7] = new b2Vec2(1.33504069f, -4.43795443f );
+		m_points[0] = new B2Vec2( 5.65314484f, 0.204832315f );
+		m_points[1] = new B2Vec2(-5.65314484f, -0.204832315f );
+		m_points[2] = new B2Vec2(2.34463644f, 1.15731204f );
+		m_points[3] = new B2Vec2(0.0508846045f, 3.23230696f );
+		m_points[4] = new B2Vec2(-5.65314484f, -0.204832315f );
+		m_points[5] = new B2Vec2(-5.65314484f, -0.204832315f );
+		m_points[6] = new B2Vec2(3.73758054f, -1.11098099f );
+		m_points[7] = new B2Vec2(1.33504069f, -4.43795443f );
 
 		m_count = e_count;
 #elif FALSE
-		m_points[0] = new b2Vec2( -0.328125f, 0.179688f );
-		m_points[1] = new b2Vec2( -0.203125f, 0.304688f );
-		m_points[2] = new b2Vec2( 0.171875f, 0.304688f );
-		m_points[3] = new b2Vec2( 0.359375f, 0.117188f );
-		m_points[4] = new b2Vec2( 0.359375f, -0.195313f );
-		m_points[5] = new b2Vec2( 0.234375f, -0.320313f );
-		m_points[6] = new b2Vec2( -0.265625f, -0.257813f );
-		m_points[7] = new b2Vec2( -0.328125f, -0.132813f );
+		m_points[0] = new B2Vec2( -0.328125f, 0.179688f );
+		m_points[1] = new B2Vec2( -0.203125f, 0.304688f );
+		m_points[2] = new B2Vec2( 0.171875f, 0.304688f );
+		m_points[3] = new B2Vec2( 0.359375f, 0.117188f );
+		m_points[4] = new B2Vec2( 0.359375f, -0.195313f );
+		m_points[5] = new B2Vec2( 0.234375f, -0.320313f );
+		m_points[6] = new B2Vec2( -0.265625f, -0.257813f );
+		m_points[7] = new B2Vec2( -0.328125f, -0.132813f );
 
 		b2Hull hull = b2ComputeHull( m_points, 8 );
 		bool valid = b2ValidateHull( &hull );

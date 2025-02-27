@@ -69,7 +69,7 @@ public class ChainShape : Sample
         }
 
         // https://betravis.github.io/shape-tools/path-to-polygon/
-        // b2Vec2 points[] = {{-20.58325, 14.54175}, {-21.90625, 15.8645},		 {-24.552, 17.1875},
+        // B2Vec2 points[] = {{-20.58325, 14.54175}, {-21.90625, 15.8645},		 {-24.552, 17.1875},
         //				   {-27.198, 11.89575},	  {-29.84375, 15.8645},		 {-29.84375, 21.15625},
         //				   {-25.875, 23.802},	  {-20.58325, 25.125},		 {-25.875, 29.09375},
         //				   {-20.58325, 31.7395},  {-11.0089998, 23.2290001}, {-8.67700005, 21.15625},
@@ -94,8 +94,8 @@ public class ChainShape : Sample
         int count = points.Length;
 
         // float scale = 0.25f;
-        // b2Vec2 lower = {float.MaxValue, float.MaxValue};
-        // b2Vec2 upper = {-float.MaxValue, -float.MaxValue};
+        // B2Vec2 lower = {float.MaxValue, float.MaxValue};
+        // B2Vec2 upper = {-float.MaxValue, -float.MaxValue};
         // for (int i = 0; i < count; ++i)
         //{
         //	points[i].x = 2.0f * scale * points[i].x;
@@ -105,7 +105,7 @@ public class ChainShape : Sample
         //	upper = b2Max(upper, points[i]);
         //}
 
-        // b2Vec2 center = b2MulSV(0.5f, b2Add(lower, upper));
+        // B2Vec2 center = b2MulSV(0.5f, b2Add(lower, upper));
         // for (int i = 0; i < count; ++i)
         //{
         //	points[i] = b2Sub(points[i], center);
@@ -113,17 +113,17 @@ public class ChainShape : Sample
 
         // for (int i = 0; i < count / 2; ++i)
         //{
-        //	b2Vec2 temp = points[i];
+        //	B2Vec2 temp = points[i];
         //	points[i] = points[count - 1 - i];
         //	points[count - 1 - i] = temp;
         // }
 
-        // printf("{");
+        // Console.WriteLine("{");
         // for (int i = 0; i < count; ++i)
         //{
-        //	printf("{%.9g, %.9g},", points[i].x, points[i].y);
+        //	Console.WriteLine("{%.9g, %.9g},", points[i].x, points[i].y);
         // }
-        // printf("};\n");
+        // Console.WriteLine("};\n");
 
         B2SurfaceMaterial material = new B2SurfaceMaterial();
         material.friction = 0.2f;

@@ -2501,7 +2501,7 @@ namespace Box2D.NET
         }
 
 #if FALSE
-void b2World_ShiftOrigin(b2WorldId worldId, b2Vec2 newOrigin)
+void b2World_ShiftOrigin(b2WorldId worldId, B2Vec2 newOrigin)
 {
 	Debug.Assert(m_locked == false);
 	if (m_locked)
@@ -2533,7 +2533,7 @@ void b2World_Dump()
 
 	b2OpenDump("box2d_dump.inl");
 
-	b2Dump("b2Vec2 g(%.9g, %.9g);\n", m_gravity.x, m_gravity.y);
+	b2Dump("B2Vec2 g(%.9g, %.9g);\n", m_gravity.x, m_gravity.y);
 	b2Dump("m_world.SetGravity(g);\n");
 
 	b2Dump("b2Body** sims = (b2Body**)b2Alloc(%d * sizeof(b2Body*));\n", m_bodyCount);
