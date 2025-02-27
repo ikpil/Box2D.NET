@@ -66,7 +66,7 @@ public class GLTriangles
         // color will get automatically expanded to floats in the shader
         B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData), (void*)offsetof(VertexData, rgba));
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -138,7 +138,7 @@ public class GLTriangles
             B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(VertexData), &m_points[base]);
             B2GL.Shared.Gl.DrawArrays(GLEnum.Triangles, 0, batchCount);
 
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;

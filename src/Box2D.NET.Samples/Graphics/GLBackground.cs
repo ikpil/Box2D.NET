@@ -32,12 +32,12 @@ public class GLBackground
         B2GL.Shared.Gl.EnableVertexAttribArray( vertexAttribute );
 
         // Single quad
-        B2Vec2 vertices[] = { { -1.0f, 1.0f }, { -1.0f, -1.0f }, { 1.0f, 1.0f }, { 1.0f, -1.0f } };
+        B2Vec2[] vertices = new B2Vec2[] {new B2Vec2( -1.0f, 1.0f ), new B2Vec2( -1.0f, -1.0f ), new B2Vec2( 1.0f, 1.0f ), new B2Vec2( 1.0f, -1.0f ) };
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId );
         B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
         B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );

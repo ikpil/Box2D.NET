@@ -46,13 +46,13 @@ public class GLPoints
 
         m_programId = B2GL.Shared.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
-        int vertexAttribute = 0;
-        int sizeAttribute = 1;
-        int colorAttribute = 2;
+        uint vertexAttribute = 0;
+        uint sizeAttribute = 1;
+        uint colorAttribute = 2;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
-        B2GL.Shared.Gl.GenBuffers(1, &m_vboId);
+        B2GL.Shared.Gl.GenVertexArrays(m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(m_vboId);
 
         B2GL.Shared.Gl.BindVertexArray(m_vaoId);
         B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
@@ -63,14 +63,12 @@ public class GLPoints
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
         B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(PointData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(PointData),
-            (void*)offsetof(PointData, position));
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, position));
         B2GL.Shared.Gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, size));
         // save bandwidth by expanding color to floats in the shader
-        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(PointData),
-            (void*)offsetof(PointData, rgba));
+        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(PointData), (void*)offsetof(PointData, rgba));
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -129,7 +127,7 @@ public class GLPoints
             B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(PointData), &m_points[@base]);
             B2GL.Shared.Gl.DrawArrays(GLEnum.Points, 0, batchCount);
 
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

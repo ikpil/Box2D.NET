@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
@@ -83,7 +84,7 @@ public class GLSolidCapsules
         B2GL.Shared.Gl.VertexAttribDivisor(lengthInstance, 1);
         B2GL.Shared.Gl.VertexAttribDivisor(colorInstance, 1);
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -164,7 +165,7 @@ public class GLSolidCapsules
             B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
             B2GL.Shared.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
 
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;

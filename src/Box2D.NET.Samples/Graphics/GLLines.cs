@@ -67,7 +67,7 @@ public class GLLines
         // save bandwidth by expanding color to floats in the shader
         B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData), (void*)offsetof(VertexData, rgba));
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -130,7 +130,7 @@ public class GLLines
 
             B2GL.Shared.Gl.DrawArrays(GL_LINES, 0, batchCount);
 
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;

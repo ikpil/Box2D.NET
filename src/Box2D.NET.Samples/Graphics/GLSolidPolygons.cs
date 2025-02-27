@@ -85,7 +85,7 @@ public class GLSolidPolygons
         B2GL.Shared.Gl.VertexAttribDivisor( instanceRadius, 1 );
         B2GL.Shared.Gl.VertexAttribDivisor( instanceColor, 1 );
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
@@ -156,7 +156,7 @@ public class GLSolidPolygons
 
             B2GL.Shared.Gl.BufferSubData( GLEnum.ArrayBuffer, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
             B2GL.Shared.Gl.DrawArraysInstanced( GLEnum.Triangles, 0, 6, batchCount );
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;

@@ -78,7 +78,7 @@ public class GLCircles
         B2GL.Shared.Gl.VertexAttribDivisor(radiusInstance, 1);
         B2GL.Shared.Gl.VertexAttribDivisor(colorInstance, 1);
 
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
 
         // Cleanup
         B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -144,7 +144,7 @@ public class GLCircles
             B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CircleData), &m_circles[base]);
             B2GL.Shared.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
 
-            CheckErrorGL();
+            B2GL.Shared.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;

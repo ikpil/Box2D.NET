@@ -262,7 +262,7 @@ public class Draw
         m_circles.Flush();
         m_lines.Flush();
         m_points.Flush();
-        CheckErrorGL();
+        B2GL.Shared.CheckErrorGL();
     }
 
     public void DrawBackground()
