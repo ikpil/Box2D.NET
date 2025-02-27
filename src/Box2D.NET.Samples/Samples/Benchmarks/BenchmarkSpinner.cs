@@ -4,7 +4,7 @@
 
 using Box2D.NET.Primitives;
 using static Box2D.NET.B2Distances;
-using static Box2D.NET.Shared.Benchmarks2;
+using static Box2D.NET.Shared.Benchmarks;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 

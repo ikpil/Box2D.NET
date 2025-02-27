@@ -19,7 +19,7 @@ using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Shared
 {
-    public static class Benchmarks2
+    public static class Benchmarks
     {
 #if NDEBUG
         private const bool BENCHMARK_DEBUG = false;

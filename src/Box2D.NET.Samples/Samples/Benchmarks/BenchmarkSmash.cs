@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using Box2D.NET.Primitives;
-using static Box2D.NET.Shared.Benchmarks2;
+using static Box2D.NET.Shared.Benchmarks;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
