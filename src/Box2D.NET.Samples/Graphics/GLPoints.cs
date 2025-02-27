@@ -16,8 +16,8 @@ public class GLPoints
 
     List<PointData> m_points;
 
-    uint m_vaoId;
-    uint m_vboId;
+    uint[] m_vaoId = new uint[1];
+    uint[] m_vboId = new uint[1];
     uint m_programId;
     int m_projectionUniform;
 
@@ -54,7 +54,7 @@ public class GLPoints
         B2GL.Shared.Gl.GenVertexArrays(m_vaoId);
         B2GL.Shared.Gl.GenBuffers(m_vboId);
 
-        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId[0]);
         B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
         B2GL.Shared.Gl.EnableVertexAttribArray(sizeAttribute);
         B2GL.Shared.Gl.EnableVertexAttribArray(colorAttribute);
@@ -117,7 +117,7 @@ public class GLPoints
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
         B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
         B2GL.Shared.Gl.Enable(GLEnum.ProgramPointSize);
 
         int @base = 0;

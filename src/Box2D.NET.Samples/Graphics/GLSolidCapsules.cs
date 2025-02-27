@@ -18,8 +18,8 @@ public class GLSolidCapsules
 
     List<CapsuleData> m_capsules;
 
-    uint m_vaoId;
-    uint m_vboIds[2];
+    uint[] m_vaoId = new uint[1];
+    uint[] m_vboIds = new uint[2];
     uint m_programId;
     int m_projectionUniform;
     int m_pixelScaleUniform;
@@ -38,10 +38,10 @@ public class GLSolidCapsules
         uint colorInstance = 4;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
-        B2GL.Shared.Gl.GenBuffers(2, m_vboIds);
+        B2GL.Shared.Gl.GenVertexArrays(m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(m_vboIds);
 
-        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId[0]);
         B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
         B2GL.Shared.Gl.EnableVertexAttribArray(transformInstance);
         B2GL.Shared.Gl.EnableVertexAttribArray(radiusInstance);
@@ -93,11 +93,11 @@ public class GLSolidCapsules
 
     public void Destroy()
     {
-        if (m_vaoId)
+        if (0 != m_vaoId[0])
         {
-            B2GL.Shared.Gl.DeleteVertexArrays(1, &m_vaoId);
-            B2GL.Shared.Gl.DeleteBuffers(2, m_vboIds);
-            m_vaoId = 0;
+            B2GL.Shared.Gl.DeleteVertexArrays(m_vaoId);
+            B2GL.Shared.Gl.DeleteBuffers(m_vboIds);
+            m_vaoId[0] = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;
         }

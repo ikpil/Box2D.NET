@@ -9,8 +9,8 @@ namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
 {
-    uint m_vaoId;
-    uint m_vboId;
+    uint[] m_vaoId = new uint[1];
+    uint[] m_vboId = new uint[1];
     uint m_programId;
     int m_timeUniform;
     int m_resolutionUniform;
@@ -28,7 +28,7 @@ public class GLBackground
         B2GL.Shared.Gl.GenVertexArrays( m_vaoId );
         B2GL.Shared.Gl.GenBuffers( m_vboId );
 
-        B2GL.Shared.Gl.BindVertexArray( m_vaoId );
+        B2GL.Shared.Gl.BindVertexArray( m_vaoId[0] );
         B2GL.Shared.Gl.EnableVertexAttribArray( vertexAttribute );
 
         // Single quad

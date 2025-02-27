@@ -17,8 +17,8 @@ public class GLCircles
 
     List<CircleData> m_circles;
 
-    uint m_vaoId;
-    uint m_vboIds[2];
+    uint[] m_vaoId = new uint[1];
+    uint[] m_vboIds = new uint[2];
     uint m_programId;
     int m_projectionUniform;
     int m_pixelScaleUniform;
@@ -35,10 +35,10 @@ public class GLCircles
         uint colorInstance = 3;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
-        B2GL.Shared.Gl.GenBuffers(2, m_vboIds);
+        B2GL.Shared.Gl.GenVertexArrays(m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(m_vboIds);
 
-        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId[0]);
         B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
         B2GL.Shared.Gl.EnableVertexAttribArray(positionInstance);
         B2GL.Shared.Gl.EnableVertexAttribArray(radiusInstance);

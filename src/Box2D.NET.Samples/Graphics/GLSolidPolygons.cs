@@ -18,8 +18,8 @@ public class GLSolidPolygons
 
     List<PolygonData> m_polygons;
 
-    uint m_vaoId;
-    uint m_vboIds[2];
+    uint[] m_vaoId = new uint[1];
+    uint[] m_vboIds = new uint[2];
     uint m_programId;
     int m_projectionUniform;
     int m_pixelScaleUniform;
@@ -41,10 +41,10 @@ public class GLSolidPolygons
         uint instanceColor = 8;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays( 1, &m_vaoId );
-        B2GL.Shared.Gl.GenBuffers( 2, m_vboIds );
+        B2GL.Shared.Gl.GenVertexArrays( m_vaoId );
+        B2GL.Shared.Gl.GenBuffers( m_vboIds );
 
-        B2GL.Shared.Gl.BindVertexArray( m_vaoId );
+        B2GL.Shared.Gl.BindVertexArray( m_vaoId[0] );
         B2GL.Shared.Gl.EnableVertexAttribArray( vertexAttribute );
         B2GL.Shared.Gl.EnableVertexAttribArray( instanceTransform );
         B2GL.Shared.Gl.EnableVertexAttribArray( instancePoint12 );
