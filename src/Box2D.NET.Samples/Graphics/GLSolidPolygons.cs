@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -56,28 +58,28 @@ public class GLSolidPolygons
         // Vertex buffer for single quad
         float a = 1.1f;
         B2Vec2 vertices[] = { { -a, -a }, { a, -a }, { -a, a }, { a, -a }, { a, a }, { -a, a } };
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[0] );
-        B2GL.Shared.Gl.BufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
-        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[0] );
+        B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
+        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
 
         // Polygon buffer
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
-        B2GL.Shared.Gl.BufferData( GL_ARRAY_BUFFER, e_batchSize * sizeof( PolygonData ), nullptr, GL_DYNAMIC_DRAW );
-        B2GL.Shared.Gl.VertexAttribPointer( instanceTransform, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
+        B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, e_batchSize * sizeof( PolygonData ), nullptr, GLEnum.DynamicDraw );
+        B2GL.Shared.Gl.VertexAttribPointer( instanceTransform, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, transform ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint12, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint12, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p1 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint34, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint34, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p3 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint56, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint56, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p5 ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instancePoint78, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint78, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p7 ) );
         glVertexAttribIPointer( instancePointCount, 1, GL_INT, sizeof( PolygonData ), (void*)offsetof( PolygonData, count ) );
-        B2GL.Shared.Gl.VertexAttribPointer( instanceRadius, 1, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instanceRadius, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, radius ) );
         // color will get automatically expanded to floats in the shader
-        B2GL.Shared.Gl.VertexAttribPointer( instanceColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instanceColor, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, color ) );
 
         // These divisors tell glsl how to distribute per instance data
@@ -93,7 +95,7 @@ public class GLSolidPolygons
         CheckErrorGL();
 
         // Cleanup
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
         B2GL.Shared.Gl.BindVertexArray( 0 );
     }
 
@@ -149,27 +151,27 @@ public class GLSolidPolygons
         glUniform1f( m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom );
 
         B2GL.Shared.Gl.BindVertexArray( m_vaoId );
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
 
-        B2GL.Shared.Gl.Enable( GL_BLEND );
-        B2GL.Shared.Gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        B2GL.Shared.Gl.Enable( GLEnum.Blend );
+        B2GL.Shared.Gl.BlendFunc( GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha );
 
         int base = 0;
         while ( count > 0 )
         {
             int batchCount = b2MinInt( count, e_batchSize );
 
-            B2GL.Shared.Gl.BufferSubData( GL_ARRAY_BUFFER, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
-            B2GL.Shared.Gl.DrawArraysInstanced( GL_TRIANGLES, 0, 6, batchCount );
+            B2GL.Shared.Gl.BufferSubData( GLEnum.ArrayBuffer, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
+            B2GL.Shared.Gl.DrawArraysInstanced( GLEnum.Triangles, 0, 6, batchCount );
             CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;
         }
 
-        B2GL.Shared.Gl.Disable( GL_BLEND );
+        B2GL.Shared.Gl.Disable( GLEnum.Blend );
 
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
         B2GL.Shared.Gl.BindVertexArray( 0 );
         B2GL.Shared.Gl.UseProgram( 0 );
 

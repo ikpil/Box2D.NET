@@ -9,8 +9,8 @@ using Silk.NET.OpenGL;
 public class B2GL
 {
     public static readonly B2GL Shared = new B2GL();
-    
-    public GL Gl { get; private set; }
+
+    public GL Gl;
     
     public void DumpInfoGL()
     {

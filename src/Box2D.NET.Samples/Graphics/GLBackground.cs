@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Silk.NET.OpenGL;
+
 namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
@@ -30,14 +32,14 @@ public class GLBackground
 
         // Single quad
         b2Vec2 vertices[] = { { -1.0f, 1.0f }, { -1.0f, -1.0f }, { 1.0f, 1.0f }, { 1.0f, -1.0f } };
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboId );
-        B2GL.Shared.Gl.BufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
-        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId );
+        B2GL.Shared.Gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
+        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
 
         CheckErrorGL();
 
         // Cleanup
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
         B2GL.Shared.Gl.BindVertexArray( 0 );
     }
 
@@ -74,9 +76,9 @@ public class GLBackground
 
         B2GL.Shared.Gl.BindVertexArray( m_vaoId );
 
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboId );
-        glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, m_vboId );
+        B2GL.Shared.Gl.DrawArrays( GLEnum.TriangleStrip, 0, 4 );
+        B2GL.Shared.Gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
         B2GL.Shared.Gl.BindVertexArray( 0 );
         B2GL.Shared.Gl.UseProgram( 0 );
     }

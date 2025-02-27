@@ -4,8 +4,10 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -57,19 +59,19 @@ public class GLTriangles
         B2GL.Shared.Gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(VertexData), nullptr, GL_DYNAMIC_DRAW);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
+        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(VertexData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(VertexData),
             (void*)offsetof(VertexData, position));
         // color will get automatically expanded to floats in the shader
-        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexData),
+        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData),
             (void*)offsetof(VertexData, rgba));
 
         CheckErrorGL();
 
         // Cleanup
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         B2GL.Shared.Gl.BindVertexArray(0);
     }
 
@@ -126,17 +128,17 @@ public class GLTriangles
 
         B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        B2GL.Shared.Gl.Enable(GL_BLEND);
-        B2GL.Shared.Gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
+        B2GL.Shared.Gl.Enable(GLEnum.Blend);
+        B2GL.Shared.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
         int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2GL.Shared.Gl.BufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(VertexData), &m_points[base]);
-            glDrawArrays(GL_TRIANGLES, 0, batchCount);
+            B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(VertexData), &m_points[base]);
+            B2GL.Shared.Gl.DrawArrays(GLEnum.Triangles, 0, batchCount);
 
             CheckErrorGL();
 
@@ -144,9 +146,9 @@ public class GLTriangles
             base += e_batchSize;
         }
 
-        B2GL.Shared.Gl.Disable(GL_BLEND);
+        B2GL.Shared.Gl.Disable(GLEnum.Blend);
 
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         B2GL.Shared.Gl.BindVertexArray(0);
         B2GL.Shared.Gl.UseProgram(0);
 

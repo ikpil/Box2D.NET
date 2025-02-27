@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 using System.Collections.Generic;
+using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -62,19 +64,19 @@ public class GLSolidCircles
             }
         }
         ;
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[0]);
+        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, sizeof(vertices), vertices, GLEnum.StaticDraw);
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET(0));
 
         // Circle buffer
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(SolidCircleData), nullptr, GL_DYNAMIC_DRAW);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
+        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(SolidCircleData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, transform));
-        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, radius));
-        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, rgba));
 
         B2GL.Shared.Gl.VertexAttribDivisor(transformInstance, 1);
@@ -84,7 +86,7 @@ public class GLSolidCircles
         CheckErrorGL();
 
         // Cleanup
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         B2GL.Shared.Gl.BindVertexArray(0);
     }
 
@@ -135,17 +137,17 @@ public class GLSolidCircles
 
         B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        B2GL.Shared.Gl.Enable(GL_BLEND);
-        B2GL.Shared.Gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
+        B2GL.Shared.Gl.Enable(GLEnum.Blend);
+        B2GL.Shared.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
         int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2GL.Shared.Gl.BufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(SolidCircleData), &m_circles[base]);
-            B2GL.Shared.Gl.DrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
+            B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(SolidCircleData), &m_circles[base]);
+            B2GL.Shared.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
 
             CheckErrorGL();
 
@@ -153,9 +155,9 @@ public class GLSolidCircles
             base += e_batchSize;
         }
 
-        B2GL.Shared.Gl.Disable(GL_BLEND);
+        B2GL.Shared.Gl.Disable(GLEnum.Blend);
 
-        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         B2GL.Shared.Gl.BindVertexArray(0);
         B2GL.Shared.Gl.UseProgram(0);
 
