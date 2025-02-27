@@ -4,7 +4,7 @@
 
 using Box2D.NET.Primitives;
 using Box2D.NET.Shared.Primitives;
-using static Box2D.NET.Shared.benchmarks;
+using static Box2D.NET.Shared.Benchmarks2;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 

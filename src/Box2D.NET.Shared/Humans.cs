@@ -14,12 +14,12 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2RevoluteJoints;
-using static Box2D.NET.Shared.random;
+using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Hulls;
 
 namespace Box2D.NET.Shared
 {
-    public static class human
+    public static class Humans
     {
         public static void CreateHuman(Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
             int groupIndex, object userData, bool colorize)

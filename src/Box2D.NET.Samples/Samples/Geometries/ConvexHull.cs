@@ -7,7 +7,7 @@ using Silk.NET.GLFW;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
-using static Box2D.NET.Shared.random;
+using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Geometries;
 

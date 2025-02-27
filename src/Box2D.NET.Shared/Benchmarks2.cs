@@ -13,13 +13,13 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2RevoluteJoints;
-using static Box2D.NET.Shared.human;
+using static Box2D.NET.Shared.Humans;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Shared
 {
-    public static class benchmarks
+    public static class Benchmarks2
     {
 #if NDEBUG
         private const bool BENCHMARK_DEBUG = false;

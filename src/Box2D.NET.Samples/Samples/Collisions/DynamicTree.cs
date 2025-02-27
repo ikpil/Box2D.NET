@@ -12,7 +12,7 @@ using Silk.NET.GLFW;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2DynamicTrees;
-using static Box2D.NET.Shared.random;
+using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Constants;
 
 

@@ -11,7 +11,7 @@ using static Box2D.NET.B2Hulls;
 
 namespace Box2D.NET.Shared
 {
-    public static class random
+    public static class RandomSupports
     {
         // Global seed for simple random number generator.
         public static uint g_seed = RAND_SEED;

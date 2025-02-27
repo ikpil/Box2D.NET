@@ -13,7 +13,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.Shared.random;
+using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Timers;
 
 

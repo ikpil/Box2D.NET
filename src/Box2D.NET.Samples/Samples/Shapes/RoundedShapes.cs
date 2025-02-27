@@ -8,7 +8,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
-using static Box2D.NET.Shared.random;
+using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
