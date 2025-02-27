@@ -26,10 +26,10 @@ public class GLSolidCapsules
 
     public void Create()
     {
-        m_programId = B2GL.Shared.CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
+        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
 
-        m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
-        m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "pixelScale");
+        m_projectionUniform = B2.g_shader.Gl.GetUniformLocation(m_programId, "projectionMatrix");
+        m_pixelScaleUniform = B2.g_shader.Gl.GetUniformLocation(m_programId, "pixelScale");
 
         uint vertexAttribute = 0;
         uint transformInstance = 1;
@@ -38,15 +38,15 @@ public class GLSolidCapsules
         uint colorInstance = 4;
 
         // Generate
-        B2GL.Shared.Gl.GenVertexArrays(m_vaoId);
-        B2GL.Shared.Gl.GenBuffers(m_vboIds);
+        B2.g_shader.Gl.GenVertexArrays(m_vaoId);
+        B2.g_shader.Gl.GenBuffers(m_vboIds);
 
-        B2GL.Shared.Gl.BindVertexArray(m_vaoId[0]);
-        B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
-        B2GL.Shared.Gl.EnableVertexAttribArray(transformInstance);
-        B2GL.Shared.Gl.EnableVertexAttribArray(radiusInstance);
-        B2GL.Shared.Gl.EnableVertexAttribArray(lengthInstance);
-        B2GL.Shared.Gl.EnableVertexAttribArray(colorInstance);
+        B2.g_shader.Gl.BindVertexArray(m_vaoId[0]);
+        B2.g_shader.Gl.EnableVertexAttribArray(vertexAttribute);
+        B2.g_shader.Gl.EnableVertexAttribArray(transformInstance);
+        B2.g_shader.Gl.EnableVertexAttribArray(radiusInstance);
+        B2.g_shader.Gl.EnableVertexAttribArray(lengthInstance);
+        B2.g_shader.Gl.EnableVertexAttribArray(colorInstance);
 
         // Vertex buffer for single quad
         float a = 1.1f;
@@ -66,37 +66,37 @@ public class GLSolidCapsules
             }
         }
         ;
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[0]);
-        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, sizeof(vertices), vertices, GLEnum.StaticDraw);
-        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET(0));
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[0]);
+        B2.g_shader.Gl.BufferData(GLEnum.ArrayBuffer, sizeof(vertices), vertices, GLEnum.StaticDraw);
+        B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET(0));
 
         // Capsule buffer
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2GL.Shared.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(CapsuleData), nullptr, GLEnum.DynamicDraw);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
+        B2.g_shader.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(CapsuleData), nullptr, GLEnum.DynamicDraw);
 
-        B2GL.Shared.Gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, transform));
-        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, radius));
-        B2GL.Shared.Gl.VertexAttribPointer(lengthInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, length));
-        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, rgba));
+        B2.g_shader.Gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, transform));
+        B2.g_shader.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, radius));
+        B2.g_shader.Gl.VertexAttribPointer(lengthInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, length));
+        B2.g_shader.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(CapsuleData), (void*)offsetof(CapsuleData, rgba));
 
-        B2GL.Shared.Gl.VertexAttribDivisor(transformInstance, 1);
-        B2GL.Shared.Gl.VertexAttribDivisor(radiusInstance, 1);
-        B2GL.Shared.Gl.VertexAttribDivisor(lengthInstance, 1);
-        B2GL.Shared.Gl.VertexAttribDivisor(colorInstance, 1);
+        B2.g_shader.Gl.VertexAttribDivisor(transformInstance, 1);
+        B2.g_shader.Gl.VertexAttribDivisor(radiusInstance, 1);
+        B2.g_shader.Gl.VertexAttribDivisor(lengthInstance, 1);
+        B2.g_shader.Gl.VertexAttribDivisor(colorInstance, 1);
 
-        B2GL.Shared.CheckErrorGL();
+        B2.g_shader.CheckErrorGL();
 
         // Cleanup
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
-        B2GL.Shared.Gl.BindVertexArray(0);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        B2.g_shader.Gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
         if (0 != m_vaoId[0])
         {
-            B2GL.Shared.Gl.DeleteVertexArrays(m_vaoId);
-            B2GL.Shared.Gl.DeleteBuffers(m_vboIds);
+            B2.g_shader.Gl.DeleteVertexArrays(m_vaoId);
+            B2.g_shader.Gl.DeleteBuffers(m_vboIds);
             m_vaoId[0] = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;
@@ -104,7 +104,7 @@ public class GLSolidCapsules
 
         if (m_programId)
         {
-            B2GL.Shared.Gl.DeleteProgram(m_programId);
+            B2.g_shader.Gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
@@ -140,7 +140,7 @@ public class GLSolidCapsules
             return;
         }
 
-        B2GL.Shared.Gl.UseProgram(m_programId);
+        B2.g_shader.Gl.UseProgram(m_programId);
 
         float proj[16] =  {
             0.0f
@@ -149,33 +149,33 @@ public class GLSolidCapsules
         Draw.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        B2GL.Shared.Gl.Uniform1(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
+        B2.g_shader.Gl.Uniform1(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
 
-        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2.g_shader.Gl.BindVertexArray(m_vaoId);
 
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2GL.Shared.Gl.Enable(GLEnum.Blend);
-        B2GL.Shared.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
+        B2.g_shader.Gl.Enable(GLEnum.Blend);
+        B2.g_shader.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
         int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2GL.Shared.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
-            B2GL.Shared.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
+            B2.g_shader.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
+            B2.g_shader.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
 
-            B2GL.Shared.CheckErrorGL();
+            B2.g_shader.CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;
         }
 
-        B2GL.Shared.Gl.Disable(GLEnum.Blend);
+        B2.g_shader.Gl.Disable(GLEnum.Blend);
 
-        B2GL.Shared.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
-        B2GL.Shared.Gl.BindVertexArray(0);
-        B2GL.Shared.Gl.UseProgram(0);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        B2.g_shader.Gl.BindVertexArray(0);
+        B2.g_shader.Gl.UseProgram(0);
 
         m_capsules.clear();
     }

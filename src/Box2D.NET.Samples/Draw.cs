@@ -16,8 +16,6 @@ namespace Box2D.NET.Samples;
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {
-    public static Draw g_draw;
-    public static Camera g_camera;
 
     public bool m_showUI;
 
@@ -260,7 +258,7 @@ public class Draw
         m_circles.Flush();
         m_lines.Flush();
         m_points.Flush();
-        B2GL.Shared.CheckErrorGL();
+        B2.g_shader.CheckErrorGL();
     }
 
     public void DrawBackground()

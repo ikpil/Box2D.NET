@@ -8,12 +8,12 @@ using System.IO;
 using System.Text;
 using Silk.NET.OpenGL;
 
-public class B2GL
+public class Shader
 {
-    public static readonly B2GL Shared = new B2GL();
+    public static readonly Shader Shared = new Shader();
 
     public GL Gl;
-    
+
     public void DumpInfoGL()
     {
         string renderer = Gl.GetStringS(StringName.Renderer);
