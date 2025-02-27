@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
@@ -107,7 +108,7 @@ public class GLCircles
 
     public void Flush()
     {
-        int count = (int)m_circles.size();
+        int count = m_circles.Count;
         if (count == 0)
         {
             return;
@@ -130,18 +131,20 @@ public class GLCircles
         B2.g_shader.Gl.Enable(GLEnum.Blend);
         B2.g_shader.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
-        int base = 0;
+        var asdf = CollectionsMarshal.AsSpan(m_circles);
+        int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2.g_shader.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CircleData), &m_circles[base]);
+            B2.g_shader.Gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CircleData), &m_circles[base]);
+            B2.g_shader.Gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, asdf);
             B2.g_shader.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
 
             B2.g_shader.CheckErrorGL();
 
             count -= e_batchSize;
-            base += e_batchSize;
+            @base += e_batchSize;
         }
 
         B2.g_shader.Gl.Disable(GLEnum.Blend);
