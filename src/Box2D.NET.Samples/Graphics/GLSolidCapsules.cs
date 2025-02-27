@@ -23,10 +23,10 @@ public class GLSolidCapsules
 
     public void Create()
     {
-        m_programId = CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
+        m_programId = B2GL.Shared.CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
 
-        m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
-        m_pixelScaleUniform = glGetUniformLocation(m_programId, "pixelScale");
+        m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
+        m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "pixelScale");
 
         int vertexAttribute = 0;
         int transformInstance = 1;
@@ -35,15 +35,15 @@ public class GLSolidCapsules
         int colorInstance = 4;
 
         // Generate
-        glGenVertexArrays(1, &m_vaoId);
-        glGenBuffers(2, m_vboIds);
+        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(2, m_vboIds);
 
-        glBindVertexArray(m_vaoId);
-        glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(transformInstance);
-        glEnableVertexAttribArray(radiusInstance);
-        glEnableVertexAttribArray(lengthInstance);
-        glEnableVertexAttribArray(colorInstance);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
+        B2GL.Shared.Gl.EnableVertexAttribArray(transformInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(radiusInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(lengthInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(colorInstance);
 
         // Vertex buffer for single quad
         float a = 1.1f;
@@ -63,41 +63,41 @@ public class GLSolidCapsules
             }
         }
         ;
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
+        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
         // Capsule buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(CapsuleData), nullptr, GL_DYNAMIC_DRAW);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
+        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(CapsuleData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+        B2GL.Shared.Gl.VertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
             (void*)offsetof(CapsuleData, transform));
-        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
             (void*)offsetof(CapsuleData, radius));
-        glVertexAttribPointer(lengthInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
+        B2GL.Shared.Gl.VertexAttribPointer(lengthInstance, 1, GL_FLOAT, GL_FALSE, sizeof(CapsuleData),
             (void*)offsetof(CapsuleData, length));
-        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CapsuleData),
+        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(CapsuleData),
             (void*)offsetof(CapsuleData, rgba));
 
-        glVertexAttribDivisor(transformInstance, 1);
-        glVertexAttribDivisor(radiusInstance, 1);
-        glVertexAttribDivisor(lengthInstance, 1);
-        glVertexAttribDivisor(colorInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(transformInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(radiusInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(lengthInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(colorInstance, 1);
 
         CheckErrorGL();
 
         // Cleanup
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
         if (m_vaoId)
         {
-            glDeleteVertexArrays(1, &m_vaoId);
-            glDeleteBuffers(2, m_vboIds);
+            B2GL.Shared.Gl.DeleteVertexArrays(1, &m_vaoId);
+            B2GL.Shared.Gl.DeleteBuffers(2, m_vboIds);
             m_vaoId = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;
@@ -105,7 +105,7 @@ public class GLSolidCapsules
 
         if (m_programId)
         {
-            glDeleteProgram(m_programId);
+            B2GL.Shared.Gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
@@ -141,7 +141,7 @@ public class GLSolidCapsules
             return;
         }
 
-        glUseProgram(m_programId);
+        B2GL.Shared.Gl.UseProgram(m_programId);
 
         float proj[16] =  {
             0.0f
@@ -152,19 +152,19 @@ public class GLSolidCapsules
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
         glUniform1f(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
 
-        glBindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
+        B2GL.Shared.Gl.Enable(GL_BLEND);
+        B2GL.Shared.Gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
-            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
+            B2GL.Shared.Gl.BufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(CapsuleData), &m_capsules[base]);
+            B2GL.Shared.Gl.DrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
 
             CheckErrorGL();
 
@@ -172,11 +172,11 @@ public class GLSolidCapsules
             base += e_batchSize;
         }
 
-        glDisable(GL_BLEND);
+        B2GL.Shared.Gl.Disable(GL_BLEND);
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glUseProgram(0);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
+        B2GL.Shared.Gl.UseProgram(0);
 
         m_capsules.clear();
     }

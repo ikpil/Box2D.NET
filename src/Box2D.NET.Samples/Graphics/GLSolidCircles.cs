@@ -25,24 +25,24 @@ public class GLSolidCircles
 
     public void Create()
     {
-        m_programId = CreateProgramFromFiles("samples/data/solid_circle.vs", "samples/data/solid_circle.fs");
-        m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
-        m_pixelScaleUniform = glGetUniformLocation(m_programId, "pixelScale");
+        m_programId = B2GL.Shared.CreateProgramFromFiles("samples/data/solid_circle.vs", "samples/data/solid_circle.fs");
+        m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
+        m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "pixelScale");
 
         // Generate
-        glGenVertexArrays(1, &m_vaoId);
-        glGenBuffers(2, m_vboIds);
+        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(2, m_vboIds);
 
-        glBindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
         int vertexAttribute = 0;
         int transformInstance = 1;
         int radiusInstance = 2;
         int colorInstance = 3;
-        glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(transformInstance);
-        glEnableVertexAttribArray(radiusInstance);
-        glEnableVertexAttribArray(colorInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
+        B2GL.Shared.Gl.EnableVertexAttribArray(transformInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(radiusInstance);
+        B2GL.Shared.Gl.EnableVertexAttribArray(colorInstance);
 
         // Vertex buffer for single quad
         float a = 1.1f;
@@ -62,38 +62,38 @@ public class GLSolidCircles
             }
         }
         ;
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
+        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
         // Circle buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(SolidCircleData), nullptr, GL_DYNAMIC_DRAW);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
+        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(SolidCircleData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(transformInstance, 4, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, transform));
-        glVertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(radiusInstance, 1, GL_FLOAT, GL_FALSE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, radius));
-        glVertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidCircleData),
+        B2GL.Shared.Gl.VertexAttribPointer(colorInstance, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(SolidCircleData),
             (void*)offsetof(SolidCircleData, rgba));
 
-        glVertexAttribDivisor(transformInstance, 1);
-        glVertexAttribDivisor(radiusInstance, 1);
-        glVertexAttribDivisor(colorInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(transformInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(radiusInstance, 1);
+        B2GL.Shared.Gl.VertexAttribDivisor(colorInstance, 1);
 
         CheckErrorGL();
 
         // Cleanup
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
         if (m_vaoId)
         {
-            glDeleteVertexArrays(1, &m_vaoId);
-            glDeleteBuffers(2, m_vboIds);
+            B2GL.Shared.Gl.DeleteVertexArrays(1, &m_vaoId);
+            B2GL.Shared.Gl.DeleteBuffers(2, m_vboIds);
             m_vaoId = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;
@@ -101,7 +101,7 @@ public class GLSolidCircles
 
         if (m_programId)
         {
-            glDeleteProgram(m_programId);
+            B2GL.Shared.Gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
@@ -122,7 +122,7 @@ public class GLSolidCircles
             return;
         }
 
-        glUseProgram(m_programId);
+        B2GL.Shared.Gl.UseProgram(m_programId);
 
         float proj[16] =  {
             0.0f
@@ -133,19 +133,19 @@ public class GLSolidCircles
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
         glUniform1f(m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom);
 
-        glBindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
+        B2GL.Shared.Gl.Enable(GL_BLEND);
+        B2GL.Shared.Gl.BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         int base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(SolidCircleData), &m_circles[base]);
-            glDrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
+            B2GL.Shared.Gl.BufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(SolidCircleData), &m_circles[base]);
+            B2GL.Shared.Gl.DrawArraysInstanced(GL_TRIANGLES, 0, 6, batchCount);
 
             CheckErrorGL();
 
@@ -153,11 +153,11 @@ public class GLSolidCircles
             base += e_batchSize;
         }
 
-        glDisable(GL_BLEND);
+        B2GL.Shared.Gl.Disable(GL_BLEND);
 
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glUseProgram(0);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
+        B2GL.Shared.Gl.UseProgram(0);
 
         m_circles.clear();
     }

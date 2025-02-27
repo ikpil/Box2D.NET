@@ -6,9 +6,13 @@ using System;
 using System.Diagnostics;
 using Silk.NET.OpenGL;
 
-public static class B2GL
+public class B2GL
 {
-    public static void DumpInfoGL()
+    public static readonly B2GL Shared = new B2GL();
+    
+    public GL Gl { get; private set; }
+    
+    public void DumpInfoGL()
     {
         string renderer = (string)glGetString(GL_RENDERER);
         string vendor = (string)glGetString(GL_VENDOR);
@@ -28,7 +32,7 @@ public static class B2GL
         printf("-------------------------------------------------------------\n");
     }
 
-    public static void CheckErrorGL()
+    public void CheckErrorGL()
     {
         GLEnum errCode = glGetError();
         if (errCode != GL_NO_ERROR)
@@ -38,7 +42,7 @@ public static class B2GL
         }
     }
 
-    public static void PrintLogGL(uint obj )
+    public void PrintLogGL(uint obj )
     {
         int log_length = 0;
         if (glIsShader(obj))
@@ -70,7 +74,7 @@ public static class B2GL
         free(log);
     }
 
-    public static uint sCreateShaderFromString(string source, GLEnum type)
+    public uint sCreateShaderFromString(string source, GLEnum type)
     {
         uint shader = glCreateShader(type);
         string sources[] =  {
@@ -95,7 +99,7 @@ public static class B2GL
         return shader;
     }
 
-    public static uint CreateProgramFromStrings(string vertexString, string fragmentString)
+    public uint CreateProgramFromStrings(string vertexString, string fragmentString)
     {
         uint vertex = sCreateShaderFromString(vertexString, GL_VERTEX_SHADER);
         if (vertex == 0)
@@ -130,7 +134,7 @@ public static class B2GL
         return program;
     }
 
-    public static uint sCreateShaderFromFile(string filename, GLEnum type)
+    public uint sCreateShaderFromFile(string filename, GLEnum type)
     {
         FILE* file = fopen(filename, "rb");
         if (file == nullptr)
@@ -172,7 +176,7 @@ public static class B2GL
         return shader;
     }
 
-    public static uint CreateProgramFromFiles(string vertexPath, string fragmentPath)
+    public uint CreateProgramFromFiles(string vertexPath, string fragmentPath)
     {
         uint vertex = sCreateShaderFromFile(vertexPath, GL_VERTEX_SHADER);
         if (vertex == 0)

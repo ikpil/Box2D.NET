@@ -42,52 +42,52 @@ public class GLPoints
                     "	color = f_color;\n" +
                     "}\n";
 
-        m_programId = CreateProgramFromStrings(vs, fs);
-        m_projectionUniform = glGetUniformLocation(m_programId, "projectionMatrix");
+        m_programId = B2GL.Shared.CreateProgramFromStrings(vs, fs);
+        m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation(m_programId, "projectionMatrix");
         int vertexAttribute = 0;
         int sizeAttribute = 1;
         int colorAttribute = 2;
 
         // Generate
-        glGenVertexArrays(1, &m_vaoId);
-        glGenBuffers(1, &m_vboId);
+        B2GL.Shared.Gl.GenVertexArrays(1, &m_vaoId);
+        B2GL.Shared.Gl.GenBuffers(1, &m_vboId);
 
-        glBindVertexArray(m_vaoId);
-        glEnableVertexAttribArray(vertexAttribute);
-        glEnableVertexAttribArray(sizeAttribute);
-        glEnableVertexAttribArray(colorAttribute);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.EnableVertexAttribArray(vertexAttribute);
+        B2GL.Shared.Gl.EnableVertexAttribArray(sizeAttribute);
+        B2GL.Shared.Gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        glBufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(PointData), nullptr, GL_DYNAMIC_DRAW);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboId);
+        B2GL.Shared.Gl.BufferData(GL_ARRAY_BUFFER, e_batchSize * sizeof(PointData), nullptr, GL_DYNAMIC_DRAW);
 
-        glVertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(PointData),
+        B2GL.Shared.Gl.VertexAttribPointer(vertexAttribute, 2, GL_FLOAT, GL_FALSE, sizeof(PointData),
             (void*)offsetof(PointData, position));
-        glVertexAttribPointer(sizeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, size));
+        B2GL.Shared.Gl.VertexAttribPointer(sizeAttribute, 1, GL_FLOAT, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, size));
         // save bandwidth by expanding color to floats in the shader
-        glVertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(PointData),
+        B2GL.Shared.Gl.VertexAttribPointer(colorAttribute, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(PointData),
             (void*)offsetof(PointData, rgba));
 
         CheckErrorGL();
 
         // Cleanup
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
         if (m_vaoId)
         {
-            glDeleteVertexArrays(1, &m_vaoId);
-            glDeleteBuffers(1, &m_vboId);
+            B2GL.Shared.Gl.DeleteVertexArrays(1, &m_vaoId);
+            B2GL.Shared.Gl.DeleteBuffers(1, &m_vboId);
             m_vaoId = 0;
             m_vboId = 0;
         }
 
         if (m_programId)
         {
-            glDeleteProgram(m_programId);
+            B2GL.Shared.Gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
@@ -109,22 +109,22 @@ public class GLPoints
             return;
         }
 
-        glUseProgram(m_programId);
+        B2GL.Shared.Gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
         Draw.g_camera.BuildProjectionMatrix(proj, 0.0f);
 
         glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        glBindVertexArray(m_vaoId);
+        B2GL.Shared.Gl.BindVertexArray(m_vaoId);
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_vboId);
-        glEnable(GL_PROGRAM_POINT_SIZE);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, m_vboId);
+        B2GL.Shared.Gl.Enable(GL_PROGRAM_POINT_SIZE);
 
         int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(PointData), &m_points[@base]);
+            B2GL.Shared.Gl.BufferSubData(GL_ARRAY_BUFFER, 0, batchCount * sizeof(PointData), &m_points[@base]);
             glDrawArrays(GL_POINTS, 0, batchCount);
 
             CheckErrorGL();
@@ -133,10 +133,10 @@ public class GLPoints
             @base += e_batchSize;
         }
 
-        glDisable(GL_PROGRAM_POINT_SIZE);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-        glUseProgram(0);
+        B2GL.Shared.Gl.Disable(GL_PROGRAM_POINT_SIZE);
+        B2GL.Shared.Gl.BindBuffer(GL_ARRAY_BUFFER, 0);
+        B2GL.Shared.Gl.BindVertexArray(0);
+        B2GL.Shared.Gl.UseProgram(0);
 
         m_points.Clear();
     }

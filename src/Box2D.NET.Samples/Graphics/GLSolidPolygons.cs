@@ -24,10 +24,10 @@ public class GLSolidPolygons
 
     public void Create()
     {
-        m_programId = CreateProgramFromFiles( "samples/data/solid_polygon.vs", "samples/data/solid_polygon.fs" );
+        m_programId = B2GL.Shared.CreateProgramFromFiles( "samples/data/solid_polygon.vs", "samples/data/solid_polygon.fs" );
 
-        m_projectionUniform = glGetUniformLocation( m_programId, "projectionMatrix" );
-        m_pixelScaleUniform = glGetUniformLocation( m_programId, "pixelScale" );
+        m_projectionUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "projectionMatrix" );
+        m_pixelScaleUniform = B2GL.Shared.Gl.GetUniformLocation( m_programId, "pixelScale" );
         int vertexAttribute = 0;
         int instanceTransform = 1;
         int instancePoint12 = 2;
@@ -39,76 +39,76 @@ public class GLSolidPolygons
         int instanceColor = 8;
 
         // Generate
-        glGenVertexArrays( 1, &m_vaoId );
-        glGenBuffers( 2, m_vboIds );
+        B2GL.Shared.Gl.GenVertexArrays( 1, &m_vaoId );
+        B2GL.Shared.Gl.GenBuffers( 2, m_vboIds );
 
-        glBindVertexArray( m_vaoId );
-        glEnableVertexAttribArray( vertexAttribute );
-        glEnableVertexAttribArray( instanceTransform );
-        glEnableVertexAttribArray( instancePoint12 );
-        glEnableVertexAttribArray( instancePoint34 );
-        glEnableVertexAttribArray( instancePoint56 );
-        glEnableVertexAttribArray( instancePoint78 );
-        glEnableVertexAttribArray( instancePointCount );
-        glEnableVertexAttribArray( instanceRadius );
-        glEnableVertexAttribArray( instanceColor );
+        B2GL.Shared.Gl.BindVertexArray( m_vaoId );
+        B2GL.Shared.Gl.EnableVertexAttribArray( vertexAttribute );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instanceTransform );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instancePoint12 );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instancePoint34 );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instancePoint56 );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instancePoint78 );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instancePointCount );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instanceRadius );
+        B2GL.Shared.Gl.EnableVertexAttribArray( instanceColor );
 
         // Vertex buffer for single quad
         float a = 1.1f;
         B2Vec2 vertices[] = { { -a, -a }, { a, -a }, { -a, a }, { a, -a }, { a, a }, { -a, a } };
-        glBindBuffer( GL_ARRAY_BUFFER, m_vboIds[0] );
-        glBufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
-        glVertexAttribPointer( vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[0] );
+        B2GL.Shared.Gl.BufferData( GL_ARRAY_BUFFER, sizeof( vertices ), vertices, GL_STATIC_DRAW );
+        B2GL.Shared.Gl.VertexAttribPointer( vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
 
         // Polygon buffer
-        glBindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
-        glBufferData( GL_ARRAY_BUFFER, e_batchSize * sizeof( PolygonData ), nullptr, GL_DYNAMIC_DRAW );
-        glVertexAttribPointer( instanceTransform, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
+        B2GL.Shared.Gl.BufferData( GL_ARRAY_BUFFER, e_batchSize * sizeof( PolygonData ), nullptr, GL_DYNAMIC_DRAW );
+        B2GL.Shared.Gl.VertexAttribPointer( instanceTransform, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, transform ) );
-        glVertexAttribPointer( instancePoint12, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint12, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p1 ) );
-        glVertexAttribPointer( instancePoint34, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint34, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p3 ) );
-        glVertexAttribPointer( instancePoint56, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint56, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p5 ) );
-        glVertexAttribPointer( instancePoint78, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instancePoint78, 4, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, p7 ) );
         glVertexAttribIPointer( instancePointCount, 1, GL_INT, sizeof( PolygonData ), (void*)offsetof( PolygonData, count ) );
-        glVertexAttribPointer( instanceRadius, 1, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instanceRadius, 1, GL_FLOAT, GL_FALSE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, radius ) );
         // color will get automatically expanded to floats in the shader
-        glVertexAttribPointer( instanceColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( PolygonData ),
+        B2GL.Shared.Gl.VertexAttribPointer( instanceColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof( PolygonData ),
             (void*)offsetof( PolygonData, color ) );
 
         // These divisors tell glsl how to distribute per instance data
-        glVertexAttribDivisor( instanceTransform, 1 );
-        glVertexAttribDivisor( instancePoint12, 1 );
-        glVertexAttribDivisor( instancePoint34, 1 );
-        glVertexAttribDivisor( instancePoint56, 1 );
-        glVertexAttribDivisor( instancePoint78, 1 );
-        glVertexAttribDivisor( instancePointCount, 1 );
-        glVertexAttribDivisor( instanceRadius, 1 );
-        glVertexAttribDivisor( instanceColor, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instanceTransform, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instancePoint12, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instancePoint34, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instancePoint56, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instancePoint78, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instancePointCount, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instanceRadius, 1 );
+        B2GL.Shared.Gl.VertexAttribDivisor( instanceColor, 1 );
 
         CheckErrorGL();
 
         // Cleanup
-        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-        glBindVertexArray( 0 );
+        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindVertexArray( 0 );
     }
 
     public void Destroy()
     {
         if ( m_vaoId )
         {
-            glDeleteVertexArrays( 1, &m_vaoId );
-            glDeleteBuffers( 2, m_vboIds );
+            B2GL.Shared.Gl.DeleteVertexArrays( 1, &m_vaoId );
+            B2GL.Shared.Gl.DeleteBuffers( 2, m_vboIds );
             m_vaoId = 0;
         }
 
         if ( m_programId )
         {
-            glDeleteProgram( m_programId );
+            B2GL.Shared.Gl.DeleteProgram( m_programId );
             m_programId = 0;
         }
     }
@@ -140,7 +140,7 @@ public class GLSolidPolygons
             return;
         }
 
-        glUseProgram( m_programId );
+        B2GL.Shared.Gl.UseProgram( m_programId );
 
         float proj[16] = { 0.0f };
         Draw.g_camera.BuildProjectionMatrix( proj, 0.2f );
@@ -148,30 +148,30 @@ public class GLSolidPolygons
         glUniformMatrix4fv( m_projectionUniform, 1, GL_FALSE, proj );
         glUniform1f( m_pixelScaleUniform, Draw.g_camera.m_height / Draw.g_camera.m_zoom );
 
-        glBindVertexArray( m_vaoId );
-        glBindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
+        B2GL.Shared.Gl.BindVertexArray( m_vaoId );
+        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, m_vboIds[1] );
 
-        glEnable( GL_BLEND );
-        glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+        B2GL.Shared.Gl.Enable( GL_BLEND );
+        B2GL.Shared.Gl.BlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 
         int base = 0;
         while ( count > 0 )
         {
             int batchCount = b2MinInt( count, e_batchSize );
 
-            glBufferSubData( GL_ARRAY_BUFFER, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
-            glDrawArraysInstanced( GL_TRIANGLES, 0, 6, batchCount );
+            B2GL.Shared.Gl.BufferSubData( GL_ARRAY_BUFFER, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
+            B2GL.Shared.Gl.DrawArraysInstanced( GL_TRIANGLES, 0, 6, batchCount );
             CheckErrorGL();
 
             count -= e_batchSize;
             base += e_batchSize;
         }
 
-        glDisable( GL_BLEND );
+        B2GL.Shared.Gl.Disable( GL_BLEND );
 
-        glBindBuffer( GL_ARRAY_BUFFER, 0 );
-        glBindVertexArray( 0 );
-        glUseProgram( 0 );
+        B2GL.Shared.Gl.BindBuffer( GL_ARRAY_BUFFER, 0 );
+        B2GL.Shared.Gl.BindVertexArray( 0 );
+        B2GL.Shared.Gl.UseProgram( 0 );
 
         m_polygons.clear();
     }
