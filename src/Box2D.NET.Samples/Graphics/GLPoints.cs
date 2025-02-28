@@ -2,9 +2,12 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 
@@ -60,13 +63,13 @@ public class GLPoints
         B2.g_shader.Gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
-        B2.g_shader.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(PointData), nullptr, GLEnum.DynamicDraw);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
+        B2.g_shader.Gl.BufferData<PointData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<PointData>.Size, null, GLEnum.DynamicDraw);
 
-        B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, position));
-        B2.g_shader.Gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(PointData), (void*)offsetof(PointData, size));
+        B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero);
+        B2.g_shader.Gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero + 8);
         // save bandwidth by expanding color to floats in the shader
-        B2.g_shader.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(PointData), (void*)offsetof(PointData, rgba));
+        B2.g_shader.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PointData>.Size, IntPtr.Zero + 12);
 
         B2.g_shader.CheckErrorGL();
 
@@ -77,15 +80,15 @@ public class GLPoints
 
     public void Destroy()
     {
-        if (m_vaoId)
+        if (0 != m_vaoId[0])
         {
-            B2.g_shader.Gl.DeleteVertexArrays(1, &m_vaoId);
-            B2.g_shader.Gl.DeleteBuffers(1, &m_vboId);
-            m_vaoId = 0;
-            m_vboId = 0;
+            B2.g_shader.Gl.DeleteVertexArrays(1, m_vaoId);
+            B2.g_shader.Gl.DeleteBuffers(1, m_vboId);
+            m_vaoId[0] = 0;
+            m_vboId[0] = 0;
         }
 
-        if (m_programId)
+        if (0 != m_programId)
         {
             B2.g_shader.Gl.DeleteProgram(m_programId);
             m_programId = 0;
@@ -114,18 +117,19 @@ public class GLPoints
         float[] proj = new float[16];
         B2.g_camera.BuildProjectionMatrix(proj, 0.0f);
 
-        glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
-        B2.g_shader.Gl.BindVertexArray(m_vaoId);
+        B2.g_shader.Gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
+        B2.g_shader.Gl.BindVertexArray(m_vaoId[0]);
 
         B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
         B2.g_shader.Gl.Enable(GLEnum.ProgramPointSize);
 
+        var points = CollectionsMarshal.AsSpan(m_points);
         int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            B2.g_shader.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(PointData), &m_points[@base]);
-            B2.g_shader.Gl.DrawArrays(GLEnum.Points, 0, batchCount);
+            B2.g_shader.Gl.BufferSubData<PointData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
+            B2.g_shader.Gl.DrawArrays(GLEnum.Points, 0, (uint)batchCount);
 
             B2.g_shader.CheckErrorGL();
 
