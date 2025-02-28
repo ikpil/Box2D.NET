@@ -21,12 +21,12 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
-    List<VertexData> m_points;
+    private List<VertexData> m_points;
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboId = new uint[1];
-    uint m_programId;
-    int m_projectionUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboId = new uint[1];
+    private uint m_programId;
+    private int m_projectionUniform;
 
     public void Create()
     {

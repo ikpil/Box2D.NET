@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Graphics;
-using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2MathFunction;
 
@@ -16,7 +14,6 @@ namespace Box2D.NET.Samples;
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {
-
     public bool m_showUI;
 
     public GLBackground m_background;
@@ -53,18 +50,6 @@ public class Draw
         m_largeFont = default;
         m_regularFont = default;
         m_background = null;
-    }
-
-    ~Draw()
-    {
-        Debug.Assert(m_points == null);
-        Debug.Assert(m_lines == null);
-        Debug.Assert(m_triangles == null);
-        Debug.Assert(m_circles == null);
-        Debug.Assert(m_solidCircles == null);
-        Debug.Assert(m_solidCapsules == null);
-        Debug.Assert(m_solidPolygons == null);
-        Debug.Assert(m_background == null);
     }
 
     public void Create()
@@ -119,36 +104,28 @@ public class Draw
     public void Destroy()
     {
         m_background.Destroy();
-        delete m_background;
-        m_background = nullptr;
+        m_background = null;
 
         m_points.Destroy();
-        delete m_points;
-        m_points = nullptr;
+        m_points = null;
 
         m_lines.Destroy();
-        delete m_lines;
-        m_lines = nullptr;
+        m_lines = null;
 
         m_triangles.Destroy();
-        delete m_triangles;
-        m_triangles = nullptr;
+        m_triangles = null;
 
         m_circles.Destroy();
-        delete m_circles;
-        m_circles = nullptr;
+        m_circles = null;
 
         m_solidCircles.Destroy();
-        delete m_solidCircles;
-        m_solidCircles = nullptr;
+        m_solidCircles = null;
 
         m_solidCapsules.Destroy();
-        delete m_solidCapsules;
-        m_solidCapsules = nullptr;
+        m_solidCapsules = null;
 
         m_solidPolygons.Destroy();
-        delete m_solidPolygons;
-        m_solidPolygons = nullptr;
+        m_solidPolygons = null;
     }
 
     public void DrawPolygon(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color)

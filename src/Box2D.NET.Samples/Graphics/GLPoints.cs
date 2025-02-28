@@ -17,12 +17,12 @@ public class GLPoints
 {
     public const int e_batchSize = 2048;
 
-    List<PointData> m_points;
+    private List<PointData> m_points;
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboId = new uint[1];
-    uint m_programId;
-    int m_projectionUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboId = new uint[1];
+    private uint m_programId;
+    private int m_projectionUniform;
 
     public void Create()
     {

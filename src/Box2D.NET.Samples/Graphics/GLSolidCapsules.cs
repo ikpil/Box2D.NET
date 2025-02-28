@@ -18,13 +18,13 @@ public class GLSolidCapsules
 {
     public const int e_batchSize = 2048;
 
-    List<CapsuleData> m_capsules;
+    private List<CapsuleData> m_capsules;
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboIds = new uint[2];
-    uint m_programId;
-    int m_projectionUniform;
-    int m_pixelScaleUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboIds = new uint[2];
+    private uint m_programId;
+    private int m_projectionUniform;
+    private int m_pixelScaleUniform;
 
     public void Create()
     {

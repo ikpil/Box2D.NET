@@ -17,8 +17,8 @@ public class SampleTask
     {
     }
 
-    public virtual void ExecuteRange(enki::TaskSetPartition range, uint threadIndex)
+    public virtual void ExecuteRange(int start, int end, uint threadIndex)
     {
-        m_task(range.start, range.end, threadIndex, m_taskContext);
+        m_task(start, end, threadIndex, m_taskContext);
     }
 }

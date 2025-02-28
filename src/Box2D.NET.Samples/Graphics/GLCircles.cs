@@ -18,13 +18,13 @@ public class GLCircles
 {
     public const int e_batchSize = 2048;
 
-    List<CircleData> m_circles;
+    private List<CircleData> m_circles;
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboIds = new uint[2];
-    uint m_programId;
-    int m_projectionUniform;
-    int m_pixelScaleUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboIds = new uint[2];
+    private uint m_programId;
+    private int m_projectionUniform;
+    private int m_pixelScaleUniform;
 
 
     public void Create()

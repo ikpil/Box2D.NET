@@ -10,12 +10,12 @@ namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
 {
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboId = new uint[1];
-    uint m_programId;
-    int m_timeUniform;
-    int m_resolutionUniform;
-    int m_baseColorUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboId = new uint[1];
+    private uint m_programId;
+    private int m_timeUniform;
+    private int m_resolutionUniform;
+    private int m_baseColorUniform;
 
     public GLBackground()
     {
