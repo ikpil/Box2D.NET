@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Core;
 using Box2D.NET.Primitives;
 
 namespace Box2D.NET.Samples.Primitives;
@@ -9,7 +10,7 @@ namespace Box2D.NET.Samples.Primitives;
 public struct PolygonData
 {
     public B2Transform transform;
-    public B2Vec2 p1, p2, p3, p4, p5, p6, p7, p8;
+    public B2FixedArray8<B2Vec2> points;
     public int count;
     public float radius;
 

@@ -4,8 +4,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 
@@ -26,10 +28,10 @@ public class GLSolidPolygons
 
     public void Create()
     {
-        m_programId = B2.g_shader.CreateProgramFromFiles( "samples/data/solid_polygon.vs", "samples/data/solid_polygon.fs" );
+        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/solid_polygon.vs", "samples/data/solid_polygon.fs");
 
-        m_projectionUniform = B2.g_shader.gl.GetUniformLocation( m_programId, "projectionMatrix" );
-        m_pixelScaleUniform = B2.g_shader.gl.GetUniformLocation( m_programId, "pixelScale" );
+        m_projectionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "projectionMatrix");
+        m_pixelScaleUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "pixelScale");
         uint vertexAttribute = 0;
         uint instanceTransform = 1;
         uint instancePoint12 = 2;
@@ -41,135 +43,141 @@ public class GLSolidPolygons
         uint instanceColor = 8;
 
         // Generate
-        B2.g_shader.gl.GenVertexArrays( m_vaoId );
-        B2.g_shader.gl.GenBuffers( m_vboIds );
+        B2.g_shader.gl.GenVertexArrays(m_vaoId);
+        B2.g_shader.gl.GenBuffers(m_vboIds);
 
-        B2.g_shader.gl.BindVertexArray( m_vaoId[0] );
-        B2.g_shader.gl.EnableVertexAttribArray( vertexAttribute );
-        B2.g_shader.gl.EnableVertexAttribArray( instanceTransform );
-        B2.g_shader.gl.EnableVertexAttribArray( instancePoint12 );
-        B2.g_shader.gl.EnableVertexAttribArray( instancePoint34 );
-        B2.g_shader.gl.EnableVertexAttribArray( instancePoint56 );
-        B2.g_shader.gl.EnableVertexAttribArray( instancePoint78 );
-        B2.g_shader.gl.EnableVertexAttribArray( instancePointCount );
-        B2.g_shader.gl.EnableVertexAttribArray( instanceRadius );
-        B2.g_shader.gl.EnableVertexAttribArray( instanceColor );
+        B2.g_shader.gl.BindVertexArray(m_vaoId[0]);
+        B2.g_shader.gl.EnableVertexAttribArray(vertexAttribute);
+        B2.g_shader.gl.EnableVertexAttribArray(instanceTransform);
+        B2.g_shader.gl.EnableVertexAttribArray(instancePoint12);
+        B2.g_shader.gl.EnableVertexAttribArray(instancePoint34);
+        B2.g_shader.gl.EnableVertexAttribArray(instancePoint56);
+        B2.g_shader.gl.EnableVertexAttribArray(instancePoint78);
+        B2.g_shader.gl.EnableVertexAttribArray(instancePointCount);
+        B2.g_shader.gl.EnableVertexAttribArray(instanceRadius);
+        B2.g_shader.gl.EnableVertexAttribArray(instanceColor);
 
         // Vertex buffer for single quad
         float a = 1.1f;
-        B2Vec2 vertices[] = { { -a, -a }, { a, -a }, { -a, a }, { a, -a }, { a, a }, { -a, a } };
-        B2.g_shader.gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[0] );
-        B2.g_shader.gl.BufferData( GLEnum.ArrayBuffer, sizeof( vertices ), vertices, GLEnum.StaticDraw );
-        B2.g_shader.gl.VertexAttribPointer( vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+        B2Vec2[] vertices = new B2Vec2[]
+        {
+            new B2Vec2(-a, -a),
+            new B2Vec2(a, -a),
+            new B2Vec2(-a, a),
+            new B2Vec2(a, -a),
+            new B2Vec2(a, a),
+            new B2Vec2(-a, a),
+        };
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[0]);
+        B2.g_shader.gl.BufferData<B2Vec2>(GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw);
+        B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
         // Polygon buffer
-        B2.g_shader.gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
-        B2.g_shader.gl.BufferData( GLEnum.ArrayBuffer, e_batchSize * sizeof( PolygonData ), nullptr, GLEnum.DynamicDraw );
-        B2.g_shader.gl.VertexAttribPointer( instanceTransform, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, transform ) );
-        B2.g_shader.gl.VertexAttribPointer( instancePoint12, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p1 ) );
-        B2.g_shader.gl.VertexAttribPointer( instancePoint34, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p3 ) );
-        B2.g_shader.gl.VertexAttribPointer( instancePoint56, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p5 ) );
-        B2.g_shader.gl.VertexAttribPointer( instancePoint78, 4, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, p7 ) );
-        glVertexAttribIPointer( instancePointCount, 1, GL_INT, sizeof( PolygonData ), (void*)offsetof( PolygonData, count ) );
-        B2.g_shader.gl.VertexAttribPointer( instanceRadius, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof( PolygonData ), (void*)offsetof( PolygonData, radius ) );
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
+        B2.g_shader.gl.BufferData<PolygonData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.VertexAttribPointer(instanceTransform, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero);
+        B2.g_shader.gl.VertexAttribPointer(instancePoint12, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 16);
+        B2.g_shader.gl.VertexAttribPointer(instancePoint34, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 32);
+        B2.g_shader.gl.VertexAttribPointer(instancePoint56, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 48);
+        B2.g_shader.gl.VertexAttribPointer(instancePoint78, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 64);
+        B2.g_shader.gl.VertexAttribIPointer(instancePointCount, 1, VertexAttribIType.Int, SizeOf<PolygonData>.Size, IntPtr.Zero + 80);
+        B2.g_shader.gl.VertexAttribPointer(instanceRadius, 1, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 84);
         // color will get automatically expanded to floats in the shader
-        B2.g_shader.gl.VertexAttribPointer( instanceColor, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof( PolygonData ), (void*)offsetof( PolygonData, color ) );
+        B2.g_shader.gl.VertexAttribPointer(instanceColor, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PolygonData>.Size, IntPtr.Zero + 88);
 
         // These divisors tell glsl how to distribute per instance data
-        B2.g_shader.gl.VertexAttribDivisor( instanceTransform, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instancePoint12, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instancePoint34, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instancePoint56, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instancePoint78, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instancePointCount, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instanceRadius, 1 );
-        B2.g_shader.gl.VertexAttribDivisor( instanceColor, 1 );
+        B2.g_shader.gl.VertexAttribDivisor(instanceTransform, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instancePoint12, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instancePoint34, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instancePoint56, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instancePoint78, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instancePointCount, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instanceRadius, 1);
+        B2.g_shader.gl.VertexAttribDivisor(instanceColor, 1);
 
         B2.g_shader.CheckErrorGL();
 
         // Cleanup
-        B2.g_shader.gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
-        B2.g_shader.gl.BindVertexArray( 0 );
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        B2.g_shader.gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
-        if ( m_vaoId )
+        if (0 != m_vaoId[0])
         {
-            B2.g_shader.gl.DeleteVertexArrays( 1, &m_vaoId );
-            B2.g_shader.gl.DeleteBuffers( 2, m_vboIds );
-            m_vaoId = 0;
+            B2.g_shader.gl.DeleteVertexArrays(1, m_vaoId);
+            B2.g_shader.gl.DeleteBuffers(2, m_vboIds);
+            m_vaoId[0] = 0;
         }
 
-        if ( m_programId )
+        if (0 != m_programId)
         {
-            B2.g_shader.gl.DeleteProgram( m_programId );
+            B2.g_shader.gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
 
-    public void AddPolygon( ref B2Transform transform, ReadOnlySpan<B2Vec2> points, int count, float radius, B2HexColor color )
+    public void AddPolygon(ref B2Transform transform, ReadOnlySpan<B2Vec2> points, int count, float radius, B2HexColor color)
     {
-        PolygonData data = {};
+        PolygonData data = new PolygonData();
         data.transform = transform;
 
         int n = count < 8 ? count : 8;
-        B2Vec2* ps = &data.p1;
-        for ( int i = 0; i < n; ++i )
+        for (int i = 0; i < n; ++i)
         {
-            ps[i] = points[i];
+            data.points[i] = points[i];
         }
 
         data.count = n;
         data.radius = radius;
-        data.color = RGBA8.MakeRGBA8( color, 1.0f );
+        data.color = RGBA8.MakeRGBA8(color, 1.0f);
 
-        m_polygons.Add( data );
+        m_polygons.Add(data);
     }
 
     public void Flush()
     {
-        int count = (int)m_polygons.size();
-        if ( count == 0 )
+        int count = (int)m_polygons.Count;
+        if (count == 0)
         {
             return;
         }
 
-        B2.g_shader.gl.UseProgram( m_programId );
+        B2.g_shader.gl.UseProgram(m_programId);
 
-        float proj[16] = { 0.0f };
-        B2.g_camera.BuildProjectionMatrix( proj, 0.2f );
+        float[] proj = new float[16];
+        B2.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
-        glUniformMatrix4fv( m_projectionUniform, 1, GL_FALSE, proj );
-        B2.g_shader.gl.Uniform1( m_pixelScaleUniform, B2.g_camera.m_height / B2.g_camera.m_zoom );
+        B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
+        B2.g_shader.gl.Uniform1(m_pixelScaleUniform, B2.g_camera.m_height / B2.g_camera.m_zoom);
 
-        B2.g_shader.gl.BindVertexArray( m_vaoId );
-        B2.g_shader.gl.BindBuffer( GLEnum.ArrayBuffer, m_vboIds[1] );
+        B2.g_shader.gl.BindVertexArray(m_vaoId[0]);
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
 
-        B2.g_shader.gl.Enable( GLEnum.Blend );
-        B2.g_shader.gl.BlendFunc( GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha );
+        B2.g_shader.gl.Enable(GLEnum.Blend);
+        B2.g_shader.gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
-        int base = 0;
-        while ( count > 0 )
+        var polygons = CollectionsMarshal.AsSpan(m_polygons);
+        int @base = 0;
+        while (count > 0)
         {
-            int batchCount = b2MinInt( count, e_batchSize );
+            int batchCount = b2MinInt(count, e_batchSize);
 
-            B2.g_shader.gl.BufferSubData( GLEnum.ArrayBuffer, 0, batchCount * sizeof( PolygonData ), &m_polygons[base] );
-            B2.g_shader.gl.DrawArraysInstanced( GLEnum.Triangles, 0, 6, batchCount );
+            B2.g_shader.gl.BufferSubData<PolygonData>(GLEnum.ArrayBuffer, 0, polygons.Slice(@base, batchCount));
+            B2.g_shader.gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
             B2.g_shader.CheckErrorGL();
 
             count -= e_batchSize;
-            base += e_batchSize;
+            @base += e_batchSize;
         }
 
-        B2.g_shader.gl.Disable( GLEnum.Blend );
+        B2.g_shader.gl.Disable(GLEnum.Blend);
 
-        B2.g_shader.gl.BindBuffer( GLEnum.ArrayBuffer, 0 );
-        B2.g_shader.gl.BindVertexArray( 0 );
-        B2.g_shader.gl.UseProgram( 0 );
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        B2.g_shader.gl.BindVertexArray(0);
+        B2.g_shader.gl.UseProgram(0);
 
-        m_polygons.clear();
+        m_polygons.Clear();
     }
-
 }
-
