@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 
@@ -62,13 +63,12 @@ public class GLCircles
         B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
         // Circle buffer
-        CircleData[] circles = new CircleData[e_batchSize];
         B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2.g_shader.Gl.BufferData<CircleData>(GLEnum.ArrayBuffer, circles, GLEnum.DynamicDraw);
+        B2.g_shader.Gl.BufferData<CircleData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<CircleData>.Size, null, GLEnum.DynamicDraw);
 
-        B2.g_shader.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, false, 24, IntPtr.Zero); // 8
-        B2.g_shader.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, 24, IntPtr.Zero + 8); // 4
-        B2.g_shader.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, 24, IntPtr.Zero + 12); // 4
+        B2.g_shader.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, false, SizeOf<CircleData>.Size, IntPtr.Zero); // 8
+        B2.g_shader.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, SizeOf<CircleData>.Size, IntPtr.Zero + 8); // 4
+        B2.g_shader.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<CircleData>.Size, IntPtr.Zero + 12); // 4
 
         B2.g_shader.Gl.VertexAttribDivisor(positionInstance, 1);
         B2.g_shader.Gl.VertexAttribDivisor(radiusInstance, 1);

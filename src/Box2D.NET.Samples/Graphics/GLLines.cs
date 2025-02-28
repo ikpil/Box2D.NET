@@ -2,10 +2,13 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 
@@ -28,23 +31,23 @@ public class GLLines
     public void Create()
     {
         string vs = "#version 330\n"
-        + "uniform mat4 projectionMatrix;\n"
-        + "layout(location = 0) in vec2 v_position;\n"
-        + "layout(location = 1) in vec4 v_color;\n"
-        + "out vec4 f_color;\n"
-        + "void main(void)\n"
-        + "{\n"
-        + "	f_color = v_color;\n"
-        + "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
-        + "}\n";
+                    + "uniform mat4 projectionMatrix;\n"
+                    + "layout(location = 0) in vec2 v_position;\n"
+                    + "layout(location = 1) in vec4 v_color;\n"
+                    + "out vec4 f_color;\n"
+                    + "void main(void)\n"
+                    + "{\n"
+                    + "	f_color = v_color;\n"
+                    + "	gl_Position = projectionMatrix * vec4(v_position, 0.0f, 1.0f);\n"
+                    + "}\n";
 
         string fs = "#version 330\n"
-        + "in vec4 f_color;\n"
-        + "out vec4 color;\n"
-        + "void main(void)\n"
-        + "{\n"
-        + "	color = f_color;\n"
-        + "}\n";
+                    + "in vec4 f_color;\n"
+                    + "out vec4 color;\n"
+                    + "void main(void)\n"
+                    + "{\n"
+                    + "	color = f_color;\n"
+                    + "}\n";
 
         m_programId = B2.g_shader.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = B2.g_shader.Gl.GetUniformLocation(m_programId, "projectionMatrix");
@@ -60,12 +63,12 @@ public class GLLines
         B2.g_shader.Gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
-        B2.g_shader.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(VertexData), nullptr, GLEnum.DynamicDraw);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
+        B2.g_shader.Gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
 
-        B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, position));
+        B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
         // save bandwidth by expanding color to floats in the shader
-        B2.g_shader.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData), (void*)offsetof(VertexData, rgba));
+        B2.g_shader.Gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
         B2.g_shader.CheckErrorGL();
 
@@ -76,15 +79,15 @@ public class GLLines
 
     public void Destroy()
     {
-        if (m_vaoId)
+        if (0 != m_vaoId[0])
         {
-            B2.g_shader.Gl.DeleteVertexArrays(1, &m_vaoId);
-            B2.g_shader.Gl.DeleteBuffers(1, &m_vboId);
-            m_vaoId = 0;
-            m_vboId = 0;
+            B2.g_shader.Gl.DeleteVertexArrays(1, m_vaoId);
+            B2.g_shader.Gl.DeleteBuffers(1, m_vboId);
+            m_vaoId[0] = 0;
+            m_vboId[0] = 0;
         }
 
-        if (m_programId)
+        if (0 != m_programId)
         {
             B2.g_shader.Gl.DeleteProgram(m_programId);
             m_programId = 0;
@@ -94,13 +97,13 @@ public class GLLines
     public void AddLine(B2Vec2 p1, B2Vec2 p2, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
-        m_points.Add( new VertexData( p1, rgba ));
-        m_points.Add( new VertexData( p2, rgba ));
+        m_points.Add(new VertexData(p1, rgba));
+        m_points.Add(new VertexData(p2, rgba));
     }
 
     public void Flush()
     {
-        int count = (int)m_points.size();
+        int count = m_points.Count;
         if (count == 0)
         {
             return;
@@ -110,36 +113,34 @@ public class GLLines
 
         B2.g_shader.Gl.UseProgram(m_programId);
 
-        float proj[16] =  {
-            0.0f
-        }
-        ;
+        float[] proj = new float[16];
         B2.g_camera.BuildProjectionMatrix(proj, 0.1f);
 
-        glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+        B2.g_shader.Gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 
-        B2.g_shader.Gl.BindVertexArray(m_vaoId);
+        B2.g_shader.Gl.BindVertexArray(m_vaoId[0]);
 
-        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
+        B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
 
-        int base = 0;
+        var points = CollectionsMarshal.AsSpan(m_points);
+        int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            B2.g_shader.Gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(VertexData), &m_points[base]);
+            B2.g_shader.Gl.BufferSubData<VertexData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
 
-            B2.g_shader.Gl.DrawArrays(GL_LINES, 0, batchCount);
+            B2.g_shader.Gl.DrawArrays(GLEnum.Lines, 0, (uint)batchCount);
 
             B2.g_shader.CheckErrorGL();
 
             count -= e_batchSize;
-            base += e_batchSize;
+            @base += e_batchSize;
         }
 
         B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         B2.g_shader.Gl.BindVertexArray(0);
         B2.g_shader.Gl.UseProgram(0);
 
-        m_points.clear();
+        m_points.Clear();
     }
 }
