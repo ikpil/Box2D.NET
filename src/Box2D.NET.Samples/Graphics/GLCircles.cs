@@ -62,12 +62,13 @@ public class GLCircles
         B2.g_shader.Gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
         // Circle buffer
+        CircleData[] circles = new CircleData[e_batchSize];
         B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2.g_shader.Gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(CircleData), nullptr, GLEnum.DynamicDraw);
+        B2.g_shader.Gl.BufferData<CircleData>(GLEnum.ArrayBuffer, circles, GLEnum.DynamicDraw);
 
-        B2.g_shader.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData), (void*)offsetof(CircleData, position));
-        B2.g_shader.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, GL_FALSE, sizeof(CircleData), (void*)offsetof(CircleData, radius));
-        B2.g_shader.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(CircleData), (void*)offsetof(CircleData, rgba));
+        B2.g_shader.Gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, false, 24, IntPtr.Zero); // 8
+        B2.g_shader.Gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, 24, IntPtr.Zero + 8); // 4
+        B2.g_shader.Gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, 24, IntPtr.Zero + 12); // 4
 
         B2.g_shader.Gl.VertexAttribDivisor(positionInstance, 1);
         B2.g_shader.Gl.VertexAttribDivisor(radiusInstance, 1);
@@ -82,16 +83,16 @@ public class GLCircles
 
     public void Destroy()
     {
-        if (m_vaoId)
+        if (0 != m_vaoId[0])
         {
-            B2.g_shader.Gl.DeleteVertexArrays(1, &m_vaoId);
+            B2.g_shader.Gl.DeleteVertexArrays(1, m_vaoId);
             B2.g_shader.Gl.DeleteBuffers(2, m_vboIds);
-            m_vaoId = 0;
+            m_vaoId[0] = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;
         }
 
-        if (m_programId)
+        if (0 != m_programId)
         {
             B2.g_shader.Gl.DeleteProgram(m_programId);
             m_programId = 0;
@@ -101,9 +102,7 @@ public class GLCircles
     public void AddCircle(B2Vec2 center, float radius, B2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
-        m_circles.Add( {
-            center, radius, rgba
-        } );
+        m_circles.Add(new CircleData(center, radius, rgba));
     }
 
     public void Flush()
@@ -116,30 +115,26 @@ public class GLCircles
 
         B2.g_shader.Gl.UseProgram(m_programId);
 
-        float proj[16] =  {
-            0.0f
-        }
-        ;
+        float[] proj = new float[16];
         B2.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
-        glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+        B2.g_shader.Gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
         B2.g_shader.Gl.Uniform1(m_pixelScaleUniform, B2.g_camera.m_height / B2.g_camera.m_zoom);
 
-        B2.g_shader.Gl.BindVertexArray(m_vaoId);
+        B2.g_shader.Gl.BindVertexArray(m_vaoId[0]);
 
         B2.g_shader.Gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
         B2.g_shader.Gl.Enable(GLEnum.Blend);
         B2.g_shader.Gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
-        var asdf = CollectionsMarshal.AsSpan(m_circles);
+        var circles = CollectionsMarshal.AsSpan(m_circles);
         int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2.g_shader.Gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, batchCount * sizeof(CircleData), &m_circles[base]);
-            B2.g_shader.Gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, asdf);
-            B2.g_shader.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, batchCount);
+            B2.g_shader.Gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, circles.Slice(@base, batchCount));
+            B2.g_shader.Gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
             B2.g_shader.CheckErrorGL();
 
