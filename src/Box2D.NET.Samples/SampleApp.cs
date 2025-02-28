@@ -10,9 +10,13 @@ using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
+using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Timers;
+using ErrorCode = Silk.NET.GLFW.ErrorCode;
 
 
 namespace Box2D.NET.Samples;
@@ -97,9 +101,9 @@ public class SampleApp
         }
 
     #ifdef __APPLE__
-        B2.g_glfw.GetWindowContentScale( g_mainWindow, &s_framebufferScale, &s_framebufferScale );
+        B2.g_glfw.GetWindowContentScale( g_mainWindow, out s_framebufferScale, out s_framebufferScale );
     #else
-        B2.g_glfw.GetWindowContentScale( g_mainWindow, &s_windowScale, &s_windowScale );
+        B2.g_glfw.GetWindowContentScale( g_mainWindow, out s_windowScale, out s_windowScale );
     #endif
 
         B2.g_glfw.MakeContextCurrent( g_mainWindow );
@@ -107,13 +111,13 @@ public class SampleApp
         // Load OpenGL functions using glad
         if ( !gladLoadGL() )
         {
-            fprintf( stderr, "Failed to initialize glad\n" );
+            Console.WriteLine("Failed to initialize glad");
             B2.g_glfw.Terminate();
             return -1;
         }
 
-        Console.WriteLine( "GL %d.%d\n", GLVersion.major, GLVersion.minor );
-        Console.WriteLine( "OpenGL %s, GLSL %s\n", glGetString( GL_VERSION ), glGetString( GL_SHADING_LANGUAGE_VERSION ) );
+        Console.WriteLine( $"GL {version.major}.{version.minor}");
+        Console.WriteLine($"OpenGL {B2.g_shader.gl.GetStringS(GLEnum.Version)}, GLSL {B2.g_shader.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
         B2.g_glfw.SetWindowSizeCallback( g_mainWindow, ResizeWindowCallback );
         B2.g_glfw.SetKeyCallback( g_mainWindow, KeyCallback );
@@ -129,28 +133,28 @@ public class SampleApp
         s_settings.sampleIndex = b2ClampInt( s_settings.sampleIndex, 0, g_sampleCount - 1 );
         s_selection = s_settings.sampleIndex;
 
-        glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
+        B2.g_shader.gl.ClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
 
-        float frameTime = 0.0;
+        float frameTime = 0.0f;
 
         while ( !B2.g_glfw.WindowShouldClose( g_mainWindow ) )
         {
             double time1 = B2.g_glfw.GetTime();
 
-            if ( GetKey(, GLFW_KEY_Z ) == InputAction.Press )
+            if ( GetKey(GLFW_KEY_Z ) == InputAction.Press )
             {
                 // Zoom out
                 B2.g_camera.m_zoom = b2MinFloat( 1.005f * B2.g_camera.m_zoom, 100.0f );
             }
-            else if ( GetKey(, GLFW_KEY_X ) == InputAction.Press )
+            else if ( GetKey( GLFW_KEY_X ) == InputAction.Press )
             {
                 // Zoom in
                 B2.g_camera.m_zoom = b2MaxFloat( 0.995f * B2.g_camera.m_zoom, 0.5f );
             }
 
-            B2.g_glfw.GetWindowSize( g_mainWindow, &B2.g_camera.m_width, &B2.g_camera.m_height );
-            B2.g_camera.m_width = int( B2.g_camera.m_width / s_windowScale );
-            B2.g_camera.m_height = int( B2.g_camera.m_height / s_windowScale );
+            B2.g_glfw.GetWindowSize( g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height );
+            B2.g_camera.m_width = (int)( B2.g_camera.m_width / s_windowScale );
+            B2.g_camera.m_height = (int)( B2.g_camera.m_height / s_windowScale );
 
             int bufferWidth, bufferHeight;
             B2.g_glfw.GetFramebufferSize( g_mainWindow, &bufferWidth, &bufferHeight );
@@ -175,12 +179,11 @@ public class SampleApp
 
             ImGui.NewFrame();
 
+            bool open = false;
             ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
-            ImGui.SetNextWindowSize( new Vector2( float( B2.g_camera.m_width ), float( B2.g_camera.m_height ) ) );
+            ImGui.SetNextWindowSize( new Vector2( B2.g_camera.m_width , B2.g_camera.m_height  ) );
             ImGui.SetNextWindowBgAlpha( 0.0f );
-            ImGui.Begin( "Overlay", nullptr,
-                          ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-                              ImGuiWindowFlags.NoScrollbar );
+            ImGui.Begin( "Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar );
             ImGui.End();
 
             if ( s_sample == nullptr )
@@ -252,7 +255,7 @@ public class SampleApp
                 time2 = B2.g_glfw.GetTime();
             }
 
-            frameTime = float( time2 - time1 );
+            frameTime = (float)( time2 - time1 );
         }
 
         delete s_sample;
@@ -267,12 +270,12 @@ public class SampleApp
  
     }
 
-    public static bool IsPowerOfTwo( int x )
+    public bool IsPowerOfTwo( int x )
     {
         return ( x != 0 ) && ( ( x & ( x - 1 ) ) == 0 );
     }
 
-    public static byte[] AllocFcn( uint size, int alignment )
+    public byte[] AllocFcn( uint size, int alignment )
     {
         // Allocation must be a multiple of alignment or risk a seg fault
         // https://en.cppreference.com/w/c/memory/aligned_alloc
@@ -289,7 +292,7 @@ public class SampleApp
         return ptr;
     }
 
-    public static void FreeFcn( byte[] mem )
+    public void FreeFcn( byte[] mem )
     {
     #if defined( _WIN64 ) || defined( _WIN32 )
         _aligned_free( mem );
@@ -298,18 +301,18 @@ public class SampleApp
     #endif
     }
 
-    public static int AssertFcn( string condition, string fileName, int lineNumber )
+    public int AssertFcn( string condition, string fileName, int lineNumber )
     {
         Console.WriteLine( "SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber );
         return 1;
     }
 
-    public static void glfwErrorCallback( ErrorCode error, string description )
+    public void glfwErrorCallback( ErrorCode error, string description )
     {
         Console.WriteLine($"GLFW error occurred. Code: {error}. Description: {description}");
     }
 
-    public static int CompareSamples( object a, object b )
+    public int CompareSamples( object a, object b )
     {
         SampleEntry* sa = (SampleEntry*)a;
         SampleEntry* sb = (SampleEntry*)b;
@@ -323,12 +326,12 @@ public class SampleApp
         return result;
     }
 
-    private static void SortSamples()
+    private void SortSamples()
     {
         qsort( g_sampleEntries, g_sampleCount, sizeof( SampleEntry ), CompareSamples );
     }
 
-    private static void RestartSample()
+    private void RestartSample()
     {
         delete s_sample;
         s_sample = nullptr;
@@ -337,7 +340,7 @@ public class SampleApp
         s_settings.restart = false;
     }
 
-    private static void CreateUI( WindowHandle* window, string glslVersion )
+    private unsafe void CreateUI( WindowHandle* window, string glslVersion )
     {
         IMGUI_CHECKVERSION();
         ImGui.CreateContext();
@@ -375,22 +378,22 @@ public class SampleApp
         }
     }
 
-    public static void DestroyUI()
+    public void DestroyUI()
     {
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui.DestroyContext();
     }
 
-    public static void ResizeWindowCallback( WindowHandle*, int width, int height )
+    public unsafe void ResizeWindowCallback( WindowHandle* window, int width, int height )
     {
-        B2.g_camera.m_width = int( width / s_windowScale );
-        B2.g_camera.m_height = int( height / s_windowScale );
-        s_settings.windowWidth = int( width / s_windowScale );
-        s_settings.windowHeight = int( height / s_windowScale );
+        B2.g_camera.m_width = (int)( width / s_windowScale );
+        B2.g_camera.m_height = (int)( height / s_windowScale );
+        s_settings.windowWidth = (int)( width / s_windowScale );
+        s_settings.windowHeight = (int)( height / s_windowScale );
     }
 
-    static void KeyCallback( WindowHandle* window, int key, int scancode, int action, int mods )
+    private unsafe void KeyCallback( WindowHandle* window, Keys key, int scancode, InputAction action, KeyModifiers mods )
     {
         ImGui_ImplGlfw_KeyCallback( window, key, scancode, action, mods );
         if ( ImGui.GetIO().WantCaptureKeyboard )
@@ -402,16 +405,16 @@ public class SampleApp
         {
             switch ( key )
             {
-                case GLFW_KEY_ESCAPE:
+                case Keys.Escape:
                     // Quit
-                    B2.g_glfw.SetWindowShouldClose( g_mainWindow, GL_TRUE );
+                    B2.g_glfw.SetWindowShouldClose(g_mainWindow, true);
                     break;
 
-                case GLFW_KEY_LEFT:
+                case Keys.Left:
                     // Pan left
-                    if ( mods == GLFW_MOD_CONTROL )
+                    if ( 0 != ((uint)mods & (uint)KeyModifiers.Control ))
                     {
-                        B2Vec2 newOrigin = { 2.0f, 0.0f };
+                        B2Vec2 newOrigin = new B2Vec2(2.0f, 0.0f);
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -420,11 +423,11 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_RIGHT:
+                case Keys.Right:
                     // Pan right
-                    if ( mods == GLFW_MOD_CONTROL )
+                    if ( 0 != ((uint)mods & (uint)KeyModifiers.Control ))
                     {
-                        B2Vec2 newOrigin = { -2.0f, 0.0f };
+                        B2Vec2 newOrigin =  new B2Vec2 (-2.0f, 0.0f );
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -433,11 +436,11 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_DOWN:
+                case Keys.Down:
                     // Pan down
-                    if ( mods == GLFW_MOD_CONTROL )
+                    if ( 0 != ((uint)mods & (uint)KeyModifiers.Control ))
                     {
-                        B2Vec2 newOrigin = { 0.0f, 2.0f };
+                        B2Vec2 newOrigin = new B2Vec2(0.0f, 2.0f);
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -446,11 +449,11 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_UP:
+                case Keys.Up:
                     // Pan up
-                    if ( mods == GLFW_MOD_CONTROL )
+                    if ( 0 != ((uint)mods & (uint)KeyModifiers.Control ))
                     {
-                        B2Vec2 newOrigin = { 0.0f, -2.0f };
+                        B2Vec2 newOrigin = new B2Vec2(0.0f, -2.0f);
                         s_sample.ShiftOrigin( newOrigin );
                     }
                     else
@@ -459,23 +462,23 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_HOME:
+                case Keys.Home:
                     B2.g_camera.ResetView();
                     break;
 
-                case GLFW_KEY_R:
+                case Keys.R:
                     RestartSample();
                     break;
 
-                case GLFW_KEY_O:
+                case Keys.O:
                     s_settings.singleStep = true;
                     break;
 
-                case GLFW_KEY_P:
+                case Keys.P:
                     s_settings.pause = !s_settings.pause;
                     break;
 
-                case GLFW_KEY_LEFT_BRACKET:
+                case Keys.LeftBracket:
                     // Switch to previous test
                     --s_selection;
                     if ( s_selection < 0 )
@@ -484,7 +487,7 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_RIGHT_BRACKET:
+                case Keys.RightBracket:
                     // Switch to next test
                     ++s_selection;
                     if ( s_selection == g_sampleCount )
@@ -493,8 +496,9 @@ public class SampleApp
                     }
                     break;
 
-                case GLFW_KEY_TAB:
+                case Keys.Tab:
                     B2.g_draw.m_showUI = !B2.g_draw.m_showUI;
+                    break;
 
                 default:
                     if ( s_sample )
@@ -505,12 +509,12 @@ public class SampleApp
         }
     }
 
-    static void CharCallback( WindowHandle* window, unsigned int c )
+    unsafe void CharCallback( WindowHandle* window, unsigned int c )
     {
         ImGui_ImplGlfw_CharCallback( window, c );
     }
 
-    static void MouseButtonCallback( WindowHandle* window, int button, int action, int mods )
+    unsafe void MouseButtonCallback( WindowHandle* window, int button, int action, int mods )
     {
         ImGui_ImplGlfw_MouseButtonCallback( window, button, action, mods );
 
@@ -552,9 +556,9 @@ public class SampleApp
         }
     }
 
-    static void MouseMotionCallback( WindowHandle* window, double xd, double yd )
+    unsafe void MouseMotionCallback( WindowHandle* window, double xd, double yd )
     {
-        B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
+        B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         ImGui_ImplGlfw_CursorPosCallback( window, ps.x, ps.y );
 
@@ -570,7 +574,7 @@ public class SampleApp
         }
     }
 
-    static void ScrollCallback( WindowHandle* window, double dx, double dy )
+    unsafe void ScrollCallback( WindowHandle* window, double dx, double dy )
     {
         ImGui_ImplGlfw_ScrollCallback( window, dx, dy );
         if ( ImGui.GetIO().WantCaptureMouse )
@@ -588,28 +592,27 @@ public class SampleApp
         }
     }
 
-    static void UpdateUI()
+    private void UpdateUI()
     {
         int maxWorkers = Environment.ProcessorCount;
 
         float menuWidth = 180.0f;
         if ( B2.g_draw.m_showUI )
         {
-            ImGui.SetNextWindowPos( { B2.g_camera.m_width - menuWidth - 10.0f, 10.0f } );
-            ImGui.SetNextWindowSize( { menuWidth, B2.g_camera.m_height - 20.0f } );
+            ImGui.SetNextWindowPos( new Vector2( B2.g_camera.m_width - menuWidth - 10.0f, 10.0f ) );
+            ImGui.SetNextWindowSize( new Vector2( menuWidth, B2.g_camera.m_height - 20.0f ) );
 
-            ImGui.Begin( "Tools", &B2.g_draw.m_showUI,
-                          ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse );
+            ImGui.Begin( "Tools", ref B2.g_draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse );
 
             if ( ImGui.BeginTabBar( "ControlTabs", ImGuiTabBarFlags.None ) )
             {
                 if ( ImGui.BeginTabItem( "Controls" ) )
                 {
                     ImGui.PushItemWidth( 100.0f );
-                    ImGui.SliderInt( "Sub-steps", &s_settings.subStepCount, 1, 50 );
-                    ImGui.SliderFloat( "Hertz", &s_settings.hertz, 5.0f, 120.0f, "%.0f hz" );
+                    ImGui.SliderInt( "Sub-steps", ref s_settings.subStepCount, 1, 50 );
+                    ImGui.SliderFloat( "Hertz", ref s_settings.hertz, 5.0f, 120.0f, "%.0f hz" );
 
-                    if ( ImGui.SliderInt( "Workers", &s_settings.workerCount, 1, maxWorkers ) )
+                    if ( ImGui.SliderInt( "Workers", ref s_settings.workerCount, 1, maxWorkers ) )
                     {
                         s_settings.workerCount = b2ClampInt( s_settings.workerCount, 1, maxWorkers );
                         RestartSample();
@@ -618,25 +621,25 @@ public class SampleApp
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox( "Sleep", &s_settings.enableSleep );
-                    ImGui.Checkbox( "Warm Starting", &s_settings.enableWarmStarting );
-                    ImGui.Checkbox( "Continuous", &s_settings.enableContinuous );
+                    ImGui.Checkbox( "Sleep", ref s_settings.enableSleep );
+                    ImGui.Checkbox( "Warm Starting", ref s_settings.enableWarmStarting );
+                    ImGui.Checkbox( "Continuous", ref s_settings.enableContinuous );
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox( "Shapes", &s_settings.drawShapes );
-                    ImGui.Checkbox( "Joints", &s_settings.drawJoints );
-                    ImGui.Checkbox( "Joint Extras", &s_settings.drawJointExtras );
-                    ImGui.Checkbox( "AABBs", &s_settings.drawAABBs );
-                    ImGui.Checkbox( "Contact Points", &s_settings.drawContactPoints );
-                    ImGui.Checkbox( "Contact Normals", &s_settings.drawContactNormals );
-                    ImGui.Checkbox( "Contact Impulses", &s_settings.drawContactImpulses );
-                    ImGui.Checkbox( "Friction Impulses", &s_settings.drawFrictionImpulses );
-                    ImGui.Checkbox( "Center of Masses", &s_settings.drawMass );
-                    ImGui.Checkbox( "Body Names", &s_settings.drawBodyNames );
-                    ImGui.Checkbox( "Graph Colors", &s_settings.drawGraphColors );
-                    ImGui.Checkbox( "Counters", &s_settings.drawCounters );
-                    ImGui.Checkbox( "Profile", &s_settings.drawProfile );
+                    ImGui.Checkbox( "Shapes", ref s_settings.drawShapes );
+                    ImGui.Checkbox( "Joints", ref s_settings.drawJoints );
+                    ImGui.Checkbox( "Joint Extras", ref s_settings.drawJointExtras );
+                    ImGui.Checkbox( "AABBs", ref s_settings.drawAABBs );
+                    ImGui.Checkbox( "Contact Points", ref s_settings.drawContactPoints );
+                    ImGui.Checkbox( "Contact Normals", ref s_settings.drawContactNormals );
+                    ImGui.Checkbox( "Contact Impulses", ref s_settings.drawContactImpulses );
+                    ImGui.Checkbox( "Friction Impulses", ref s_settings.drawFrictionImpulses );
+                    ImGui.Checkbox( "Center of Masses", ref s_settings.drawMass );
+                    ImGui.Checkbox( "Body Names", ref s_settings.drawBodyNames );
+                    ImGui.Checkbox( "Graph Colors", ref s_settings.drawGraphColors );
+                    ImGui.Checkbox( "Counters", ref s_settings.drawCounters );
+                    ImGui.Checkbox( "Profile", ref s_settings.drawProfile );
 
                     Vector2 button_sz = new Vector2( -1, 0 );
                     if ( ImGui.Button( "Pause (P)", button_sz ) )
@@ -666,7 +669,7 @@ public class SampleApp
 
                     if ( ImGui.Button( "Quit", button_sz ) )
                     {
-                        B2.g_glfw.SetWindowShouldClose( g_mainWindow, GL_TRUE );
+                        B2.g_glfw.SetWindowShouldClose( g_mainWindow, true);
                     }
 
                     ImGui.EndTabItem();
@@ -697,8 +700,7 @@ public class SampleApp
                                 {
                                     selectionFlags = ImGuiTreeNodeFlags.Selected;
                                 }
-                                ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s",
-                                                   g_sampleEntries[i].name );
+                                ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s", g_sampleEntries[i].name );
                                 if ( ImGui.IsItemClicked() )
                                 {
                                     s_selection = i;
