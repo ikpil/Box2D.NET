@@ -13,4 +13,12 @@ public struct CapsuleData
     public float radius;
     public float length;
     public RGBA8 rgba;
+
+    public CapsuleData(B2Transform transform, float radius, float length, RGBA8 rgba)
+    {
+        this.transform = transform;
+        this.radius = radius;
+        this.length = length;
+        this.rgba = rgba;
+    }
 }
