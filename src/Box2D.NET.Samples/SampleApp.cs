@@ -28,7 +28,7 @@ public class SampleApp
     static float s_windowScale = 1.0f;
     static float s_framebufferScale = 1.0f;
 
-    public int Run()
+    public unsafe int Run()
     {
        	// Install memory hooks
         b2SetAllocator( AllocFcn, FreeFcn );
@@ -58,18 +58,19 @@ public class SampleApp
         string glslVersion = string.Empty;
     #endif
 
-        B2.g_glfw.WindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-        B2.g_glfw.WindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-        B2.g_glfw.WindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
-        B2.g_glfw.WindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+        B2.g_glfw.WindowHint( WindowHintInt.ContextVersionMajor, 3 );
+        B2.g_glfw.WindowHint( WindowHintInt.ContextVersionMinor, 3 );
+        B2.g_glfw.WindowHint( WindowHintBool.OpenGLForwardCompat, true);
+        B2.g_glfw.WindowHint( WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 
         // MSAA
-        B2.g_glfw.WindowHint( GLFW_SAMPLES, 4 );
+        B2.g_glfw.WindowHint( WindowHintInt.Samples, 4 );
 
         B2Version version = b2GetVersion();
         buffer += $"Box2D Version {version.major}.{version.minor}.{version.revision}";
 
-        if ( GLFWmonitor* primaryMonitor = B2.g_glfw.GetPrimaryMonitor() )
+        Monitor* primaryMonitor = B2.g_glfw.GetPrimaryMonitor();
+        if (null != primaryMonitor)
         {
     #ifdef __APPLE__
             B2.g_glfw.GetMonitorContentScale( primaryMonitor, out s_framebufferScale, out s_framebufferScale );
@@ -81,17 +82,16 @@ public class SampleApp
         bool fullscreen = false;
         if ( fullscreen )
         {
-            g_mainWindow = B2.g_glfw.CreateWindow( (int) 1920 * s_windowScale , (int) 1080 * s_windowScale ), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
+            g_mainWindow = B2.g_glfw.CreateWindow( (int)(1920 * s_windowScale) , (int)(1080 * s_windowScale) , buffer, B2.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
-            g_mainWindow = B2.g_glfw.CreateWindow( int( B2.g_camera.m_width * s_windowScale ), int( B2.g_camera.m_height * s_windowScale ),
-                                             buffer, nullptr, nullptr );
+            g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
-        if ( g_mainWindow == nullptr )
+        if ( g_mainWindow == null)
         {
-            fprintf( stderr, "Failed to open GLFW g_mainWindow.\n" );
+            Console.WriteLine("Failed to open GLFW g_mainWindow." );
             B2.g_glfw.Terminate();
             return -1;
         }
@@ -304,7 +304,7 @@ public class SampleApp
         return 1;
     }
 
-    public static void glfwErrorCallback( int error, string description )
+    public static void glfwErrorCallback( ErrorCode error, string description )
     {
         Console.WriteLine($"GLFW error occurred. Code: {error}. Description: {description}");
     }
