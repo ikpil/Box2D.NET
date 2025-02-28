@@ -2,10 +2,13 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 
@@ -17,12 +20,12 @@ public class GLTriangles
     // must be multiple of 3
     public const int e_batchSize = 3 * 512;
 
-    List<VertexData> m_points;
+    private List<VertexData> m_points;
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboId = new uint[1];
-    uint m_programId;
-    int m_projectionUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboId = new uint[1];
+    private uint m_programId;
+    private int m_projectionUniform;
 
     public void Create()
     {
@@ -59,12 +62,12 @@ public class GLTriangles
         B2.g_shader.gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
-        B2.g_shader.gl.BufferData(GLEnum.ArrayBuffer, e_batchSize * sizeof(VertexData), nullptr, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
+        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
 
-        B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, GL_FALSE, sizeof(VertexData), (void*)offsetof(VertexData, position));
+        B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
         // color will get automatically expanded to floats in the shader
-        B2.g_shader.gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, GL_TRUE, sizeof(VertexData), (void*)offsetof(VertexData, rgba));
+        B2.g_shader.gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
         B2.g_shader.CheckErrorGL();
 
@@ -75,15 +78,15 @@ public class GLTriangles
 
     public void Destroy()
     {
-        if (m_vaoId)
+        if (0 != m_vaoId[0])
         {
-            B2.g_shader.gl.DeleteVertexArrays(1, &m_vaoId);
-            B2.g_shader.gl.DeleteBuffers(1, &m_vboId);
-            m_vaoId = 0;
-            m_vboId = 0;
+            B2.g_shader.gl.DeleteVertexArrays(1, m_vaoId);
+            B2.g_shader.gl.DeleteBuffers(1, m_vboId);
+            m_vaoId[0] = 0;
+            m_vboId[0] = 0;
         }
 
-        if (m_programId)
+        if (0 != m_programId)
         {
             B2.g_shader.gl.DeleteProgram(m_programId);
             m_programId = 0;
@@ -93,20 +96,14 @@ public class GLTriangles
     public void AddTriangle(B2Vec2 p1, B2Vec2 p2, B2Vec2 p3, B2HexColor c)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
-        m_points.Add( {
-            p1, rgba
-        } );
-        m_points.Add( {
-            p2, rgba
-        } );
-        m_points.Add( {
-            p3, rgba
-        } );
+        m_points.Add(new VertexData(p1, rgba));
+        m_points.Add(new VertexData(p2, rgba));
+        m_points.Add(new VertexData(p3, rgba));
     }
 
     public void Flush()
     {
-        int count = (int)m_points.size();
+        int count = (int)m_points.Count;
         if (count == 0)
         {
             return;
@@ -116,32 +113,30 @@ public class GLTriangles
 
         B2.g_shader.gl.UseProgram(m_programId);
 
-        float proj[16] =  {
-            0.0f
-        }
-        ;
+        float[] proj = new float[16];
         B2.g_camera.BuildProjectionMatrix(proj, 0.2f);
 
-        glUniformMatrix4fv(m_projectionUniform, 1, GL_FALSE, proj);
+        B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 
-        B2.g_shader.gl.BindVertexArray(m_vaoId);
+        B2.g_shader.gl.BindVertexArray(m_vaoId[0]);
 
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId);
+        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
         B2.g_shader.gl.Enable(GLEnum.Blend);
         B2.g_shader.gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
 
-        int base = 0;
+        var points = CollectionsMarshal.AsSpan(m_points);
+        int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
 
-            B2.g_shader.gl.BufferSubData(GLEnum.ArrayBuffer, 0, batchCount * sizeof(VertexData), &m_points[base]);
-            B2.g_shader.gl.DrawArrays(GLEnum.Triangles, 0, batchCount);
+            B2.g_shader.gl.BufferSubData<VertexData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
+            B2.g_shader.gl.DrawArrays(GLEnum.Triangles, 0, (uint)batchCount);
 
             B2.g_shader.CheckErrorGL();
 
             count -= e_batchSize;
-            base += e_batchSize;
+            @base += e_batchSize;
         }
 
         B2.g_shader.gl.Disable(GLEnum.Blend);
@@ -150,6 +145,6 @@ public class GLTriangles
         B2.g_shader.gl.BindVertexArray(0);
         B2.g_shader.gl.UseProgram(0);
 
-        m_points.clear();
+        m_points.Clear();
     }
 }
