@@ -12,31 +12,16 @@ using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Worlds;
 
 
 namespace Box2D.NET.Samples;
 
 public class SampleApp
 {
-#if defined( _WIN32 ) && 0
-    #include <crtdbg.h>
-
-    static int MyAllocHook( int allocType, void* userData, size_t size, int blockType, long requestNumber,
-                            const unsigned char* filename, int lineNumber )
-    {
-        // This hook can help find leaks
-        if ( size == 143 )
-        {
-            size += 0;
-        }
-
-        return 1;
-    }
-#endif
-
-    GLFWwindow* g_mainWindow = nullptr;
+    private unsafe WindowHandle* g_mainWindow;
     static int s_selection = 0;
-    static Sample s_sample = nullptr;
+    static Sample s_sample = null;
     static Settings s_settings;
     static bool s_rightMouseDown = false;
     static B2Vec2 s_clickPointWS = b2Vec2_zero;
@@ -49,94 +34,93 @@ public class SampleApp
         b2SetAllocator( AllocFcn, FreeFcn );
         b2SetAssertFcn( AssertFcn );
 
-        char buffer[128];
-
         s_settings.Load();
         s_settings.workerCount = b2MinInt( 8, Environment.ProcessorCount / 2);
 
         SortSamples();
 
-        glfwSetErrorCallback( glfwErrorCallback );
+        B2.g_glfw.SetErrorCallback( glfwErrorCallback );
 
         B2.g_camera.m_width = s_settings.windowWidth;
         B2.g_camera.m_height = s_settings.windowHeight;
 
-        if ( glfwInit() == 0 )
+        if ( B2.g_glfw.Init())
         {
-            fprintf( stderr, "Failed to initialize GLFW\n" );
+            Console.WriteLine( "Failed to initialize GLFW" );
             return -1;
         }
 
+        string buffer = string.Empty;
+        
     #if __APPLE__
         string glslVersion = "#version 150";
     #else
-        string glslVersion = nullptr;
+        string glslVersion = string.Empty;
     #endif
 
-        glfwWindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
-        glfwWindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
-        glfwWindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
-        glfwWindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
+        B2.g_glfw.WindowHint( GLFW_CONTEXT_VERSION_MAJOR, 3 );
+        B2.g_glfw.WindowHint( GLFW_CONTEXT_VERSION_MINOR, 3 );
+        B2.g_glfw.WindowHint( GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE );
+        B2.g_glfw.WindowHint( GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE );
 
         // MSAA
-        glfwWindowHint( GLFW_SAMPLES, 4 );
+        B2.g_glfw.WindowHint( GLFW_SAMPLES, 4 );
 
         B2Version version = b2GetVersion();
-        snprintf( buffer, 128, "Box2D Version %d.%d.%d", version.major, version.minor, version.revision );
+        buffer += $"Box2D Version {version.major}.{version.minor}.{version.revision}";
 
-        if ( GLFWmonitor* primaryMonitor = glfwGetPrimaryMonitor() )
+        if ( GLFWmonitor* primaryMonitor = B2.g_glfw.GetPrimaryMonitor() )
         {
     #ifdef __APPLE__
-            glfwGetMonitorContentScale( primaryMonitor, &s_framebufferScale, &s_framebufferScale );
+            B2.g_glfw.GetMonitorContentScale( primaryMonitor, out s_framebufferScale, out s_framebufferScale );
     #else
-            glfwGetMonitorContentScale( primaryMonitor, &s_windowScale, &s_windowScale );
+            B2.g_glfw.GetMonitorContentScale( primaryMonitor, out s_windowScale, out s_windowScale );
     #endif
         }
 
         bool fullscreen = false;
         if ( fullscreen )
         {
-            g_mainWindow = glfwCreateWindow( int( 1920 * s_windowScale ), int( 1080 * s_windowScale ), buffer,
-                                             glfwGetPrimaryMonitor(), nullptr );
+            g_mainWindow = B2.g_glfw.CreateWindow( (int) 1920 * s_windowScale , (int) 1080 * s_windowScale ), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
-            g_mainWindow = glfwCreateWindow( int( B2.g_camera.m_width * s_windowScale ), int( B2.g_camera.m_height * s_windowScale ),
+            g_mainWindow = B2.g_glfw.CreateWindow( int( B2.g_camera.m_width * s_windowScale ), int( B2.g_camera.m_height * s_windowScale ),
                                              buffer, nullptr, nullptr );
         }
 
         if ( g_mainWindow == nullptr )
         {
             fprintf( stderr, "Failed to open GLFW g_mainWindow.\n" );
-            glfwTerminate();
+            B2.g_glfw.Terminate();
             return -1;
         }
 
     #ifdef __APPLE__
-        glfwGetWindowContentScale( g_mainWindow, &s_framebufferScale, &s_framebufferScale );
+        B2.g_glfw.GetWindowContentScale( g_mainWindow, &s_framebufferScale, &s_framebufferScale );
     #else
-        glfwGetWindowContentScale( g_mainWindow, &s_windowScale, &s_windowScale );
+        B2.g_glfw.GetWindowContentScale( g_mainWindow, &s_windowScale, &s_windowScale );
     #endif
 
-        glfwMakeContextCurrent( g_mainWindow );
+        B2.g_glfw.MakeContextCurrent( g_mainWindow );
 
         // Load OpenGL functions using glad
         if ( !gladLoadGL() )
         {
             fprintf( stderr, "Failed to initialize glad\n" );
-            glfwTerminate();
+            B2.g_glfw.Terminate();
             return -1;
         }
 
         Console.WriteLine( "GL %d.%d\n", GLVersion.major, GLVersion.minor );
         Console.WriteLine( "OpenGL %s, GLSL %s\n", glGetString( GL_VERSION ), glGetString( GL_SHADING_LANGUAGE_VERSION ) );
 
-        glfwSetWindowSizeCallback( g_mainWindow, ResizeWindowCallback );
-        glfwSetKeyCallback( g_mainWindow, KeyCallback );
-        glfwSetCharCallback( g_mainWindow, CharCallback );
-        glfwSetMouseButtonCallback( g_mainWindow, MouseButtonCallback );
-        glfwSetCursorPosCallback( g_mainWindow, MouseMotionCallback );
-        glfwSetScrollCallback( g_mainWindow, ScrollCallback );
+        B2.g_glfw.SetWindowSizeCallback( g_mainWindow, ResizeWindowCallback );
+        B2.g_glfw.SetKeyCallback( g_mainWindow, KeyCallback );
+        B2.g_glfw.SetCharCallback( g_mainWindow, CharCallback );
+        B2.g_glfw.SetMouseButtonCallback( g_mainWindow, MouseButtonCallback );
+        B2.g_glfw.SetCursorPosCallback( g_mainWindow, MouseMotionCallback );
+        B2.g_glfw.SetScrollCallback( g_mainWindow, ScrollCallback );
 
         // todo put this in s_settings
         CreateUI( g_mainWindow, glslVersion );
@@ -149,45 +133,45 @@ public class SampleApp
 
         float frameTime = 0.0;
 
-        while ( !glfwWindowShouldClose( g_mainWindow ) )
+        while ( !B2.g_glfw.WindowShouldClose( g_mainWindow ) )
         {
-            double time1 = glfwGetTime();
+            double time1 = B2.g_glfw.GetTime();
 
-            if ( glfwGetKey( g_mainWindow, GLFW_KEY_Z ) == GLFW_PRESS )
+            if ( GetKey(, GLFW_KEY_Z ) == InputAction.Press )
             {
                 // Zoom out
                 B2.g_camera.m_zoom = b2MinFloat( 1.005f * B2.g_camera.m_zoom, 100.0f );
             }
-            else if ( glfwGetKey( g_mainWindow, GLFW_KEY_X ) == GLFW_PRESS )
+            else if ( GetKey(, GLFW_KEY_X ) == InputAction.Press )
             {
                 // Zoom in
                 B2.g_camera.m_zoom = b2MaxFloat( 0.995f * B2.g_camera.m_zoom, 0.5f );
             }
 
-            glfwGetWindowSize( g_mainWindow, &B2.g_camera.m_width, &B2.g_camera.m_height );
+            B2.g_glfw.GetWindowSize( g_mainWindow, &B2.g_camera.m_width, &B2.g_camera.m_height );
             B2.g_camera.m_width = int( B2.g_camera.m_width / s_windowScale );
             B2.g_camera.m_height = int( B2.g_camera.m_height / s_windowScale );
 
             int bufferWidth, bufferHeight;
-            glfwGetFramebufferSize( g_mainWindow, &bufferWidth, &bufferHeight );
-            glViewport( 0, 0, bufferWidth, bufferHeight );
+            B2.g_glfw.GetFramebufferSize( g_mainWindow, &bufferWidth, &bufferHeight );
+            B2.g_shader.gl.Viewport( 0, 0, bufferWidth, bufferHeight );
 
-            glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+            B2.g_shader.gl.Clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
             //B2.g_draw.DrawBackground();
 
             double cursorPosX = 0, cursorPosY = 0;
-            glfwGetCursorPos( g_mainWindow, &cursorPosX, &cursorPosY );
+            B2.g_glfw.GetCursorPos( g_mainWindow, &cursorPosX, &cursorPosY );
             ImGui_ImplGlfw_CursorPosCallback( g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale );
             ImGui_ImplOpenGL3_NewFrame();
             ImGui_ImplGlfw_NewFrame();
             ImGui_ImplGlfw_CursorPosCallback( g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale );
 
-            ImGuiIO& io = ImGui.GetIO();
-            io.DisplaySize.x = float( B2.g_camera.m_width );
-            io.DisplaySize.y = float( B2.g_camera.m_height );
-            io.DisplayFramebufferScale.x = bufferWidth / float( B2.g_camera.m_width );
-            io.DisplayFramebufferScale.y = bufferHeight / float( B2.g_camera.m_height );
+            ImGuiIOPtr io = ImGui.GetIO();
+            io.DisplaySize.X = (float) B2.g_camera.m_width ;
+            io.DisplaySize.Y = (float) B2.g_camera.m_height ;
+            io.DisplayFramebufferScale.X = bufferWidth / (float) B2.g_camera.m_width ;
+            io.DisplayFramebufferScale.Y = bufferHeight / (float) B2.g_camera.m_height ;
 
             ImGui.NewFrame();
 
@@ -237,10 +221,10 @@ public class SampleApp
             ImGui.Render();
             ImGui_ImplOpenGL3_RenderDrawData( ImGui.GetDrawData() );
 
-            glfwSwapBuffers( g_mainWindow );
+            B2.g_glfw.SwapBuffers( g_mainWindow );
 
             // For the Tracy profiler
-            FrameMark;
+            //FrameMark;
 
             if ( s_selection != s_settings.sampleIndex )
             {
@@ -257,15 +241,15 @@ public class SampleApp
                 s_sample = g_sampleEntries[s_settings.sampleIndex].createFcn( s_settings );
             }
 
-            glfwPollEvents();
+            B2.g_glfw.PollEvents();
 
             // Limit frame rate to 60Hz
-            double time2 = glfwGetTime();
+            double time2 = B2.g_glfw.GetTime();
             double targetTime = time1 + 1.0 / 60.0;
             while ( time2 < targetTime )
             {
                 b2Yield();
-                time2 = glfwGetTime();
+                time2 = B2.g_glfw.GetTime();
             }
 
             frameTime = float( time2 - time1 );
@@ -277,7 +261,7 @@ public class SampleApp
         B2.g_draw.Destroy();
 
         DestroyUI();
-        glfwTerminate();
+        B2.g_glfw.Terminate();
 
         s_settings.Save();
  
@@ -322,10 +306,10 @@ public class SampleApp
 
     public static void glfwErrorCallback( int error, string description )
     {
-        fprintf( stderr, "GLFW error occurred. Code: %d. Description: %s\n", error, description );
+        Console.WriteLine($"GLFW error occurred. Code: {error}. Description: {description}");
     }
 
-    public static int CompareSamples( const void* a, const void* b )
+    public static int CompareSamples( object a, object b )
     {
         SampleEntry* sa = (SampleEntry*)a;
         SampleEntry* sb = (SampleEntry*)b;
@@ -353,7 +337,7 @@ public class SampleApp
         s_settings.restart = false;
     }
 
-    private static void CreateUI( GLFWwindow* window, string glslVersion )
+    private static void CreateUI( WindowHandle* window, string glslVersion )
     {
         IMGUI_CHECKVERSION();
         ImGui.CreateContext();
@@ -398,7 +382,7 @@ public class SampleApp
         ImGui.DestroyContext();
     }
 
-    public static void ResizeWindowCallback( GLFWwindow*, int width, int height )
+    public static void ResizeWindowCallback( WindowHandle*, int width, int height )
     {
         B2.g_camera.m_width = int( width / s_windowScale );
         B2.g_camera.m_height = int( height / s_windowScale );
@@ -406,7 +390,7 @@ public class SampleApp
         s_settings.windowHeight = int( height / s_windowScale );
     }
 
-    static void KeyCallback( GLFWwindow* window, int key, int scancode, int action, int mods )
+    static void KeyCallback( WindowHandle* window, int key, int scancode, int action, int mods )
     {
         ImGui_ImplGlfw_KeyCallback( window, key, scancode, action, mods );
         if ( ImGui.GetIO().WantCaptureKeyboard )
@@ -414,13 +398,13 @@ public class SampleApp
             return;
         }
 
-        if ( action == GLFW_PRESS )
+        if ( action == InputAction.Press )
         {
             switch ( key )
             {
                 case GLFW_KEY_ESCAPE:
                     // Quit
-                    glfwSetWindowShouldClose( g_mainWindow, GL_TRUE );
+                    B2.g_glfw.SetWindowShouldClose( g_mainWindow, GL_TRUE );
                     break;
 
                 case GLFW_KEY_LEFT:
@@ -521,12 +505,12 @@ public class SampleApp
         }
     }
 
-    static void CharCallback( GLFWwindow* window, unsigned int c )
+    static void CharCallback( WindowHandle* window, unsigned int c )
     {
         ImGui_ImplGlfw_CharCallback( window, c );
     }
 
-    static void MouseButtonCallback( GLFWwindow* window, int button, int action, int mods )
+    static void MouseButtonCallback( WindowHandle* window, int button, int action, int mods )
     {
         ImGui_ImplGlfw_MouseButtonCallback( window, button, action, mods );
 
@@ -536,14 +520,14 @@ public class SampleApp
         }
 
         double xd, yd;
-        glfwGetCursorPos( g_mainWindow, &xd, &yd );
+        B2.g_glfw.GetCursorPos( g_mainWindow, &xd, &yd );
         B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
 
         // Use the mouse to move things around.
         if ( button == (int)MouseButton.Left )
         {
             B2Vec2 pw = B2.g_camera.ConvertScreenToWorld( ps );
-            if ( action == GLFW_PRESS )
+            if ( action == InputAction.Press )
             {
                 s_sample.MouseDown( pw, button, mods );
             }
@@ -555,7 +539,7 @@ public class SampleApp
         }
         else if ( button == GLFW_MOUSE_BUTTON_2 )
         {
-            if ( action == GLFW_PRESS )
+            if ( action == InputAction.Press )
             {
                 s_clickPointWS = B2.g_camera.ConvertScreenToWorld( ps );
                 s_rightMouseDown = true;
@@ -568,7 +552,7 @@ public class SampleApp
         }
     }
 
-    static void MouseMotionCallback( GLFWwindow* window, double xd, double yd )
+    static void MouseMotionCallback( WindowHandle* window, double xd, double yd )
     {
         B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
 
@@ -586,7 +570,7 @@ public class SampleApp
         }
     }
 
-    static void ScrollCallback( GLFWwindow* window, double dx, double dy )
+    static void ScrollCallback( WindowHandle* window, double dx, double dy )
     {
         ImGui_ImplGlfw_ScrollCallback( window, dx, dy );
         if ( ImGui.GetIO().WantCaptureMouse )
@@ -606,7 +590,7 @@ public class SampleApp
 
     static void UpdateUI()
     {
-        int maxWorkers = enki::GetNumHardwareThreads();
+        int maxWorkers = Environment.ProcessorCount;
 
         float menuWidth = 180.0f;
         if ( B2.g_draw.m_showUI )
@@ -682,7 +666,7 @@ public class SampleApp
 
                     if ( ImGui.Button( "Quit", button_sz ) )
                     {
-                        glfwSetWindowShouldClose( g_mainWindow, GL_TRUE );
+                        B2.g_glfw.SetWindowShouldClose( g_mainWindow, GL_TRUE );
                     }
 
                     ImGui.EndTabItem();

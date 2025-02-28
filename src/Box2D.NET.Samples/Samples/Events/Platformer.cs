@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -223,18 +224,18 @@ public class Platformer : Sample
             b2Body_SetLinearVelocity(m_movingPlatformId, new B2Vec2(-2.0f, 0.0f));
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)
+        if (GetKey(Keys.A) == InputAction.Press)
         {
             b2Body_ApplyForceToCenter(m_playerId, new B2Vec2(-m_force, 0.0f), true);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_D) == GLFW_PRESS)
+        if (GetKey(Keys.D) == InputAction.Press)
         {
             b2Body_ApplyForceToCenter(m_playerId, new B2Vec2(m_force, 0.0f), true);
         }
 
-        int keyState = glfwGetKey(g_mainWindow, GLFW_KEY_SPACE);
-        if (keyState == GLFW_PRESS)
+        var keyState = GetKey(Keys.Space);
+        if (keyState == InputAction.Press)
         {
             if (canJump)
             {

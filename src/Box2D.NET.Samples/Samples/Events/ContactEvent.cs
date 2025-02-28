@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Extensions;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -167,22 +168,22 @@ public class ContactEvent : Sample
 
         B2Vec2 position = b2Body_GetPosition(m_playerId);
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)
+        if (GetKey(Keys.A) == InputAction.Press)
         {
             b2Body_ApplyForce(m_playerId, new B2Vec2(-m_force, 0.0f), position, true);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_D) == GLFW_PRESS)
+        if (GetKey(Keys.D) == InputAction.Press)
         {
             b2Body_ApplyForce(m_playerId, new B2Vec2(m_force, 0.0f), position, true);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_W) == GLFW_PRESS)
+        if (GetKey(Keys.W) == InputAction.Press)
         {
             b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, m_force), position, true);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_S) == GLFW_PRESS)
+        if (GetKey(Keys.S) == InputAction.Press)
         {
             b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, -m_force), position, true);
         }

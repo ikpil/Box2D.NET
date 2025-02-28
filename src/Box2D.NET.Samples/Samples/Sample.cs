@@ -725,4 +725,16 @@ public class Sample : IDisposable
         var segment = svgPath.Substring(startIdx, ptrIndex - startIdx);
         return float.TryParse(segment, CultureInfo.InvariantCulture, out value);
     }
+    
+    public unsafe InputAction GetKey(Keys key)
+    {
+        switch (B2.g_glfw.GetKey(B2.g_mainWindow, key))
+        {
+            case 0: return InputAction.Release;
+            case 1: return InputAction.Press;
+            case 2: return InputAction.Repeat;
+            default: return InputAction.Release;
+        }
+        
+    }
 }

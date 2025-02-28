@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -243,7 +244,7 @@ public class VerticalStack : Sample
 
         ImGui.PopItemWidth();
 
-        if (ImGui.Button("Fire Bullets") || glfwGetKey(g_mainWindow, GLFW_KEY_B) == GLFW_PRESS)
+        if (ImGui.Button("Fire Bullets") || GetKey(Keys.B) == InputAction.Press)
         {
             DestroyBullets();
             FireBullets();

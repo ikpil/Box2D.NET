@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using Silk.NET.Vulkan;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
@@ -248,19 +249,19 @@ public class Driving : Sample
 
     public override void Step(Settings settings)
     {
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)
+        if (GetKey(Keys.A) == InputAction.Press)
         {
             m_throttle = 1.0f;
             m_car.SetSpeed(m_speed);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_S) == GLFW_PRESS)
+        if (GetKey(Keys.S) == InputAction.Press)
         {
             m_throttle = 0.0f;
             m_car.SetSpeed(0.0f);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_D) == GLFW_PRESS)
+        if (GetKey(Keys.D) == InputAction.Press)
         {
             m_throttle = -1.0f;
             m_car.SetSpeed(-m_speed);

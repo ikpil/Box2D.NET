@@ -73,7 +73,7 @@ public class GLBackground
         double time = B2.g_glfw.GetTime();
         time = time % 100.0; // fmodf 대신 % 연산 사용
 
-        // float time = (float)glfwGetTime();
+        // float time = (float)B2.g_glfw.GetTime();
         // time = fmodf(time, 100.0f);
 
         B2.g_shader.gl.Uniform1(m_timeUniform, time);

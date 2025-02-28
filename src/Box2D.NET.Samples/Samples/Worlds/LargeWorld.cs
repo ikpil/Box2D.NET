@@ -7,6 +7,8 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
+using Silk.NET.GLFW;
+using Silk.NET.Input.Glfw;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -231,17 +233,17 @@ public class LargeWorld : Sample
             B2.g_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_A) == GLFW_PRESS)
+        if (GetKey(Keys.A) == InputAction.Press)
         {
             m_car.SetSpeed(20.0f);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_S) == GLFW_PRESS)
+        if (GetKey(Keys.S) == InputAction.Press)
         {
             m_car.SetSpeed(0.0f);
         }
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_D) == GLFW_PRESS)
+        if (GetKey(Keys.D) == InputAction.Press)
         {
             m_car.SetSpeed(-5.0f);
         }

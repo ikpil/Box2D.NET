@@ -7,6 +7,7 @@ using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Graphics;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples;
@@ -31,7 +32,6 @@ public class Draw
     public ImFontPtr m_mediumFont;
     public ImFontPtr m_largeFont;
 
-    GLFWwindow g_mainWindow;
 
     public Draw()
     {

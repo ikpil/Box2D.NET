@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using Box2D.NET.Primitives;
+using Silk.NET.GLFW;
 using Silk.NET.Input;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
@@ -175,7 +176,7 @@ public class Pinball : Sample
     {
         base.Step(settings);
 
-        if (glfwGetKey(g_mainWindow, GLFW_KEY_SPACE) == GLFW_PRESS)
+        if (GetKey(Keys.Space) == InputAction.Press)
         {
             b2RevoluteJoint_SetMotorSpeed(m_leftJointId, 20.0f);
             b2RevoluteJoint_SetMotorSpeed(m_rightJointId, -20.0f);
