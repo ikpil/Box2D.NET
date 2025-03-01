@@ -76,7 +76,7 @@ namespace Box2D.NET.Shared
                         jd.bodyIdB = body;
                         jd.localAnchorA = new B2Vec2(0.0f, -0.5f);
                         jd.localAnchorB = new B2Vec2(0.0f, 0.5f);
-                        b2CreateRevoluteJoint(worldId, jd);
+                        b2CreateRevoluteJoint(worldId, ref jd);
                     }
 
                     if (k > 0)
@@ -85,7 +85,7 @@ namespace Box2D.NET.Shared
                         jd.bodyIdB = body;
                         jd.localAnchorA = new B2Vec2(0.5f, 0.0f);
                         jd.localAnchorB = new B2Vec2(-0.5f, 0.0f);
-                        b2CreateRevoluteJoint(worldId, jd);
+                        b2CreateRevoluteJoint(worldId, ref jd);
                     }
 
                     bodies[index++] = body;
@@ -375,7 +375,7 @@ namespace Box2D.NET.Shared
                 jointDef.motorSpeed = motorSpeed;
                 jointDef.maxMotorTorque = maxMotorTorque;
 
-                spinnerData.spinnerId = b2CreateRevoluteJoint(worldId, jointDef);
+                spinnerData.spinnerId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             {
@@ -516,7 +516,7 @@ namespace Box2D.NET.Shared
                 jd.maxMotorTorque = 1e8f;
                 jd.enableMotor = true;
 
-                b2CreateRevoluteJoint(worldId, jd);
+                b2CreateRevoluteJoint(worldId, ref jd);
             }
 
             int gridCount = BENCHMARK_DEBUG ? 20 : 45;

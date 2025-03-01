@@ -316,7 +316,7 @@ public class B2DeterminismTest
                     {
                         jointDef.bodyIdA = prevBodyId;
                         jointDef.bodyIdB = bodyId;
-                        b2CreateRevoluteJoint(worldId, jointDef);
+                        b2CreateRevoluteJoint(worldId, ref jointDef);
                         prevBodyId = b2_nullBodyId;
                     }
 

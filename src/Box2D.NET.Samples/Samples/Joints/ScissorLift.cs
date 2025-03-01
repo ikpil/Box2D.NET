@@ -98,7 +98,7 @@ public class ScissorLift : Sample
                 revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = (i == 0) ? true : false;
 
-                b2CreateRevoluteJoint(m_worldId, revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
                 // right pin
                 if (i == 0)
@@ -124,7 +124,7 @@ public class ScissorLift : Sample
                     revoluteDef.maxMotorTorque = 1.0f;
                     revoluteDef.collideConnected = false;
 
-                    b2CreateRevoluteJoint(m_worldId, revoluteDef);
+                    b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
                 }
 
                 // middle pin
@@ -136,7 +136,7 @@ public class ScissorLift : Sample
                 revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = false;
 
-                b2CreateRevoluteJoint(m_worldId, revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
                 baseId1 = bodyId2;
                 baseId2 = bodyId1;
@@ -162,7 +162,7 @@ public class ScissorLift : Sample
                 revoluteDef.enableMotor = false;
                 revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = true;
-                b2CreateRevoluteJoint(m_worldId, revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
             }
 
             // right pin

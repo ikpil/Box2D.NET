@@ -79,7 +79,7 @@ public class Bridge : Sample
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
-                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
+                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = m_bodyIds[i];
             }
@@ -92,7 +92,7 @@ public class Bridge : Sample
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
-                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
+                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 Debug.Assert(jointIndex == e_count + 1);
             }

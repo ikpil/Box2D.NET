@@ -161,7 +161,7 @@ public class FixedRotation : Sample
             jointDef.bodyIdB = m_bodyIds[index];
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

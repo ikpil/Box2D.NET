@@ -145,7 +145,7 @@ public class SensorFunnel : Sample
                 revoluteDef.motorSpeed = 2.0f * sign;
                 revoluteDef.enableMotor = true;
 
-                b2CreateRevoluteJoint(m_worldId, revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
                 y -= 14.0f;
                 sign = -sign;

@@ -123,7 +123,7 @@ public class Driving : Sample
             jointDef.lowerAngle = -8.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 8.0f * B2_PI / 180.0f;
             jointDef.enableLimit = true;
-            b2CreateRevoluteJoint(m_worldId, jointDef);
+            b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         // Bridge
@@ -148,7 +148,7 @@ public class Driving : Sample
                 jointDef.bodyIdB = bodyId;
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-                b2CreateRevoluteJoint(m_worldId, jointDef);
+                b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = bodyId;
             }
@@ -161,7 +161,7 @@ public class Driving : Sample
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = 50.0f;
-                b2CreateRevoluteJoint(m_worldId, jointDef);
+                b2CreateRevoluteJoint(m_worldId, ref jointDef);
             }
         }
 

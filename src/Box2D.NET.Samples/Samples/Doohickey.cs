@@ -64,7 +64,7 @@ public class Doohickey
         revoluteDef.localAnchorB = new B2Vec2(-3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
-        b2CreateRevoluteJoint(worldId, revoluteDef);
+        b2CreateRevoluteJoint(worldId, ref revoluteDef);
 
         revoluteDef.bodyIdA = m_wheelId2;
         revoluteDef.bodyIdB = m_barId2;
@@ -72,7 +72,7 @@ public class Doohickey
         revoluteDef.localAnchorB = new B2Vec2(3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
-        b2CreateRevoluteJoint(worldId, revoluteDef);
+        b2CreateRevoluteJoint(worldId, ref revoluteDef);
 
         B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
         prismaticDef.bodyIdA = m_barId1;

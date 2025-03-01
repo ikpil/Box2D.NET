@@ -91,7 +91,7 @@ public class RevoluteJoint : Sample
             jointDef.upperAngle = 0.75f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
 
-            m_jointId1 = b2CreateRevoluteJoint(m_worldId, jointDef);
+            m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         {
@@ -133,7 +133,7 @@ public class RevoluteJoint : Sample
             jointDef.motorSpeed = 0.0f;
             jointDef.maxMotorTorque = m_motorTorque;
 
-            m_jointId2 = b2CreateRevoluteJoint(m_worldId, jointDef);
+            m_jointId2 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
     }
 

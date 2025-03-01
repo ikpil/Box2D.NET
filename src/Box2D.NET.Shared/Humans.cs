@@ -128,7 +128,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // head
@@ -170,7 +170,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // upper left leg
@@ -207,7 +207,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             Span<B2Vec2> points = stackalloc B2Vec2[4];
@@ -261,7 +261,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // upper right leg
@@ -298,7 +298,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // lower right leg
@@ -343,7 +343,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // upper left arm
@@ -380,7 +380,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // lower left arm
@@ -418,7 +418,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // upper right arm
@@ -455,7 +455,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             // lower right arm
@@ -493,7 +493,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = dampingRatio;
                 jointDef.drawSize = drawSize;
 
-                bone.jointId = b2CreateRevoluteJoint(worldId, jointDef);
+                bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
 
             human.isSpawned = true;

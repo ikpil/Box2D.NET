@@ -104,7 +104,7 @@ public class BodyType : Sample
             revoluteDef.localAnchorB = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
-            b2CreateRevoluteJoint(m_worldId, revoluteDef);
+            b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
             pivot = new B2Vec2(3.0f, 5.0f);
             revoluteDef.bodyIdA = m_secondAttachmentId;
@@ -113,7 +113,7 @@ public class BodyType : Sample
             revoluteDef.localAnchorB = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
-            b2CreateRevoluteJoint(m_worldId, revoluteDef);
+            b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
             B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
             B2Vec2 anchor = new B2Vec2(0.0f, 5.0f);

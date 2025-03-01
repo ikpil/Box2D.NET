@@ -95,14 +95,14 @@ public class Pinball : Sample
             jointDef.bodyIdB = leftFlipperId;
             jointDef.lowerAngle = -30.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 5.0f * B2_PI / 180.0f;
-            m_leftJointId = b2CreateRevoluteJoint(m_worldId, jointDef);
+            m_leftJointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
             jointDef.motorSpeed = 0.0f;
             jointDef.localAnchorA = p2;
             jointDef.bodyIdB = rightFlipperId;
             jointDef.lowerAngle = -5.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 30.0f * B2_PI / 180.0f;
-            m_rightJointId = b2CreateRevoluteJoint(m_worldId, jointDef);
+            m_rightJointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         // Spinners
@@ -127,7 +127,7 @@ public class Pinball : Sample
             jointDef.localAnchorB = b2Vec2_zero;
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 0.1f;
-            b2CreateRevoluteJoint(m_worldId, jointDef);
+            b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
             bodyDef.position = new B2Vec2(4.0f, 8.0f);
             bodyId = b2CreateBody(m_worldId, ref bodyDef);
@@ -135,7 +135,7 @@ public class Pinball : Sample
             b2CreatePolygonShape(bodyId, shapeDef, box2);
             jointDef.localAnchorA = bodyDef.position;
             jointDef.bodyIdB = bodyId;
-            b2CreateRevoluteJoint(m_worldId, jointDef);
+            b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         // Bumpers

@@ -128,7 +128,7 @@ public class Sleep : Sample
             jointDef.bodyIdB = m_pendulumId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            b2CreateRevoluteJoint(m_worldId, jointDef);
+            b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
     }
 

@@ -504,7 +504,7 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, B2RevoluteJointDef def)
+        public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, ref B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);

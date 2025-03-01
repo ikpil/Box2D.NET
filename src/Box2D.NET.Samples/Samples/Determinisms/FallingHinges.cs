@@ -118,7 +118,7 @@ public class FallingHinges : Sample
                     {
                         jointDef.bodyIdA = prevBodyId;
                         jointDef.bodyIdB = bodyId;
-                        b2CreateRevoluteJoint(m_worldId, jointDef);
+                        b2CreateRevoluteJoint(m_worldId, ref jointDef);
                         prevBodyId = b2_nullBodyId;
                     }
 
