@@ -90,7 +90,7 @@ public class ModifyGeometry : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(10.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, box);
         }
 
         {
@@ -100,7 +100,7 @@ public class ModifyGeometry : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(1.0f, 1.0f);
-            b2CreatePolygonShape(bodyId, shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, box);
         }
 
         {
@@ -112,7 +112,7 @@ public class ModifyGeometry : Sample
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            m_shapeId = b2CreateCircleShape(bodyId, shapeDef, m_circle);
+            m_shapeId = b2CreateCircleShape(bodyId, ref shapeDef, m_circle);
         }
     }
 

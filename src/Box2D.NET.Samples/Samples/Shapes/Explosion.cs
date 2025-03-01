@@ -67,7 +67,7 @@ public class Explosion : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
-            b2CreatePolygonShape(bodyId, shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
             weldDef.localAnchorA = bodyDef.position;
             weldDef.bodyIdB = bodyId;

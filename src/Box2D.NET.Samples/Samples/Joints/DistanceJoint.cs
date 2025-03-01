@@ -110,7 +110,7 @@ public class DistanceJoint : Sample
             bodyDef.angularDamping = 0.1f;
             bodyDef.position = new B2Vec2(m_length * (i + 1.0f), yOffset);
             m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(m_bodyIds[i], shapeDef, circle);
+            b2CreateCircleShape(m_bodyIds[i], ref shapeDef, circle);
 
             B2Vec2 pivotA = new B2Vec2(m_length * i, yOffset);
             B2Vec2 pivotB = new B2Vec2(m_length * (i + 1.0f), yOffset);

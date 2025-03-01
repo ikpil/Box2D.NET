@@ -51,7 +51,7 @@ public class CircleStack : Sample
             shapeIndex += 1;
 
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, segment);
         }
 
         b2World_SetGravity(m_worldId, new B2Vec2(0.0f, -20.0f));
@@ -78,7 +78,7 @@ public class CircleStack : Sample
 
                 shapeDef.userData = shapeIndex;
                 shapeIndex += 1;
-                b2CreateCircleShape(bodyId, shapeDef, circle);
+                b2CreateCircleShape(bodyId, ref shapeDef, circle);
 
                 y += 2.0f;
             }

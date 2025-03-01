@@ -51,7 +51,7 @@ public class RevoluteJoint : Sample
             B2Polygon box = b2MakeBox(40.0f, 1.0f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, box);
         }
 
         m_enableSpring = false;
@@ -72,7 +72,7 @@ public class RevoluteJoint : Sample
             shapeDef.density = 1.0f;
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 6.0f), 0.5f);
-            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
 
             B2Vec2 pivot = new B2Vec2(-10.0f, 20.5f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -106,7 +106,7 @@ public class RevoluteJoint : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
 
-            b2CreateCircleShape(m_ball, shapeDef, circle);
+            b2CreateCircleShape(m_ball, ref shapeDef, circle);
         }
 
         {
@@ -118,7 +118,7 @@ public class RevoluteJoint : Sample
             B2Polygon box = b2MakeOffsetBox(10.0f, 0.5f, new B2Vec2(-10.0f, 0.0f), b2Rot_identity);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(body, shapeDef, box);
+            b2CreatePolygonShape(body, ref shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(19.0f, 10.0f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();

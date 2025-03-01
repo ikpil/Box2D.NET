@@ -33,10 +33,10 @@ public class DoohickeyFarm : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, segment);
 
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(0.0f, 1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, box);
         }
 
         float y = 4.0f;

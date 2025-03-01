@@ -57,7 +57,7 @@ public class FallingHinges : Sample
 
             B2Polygon box = b2MakeBox(20.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, box);
         }
 
         for (int i = 0; i < e_rows * e_columns; ++i)
@@ -122,7 +122,7 @@ public class FallingHinges : Sample
                         prevBodyId = b2_nullBodyId;
                     }
 
-                    b2CreatePolygonShape(bodyId, shapeDef, box);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
                     Debug.Assert(bodyIndex < bodyCount);
                     m_bodies[bodyIndex] = bodyId;

@@ -67,14 +67,14 @@ public class ChainLink : Sample
             bodyDef.position = new B2Vec2(-5.0f, 2.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(bodyId, shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, circle);
         }
 
         {
             bodyDef.position = new B2Vec2(0.0f, 2.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
         }
 
         {
@@ -82,7 +82,7 @@ public class ChainLink : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             float h = 0.5f;
             B2Polygon box = b2MakeBox(h, h);
-            b2CreatePolygonShape(bodyId, shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, box);
         }
     }
 

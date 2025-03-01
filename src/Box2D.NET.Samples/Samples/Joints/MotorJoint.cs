@@ -51,7 +51,7 @@ public class MotorJoint : Sample
             groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, segment);
         }
 
         // Define motorized body
@@ -64,7 +64,7 @@ public class MotorJoint : Sample
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(bodyId, shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
             m_maxForce = 500.0f;
             m_maxTorque = 500.0f;

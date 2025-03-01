@@ -55,7 +55,7 @@ public class BenchmarkKinematic : Sample
             {
                 float x = j * grid;
                 B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
-                b2CreatePolygonShape(bodyId, shapeDef, square);
+                b2CreatePolygonShape(bodyId, ref shapeDef, square);
             }
         }
 

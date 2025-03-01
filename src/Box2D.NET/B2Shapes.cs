@@ -76,7 +76,7 @@ namespace Box2D.NET
             shape.fatAABB = fatAABB;
         }
 
-        public static B2Shape b2CreateShapeInternal(B2World world, B2Body body, B2Transform transform, B2ShapeDef def, object geometry, B2ShapeType shapeType)
+        public static B2Shape b2CreateShapeInternal(B2World world, B2Body body, B2Transform transform, ref B2ShapeDef def, object geometry, B2ShapeType shapeType)
         {
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
             Debug.Assert(b2IsValidFloat(def.friction) && def.friction >= 0.0f);
@@ -183,7 +183,7 @@ namespace Box2D.NET
             return shape;
         }
 
-        public static B2ShapeId b2CreateShape(B2BodyId bodyId, B2ShapeDef def, object geometry, B2ShapeType shapeType)
+        public static B2ShapeId b2CreateShape(B2BodyId bodyId, ref B2ShapeDef def, object geometry, B2ShapeType shapeType)
         {
             B2_CHECK_DEF(ref def);
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
@@ -199,7 +199,7 @@ namespace Box2D.NET
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2Shape shape = b2CreateShapeInternal(world, body, transform, def, geometry, shapeType);
+            B2Shape shape = b2CreateShapeInternal(world, body, transform, ref def, geometry, shapeType);
 
             if (def.updateBodyMass == true)
             {
@@ -212,30 +212,30 @@ namespace Box2D.NET
             return id;
         }
 
-        public static B2ShapeId b2CreateCircleShape(B2BodyId bodyId, B2ShapeDef def, B2Circle circle)
+        public static B2ShapeId b2CreateCircleShape(B2BodyId bodyId, ref B2ShapeDef def, B2Circle circle)
         {
-            return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
+            return b2CreateShape(bodyId, ref def, circle, B2ShapeType.b2_circleShape);
         }
 
-        public static B2ShapeId b2CreateCapsuleShape(B2BodyId bodyId, B2ShapeDef def, B2Capsule capsule)
+        public static B2ShapeId b2CreateCapsuleShape(B2BodyId bodyId, ref B2ShapeDef def, B2Capsule capsule)
         {
             float lengthSqr = b2DistanceSquared(capsule.center1, capsule.center2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
                 B2Circle circle = new B2Circle(b2Lerp(capsule.center1, capsule.center2, 0.5f), capsule.radius);
-                return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
+                return b2CreateShape(bodyId, ref def, circle, B2ShapeType.b2_circleShape);
             }
 
-            return b2CreateShape(bodyId, def, capsule, B2ShapeType.b2_capsuleShape);
+            return b2CreateShape(bodyId, ref def, capsule, B2ShapeType.b2_capsuleShape);
         }
 
-        public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, B2ShapeDef def, B2Polygon polygon)
+        public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, ref B2ShapeDef def, B2Polygon polygon)
         {
             Debug.Assert(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
-            return b2CreateShape(bodyId, def, polygon, B2ShapeType.b2_polygonShape);
+            return b2CreateShape(bodyId, ref def, polygon, B2ShapeType.b2_polygonShape);
         }
 
-        public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, B2ShapeDef def, B2Segment segment)
+        public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, ref B2ShapeDef def, B2Segment segment)
         {
             float lengthSqr = b2DistanceSquared(segment.point1, segment.point2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
@@ -244,7 +244,7 @@ namespace Box2D.NET
                 return b2_nullShapeId;
             }
 
-            return b2CreateShape(bodyId, def, segment, B2ShapeType.b2_segmentShape);
+            return b2CreateShape(bodyId, ref def, segment, B2ShapeType.b2_segmentShape);
         }
 
 // Destroy a shape on a body. This doesn't need to be called when destroying a body.
@@ -434,7 +434,7 @@ namespace Box2D.NET
                     shapeDef.customColor = material.customColor;
                     shapeDef.material = material.material;
 
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
+                    B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[i] = shape.id;
                 }
 
@@ -454,7 +454,7 @@ namespace Box2D.NET
                     shapeDef.customColor = material.customColor;
                     shapeDef.material = material.material;
 
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
+                    B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[n - 2] = shape.id;
                 }
 
@@ -474,7 +474,7 @@ namespace Box2D.NET
                     shapeDef.customColor = material.customColor;
                     shapeDef.material = material.material;
 
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
+                    B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[n - 1] = shape.id;
                 }
             }
@@ -503,7 +503,7 @@ namespace Box2D.NET
                     shapeDef.customColor = material.customColor;
                     shapeDef.material = material.material;
 
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
+                    B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[i] = shape.id;
                 }
             }

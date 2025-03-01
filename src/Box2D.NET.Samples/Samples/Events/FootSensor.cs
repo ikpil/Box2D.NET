@@ -79,13 +79,13 @@ public class FootSensor : Sample
             shapeDef.filter.maskBits = GROUND;
             shapeDef.friction = 0.3f;
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.5f);
-            b2CreateCapsuleShape(m_playerId, shapeDef, capsule);
+            b2CreateCapsuleShape(m_playerId, ref shapeDef, capsule);
 
             B2Polygon box = b2MakeOffsetBox(0.5f, 0.25f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             shapeDef.filter.categoryBits = FOOT;
             shapeDef.filter.maskBits = GROUND;
             shapeDef.isSensor = true;
-            m_sensorId = b2CreatePolygonShape(m_playerId, shapeDef, box);
+            m_sensorId = b2CreatePolygonShape(m_playerId, ref shapeDef, box);
         }
 
         m_overlapCount = 0;

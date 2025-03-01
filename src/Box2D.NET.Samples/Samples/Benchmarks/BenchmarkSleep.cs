@@ -51,7 +51,7 @@ public class BenchmarkSleep : Sample
 
         B2Polygon box = b2MakeBox(groundSize, 1.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(groundId, shapeDef, box);
+        b2CreatePolygonShape(groundId, ref shapeDef, box);
 
         for (int i = 0; i < e_maxBodyCount; ++i)
         {
@@ -112,7 +112,7 @@ public class BenchmarkSleep : Sample
 
                 Debug.Assert(index < e_maxBodyCount);
                 m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(m_bodies[index], shapeDef, box);
+                b2CreatePolygonShape(m_bodies[index], ref shapeDef, box);
 
                 index += 1;
             }

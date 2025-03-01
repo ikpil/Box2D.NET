@@ -53,7 +53,7 @@ public class ShapeFilter : Sample
             shapeDef.filter.categoryBits = GROUND;
             shapeDef.filter.maskBits = ALL_BITS;
 
-            b2CreateSegmentShape(groundId, shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, segment);
         }
 
         {
@@ -75,15 +75,15 @@ public class ShapeFilter : Sample
 
             shapeDef.filter.categoryBits = TEAM1;
             shapeDef.filter.maskBits = GROUND | TEAM2 | TEAM3;
-            m_shape1Id = b2CreatePolygonShape(m_player1Id, shapeDef, box);
+            m_shape1Id = b2CreatePolygonShape(m_player1Id, ref shapeDef, box);
 
             shapeDef.filter.categoryBits = TEAM2;
             shapeDef.filter.maskBits = GROUND | TEAM1 | TEAM3;
-            m_shape2Id = b2CreatePolygonShape(m_player2Id, shapeDef, box);
+            m_shape2Id = b2CreatePolygonShape(m_player2Id, ref shapeDef, box);
 
             shapeDef.filter.categoryBits = TEAM3;
             shapeDef.filter.maskBits = GROUND | TEAM1 | TEAM2;
-            m_shape3Id = b2CreatePolygonShape(m_player3Id, shapeDef, box);
+            m_shape3Id = b2CreatePolygonShape(m_player3Id, ref shapeDef, box);
         }
     }
 

@@ -139,7 +139,7 @@ public class BenchmarkCast : Sample
                         shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DGreen;
                     }
 
-                    b2CreatePolygonShape(bodyId, shapeDef, box);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, box);
                 }
 
                 x += m_grid;

@@ -160,21 +160,21 @@ public class GhostBumps : Sample
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
@@ -186,19 +186,19 @@ public class GhostBumps : Sample
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * hx;
             }
 
@@ -209,21 +209,21 @@ public class GhostBumps : Sample
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
                 B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
+                b2CreatePolygonShape(m_groundId, ref shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
@@ -251,18 +251,18 @@ public class GhostBumps : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
+            m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            m_shapeId = b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
+            m_shapeId = b2CreateCapsuleShape(m_bodyId, ref shapeDef, capsule);
         }
         else
         {
             float h = 0.5f - m_round;
             B2Polygon box = b2MakeRoundedBox(h, 2.0f * h, m_round);
-            m_shapeId = b2CreatePolygonShape(m_bodyId, shapeDef, box);
+            m_shapeId = b2CreatePolygonShape(m_bodyId, ref shapeDef, box);
         }
     }
 

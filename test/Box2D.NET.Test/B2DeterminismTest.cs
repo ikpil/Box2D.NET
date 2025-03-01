@@ -164,7 +164,7 @@ public class B2DeterminismTest
 
             B2Polygon box = b2MakeBox(1000.0f, 1.0f);
             B2ShapeDef sd = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, sd, box);
+            b2CreatePolygonShape(groundId, ref sd, box);
         }
 
         {
@@ -192,7 +192,7 @@ public class B2DeterminismTest
                     B2BodyId bodyId = b2CreateBody(worldId, ref bd);
                     bodies[n] = bodyId;
 
-                    b2CreatePolygonShape(bodyId, sd, box);
+                    b2CreatePolygonShape(bodyId, ref sd, box);
                 }
             }
         }
@@ -255,7 +255,7 @@ public class B2DeterminismTest
 
             B2Polygon box = b2MakeBox(20.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, box);
         }
 
         {
@@ -320,7 +320,7 @@ public class B2DeterminismTest
                         prevBodyId = b2_nullBodyId;
                     }
 
-                    b2CreatePolygonShape(bodyId, shapeDef, box);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
                     Debug.Assert(bodyIndex < bodyCount);
                     bodies[bodyIndex] = bodyId;

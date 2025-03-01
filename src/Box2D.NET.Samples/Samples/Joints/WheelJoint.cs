@@ -62,7 +62,7 @@ public class WheelJoint : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.5f);
-            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
 
             B2Vec2 pivot = new B2Vec2(0.0f, 10.0f);
             B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));

@@ -36,7 +36,7 @@ public class RecreateStatic : Sample
         B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
-        b2CreatePolygonShape(bodyId, shapeDef, box);
+        b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
         m_groundId = new B2BodyId();
     }
@@ -59,7 +59,7 @@ public class RecreateStatic : Sample
         shapeDef.invokeContactCreation = true;
 
         B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-        b2CreateSegmentShape(m_groundId, shapeDef, segment);
+        b2CreateSegmentShape(m_groundId, ref shapeDef, segment);
 
         base.Step(settings);
     }

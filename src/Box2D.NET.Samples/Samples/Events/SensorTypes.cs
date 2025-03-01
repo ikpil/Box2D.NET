@@ -56,13 +56,13 @@ public class SensorTypes : Sample
             shapeDef.filter.maskBits = SENSOR | DEFAULT;
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-6.0f, 0.0f), new B2Vec2(6.0f, 0.0f));
-            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(-6.0f, 0.0f), new B2Vec2(-6.0f, 4.0f));
-            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(6.0f, 0.0f), new B2Vec2(6.0f, 4.0f));
-            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
         }
 
         {
@@ -76,7 +76,7 @@ public class SensorTypes : Sample
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_staticSensorId = b2CreatePolygonShape(bodyId, shapeDef, box);
+            m_staticSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, box);
         }
 
         {
@@ -91,7 +91,7 @@ public class SensorTypes : Sample
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_kinematicSensorId = b2CreatePolygonShape(m_kinematicBodyId, shapeDef, box);
+            m_kinematicSensorId = b2CreatePolygonShape(m_kinematicBodyId, ref shapeDef, box);
         }
 
         {
@@ -105,13 +105,13 @@ public class SensorTypes : Sample
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_dynamicSensorId = b2CreatePolygonShape(bodyId, shapeDef, box);
+            m_dynamicSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, box);
 
             // Add some real collision so the dynamic body is valid
             shapeDef.filter.categoryBits = DEFAULT;
             shapeDef.isSensor = false;
             box = b2MakeSquare(0.8f);
-            b2CreatePolygonShape(bodyId, shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, box);
         }
 
         {
@@ -127,7 +127,7 @@ public class SensorTypes : Sample
             shapeDef.filter.maskBits = GROUND | DEFAULT | SENSOR;
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(bodyId, shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, circle);
         }
     }
 

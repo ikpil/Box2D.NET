@@ -162,18 +162,18 @@ public class ChainShape : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
+            m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            m_shapeId = b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
+            m_shapeId = b2CreateCapsuleShape(m_bodyId, ref shapeDef, capsule);
         }
         else
         {
             float h = 0.5f;
             B2Polygon box = b2MakeBox(h, h);
-            m_shapeId = b2CreatePolygonShape(m_bodyId, shapeDef, box);
+            m_shapeId = b2CreatePolygonShape(m_bodyId, ref shapeDef, box);
         }
 
 #if DEBUG

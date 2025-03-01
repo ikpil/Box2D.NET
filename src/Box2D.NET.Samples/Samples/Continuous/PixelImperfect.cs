@@ -39,7 +39,7 @@ public class PixelImperfect : Sample
             B2Polygon block4Shape = b2MakeBox(20.0f / pixelsPerMeter, 10.0f / pixelsPerMeter);
             B2ShapeDef block4ShapeDef = b2DefaultShapeDef();
             block4ShapeDef.friction = 0.0f;
-            b2CreatePolygonShape(block4BodyId, block4ShapeDef, block4Shape);
+            b2CreatePolygonShape(block4BodyId, ref block4ShapeDef, block4Shape);
         }
 
         {
@@ -55,7 +55,7 @@ public class PixelImperfect : Sample
             B2ShapeDef ballShapeDef = b2DefaultShapeDef();
             ballShapeDef.friction = 0.0f;
             //ballShapeDef.restitution = 1.f;
-            b2CreatePolygonShape(m_ballId, ballShapeDef, ballShape);
+            b2CreatePolygonShape(m_ballId, ref ballShapeDef, ballShape);
             b2Body_SetLinearVelocity(m_ballId, new B2Vec2(0.0f, -5.0f));
             b2Body_SetFixedRotation(m_ballId, true);
         }

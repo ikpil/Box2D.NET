@@ -82,7 +82,7 @@ public class ContactEvent : Sample
             // Enable contact events for the player shape
             shapeDef.enableContactEvents = true;
 
-            m_coreShapeId = b2CreateCircleShape(m_playerId, shapeDef, circle);
+            m_coreShapeId = b2CreateCircleShape(m_playerId, ref shapeDef, circle);
         }
 
         for (int i = 0; i < e_count; ++i)
@@ -132,17 +132,17 @@ public class ContactEvent : Sample
         if ((index + 1) % 3 == 0)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(m_debrisIds[index], shapeDef, circle);
+            b2CreateCircleShape(m_debrisIds[index], ref shapeDef, circle);
         }
         else if ((index + 1) % 2 == 0)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.25f), new B2Vec2(0.0f, 0.25f), 0.25f);
-            b2CreateCapsuleShape(m_debrisIds[index], shapeDef, capsule);
+            b2CreateCapsuleShape(m_debrisIds[index], ref shapeDef, capsule);
         }
         else
         {
             B2Polygon box = b2MakeBox(0.4f, 0.6f);
-            b2CreatePolygonShape(m_debrisIds[index], shapeDef, box);
+            b2CreatePolygonShape(m_debrisIds[index], ref shapeDef, box);
         }
     }
 
@@ -379,7 +379,7 @@ public class ContactEvent : Sample
                     B2Circle circle = b2Shape_GetCircle(shapeId[0]);
                     circle.center = b2TransformPoint(ref relativeTransform, circle.center);
 
-                    b2CreateCircleShape(m_playerId, shapeDef, circle);
+                    b2CreateCircleShape(m_playerId, ref shapeDef, circle);
                 }
                     break;
 
@@ -389,7 +389,7 @@ public class ContactEvent : Sample
                     capsule.center1 = b2TransformPoint(ref relativeTransform, capsule.center1);
                     capsule.center2 = b2TransformPoint(ref relativeTransform, capsule.center2);
 
-                    b2CreateCapsuleShape(m_playerId, shapeDef, capsule);
+                    b2CreateCapsuleShape(m_playerId, ref shapeDef, capsule);
                 }
                     break;
 
@@ -398,7 +398,7 @@ public class ContactEvent : Sample
                     B2Polygon originalPolygon = b2Shape_GetPolygon(shapeId[0]);
                     B2Polygon polygon = b2TransformPolygon(relativeTransform, originalPolygon);
 
-                    b2CreatePolygonShape(m_playerId, shapeDef, polygon);
+                    b2CreatePolygonShape(m_playerId, ref shapeDef, polygon);
                 }
                     break;
 

@@ -89,7 +89,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.02f * s), new B2Vec2(0.0f, 0.02f * s), 0.095f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
             }
 
             // torso
@@ -110,7 +110,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.135f * s), new B2Vec2(0.0f, 0.135f * s), 0.09f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.0f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -148,7 +148,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.038f * s), new B2Vec2(0.0f, 0.039f * s), 0.075f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 //// neck
                 // capsule = { { 0.0f, -0.12f * s }, { 0.0f, -0.08f * s }, 0.05f * s };
@@ -189,7 +189,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -235,7 +235,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.155f * s), new B2Vec2(0.0f, 0.125f * s), 0.045f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 // b2Polygon box = b2MakeOffsetBox(0.1f * s, 0.03f * s, {0.05f * s, -0.175f * s}, 0.0f);
                 // b2CreatePolygonShape(bone.bodyId, &shapeDef, &box);
@@ -243,7 +243,7 @@ namespace Box2D.NET.Shared
                 // capsule = { { -0.02f * s, -0.175f * s }, { 0.13f * s, -0.175f * s }, 0.03f * s };
                 // b2CreateCapsuleShape( bone.bodyId, &footShapeDef, &capsule );
 
-                b2CreatePolygonShape(bone.bodyId, footShapeDef, footPolygon);
+                b2CreatePolygonShape(bone.bodyId, ref footShapeDef, footPolygon);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -280,7 +280,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -317,7 +317,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.155f * s), new B2Vec2(0.0f, 0.125f * s), 0.045f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 // b2Polygon box = b2MakeOffsetBox(0.1f * s, 0.03f * s, {0.05f * s, -0.175f * s}, 0.0f);
                 // b2CreatePolygonShape(bone.bodyId, &shapeDef, &box);
@@ -325,7 +325,7 @@ namespace Box2D.NET.Shared
                 // capsule = { { -0.02f * s, -0.175f * s }, { 0.13f * s, -0.175f * s }, 0.03f * s };
                 // b2CreateCapsuleShape( bone.bodyId, &footShapeDef, &capsule );
 
-                b2CreatePolygonShape(bone.bodyId, footShapeDef, footPolygon);
+                b2CreatePolygonShape(bone.bodyId, ref footShapeDef, footPolygon);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -362,7 +362,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -399,7 +399,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -437,7 +437,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -474,7 +474,7 @@ namespace Box2D.NET.Shared
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
-                b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
+                b2CreateCapsuleShape(bone.bodyId, ref shapeDef, capsule);
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();

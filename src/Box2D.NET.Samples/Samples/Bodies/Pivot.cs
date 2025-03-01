@@ -40,7 +40,7 @@ public class Pivot : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, segment);
         }
 
         // Create a separate body on the ground
@@ -64,7 +64,7 @@ public class Pivot : Sample
             B2Polygon box = b2MakeBox(0.1f, m_lever);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyId, shapeDef, box);
+            b2CreatePolygonShape(m_bodyId, ref shapeDef, box);
         }
     }
 
