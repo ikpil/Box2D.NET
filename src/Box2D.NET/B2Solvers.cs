@@ -362,8 +362,8 @@ namespace Box2D.NET
             if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents))
             {
                 // Pre-solve is expensive because I need to compute a temporary manifold
-                B2Transform transformA = b2GetSweepTransform(input.sweepA, hitFraction);
-                B2Transform transformB = b2GetSweepTransform(input.sweepB, hitFraction);
+                B2Transform transformA = b2GetSweepTransform(ref input.sweepA, hitFraction);
+                B2Transform transformB = b2GetSweepTransform(ref input.sweepB, hitFraction);
                 B2Manifold manifold = b2ComputeManifold(shape, transformA, fastShape, transformB);
                 B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);

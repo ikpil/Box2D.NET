@@ -24,7 +24,7 @@ namespace Box2D.NET
 #endif
         
         /// Evaluate the transform sweep at a specific time.
-        public static B2Transform b2GetSweepTransform(B2Sweep sweep, float time)
+        public static B2Transform b2GetSweepTransform(ref B2Sweep sweep, float time)
         {
             // https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
             B2Transform xf;
@@ -819,7 +819,7 @@ namespace Box2D.NET
 
 
 
-        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, B2Sweep sweepA, ref B2ShapeProxy proxyB, B2Sweep sweepB, float t1)
+        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2Sweep sweepA, ref B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
         {
             B2SeparationFunction f = new B2SeparationFunction();
 
@@ -829,11 +829,11 @@ namespace Box2D.NET
             int count = cache.count;
             Debug.Assert(0 < count && count < 3);
 
-            f.sweepA = sweepA.Clone();
-            f.sweepB = sweepB.Clone();
+            f.sweepA = sweepA;
+            f.sweepB = sweepB;
 
-            B2Transform xfA = b2GetSweepTransform(sweepA, t1);
-            B2Transform xfB = b2GetSweepTransform(sweepB, t1);
+            B2Transform xfA = b2GetSweepTransform(ref sweepA, t1);
+            B2Transform xfB = b2GetSweepTransform(ref sweepB, t1);
 
             if (count == 1)
             {
@@ -901,8 +901,8 @@ namespace Box2D.NET
 
         public static float b2FindMinSeparation(ref B2SeparationFunction f, ref int indexA, ref int indexB, float t)
         {
-            B2Transform xfA = b2GetSweepTransform(f.sweepA, t);
-            B2Transform xfB = b2GetSweepTransform(f.sweepB, t);
+            B2Transform xfA = b2GetSweepTransform(ref f.sweepA, t);
+            B2Transform xfB = b2GetSweepTransform(ref f.sweepB, t);
 
             switch (f.type)
             {
@@ -969,8 +969,8 @@ namespace Box2D.NET
         //
         static float b2EvaluateSeparation(B2SeparationFunction f, int indexA, int indexB, float t)
         {
-            B2Transform xfA = b2GetSweepTransform(f.sweepA, t);
-            B2Transform xfB = b2GetSweepTransform(f.sweepB, t);
+            B2Transform xfA = b2GetSweepTransform(ref f.sweepA, t);
+            B2Transform xfB = b2GetSweepTransform(ref f.sweepB, t);
 
             switch (f.type)
             {
@@ -1069,8 +1069,8 @@ namespace Box2D.NET
             // This loop terminates when an axis is repeated (no progress is made).
             for (;;)
             {
-                B2Transform xfA = b2GetSweepTransform(sweepA, t1);
-                B2Transform xfB = b2GetSweepTransform(sweepB, t1);
+                B2Transform xfA = b2GetSweepTransform(ref sweepA, t1);
+                B2Transform xfB = b2GetSweepTransform(ref sweepB, t1);
 
                 // Get the distance between shapes. We can also use the results
                 // to get a separating axis.
@@ -1107,7 +1107,7 @@ namespace Box2D.NET
                 }
 
                 // Initialize the separating axis.
-                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, ref proxyA, sweepA, ref proxyB, sweepB, t1);
+                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, ref proxyA, ref sweepA, ref proxyB, ref sweepB, t1);
 #if FALSE
                     // Dump the curve seen by the root finder
                     {
