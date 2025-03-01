@@ -1011,7 +1011,7 @@ namespace Box2D.NET
 
                     B2Body body = b2Array_Get(ref world.bodies, (int)bodyId);
 
-                    if (draw.drawBodyNames && body.name[0] != 0)
+                    if (draw.drawBodyNames && !string.IsNullOrEmpty(body.name))
                     {
                         B2Vec2 offset = new B2Vec2(0.1f, 0.1f);
                         B2BodySim bodySim = b2GetBodySim(world, body);
@@ -1316,7 +1316,7 @@ namespace Box2D.NET
                         continue;
                     }
 
-                    if (body.name[0] == 0)
+                    if (string.IsNullOrEmpty(body.name))
                     {
                         continue;
                     }
