@@ -112,7 +112,7 @@ public class ScissorLift : Sample
                     wheelDef.enableSpring = false;
                     wheelDef.collideConnected = true;
 
-                    b2CreateWheelJoint(m_worldId, wheelDef);
+                    b2CreateWheelJoint(m_worldId, ref wheelDef);
                 }
                 else
                 {
@@ -175,7 +175,7 @@ public class ScissorLift : Sample
                 wheelDef.localAnchorB = baseAnchor2;
                 wheelDef.enableSpring = false;
                 wheelDef.collideConnected = true;
-                b2CreateWheelJoint(m_worldId, wheelDef);
+                b2CreateWheelJoint(m_worldId, ref wheelDef);
             }
 
             m_enableMotor = false;

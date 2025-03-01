@@ -114,7 +114,7 @@ public class Truck
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_rearAxleId = b2CreateWheelJoint(worldId, jointDef);
+        m_rearAxleId = b2CreateWheelJoint(worldId, ref jointDef);
 
         pivot = b2Body_GetPosition(m_frontWheelId);
         jointDef.bodyIdA = m_chassisId;
@@ -130,7 +130,7 @@ public class Truck
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_frontAxleId = b2CreateWheelJoint(worldId, jointDef);
+        m_frontAxleId = b2CreateWheelJoint(worldId, ref jointDef);
     }
 
     public void Despawn()

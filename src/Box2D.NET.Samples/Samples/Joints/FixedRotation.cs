@@ -216,7 +216,7 @@ public class FixedRotation : Sample
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
-            m_jointIds[index] = b2CreateWheelJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

@@ -81,7 +81,7 @@ public class WheelJoint : Sample
             jointDef.hertz = m_hertz;
             jointDef.dampingRatio = m_dampingRatio;
 
-            m_jointId = b2CreateWheelJoint(m_worldId, jointDef);
+            m_jointId = b2CreateWheelJoint(m_worldId, ref jointDef);
         }
     }
 

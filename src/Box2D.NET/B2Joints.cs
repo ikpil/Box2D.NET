@@ -654,7 +654,7 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateWheelJoint(B2WorldId worldId, B2WheelJointDef def)
+        public static B2JointId b2CreateWheelJoint(B2WorldId worldId, ref B2WheelJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
