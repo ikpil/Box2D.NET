@@ -56,7 +56,7 @@ public class NullJoint : Sample
             jointDef.bodyIdA = bodyId1;
             jointDef.bodyIdB = bodyId2;
 
-            b2CreateNullJoint(m_worldId, jointDef);
+            b2CreateNullJoint(m_worldId, ref jointDef);
         }
     }
 }
