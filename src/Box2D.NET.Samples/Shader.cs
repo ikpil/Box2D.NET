@@ -76,9 +76,8 @@ public class Shader
     public uint sCreateShaderFromString(string source, GLEnum type)
     {
         uint shader = gl.CreateShader(type);
-        string[] sources = [source];
 
-        gl.ShaderSource(shader, 1, sources, 0);
+        gl.ShaderSource(shader, source);
         gl.CompileShader(shader);
 
         Span<int> success = stackalloc int[1];
@@ -143,9 +142,8 @@ public class Shader
 
 
         uint shader = gl.CreateShader(type);
-        string[] sources = [source];
 
-        gl.ShaderSource(shader, 1, sources, 0);
+        gl.ShaderSource(shader, source);
         gl.CompileShader(shader);
 
         Span<int> success = stackalloc int[1];
