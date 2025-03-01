@@ -5,7 +5,7 @@
 namespace Box2D.NET.Primitives
 {
     // Bit set provides fast operations on large arrays of bits.
-    public class B2BitSet
+    public struct B2BitSet
     {
         public ulong[] bits;
         public int blockCapacity;

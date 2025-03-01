@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using Box2D.NET.Primitives;
 using static Box2D.NET.B2Arrays;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -84,7 +85,7 @@ namespace Box2D.NET
         }
 
 #else
-        public static void b2ValidateFreeId(b2IdPool pool, int id)
+        public static void b2ValidateFreeId(B2IdPool pool, int id)
         {
             B2_UNUSED(pool);
             B2_UNUSED(id);

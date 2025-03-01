@@ -986,7 +986,7 @@ namespace Box2D.NET
         }
 
 #else
-        public static void b2ValidateIsland(b2World world, int islandId)
+        public static void b2ValidateIsland(B2World world, int islandId)
         {
             B2_UNUSED(world);
             B2_UNUSED(islandId);

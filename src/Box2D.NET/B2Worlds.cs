@@ -3248,17 +3248,17 @@ void b2World_Dump()
         }
 
 #else
-        public static void b2ValidateConnectivity(b2World world)
+        public static void b2ValidateConnectivity(B2World world)
         {
             B2_UNUSED(world);
         }
 
-        public static void b2ValidateSolverSets(b2World world)
+        public static void b2ValidateSolverSets(B2World world)
         {
             B2_UNUSED(world);
         }
 
-        public static void b2ValidateContacts(b2World world)
+        public static void b2ValidateContacts(B2World world)
         {
             B2_UNUSED(world);
         }

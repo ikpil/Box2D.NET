@@ -193,9 +193,9 @@ namespace Box2D.NET.Primitives
 
             contactHitEvents = new B2Array<B2ContactHitEvent>();
 
-            debugBodySet = null;
-            debugJointSet = null;
-            debugContactSet = null;
+            // debugBodySet = null;
+            // debugJointSet = null;
+            // debugContactSet = null;
 
             stepIndex = 0;
 
