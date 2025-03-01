@@ -196,7 +196,9 @@ public class SampleApp
     float frameTime = 0.0f;
     private unsafe void OnWindowUpdate(double dt)
     {
-        //while (!B2.g_glfw.WindowShouldClose(g_mainWindow))
+        if (B2.g_glfw.WindowShouldClose(g_mainWindow))
+            return;
+        
         {
             double time1 = B2.g_glfw.GetTime();
             
