@@ -133,7 +133,7 @@ public class Bridge : Sample
 
     public override void UpdateUI()
     {
-        bool open = false;
+        bool open = true;
         float height = 80.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));

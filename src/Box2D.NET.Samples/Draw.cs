@@ -188,7 +188,7 @@ public class Draw
         //{
         //	return;
         // }
-        bool open = false;
+        bool open = true;
 
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
@@ -204,7 +204,7 @@ public class Draw
     {
         B2Vec2 ps = B2.g_camera.ConvertWorldToScreen(p);
 
-        bool open = false;
+        bool open = true;
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
