@@ -16,7 +16,7 @@ namespace Box2D.NET
         // Debug.Assert( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
 
         /// Validate ray cast input data (NaN, etc)
-        public static bool b2IsValidRay(B2RayCastInput input)
+        public static bool b2IsValidRay(ref B2RayCastInput input)
         {
             bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) && b2IsValidFloat(input.maxFraction) &&
                            0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
@@ -543,9 +543,9 @@ namespace Box2D.NET
         /// Ray cast versus circle shape in local space. Initial overlap is treated as a miss.
         // Precision Improvements for Ray / Sphere Intersection - Ray Tracing Gems 2019
         // http://www.codercorner.com/blog/?p=321
-        public static B2CastOutput b2RayCastCircle(B2RayCastInput input, B2Circle shape)
+        public static B2CastOutput b2RayCastCircle(ref B2RayCastInput input, B2Circle shape)
         {
-            Debug.Assert(b2IsValidRay(input));
+            Debug.Assert(b2IsValidRay(ref input));
 
             B2Vec2 p = shape.center;
 
@@ -602,9 +602,9 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
-        public static B2CastOutput b2RayCastCapsule(B2RayCastInput input, B2Capsule shape)
+        public static B2CastOutput b2RayCastCapsule(ref B2RayCastInput input, B2Capsule shape)
         {
-            Debug.Assert(b2IsValidRay(input));
+            Debug.Assert(b2IsValidRay(ref input));
 
             B2CastOutput output = new B2CastOutput();
 
@@ -620,7 +620,7 @@ namespace Box2D.NET
             {
                 // Capsule is really a circle
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(input, circle);
+                return b2RayCastCircle(ref input, circle);
             }
 
             B2Vec2 p1 = input.origin;
@@ -642,14 +642,14 @@ namespace Box2D.NET
                 {
                     // start point behind capsule segment
                     B2Circle circle = new B2Circle(v1, shape.radius);
-                    return b2RayCastCircle(input, circle);
+                    return b2RayCastCircle(ref input, circle);
                 }
 
                 if (qa > 1.0f)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
-                    return b2RayCastCircle(input, circle);
+                    return b2RayCastCircle(ref input, circle);
                 }
 
                 // ray starts inside capsule . no hit
@@ -716,13 +716,13 @@ namespace Box2D.NET
             {
                 // ray passes behind capsule segment
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(input, circle);
+                return b2RayCastCircle(ref input, circle);
             }
             else if (capsuleLength < s1)
             {
                 // ray passes ahead of capsule segment
                 B2Circle circle = new B2Circle(v2, shape.radius);
-                return b2RayCastCircle(input, circle);
+                return b2RayCastCircle(ref input, circle);
             }
             else
             {
@@ -822,7 +822,7 @@ namespace Box2D.NET
         /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
         public static B2CastOutput b2RayCastPolygon(ref B2RayCastInput input, B2Polygon shape)
         {
-            Debug.Assert(b2IsValidRay(input));
+            Debug.Assert(b2IsValidRay(ref input));
 
             if (shape.radius == 0.0f)
             {

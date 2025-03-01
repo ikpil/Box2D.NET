@@ -54,7 +54,7 @@ public class DynamicTree : Sample
         return true;
     }
 
-    static float RayCallback(B2RayCastInput input, int proxyId, int userData, object context)
+    static float RayCallback(ref B2RayCastInput input, int proxyId, int userData, object context)
     {
         DynamicTree sample = context as DynamicTree;
         Proxy proxy = sample.m_proxies[userData];
@@ -308,7 +308,7 @@ public class DynamicTree : Sample
         if (m_rayDrag)
         {
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
-            B2TreeStats result = b2DynamicTree_RayCast(m_tree, input, B2_DEFAULT_MASK_BITS, RayCallback, this);
+            B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, this);
 
             B2.g_draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
             B2.g_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);

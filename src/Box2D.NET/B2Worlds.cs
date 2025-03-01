@@ -2212,7 +2212,7 @@ namespace Box2D.NET
             }
         }
 
-        public static float RayCastCallback(B2RayCastInput input, int proxyId, int shapeId, object context)
+        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, int shapeId, object context)
         {
             B2_UNUSED(proxyId);
 
@@ -2230,7 +2230,7 @@ namespace Box2D.NET
 
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
-            B2CastOutput output = b2RayCastShape(input, shape, transform);
+            B2CastOutput output = b2RayCastShape(ref input, shape, transform);
 
             if (output.hit)
             {
@@ -2271,7 +2271,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, worldContext);
+                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2318,7 +2318,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, worldContext);
+                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, worldContext);
                 result.nodeVisits += treeResult.nodeVisits;
                 result.leafVisits += treeResult.leafVisits;
 

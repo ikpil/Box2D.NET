@@ -134,7 +134,7 @@ public class B2ShapeTest
         B2RayCastInput input = new B2RayCastInput(new B2Vec2(-4.0f, 0.0f), new B2Vec2(8.0f, 0.0f), 1.0f);
 
         {
-            B2CastOutput output = b2RayCastCircle(input, circle);
+            B2CastOutput output = b2RayCastCircle(ref input, circle);
             Assert.That(output.hit);
             Assert.That(output.normal.x + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.y, Is.LessThan(FLT_EPSILON));

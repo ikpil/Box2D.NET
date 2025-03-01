@@ -827,7 +827,7 @@ namespace Box2D.NET
             return extent;
         }
 
-        public static B2CastOutput b2RayCastShape(B2RayCastInput input, B2Shape shape, B2Transform transform)
+        public static B2CastOutput b2RayCastShape(ref B2RayCastInput input, B2Shape shape, B2Transform transform)
         {
             B2RayCastInput localInput = input;
             localInput.origin = b2InvTransformPoint(transform, input.origin);
@@ -837,10 +837,10 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(localInput, shape.capsule);
+                    output = b2RayCastCapsule(ref localInput, shape.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(localInput, shape.circle);
+                    output = b2RayCastCircle(ref localInput, shape.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
                     output = b2RayCastPolygon(ref localInput, shape.polygon);
@@ -1001,7 +1001,7 @@ namespace Box2D.NET
         }
 
 // todo_erin untested
-        public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, B2RayCastInput input)
+        public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, ref B2RayCastInput input)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1018,11 +1018,11 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(localInput, shape.capsule);
+                    output = b2RayCastCapsule(ref localInput, shape.capsule);
                     break;
 
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(localInput, shape.circle);
+                    output = b2RayCastCircle(ref localInput, shape.circle);
                     break;
 
                 case B2ShapeType.b2_segmentShape:
