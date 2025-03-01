@@ -96,7 +96,7 @@ public class Explosion : Sample
             def.radius = m_radius;
             def.falloff = m_falloff;
             def.impulsePerLength = m_impulse;
-            b2World_Explode(m_worldId, def);
+            b2World_Explode(m_worldId, ref def);
         }
 
         ImGui.SliderFloat("radius", ref m_radius, 0.0f, 20.0f, "%.1f");

@@ -138,7 +138,7 @@ public class BodyMove : Sample
             def.radius = m_explosionRadius;
             def.falloff = 0.1f;
             def.impulsePerLength = m_explosionMagnitude;
-            b2World_Explode(m_worldId, def);
+            b2World_Explode(m_worldId, ref def);
         }
 
         ImGui.SliderFloat("Magnitude", ref m_explosionMagnitude, -20.0f, 20.0f, "%.1f");

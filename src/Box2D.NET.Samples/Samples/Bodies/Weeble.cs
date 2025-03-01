@@ -110,7 +110,7 @@ public class Weeble : Sample
             def.radius = m_explosionRadius;
             def.falloff = 0.1f;
             def.impulsePerLength = m_explosionMagnitude;
-            b2World_Explode(m_worldId, def);
+            b2World_Explode(m_worldId, ref def);
         }
 
         ImGui.PushItemWidth(100.0f);

@@ -2708,7 +2708,7 @@ void b2World_Dump()
             return true;
         }
 
-        public static void b2World_Explode(B2WorldId worldId, B2ExplosionDef explosionDef)
+        public static void b2World_Explode(B2WorldId worldId, ref B2ExplosionDef explosionDef)
         {
             ulong maskBits = explosionDef.maskBits;
             B2Vec2 position = explosionDef.position;
