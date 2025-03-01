@@ -31,7 +31,7 @@ namespace Box2D.NET
         /// - return a value of 0 to terminate the ray cast
         /// - return a value less than input->maxFraction to clip the ray
         /// - return a value of input->maxFraction to continue the ray cast without clipping
-        public delegate float b2TreeShapeCastCallbackFcn(B2ShapeCastInput input, int proxyId, int userData, object context);
+        public delegate float b2TreeShapeCastCallbackFcn(ref B2ShapeCastInput input, int proxyId, int userData, object context);
 
         public static readonly B2TreeNode b2_defaultTreeNode = new B2TreeNode()
         {
@@ -1282,7 +1282,7 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_ShapeCast(B2DynamicTree tree, B2ShapeCastInput input, ulong maskBits, b2TreeShapeCastCallbackFcn callback, object context)
+        public static B2TreeStats b2DynamicTree_ShapeCast(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits, b2TreeShapeCastCallbackFcn callback, object context)
         {
             B2TreeStats stats = new B2TreeStats();
 
@@ -1366,7 +1366,7 @@ namespace Box2D.NET
                 {
                     subInput.maxFraction = maxFraction;
 
-                    float value = callback(subInput, nodeId, node.userData, context);
+                    float value = callback(ref subInput, nodeId, node.userData, context);
                     stats.leafVisits += 1;
 
                     if (value == 0.0f)

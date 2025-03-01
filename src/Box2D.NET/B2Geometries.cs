@@ -907,7 +907,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a circle. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCircle(B2ShapeCastInput input, B2Circle shape)
+        public static B2CastOutput b2ShapeCastCircle(ref B2ShapeCastInput input, B2Circle shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -922,7 +922,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCapsule(B2ShapeCastInput input, B2Capsule shape)
+        public static B2CastOutput b2ShapeCastCapsule(ref B2ShapeCastInput input, B2Capsule shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -937,7 +937,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a line segment. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastSegment(B2ShapeCastInput input, B2Segment shape)
+        public static B2CastOutput b2ShapeCastSegment(ref B2ShapeCastInput input, B2Segment shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -952,7 +952,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastPolygon(B2ShapeCastInput input, B2Polygon shape)
+        public static B2CastOutput b2ShapeCastPolygon(ref B2ShapeCastInput input, B2Polygon shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices, shape.count, shape.radius);

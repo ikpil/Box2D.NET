@@ -860,7 +860,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2CastOutput b2ShapeCastShape(B2ShapeCastInput input, B2Shape shape, B2Transform transform)
+        public static B2CastOutput b2ShapeCastShape(ref B2ShapeCastInput input, B2Shape shape, B2Transform transform)
         {
             B2ShapeCastInput localInput = input;
 
@@ -875,19 +875,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2ShapeCastCapsule(localInput, shape.capsule);
+                    output = b2ShapeCastCapsule(ref localInput, shape.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(localInput, shape.circle);
+                    output = b2ShapeCastCircle(ref localInput, shape.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(localInput, shape.polygon);
+                    output = b2ShapeCastPolygon(ref localInput, shape.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(localInput, shape.segment);
+                    output = b2ShapeCastSegment(ref localInput, shape.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2ShapeCastSegment(localInput, shape.chainSegment.segment);
+                    output = b2ShapeCastSegment(ref localInput, shape.chainSegment.segment);
                     break;
                 default:
                     return output;

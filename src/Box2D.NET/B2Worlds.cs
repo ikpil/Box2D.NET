@@ -2333,7 +2333,7 @@ namespace Box2D.NET
             return result;
         }
 
-        public static float ShapeCastCallback(B2ShapeCastInput input, int proxyId, int shapeId, object context)
+        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, int shapeId, object context)
         {
             B2_UNUSED(proxyId);
 
@@ -2352,7 +2352,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2CastOutput output = b2ShapeCastShape(input, shape, transform);
+            B2CastOutput output = b2ShapeCastShape(ref input, shape, transform);
 
             if (output.hit)
             {
@@ -2393,7 +2393,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2437,7 +2437,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2484,7 +2484,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
