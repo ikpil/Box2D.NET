@@ -10,8 +10,6 @@ using Silk.NET.OpenGL;
 
 public class Shader
 {
-    public static readonly Shader Shared = new Shader();
-
     public GL gl;
 
     public void DumpInfoGL()

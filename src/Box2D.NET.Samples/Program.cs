@@ -50,7 +50,7 @@ public static class Program
         InitializeLogger();
 
         var app = new SampleApp();
-        var status = app.Run();
+        var status = app.Run(args);
 
         return status;
     }
