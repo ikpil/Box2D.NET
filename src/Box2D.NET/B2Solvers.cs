@@ -340,7 +340,7 @@ namespace Box2D.NET
             float hitFraction = continuousContext.fraction;
 
             bool didHit = false;
-            B2TOIOutput output = b2TimeOfImpact(input);
+            B2TOIOutput output = b2TimeOfImpact(ref input);
             if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
             {
                 hitFraction = output.fraction;
@@ -351,7 +351,7 @@ namespace Box2D.NET
                 // fallback to TOI of a small circle around the fast shape centroid
                 B2Vec2 centroid = b2GetShapeCentroid(fastShape);
                 input.proxyB = b2MakeProxy(centroid, 1, B2_SPECULATIVE_DISTANCE);
-                output = b2TimeOfImpact(input);
+                output = b2TimeOfImpact(ref input);
                 if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                 {
                     hitFraction = output.fraction;

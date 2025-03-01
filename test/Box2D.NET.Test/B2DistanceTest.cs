@@ -114,7 +114,7 @@ public class B2DistanceTest
         input.sweepB = new B2Sweep(b2Vec2_zero, b2Vec2_zero, new B2Vec2(-2.0f, 0.0f), b2Rot_identity, b2Rot_identity);
         input.maxFraction = 1.0f;
 
-        B2TOIOutput output = b2TimeOfImpact(input);
+        B2TOIOutput output = b2TimeOfImpact(ref input);
 
         Assert.That(output.state, Is.EqualTo(B2TOIState.b2_toiStateHit));
         Assert.That(output.fraction - 0.5f, Is.LessThan(0.005f));

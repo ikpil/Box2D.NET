@@ -59,7 +59,7 @@ public class TimeOfImpact : Sample
         input.sweepB = sweepB;
         input.maxFraction = 1.0f;
 
-        B2TOIOutput output = b2TimeOfImpact(input);
+        B2TOIOutput output = b2TimeOfImpact(ref input);
 
         B2.g_draw.DrawString(5, m_textLine, "toi = %g", output.fraction);
         m_textLine += m_textIncrement;

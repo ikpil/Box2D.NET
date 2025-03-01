@@ -1022,7 +1022,7 @@ namespace Box2D.NET
         /// again.
         // CCD via the local separating axis method. This seeks progression
         // by computing the largest time at which separation is maintained.
-        public static B2TOIOutput b2TimeOfImpact(B2TOIInput input)
+        public static B2TOIOutput b2TimeOfImpact(ref B2TOIInput input)
         {
 #if B2_SNOOP_TOI_COUNTERS
             ulong ticks = b2GetTicks();
