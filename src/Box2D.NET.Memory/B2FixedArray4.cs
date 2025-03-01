@@ -11,7 +11,7 @@ namespace Box2D.NET.Core
     public struct B2FixedArray4<T> where T : unmanaged
     {
         public const int Length = 4;
-        
+
         public T v0000;
         public T v0001;
         public T v0002;
@@ -30,6 +30,12 @@ namespace Box2D.NET.Core
                 throw new IndexOutOfRangeException();
 
             return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe Span<T> AsSpan()
+        {
+            return new Span<T>(Unsafe.AsPointer(ref v0000), Length);
         }
     }
 }

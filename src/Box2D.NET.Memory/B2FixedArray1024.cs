@@ -1051,5 +1051,11 @@ namespace Box2D.NET.Core
 
             return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe Span<T> AsSpan()
+        {
+            return new Span<T>(Unsafe.AsPointer(ref v0000), Length);
+        }
     }
 }
