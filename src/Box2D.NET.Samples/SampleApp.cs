@@ -419,6 +419,7 @@ public class SampleApp
         // ImGui_ImplOpenGL3_Shutdown();
         // ImGui_ImplGlfw_Shutdown();
         // ImGui.DestroyContext();
+        _imgui.Dispose();
     }
 
     public unsafe void ResizeWindowCallback(WindowHandle* window, int width, int height)
@@ -746,8 +747,7 @@ public class SampleApp
                                     selectionFlags = ImGuiTreeNodeFlags.Selected;
                                 }
 
-                                // todo: @ikpil, check!
-                                //ImGui.TreeNodeEx((void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s", SampleFactory.Shared.GetName(i));
+                                ImGui.TreeNodeEx(SampleFactory.Shared.GetName(i), leafNodeFlags | selectionFlags);
                                 if (ImGui.IsItemClicked())
                                 {
                                     s_selection = i;
