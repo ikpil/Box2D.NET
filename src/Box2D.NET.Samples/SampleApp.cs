@@ -68,12 +68,13 @@ public class SampleApp
         B2.g_camera.m_height = s_settings.windowHeight;
 
         var options = WindowOptions.Default;
+        options.ShouldSwapAutomatically = false;
         if (!B2.g_glfw.Init())
         {
             Console.WriteLine("Failed to initialize GLFW");
             return -1;
         }
-
+        
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
         B2.g_glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
@@ -199,7 +200,7 @@ public class SampleApp
         //while (!B2.g_glfw.WindowShouldClose(g_mainWindow))
         {
             double time1 = B2.g_glfw.GetTime();
-
+            
             // if (GetKey(Keys.Z) == InputAction.Press)
             // {
             //     // Zoom out
@@ -210,51 +211,48 @@ public class SampleApp
             //     // Zoom in
             //     B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
             // }
-
+            
             B2.g_glfw.GetWindowSize(g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
             B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
             B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
-
+            
             B2.g_glfw.GetFramebufferSize(g_mainWindow, out var bufferWidth, out var bufferHeight);
             B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
-
-            B2.g_shader.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-
+            
             //B2.g_draw.DrawBackground();
-
+            
             B2.g_glfw.GetCursorPos(g_mainWindow, out var cursorPosX, out var cursorPosY);
             // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
             // ImGui_ImplOpenGL3_NewFrame();
             // ImGui_ImplGlfw_NewFrame();
             // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-
+            
             var io = ImGui.GetIO();
             io.DisplaySize.X = (float)B2.g_camera.m_width;
             io.DisplaySize.Y = (float)B2.g_camera.m_height;
             io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
             io.DisplayFramebufferScale.Y = bufferHeight / (float)B2.g_camera.m_height;
-
-
+            
+            
             // For the Tracy profiler
             //FrameMark;
-
+            
             if (s_selection != s_settings.sampleIndex)
             {
                 B2.g_camera.ResetView();
                 s_settings.sampleIndex = s_selection;
-
+            
                 // #todo restore all drawing settings that may have been overridden by a sample
                 s_settings.subStepCount = 4;
                 s_settings.drawJoints = true;
                 s_settings.useCameraBounds = false;
-
+            
                 s_sample = null;
                 s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
             }
-
+            
             B2.g_glfw.PollEvents();
-
+            
             // Limit frame rate to 60Hz
             double time2 = B2.g_glfw.GetTime();
             double targetTime = time1 + 1.0 / 60.0;
@@ -263,7 +261,7 @@ public class SampleApp
                 b2Yield();
                 time2 = B2.g_glfw.GetTime();
             }
-
+            
             frameTime = (float)(time2 - time1);
             
             _imgui.Update((float)dt);
@@ -272,6 +270,8 @@ public class SampleApp
 
     private unsafe void OnWindowRender(double dt)
     {
+        B2.g_shader.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            
         bool open = true;
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(B2.g_camera.m_width, B2.g_camera.m_height));
@@ -315,9 +315,7 @@ public class SampleApp
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-
         B2.g_glfw.SwapBuffers(g_mainWindow);
-        
     }
 
     private void OnWindowClosing()
