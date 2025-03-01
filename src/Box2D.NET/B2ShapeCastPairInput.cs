@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// Input parameters for b2ShapeCast
-    public struct B2ShapeCastPairInput
+    public ref struct B2ShapeCastPairInput
     {
         public B2ShapeProxy proxyA; // The proxy for shape A
         public B2ShapeProxy proxyB; // The proxy for shape B

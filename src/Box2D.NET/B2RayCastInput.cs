@@ -12,7 +12,7 @@ namespace Box2D.NET
      * @{
      */
     /// Low level ray cast input data
-    public struct B2RayCastInput // todo @ikpil, check! for class
+    public ref struct B2RayCastInput
     {
         /// Start point of the ray cast
         public B2Vec2 origin;
