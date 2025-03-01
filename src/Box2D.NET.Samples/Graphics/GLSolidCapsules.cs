@@ -18,7 +18,7 @@ public class GLSolidCapsules
 {
     public const int e_batchSize = 2048;
 
-    private List<CapsuleData> m_capsules;
+    private List<CapsuleData> m_capsules = new List<CapsuleData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboIds = new uint[2];
@@ -67,7 +67,7 @@ public class GLSolidCapsules
 
         // Capsule buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2.g_shader.gl.BufferData<CapsuleData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<CapsuleData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<CapsuleData>.Size, null, GLEnum.DynamicDraw);
 
         B2.g_shader.gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, false, SizeOf<CapsuleData>.Size, IntPtr.Zero);
         B2.g_shader.gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, SizeOf<CapsuleData>.Size, IntPtr.Zero + 16);

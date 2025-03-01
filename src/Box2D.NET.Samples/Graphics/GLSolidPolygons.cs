@@ -18,7 +18,7 @@ public class GLSolidPolygons
 {
     public const int e_batchSize = 512;
 
-    List<PolygonData> m_polygons;
+    private List<PolygonData> m_polygons = new List<PolygonData>();
 
     uint[] m_vaoId = new uint[1];
     uint[] m_vboIds = new uint[2];
@@ -74,7 +74,7 @@ public class GLSolidPolygons
 
         // Polygon buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2.g_shader.gl.BufferData<PolygonData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<PolygonData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<PolygonData>.Size, null, GLEnum.DynamicDraw);
         B2.g_shader.gl.VertexAttribPointer(instanceTransform, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero);
         B2.g_shader.gl.VertexAttribPointer(instancePoint12, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 16);
         B2.g_shader.gl.VertexAttribPointer(instancePoint34, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 32);
@@ -145,6 +145,7 @@ public class GLSolidPolygons
         }
 
         B2.g_shader.gl.UseProgram(m_programId);
+            B2.g_shader.CheckErrorGL();
 
         float[] proj = new float[16];
         B2.g_camera.BuildProjectionMatrix(proj, 0.2f);

@@ -20,7 +20,7 @@ public class GLTriangles
     // must be multiple of 3
     public const int e_batchSize = 3 * 512;
 
-    private List<VertexData> m_points;
+    private List<VertexData> m_points = new List<VertexData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
@@ -63,7 +63,7 @@ public class GLTriangles
 
         // Vertex buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
-        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
 
         B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
         // color will get automatically expanded to floats in the shader

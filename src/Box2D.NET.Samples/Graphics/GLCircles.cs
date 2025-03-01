@@ -18,7 +18,7 @@ public class GLCircles
 {
     public const int e_batchSize = 2048;
 
-    private List<CircleData> m_circles;
+    private List<CircleData> m_circles = new List<CircleData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboIds = new uint[2];
@@ -64,7 +64,7 @@ public class GLCircles
 
         // Circle buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);
-        B2.g_shader.gl.BufferData<CircleData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<CircleData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<CircleData>.Size, null, GLEnum.DynamicDraw);
 
         B2.g_shader.gl.VertexAttribPointer(positionInstance, 2, VertexAttribPointerType.Float, false, SizeOf<CircleData>.Size, IntPtr.Zero); // 8
         B2.g_shader.gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, SizeOf<CircleData>.Size, IntPtr.Zero + 8); // 4

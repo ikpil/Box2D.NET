@@ -58,6 +58,10 @@ public class Sample : IDisposable
         m_scheduler.Initialize(settings.workerCount);
 
         m_tasks = new SampleTask[m_maxTasks];
+        for (int i = 0; i < m_maxTasks; ++i)
+        {
+            m_tasks[i] = new SampleTask();
+        }
         m_taskCount = 0;
 
         m_threadCount = 1 + settings.workerCount;

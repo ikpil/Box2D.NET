@@ -19,6 +19,6 @@ public class SampleTask
 
     public virtual void ExecuteRange(int start, int end, uint threadIndex)
     {
-        m_task(start, end, threadIndex, m_taskContext);
+        m_task.Invoke(start, end, threadIndex, m_taskContext);
     }
 }

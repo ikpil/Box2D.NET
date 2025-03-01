@@ -21,7 +21,7 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
-    private List<VertexData> m_points;
+    private List<VertexData> m_points = new();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
@@ -64,7 +64,7 @@ public class GLLines
 
         // Vertex buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
-        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
 
         B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
         // save bandwidth by expanding color to floats in the shader

@@ -17,7 +17,7 @@ public class GLPoints
 {
     public const int e_batchSize = 2048;
 
-    private List<PointData> m_points;
+    private List<PointData> m_points = new List<PointData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
@@ -64,7 +64,7 @@ public class GLPoints
 
         // Vertex buffer
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
-        B2.g_shader.gl.BufferData<PointData>(GLEnum.ArrayBuffer, e_batchSize, null, GLEnum.DynamicDraw);
+        B2.g_shader.gl.BufferData<PointData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<PointData>.Size, null, GLEnum.DynamicDraw);
 
         B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero);
         B2.g_shader.gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero + 8);
