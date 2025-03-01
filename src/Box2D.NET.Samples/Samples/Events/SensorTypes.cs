@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Extensions;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;

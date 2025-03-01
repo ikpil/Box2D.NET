@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;

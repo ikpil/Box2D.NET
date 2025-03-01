@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using Box2D.NET.Primitives;
 
 namespace Box2D.NET
 {

@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using Box2D.NET.Primitives;
 using Box2D.NET.Shared.Primitives;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;

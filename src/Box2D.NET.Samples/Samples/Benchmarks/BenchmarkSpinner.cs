@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using Box2D.NET.Primitives;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.Benchmarks;
 

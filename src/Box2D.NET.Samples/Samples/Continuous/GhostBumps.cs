@@ -4,7 +4,6 @@
 
 using System;
 using System.Numerics;
-using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Hulls;

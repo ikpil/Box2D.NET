@@ -7,7 +7,6 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using ImGuiNET;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
 using Silk.NET.Input;

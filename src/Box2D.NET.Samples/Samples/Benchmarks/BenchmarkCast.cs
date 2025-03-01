@@ -4,7 +4,6 @@
 
 using System.Collections.Generic;
 using System.Numerics;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Extensions;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;

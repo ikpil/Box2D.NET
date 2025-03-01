@@ -5,7 +5,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using Box2D.NET.Primitives;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2DynamicTrees;

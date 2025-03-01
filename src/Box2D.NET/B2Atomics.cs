@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Threading;
-using Box2D.NET.Primitives;
 
 namespace Box2D.NET
 {

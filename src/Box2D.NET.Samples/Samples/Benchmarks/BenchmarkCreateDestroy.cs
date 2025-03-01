@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
-using Box2D.NET.Primitives;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;

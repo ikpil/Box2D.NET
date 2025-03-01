@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using Box2D.NET.Primitives;
 using NUnit.Framework;
 using static Box2D.NET.B2AABBs;
 using static Box2D.NET.B2MathFunction;

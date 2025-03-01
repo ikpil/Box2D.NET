@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Numerics;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
 using Box2D.NET.Samples.Extensions;
 using ImGuiNET;

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;

@@ -4,7 +4,6 @@
 
 using System;
 using System.Numerics;
-using Box2D.NET.Primitives;
 using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;

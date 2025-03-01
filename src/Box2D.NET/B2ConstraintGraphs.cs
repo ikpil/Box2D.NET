@@ -18,7 +18,6 @@
 #define B2_FORCE_OVERFLOW
 
 using System.Diagnostics;
-using Box2D.NET.Primitives;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;

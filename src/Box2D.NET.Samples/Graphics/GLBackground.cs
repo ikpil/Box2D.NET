@@ -4,7 +4,6 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Box2D.NET.Primitives;
 using Silk.NET.OpenGL;
 
 namespace Box2D.NET.Samples.Graphics;

@@ -4,7 +4,6 @@
 
 using System.Diagnostics;
 using System.Numerics;
-using Box2D.NET.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;

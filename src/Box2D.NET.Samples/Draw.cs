@@ -4,7 +4,6 @@
 
 using System;
 using System.Numerics;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Graphics;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -171,10 +170,10 @@ public class Draw
         B2Vec2 p1 = transform.p;
 
         B2Vec2 p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetXAxis(transform.q));
-        m_lines.AddLine(p1, p2, NET.Primitives.B2HexColor.b2_colorRed);
+        m_lines.AddLine(p1, p2, B2HexColor.b2_colorRed);
 
         p2 = b2MulAdd(p1, k_axisScale, b2Rot_GetYAxis(transform.q));
-        m_lines.AddLine(p1, p2, NET.Primitives.B2HexColor.b2_colorGreen);
+        m_lines.AddLine(p1, p2, B2HexColor.b2_colorGreen);
     }
 
     public void DrawPoint(B2Vec2 p, float size, B2HexColor color)

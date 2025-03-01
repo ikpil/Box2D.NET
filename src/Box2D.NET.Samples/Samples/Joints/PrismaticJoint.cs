@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Numerics;
-using Box2D.NET.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;

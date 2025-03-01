@@ -5,7 +5,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Extensions;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;

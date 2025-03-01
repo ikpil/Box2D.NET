@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Extensions;
 using ImGuiNET;
 using Silk.NET.GLFW;
