@@ -244,7 +244,7 @@ public class Sample : IDisposable
                 mouseDef.hertz = 5.0f;
                 mouseDef.dampingRatio = 0.7f;
                 mouseDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId);
-                m_mouseJointId = b2CreateMouseJoint(m_worldId, mouseDef);
+                m_mouseJointId = b2CreateMouseJoint(m_worldId, ref mouseDef);
 
                 b2Body_SetAwake(queryContext.bodyId, true);
             }
