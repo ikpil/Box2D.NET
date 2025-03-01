@@ -45,7 +45,7 @@ public class BenchmarkCast : Sample
         return new BenchmarkCast(settings);
     }
 
-    BenchmarkCast(Settings settings) : base(settings)
+    public BenchmarkCast(Settings settings) : base(settings)
     {
         if (settings.restart == false)
         {

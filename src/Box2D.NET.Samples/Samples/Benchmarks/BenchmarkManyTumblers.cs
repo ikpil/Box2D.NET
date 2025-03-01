@@ -169,7 +169,7 @@ public class BenchmarkManyTumblers : Sample
         ImGui.End();
     }
 
-    public virtual void Step(Settings settings)
+    public override void Step(Settings settings)
     {
         base.Step(settings);
 
