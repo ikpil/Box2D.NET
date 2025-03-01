@@ -206,7 +206,7 @@ public class Sample : IDisposable
         return true;
     }
 
-    public virtual void Keyboard(int a)
+    public virtual void Keyboard(Keys a)
     {
     }
 

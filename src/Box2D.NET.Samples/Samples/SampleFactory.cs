@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Box2D.NET.Samples.Primitives;
 
 namespace Box2D.NET.Samples.Samples;
@@ -35,7 +36,7 @@ public class SampleFactory
         var entry = GetInternal(index);
         return entry.Category;
     }
-    
+
     public string GetName(int index)
     {
         var entry = GetInternal(index);
@@ -46,5 +47,27 @@ public class SampleFactory
     {
         var sample = _sampleEntries[index];
         return sample;
+    }
+
+    private static int CompareSamples(SampleEntry sa, SampleEntry sb)
+    {
+        int result = string.Compare(sa.Category, sb.Category, StringComparison.InvariantCultureIgnoreCase);
+        if (result == 0)
+        {
+            result = string.Compare(sa.Name, sb.Name, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        return result;
+    }
+    
+    public void SortSamples()
+    {
+        _sampleEntries.Sort(CompareSamples);
+    }
+
+    public string GetTitle(int index)
+    {
+        var entry = GetInternal(index);
+        return entry.Title;
     }
 }

@@ -266,7 +266,7 @@ public class Drop : Sample
         m_frameCount = 1;
     }
 
-    public override void Keyboard(int key)
+    public override void Keyboard(Keys key)
     {
         switch ((Keys)key)
         {

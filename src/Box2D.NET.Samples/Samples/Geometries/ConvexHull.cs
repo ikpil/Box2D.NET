@@ -99,7 +99,7 @@ public class ConvexHull : Sample
         m_generation += 1;
     }
 
-    public override void Keyboard(int key)
+    public override void Keyboard(Keys key)
     {
         switch ((Keys)key)
         {

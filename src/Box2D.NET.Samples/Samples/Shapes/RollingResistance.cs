@@ -60,7 +60,7 @@ public class RollingResistance : Sample
         }
     }
 
-    public override void Keyboard(int key)
+    public override void Keyboard(Keys key)
     {
         switch ((Keys)key)
         {

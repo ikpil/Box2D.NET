@@ -12,12 +12,14 @@ public class SampleEntry
 {
     public readonly string Category;
     public readonly string Name;
+    public readonly string Title;
     public readonly SampleCreateFcn CreateFcn;
 
     public SampleEntry(string category, string name, SampleCreateFcn createFcn)
     {
         Category = category;
         Name = name;
+        Title = $"{Category} : {Name}";
         CreateFcn = createFcn;
     }
 }
