@@ -10,12 +10,15 @@ using ImGuiNET;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.Windowing;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using ErrorCode = Silk.NET.GLFW.ErrorCode;
+using Monitor = Silk.NET.GLFW.Monitor;
 
 
 namespace Box2D.NET.Samples;
@@ -24,6 +27,7 @@ public class SampleApp
 {
     // -----------------------------------------------------------------------------------------------------
     private unsafe WindowHandle* g_mainWindow;
+    private IWindow _window;
     private int s_selection = 0;
     private Sample s_sample = null;
     private Settings s_settings;
@@ -49,6 +53,8 @@ public class SampleApp
         SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
 
+        Window.PrioritizeGlfw();
+
         B2.g_glfw = Glfw.GetApi();
         B2.g_glfw.SetErrorCallback(glfwErrorCallback);
 
@@ -56,19 +62,12 @@ public class SampleApp
         B2.g_camera.m_width = s_settings.windowWidth;
         B2.g_camera.m_height = s_settings.windowHeight;
 
+        var options = WindowOptions.Default;
         if (!B2.g_glfw.Init())
         {
             Console.WriteLine("Failed to initialize GLFW");
             return -1;
         }
-
-        string buffer = string.Empty;
-
-#if __APPLE__
-        string glslVersion = "#version 150";
-#else
-        string glslVersion = string.Empty;
-#endif
 
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
@@ -77,9 +76,10 @@ public class SampleApp
 
         // MSAA
         B2.g_glfw.WindowHint(WindowHintInt.Samples, 4);
+        options.Samples = 4;
 
         B2Version version = b2GetVersion();
-        buffer += $"Box2D Version {version.major}.{version.minor}.{version.revision}";
+        options.Title = $"Box2D Version {version.major}.{version.minor}.{version.revision}";
 
         Monitor* primaryMonitor = B2.g_glfw.GetPrimaryMonitor();
         if (null != primaryMonitor)
@@ -94,21 +94,44 @@ public class SampleApp
             }
         }
 
+
         bool fullscreen = false;
         if (fullscreen)
         {
-            g_mainWindow = B2.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
+            options.Size = new Vector2D<int>((int)(1920 * s_windowScale), (int)(1080 * s_windowScale));
+            //g_mainWindow = B2.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
-            g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
+            options.Size = new Vector2D<int>((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale));
+            //g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
+        _window = Window.Create(options);
+        _window.Load += OnWindowLoaded;
+        _window.Update += OnWindowUpdate;
+        _window.Closing += OnWindowClosing;
+        _window.Run();
+        
+        B2.g_glfw.Terminate();
+        s_settings.Save();
+
+        return 0;
+    }
+
+    private unsafe void OnWindowLoaded()
+    {
+#if __APPLE__
+        string glslVersion = "#version 150";
+#else
+        string glslVersion = string.Empty;
+#endif
+
+        g_mainWindow = (WindowHandle*)_window.Native?.Glfw.Value;
         if (g_mainWindow == null)
         {
             Console.WriteLine("Failed to open GLFW g_mainWindow.");
-            B2.g_glfw.Terminate();
-            return -1;
+            return;
         }
 
         // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -123,18 +146,17 @@ public class SampleApp
 
         B2.g_glfw.MakeContextCurrent(g_mainWindow);
 
-
         // Load OpenGL functions using glad
         B2.g_shader = new Shader();
-        B2.g_shader.gl = GL.GetApi(B2.g_glfw.Context);
+        B2.g_shader.gl = _window.CreateOpenGL();
         if (null == B2.g_shader.gl)
         {
             Console.WriteLine("Failed to initialize glad");
-            B2.g_glfw.Terminate();
-            return -1;
+            return;
         }
 
-        Console.WriteLine($"GL {version.major}.{version.minor}");
+        var glVersion = B2.g_shader.gl.GetStringS(StringName.Version);
+        Console.WriteLine($"GL {glVersion}");
         Console.WriteLine($"OpenGL {B2.g_shader.gl.GetStringS(GLEnum.Version)}, GLSL {B2.g_shader.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
         B2.g_glfw.SetWindowSizeCallback(g_mainWindow, ResizeWindowCallback);
@@ -146,15 +168,18 @@ public class SampleApp
 
         // todo put this in s_settings
         CreateUI(g_mainWindow, glslVersion);
+        B2.g_draw = new Draw();
         B2.g_draw.Create();
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
         s_selection = s_settings.sampleIndex;
 
         B2.g_shader.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-
+    }
+    
+    private unsafe void OnWindowUpdate(double dt)
+    {
         float frameTime = 0.0f;
-
         while (!B2.g_glfw.WindowShouldClose(g_mainWindow))
         {
             double time1 = B2.g_glfw.GetTime();
@@ -272,17 +297,13 @@ public class SampleApp
 
             frameTime = (float)(time2 - time1);
         }
+    }
 
+    private void OnWindowClosing()
+    {
         s_sample = null;
-
         B2.g_draw.Destroy();
-
         DestroyUI();
-        B2.g_glfw.Terminate();
-
-        s_settings.Save();
-
-        return 0;
     }
 
     public bool IsPowerOfTwo(int x)
@@ -355,7 +376,7 @@ public class SampleApp
         //     Debug.Assert(false);
         // }
         //
-        // string fontPath = "samples/data/droid_sans.ttf";
+        // string fontPath = "data/droid_sans.ttf";
         // FILE* file = fopen(fontPath, "rb");
         //
         // if (file != nullptr)
