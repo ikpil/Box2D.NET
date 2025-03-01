@@ -912,7 +912,7 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
+            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
@@ -927,7 +927,7 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
+            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
@@ -942,7 +942,7 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
-            pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
+            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
@@ -957,7 +957,7 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices, shape.count, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points, input.count, input.radius);
+            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;

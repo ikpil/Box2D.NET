@@ -5,6 +5,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Box2D.NET.Primitives;
+using Box2D.NET.Samples.Extensions;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2Geometries;
@@ -68,8 +69,8 @@ public class BenchmarkCast : Sample
 
         g_seed = 1234;
         int sampleCount = g_sampleDebug ? 100 : 10000;
-        m_origins.EnsureCapacity(sampleCount);
-        m_translations.EnsureCapacity(sampleCount);
+        m_origins.Resize(sampleCount);
+        m_translations.Resize(sampleCount);
         float extent = m_rowCount * m_grid;
 
         // Pre-compute rays to avoid randomizer overhead

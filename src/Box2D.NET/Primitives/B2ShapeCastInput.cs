@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Core;
+
 namespace Box2D.NET.Primitives
 {
     /// Low level shape cast input in generic form. This allows casting an arbitrary point
@@ -11,7 +13,7 @@ namespace Box2D.NET.Primitives
     {
         /// A point cloud to cast
         //public B2Vec2[] points = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];
-        public B2Vec2[] points;
+        public B2FixedArray8<B2Vec2> points;
 
         /// The number of points
         public int count;

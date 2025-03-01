@@ -1327,8 +1327,6 @@ namespace Box2D.NET
 
             //b2ShapeCastInput subInput = *input;
             B2ShapeCastInput subInput = input;
-            subInput.points = new B2Vec2[input.points.Length];
-            Array.Copy(input.points, subInput.points, input.points.Length);
             B2TreeNode[] nodes = tree.nodes;
 
             int[] stack = new int[B2_TREE_STACK_SIZE];
