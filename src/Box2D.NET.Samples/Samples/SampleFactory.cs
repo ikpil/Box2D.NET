@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Box2D.NET.Samples.Primitives;
-using Box2D.NET.Samples.Samples.Benchmarks;
 
 namespace Box2D.NET.Samples.Samples;
 

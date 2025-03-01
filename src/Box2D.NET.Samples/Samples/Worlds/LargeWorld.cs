@@ -7,7 +7,6 @@ using System.Numerics;
 using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
-using Silk.NET.Input.Glfw;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;

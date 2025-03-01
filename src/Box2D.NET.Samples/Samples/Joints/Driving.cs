@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
-using Silk.NET.Vulkan;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;

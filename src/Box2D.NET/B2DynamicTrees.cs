@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using Box2D.NET.Core;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
@@ -1091,7 +1092,11 @@ namespace Box2D.NET
                 return result;
             }
 
-            int[] stack = new int[B2_TREE_STACK_SIZE];
+            //int[] stack = stackalloc int[B2_TREE_STACK_SIZE];
+            //Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            var dummy = new B2FixedArray1024<int>();
+            var stack = dummy.AsSpan();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
 

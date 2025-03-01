@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using Silk.NET.GLFW;
-using Silk.NET.Input;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
