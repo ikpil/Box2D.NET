@@ -85,8 +85,8 @@ namespace Box2D.NET
 #else
         public static void b2ValidateFreeId(B2IdPool pool, int id)
         {
-            B2_UNUSED(pool);
-            B2_UNUSED(id);
+            B2Cores.B2_UNUSED(pool);
+            B2Cores.B2_UNUSED(id);
         }
 
 #endif
