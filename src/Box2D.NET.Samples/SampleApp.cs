@@ -113,8 +113,9 @@ public class SampleApp
         }
 
         _window = Window.Create(options);
-        _window.Load += OnWindowLoaded;
+        _window.Load += OnWindowLoad;
         _window.Update += OnWindowUpdate;
+        _window.Render += OnWindowRender;
         _window.Closing += OnWindowClosing;
         _window.Run();
         
@@ -124,7 +125,7 @@ public class SampleApp
         return 0;
     }
 
-    private unsafe void OnWindowLoaded()
+    private unsafe void OnWindowLoad()
     {
 #if __APPLE__
         string glslVersion = "#version 150";
@@ -234,53 +235,6 @@ public class SampleApp
             io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
             io.DisplayFramebufferScale.Y = bufferHeight / (float)B2.g_camera.m_height;
 
-            ImGui.NewFrame();
-
-            bool open = false;
-            ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
-            ImGui.SetNextWindowSize(new Vector2(B2.g_camera.m_width, B2.g_camera.m_height));
-            ImGui.SetNextWindowBgAlpha(0.0f);
-            ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
-            ImGui.End();
-
-            if (s_sample == null)
-            {
-                // delayed creation because imgui doesn't create fonts until NewFrame() is called
-                s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
-            }
-
-            if (B2.g_draw.m_showUI)
-            {
-                var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
-                s_sample.DrawTitle(title);
-            }
-
-            s_sample.Step(s_settings);
-
-            B2.g_draw.Flush();
-
-            UpdateUI();
-
-            // ImGui.ShowDemoWindow();
-
-            // if (B2.g_draw.m_showUI)
-            // {
-            //     snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample.m_stepCount,
-            //         B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom);
-            //     // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
-            //
-            //     ImGui.Begin("Overlay", nullptr,
-            //         ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-            //         ImGuiWindowFlags.NoScrollbar);
-            //     ImGui.SetCursorPos(new Vector2(5.0f, B2.g_camera.m_height - 20.0f));
-            //     ImGui.TextColored(new Vector4(153, 230, 153, 255), "%s", buffer);
-            //     ImGui.End();
-            // }
-
-            ImGui.Render();
-            //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-
-            B2.g_glfw.SwapBuffers(g_mainWindow);
 
             // For the Tracy profiler
             //FrameMark;
@@ -311,7 +265,59 @@ public class SampleApp
             }
 
             frameTime = (float)(time2 - time1);
+            
+            _imgui.Update((float)dt);
         }
+    }
+
+    private unsafe void OnWindowRender(double dt)
+    {
+        bool open = true;
+        ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
+        ImGui.SetNextWindowSize(new Vector2(B2.g_camera.m_width, B2.g_camera.m_height));
+        ImGui.SetNextWindowBgAlpha(0.0f);
+        ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
+        ImGui.End();
+
+        if (s_sample == null)
+        {
+            // delayed creation because imgui doesn't create fonts until NewFrame() is called
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
+        }
+
+        if (B2.g_draw.m_showUI)
+        {
+            var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
+            s_sample.DrawTitle(title);
+        }
+
+        s_sample.Step(s_settings);
+
+        B2.g_draw.Flush();
+
+        UpdateUI();
+
+        //ImGui.ShowDemoWindow();
+
+        // if (B2.g_draw.m_showUI)
+        // {
+        //     snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample.m_stepCount,
+        //         B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom);
+        //     // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
+        //
+        //     ImGui.Begin("Overlay", nullptr,
+        //         ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+        //         ImGuiWindowFlags.NoScrollbar);
+        //     ImGui.SetCursorPos(new Vector2(5.0f, B2.g_camera.m_height - 20.0f));
+        //     ImGui.TextColored(new Vector4(153, 230, 153, 255), "%s", buffer);
+        //     ImGui.End();
+        // }
+
+        _imgui.Render();
+        //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
+
+        B2.g_glfw.SwapBuffers(g_mainWindow);
+        
     }
 
     private void OnWindowClosing()
@@ -596,14 +602,14 @@ public class SampleApp
         }
     }
 
-    unsafe void MouseMotionCallback(WindowHandle* window, double xd, double yd)
+    private unsafe void MouseMotionCallback(WindowHandle* window, double xd, double yd)
     {
         B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
 
         B2Vec2 pw = B2.g_camera.ConvertScreenToWorld(ps);
-        s_sample.MouseMove(pw);
+        s_sample?.MouseMove(pw);
 
         if (s_rightMouseDown)
         {
@@ -614,7 +620,7 @@ public class SampleApp
         }
     }
 
-    unsafe void ScrollCallback(WindowHandle* window, double dx, double dy)
+    private unsafe void ScrollCallback(WindowHandle* window, double dx, double dy)
     {
         //ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
         if (ImGui.GetIO().WantCaptureMouse)
