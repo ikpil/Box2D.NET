@@ -90,7 +90,7 @@ public class BenchmarkCast : Sample
         g_seed = 1234;
         b2DestroyWorld(m_worldId);
         B2WorldDef worldDef = b2DefaultWorldDef();
-        m_worldId = b2CreateWorld(worldDef);
+        m_worldId = b2CreateWorld(ref worldDef);
 
         ulong ticks = b2GetTicks();
 

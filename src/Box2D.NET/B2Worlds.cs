@@ -104,7 +104,7 @@ namespace Box2D.NET
             return b2MaxFloat(restitutionA, restitutionB);
         }
 
-        public static B2WorldId b2CreateWorld(B2WorldDef def)
+        public static B2WorldId b2CreateWorld(ref B2WorldDef def)
         {
             Debug.Assert(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
             B2_CHECK_DEF(ref def);

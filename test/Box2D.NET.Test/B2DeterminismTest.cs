@@ -153,7 +153,7 @@ public class B2DeterminismTest
         worldDef.workerCount = workerCount;
         worldDef.enableSleep = false;
 
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
 
         B2BodyId[] bodies = new B2BodyId[e_count];
 
@@ -246,7 +246,7 @@ public class B2DeterminismTest
     public void CrossPlatformTest()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();

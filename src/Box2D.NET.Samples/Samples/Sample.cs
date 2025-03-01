@@ -110,7 +110,7 @@ public class Sample : IDisposable
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_settings.enableSleep;
 
-        m_worldId = b2CreateWorld(worldDef);
+        m_worldId = b2CreateWorld(ref worldDef);
     }
 
     public void TestMathCpp()

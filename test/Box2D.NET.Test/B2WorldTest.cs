@@ -32,7 +32,7 @@ public class B2WorldTest
         B2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.gravity = new B2Vec2(0.0f, -10.0f);
 
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
         Assert.That(b2World_IsValid(worldId));
 
         // Define the ground body.
@@ -110,7 +110,7 @@ public class B2WorldTest
     public void EmptyWorld()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
         Assert.That(b2World_IsValid(worldId), Is.EqualTo(true));
 
         float timeStep = 1.0f / 60.0f;
@@ -132,7 +132,7 @@ public class B2WorldTest
     public void DestroyAllBodiesWorld()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
         Assert.That(b2World_IsValid(worldId), Is.EqualTo(true));
 
         int count = 0;
@@ -182,7 +182,7 @@ public class B2WorldTest
     public void TestIsValid()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
         Assert.That(b2World_IsValid(worldId));
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -222,7 +222,7 @@ public class B2WorldTest
             B2WorldDef worldDef = b2DefaultWorldDef();
             for (int j = 0; j < WORLD_COUNT; ++j)
             {
-                worldIds[j] = b2CreateWorld(worldDef);
+                worldIds[j] = b2CreateWorld(ref worldDef);
                 Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true), $"i({i}) j({j})");
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -272,7 +272,7 @@ public class B2WorldTest
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
 
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
         Assert.That(b2World_IsValid(worldId));
 
         b2World_EnableSleeping(worldId, true);
@@ -334,7 +334,7 @@ public class B2WorldTest
     public void TestSensor()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(worldDef);
+        B2WorldId worldId = b2CreateWorld(ref worldDef);
 
         // Wall from x = 1 to x = 2
         B2BodyDef bodyDef = b2DefaultBodyDef();
