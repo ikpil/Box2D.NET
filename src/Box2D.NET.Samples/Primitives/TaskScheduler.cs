@@ -10,17 +10,17 @@ public class TaskScheduler
 {
     public void Initialize(int workerCount)
     {
-        Debug.Assert(false);
+        //Debug.Assert(false);
     }
     
     public void AddTaskSetToPipe(SampleTask task)
     {
         // !!
-        Debug.Assert(false);
+        //Debug.Assert(false);
     }
 
     public void WaitforTask(SampleTask task)
     {
-        Debug.Assert(false);
+        //Debug.Assert(false);
     }
 }

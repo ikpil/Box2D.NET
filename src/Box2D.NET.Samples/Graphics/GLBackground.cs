@@ -24,7 +24,7 @@ public class GLBackground
 
     public void Create()
     {
-        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/background.vs", "samples/data/background.fs");
+        m_programId = B2.g_shader.CreateProgramFromFiles("data/background.vs", "data/background.fs");
         m_timeUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "time");
         m_resolutionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "resolution");
         m_baseColorUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "baseColor");

@@ -106,6 +106,7 @@ public class BenchmarkBarrel : Sample
         //memset( m_humans, 0, sizeof( m_humans ) );
         for (int i = 0; i < m_humans.Length; ++i)
         {
+            m_humans[i] = new Human();
             m_humans[i].Clear();
         }
 

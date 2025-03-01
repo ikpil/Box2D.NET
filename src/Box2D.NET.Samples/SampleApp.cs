@@ -3,15 +3,17 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using ImGuiNET;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
+using Silk.NET.Input;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
+using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
@@ -19,6 +21,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using ErrorCode = Silk.NET.GLFW.ErrorCode;
 using Monitor = Silk.NET.GLFW.Monitor;
+using MouseButton = Silk.NET.GLFW.MouseButton;
 
 
 namespace Box2D.NET.Samples;
@@ -28,6 +31,8 @@ public class SampleApp
     // -----------------------------------------------------------------------------------------------------
     private unsafe WindowHandle* g_mainWindow;
     private IWindow _window;
+    private IInputContext _input;
+    private ImGuiController _imgui;
     private int s_selection = 0;
     private Sample s_sample = null;
     private Settings s_settings;
@@ -146,6 +151,7 @@ public class SampleApp
 
         B2.g_glfw.MakeContextCurrent(g_mainWindow);
 
+        _input = _window.CreateInput();
         // Load OpenGL functions using glad
         B2.g_shader = new Shader();
         B2.g_shader.gl = _window.CreateOpenGL();
@@ -175,6 +181,15 @@ public class SampleApp
         s_selection = s_settings.sampleIndex;
 
         B2.g_shader.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+        
+        // for windows : Microsoft Visual C++ Redistributable Package
+        // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+        var imGuiFontConfig = new ImGuiFontConfig(Path.Combine("data", "droid_sans.ttf"), 10, null);
+        _imgui = new ImGuiController(B2.g_shader.gl, _window, _input, imGuiFontConfig);
+
+        //ImGui.GetStyle().ScaleAllSizes(scale);
+        //ImGui.GetIO().FontGlobalScale = 2.0f;
+
     }
     
     float frameTime = 0.0f;
@@ -213,7 +228,7 @@ public class SampleApp
             // ImGui_ImplGlfw_NewFrame();
             // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
 
-            ImGuiIOPtr io = ImGui.GetIO();
+            var io = ImGui.GetIO();
             io.DisplaySize.X = (float)B2.g_camera.m_width;
             io.DisplaySize.Y = (float)B2.g_camera.m_height;
             io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
