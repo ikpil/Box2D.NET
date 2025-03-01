@@ -248,7 +248,7 @@ public class Sample : IDisposable
         }
     }
 
-    public virtual void MouseUp(B2Vec2 p, int button)
+    public virtual void MouseUp(B2Vec2 p, MouseButton button)
     {
         if (b2Joint_IsValid(m_mouseJointId) == false)
         {

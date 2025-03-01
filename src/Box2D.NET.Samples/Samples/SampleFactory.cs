@@ -8,13 +8,13 @@ public class SampleFactory
     public static readonly SampleFactory Shared = new SampleFactory();
 
     private readonly List<SampleEntry> _sampleEntries;
-
+    public int SampleCount => _sampleEntries.Count;
 
     private SampleFactory()
     {
         _sampleEntries = new List<SampleEntry>();
     }
-    
+
     public int RegisterSample(string category, string name, SampleCreateFcn fcn)
     {
         int index = _sampleEntries.Count;
@@ -25,7 +25,26 @@ public class SampleFactory
 
     public Sample Create(int index, Settings setting)
     {
-        var sample = _sampleEntries[index].createFcn.Invoke(setting);
+        var entry = GetInternal(index);
+        var sample = entry.CreateFcn.Invoke(setting);
+        return sample;
+    }
+
+    public string GetCategory(int index)
+    {
+        var entry = GetInternal(index);
+        return entry.Category;
+    }
+    
+    public string GetName(int index)
+    {
+        var entry = GetInternal(index);
+        return entry.Name;
+    }
+
+    private SampleEntry GetInternal(int index)
+    {
+        var sample = _sampleEntries[index];
         return sample;
     }
 }

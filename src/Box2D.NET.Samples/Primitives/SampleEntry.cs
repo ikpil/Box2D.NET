@@ -10,14 +10,14 @@ public delegate Sample SampleCreateFcn(Settings settings);
 
 public class SampleEntry
 {
-    public readonly string category;
-    public readonly string name;
-    public readonly SampleCreateFcn createFcn;
+    public readonly string Category;
+    public readonly string Name;
+    public readonly SampleCreateFcn CreateFcn;
 
     public SampleEntry(string category, string name, SampleCreateFcn createFcn)
     {
-        this.category = category;
-        this.name = name;
-        this.createFcn = createFcn;
+        Category = category;
+        Name = name;
+        CreateFcn = createFcn;
     }
 }

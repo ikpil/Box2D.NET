@@ -203,7 +203,7 @@ public class SmoothManifold : Sample
         }
     }
 
-    public override void MouseUp(B2Vec2 _, int button)
+    public override void MouseUp(B2Vec2 p, MouseButton button)
     {
         if (button == (int)MouseButton.Left)
         {

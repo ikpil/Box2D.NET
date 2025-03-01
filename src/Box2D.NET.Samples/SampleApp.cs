@@ -131,7 +131,7 @@ public class SampleApp
         CreateUI( g_mainWindow, glslVersion );
         B2.g_draw.Create();
 
-        s_settings.sampleIndex = b2ClampInt( s_settings.sampleIndex, 0, g_sampleCount - 1 );
+        s_settings.sampleIndex = b2ClampInt( s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1 );
         s_selection = s_settings.sampleIndex;
 
         B2.g_shader.gl.ClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
@@ -328,7 +328,7 @@ public class SampleApp
 
     private void SortSamples()
     {
-        qsort( g_sampleEntries, g_sampleCount, sizeof( SampleEntry ), CompareSamples );
+        qsort( g_sampleEntries, SampleFactory.Shared.SampleCount, sizeof( SampleEntry ), CompareSamples );
     }
 
     private void RestartSample()
@@ -482,14 +482,14 @@ public class SampleApp
                     --s_selection;
                     if ( s_selection < 0 )
                     {
-                        s_selection = g_sampleCount - 1;
+                        s_selection = SampleFactory.Shared.SampleCount - 1;
                     }
                     break;
 
                 case Keys.RightBracket:
                     // Switch to next test
                     ++s_selection;
-                    if ( s_selection == g_sampleCount )
+                    if ( s_selection == SampleFactory.Shared.SampleCount )
                     {
                         s_selection = 0;
                     }
@@ -682,24 +682,24 @@ public class SampleApp
                 if ( ImGui.BeginTabItem( "Samples" ) )
                 {
                     int categoryIndex = 0;
-                    string category = g_sampleEntries[categoryIndex].category;
+                    string category = SampleFactory.Shared.GetCategory(categoryIndex);
                     int i = 0;
-                    while ( i < g_sampleCount )
+                    while ( i < SampleFactory.Shared.SampleCount )
                     {
-                        bool categorySelected = strcmp( category, g_sampleEntries[s_settings.sampleIndex].category ) == 0;
+                        bool categorySelected = strcmp( category, SampleFactory.Shared.GetCategory(s_settings.sampleIndex)) == 0;
                         ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags.Selected : 0;
                         bool nodeOpen = ImGui.TreeNodeEx( category, nodeFlags | nodeSelectionFlags );
 
                         if ( nodeOpen )
                         {
-                            while ( i < g_sampleCount && strcmp( category, g_sampleEntries[i].category ) == 0 )
+                            while ( i < SampleFactory.Shared.SampleCount && strcmp( category, SampleFactory.Shared.GetCategory(i)) == 0 )
                             {
                                 ImGuiTreeNodeFlags selectionFlags = 0;
                                 if ( s_settings.sampleIndex == i )
                                 {
                                     selectionFlags = ImGuiTreeNodeFlags.Selected;
                                 }
-                                ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s", g_sampleEntries[i].name );
+                                ImGui.TreeNodeEx( (void*)(intptr_t)i, leafNodeFlags | selectionFlags, "%s", SampleFactory.Shared.GetName(i) );
                                 if ( ImGui.IsItemClicked() )
                                 {
                                     s_selection = i;
@@ -710,15 +710,15 @@ public class SampleApp
                         }
                         else
                         {
-                            while ( i < g_sampleCount && strcmp( category, g_sampleEntries[i].category ) == 0 )
+                            while ( i < SampleFactory.Shared.SampleCount && strcmp( category, SampleFactory.Shared.GetCategory(i)) ) == 0 )
                             {
                                 ++i;
                             }
                         }
 
-                        if ( i < g_sampleCount )
+                        if ( i < SampleFactory.Shared.SampleCount )
                         {
-                            category = g_sampleEntries[i].category;
+                            category = SampleFactory.Shared.GetCategory(i);
                             categoryIndex = i;
                         }
                     }
