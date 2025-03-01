@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// Low level ray cast or shape-cast output data
-    public class B2CastOutput
+    public struct B2CastOutput
     {
         /// The surface normal at the hit point
         public B2Vec2 normal;
