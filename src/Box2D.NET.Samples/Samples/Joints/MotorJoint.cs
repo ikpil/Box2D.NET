@@ -77,7 +77,7 @@ public class MotorJoint : Sample
             jointDef.maxTorque = m_maxTorque;
             jointDef.correctionFactor = m_correctionFactor;
 
-            m_jointId = b2CreateMotorJoint(m_worldId, jointDef);
+            m_jointId = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
         m_go = true;

@@ -100,7 +100,7 @@ public class BreakableJoint : Sample
             jointDef.maxForce = 1000.0f;
             jointDef.maxTorque = 20.0f;
             jointDef.collideConnected = true;
-            m_jointIds[index] = b2CreateMotorJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

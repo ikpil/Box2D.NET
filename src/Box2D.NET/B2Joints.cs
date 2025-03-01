@@ -403,7 +403,7 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateMotorJoint(B2WorldId worldId, B2MotorJointDef def)
+        public static B2JointId b2CreateMotorJoint(B2WorldId worldId, ref B2MotorJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);

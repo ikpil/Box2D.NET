@@ -118,7 +118,7 @@ public class FixedRotation : Sample
             jointDef.linearOffset = position;
             jointDef.maxForce = 200.0f;
             jointDef.maxTorque = 20.0f;
-            m_jointIds[index] = b2CreateMotorJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;
