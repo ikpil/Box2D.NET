@@ -32,6 +32,11 @@ public class SampleApp
     private float s_windowScale = 1.0f;
     private float s_framebufferScale = 1.0f;
 
+    public SampleApp()
+    {
+        s_settings = new();
+    }
+
     public unsafe int Run()
     {
         // Install memory hooks
@@ -41,11 +46,13 @@ public class SampleApp
         s_settings.Load();
         s_settings.workerCount = b2MinInt(8, Environment.ProcessorCount / 2);
 
+        SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
 
         B2.g_glfw = Glfw.GetApi();
         B2.g_glfw.SetErrorCallback(glfwErrorCallback);
 
+        B2.g_camera = new Camera();
         B2.g_camera.m_width = s_settings.windowWidth;
         B2.g_camera.m_height = s_settings.windowHeight;
 

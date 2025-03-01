@@ -49,8 +49,6 @@ public static class Program
         InitializeWorkingDirectory();
         InitializeLogger();
 
-        Thread.Sleep(1);
-
         var app = new SampleApp();
         var status = app.Run();
 
