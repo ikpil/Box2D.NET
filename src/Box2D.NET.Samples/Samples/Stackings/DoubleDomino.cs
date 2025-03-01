@@ -12,9 +12,9 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class DoubleDomino : Sample
 {
-    static int sampleDoubleDomino = RegisterSample("Stacking", "Double Domino", Create);
+    private static readonly int SampleDoubleDomino = SampleFactory.Shared.RegisterSample("Stacking", "Double Domino", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new DoubleDomino(settings);
     }

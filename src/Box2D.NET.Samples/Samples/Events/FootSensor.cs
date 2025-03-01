@@ -31,9 +31,9 @@ public class FootSensor : Sample
     List<B2ShapeId> m_overlaps;
     int m_overlapCount;
 
-    static int sampleCharacterSensor = RegisterSample("Events", "Foot Sensor", Create);
+    private static readonly int SampleCharacterSensor = SampleFactory.Shared.RegisterSample("Events", "Foot Sensor", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new FootSensor(settings);
     }

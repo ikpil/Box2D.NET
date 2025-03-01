@@ -19,9 +19,9 @@ public class CustomFilter : Sample
 
     B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
-    static int sampleCustomFilter = RegisterSample("Shapes", "Custom Filter", Create);
+    private static readonly int SampleCustomFilter = SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new CustomFilter(settings);
     }

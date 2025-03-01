@@ -15,9 +15,9 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This is more specific than filters. It also shows that sleeping is coupled by the null joint.
 public class NullJoint : Sample
 {
-    static int sampleNullJoint = RegisterSample("Joints", "Null Joint", Create);
+    private static readonly int SampleNullJoint = SampleFactory.Shared.RegisterSample("Joints", "Null Joint", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new NullJoint(settings);
     }

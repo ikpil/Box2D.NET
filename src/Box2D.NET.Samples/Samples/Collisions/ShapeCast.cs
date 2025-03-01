@@ -27,9 +27,9 @@ public class ShapeCast : Sample
     B2Vec2 m_translationB;
     bool m_rayDrag;
 
-    static int sampleShapeCast = RegisterSample("Collision", "Shape Cast", Create);
+    private static readonly int SampleShapeCast = SampleFactory.Shared.RegisterSample("Collision", "Shape Cast", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ShapeCast(settings);
     }
@@ -137,7 +137,7 @@ public class ShapeCast : Sample
     }
 
 
-    public override void MouseDown(B2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
     {
         if (button == (int)MouseButton.Left)
         {

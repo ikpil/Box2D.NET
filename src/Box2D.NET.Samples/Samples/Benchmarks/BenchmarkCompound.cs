@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkCompound : Sample
 {
-    static int sampleCompound = RegisterSample("Benchmark", "Compound", Create);
+    private static readonly int SampleCompound = SampleFactory.Shared.RegisterSample("Benchmark", "Compound", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkCompound(settings);
     }

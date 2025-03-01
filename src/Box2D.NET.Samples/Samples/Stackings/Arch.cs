@@ -14,9 +14,9 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class Arch : Sample
 {
-    static int sampleArch = RegisterSample("Stacking", "Arch", Create);
+    private static readonly int SampleArch = SampleFactory.Shared.RegisterSample("Stacking", "Arch", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Arch(settings);
     }

@@ -16,12 +16,12 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class Cliff : Sample
 {
+    private static readonly int SampleCliff = SampleFactory.Shared.RegisterSample("Stacking", "Cliff", Create);
+    
     B2BodyId[] m_bodyIds = new B2BodyId[9];
     bool m_flip;
 
-    static int sampleCliff = RegisterSample("Stacking", "Cliff", Create);
-
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Cliff(settings);
     }

@@ -12,10 +12,11 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class SingleBox : Sample
 {
+    private static readonly int SampleSingleBox = SampleFactory.Shared.RegisterSample("Stacking", "Single Box", Create);
+    
     B2BodyId m_bodyId;
-    static int sampleSingleBox = RegisterSample("Stacking", "Single Box", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SingleBox(settings);
     }

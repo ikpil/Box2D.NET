@@ -30,9 +30,9 @@ public class MotorJoint : Sample
     float m_correctionFactor;
     bool m_go;
 
-    static int sampleMotorJoint = RegisterSample("Joints", "Motor Joint", Create);
+    private static readonly int SampleMotorJoint = SampleFactory.Shared.RegisterSample("Joints", "Motor Joint", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new MotorJoint(settings);
     }

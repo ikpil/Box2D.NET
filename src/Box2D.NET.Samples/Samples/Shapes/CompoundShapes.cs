@@ -25,9 +25,9 @@ public class CompoundShapes : Sample
     B2BodyId m_ship2Id;
     bool m_drawBodyAABBs;
 
-    static int sampleCompoundShape = RegisterSample("Shapes", "Compound Shapes", Create);
+    private static readonly int SampleCompoundShape = SampleFactory.Shared.RegisterSample("Shapes", "Compound Shapes", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new CompoundShapes(settings);
     }

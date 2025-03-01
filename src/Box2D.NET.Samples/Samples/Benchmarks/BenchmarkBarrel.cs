@@ -21,6 +21,8 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 // Note: resetting the scene is non-deterministic because the world uses freelists
 public class BenchmarkBarrel : Sample
 {
+    private static readonly int SampleBenchmarkBarrel = SampleFactory.Shared.RegisterSample("Benchmark", "Barrel", Create);
+    
     public enum ShapeType
     {
         e_circleShape = 0,
@@ -41,7 +43,6 @@ public class BenchmarkBarrel : Sample
 
     ShapeType m_shapeType;
 
-    private static int benchmarkBarrel = RegisterSample("Benchmark", "Barrel", Create);
 
     private static Sample Create(Settings settings)
     {

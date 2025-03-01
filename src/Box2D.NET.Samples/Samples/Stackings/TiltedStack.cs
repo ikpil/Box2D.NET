@@ -14,13 +14,14 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class TiltedStack : Sample
 {
+    private static readonly int SampleTiltedStack = SampleFactory.Shared.RegisterSample("Stacking", "Tilted Stack", Create);
+    
     public const int e_columns = 10;
     public const int e_rows = 10;
 
     B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
-    static int sampleTiltedStack = RegisterSample("Stacking", "Tilted Stack", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new TiltedStack(settings);
     }

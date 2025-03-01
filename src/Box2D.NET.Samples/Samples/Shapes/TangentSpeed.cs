@@ -14,9 +14,9 @@ public class TangentSpeed : Sample
     public const int m_totalCount = 200;
 
     int m_count = 0;
-    static int sampleTangentSpeed = RegisterSample("Shapes", "Tangent Speed", Create);
+    private static readonly int SampleTangentSpeed = SampleFactory.Shared.RegisterSample("Shapes", "Tangent Speed", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new TangentSpeed(settings);
     }

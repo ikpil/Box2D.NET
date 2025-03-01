@@ -23,9 +23,9 @@ public class Sleep : Sample
     B2ShapeId[] m_sensorIds = new B2ShapeId[2];
     bool[] m_sensorTouching = new bool[2];
 
-    static int sampleSleep = RegisterSample("Bodies", "Sleep", Create);
+    private static readonly int SampleSleep = SampleFactory.Shared.RegisterSample("Bodies", "Sleep", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Sleep(settings);
     }

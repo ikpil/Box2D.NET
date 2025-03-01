@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkKinematic : Sample
 {
-    static int sampleKinematic = RegisterSample("Benchmark", "Kinematic", Create);
+    private static readonly int SampleKinematic = SampleFactory.Shared.RegisterSample("Benchmark", "Kinematic", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkKinematic(settings);
     }

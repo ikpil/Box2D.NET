@@ -24,9 +24,9 @@ public class SensorBookend : Sample
     B2ShapeId m_visitorShapeId;
     bool m_isVisiting;
 
-    static int sampleSensorBookendEvent = RegisterSample("Events", "Sensor Bookend", Create);
+    private static readonly int SampleSensorBookendEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Bookend", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SensorBookend(settings);
     }

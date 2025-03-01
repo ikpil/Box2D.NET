@@ -22,9 +22,9 @@ public class Weeble : Sample
     float m_explosionRadius;
     float m_explosionMagnitude;
 
-    private static int sampleWeeble = RegisterSample("Bodies", "Weeble", Create);
+    private static readonly int SampleWeeble = SampleFactory.Shared.RegisterSample("Bodies", "Weeble", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Weeble(settings);
     }

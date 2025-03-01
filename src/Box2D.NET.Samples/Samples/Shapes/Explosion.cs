@@ -26,9 +26,9 @@ public class Explosion : Sample
     float m_impulse;
     float m_referenceAngle;
 
-    static int sampleExplosion = RegisterSample("Shapes", "Explosion", Create);
+    private static readonly int SampleExplosion = SampleFactory.Shared.RegisterSample("Shapes", "Explosion", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Explosion(settings);
     }

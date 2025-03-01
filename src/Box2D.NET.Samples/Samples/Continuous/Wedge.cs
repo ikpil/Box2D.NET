@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // This also shows a difficult setup for the solver with an acute angle.
 public class Wedge : Sample
 {
-    static int sampleWedge = RegisterSample("Continuous", "Wedge", Create);
+    private static readonly int SampleWedge = SampleFactory.Shared.RegisterSample("Continuous", "Wedge", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Wedge(settings);
     }

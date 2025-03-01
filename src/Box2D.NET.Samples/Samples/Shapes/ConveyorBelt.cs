@@ -12,9 +12,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class ConveyorBelt : Sample
 {
-    static int sampleConveyorBelt = RegisterSample("Shapes", "Conveyor Belt", Create);
+    private static readonly int SampleConveyorBelt = SampleFactory.Shared.RegisterSample("Shapes", "Conveyor Belt", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ConveyorBelt(settings);
     }

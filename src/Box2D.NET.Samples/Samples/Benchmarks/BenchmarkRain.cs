@@ -10,11 +10,11 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkRain : Sample
 {
-    static int benchmarkRain = RegisterSample("Benchmark", "Rain", Create);
+    private static readonly int SampleBenchmarkRain = SampleFactory.Shared.RegisterSample("Benchmark", "Rain", Create);
 
     private RainData m_rainData;
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkRain(settings);
     }

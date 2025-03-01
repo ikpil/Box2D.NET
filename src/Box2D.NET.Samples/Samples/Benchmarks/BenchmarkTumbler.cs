@@ -9,9 +9,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkTumbler : Sample
 {
-    static int benchmarkTumbler = RegisterSample("Benchmark", "Tumbler", Create);
+    private static readonly int SampleBenchmarkTumbler = SampleFactory.Shared.RegisterSample("Benchmark", "Tumbler", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkTumbler(settings);
     }

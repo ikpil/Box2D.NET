@@ -18,9 +18,9 @@ public class Pivot : Sample
     B2BodyId m_bodyId;
     float m_lever;
 
-    static int samplePivot = RegisterSample("Bodies", "Pivot", Create);
+    private static readonly int SamplePivot = SampleFactory.Shared.RegisterSample("Bodies", "Pivot", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Pivot(settings);
     }

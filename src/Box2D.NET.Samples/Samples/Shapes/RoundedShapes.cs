@@ -14,9 +14,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class RoundedShapes : Sample
 {
-    static int sampleRoundedShapes = RegisterSample("Shapes", "Rounded", Create);
+    private static readonly int SampleRoundedShapes = SampleFactory.Shared.RegisterSample("Shapes", "Rounded", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RoundedShapes(settings);
     }

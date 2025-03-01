@@ -37,9 +37,9 @@ public class ContactEvent : Sample
     float m_force;
     float m_wait;
 
-    static int sampleWeeble = RegisterSample("Events", "Contact", Create);
+    private static readonly int SampleWeeble = SampleFactory.Shared.RegisterSample("Events", "Contact", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ContactEvent(settings);
     }

@@ -30,9 +30,9 @@ public class SensorTypes : Sample
 
     List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
 
-    static int sampleSensorTypes = RegisterSample("Events", "Sensor Types", Create);
+    private static readonly int SampleSensorTypes = SampleFactory.Shared.RegisterSample("Events", "Sensor Types", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SensorTypes(settings);
     }

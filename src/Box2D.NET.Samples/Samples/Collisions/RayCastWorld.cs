@@ -66,9 +66,9 @@ public class RayCastWorld : Sample
     B2Vec2 m_rayEnd;
     bool m_dragging;
 
-    static int sampleRayCastWorld = RegisterSample("Collision", "Ray Cast World", Create);
+    private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RayCastWorld(settings);
     }
@@ -237,7 +237,7 @@ public class RayCastWorld : Sample
         }
     }
 
-    public override void MouseDown(B2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -247,7 +247,7 @@ public class RayCastWorld : Sample
                 m_rayEnd = p;
                 m_dragging = true;
             }
-            else if (0 != (mods & (uint)Keys.ShiftLeft) && m_dragging == false)
+            else if (0 != ((uint)mods & (uint)KeyModifiers.Shift) && m_dragging == false)
             {
                 m_rotating = true;
                 m_angleAnchor = p;

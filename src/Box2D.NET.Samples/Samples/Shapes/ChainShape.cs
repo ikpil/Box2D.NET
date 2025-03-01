@@ -32,9 +32,9 @@ public class ChainShape : Sample
     float m_restitution;
     float m_friction;
 
-    static int sampleChainShape = RegisterSample("Shapes", "Chain Shape", Create);
+    private static readonly int SampleChainShape = SampleFactory.Shared.RegisterSample("Shapes", "Chain Shape", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ChainShape(settings);
     }

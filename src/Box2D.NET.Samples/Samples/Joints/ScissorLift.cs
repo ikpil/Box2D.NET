@@ -22,9 +22,9 @@ public class ScissorLift : Sample
     float m_motorSpeed;
     bool m_enableMotor;
 
-    static int sampleScissorLift = RegisterSample("Joints", "Scissor Lift", Create);
+    private static readonly int SampleScissorLift = SampleFactory.Shared.RegisterSample("Joints", "Scissor Lift", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ScissorLift(settings);
     }

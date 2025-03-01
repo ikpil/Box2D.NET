@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // Shows how to link to chain shapes together. This is a useful technique for building large game levels with smooth collision.
 public class ChainLink : Sample
 {
-    static int sampleChainLink = RegisterSample("Shapes", "Chain Link", Create);
+    private static readonly int SampleChainLink = SampleFactory.Shared.RegisterSample("Shapes", "Chain Link", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ChainLink(settings);
     }

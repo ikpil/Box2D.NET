@@ -26,9 +26,9 @@ public class BreakableJoint : Sample
     B2JointId[] m_jointIds = new B2JointId[e_count];
     float m_breakForce;
 
-    static int sampleBreakableJoint = RegisterSample("Joints", "Breakable", Create);
+    private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Joints", "Breakable", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BreakableJoint(settings);
     }

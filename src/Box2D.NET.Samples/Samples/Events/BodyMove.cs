@@ -20,6 +20,8 @@ namespace Box2D.NET.Samples.Samples.Events;
 // This shows how to process body events.
 public class BodyMove : Sample
 {
+    private static readonly int SampleBodyMove = SampleFactory.Shared.RegisterSample("Events", "Body Move", Create);
+
     public const int e_count = 50;
 
     B2BodyId[] m_bodyIds = new B2BodyId[e_count];
@@ -30,9 +32,8 @@ public class BodyMove : Sample
     float m_explosionRadius;
     float m_explosionMagnitude;
 
-    static int sampleBodyMove = RegisterSample("Events", "Body Move", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BodyMove(settings);
     }

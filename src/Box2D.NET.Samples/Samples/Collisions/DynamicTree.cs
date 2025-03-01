@@ -22,6 +22,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 // can be used independently as a spatial data structure.
 public class DynamicTree : Sample
 {
+    private static readonly int SampleDynamicTree = SampleFactory.Shared.RegisterSample("Collision", "Dynamic Tree", Create);
+    
     B2DynamicTree m_tree;
     int m_rowCount, m_columnCount;
     Proxy[] m_proxies;
@@ -62,9 +64,8 @@ public class DynamicTree : Sample
         return input.maxFraction;
     }
 
-    static int sampleDynamicTree = RegisterSample("Collision", "Dynamic Tree", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new DynamicTree(settings);
     }
@@ -259,7 +260,7 @@ public class DynamicTree : Sample
         }
     }
 
-    public override void MouseDown(B2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -269,7 +270,7 @@ public class DynamicTree : Sample
                 m_startPoint = p;
                 m_endPoint = p;
             }
-            else if (0 != (mods & (uint)Keys.ShiftLeft) && m_rayDrag == false)
+            else if (0 != ((uint)mods & (uint)KeyModifiers.Shift) && m_rayDrag == false)
             {
                 m_queryDrag = true;
                 m_startPoint = p;

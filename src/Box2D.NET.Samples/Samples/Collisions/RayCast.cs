@@ -36,9 +36,9 @@ public class RayCast : Sample
     bool m_rotating;
     bool m_showFraction;
 
-    static int sampleIndex = RegisterSample("Collision", "Ray Cast", Create);
+    private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RayCast(settings);
     }
@@ -121,7 +121,7 @@ public class RayCast : Sample
         ImGui.End();
     }
 
-    public override void MouseDown(B2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -132,12 +132,12 @@ public class RayCast : Sample
                 m_rayStart = p;
                 m_rayDrag = true;
             }
-            else if (0 != (mods & (uint)Keys.ShiftLeft))
+            else if (0 != ((uint)mods & (uint)KeyModifiers.Shift))
             {
                 m_translating = true;
                 m_basePosition = m_transform.p;
             }
-            else if (0 != (mods & (uint)Keys.ControlLeft))
+            else if (0 != ((uint)mods & (uint)KeyModifiers.Control))
             {
                 m_rotating = true;
                 m_baseAngle = m_angle;

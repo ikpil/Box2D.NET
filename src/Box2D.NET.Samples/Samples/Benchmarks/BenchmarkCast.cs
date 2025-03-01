@@ -21,6 +21,8 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkCast : Sample
 {
+    private static readonly int SampleBenchmarkCast = SampleFactory.Shared.RegisterSample("Benchmark", "Cast", Create);
+    
     QueryType m_queryType;
 
     List<B2Vec2> m_origins = new List<B2Vec2>();
@@ -37,9 +39,8 @@ public class BenchmarkCast : Sample
     float m_grid;
     bool m_topDown;
 
-    static int sampleCast = RegisterSample("Benchmark", "Cast", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkCast(settings);
     }

@@ -9,9 +9,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkLargePyramid : Sample
 {
-    static int benchmarkLargePyramid = RegisterSample("Benchmark", "Large Pyramid", Create);
+    private static readonly int SampleBenchmarkLargePyramid = SampleFactory.Shared.RegisterSample("Benchmark", "Large Pyramid", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkLargePyramid(settings);
     }

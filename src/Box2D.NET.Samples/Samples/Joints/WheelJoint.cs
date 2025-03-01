@@ -25,9 +25,9 @@ public class WheelJoint : Sample
     bool m_enableMotor;
     bool m_enableLimit;
 
-    static int sampleWheel = RegisterSample("Joints", "Wheel", Create);
+    private static readonly int SampleWheel = SampleFactory.Shared.RegisterSample("Joints", "Wheel", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new WheelJoint(settings);
     }

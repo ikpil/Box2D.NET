@@ -19,9 +19,9 @@ public class Ragdoll : Sample
     float m_jointFrictionTorque;
     float m_jointHertz;
     float m_jointDampingRatio;
-    static int sampleRagdoll = RegisterSample("Joints", "Ragdoll", Create);
+    private static readonly int SampleRagdoll = SampleFactory.Shared.RegisterSample("Joints", "Ragdoll", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Ragdoll(settings);
     }

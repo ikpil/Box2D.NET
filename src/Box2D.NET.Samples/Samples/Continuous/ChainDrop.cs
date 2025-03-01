@@ -20,9 +20,9 @@ public class ChainDrop : Sample
     float m_yOffset;
     float m_speed;
 
-    static int sampleChainDrop = RegisterSample("Continuous", "Chain Drop", Create);
+    private static readonly int SampleChainDrop = SampleFactory.Shared.RegisterSample("Continuous", "Chain Drop", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ChainDrop(settings);
     }

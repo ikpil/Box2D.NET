@@ -23,9 +23,9 @@ public class Pinball : Sample
     B2JointId m_rightJointId;
     B2BodyId m_ballId;
 
-    static int samplePinball = RegisterSample("Continuous", "Pinball", Create);
+    private static readonly int SamplePinball = SampleFactory.Shared.RegisterSample("Continuous", "Pinball", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Pinball(settings);
     }

@@ -35,9 +35,9 @@ public class LargeWorld : Sample
     bool m_explode;
     bool m_followCar;
 
-    static int sampleLargeWorld = RegisterSample("World", "Large World", Create);
+    private static readonly int SampleLargeWorld = SampleFactory.Shared.RegisterSample("World", "Large World", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new LargeWorld(settings);
     }

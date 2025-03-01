@@ -16,9 +16,9 @@ public class UserConstraint : Sample
 {
     B2BodyId m_bodyId;
     float[] m_impulses = new float[2];
-    static int sampleUserConstraintIndex = RegisterSample("Joints", "User Constraint", Create);
+    private static readonly int SampleUserConstraintIndex = SampleFactory.Shared.RegisterSample("Joints", "User Constraint", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new UserConstraint(settings);
     }

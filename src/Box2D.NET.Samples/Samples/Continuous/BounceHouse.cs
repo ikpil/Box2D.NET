@@ -17,6 +17,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class BounceHouse : Sample
 {
+    private static readonly int SampleBounceHouse = SampleFactory.Shared.RegisterSample("Continuous", "Bounce House", Create);
+    
     public enum ShapeType
     {
         e_circleShape = 0,
@@ -29,9 +31,8 @@ public class BounceHouse : Sample
     B2BodyId m_bodyId;
     ShapeType m_shapeType;
     bool m_enableHitEvents;
-    static int sampleBounceHouse = RegisterSample("Continuous", "Bounce House", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BounceHouse(settings);
     }

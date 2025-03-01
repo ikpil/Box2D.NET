@@ -24,9 +24,9 @@ public class SkinnyBox : Sample
     bool m_autoTest;
     bool m_bullet;
 
-    static int sampleSkinnyBox = RegisterSample("Continuous", "Skinny Box", Create);
+    private static readonly int SampleSkinnyBox = SampleFactory.Shared.RegisterSample("Continuous", "Skinny Box", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SkinnyBox(settings);
     }

@@ -25,33 +25,14 @@ namespace Box2D.NET.Samples.Samples;
 
 public class Sample : IDisposable
 {
+    public const int k_maxContactPoints = 12 * 2048;
+    public const int m_maxTasks = 64;
+    public const int m_maxThreads = 64;
 #if NDEBUG
     public const bool g_sampleDebug = false;
 #else
     public const bool g_sampleDebug = true;
 #endif
-    public const int k_maxContactPoints = 12 * 2048;
-
-    public const int MAX_SAMPLES = 256;
-    public static SampleEntry[] g_sampleEntries = new SampleEntry[MAX_SAMPLES];
-    public static int g_sampleCount = 0;
-
-    public static int RegisterSample(string category, string name, SampleCreateFcn fcn)
-    {
-        int index = g_sampleCount;
-        if (index < MAX_SAMPLES)
-        {
-            g_sampleEntries[index] = new SampleEntry(category, name, fcn);
-            ++g_sampleCount;
-            return index;
-        }
-
-        return -1;
-    }
-
-    // -----------------------------------------------------------------------------------------------------
-    public const int m_maxTasks = 64;
-    public const int m_maxThreads = 64;
 
     public Settings m_settings;
     public TaskScheduler m_scheduler;
@@ -229,7 +210,7 @@ public class Sample : IDisposable
     {
     }
 
-    public virtual void MouseDown(B2Vec2 p, int button, int mod)
+    public virtual void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mod)
     {
         if (B2_IS_NON_NULL(m_mouseJointId))
         {

@@ -20,9 +20,9 @@ public class ConvexHull : Sample
     int m_generation;
     bool m_auto;
     bool m_bulk;
-    static int sampleIndex = RegisterSample("Geometry", "Convex Hull", Create);
+    private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Geometry", "Convex Hull", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ConvexHull(settings);
     }

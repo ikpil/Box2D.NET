@@ -26,9 +26,9 @@ public class Drop : Sample
     bool m_continuous;
     bool m_speculative;
 
-    static int sampleDrop = RegisterSample("Continuous", "Drop", Create);
+    private static readonly int SampleDrop = SampleFactory.Shared.RegisterSample("Continuous", "Drop", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Drop(settings);
     }

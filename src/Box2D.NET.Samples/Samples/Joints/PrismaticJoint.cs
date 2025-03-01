@@ -25,9 +25,9 @@ public class PrismaticJoint : Sample
     bool m_enableSpring;
     bool m_enableMotor;
     bool m_enableLimit;
-    static int samplePrismatic = RegisterSample("Joints", "Prismatic", Create);
+    private static readonly int SamplePrismatic = SampleFactory.Shared.RegisterSample("Joints", "Prismatic", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new PrismaticJoint(settings);
     }

@@ -11,7 +11,6 @@ using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
-using Silk.NET.OpenGL.Extensions.ImGui;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Worlds;
@@ -21,16 +20,18 @@ using ErrorCode = Silk.NET.GLFW.ErrorCode;
 
 namespace Box2D.NET.Samples;
 
+
 public class SampleApp
 {
+    // -----------------------------------------------------------------------------------------------------
     private unsafe WindowHandle* g_mainWindow;
-    static int s_selection = 0;
-    static Sample s_sample = null;
-    static Settings s_settings;
-    static bool s_rightMouseDown = false;
-    static B2Vec2 s_clickPointWS = b2Vec2_zero;
-    static float s_windowScale = 1.0f;
-    static float s_framebufferScale = 1.0f;
+    private int s_selection = 0;
+    private Sample s_sample = null;
+    private Settings s_settings;
+    private bool s_rightMouseDown = false;
+    private B2Vec2 s_clickPointWS = b2Vec2_zero;
+    private float s_windowScale = 1.0f;
+    private float s_framebufferScale = 1.0f;
 
     public unsafe int Run()
     {
@@ -141,12 +142,12 @@ public class SampleApp
         {
             double time1 = B2.g_glfw.GetTime();
 
-            if ( GetKey(GLFW_KEY_Z ) == InputAction.Press )
+            if ( GetKey(Keys.Z ) == InputAction.Press )
             {
                 // Zoom out
                 B2.g_camera.m_zoom = b2MinFloat( 1.005f * B2.g_camera.m_zoom, 100.0f );
             }
-            else if ( GetKey( GLFW_KEY_X ) == InputAction.Press )
+            else if ( GetKey( Keys.X ) == InputAction.Press )
             {
                 // Zoom in
                 B2.g_camera.m_zoom = b2MaxFloat( 0.995f * B2.g_camera.m_zoom, 0.5f );
@@ -186,10 +187,10 @@ public class SampleApp
             ImGui.Begin( "Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar );
             ImGui.End();
 
-            if ( s_sample == nullptr )
+            if ( s_sample == null )
             {
                 // delayed creation because imgui doesn't create fonts until NewFrame() is called
-                s_sample = g_sampleEntries[s_settings.sampleIndex].createFcn( s_settings );
+                s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
             }
 
             if ( B2.g_draw.m_showUI )
@@ -258,8 +259,7 @@ public class SampleApp
             frameTime = (float)( time2 - time1 );
         }
 
-        delete s_sample;
-        s_sample = nullptr;
+        s_sample = null;
 
         B2.g_draw.Destroy();
 
@@ -333,10 +333,9 @@ public class SampleApp
 
     private void RestartSample()
     {
-        delete s_sample;
-        s_sample = nullptr;
+        s_sample = null;
         s_settings.restart = true;
-        s_sample = g_sampleEntries[s_settings.sampleIndex].createFcn( s_settings );
+        s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex,  s_settings);
         s_settings.restart = false;
     }
 
@@ -509,12 +508,12 @@ public class SampleApp
         }
     }
 
-    unsafe void CharCallback( WindowHandle* window, unsigned int c )
+    private unsafe void CharCallback( WindowHandle* window, uint c )
     {
         ImGui_ImplGlfw_CharCallback( window, c );
     }
 
-    unsafe void MouseButtonCallback( WindowHandle* window, int button, int action, int mods )
+    private unsafe void MouseButtonCallback( WindowHandle* window, MouseButton button, InputAction action, KeyModifiers mods )
     {
         ImGui_ImplGlfw_MouseButtonCallback( window, button, action, mods );
 
@@ -524,8 +523,8 @@ public class SampleApp
         }
 
         double xd, yd;
-        B2.g_glfw.GetCursorPos( g_mainWindow, &xd, &yd );
-        B2Vec2 ps = { float( xd ) / s_windowScale, float( yd ) / s_windowScale };
+        B2.g_glfw.GetCursorPos( g_mainWindow, out xd, out yd );
+        B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         // Use the mouse to move things around.
         if ( button == (int)MouseButton.Left )
@@ -536,7 +535,7 @@ public class SampleApp
                 s_sample.MouseDown( pw, button, mods );
             }
 
-            if ( action == GLFW_RELEASE )
+            if ( action == InputAction.Release )
             {
                 s_sample.MouseUp( pw, button );
             }

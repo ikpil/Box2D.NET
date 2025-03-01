@@ -30,9 +30,9 @@ public class Platformer : Sample
     B2ShapeId m_playerShapeId;
     B2BodyId m_movingPlatformId;
 
-    static int samplePlatformer = RegisterSample("Events", "Platformer", Create);
+    private static readonly int SamplePlatformer = SampleFactory.Shared.RegisterSample("Events", "Platformer", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Platformer(settings);
     }

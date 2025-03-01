@@ -28,9 +28,9 @@ public class RevoluteJoint : Sample
     bool m_enableSpring;
     bool m_enableMotor;
     bool m_enableLimit;
-    static int sampleRevolute = RegisterSample("Joints", "Revolute", Create);
+    private static readonly int SampleRevolute = SampleFactory.Shared.RegisterSample("Joints", "Revolute", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RevoluteJoint(settings);
     }

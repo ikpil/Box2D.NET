@@ -18,6 +18,7 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 // todo try removing kinematics from graph coloring
 public class BenchmarkManyTumblers : Sample
 {
+    private static readonly int SampleBenchmarkManyTumblers = SampleFactory.Shared.RegisterSample("Benchmark", "Many Tumblers", Create);
     B2BodyId m_groundId;
 
     int m_rowCount;
@@ -32,9 +33,8 @@ public class BenchmarkManyTumblers : Sample
     int m_bodyIndex;
 
     float m_angularSpeed;
-    static int benchmarkManyTumblers = RegisterSample("Benchmark", "Many Tumblers", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkManyTumblers(settings);
     }

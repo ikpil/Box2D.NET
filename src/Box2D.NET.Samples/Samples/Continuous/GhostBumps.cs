@@ -35,9 +35,9 @@ public class GhostBumps : Sample
     float m_bevel;
     bool m_useChain;
 
-    static int sampleGhostCollision = RegisterSample("Continuous", "Ghost Bumps", Create);
+    private static readonly int SampleGhostCollision = SampleFactory.Shared.RegisterSample("Continuous", "Ghost Bumps", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new GhostBumps(settings);
     }

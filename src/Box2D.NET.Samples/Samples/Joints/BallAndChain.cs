@@ -23,9 +23,9 @@ public class BallAndChain : Sample
     B2JointId[] m_jointIds = new B2JointId[e_count + 1];
     float m_frictionTorque;
 
-    static int sampleBallAndChainIndex = RegisterSample("Joints", "Ball & Chain", Create);
+    private static readonly int SampleBallAndChainIndex = SampleFactory.Shared.RegisterSample("Joints", "Ball & Chain", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BallAndChain(settings);
     }

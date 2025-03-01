@@ -26,9 +26,9 @@ public class FixedRotation : Sample
     B2JointId[] m_jointIds = new B2JointId[e_count];
     bool m_fixedRotation;
 
-    static int sampleFixedRotation = RegisterSample("Joints", "Fixed Rotation", Create);
+    private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new FixedRotation(settings);
     }

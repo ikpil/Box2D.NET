@@ -9,9 +9,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkSmash : Sample
 {
-    static int sampleSmash = RegisterSample("Benchmark", "Smash", Create);
+    private static readonly int SampleBenchmarkSmash = SampleFactory.Shared.RegisterSample("Benchmark", "Smash", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkSmash(settings);
     }

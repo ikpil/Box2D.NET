@@ -9,9 +9,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkJointGrid : Sample
 {
-    static int benchmarkJointGridIndex = RegisterSample("Benchmark", "Joint Grid", Create);
+    private static readonly int BenchmarkJointGridIndex = SampleFactory.Shared.RegisterSample("Benchmark", "Joint Grid", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkJointGrid(settings);
     }

@@ -24,9 +24,9 @@ public class OverlapRecovery : Sample
     float m_pushout;
     float m_hertz;
     float m_dampingRatio;
-    static int sampleIndex4 = RegisterSample("Robustness", "Overlap Recovery", Create);
+    private static readonly int SampleIndex4 = SampleFactory.Shared.RegisterSample("Robustness", "Overlap Recovery", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new OverlapRecovery(settings);
     }

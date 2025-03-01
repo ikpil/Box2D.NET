@@ -11,6 +11,8 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class Confined : Sample
 {
+    private static readonly int SampleConfined = SampleFactory.Shared.RegisterSample("Stacking", "Confined", Create);
+    
     public const int e_gridCount = 25;
     public const int e_maxCount = e_gridCount * e_gridCount;
 
@@ -18,9 +20,8 @@ public class Confined : Sample
     int m_column;
     int m_count;
 
-    static int sampleConfined = RegisterSample("Stacking", "Confined", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Confined(settings);
     }

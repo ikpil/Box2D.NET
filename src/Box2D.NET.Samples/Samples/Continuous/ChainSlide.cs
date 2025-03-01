@@ -12,9 +12,9 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class ChainSlide : Sample
 {
-    static int sampleChainSlide = RegisterSample("Continuous", "Chain Slide", Create);
+    private static readonly int SampleChainSlide = SampleFactory.Shared.RegisterSample("Continuous", "Chain Slide", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ChainSlide(settings);
     }

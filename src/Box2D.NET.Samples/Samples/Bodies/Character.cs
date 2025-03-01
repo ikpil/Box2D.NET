@@ -16,7 +16,7 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 /// Instead this is used to test smooth collision on chain shapes.
 public class Character : Sample
 {
-    private static int sampleCharacter = RegisterSample("Bodies", "Character", Create);
+    private static readonly int SampleCharacter = SampleFactory.Shared.RegisterSample("Bodies", "Character", Create);
 
     B2BodyId m_circleCharacterId;
     B2BodyId m_capsuleCharacterId;

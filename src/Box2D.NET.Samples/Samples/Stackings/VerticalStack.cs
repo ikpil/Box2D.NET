@@ -18,6 +18,8 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class VerticalStack : Sample
 {
+    private static readonly int SampleVerticalStack = SampleFactory.Shared.RegisterSample("Stacking", "Vertical Stack", Create);
+    
     public const int e_maxColumns = 10;
     public const int e_maxRows = 15;
     public const int e_maxBullets = 8;
@@ -36,9 +38,8 @@ public class VerticalStack : Sample
     ShapeType m_shapeType;
     ShapeType m_bulletType;
 
-    static int sampleVerticalStack = RegisterSample("Stacking", "Vertical Stack", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new VerticalStack(settings);
     }

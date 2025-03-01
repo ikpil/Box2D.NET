@@ -15,9 +15,9 @@ public class BadBody : Sample
 {
     B2BodyId m_badBodyId;
 
-    static int sampleBadBody = RegisterSample("Bodies", "Bad", Create);
+    private static readonly int SampleBadBody = SampleFactory.Shared.RegisterSample("Bodies", "Bad", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BadBody(settings);
     }

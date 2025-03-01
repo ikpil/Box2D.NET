@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class Friction : Sample
 {
-    static int sampleFriction = RegisterSample("Shapes", "Friction", Create);
+    private static readonly int SampleFriction = SampleFactory.Shared.RegisterSample("Shapes", "Friction", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Friction(settings);
     }

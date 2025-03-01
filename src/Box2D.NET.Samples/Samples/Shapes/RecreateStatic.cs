@@ -15,9 +15,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 public class RecreateStatic : Sample
 {
     B2BodyId m_groundId;
-    static int sampleSingleBox = RegisterSample("Shapes", "Recreate Static", Create);
+    private static readonly int SampleSingleBox = SampleFactory.Shared.RegisterSample("Shapes", "Recreate Static", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RecreateStatic(settings);
     }

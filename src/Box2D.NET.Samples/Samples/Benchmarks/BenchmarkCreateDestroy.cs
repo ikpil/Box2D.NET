@@ -16,6 +16,8 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkCreateDestroy : Sample
 {
+    private static readonly int BenchmarkCreateDestroy_ = SampleFactory.Shared.RegisterSample("Benchmark", "CreateDestroy", Create);
+    
     public const int e_maxBaseCount = 100;
     public const int e_maxBodyCount = e_maxBaseCount * (e_maxBaseCount + 1) / 2;
 
@@ -26,9 +28,8 @@ public class BenchmarkCreateDestroy : Sample
     int m_baseCount;
     int m_iterations;
 
-    static int benchmarkCreateDestroy = RegisterSample("Benchmark", "CreateDestroy", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkCreateDestroy(settings);
     }

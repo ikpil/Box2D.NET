@@ -35,9 +35,9 @@ public class FallingHinges : Sample
     B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
     uint m_hash;
     int m_sleepStep;
-    static int sampleFallingHinges = RegisterSample("Determinism", "Falling Hinges", Create);
+    private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new FallingHinges(settings);
     }

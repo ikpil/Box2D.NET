@@ -27,9 +27,9 @@ public class Bridge : Sample
     B2JointId[] m_jointIds = new B2JointId[e_count + 1];
     float m_frictionTorque;
     float m_gravityScale;
-    static int sampleBridgeIndex = RegisterSample("Joints", "Bridge", Create);
+    private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Bridge(settings);
     }

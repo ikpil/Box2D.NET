@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class OffsetShapes : Sample
 {
-    static int sampleOffsetShapes = RegisterSample("Shapes", "Offset", Create);
+    private static readonly int SampleOffsetShapes = SampleFactory.Shared.RegisterSample("Shapes", "Offset", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new OffsetShapes(settings);
     }

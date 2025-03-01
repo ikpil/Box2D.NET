@@ -10,9 +10,9 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkSpinner : Sample
 {
-    static int sampleSpinner = RegisterSample("Benchmark", "Spinner", Create);
+    private static readonly int SampleBenchmarkSpinner = SampleFactory.Shared.RegisterSample("Benchmark", "Spinner", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkSpinner(settings);
     }

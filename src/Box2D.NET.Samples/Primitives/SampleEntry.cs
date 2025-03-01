@@ -8,7 +8,7 @@ namespace Box2D.NET.Samples.Primitives;
 
 public delegate Sample SampleCreateFcn(Settings settings);
 
-public readonly struct SampleEntry
+public class SampleEntry
 {
     public readonly string category;
     public readonly string name;

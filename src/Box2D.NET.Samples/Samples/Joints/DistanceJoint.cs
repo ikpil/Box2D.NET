@@ -30,9 +30,9 @@ public class DistanceJoint : Sample
     float m_maxLength;
     bool m_enableSpring;
     bool m_enableLimit;
-    static int sampleDistanceJoint = RegisterSample("Joints", "Distance Joint", Create);
+    private static readonly int SampleDistanceJoint = SampleFactory.Shared.RegisterSample("Joints", "Distance Joint", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new DistanceJoint(settings);
     }

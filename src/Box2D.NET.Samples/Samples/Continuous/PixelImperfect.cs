@@ -15,9 +15,9 @@ public class PixelImperfect : Sample
 {
     B2BodyId m_ballId;
 
-    static int samplePixelImperfect = RegisterSample("Continuous", "Pixel Imperfect", Create);
+    private static readonly int SamplePixelImperfect = SampleFactory.Shared.RegisterSample("Continuous", "Pixel Imperfect", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new PixelImperfect(settings);
     }

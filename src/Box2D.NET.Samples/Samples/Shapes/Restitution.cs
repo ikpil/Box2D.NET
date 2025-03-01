@@ -28,9 +28,9 @@ public class Restitution : Sample
     B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     ShapeType m_shapeType;
 
-    static int sampleIndex = RegisterSample("Shapes", "Restitution", Create);
+    private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Shapes", "Restitution", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Restitution(settings);
     }

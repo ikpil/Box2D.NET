@@ -14,9 +14,9 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // This shows that while Box2D uses speculative collision, it does not lead to speculative ghost collisions at small distances
 public class SpeculativeGhost : Sample
 {
-    static int sampleSpeculativeGhost = RegisterSample("Continuous", "Speculative Ghost", Create);
+    private static readonly int SampleSpeculativeGhost = SampleFactory.Shared.RegisterSample("Continuous", "Speculative Ghost", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SpeculativeGhost(settings);
     }

@@ -15,9 +15,9 @@ public class RollingResistance : Sample
 {
     float m_resistScale;
     float m_lift;
-    static int sampleRollingResistance = RegisterSample("Shapes", "Rolling Resistance", Create);
+    private static readonly int SampleRollingResistance = SampleFactory.Shared.RegisterSample("Shapes", "Rolling Resistance", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RollingResistance(settings);
     }

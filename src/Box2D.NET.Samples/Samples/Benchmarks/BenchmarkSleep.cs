@@ -15,6 +15,8 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkSleep : Sample
 {
+    private static readonly int SampleBenchmarkSleep = SampleFactory.Shared.RegisterSample("Benchmark", "Sleep", Create);
+    
     public const int e_maxBaseCount = 100;
     public const int e_maxBodyCount = e_maxBaseCount * (e_maxBaseCount + 1) / 2;
 
@@ -28,9 +30,8 @@ public class BenchmarkSleep : Sample
     int m_sleepCount;
     bool m_awake;
 
-    static int benchmarkSleep = RegisterSample("Benchmark", "Sleep", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BenchmarkSleep(settings);
     }

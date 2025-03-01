@@ -29,9 +29,9 @@ public class ShapeFilter : Sample
     B2ShapeId m_shape2Id;
     B2ShapeId m_shape3Id;
 
-    static int sampleShapeFilter = RegisterSample("Shapes", "Filter", Create);
+    private static readonly int SampleShapeFilter = SampleFactory.Shared.RegisterSample("Shapes", "Filter", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ShapeFilter(settings);
     }

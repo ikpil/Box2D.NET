@@ -27,7 +27,7 @@ public class BodyType : Sample
     float m_speed;
     bool m_isEnabled;
 
-    private static int sampleBodyType = RegisterSample("Bodies", "Body Type", BodyType.Create);
+    private static readonly int SampleBodyType = SampleFactory.Shared.RegisterSample("Bodies", "Body Type", BodyType.Create);
 
     private static Sample Create(Settings settings)
     {

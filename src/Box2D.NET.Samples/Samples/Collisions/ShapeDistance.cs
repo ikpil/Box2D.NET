@@ -49,9 +49,9 @@ public class ShapeDistance : Sample
     bool m_useCache;
     bool m_drawSimplex;
 
-    static int sampleShapeDistance = RegisterSample("Collision", "Shape Distance", Create);
+    private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ShapeDistance(settings);
     }
@@ -262,7 +262,7 @@ public class ShapeDistance : Sample
         ImGui.End();
     }
 
-    public override void MouseDown(B2Vec2 p, int button, int mods)
+    public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
     {
         if (button == (int)MouseButton.Left)
         {
@@ -272,7 +272,7 @@ public class ShapeDistance : Sample
                 m_startPoint = p;
                 m_basePosition = m_transform.p;
             }
-            else if (0 != (mods & (uint)Keys.ShiftLeft) && m_dragging == false)
+            else if (0 != ((uint)mods & (uint)KeyModifiers.Shift) && m_dragging == false)
             {
                 m_rotating = true;
                 m_startPoint = p;

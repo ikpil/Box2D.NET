@@ -30,9 +30,9 @@ public class Cantilever : Sample
     B2JointId[] m_jointIds = new B2JointId[e_count];
     bool m_collideConnected;
 
-    static int sampleCantileverIndex = RegisterSample("Joints", "Cantilever", Create);
+    private static readonly int SampleCantileverIndex = SampleFactory.Shared.RegisterSample("Joints", "Cantilever", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Cantilever(settings);
     }

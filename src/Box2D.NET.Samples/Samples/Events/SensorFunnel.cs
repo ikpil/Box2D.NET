@@ -35,9 +35,9 @@ public class SensorFunnel : Sample
     float m_wait;
     float m_side;
 
-    static int sampleSensorBeginEvent = RegisterSample("Events", "Sensor Funnel", Create);
+    private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SensorFunnel(settings);
     }

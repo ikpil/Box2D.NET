@@ -66,9 +66,9 @@ public class ModifyGeometry : Sample
     }
     //}
 
-    static int sampleModifyGeometry = RegisterSample("Shapes", "Modify Geometry", Create);
+    private static readonly int SampleModifyGeometry = SampleFactory.Shared.RegisterSample("Shapes", "Modify Geometry", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new ModifyGeometry(settings);
     }

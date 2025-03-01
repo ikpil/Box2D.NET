@@ -28,9 +28,9 @@ public class Driving : Sample
     float m_torque;
     float m_speed;
 
-    static int sampleDriving = RegisterSample("Joints", "Driving", Create);
+    private static readonly int SampleDriving = SampleFactory.Shared.RegisterSample("Joints", "Driving", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new Driving(settings);
     }

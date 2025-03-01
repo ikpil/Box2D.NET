@@ -20,9 +20,9 @@ public class BounceHumans : Sample
     float m_countDown = 0.0f;
     float m_time = 0.0f;
 
-    static int sampleBounceHumans = RegisterSample("Continuous", "Bounce Humans", Create);
+    private static readonly int SampleBounceHumans = SampleFactory.Shared.RegisterSample("Continuous", "Bounce Humans", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new BounceHumans(settings);
     }

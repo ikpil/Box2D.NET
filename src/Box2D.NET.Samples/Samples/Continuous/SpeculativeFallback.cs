@@ -16,9 +16,9 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // a simple fallback scheme to prevent tunneling.
 public class SpeculativeFallback : Sample
 {
-    static int sampleSpeculativeFallback = RegisterSample("Continuous", "Speculative Fallback", Create);
+    private static readonly int SampleSpeculativeFallback = SampleFactory.Shared.RegisterSample("Continuous", "Speculative Fallback", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new SpeculativeFallback(settings);
     }

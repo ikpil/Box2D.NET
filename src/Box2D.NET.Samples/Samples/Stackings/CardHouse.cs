@@ -14,9 +14,9 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 // From PEEL
 public class CardHouse : Sample
 {
-    static int sampleCardHouse = RegisterSample("Stacking", "Card House", Create);
+    private static readonly int SampleCardHouse = SampleFactory.Shared.RegisterSample("Stacking", "Card House", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new CardHouse(settings);
     }

@@ -16,9 +16,9 @@ public class RestitutionThreshold : Sample
 {
     B2BodyId m_ballId;
 
-    static int sampleRestitutionThreshold = RegisterSample("Continuous", "Restitution Threshold", Create);
+    private static readonly int SampleRestitutionThreshold = SampleFactory.Shared.RegisterSample("Continuous", "Restitution Threshold", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new RestitutionThreshold(settings);
     }

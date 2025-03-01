@@ -14,10 +14,10 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 // A simple circle stack that also shows how to collect hit events
 public class CircleStack : Sample
 {
+    private static readonly int SampleCircleStack = SampleFactory.Shared.RegisterSample("Stacking", "Circle Stack", Create);
     List<Event> m_events;
-    static int sampleCircleStack = RegisterSample("Stacking", "Circle Stack", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new CircleStack(settings);
     }

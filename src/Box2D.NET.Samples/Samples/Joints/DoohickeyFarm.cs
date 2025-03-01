@@ -13,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class DoohickeyFarm : Sample
 {
-    static int sampleDoohickey = RegisterSample("Joints", "Doohickey", Create);
+    private static readonly int SampleDoohickey = SampleFactory.Shared.RegisterSample("Joints", "Doohickey", Create);
 
-    static Sample Create(Settings settings)
+    private static Sample Create(Settings settings)
     {
         return new DoohickeyFarm(settings);
     }
