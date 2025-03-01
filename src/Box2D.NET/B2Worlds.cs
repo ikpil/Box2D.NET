@@ -280,17 +280,17 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorldFromId(worldId);
 
-            b2DestroyBitSet(world.debugBodySet);
-            b2DestroyBitSet(world.debugJointSet);
-            b2DestroyBitSet(world.debugContactSet);
+            b2DestroyBitSet(ref world.debugBodySet);
+            b2DestroyBitSet(ref world.debugJointSet);
+            b2DestroyBitSet(ref world.debugContactSet);
 
             for (int i = 0; i < world.workerCount; ++i)
             {
-                b2DestroyBitSet(world.taskContexts.data[i].contactStateBitSet);
-                b2DestroyBitSet(world.taskContexts.data[i].enlargedSimBitSet);
-                b2DestroyBitSet(world.taskContexts.data[i].awakeIslandBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].awakeIslandBitSet);
 
-                b2DestroyBitSet(world.sensorTaskContexts.data[i].eventBits);
+                b2DestroyBitSet(ref world.sensorTaskContexts.data[i].eventBits);
             }
 
             b2Array_Destroy(ref world.taskContexts);
@@ -398,7 +398,7 @@ namespace Box2D.NET
                 {
                     contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simDisjoint;
                     contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simTouchingFlag;
-                    b2SetBit(taskContext.contactStateBitSet, contactId);
+                    b2SetBit(ref taskContext.contactStateBitSet, contactId);
                 }
                 else
                 {
@@ -433,12 +433,12 @@ namespace Box2D.NET
                     if (touching == true && wasTouching == false)
                     {
                         contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStartedTouching;
-                        b2SetBit(taskContext.contactStateBitSet, contactId);
+                        b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
                     else if (touching == false && wasTouching == true)
                     {
                         contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStoppedTouching;
-                        b2SetBit(taskContext.contactStateBitSet, contactId);
+                        b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
                 }
             }
@@ -553,7 +553,7 @@ namespace Box2D.NET
             int contactIdCapacity = b2GetIdCapacity(world.contactIdPool);
             for (int i = 0; i < world.workerCount; ++i)
             {
-                b2SetBitCountAndClear(world.taskContexts.data[i].contactStateBitSet, contactIdCapacity);
+                b2SetBitCountAndClear(ref world.taskContexts.data[i].contactStateBitSet, contactIdCapacity);
             }
 
             // Task should take at least 40us on a 4GHz CPU (10K cycles)
@@ -574,10 +574,10 @@ namespace Box2D.NET
             b2TracyCZoneNC(B2TracyCZone.contact_state, "Contact State", B2HexColor.b2_colorLightSlateGray, true);
 
             // Bitwise OR all contact bits
-            B2BitSet bitSet = world.taskContexts.data[0].contactStateBitSet;
+            ref B2BitSet bitSet = ref world.taskContexts.data[0].contactStateBitSet;
             for (int i = 1; i < world.workerCount; ++i)
             {
-                b2InPlaceUnion(bitSet, world.taskContexts.data[i].contactStateBitSet);
+                b2InPlaceUnion(ref bitSet, ref world.taskContexts.data[i].contactStateBitSet);
             }
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -881,7 +881,7 @@ namespace Box2D.NET
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
             Debug.Assert(shape.id == shapeId);
 
-            b2SetBit(world.debugBodySet, shape.bodyId);
+            b2SetBit(ref world.debugBodySet, shape.bodyId);
 
             if (draw.drawShapes)
             {
@@ -981,13 +981,13 @@ namespace Box2D.NET
             };
 
             int bodyCapacity = b2GetIdCapacity(world.bodyIdPool);
-            b2SetBitCountAndClear(world.debugBodySet, bodyCapacity);
+            b2SetBitCountAndClear(ref world.debugBodySet, bodyCapacity);
 
             int jointCapacity = b2GetIdCapacity(world.jointIdPool);
-            b2SetBitCountAndClear(world.debugJointSet, jointCapacity);
+            b2SetBitCountAndClear(ref world.debugJointSet, jointCapacity);
 
             int contactCapacity = b2GetIdCapacity(world.contactIdPool);
-            b2SetBitCountAndClear(world.debugContactSet, contactCapacity);
+            b2SetBitCountAndClear(ref world.debugContactSet, contactCapacity);
 
             B2DrawContext drawContext = new B2DrawContext();
             drawContext.world = world;
@@ -1048,10 +1048,10 @@ namespace Box2D.NET
                             B2Joint joint = b2Array_Get(ref world.joints, jointId);
 
                             // avoid double draw
-                            if (b2GetBit(world.debugJointSet, jointId) == false)
+                            if (b2GetBit(ref world.debugJointSet, jointId) == false)
                             {
                                 b2DrawJoint(draw, world, joint);
-                                b2SetBit(world.debugJointSet, jointId);
+                                b2SetBit(ref world.debugJointSet, jointId);
                             }
                             else
                             {
@@ -1080,7 +1080,7 @@ namespace Box2D.NET
                             }
 
                             // avoid double draw
-                            if (b2GetBit(world.debugContactSet, contactId) == false)
+                            if (b2GetBit(ref world.debugContactSet, contactId) == false)
                             {
                                 Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
 
@@ -1143,7 +1143,7 @@ namespace Box2D.NET
                                     }
                                 }
 
-                                b2SetBit(world.debugContactSet, contactId);
+                                b2SetBit(ref world.debugContactSet, contactId);
                             }
                             else
                             {
@@ -1983,7 +1983,7 @@ namespace Box2D.NET
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
                 B2GraphColor c = world.constraintGraph.colors[i];
-                bodyBitSetBytes += b2GetBitSetBytes(c.bodySet);
+                bodyBitSetBytes += b2GetBitSetBytes(ref c.bodySet);
                 contactSimCapacity += c.contactSims.capacity;
                 jointSimCapacity += c.jointSims.capacity;
             }
@@ -3102,8 +3102,8 @@ void b2World_Dump()
                         {
                             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
                             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                            Debug.Assert(b2GetBit(color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                            Debug.Assert(b2GetBit(color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
                         }
                     }
                 }
@@ -3126,8 +3126,8 @@ void b2World_Dump()
                         {
                             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
                             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                            Debug.Assert(b2GetBit(color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                            Debug.Assert(b2GetBit(color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
+                            Debug.Assert(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
                         }
                     }
                 }

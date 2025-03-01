@@ -1,8 +1,5 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
-// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
-
-using System.Diagnostics;
 
 namespace Box2D.NET.Samples.Primitives;
 
@@ -15,6 +12,7 @@ public class TaskScheduler
     
     public void AddTaskSetToPipe(SampleTask task)
     {
+        task.m_task.Invoke(0, task.m_SetSize, 0, task.m_taskContext);
         // !!
         //Debug.Assert(false);
     }

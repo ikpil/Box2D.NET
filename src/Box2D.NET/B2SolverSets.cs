@@ -340,8 +340,8 @@ namespace Box2D.NET
                     if (colorIndex != B2_OVERFLOW_INDEX)
                     {
                         // might clear a bit for a static body, but this has no effect
-                        b2ClearBit(color.bodySet, (uint)contact.edges[0].bodyId);
-                        b2ClearBit(color.bodySet, (uint)contact.edges[1].bodyId);
+                        b2ClearBit(ref color.bodySet, (uint)contact.edges[0].bodyId);
+                        b2ClearBit(ref color.bodySet, (uint)contact.edges[1].bodyId);
                     }
 
                     int localIndex = contact.localIndex;
@@ -391,8 +391,8 @@ namespace Box2D.NET
                     if (colorIndex != B2_OVERFLOW_INDEX)
                     {
                         // might clear a bit for a static body, but this has no effect
-                        b2ClearBit(color.bodySet, (uint)joint.edges[0].bodyId);
-                        b2ClearBit(color.bodySet, (uint)joint.edges[1].bodyId);
+                        b2ClearBit(ref color.bodySet, (uint)joint.edges[0].bodyId);
+                        b2ClearBit(ref color.bodySet, (uint)joint.edges[1].bodyId);
                     }
 
                     int sleepJointIndex = sleepSet.jointSims.count;

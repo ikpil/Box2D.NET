@@ -18,16 +18,16 @@ public class B2BitSetTest
     {
         B2BitSet bitSet = b2CreateBitSet(COUNT);
 
-        b2SetBitCountAndClear(bitSet, COUNT);
+        b2SetBitCountAndClear(ref bitSet, COUNT);
         bool[] values = new bool[COUNT];
 
         int i1 = 0, i2 = 1;
-        b2SetBit(bitSet, i1);
+        b2SetBit(ref bitSet, i1);
         values[i1] = true;
 
         while (i2 < COUNT)
         {
-            b2SetBit(bitSet, i2);
+            b2SetBit(ref bitSet, i2);
             values[i2] = true;
             int next = i1 + i2;
             i1 = i2;
@@ -36,10 +36,10 @@ public class B2BitSetTest
 
         for (int i = 0; i < COUNT; ++i)
         {
-            bool value = b2GetBit(bitSet, i);
+            bool value = b2GetBit(ref bitSet, i);
             Assert.That(value, Is.EqualTo(values[i]));
         }
 
-        b2DestroyBitSet(bitSet);
+        b2DestroyBitSet(ref bitSet);
     }
 }

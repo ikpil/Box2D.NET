@@ -551,8 +551,8 @@ namespace Box2D.NET
             Debug.Assert(endIndex <= world.bodyMoveEvents.count);
             B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 
-            B2BitSet enlargedSimBitSet = world.taskContexts.data[threadIndex].enlargedSimBitSet;
-            B2BitSet awakeIslandBitSet = world.taskContexts.data[threadIndex].awakeIslandBitSet;
+           ref B2BitSet enlargedSimBitSet = ref world.taskContexts.data[threadIndex].enlargedSimBitSet;
+           ref B2BitSet awakeIslandBitSet = ref world.taskContexts.data[threadIndex].awakeIslandBitSet;
             B2TaskContext taskContext = world.taskContexts.data[threadIndex];
 
             bool enableContinuous = world.enableContinuous;
@@ -653,7 +653,7 @@ namespace Box2D.NET
                 {
                     // keep island awake
                     int islandIndex = island.localIndex;
-                    b2SetBit(awakeIslandBitSet, islandIndex);
+                    b2SetBit(ref awakeIslandBitSet, islandIndex);
                 }
                 else if (island.constraintRemoveCount > 0)
                 {
@@ -681,7 +681,7 @@ namespace Box2D.NET
 
                         // Add to enlarged shapes regardless of AABB changes.
                         // Bit-set to keep the move array sorted
-                        b2SetBit(enlargedSimBitSet, simIndex);
+                        b2SetBit(ref enlargedSimBitSet, simIndex);
                     }
                     else
                     {
@@ -706,7 +706,7 @@ namespace Box2D.NET
                             shape.enlargedAABB = true;
 
                             // Bit-set to keep the move array sorted
-                            b2SetBit(enlargedSimBitSet, simIndex);
+                            b2SetBit(ref enlargedSimBitSet, simIndex);
                         }
                     }
 
@@ -1718,8 +1718,8 @@ public enum b2SolverBlockType
                 for (int i = 0; i < world.workerCount; ++i)
                 {
                     B2TaskContext taskContext = world.taskContexts.data[i];
-                    b2SetBitCountAndClear(taskContext.enlargedSimBitSet, awakeBodyCount);
-                    b2SetBitCountAndClear(taskContext.awakeIslandBitSet, awakeIslandCount);
+                    b2SetBitCountAndClear(ref taskContext.enlargedSimBitSet, awakeBodyCount);
+                    b2SetBitCountAndClear(ref taskContext.awakeIslandBitSet, awakeIslandCount);
                     taskContext.splitIslandId = B2_NULL_INDEX;
                     taskContext.splitSleepTime = 0.0f;
                 }
@@ -1825,10 +1825,10 @@ public enum b2SolverBlockType
                 b2ValidateNoEnlarged(world.broadPhase);
 
                 // Gather bits for all sim bodies that have enlarged AABBs
-                B2BitSet enlargedBodyBitSet = world.taskContexts.data[0].enlargedSimBitSet;
+                ref B2BitSet enlargedBodyBitSet = ref world.taskContexts.data[0].enlargedSimBitSet;
                 for (int i = 1; i < world.workerCount; ++i)
                 {
-                    b2InPlaceUnion(enlargedBodyBitSet, world.taskContexts.data[i].enlargedSimBitSet);
+                    b2InPlaceUnion(ref enlargedBodyBitSet, ref world.taskContexts.data[i].enlargedSimBitSet);
                 }
 
                 // Enlarge broad-phase proxies and build move array
@@ -2013,10 +2013,10 @@ public enum b2SolverBlockType
                     }
                 }
 
-                B2BitSet awakeIslandBitSet = world.taskContexts.data[0].awakeIslandBitSet;
+                ref B2BitSet awakeIslandBitSet = ref world.taskContexts.data[0].awakeIslandBitSet;
                 for (int i = 1; i < world.workerCount; ++i)
                 {
-                    b2InPlaceUnion(awakeIslandBitSet, world.taskContexts.data[i].awakeIslandBitSet);
+                    b2InPlaceUnion(ref awakeIslandBitSet, ref world.taskContexts.data[i].awakeIslandBitSet);
                 }
 
                 // Need to process in reverse because this moves islands to sleeping solver sets.
@@ -2024,7 +2024,7 @@ public enum b2SolverBlockType
                 int count = awakeSet.islandSims.count;
                 for (int islandIndex = count - 1; islandIndex >= 0; islandIndex -= 1)
                 {
-                    if (b2GetBit(awakeIslandBitSet, islandIndex) == true)
+                    if (b2GetBit(ref awakeIslandBitSet, islandIndex) == true)
                     {
                         // this island is still awake
                         continue;

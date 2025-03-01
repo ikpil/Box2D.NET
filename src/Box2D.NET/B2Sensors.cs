@@ -167,7 +167,7 @@ namespace Box2D.NET
                 if (count1 != count2)
                 {
                     // something changed
-                    b2SetBit(taskContext.eventBits, sensorIndex);
+                    b2SetBit(ref taskContext.eventBits, sensorIndex);
                 }
                 else
                 {
@@ -179,7 +179,7 @@ namespace Box2D.NET
                         if (s1.shapeId != s2.shapeId || s1.generation != s2.generation)
                         {
                             // something changed
-                            b2SetBit(taskContext.eventBits, sensorIndex);
+                            b2SetBit(ref taskContext.eventBits, sensorIndex);
                             break;
                         }
                     }
@@ -203,7 +203,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < world.workerCount; ++i)
             {
-                b2SetBitCountAndClear(world.sensorTaskContexts.data[i].eventBits, sensorCount);
+                b2SetBitCountAndClear(ref world.sensorTaskContexts.data[i].eventBits, sensorCount);
             }
 
             // Parallel-for sensors overlaps
@@ -217,10 +217,10 @@ namespace Box2D.NET
 
             b2TracyCZoneNC(B2TracyCZone.sensor_state, "Events", B2HexColor.b2_colorLightSlateGray, true);
 
-            B2BitSet bitSet = world.sensorTaskContexts.data[0].eventBits;
+            ref B2BitSet bitSet = ref world.sensorTaskContexts.data[0].eventBits;
             for (int i = 1; i < world.workerCount; ++i)
             {
-                b2InPlaceUnion(bitSet, world.sensorTaskContexts.data[i].eventBits);
+                b2InPlaceUnion(ref bitSet, ref world.sensorTaskContexts.data[i].eventBits);
             }
 
             // Iterate sensors bits and publish events

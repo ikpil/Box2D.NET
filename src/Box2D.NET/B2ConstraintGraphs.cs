@@ -57,7 +57,7 @@ namespace Box2D.NET
                 color.contactSims = b2Array_Create<B2ContactSim>();
                 color.jointSims = b2Array_Create<B2JointSim>();
 
-                b2SetBitCountAndClear(color.bodySet, bodyCapacity);
+                b2SetBitCountAndClear(ref color.bodySet, bodyCapacity);
             }
 
             // @ikpil, for dummy
@@ -79,7 +79,7 @@ namespace Box2D.NET
                 // The bit set should never be used on the overflow color
                 Debug.Assert(i != B2_OVERFLOW_INDEX || color.bodySet.bits == null);
 
-                b2DestroyBitSet(color.bodySet);
+                b2DestroyBitSet(ref color.bodySet);
 
                 b2Array_Destroy(ref color.contactSims);
                 b2Array_Destroy(ref color.jointSims);
@@ -112,13 +112,13 @@ namespace Box2D.NET
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color0 = graph.colors[i];
-                    if (b2GetBit(color0.bodySet, bodyIdA) || b2GetBit(color0.bodySet, bodyIdB))
+                    if (b2GetBit(ref color0.bodySet, bodyIdA) || b2GetBit(ref color0.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color0.bodySet, bodyIdA);
-                    b2SetBitGrow(color0.bodySet, bodyIdB);
+                    b2SetBitGrow(ref color0.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color0.bodySet, bodyIdB);
                     colorIndex = i;
                     break;
                 }
@@ -129,12 +129,12 @@ namespace Box2D.NET
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color0 = graph.colors[i];
-                    if (b2GetBit(color0.bodySet, bodyIdA))
+                    if (b2GetBit(ref color0.bodySet, bodyIdA))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color0.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color0.bodySet, bodyIdA);
                     colorIndex = i;
                     break;
                 }
@@ -145,12 +145,12 @@ namespace Box2D.NET
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color0 = graph.colors[i];
-                    if (b2GetBit(color0.bodySet, bodyIdB))
+                    if (b2GetBit(ref color0.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color0.bodySet, bodyIdB);
+                    b2SetBitGrow(ref color0.bodySet, bodyIdB);
                     colorIndex = i;
                     break;
                 }
@@ -216,8 +216,8 @@ namespace Box2D.NET
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
                 // might clear a bit for a static body, but this has no effect
-                b2ClearBit(color.bodySet, (uint)bodyIdA);
-                b2ClearBit(color.bodySet, (uint)bodyIdB);
+                b2ClearBit(ref color.bodySet, (uint)bodyIdA);
+                b2ClearBit(ref color.bodySet, (uint)bodyIdB);
             }
 
             int movedIndex = b2Array_RemoveSwap(ref color.contactSims, localIndex);
@@ -246,13 +246,13 @@ namespace Box2D.NET
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color = graph.colors[i];
-                    if (b2GetBit(color.bodySet, bodyIdA) || b2GetBit(color.bodySet, bodyIdB))
+                    if (b2GetBit(ref color.bodySet, bodyIdA) || b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color.bodySet, bodyIdA);
-                    b2SetBitGrow(color.bodySet, bodyIdB);
+                    b2SetBitGrow(ref color.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color.bodySet, bodyIdB);
                     return i;
                 }
             }
@@ -261,12 +261,12 @@ namespace Box2D.NET
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color = graph.colors[i];
-                    if (b2GetBit(color.bodySet, bodyIdA))
+                    if (b2GetBit(ref color.bodySet, bodyIdA))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color.bodySet, bodyIdA);
                     return i;
                 }
             }
@@ -275,12 +275,12 @@ namespace Box2D.NET
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
                     B2GraphColor color = graph.colors[i];
-                    if (b2GetBit(color.bodySet, bodyIdB))
+                    if (b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(color.bodySet, bodyIdB);
+                    b2SetBitGrow(ref color.bodySet, bodyIdB);
                     return i;
                 }
             }
@@ -330,8 +330,8 @@ namespace Box2D.NET
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
                 // May clear static bodies, no effect
-                b2ClearBit(color.bodySet, (uint)bodyIdA);
-                b2ClearBit(color.bodySet, (uint)bodyIdB);
+                b2ClearBit(ref color.bodySet, (uint)bodyIdA);
+                b2ClearBit(ref color.bodySet, (uint)bodyIdB);
             }
 
             int movedIndex = b2Array_RemoveSwap(ref color.jointSims, localIndex);

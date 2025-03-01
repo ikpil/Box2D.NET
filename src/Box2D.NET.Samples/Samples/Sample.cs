@@ -150,7 +150,7 @@ public class Sample : IDisposable
     private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
     {
         Sample sample = userContext as Sample;
-        if (sample.m_taskCount < Sample.m_maxTasks)
+        if (sample.m_taskCount < m_maxTasks)
         {
             SampleTask sampleTask = sample.m_tasks[sample.m_taskCount];
             sampleTask.m_SetSize = itemCount;
