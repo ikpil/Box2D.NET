@@ -29,7 +29,7 @@ public class GLCircles
 
     public void Create()
     {
-        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/circle.vs", "samples/data/circle.fs");
+        m_programId = B2.g_shader.CreateProgramFromFiles("data/circle.vs", "data/circle.fs");
         m_projectionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "pixelScale");
         uint vertexAttribute = 0;

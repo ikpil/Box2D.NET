@@ -30,7 +30,7 @@ public class GLSolidCircles
 
     public void Create()
     {
-        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/solid_circle.vs", "samples/data/solid_circle.fs");
+        m_programId = B2.g_shader.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
         m_projectionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "pixelScale");
 

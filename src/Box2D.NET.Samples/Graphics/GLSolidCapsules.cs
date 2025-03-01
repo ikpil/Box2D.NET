@@ -28,7 +28,7 @@ public class GLSolidCapsules
 
     public void Create()
     {
-        m_programId = B2.g_shader.CreateProgramFromFiles("samples/data/solid_capsule.vs", "samples/data/solid_capsule.fs");
+        m_programId = B2.g_shader.CreateProgramFromFiles("data/solid_capsule.vs", "data/solid_capsule.fs");
 
         m_projectionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "pixelScale");

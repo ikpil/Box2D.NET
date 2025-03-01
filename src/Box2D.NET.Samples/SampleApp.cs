@@ -177,10 +177,10 @@ public class SampleApp
         B2.g_shader.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     }
     
+    float frameTime = 0.0f;
     private unsafe void OnWindowUpdate(double dt)
     {
-        float frameTime = 0.0f;
-        while (!B2.g_glfw.WindowShouldClose(g_mainWindow))
+        //while (!B2.g_glfw.WindowShouldClose(g_mainWindow))
         {
             double time1 = B2.g_glfw.GetTime();
 

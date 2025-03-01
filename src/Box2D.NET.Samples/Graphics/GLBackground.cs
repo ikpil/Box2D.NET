@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.InteropServices;
 using Box2D.NET.Primitives;
 using Silk.NET.OpenGL;
 
@@ -37,7 +38,8 @@ public class GLBackground
         B2.g_shader.gl.EnableVertexAttribArray(vertexAttribute);
 
         // Single quad
-        B2Vec2[] vertices = new B2Vec2[] { new B2Vec2(-1.0f, 1.0f), new B2Vec2(-1.0f, -1.0f), new B2Vec2(1.0f, 1.0f), new B2Vec2(1.0f, -1.0f) };
+        //B2ExplicitVec2[] vertices = [new(-1.0f, 1.0f), new(-1.0f, -1.0f), new(1.0f, 1.0f), new(1.0f, -1.0f)];
+        B2Vec2[] vertices = [new(-1.0f, 1.0f), new(-1.0f, -1.0f), new(1.0f, 1.0f), new(1.0f, -1.0f)];
         B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
         B2.g_shader.gl.BufferData<B2Vec2>(GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw);
         B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
