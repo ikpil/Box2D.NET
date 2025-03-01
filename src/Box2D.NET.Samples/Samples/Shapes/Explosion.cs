@@ -71,7 +71,7 @@ public class Explosion : Sample
 
             weldDef.localAnchorA = bodyDef.position;
             weldDef.bodyIdB = bodyId;
-            B2JointId jointId = b2CreateWeldJoint(m_worldId, weldDef);
+            B2JointId jointId = b2CreateWeldJoint(m_worldId, ref weldDef);
             m_jointIds.Add(jointId);
         }
 

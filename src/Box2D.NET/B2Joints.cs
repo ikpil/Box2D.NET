@@ -612,7 +612,7 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateWeldJoint(B2WorldId worldId, B2WeldJointDef def)
+        public static B2JointId b2CreateWeldJoint(B2WorldId worldId, ref B2WeldJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);

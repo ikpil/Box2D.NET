@@ -168,7 +168,7 @@ public class BreakableJoint : Sample
             jointDef.linearHertz = 2.0f;
             jointDef.linearDampingRatio = 0.5f;
             jointDef.collideConnected = true;
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

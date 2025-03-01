@@ -88,7 +88,7 @@ public class Cantilever : Sample
                 jointDef.angularHertz = m_angularHertz;
                 jointDef.angularDampingRatio = m_angularDampingRatio;
                 jointDef.collideConnected = m_collideConnected;
-                m_jointIds[i] = b2CreateWeldJoint(m_worldId, jointDef);
+                m_jointIds[i] = b2CreateWeldJoint(m_worldId, ref jointDef);
 
                 prevBodyId = m_bodyIds[i];
             }

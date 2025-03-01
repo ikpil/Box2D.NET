@@ -186,7 +186,7 @@ public class FixedRotation : Sample
             jointDef.angularDampingRatio = 0.5f;
             jointDef.linearHertz = 1.0f;
             jointDef.linearDampingRatio = 0.5f;
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

@@ -90,7 +90,7 @@ public class Donut
             B2Rot rotA = b2Body_GetRotation(prevBodyId);
             B2Rot rotB = b2Body_GetRotation(m_bodyIds[i]);
             weldDef.referenceAngle = b2RelativeAngle(rotB, rotA);
-            m_jointIds[i] = b2CreateWeldJoint(worldId, weldDef);
+            m_jointIds[i] = b2CreateWeldJoint(worldId, ref weldDef);
             prevBodyId = weldDef.bodyIdB;
         }
 
