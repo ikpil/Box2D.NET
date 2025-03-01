@@ -11,7 +11,7 @@ namespace Box2D.NET
     /// configuration can violate the constraint slightly. The joint translation is zero
     /// when the local anchor points coincide in world space.
     /// @ingroup prismatic_joint
-    public class B2PrismaticJointDef
+    public ref struct B2PrismaticJointDef
     {
         /// The first attached body
         public B2BodyId bodyIdA;

@@ -9,7 +9,7 @@ namespace Box2D.NET
     /// This a soft constraint and allows the constraint to stretch without
     /// applying huge forces. This also applies rotation constraint heuristic to improve control.
     /// @ingroup mouse_joint
-    public class B2MouseJointDef
+    public ref struct B2MouseJointDef
     {
         /// The first attached body. This is assumed to be static.
         public B2BodyId bodyIdA;

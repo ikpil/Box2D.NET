@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// World definition used to create a simulation world.
     /// Must be initialized using b2DefaultWorldDef().
     /// @ingroup world
-    public class B2WorldDef
+    public ref struct B2WorldDef
     {
         /// Gravity vector. Box2D has no up-vector defined.
         public B2Vec2 gravity;

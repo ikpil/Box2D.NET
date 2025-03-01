@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// A null joint is used to disable collision between two specific bodies.
     ///
     /// @ingroup null_joint
-    public class B2NullJointDef
+    public ref struct B2NullJointDef
     {
         /// The first attached body.
         public B2BodyId bodyIdA;

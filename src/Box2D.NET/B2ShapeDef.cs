@@ -9,7 +9,7 @@ namespace Box2D.NET
     /// the same shape definition to create multiple shapes.
     /// Must be initialized using b2DefaultShapeDef().
     /// @ingroup shape
-    public class B2ShapeDef
+    public ref struct B2ShapeDef
     {
         /// Use this to store application specific shape data.
         public object userData;
