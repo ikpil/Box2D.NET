@@ -41,7 +41,7 @@ public class CompoundShapes : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(50.0f, 0.0f), new B2Vec2(-50.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
@@ -52,7 +52,7 @@ public class CompoundShapes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-15.0f, 1.0f);
-            m_table1Id = b2CreateBody(m_worldId, bodyDef);
+            m_table1Id = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon top = b2MakeOffsetBox(3.0f, 0.5f, new B2Vec2(0.0f, 3.5f), b2Rot_identity);
@@ -69,7 +69,7 @@ public class CompoundShapes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-5.0f, 1.0f);
-            m_table2Id = b2CreateBody(m_worldId, bodyDef);
+            m_table2Id = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon top = b2MakeOffsetBox(3.0f, 0.5f, new B2Vec2(0.0f, 3.5f), b2Rot_identity);
@@ -86,7 +86,7 @@ public class CompoundShapes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(5.0f, 1.0f);
-            m_ship1Id = b2CreateBody(m_worldId, bodyDef);
+            m_ship1Id = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Vec2[] vertices = new B2Vec2[3];
@@ -112,7 +112,7 @@ public class CompoundShapes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(15.0f, 1.0f);
-            m_ship2Id = b2CreateBody(m_worldId, bodyDef);
+            m_ship2Id = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Vec2[] vertices = new B2Vec2[3];
@@ -144,7 +144,7 @@ public class CompoundShapes : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition(m_table1Id);
             bodyDef.rotation = b2Body_GetRotation(m_table1Id);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(4.0f, 0.1f, new B2Vec2(0.0f, 3.0f), b2Rot_identity);
@@ -157,7 +157,7 @@ public class CompoundShapes : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = b2Body_GetPosition(m_table2Id);
             bodyDef.rotation = b2Body_GetRotation(m_table2Id);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(4.0f, 0.1f, new B2Vec2(0.0f, 3.0f), b2Rot_identity);
@@ -171,7 +171,7 @@ public class CompoundShapes : Sample
             bodyDef.position = b2Body_GetPosition(m_ship1Id);
             bodyDef.rotation = b2Body_GetRotation(m_ship1Id);
             // bodyDef.gravityScale = 0.0f;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 2.0f), 0.5f);
@@ -185,7 +185,7 @@ public class CompoundShapes : Sample
             bodyDef.position = b2Body_GetPosition(m_ship2Id);
             bodyDef.rotation = b2Body_GetRotation(m_ship2Id);
             // bodyDef.gravityScale = 0.0f;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 2.0f), 0.5f);

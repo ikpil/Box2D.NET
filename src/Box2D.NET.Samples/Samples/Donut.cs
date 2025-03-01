@@ -69,7 +69,7 @@ public class Donut
             bodyDef.position = new B2Vec2(radius * MathF.Cos(angle) + center.x, radius * MathF.Sin(angle) + center.y);
             bodyDef.rotation = b2MakeRot(angle);
 
-            m_bodyIds[i] = b2CreateBody(worldId, bodyDef);
+            m_bodyIds[i] = b2CreateBody(worldId, ref bodyDef);
             b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
 
             angle += deltaAngle;

@@ -48,7 +48,7 @@ public class FootSensor : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Vec2[] points = new B2Vec2[20];
             float x = 10.0f;
@@ -65,7 +65,7 @@ public class FootSensor : Sample
             chainDef.filter.maskBits = FOOT | PLAYER;
             chainDef.isLoop = false;
 
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         {
@@ -73,7 +73,7 @@ public class FootSensor : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.fixedRotation = true;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
-            m_playerId = b2CreateBody(m_worldId, bodyDef);
+            m_playerId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = PLAYER;
             shapeDef.filter.maskBits = GROUND;

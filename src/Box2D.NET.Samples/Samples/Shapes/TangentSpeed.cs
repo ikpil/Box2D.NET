@@ -30,7 +30,7 @@ public class TangentSpeed : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             //string path = "M 613.8334,185.20833 H 500.06255 L 470.95838,182.5625 444.50004,174.625 418.04171,161.39583 "
             //				   "394.2292,140.22917 h "
@@ -75,7 +75,7 @@ public class TangentSpeed : Sample
             chainDef.materials = materials;
             chainDef.materialCount = count;
 
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
     }
 
@@ -86,7 +86,7 @@ public class TangentSpeed : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(110.0f, -30.0f);
-        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.rollingResistance = 0.3f;

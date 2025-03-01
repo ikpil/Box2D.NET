@@ -54,7 +54,7 @@ public class SensorFunnel : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             // B2Vec2 points[] = {
             //{42.333, 44.979},	{177.271, 44.979},	{177.271, 100.542}, {142.875, 121.708}, {177.271, 121.708},
@@ -117,7 +117,7 @@ public class SensorFunnel : Sample
             chainDef.isLoop = true;
             chainDef.materials = [material];
             chainDef.materialCount = 1;
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
 
             float sign = 1.0f;
             float y = 14.0f;
@@ -126,7 +126,7 @@ public class SensorFunnel : Sample
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.type = B2BodyType.b2_dynamicBody;
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 B2Polygon box = b2MakeBox(6.0f, 0.5f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();

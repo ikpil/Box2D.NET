@@ -84,7 +84,7 @@ public class RayCastWorld : Sample
         // Ground body
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
@@ -185,7 +185,7 @@ public class RayCastWorld : Sample
             bodyDef.gravityScale = 0.0f;
         }
 
-        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
+        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];

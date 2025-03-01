@@ -49,7 +49,7 @@ public class Platformer : Sample
         // Ground
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
@@ -61,7 +61,7 @@ public class Platformer : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_staticBody;
             bodyDef.position = new B2Vec2(-6.0f, 6.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -78,7 +78,7 @@ public class Platformer : Sample
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(0.0f, 6.0f);
             bodyDef.linearVelocity = new B2Vec2(2.0f, 0.0f);
-            m_movingPlatformId = b2CreateBody(m_worldId, bodyDef);
+            m_movingPlatformId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -96,7 +96,7 @@ public class Platformer : Sample
             bodyDef.fixedRotation = true;
             bodyDef.linearDamping = 0.5f;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
-            m_playerId = b2CreateBody(m_worldId, bodyDef);
+            m_playerId = b2CreateBody(m_worldId, ref bodyDef);
 
             m_radius = 0.5f;
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 1.0f), m_radius);

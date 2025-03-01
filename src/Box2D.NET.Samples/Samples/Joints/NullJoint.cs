@@ -32,7 +32,7 @@ public class NullJoint : Sample
         {
             B2BodyId groundId;
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, bodyDef);
+            groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
@@ -42,14 +42,14 @@ public class NullJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-4.0f, 2.0f);
-            B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId1 = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeSquare(2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(bodyId1, shapeDef, box);
 
             bodyDef.position = new B2Vec2(4.0f, 2.0f);
-            B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId2 = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId2, shapeDef, box);
 
             B2NullJointDef jointDef = b2DefaultNullJointDef();

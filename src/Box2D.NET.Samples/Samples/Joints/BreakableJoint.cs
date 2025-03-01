@@ -42,7 +42,7 @@ public class BreakableJoint : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
@@ -66,7 +66,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             float length = 2.0f;
@@ -90,7 +90,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
@@ -111,7 +111,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
@@ -133,7 +133,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
@@ -154,7 +154,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
@@ -179,7 +179,7 @@ public class BreakableJoint : Sample
             Debug.Assert(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);

@@ -45,7 +45,7 @@ public class BounceHouse : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         {
@@ -97,7 +97,7 @@ public class BounceHouse : Sample
         // Circle shapes centered on the body can spin fast without risk of tunnelling.
         bodyDef.allowFastRotation = m_shapeType == ShapeType.e_circleShape;
 
-        m_bodyId = b2CreateBody(m_worldId, bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;

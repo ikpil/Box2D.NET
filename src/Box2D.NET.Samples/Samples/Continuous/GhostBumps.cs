@@ -72,7 +72,7 @@ public class GhostBumps : Sample
         m_shapeId = b2_nullShapeId;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, bodyDef);
+        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         float m = 1.0f / MathF.Sqrt(2.0f);
         float mm = 2.0f * (MathF.Sqrt(2.0f) - 1.0f);
@@ -112,7 +112,7 @@ public class GhostBumps : Sample
             chainDef.materials = new[] { material };
             chainDef.materialCount = 1;
 
-            b2CreateChain(m_groundId, chainDef);
+            b2CreateChain(m_groundId, ref chainDef);
         }
         else
         {
@@ -242,7 +242,7 @@ public class GhostBumps : Sample
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(-28.0f, 18.0f);
         bodyDef.linearVelocity = new B2Vec2(0.0f, 0.0f);
-        m_bodyId = b2CreateBody(m_worldId, bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;

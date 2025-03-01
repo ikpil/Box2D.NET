@@ -235,7 +235,7 @@ public class Sample : IDisposable
             if (B2_IS_NON_NULL(queryContext.bodyId))
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
-                m_groundBodyId = b2CreateBody(m_worldId, bodyDef);
+                m_groundBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 B2MouseJointDef mouseDef = b2DefaultMouseJointDef();
                 mouseDef.bodyIdA = m_groundBodyId;

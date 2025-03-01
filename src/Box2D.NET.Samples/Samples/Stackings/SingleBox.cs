@@ -31,7 +31,7 @@ public class SingleBox : Sample
         float extent = 1.0f;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         float groundWidth = 66.0f * extent;
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -44,7 +44,7 @@ public class SingleBox : Sample
         B2Polygon box = b2MakeBox(extent, extent);
         bodyDef.position = new B2Vec2(0.0f, 1.0f);
         bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
-        m_bodyId = b2CreateBody(m_worldId, bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
         b2CreatePolygonShape(m_bodyId, shapeDef, box);
     }
 

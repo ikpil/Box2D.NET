@@ -66,7 +66,7 @@ public class Truck
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
-        m_chassisId = b2CreateBody(worldId, bodyDef);
+        m_chassisId = b2CreateBody(worldId, ref bodyDef);
         b2CreatePolygonShape(m_chassisId, shapeDef, chassis);
 
         B2Polygon box = b2MakeOffsetBox(1.25f * scale, 0.1f * scale, new B2Vec2(-2.05f * scale, -0.275f * scale), b2Rot_identity);
@@ -83,11 +83,11 @@ public class Truck
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
         bodyDef.position = b2Add(new B2Vec2(-2.75f * scale, 0.3f * scale), position);
-        m_rearWheelId = b2CreateBody(worldId, bodyDef);
+        m_rearWheelId = b2CreateBody(worldId, ref bodyDef);
         b2CreateCircleShape(m_rearWheelId, shapeDef, circle);
 
         bodyDef.position = b2Add(new B2Vec2(0.8f * scale, 0.3f * scale), position);
-        m_frontWheelId = b2CreateBody(worldId, bodyDef);
+        m_frontWheelId = b2CreateBody(worldId, ref bodyDef);
         b2CreateCircleShape(m_frontWheelId, shapeDef, circle);
 
         B2Vec2 axis = new B2Vec2(0.0f, 1.0f);

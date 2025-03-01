@@ -109,7 +109,7 @@ public class BenchmarkCast : Sample
                 if (fillTest <= m_fill)
                 {
                     bodyDef.position = new B2Vec2(x, y);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                     float ratio = RandomFloatRange(1.0f, m_ratio);
                     float halfWidth = RandomFloatRange(0.05f, 0.25f);

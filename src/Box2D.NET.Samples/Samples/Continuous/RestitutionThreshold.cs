@@ -40,7 +40,7 @@ public class RestitutionThreshold : Sample
             block0BodyDef.type = B2BodyType.b2_staticBody;
             block0BodyDef.position = new B2Vec2(205.0f / pixelsPerMeter, 120.0f / pixelsPerMeter);
             block0BodyDef.rotation = b2MakeRot(70.0f * 3.14f / 180.0f);
-            B2BodyId block0BodyId = b2CreateBody(m_worldId, block0BodyDef);
+            B2BodyId block0BodyId = b2CreateBody(m_worldId, ref block0BodyDef);
             B2Polygon block0Shape = b2MakeBox(50.0f / pixelsPerMeter, 5.0f / pixelsPerMeter);
             B2ShapeDef block0ShapeDef = b2DefaultShapeDef();
             block0ShapeDef.friction = 0.0f;
@@ -52,7 +52,7 @@ public class RestitutionThreshold : Sample
             B2BodyDef ballBodyDef = b2DefaultBodyDef();
             ballBodyDef.type = B2BodyType.b2_dynamicBody;
             ballBodyDef.position = new B2Vec2(200.0f / pixelsPerMeter, 250.0f / pixelsPerMeter);
-            m_ballId = b2CreateBody(m_worldId, ballBodyDef);
+            m_ballId = b2CreateBody(m_worldId, ref ballBodyDef);
 
             B2Circle ballShape = new B2Circle(new B2Vec2(), 0.0f);
             ballShape.radius = 5.0f / pixelsPerMeter;

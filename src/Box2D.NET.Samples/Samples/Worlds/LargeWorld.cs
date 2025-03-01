@@ -84,7 +84,7 @@ public class LargeWorld : Sample
                 if (i % 10 == 0)
                 {
                     bodyDef.position.x = xBody;
-                    groundId = b2CreateBody(m_worldId, bodyDef);
+                    groundId = b2CreateBody(m_worldId, ref bodyDef);
                     xShape = 0.0f;
                 }
 
@@ -126,7 +126,7 @@ public class LargeWorld : Sample
                     bodyDef.position.y = 10.0f;
                     for (int j = 0; j < 5; ++j)
                     {
-                        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                         b2CreatePolygonShape(bodyId, shapeDef, box);
                         bodyDef.position.y += 0.5f;
                     }

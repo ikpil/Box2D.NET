@@ -349,7 +349,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ChainId b2CreateChain(B2BodyId bodyId, B2ChainDef def)
+        public static B2ChainId b2CreateChain(B2BodyId bodyId, ref B2ChainDef def)
         {
             B2_CHECK_DEF(ref def);
             Debug.Assert(def.count >= 4);

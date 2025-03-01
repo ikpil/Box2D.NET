@@ -46,7 +46,7 @@ public class ShapeFilter : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -61,13 +61,13 @@ public class ShapeFilter : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
             bodyDef.position = new B2Vec2(0.0f, 2.0f);
-            m_player1Id = b2CreateBody(m_worldId, bodyDef);
+            m_player1Id = b2CreateBody(m_worldId, ref bodyDef);
 
             bodyDef.position = new B2Vec2(0.0f, 5.0f);
-            m_player2Id = b2CreateBody(m_worldId, bodyDef);
+            m_player2Id = b2CreateBody(m_worldId, ref bodyDef);
 
             bodyDef.position = new B2Vec2(0.0f, 8.0f);
-            m_player3Id = b2CreateBody(m_worldId, bodyDef);
+            m_player3Id = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 1.0f);
 

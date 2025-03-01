@@ -37,7 +37,7 @@ public class Character : Sample
         // Ground body
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
@@ -49,7 +49,7 @@ public class Character : Sample
         // an internal vertex.
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment1 = new B2Segment(new B2Vec2(-8.0f, 1.0f), new B2Vec2(-6.0f, 1.0f));
@@ -66,7 +66,7 @@ public class Character : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Vec2[] points = new B2Vec2[] { new(8.0f, 7.0f), new(7.0f, 8.0f), new B2Vec2(6.0f, 8.0f), new B2Vec2(5.0f, 7.0f) };
             B2ChainDef chainDef = b2DefaultChainDef();
@@ -74,7 +74,7 @@ public class Character : Sample
             chainDef.count = 4;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         // Square tiles. This shows that adjacency shapes may have non-smooth collision. Box2D has no solution
@@ -82,7 +82,7 @@ public class Character : Sample
         // todo_erin try this: https://briansemrau.github.io/dealing-with-ghost-collisions/
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(4.0f, 3.0f), b2Rot_identity);
@@ -98,21 +98,21 @@ public class Character : Sample
         // Square made from a chain loop. Collision should be smooth.
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Vec2[] points = new B2Vec2[] { new(-1.0f, 3.0f), new(1.0f, 3.0f), new(1.0f, 5.0f), new(-1.0f, 5.0f) };
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
             chainDef.count = 4;
             chainDef.isLoop = true;
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         // Chain loop. Collision should be smooth.
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(-10.0f, 4.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Vec2[] points = new B2Vec2[10]
             {
@@ -131,7 +131,7 @@ public class Character : Sample
             chainDef.points = points;
             chainDef.count = 10;
             chainDef.isLoop = true;
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         // Circle character
@@ -142,7 +142,7 @@ public class Character : Sample
             bodyDef.fixedRotation = true;
             bodyDef.enableSleep = false;
 
-            m_circleCharacterId = b2CreateBody(m_worldId, bodyDef);
+            m_circleCharacterId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.25f);
 
@@ -160,7 +160,7 @@ public class Character : Sample
             bodyDef.fixedRotation = true;
             bodyDef.enableSleep = false;
 
-            m_capsuleCharacterId = b2CreateBody(m_worldId, bodyDef);
+            m_capsuleCharacterId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.25f), new B2Vec2(0.0f, 0.75f), 0.25f);
 
@@ -178,7 +178,7 @@ public class Character : Sample
             bodyDef.fixedRotation = true;
             bodyDef.enableSleep = false;
 
-            m_boxCharacterId = b2CreateBody(m_worldId, bodyDef);
+            m_boxCharacterId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(0.4f, 0.4f);
 

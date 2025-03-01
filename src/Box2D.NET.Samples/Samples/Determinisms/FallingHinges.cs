@@ -53,7 +53,7 @@ public class FallingHinges : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(20.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -108,7 +108,7 @@ public class FallingHinges : Sample
                     // this tests the deterministic cosine and sine functions
                     bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
 
-                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                     if ((i & 1) == 0)
                     {

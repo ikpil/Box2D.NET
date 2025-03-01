@@ -48,7 +48,7 @@ public class BodyMove : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.1f;
@@ -94,7 +94,7 @@ public class BodyMove : Sample
         {
             bodyDef.position = new B2Vec2(x, y);
             bodyDef.userData = m_bodyIds[m_count];
-            m_bodyIds[m_count] = b2CreateBody(m_worldId, bodyDef);
+            m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
             m_sleeping[m_count] = false;
 
             int remainder = m_count % 4;

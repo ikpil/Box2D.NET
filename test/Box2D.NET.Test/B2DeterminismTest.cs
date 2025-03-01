@@ -160,7 +160,7 @@ public class B2DeterminismTest
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(worldId, bd);
+            B2BodyId groundId = b2CreateBody(worldId, ref bd);
 
             B2Polygon box = b2MakeBox(1000.0f, 1.0f);
             B2ShapeDef sd = b2DefaultShapeDef();
@@ -189,7 +189,7 @@ public class B2DeterminismTest
                     int n = j * e_rows + i;
 
                     bd.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
-                    B2BodyId bodyId = b2CreateBody(worldId, bd);
+                    B2BodyId bodyId = b2CreateBody(worldId, ref bd);
                     bodies[n] = bodyId;
 
                     b2CreatePolygonShape(bodyId, sd, box);
@@ -251,7 +251,7 @@ public class B2DeterminismTest
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(20.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -306,7 +306,7 @@ public class B2DeterminismTest
                     // this tests the deterministic cosine and sine functions
                     bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
 
-                    B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
 
                     if ((i & 1) == 0)
                     {

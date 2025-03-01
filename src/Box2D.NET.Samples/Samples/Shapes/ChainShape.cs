@@ -137,9 +137,9 @@ public class ChainShape : Sample
         chainDef.isLoop = true;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, bodyDef);
+        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-        m_chainId = b2CreateChain(m_groundId, chainDef);
+        m_chainId = b2CreateChain(m_groundId, ref chainDef);
     }
 
     void Launch()
@@ -152,7 +152,7 @@ public class ChainShape : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(-55.0f, 13.5f);
-        m_bodyId = b2CreateBody(m_worldId, bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;

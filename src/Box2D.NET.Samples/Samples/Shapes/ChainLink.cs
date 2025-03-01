@@ -42,14 +42,14 @@ public class ChainLink : Sample
         int count2 = points2.Length;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         {
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points1;
             chainDef.count = count1;
             chainDef.isLoop = false;
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         {
@@ -57,7 +57,7 @@ public class ChainLink : Sample
             chainDef.points = points2;
             chainDef.count = count2;
             chainDef.isLoop = false;
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -65,21 +65,21 @@ public class ChainLink : Sample
 
         {
             bodyDef.position = new B2Vec2(-5.0f, 2.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         {
             bodyDef.position = new B2Vec2(0.0f, 2.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
             b2CreateCapsuleShape(bodyId, shapeDef, capsule);
         }
 
         {
             bodyDef.position = new B2Vec2(5.0f, 2.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             float h = 0.5f;
             B2Polygon box = b2MakeBox(h, h);
             b2CreatePolygonShape(bodyId, shapeDef, box);

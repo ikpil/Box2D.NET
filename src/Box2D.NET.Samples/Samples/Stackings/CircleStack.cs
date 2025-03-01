@@ -44,7 +44,7 @@ public class CircleStack : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.userData = shapeIndex;
@@ -74,7 +74,7 @@ public class CircleStack : Sample
             {
                 bodyDef.position.y = y;
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 shapeDef.userData = shapeIndex;
                 shapeIndex += 1;

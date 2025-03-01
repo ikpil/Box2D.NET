@@ -174,7 +174,7 @@ public class OverlapWorld : Sample
         bodyDef.position = new B2Vec2(x, y);
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
-        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
+        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];

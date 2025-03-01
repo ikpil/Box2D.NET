@@ -42,7 +42,7 @@ public class B2WorldTest
         // Call the body factory which allocates memory for the ground body
         // from a pool and creates the ground box shape (also from a pool).
         // The body is also added to the world.
-        B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
+        B2BodyId groundId = b2CreateBody(worldId, ref groundBodyDef);
         Assert.That(b2Body_IsValid(groundId));
 
         // Define the ground box shape. The extents are the half-widths of the box.
@@ -57,7 +57,7 @@ public class B2WorldTest
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(0.0f, 4.0f);
 
-        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
 
         // Define another box shape for our dynamic body.
         B2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f);
@@ -149,7 +149,7 @@ public class B2WorldTest
             {
                 if (count < BODY_COUNT)
                 {
-                    bodyIds[count] = b2CreateBody(worldId, bodyDef);
+                    bodyIds[count] = b2CreateBody(worldId, ref bodyDef);
 
                     B2ShapeDef shapeDef = b2DefaultShapeDef();
                     b2CreatePolygonShape(bodyIds[count], shapeDef, square);
@@ -187,10 +187,10 @@ public class B2WorldTest
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
 
-        B2BodyId bodyId1 = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId1 = b2CreateBody(worldId, ref bodyDef);
         Assert.That(b2Body_IsValid(bodyId1), Is.EqualTo(true));
 
-        B2BodyId bodyId2 = b2CreateBody(worldId, bodyDef);
+        B2BodyId bodyId2 = b2CreateBody(worldId, ref bodyDef);
         Assert.That(b2Body_IsValid(bodyId2), Is.EqualTo(true));
 
         b2DestroyBody(bodyId1);
@@ -226,7 +226,7 @@ public class B2WorldTest
                 Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true), $"i({i}) j({j})");
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
-                b2CreateBody(worldIds[j], bodyDef);
+                b2CreateBody(worldIds[j], ref bodyDef);
             }
 
             for (int j = 0; j < WORLD_COUNT; ++j)
@@ -341,7 +341,7 @@ public class B2WorldTest
         bodyDef.type = B2BodyType.b2_staticBody;
         bodyDef.position.x = 1.5f;
         bodyDef.position.y = 11.0f;
-        B2BodyId wallId = b2CreateBody(worldId, bodyDef);
+        B2BodyId wallId = b2CreateBody(worldId, ref bodyDef);
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         b2CreatePolygonShape(wallId, shapeDef, box);
@@ -353,7 +353,7 @@ public class B2WorldTest
         bodyDef.gravityScale = 0.0f;
         bodyDef.position = new B2Vec2(7.39814f, 4.0f);
         bodyDef.linearVelocity = new B2Vec2(-20.0f, 0.0f);
-        B2BodyId bulletId = b2CreateBody(worldId, bodyDef);
+        B2BodyId bulletId = b2CreateBody(worldId, ref bodyDef);
         shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.1f);

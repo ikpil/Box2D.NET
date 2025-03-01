@@ -33,7 +33,7 @@ public class RecreateStatic : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(0.0f, 1.0f);
-        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
         b2CreatePolygonShape(bodyId, shapeDef, box);
@@ -50,7 +50,7 @@ public class RecreateStatic : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, bodyDef);
+        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 

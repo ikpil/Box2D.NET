@@ -30,7 +30,7 @@ public class SpeculativeGhost : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
@@ -48,7 +48,7 @@ public class SpeculativeGhost : Sample
             bodyDef.position = new B2Vec2(0.015f, 2.515f);
             bodyDef.linearVelocity = new B2Vec2(0.1f * 1.25f * settings.hertz, -0.1f * 1.25f * settings.hertz);
             bodyDef.gravityScale = 0.0f;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeSquare(0.25f);

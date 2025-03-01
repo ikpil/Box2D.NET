@@ -62,7 +62,7 @@ public class BenchmarkBarrel : Sample
             float gridSize = 1.0f;
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -232,14 +232,14 @@ public class BenchmarkBarrel : Sample
 
                 if (m_shapeType == ShapeType.e_circleShape)
                 {
-                    m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
+                    m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
                     circle.radius = RandomFloatRange(0.25f, 0.75f);
                     shapeDef.rollingResistance = 0.2f;
                     b2CreateCircleShape(m_bodies[index], shapeDef, circle);
                 }
                 else if (m_shapeType == ShapeType.e_capsuleShape)
                 {
-                    m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
+                    m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
                     capsule.radius = RandomFloatRange(0.25f, 0.5f);
                     float length = RandomFloatRange(0.25f, 1.0f);
                     capsule.center1 = new B2Vec2(0.0f, -0.5f * length);
@@ -249,7 +249,7 @@ public class BenchmarkBarrel : Sample
                 }
                 else if (m_shapeType == ShapeType.e_mixShape)
                 {
-                    m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
+                    m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
 
                     int mod = index % 3;
                     if (mod == 0)
@@ -284,7 +284,7 @@ public class BenchmarkBarrel : Sample
                 }
                 else if (m_shapeType == ShapeType.e_compoundShape)
                 {
-                    m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
+                    m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
 
                     b2CreatePolygonShape(m_bodies[index], shapeDef, left);
                     b2CreatePolygonShape(m_bodies[index], shapeDef, right);

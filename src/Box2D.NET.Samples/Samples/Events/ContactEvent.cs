@@ -54,7 +54,7 @@ public class ContactEvent : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Vec2[] points = new B2Vec2[] { new B2Vec2(40.0f, -40.0f), new B2Vec2(-40.0f, -40.0f), new B2Vec2(-40.0f, 40.0f), new B2Vec2(40.0f, 40.0f) };
 
@@ -63,7 +63,7 @@ public class ContactEvent : Sample
             chainDef.points = points;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         // Player
@@ -74,7 +74,7 @@ public class ContactEvent : Sample
             bodyDef.linearDamping = 0.5f;
             bodyDef.angularDamping = 0.5f;
             bodyDef.isBullet = true;
-            m_playerId = b2CreateBody(m_worldId, bodyDef);
+            m_playerId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -121,7 +121,7 @@ public class ContactEvent : Sample
         bodyDef.angularVelocity = RandomFloatRange(-1.0f, 1.0f);
         bodyDef.gravityScale = 0.0f;
         bodyDef.userData = m_bodyUserData[index];
-        m_debrisIds[index] = b2CreateBody(m_worldId, bodyDef);
+        m_debrisIds[index] = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.restitution = 0.8f;

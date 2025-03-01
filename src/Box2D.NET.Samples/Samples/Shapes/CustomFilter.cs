@@ -38,7 +38,7 @@ public class CustomFilter : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -56,7 +56,7 @@ public class CustomFilter : Sample
             for (int i = 0; i < e_count; ++i)
             {
                 bodyDef.position = new B2Vec2(x, 5.0f);
-                m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
+                m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
 
                 shapeDef.userData = i + 1;
                 m_shapeIds[i] = b2CreatePolygonShape(m_bodyIds[i], shapeDef, box);

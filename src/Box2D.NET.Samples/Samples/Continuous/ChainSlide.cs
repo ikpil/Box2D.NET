@@ -32,7 +32,7 @@ public class ChainSlide : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             const int count = 80;
             B2Vec2[] points = new B2Vec2[count];
@@ -69,7 +69,7 @@ public class ChainSlide : Sample
             chainDef.count = count;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, chainDef);
+            b2CreateChain(groundId, ref chainDef);
         }
 
         {
@@ -77,7 +77,7 @@ public class ChainSlide : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.linearVelocity = new B2Vec2(100.0f, 0.0f);
             bodyDef.position = new B2Vec2(-19.5f, 0.0f + 0.5f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.0f;

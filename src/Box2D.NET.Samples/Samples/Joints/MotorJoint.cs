@@ -48,7 +48,7 @@ public class MotorJoint : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, bodyDef);
+            groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, shapeDef, segment);
@@ -59,7 +59,7 @@ public class MotorJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(0.0f, 8.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();

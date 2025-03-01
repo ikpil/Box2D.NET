@@ -40,7 +40,7 @@ public class SensorBookend : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
@@ -65,7 +65,7 @@ public class SensorBookend : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
 
         bodyDef.position = new B2Vec2(0.0f, 1.0f);
-        m_sensorBodyId = b2CreateBody(m_worldId, bodyDef);
+        m_sensorBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
@@ -79,7 +79,7 @@ public class SensorBookend : Sample
         bodyDef.position = new B2Vec2(-4.0f, 1.0f);
         bodyDef.type = B2BodyType.b2_dynamicBody;
 
-        m_visitorBodyId = b2CreateBody(m_worldId, bodyDef);
+        m_visitorBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 

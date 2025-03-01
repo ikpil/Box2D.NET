@@ -43,7 +43,7 @@ public class Weeble : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, bodyDef);
+            groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -56,7 +56,7 @@ public class Weeble : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(0.0f, 3.0f);
             bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
-            m_weebleId = b2CreateBody(m_worldId, bodyDef);
+            m_weebleId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();

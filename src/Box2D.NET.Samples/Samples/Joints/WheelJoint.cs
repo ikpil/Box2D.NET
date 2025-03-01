@@ -43,7 +43,7 @@ public class WheelJoint : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, bodyDef);
+            groundId = b2CreateBody(m_worldId, ref bodyDef);
         }
 
         m_enableSpring = true;
@@ -58,7 +58,7 @@ public class WheelJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 10.25f);
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.5f);

@@ -40,7 +40,7 @@ public class Sleep : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, bodyDef);
+            groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -55,7 +55,7 @@ public class Sleep : Sample
             bodyDef.position = new B2Vec2(-4.0f, 3.0f + 2.0f * i);
             bodyDef.isAwake = false;
             bodyDef.enableSleep = true;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 1.0f), new B2Vec2(1.0f, 1.0f), 0.75f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -74,7 +74,7 @@ public class Sleep : Sample
             bodyDef.position = new B2Vec2(0.0f, 3.0f);
             bodyDef.isAwake = false;
             bodyDef.enableSleep = false;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(1.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -88,7 +88,7 @@ public class Sleep : Sample
             bodyDef.position = new B2Vec2(5.0f, 3.0f);
             bodyDef.isAwake = true;
             bodyDef.enableSleep = false;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(0.0f, 1.0f), b2MakeRot(0.25f * B2_PI));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -102,7 +102,7 @@ public class Sleep : Sample
             bodyDef.position = new B2Vec2(5.0f, 1.0f);
             bodyDef.isAwake = false;
             bodyDef.enableSleep = true;
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeSquare(1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -116,7 +116,7 @@ public class Sleep : Sample
             bodyDef.position = new B2Vec2(0.0f, 100.0f);
             bodyDef.angularDamping = 0.5f;
             bodyDef.sleepThreshold = 0.05f;
-            m_pendulumId = b2CreateBody(m_worldId, bodyDef);
+            m_pendulumId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(90.0f, 0.0f), 0.25f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();

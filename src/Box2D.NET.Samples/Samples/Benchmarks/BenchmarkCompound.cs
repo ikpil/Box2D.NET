@@ -37,7 +37,7 @@ public class BenchmarkCompound : Sample
 #endif
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             for (int i = 0; i < height; ++i)
@@ -86,7 +86,7 @@ public class BenchmarkCompound : Sample
                 {
                     float xbody = -0.5f * grid * count * span + n * span * grid;
                     bodyDef.position = new B2Vec2(xbody, ybody);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                     for (int i = 0; i < span; ++i)
                     {

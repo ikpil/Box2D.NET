@@ -32,7 +32,7 @@ public class HighMassRatio1 : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(50.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, shapeDef, box);
@@ -57,7 +57,7 @@ public class HighMassRatio1 : Sample
 
                         float yy = count == 1 ? y + 2.0f : y;
                         bodyDef.position = new B2Vec2(2.0f * coeff * extent + offset, yy);
-                        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                         shapeDef.density = count == 1 ? (j + 1.0f) * 100.0f : 1.0f;
                         b2CreatePolygonShape(bodyId, shapeDef, box);

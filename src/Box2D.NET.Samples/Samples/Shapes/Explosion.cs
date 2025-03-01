@@ -42,7 +42,7 @@ public class Explosion : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 0.0f;
@@ -64,7 +64,7 @@ public class Explosion : Sample
         {
             B2CosSin cosSin = b2ComputeCosSin(angle * B2_PI / 180.0f);
             bodyDef.position = new B2Vec2(r * cosSin.cosine, r * cosSin.sine);
-            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
             b2CreatePolygonShape(bodyId, shapeDef, box);

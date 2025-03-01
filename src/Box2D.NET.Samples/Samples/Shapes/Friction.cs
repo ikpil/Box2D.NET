@@ -29,7 +29,7 @@ public class Friction : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.2f;
@@ -66,7 +66,7 @@ public class Friction : Sample
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2(-15.0f + 4.0f * i, 28.0f);
-                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 shapeDef.friction = friction[i];
                 b2CreatePolygonShape(bodyId, shapeDef, box);
