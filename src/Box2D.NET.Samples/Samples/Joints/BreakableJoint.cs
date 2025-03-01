@@ -79,7 +79,7 @@ public class BreakableJoint : Sample
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot2);
             jointDef.length = length;
             jointDef.collideConnected = true;
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

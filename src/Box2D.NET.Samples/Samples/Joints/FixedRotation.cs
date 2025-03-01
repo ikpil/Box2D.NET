@@ -97,7 +97,7 @@ public class FixedRotation : Sample
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot1);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot2);
             jointDef.length = length;
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
+            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
         position.x += 5.0f;

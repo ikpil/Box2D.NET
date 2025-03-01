@@ -350,7 +350,7 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, B2DistanceJointDef def)
+        public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, ref B2DistanceJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);

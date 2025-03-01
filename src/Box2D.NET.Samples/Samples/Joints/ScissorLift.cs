@@ -194,7 +194,7 @@ public class ScissorLift : Sample
             distanceDef.enableMotor = m_enableMotor;
             distanceDef.motorSpeed = m_motorSpeed;
             distanceDef.maxMotorForce = m_motorForce;
-            m_liftJointId = b2CreateDistanceJoint(m_worldId, distanceDef);
+            m_liftJointId = b2CreateDistanceJoint(m_worldId, ref distanceDef);
 
             Car car = new Car();
             car.Spawn(m_worldId, new B2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, null);

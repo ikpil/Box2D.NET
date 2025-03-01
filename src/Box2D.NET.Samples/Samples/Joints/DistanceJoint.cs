@@ -118,7 +118,7 @@ public class DistanceJoint : Sample
             jointDef.bodyIdB = m_bodyIds[i];
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivotA);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivotB);
-            m_jointIds[i] = b2CreateDistanceJoint(m_worldId, jointDef);
+            m_jointIds[i] = b2CreateDistanceJoint(m_worldId, ref jointDef);
 
             prevBodyId = m_bodyIds[i];
         }
