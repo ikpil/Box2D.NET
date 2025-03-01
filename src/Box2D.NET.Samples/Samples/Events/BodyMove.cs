@@ -5,6 +5,7 @@
 using System.Numerics;
 using Box2D.NET.Primitives;
 using Box2D.NET.Samples;
+using Box2D.NET.Samples.Extensions;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
@@ -165,19 +166,20 @@ public class BodyMove : Sample
 
             // this shows a somewhat contrived way to track body sleeping
             B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
-            ptrdiff_t diff = bodyId - m_bodyIds;
-            bool* sleeping = m_sleeping + diff;
+            //ptrdiff_t diff = bodyId - m_bodyIds;
+            int diff = m_bodyIds.FindIndex(bodyId);
+            ref bool sleeping = ref m_sleeping[diff];
 
             if (@event.fellAsleep)
             {
-                *sleeping = true;
+                sleeping = true;
                 m_sleepCount += 1;
             }
             else
             {
-                if (*sleeping)
+                if (sleeping)
                 {
-                    *sleeping = false;
+                    sleeping = false;
                     m_sleepCount -= 1;
                 }
             }
