@@ -49,7 +49,6 @@ public class TangentSpeed : Sample
             B2SurfaceMaterial[] materials = new B2SurfaceMaterial[20];
             for (int i = 0; i < 20; ++i)
             {
-                materials[i] = new B2SurfaceMaterial();
                 materials[i].friction = 0.6f;
             }
 

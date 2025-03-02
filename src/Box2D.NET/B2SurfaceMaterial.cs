@@ -8,7 +8,7 @@ namespace Box2D.NET
 {
     /// Surface materials allow chain shapes to have per segment surface properties.
     /// @ingroup shape
-    public class B2SurfaceMaterial // todo: @ikpil, class or struct
+    public struct B2SurfaceMaterial
     {
         /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
         public float friction;
@@ -29,11 +29,5 @@ namespace Box2D.NET
 
         /// Custom debug draw color.
         public uint customColor;
-
-        public B2SurfaceMaterial Clone()
-        {
-            Debug.Assert(false);
-            return null;
-        }
     }
 }

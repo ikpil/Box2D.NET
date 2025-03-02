@@ -186,7 +186,7 @@ namespace Box2D.NET
 
             return material;
         }
-
+        
         /// Use this to initialize your chain definition
         /// @ingroup shape
         public static B2ChainDef b2DefaultChainDef()

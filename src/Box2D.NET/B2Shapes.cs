@@ -388,13 +388,13 @@ namespace Box2D.NET
 
             for (int i = 0; i < materialCount; ++i)
             {
-                B2SurfaceMaterial material = def.materials[i];
+                ref B2SurfaceMaterial material = ref def.materials[i];
                 Debug.Assert(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
                 Debug.Assert(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
                 Debug.Assert(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
                 Debug.Assert(b2IsValidFloat(material.tangentSpeed));
 
-                chainShape.materials[i] = material.Clone();
+                chainShape.materials[i] = material;
             }
 
             body.headChainId = chainId;
@@ -426,7 +426,7 @@ namespace Box2D.NET
                     prevIndex = i;
 
                     int materialIndex = materialCount == 1 ? 0 : i;
-                    B2SurfaceMaterial material = def.materials[materialIndex];
+                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
                     shapeDef.friction = material.friction;
                     shapeDef.restitution = material.restitution;
                     shapeDef.rollingResistance = material.rollingResistance;
@@ -446,7 +446,7 @@ namespace Box2D.NET
                     chainSegment.chainId = chainId;
 
                     int materialIndex = materialCount == 1 ? 0 : n - 2;
-                    B2SurfaceMaterial material = def.materials[materialIndex];
+                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
                     shapeDef.friction = material.friction;
                     shapeDef.restitution = material.restitution;
                     shapeDef.rollingResistance = material.rollingResistance;
@@ -466,7 +466,7 @@ namespace Box2D.NET
                     chainSegment.chainId = chainId;
 
                     int materialIndex = materialCount == 1 ? 0 : n - 1;
-                    B2SurfaceMaterial material = def.materials[materialIndex];
+                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
                     shapeDef.friction = material.friction;
                     shapeDef.restitution = material.restitution;
                     shapeDef.rollingResistance = material.rollingResistance;
@@ -495,7 +495,7 @@ namespace Box2D.NET
 
                     // Material is associated with leading point of solid segment
                     int materialIndex = materialCount == 1 ? 0 : i + 1;
-                    B2SurfaceMaterial material = def.materials[materialIndex];
+                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
                     shapeDef.friction = material.friction;
                     shapeDef.restitution = material.restitution;
                     shapeDef.rollingResistance = material.rollingResistance;
