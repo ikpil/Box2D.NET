@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using Box2D.NET.Core;
 
 namespace Box2D.NET
 {
@@ -15,10 +16,10 @@ namespace Box2D.NET
     public class B2Polygon
     {
         /// The polygon vertices
-        public readonly B2Vec2[] vertices = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
+        public B2FixedArray8<B2Vec2> vertices; // = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
 
         /// The outward normal vectors of the polygon sides
-        public readonly B2Vec2[] normals = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
+        public B2FixedArray8<B2Vec2> normals; // = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
 
         /// The centroid of the polygon
         public B2Vec2 centroid;
@@ -32,8 +33,8 @@ namespace Box2D.NET
         public B2Polygon Clone()
         {
             var p = new B2Polygon();
-            Array.Copy(vertices, p.vertices, vertices.Length);
-            Array.Copy(normals, p.normals, normals.Length);
+            p.vertices = vertices;
+            p.normals = normals;
             p.centroid = centroid;
             p.radius = radius;
             p.count = count;

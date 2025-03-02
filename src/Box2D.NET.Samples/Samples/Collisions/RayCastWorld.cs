@@ -484,7 +484,7 @@ public class RayCastWorld : Sample
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, B2HexColor.b2_colorYellow);
+                        B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
@@ -505,7 +505,7 @@ public class RayCastWorld : Sample
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices, box.count, box.radius, B2HexColor.b2_colorYellow);
+                    B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }

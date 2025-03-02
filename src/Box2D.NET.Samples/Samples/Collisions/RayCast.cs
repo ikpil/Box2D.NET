@@ -272,7 +272,7 @@ public class RayCast : Sample
         // box
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            B2.g_draw.DrawSolidPolygon(ref transform, m_box.vertices, m_box.count, 0.0f, color1);
+            B2.g_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
@@ -293,7 +293,7 @@ public class RayCast : Sample
         // triangle
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            B2.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices, m_triangle.count, 0.0f, color1);
+            B2.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));

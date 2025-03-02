@@ -89,7 +89,7 @@ namespace Box2D.NET
                 shape.normals[i] = b2Normalize(b2CrossVS(edge, 1.0f));
             }
 
-            shape.centroid = b2ComputePolygonCentroid(shape.vertices, shape.count);
+            shape.centroid = b2ComputePolygonCentroid(shape.vertices.AsSpan(), shape.count);
 
             return shape;
         }
@@ -135,7 +135,7 @@ namespace Box2D.NET
                 shape.normals[i] = b2Normalize(b2CrossVS(edge, 1.0f));
             }
 
-            shape.centroid = b2ComputePolygonCentroid(shape.vertices, shape.count);
+            shape.centroid = b2ComputePolygonCentroid(shape.vertices.AsSpan(), shape.count);
 
             return shape;
         }
@@ -528,7 +528,7 @@ namespace Box2D.NET
         public static bool b2PointInPolygon(B2Vec2 point, B2Polygon shape)
         {
             B2DistanceInput input = new B2DistanceInput();
-            input.proxyA = b2MakeProxy(shape.vertices, shape.count, 0.0f);
+            input.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, 0.0f);
             input.proxyB = b2MakeProxy(point, 1, 0.0f);
             input.transformA = b2Transform_identity;
             input.transformB = b2Transform_identity;
@@ -897,7 +897,7 @@ namespace Box2D.NET
 
             // TODO_ERIN this is not working for ray vs box (zero radii)
             B2ShapeCastPairInput castInput = new B2ShapeCastPairInput();
-            castInput.proxyA = b2MakeProxy(shape.vertices, shape.count, shape.radius);
+            castInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
             castInput.proxyB = b2MakeProxy(input.origin, 1, 0.0f);
             castInput.transformA = b2Transform_identity;
             castInput.transformB = b2Transform_identity;
@@ -955,7 +955,7 @@ namespace Box2D.NET
         public static B2CastOutput b2ShapeCastPolygon(ref B2ShapeCastInput input, B2Polygon shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
-            pairInput.proxyA = b2MakeProxy(shape.vertices, shape.count, shape.radius);
+            pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
             pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;

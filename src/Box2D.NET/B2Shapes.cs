@@ -668,7 +668,7 @@ namespace Box2D.NET
                     return 2.0f * B2_PI * shape.circle.radius;
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Vec2[] points = shape.polygon.vertices;
+                    Span<B2Vec2> points = shape.polygon.vertices.AsSpan();
                     int count = shape.polygon.count;
                     float perimeter = 2.0f * B2_PI * shape.polygon.radius;
                     Debug.Assert(count > 0);
@@ -708,7 +708,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Vec2[] points = shape.polygon.vertices;
+                    Span<B2Vec2> points = shape.polygon.vertices.AsSpan();
                     int count = shape.polygon.count;
                     Debug.Assert(count > 0);
                     float value = b2Dot(points[0], line);
@@ -929,7 +929,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_circleShape:
                     return b2MakeProxy(shape.circle.center, 1, shape.circle.radius);
                 case B2ShapeType.b2_polygonShape:
-                    return b2MakeProxy(shape.polygon.vertices, shape.polygon.count, shape.polygon.radius);
+                    return b2MakeProxy(shape.polygon.vertices.AsSpan(), shape.polygon.count, shape.polygon.radius);
                 case B2ShapeType.b2_segmentShape:
                     return b2MakeProxy(shape.segment.point1, shape.segment.point2, 2, 0.0f);
                 case B2ShapeType.b2_chainSegmentShape:

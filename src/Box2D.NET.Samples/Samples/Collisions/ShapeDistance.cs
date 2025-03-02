@@ -183,11 +183,11 @@ public class ShapeDistance : Sample
                 break;
 
             case ShapeType.e_triangle:
-                B2.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices, 3, radius, color);
+                B2.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), 3, radius, color);
                 break;
 
             case ShapeType.e_box:
-                B2.g_draw.DrawSolidPolygon(ref transform, m_box.vertices, 4, radius, color);
+                B2.g_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), 4, radius, color);
                 break;
 
             default:

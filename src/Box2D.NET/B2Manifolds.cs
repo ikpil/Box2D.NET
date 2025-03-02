@@ -162,8 +162,8 @@ namespace Box2D.NET
             int normalIndex = 0;
             float separation = -float.MaxValue;
             int vertexCount = polygonA.count;
-            B2Vec2[] vertices = polygonA.vertices;
-            B2Vec2[] normals = polygonA.normals;
+            Span<B2Vec2> vertices = polygonA.vertices.AsSpan();
+            Span<B2Vec2> normals = polygonA.normals.AsSpan();
 
             for (int i = 0; i < vertexCount; ++i)
             {
@@ -691,9 +691,9 @@ namespace Box2D.NET
         {
             int count1 = poly1.count;
             int count2 = poly2.count;
-            B2Vec2[] n1s = poly1.normals;
-            B2Vec2[] v1s = poly1.vertices;
-            B2Vec2[] v2s = poly2.vertices;
+            Span<B2Vec2> n1s = poly1.normals.AsSpan();
+            Span<B2Vec2> v1s = poly1.vertices.AsSpan();
+            Span<B2Vec2> v2s = poly2.vertices.AsSpan();
 
             int bestIndex = 0;
             float maxSeparation = -float.MaxValue;
@@ -798,7 +798,7 @@ namespace Box2D.NET
 
                 // Find the incident edge on polyB
                 int count = localPolyB.count;
-                B2Vec2[] normals = localPolyB.normals;
+                Span<B2Vec2> normals = localPolyB.normals.AsSpan();
                 edgeB = 0;
                 float minDot = float.MaxValue;
                 for (int i = 0; i < count; ++i)
@@ -819,7 +819,7 @@ namespace Box2D.NET
 
                 // Find the incident edge on polyA
                 int count = localPolyA.count;
-                B2Vec2[] normals = localPolyA.normals;
+                Span<B2Vec2> normals = localPolyA.normals.AsSpan();
                 edgeA = 0;
                 float minDot = float.MaxValue;
                 for (int i = 0; i < count; ++i)

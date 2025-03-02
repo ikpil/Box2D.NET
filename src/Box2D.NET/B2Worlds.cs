@@ -839,7 +839,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_polygonShape:
                 {
                     B2Polygon poly = shape.polygon;
-                    draw.DrawSolidPolygon(ref xf, poly.vertices, poly.count, poly.radius, color, draw.context);
+                    draw.DrawSolidPolygon(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;
 
@@ -2179,7 +2179,7 @@ namespace Box2D.NET
 
             B2AABB aabb = b2ComputePolygonAABB(polygon, transform);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy(polygon.vertices, polygon.count, polygon.radius), transform, context
+                world, fcn, filter, b2MakeProxy(polygon.vertices.AsSpan(), polygon.count, polygon.radius), transform, context
             );
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
