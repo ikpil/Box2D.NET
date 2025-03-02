@@ -84,8 +84,8 @@ public class GLCircles
     {
         if (0 != m_vaoId[0])
         {
-            B2.g_shader.gl.DeleteVertexArrays(1, m_vaoId);
-            B2.g_shader.gl.DeleteBuffers(2, m_vboIds);
+            B2.g_shader.gl.DeleteVertexArrays(m_vaoId);
+            B2.g_shader.gl.DeleteBuffers(m_vboIds);
             m_vaoId[0] = 0;
             m_vboIds[0] = 0;
             m_vboIds[1] = 0;

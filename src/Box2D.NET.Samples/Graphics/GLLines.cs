@@ -80,8 +80,8 @@ public class GLLines
     {
         if (0 != m_vaoId[0])
         {
-            B2.g_shader.gl.DeleteVertexArrays(1, m_vaoId);
-            B2.g_shader.gl.DeleteBuffers(1, m_vboId);
+            B2.g_shader.gl.DeleteVertexArrays(m_vaoId);
+            B2.g_shader.gl.DeleteBuffers(m_vboId);
             m_vaoId[0] = 0;
             m_vboId[0] = 0;
         }

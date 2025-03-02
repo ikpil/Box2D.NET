@@ -329,7 +329,7 @@ namespace Box2D.NET.Shared
                 groundId = b2CreateBody(worldId, ref bodyDef);
 
                 B2Vec2[] points = new B2Vec2[SPINNER_POINT_COUNT];
-
+                
                 B2Rot q = b2MakeRot(-2.0f * B2_PI / SPINNER_POINT_COUNT);
                 B2Vec2 p = new B2Vec2(40.0f, 0.0f);
                 for (int i = 0; i < SPINNER_POINT_COUNT; ++i)
@@ -337,17 +337,17 @@ namespace Box2D.NET.Shared
                     points[i] = new B2Vec2(p.x, p.y + 32.0f);
                     p = b2RotateVector(q, p);
                 }
-
+                
                 B2SurfaceMaterial material = new B2SurfaceMaterial();
                 material.friction = 0.1f;
-
+                
                 B2ChainDef chainDef = b2DefaultChainDef();
                 chainDef.points = points;
                 chainDef.count = SPINNER_POINT_COUNT;
                 chainDef.isLoop = true;
                 chainDef.materials = new[] { material };
                 chainDef.materialCount = 1;
-
+                
                 b2CreateChain(groundId, ref chainDef);
             }
 
