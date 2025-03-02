@@ -34,7 +34,7 @@ public class HighMassRatio3 : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(50.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         {
@@ -51,19 +51,19 @@ public class HighMassRatio3 : Sample
             {
                 bodyDef.position = new B2Vec2(-9.0f * extent, 0.5f * extent);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, smallTriangle);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref smallTriangle);
             }
 
             {
                 bodyDef.position = new B2Vec2(9.0f * extent, 0.5f * extent);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, smallTriangle);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref smallTriangle);
             }
 
             {
                 bodyDef.position = new B2Vec2(0.0f, (10.0f + 4.0f) * extent);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, bigBox);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref bigBox);
             }
         }
     }

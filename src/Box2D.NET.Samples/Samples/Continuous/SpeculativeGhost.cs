@@ -34,10 +34,10 @@ public class SpeculativeGhost : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
             B2Polygon box = b2MakeOffsetBox(1.0f, 0.1f, new B2Vec2(0.0f, 0.9f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         {
@@ -52,7 +52,7 @@ public class SpeculativeGhost : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeSquare(0.25f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
     }
 }

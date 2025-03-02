@@ -52,7 +52,7 @@ public class Platformer : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Static Platform
@@ -69,7 +69,7 @@ public class Platformer : Sample
             shapeDef.enablePreSolveEvents = true;
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         // Moving Platform
@@ -86,7 +86,7 @@ public class Platformer : Sample
             shapeDef.enablePreSolveEvents = true;
 
             B2Polygon box = b2MakeBox(3.0f, 0.5f);
-            b2CreatePolygonShape(m_movingPlatformId, ref shapeDef, box);
+            b2CreatePolygonShape(m_movingPlatformId, ref shapeDef, ref box);
         }
 
         // Player
@@ -103,7 +103,7 @@ public class Platformer : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.1f;
 
-            m_playerShapeId = b2CreateCapsuleShape(m_playerId, ref shapeDef, capsule);
+            m_playerShapeId = b2CreateCapsuleShape(m_playerId, ref shapeDef, ref capsule);
         }
 
         m_force = 25.0f;

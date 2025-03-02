@@ -50,7 +50,7 @@ public class B2WorldTest
 
         // Add the box shape to the ground body.
         B2ShapeDef groundShapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(groundId, ref groundShapeDef, groundBox);
+        b2CreatePolygonShape(groundId, ref groundShapeDef, ref groundBox);
 
         // Define the dynamic body. We set its position and call the body factory.
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -72,7 +72,7 @@ public class B2WorldTest
         shapeDef.friction = 0.3f;
 
         // Add the shape to the body.
-        b2CreatePolygonShape(bodyId, ref shapeDef, dynamicBox);
+        b2CreatePolygonShape(bodyId, ref shapeDef, ref dynamicBox);
 
         // Prepare for simulation. Typically we use a time step of 1/60 of a
         // second (60Hz) and 4 sub-steps. This provides a high quality simulation
@@ -152,7 +152,7 @@ public class B2WorldTest
                     bodyIds[count] = b2CreateBody(worldId, ref bodyDef);
 
                     B2ShapeDef shapeDef = b2DefaultShapeDef();
-                    b2CreatePolygonShape(bodyIds[count], ref shapeDef, square);
+                    b2CreatePolygonShape(bodyIds[count], ref shapeDef, ref square);
                     count += 1;
                 }
                 else
@@ -344,7 +344,7 @@ public class B2WorldTest
         B2BodyId wallId = b2CreateBody(worldId, ref bodyDef);
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(wallId, ref shapeDef, box);
+        b2CreatePolygonShape(wallId, ref shapeDef, ref box);
 
         // Bullet fired towards the wall
         bodyDef = b2DefaultBodyDef();
@@ -357,7 +357,7 @@ public class B2WorldTest
         shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.1f);
-        b2CreateCircleShape(bulletId, ref shapeDef, circle);
+        b2CreateCircleShape(bulletId, ref shapeDef, ref circle);
 
         int beginCount = 0;
         int endCount = 0;

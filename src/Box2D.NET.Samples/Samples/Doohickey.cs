@@ -42,19 +42,19 @@ public class Doohickey
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-5.0f, 3.0f));
         m_wheelId1 = b2CreateBody(worldId, ref bodyDef);
-        b2CreateCircleShape(m_wheelId1, ref shapeDef, circle);
+        b2CreateCircleShape(m_wheelId1, ref shapeDef, ref circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(5.0f, 3.0f));
         m_wheelId2 = b2CreateBody(worldId, ref bodyDef);
-        b2CreateCircleShape(m_wheelId2, ref shapeDef, circle);
+        b2CreateCircleShape(m_wheelId2, ref shapeDef, ref circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-1.5f, 3.0f));
         m_barId1 = b2CreateBody(worldId, ref bodyDef);
-        b2CreateCapsuleShape(m_barId1, ref shapeDef, capsule);
+        b2CreateCapsuleShape(m_barId1, ref shapeDef, ref capsule);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(1.5f, 3.0f));
         m_barId2 = b2CreateBody(worldId, ref bodyDef);
-        b2CreateCapsuleShape(m_barId2, ref shapeDef, capsule);
+        b2CreateCapsuleShape(m_barId2, ref shapeDef, ref capsule);
 
         B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 

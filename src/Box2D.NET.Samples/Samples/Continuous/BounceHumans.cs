@@ -46,27 +46,27 @@ public class BounceHumans : Sample
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, -10.0f), new B2Vec2(10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, -10.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 10.0f), new B2Vec2(-10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 10.0f), new B2Vec2(-10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 2.0f);
         shapeDef.restitution = 2.0f;
-        b2CreateCircleShape(groundId, ref shapeDef, circle);
+        b2CreateCircleShape(groundId, ref shapeDef, ref circle);
     }
 
     public override void Step(Settings settings)

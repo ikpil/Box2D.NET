@@ -60,10 +60,10 @@ public class VerticalStack : Sample
 
             B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 1.0f), new B2Vec2(10.0f, 21.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         for (int i = 0; i < e_maxRows * e_maxColumns; ++i)
@@ -140,11 +140,11 @@ public class VerticalStack : Sample
 
                 if (m_shapeType == ShapeType.e_circleShape)
                 {
-                    b2CreateCircleShape(bodyId, ref shapeDef, circle);
+                    b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
                 }
                 else
                 {
-                    b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                 }
             }
         }
@@ -203,11 +203,11 @@ public class VerticalStack : Sample
 
             if (m_bulletType == ShapeType.e_boxShape)
             {
-                b2CreatePolygonShape(bullet, ref shapeDef, box);
+                b2CreatePolygonShape(bullet, ref shapeDef, ref box);
             }
             else
             {
-                b2CreateCircleShape(bullet, ref shapeDef, circle);
+                b2CreateCircleShape(bullet, ref shapeDef, ref circle);
             }
 
             Debug.Assert(B2_IS_NULL(m_bullets[i]));

@@ -88,7 +88,7 @@ public class RayCastWorld : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
@@ -197,19 +197,19 @@ public class RayCastWorld : Sample
 
         if (index < 4)
         {
-            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, m_polygons[index]);
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_polygons[index]);
         }
         else if (index == 4)
         {
-            b2CreateCircleShape(m_bodyIds[m_bodyIndex], ref shapeDef, m_circle);
+            b2CreateCircleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_circle);
         }
         else if (index == 5)
         {
-            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, m_capsule);
+            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_capsule);
         }
         else
         {
-            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], ref shapeDef, m_segment);
+            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_segment);
         }
 
         m_bodyIndex = (m_bodyIndex + 1) % e_maxCount;

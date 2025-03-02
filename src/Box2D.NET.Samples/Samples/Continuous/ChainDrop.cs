@@ -76,7 +76,7 @@ public class ChainDrop : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-        m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, circle);
+        m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
 
         //b2Capsule capsule = { { -0.5f, 0.0f }, { 0.5f, 0.0 }, 0.25f };
         //m_shapeId = b2CreateCapsuleShape( m_bodyId, &shapeDef, &capsule );

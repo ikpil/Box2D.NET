@@ -31,7 +31,7 @@ public class SoftBody : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         m_donut = new();

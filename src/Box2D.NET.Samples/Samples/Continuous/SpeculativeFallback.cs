@@ -36,7 +36,7 @@ public class SpeculativeFallback : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
             B2Vec2[] points = new B2Vec2[5]
             {
@@ -48,7 +48,7 @@ public class SpeculativeFallback : Sample
             };
             B2Hull hull = b2ComputeHull(points, 5);
             B2Polygon poly = b2MakePolygon(hull, 0.0f);
-            b2CreatePolygonShape(groundId, ref shapeDef, poly);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref poly);
         }
 
         // Fast moving skinny box. Also testing a large shape offset.
@@ -62,7 +62,7 @@ public class SpeculativeFallback : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(2.0f, 0.05f, new B2Vec2(-offset, 0.0f), b2MakeRot(B2_PI));
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
     }
 }

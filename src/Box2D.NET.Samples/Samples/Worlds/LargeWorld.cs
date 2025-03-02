@@ -95,7 +95,7 @@ public class LargeWorld : Sample
                 {
                     B2Polygon square = b2MakeOffsetBox(0.4f * m_gridSize, 0.4f * m_gridSize, new B2Vec2(xShape, y), b2Rot_identity);
                     square.radius = 0.1f;
-                    b2CreatePolygonShape(groundId, ref shapeDef, square);
+                    b2CreatePolygonShape(groundId, ref shapeDef, ref square);
 
                     y += m_gridSize;
                 }
@@ -126,7 +126,7 @@ public class LargeWorld : Sample
                     for (int j = 0; j < 5; ++j)
                     {
                         B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                        b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                         bodyDef.position.y += 0.5f;
                     }
 

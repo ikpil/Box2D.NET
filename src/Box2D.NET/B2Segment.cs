@@ -18,5 +18,10 @@ namespace Box2D.NET
             this.point1 = point1;
             this.point2 = point2;
         }
+
+        public B2Segment Clone()
+        {
+            return new B2Segment(point1, point2);
+        }
     }
 }

@@ -18,5 +18,10 @@ namespace Box2D.NET
             this.center = center;
             this.radius = radius;
         }
+
+        public B2Circle Clone()
+        {
+            return new B2Circle(center, radius);
+        }
     }
 }

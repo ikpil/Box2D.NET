@@ -44,13 +44,13 @@ public class SensorBookend : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(-10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, groundSegment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
 
             m_isVisiting = false;
         }
@@ -70,7 +70,7 @@ public class SensorBookend : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
         B2Polygon box = b2MakeSquare(1.0f);
-        m_sensorShapeId = b2CreatePolygonShape(m_sensorBodyId, ref shapeDef, box);
+        m_sensorShapeId = b2CreatePolygonShape(m_sensorBodyId, ref shapeDef, ref box);
     }
 
     void CreateVisitor()
@@ -84,7 +84,7 @@ public class SensorBookend : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-        m_visitorShapeId = b2CreateCircleShape(m_visitorBodyId, ref shapeDef, circle);
+        m_visitorShapeId = b2CreateCircleShape(m_visitorBodyId, ref shapeDef, ref circle);
     }
 
     public override void UpdateUI()

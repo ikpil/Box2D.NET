@@ -33,7 +33,7 @@ public class ConveyorBelt : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Platform
@@ -48,7 +48,7 @@ public class ConveyorBelt : Sample
             shapeDef.friction = 0.8f;
             shapeDef.tangentSpeed = 2.0f;
 
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         // Boxes
@@ -62,7 +62,7 @@ public class ConveyorBelt : Sample
                 bodyDef.position = new B2Vec2(-10.0f + 2.0f * i, 7.0f);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
-                b2CreatePolygonShape(bodyId, ref shapeDef, cube);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref cube);
             }
         }
     }

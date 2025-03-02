@@ -22,5 +22,15 @@ namespace Box2D.NET
 
         /// The owning chain shape index (internal usage only)
         public int chainId;
+
+        public B2ChainSegment Clone()
+        {
+            var chainSegment = new B2ChainSegment();
+            chainSegment.ghost1 = ghost1;
+            chainSegment.segment = segment.Clone();
+            chainSegment.ghost2 = ghost2;
+            chainSegment.chainId = chainId;
+            return chainSegment;
+        }
     }
 }

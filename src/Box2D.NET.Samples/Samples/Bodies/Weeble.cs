@@ -47,7 +47,7 @@ public class Weeble : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Build weeble
@@ -61,7 +61,7 @@ public class Weeble : Sample
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreateCapsuleShape(m_weebleId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_weebleId, ref shapeDef, ref capsule);
 
             float mass = b2Body_GetMass(m_weebleId);
             float inertiaTensor = b2Body_GetRotationalInertia(m_weebleId);

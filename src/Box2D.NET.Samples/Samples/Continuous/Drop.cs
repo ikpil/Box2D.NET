@@ -105,7 +105,7 @@ public class Drop : Sample
         float w = 0.25f;
         int count = 40;
         B2Segment segment = new B2Segment(new B2Vec2(-0.5f * count * w, 0.0f), new B2Vec2(0.5f * count * w, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, segment);
+        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
         m_groundIds.Add(groundId);
     }
@@ -132,7 +132,7 @@ public class Drop : Sample
         for (int j = 0; j <= count; ++j)
         {
             B2Polygon box = b2MakeOffsetBox(0.5f * w, h, new B2Vec2(x, 0.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
             x += w;
         }
 
@@ -156,9 +156,9 @@ public class Drop : Sample
         float w = 0.25f;
         int count = 40;
         B2Segment segment = new B2Segment(new B2Vec2(-0.5f * count * w, 0.0f), new B2Vec2(0.5f * count * w, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, segment);
+        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         segment = new B2Segment(new B2Vec2(3.0f, 0.0f), new B2Vec2(3.0f, 8.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, segment);
+        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
         m_groundIds.Add(groundId);
     }
@@ -178,7 +178,7 @@ public class Drop : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.125f);
-        b2CreateCircleShape(bodyId, ref shapeDef, circle);
+        b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
         m_bodyIds.Add(bodyId);
         m_frameCount = 1;
@@ -201,7 +201,7 @@ public class Drop : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Polygon box = b2MakeBox(0.75f, 0.01f);
-        b2CreatePolygonShape(bodyId, ref shapeDef, box);
+        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
         m_bodyIds.Add(bodyId);
         m_frameCount = 1;
@@ -244,7 +244,7 @@ public class Drop : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             m_bodyIds.Add(bodyId);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.125f);
@@ -258,7 +258,7 @@ public class Drop : Sample
             bodyDef.isBullet = true;
 
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(bodyId, ref shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
             m_bodyIds.Add(bodyId);
         }
 

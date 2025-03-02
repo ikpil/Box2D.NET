@@ -76,7 +76,7 @@ public class Cantilever : Sample
             {
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, 0.0f);
                 m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, capsule);
+                b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, 0.0f);
                 jointDef.bodyIdA = prevBodyId;

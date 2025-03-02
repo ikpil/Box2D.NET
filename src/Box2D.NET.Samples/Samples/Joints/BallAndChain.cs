@@ -62,7 +62,7 @@ public class BallAndChain : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, e_count * hx);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
+                b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, e_count * hx);
                 jointDef.bodyIdA = prevBodyId;
@@ -84,7 +84,7 @@ public class BallAndChain : Sample
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * e_count) * hx + circle.radius - hx, e_count * hx);
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreateCircleShape(bodyId, ref shapeDef, circle);
+                b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * e_count) * hx, e_count * hx);
                 jointDef.bodyIdA = prevBodyId;

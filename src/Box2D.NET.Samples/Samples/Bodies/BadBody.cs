@@ -36,7 +36,7 @@ public class BadBody : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Build a bad body
@@ -54,7 +54,7 @@ public class BadBody : Sample
 
             // density set to zero intentionally to create a bad body
             shapeDef.density = 0.0f;
-            b2CreateCapsuleShape(m_badBodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_badBodyId, ref shapeDef, ref capsule);
         }
 
         // Build a normal body
@@ -69,7 +69,7 @@ public class BadBody : Sample
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-            b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
         }
     }
 

@@ -51,7 +51,7 @@ public class BodyType : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Define attachment
@@ -64,7 +64,7 @@ public class BodyType : Sample
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(m_attachmentId, ref shapeDef, box);
+            b2CreatePolygonShape(m_attachmentId, ref shapeDef, ref box);
         }
 
         // Define second attachment
@@ -78,7 +78,7 @@ public class BodyType : Sample
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(m_secondAttachmentId, ref shapeDef, box);
+            b2CreatePolygonShape(m_secondAttachmentId, ref shapeDef, ref box);
         }
 
         // Define platform
@@ -94,7 +94,7 @@ public class BodyType : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
-            b2CreatePolygonShape(m_platformId, ref shapeDef, box);
+            b2CreatePolygonShape(m_platformId, ref shapeDef, ref box);
 
             B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
@@ -147,7 +147,7 @@ public class BodyType : Sample
             shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         // Create a second payload
@@ -164,7 +164,7 @@ public class BodyType : Sample
             shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
-            b2CreatePolygonShape(m_secondPayloadId, ref shapeDef, box);
+            b2CreatePolygonShape(m_secondPayloadId, ref shapeDef, ref box);
         }
 
         // Create a separate body on the ground
@@ -181,7 +181,7 @@ public class BodyType : Sample
             shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
-            b2CreateCapsuleShape(m_touchingBodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_touchingBodyId, ref shapeDef, ref capsule);
         }
 
         // Create a separate floating body
@@ -199,7 +199,7 @@ public class BodyType : Sample
             shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
-            b2CreateCircleShape(m_floatingBodyId, ref shapeDef, circle);
+            b2CreateCircleShape(m_floatingBodyId, ref shapeDef, ref circle);
         }
     }
 

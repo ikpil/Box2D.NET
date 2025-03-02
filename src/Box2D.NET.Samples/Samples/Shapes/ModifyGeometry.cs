@@ -90,7 +90,7 @@ public class ModifyGeometry : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(10.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         {
@@ -100,19 +100,20 @@ public class ModifyGeometry : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(1.0f, 1.0f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         {
             m_shapeType = B2ShapeType.b2_circleShape;
             m_scale = 1.0f;
-            m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+            var circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+            m_circle = circle; // todo : @ikpil, fix it!!
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            m_shapeId = b2CreateCircleShape(bodyId, ref shapeDef, m_circle);
+            m_shapeId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle); // todo : @ikpil, fix it!!
         }
     }
 

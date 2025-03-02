@@ -85,7 +85,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             float length = 2.0f;
             B2Vec2 pivot1 = new B2Vec2(position.x, position.y + 1.0f + length);
@@ -109,7 +109,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.bodyIdA = m_groundId;
@@ -130,7 +130,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
@@ -152,7 +152,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -173,7 +173,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
@@ -198,7 +198,7 @@ public class FixedRotation : Sample
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();

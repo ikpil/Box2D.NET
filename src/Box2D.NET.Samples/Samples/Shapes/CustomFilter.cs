@@ -42,7 +42,7 @@ public class CustomFilter : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
@@ -58,7 +58,7 @@ public class CustomFilter : Sample
                 m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
 
                 shapeDef.userData = i + 1;
-                m_shapeIds[i] = b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, box);
+                m_shapeIds[i] = b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, ref box);
                 x += 2.0f;
             }
         }

@@ -67,7 +67,7 @@ namespace Box2D.NET.Shared
 
                     B2BodyId body = b2CreateBody(worldId, ref bodyDef);
 
-                    b2CreateCircleShape(body, ref shapeDef, circle);
+                    b2CreateCircleShape(body, ref shapeDef, ref circle);
 
                     if (i > 0)
                     {
@@ -105,7 +105,7 @@ namespace Box2D.NET.Shared
 
                 B2Polygon box = b2MakeBox(100.0f, 1.0f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                b2CreatePolygonShape(groundId, ref shapeDef, box);
+                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
             }
 
             {
@@ -131,7 +131,7 @@ namespace Box2D.NET.Shared
 
                         bodyDef.position = new B2Vec2(x, y);
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
-                        b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                     }
                 }
             }
@@ -156,7 +156,7 @@ namespace Box2D.NET.Shared
                     bodyDef.position = new B2Vec2(x, y);
 
                     B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                 }
             }
         }
@@ -182,7 +182,7 @@ namespace Box2D.NET.Shared
             for (int i = 0; i < rowCount; ++i)
             {
                 B2Segment segment = new B2Segment(new B2Vec2(-0.5f * 2.0f * groundWidth, groundY), new B2Vec2(0.5f * 2.0f * groundWidth, groundY));
-                b2CreateSegmentShape(groundId, ref shapeDef, segment);
+                b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
                 groundY += groundDeltaY;
             }
 
@@ -232,7 +232,7 @@ namespace Box2D.NET.Shared
                     for (int j = 0; j <= rainData.gridCount; ++j)
                     {
                         B2Polygon box = b2MakeOffsetBox(0.5f * width, 0.5f * height, new B2Vec2(x, y), b2Rot_identity);
-                        b2CreatePolygonShape(groundId, ref shapeDef, box);
+                        b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
                         //b2Segment segment = { { x - 0.5f * width, y }, { x + 0.5f * width, y } };
                         //b2CreateSegmentShape( groundId, &shapeDef, &segment );
@@ -362,7 +362,7 @@ namespace Box2D.NET.Shared
                 B2Polygon box = b2MakeRoundedBox(0.4f, 20.0f, 0.2f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.friction = 0.0f;
-                b2CreatePolygonShape(spinnerId, ref shapeDef, box);
+                b2CreatePolygonShape(spinnerId, ref shapeDef, ref box);
 
                 float motorSpeed = 5.0f;
                 float maxMotorTorque = 40000.0f;
@@ -400,15 +400,15 @@ namespace Box2D.NET.Shared
                     int remainder = i % 3;
                     if (remainder == 0)
                     {
-                        b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
+                        b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
                     }
                     else if (remainder == 1)
                     {
-                        b2CreateCircleShape(bodyId, ref shapeDef, circle);
+                        b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
                     }
                     else if (remainder == 2)
                     {
-                        b2CreatePolygonShape(bodyId, ref shapeDef, square);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref square);
                     }
 
                     x += 1.0f;
@@ -447,7 +447,7 @@ namespace Box2D.NET.Shared
 
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.density = 8.0f;
-                b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }
 
             {
@@ -470,7 +470,7 @@ namespace Box2D.NET.Shared
                         bodyDef.position.x = i * d + 30.0f;
                         bodyDef.position.y = (j - rows / 2.0f) * d;
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
-                        b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                     }
                 }
             }
@@ -495,13 +495,13 @@ namespace Box2D.NET.Shared
 
                 B2Polygon polygon;
                 polygon = b2MakeOffsetBox(0.5f, 10.0f, new B2Vec2(10.0f, 0.0f), b2Rot_identity);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
                 polygon = b2MakeOffsetBox(0.5f, 10.0f, new B2Vec2(-10.0f, 0.0f), b2Rot_identity);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
                 polygon = b2MakeOffsetBox(10.0f, 0.5f, new B2Vec2(0.0f, 10.0f), b2Rot_identity);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
                 polygon = b2MakeOffsetBox(10.0f, 0.5f, new B2Vec2(0.0f, -10.0f), b2Rot_identity);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
 
                 float motorSpeed = 25.0f;
 
@@ -535,7 +535,7 @@ namespace Box2D.NET.Shared
                         bodyDef.position = new B2Vec2(x, y);
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
 
-                        b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
 
                         x += 0.4f;
                     }

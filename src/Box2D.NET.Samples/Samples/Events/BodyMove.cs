@@ -53,21 +53,21 @@ public class BodyMove : Sample
             shapeDef.friction = 0.1f;
 
             B2Polygon box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(-10.0f, -0.1f), b2MakeRot(-0.15f * B2_PI));
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(10.0f, -0.1f), b2MakeRot(0.15f * B2_PI));
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             shapeDef.restitution = 0.8f;
 
             box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(19.9f, 10.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(-19.9f, 10.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             box = b2MakeOffsetBox(20.0f, 0.1f, new B2Vec2(0.0f, 20.1f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         m_sleepCount = 0;
@@ -99,21 +99,21 @@ public class BodyMove : Sample
             int remainder = m_count % 4;
             if (remainder == 0)
             {
-                b2CreateCapsuleShape(m_bodyIds[m_count], ref shapeDef, capsule);
+                b2CreateCapsuleShape(m_bodyIds[m_count], ref shapeDef, ref capsule);
             }
             else if (remainder == 1)
             {
-                b2CreateCircleShape(m_bodyIds[m_count], ref shapeDef, circle);
+                b2CreateCircleShape(m_bodyIds[m_count], ref shapeDef, ref circle);
             }
             else if (remainder == 2)
             {
-                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, square);
+                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, ref square);
             }
             else
             {
                 B2Polygon poly = RandomPolygon(0.75f);
                 poly.radius = 0.1f;
-                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, poly);
+                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, ref poly);
             }
 
             m_count += 1;

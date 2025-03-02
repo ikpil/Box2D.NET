@@ -68,7 +68,7 @@ public class Arch : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2Segment segment = new B2Segment(new B2Vec2(-100.0f, 0.0f), new B2Vec2(100.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
@@ -81,7 +81,7 @@ public class Arch : Sample
                 B2Vec2[] ps = new B2Vec2[4] { ps1[i], ps2[i], ps2[i + 1], ps1[i + 1] };
                 B2Hull hull = b2ComputeHull(ps, 4);
                 B2Polygon polygon = b2MakePolygon(hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
             for (int i = 0; i < 8; ++i)
@@ -96,7 +96,7 @@ public class Arch : Sample
                 };
                 B2Hull hull = b2ComputeHull(ps, 4);
                 B2Polygon polygon = b2MakePolygon(hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
             {
@@ -104,7 +104,7 @@ public class Arch : Sample
                 B2Vec2[] ps = new B2Vec2[4] { ps1[8], ps2[8], new B2Vec2(-ps2[8].x, ps2[8].y), new B2Vec2(-ps1[8].x, ps1[8].y) };
                 B2Hull hull = b2ComputeHull(ps, 4);
                 B2Polygon polygon = b2MakePolygon(hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, polygon);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
             for (int i = 0; i < 4; ++i)
@@ -112,7 +112,7 @@ public class Arch : Sample
                 B2Polygon box = b2MakeBox(2.0f, 0.5f);
                 bodyDef.position = new B2Vec2(0.0f, 0.5f + ps2[8].y + 1.0f * i);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }
         }
     }

@@ -134,7 +134,7 @@ public class SensorFunnel : Sample
                 shapeDef.restitution = 1.0f;
                 shapeDef.density = 1.0f;
 
-                b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
                 revoluteDef.bodyIdA = groundId;
@@ -155,7 +155,7 @@ public class SensorFunnel : Sample
                 B2Polygon box = b2MakeOffsetBox(4.0f, 1.0f, new B2Vec2(0.0f, -30.5f), b2Rot_identity);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.isSensor = true;
-                b2CreatePolygonShape(groundId, ref shapeDef, box);
+                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
             }
         }
 

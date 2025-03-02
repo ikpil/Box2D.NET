@@ -79,8 +79,8 @@ public class Pinball : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-            b2CreatePolygonShape(leftFlipperId, ref shapeDef, box);
-            b2CreatePolygonShape(rightFlipperId, ref shapeDef, box);
+            b2CreatePolygonShape(leftFlipperId, ref shapeDef, ref box);
+            b2CreatePolygonShape(rightFlipperId, ref shapeDef, ref box);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.bodyIdA = groundId;
@@ -116,8 +116,8 @@ public class Pinball : Sample
             B2Polygon box1 = b2MakeBox(1.5f, 0.125f);
             B2Polygon box2 = b2MakeBox(0.125f, 1.5f);
 
-            b2CreatePolygonShape(bodyId, ref shapeDef, box1);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box2);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box1);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box2);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.bodyIdA = groundId;
@@ -130,8 +130,8 @@ public class Pinball : Sample
 
             bodyDef.position = new B2Vec2(4.0f, 8.0f);
             bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box1);
-            b2CreatePolygonShape(bodyId, ref shapeDef, box2);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box1);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box2);
             jointDef.localAnchorA = bodyDef.position;
             jointDef.bodyIdB = bodyId;
             b2CreateRevoluteJoint(m_worldId, ref jointDef);
@@ -148,11 +148,11 @@ public class Pinball : Sample
             shapeDef.restitution = 1.5f;
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
-            b2CreateCircleShape(bodyId, ref shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
             bodyDef.position = new B2Vec2(4.0f, 17.0f);
             bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(bodyId, ref shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }
 
         // Ball
@@ -166,7 +166,7 @@ public class Pinball : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.2f);
-            b2CreateCircleShape(m_ballId, ref shapeDef, circle);
+            b2CreateCircleShape(m_ballId, ref shapeDef, ref circle);
         }
     }
 

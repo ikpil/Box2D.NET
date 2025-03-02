@@ -36,7 +36,7 @@ public class CardHouse : Sample
         shapeDef.friction = 0.7f;
 
         B2Polygon groundBox = b2MakeBox(40.0f, 2.0f);
-        b2CreatePolygonShape(groundId, ref shapeDef, groundBox);
+        b2CreatePolygonShape(groundId, ref shapeDef, ref groundBox);
 
         float cardHeight = 0.2f;
         float cardThickness = 0.001f;
@@ -61,21 +61,21 @@ public class CardHouse : Sample
                     bodyDef.position = new B2Vec2(z + 0.25f, y + cardHeight - 0.015f);
                     bodyDef.rotation = b2MakeRot(angle2);
                     B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, cardBox);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref cardBox);
                 }
 
                 {
                     bodyDef.position = new B2Vec2(z, y);
                     bodyDef.rotation = b2MakeRot(angle1);
                     B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, cardBox);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref cardBox);
 
                     z += 0.175f;
 
                     bodyDef.position = new B2Vec2(z, y);
                     bodyDef.rotation = b2MakeRot(angle0);
                     bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, cardBox);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref cardBox);
 
                     z += 0.175f;
                 }

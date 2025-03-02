@@ -41,7 +41,7 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Collinear edges with no adjacency information.
@@ -53,13 +53,13 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment1 = new B2Segment(new B2Vec2(-8.0f, 1.0f), new B2Vec2(-6.0f, 1.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment1);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment1);
 
             B2Segment segment2 = new B2Segment(new B2Vec2(-6.0f, 1.0f), new B2Vec2(-4.0f, 1.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment2);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment2);
 
             B2Segment segment3 = new B2Segment(new B2Vec2(-4.0f, 1.0f), new B2Vec2(-2.0f, 1.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment3);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment3);
         }
 
         // Chain shape
@@ -86,13 +86,13 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(4.0f, 3.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(6.0f, 3.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(8.0f, 3.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         // Square made from a chain loop. Collision should be smooth.
@@ -149,7 +149,7 @@ public class Character : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
             shapeDef.friction = 0.2f;
-            b2CreateCircleShape(m_circleCharacterId, ref shapeDef, circle);
+            b2CreateCircleShape(m_circleCharacterId, ref shapeDef, ref circle);
         }
 
         // Capsule character
@@ -167,7 +167,7 @@ public class Character : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
             shapeDef.friction = 0.2f;
-            b2CreateCapsuleShape(m_capsuleCharacterId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_capsuleCharacterId, ref shapeDef, ref capsule);
         }
 
         // Square character
@@ -185,7 +185,7 @@ public class Character : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
             shapeDef.friction = 0.2f;
-            b2CreatePolygonShape(m_boxCharacterId, ref shapeDef, box);
+            b2CreatePolygonShape(m_boxCharacterId, ref shapeDef, ref box);
         }
     }
 

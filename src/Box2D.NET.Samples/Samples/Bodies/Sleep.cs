@@ -44,7 +44,7 @@ public class Sleep : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            m_groundShapeId = b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            m_groundShapeId = b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         // Sleeping body with sensors
@@ -59,11 +59,11 @@ public class Sleep : Sample
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 1.0f), new B2Vec2(1.0f, 1.0f), 0.75f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
             shapeDef.isSensor = true;
             capsule.radius = 1.0f;
-            m_sensorIds[i] = b2CreateCapsuleShape(bodyId, ref shapeDef, capsule);
+            m_sensorIds[i] = b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
             m_sensorTouching[i] = false;
         }
 
@@ -78,7 +78,7 @@ public class Sleep : Sample
 
             B2Circle circle = new B2Circle(new B2Vec2(1.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCircleShape(bodyId, ref shapeDef, circle);
+            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }
 
         // Awake body and sleep is disabled
@@ -92,7 +92,7 @@ public class Sleep : Sample
 
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(0.0f, 1.0f), b2MakeRot(0.25f * B2_PI));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         // A sleeping body to test waking on collision
@@ -106,7 +106,7 @@ public class Sleep : Sample
 
             B2Polygon box = b2MakeSquare(1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 
         // A long pendulum
@@ -120,7 +120,7 @@ public class Sleep : Sample
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(90.0f, 0.0f), 0.25f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCapsuleShape(m_pendulumId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_pendulumId, ref shapeDef, ref capsule);
 
             B2Vec2 pivot = bodyDef.position;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();

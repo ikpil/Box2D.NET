@@ -50,22 +50,22 @@ public class BounceHouse : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, -10.0f), new B2Vec2(10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, -10.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 10.0f), new B2Vec2(-10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 10.0f), new B2Vec2(-10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
         m_shapeType = ShapeType.e_boxShape;
@@ -108,18 +108,18 @@ public class BounceHouse : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(m_bodyId, ref shapeDef, circle);
+            b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            b2CreateCapsuleShape(m_bodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_bodyId, ref shapeDef, ref capsule);
         }
         else
         {
             float h = 0.1f;
             B2Polygon box = b2MakeBox(20.0f * h, h);
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, box);
+            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
         }
     }
 

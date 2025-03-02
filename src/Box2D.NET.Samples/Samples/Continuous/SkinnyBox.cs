@@ -45,10 +45,10 @@ public class SkinnyBox : Sample
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.friction = 0.9f;
-            b2CreateSegmentShape(groundId, ref shapeDef, segment);
+            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
             B2Polygon box = b2MakeOffsetBox(0.1f, 1.0f, new B2Vec2(0.0f, 1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         m_autoTest = false;
@@ -91,12 +91,12 @@ public class SkinnyBox : Sample
         if (m_capsule)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 0.1f);
-            b2CreateCapsuleShape(m_bodyId, ref shapeDef, capsule);
+            b2CreateCapsuleShape(m_bodyId, ref shapeDef, ref capsule);
         }
         else
         {
             B2Polygon polygon = b2MakeBox(2.0f, 0.05f);
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, polygon);
+            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref polygon);
         }
 
         if (m_bullet)
@@ -106,7 +106,7 @@ public class SkinnyBox : Sample
             bodyDef.position = new B2Vec2(m_x, 10.0f);
             bodyDef.linearVelocity = new B2Vec2(0.0f, -50.0f);
             m_bulletId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreatePolygonShape(m_bulletId, ref shapeDef, polygon);
+            b2CreatePolygonShape(m_bulletId, ref shapeDef, ref polygon);
         }
     }
 

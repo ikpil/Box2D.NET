@@ -23,5 +23,10 @@ namespace Box2D.NET
             this.center2 = center2;
             this.radius = radius;
         }
+
+        public B2Capsule Clone()
+        {
+            return new B2Capsule(center1, center2, radius);
+        }
     }
 }

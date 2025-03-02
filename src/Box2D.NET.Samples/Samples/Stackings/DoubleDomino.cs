@@ -33,7 +33,7 @@ public class DoubleDomino : Sample
 
             B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, box);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         {
@@ -50,7 +50,7 @@ public class DoubleDomino : Sample
             {
                 bodyDef.position = new B2Vec2(x, 0.5f);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, box);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                 if (i == 0)
                 {
                     b2Body_ApplyLinearImpulse(bodyId, new B2Vec2(0.2f, 0.0f), new B2Vec2(x, 1.0f), true);
