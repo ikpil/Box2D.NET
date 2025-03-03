@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.IO;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace Box2D.NET.Samples;
@@ -43,7 +44,7 @@ public class Settings
     public void Save()
     {
         string json = JsonConvert.SerializeObject(this, Formatting.Indented);
-        File.WriteAllText(fileName, json);
+        File.WriteAllText(fileName, json, Encoding.UTF8);
     }
 
     public void Load()
