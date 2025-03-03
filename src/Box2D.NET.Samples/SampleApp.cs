@@ -27,7 +27,6 @@ namespace Box2D.NET.Samples;
 
 public class SampleApp
 {
-    // -----------------------------------------------------------------------------------------------------
     private unsafe WindowHandle* g_mainWindow;
     private IWindow _window;
     private IInputContext _input;
@@ -39,6 +38,7 @@ public class SampleApp
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
     private float s_windowScale = 1.0f;
     private float s_framebufferScale = 1.0f;
+    private float _frameTime = 0.0f;
 
     public SampleApp()
     {
@@ -73,7 +73,7 @@ public class SampleApp
             Console.WriteLine("Failed to initialize GLFW");
             return -1;
         }
-        
+
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
         B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
         B2.g_glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
@@ -118,7 +118,7 @@ public class SampleApp
         _window.Render += OnWindowRender;
         _window.Closing += OnWindowClosing;
         _window.Run();
-        
+
         B2.g_glfw.Terminate();
         s_settings.Save();
 
@@ -173,106 +173,96 @@ public class SampleApp
         B2.g_glfw.SetCursorPosCallback(g_mainWindow, MouseMotionCallback);
         B2.g_glfw.SetScrollCallback(g_mainWindow, ScrollCallback);
 
-        // todo put this in s_settings
-        CreateUI(g_mainWindow, glslVersion);
         B2.g_draw = new Draw();
         B2.g_draw.Create();
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
         s_selection = s_settings.sampleIndex;
 
+        // todo put this in s_settings
+        CreateUI(g_mainWindow, glslVersion);
+
         B2.g_shader.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
-        
-        // for windows : Microsoft Visual C++ Redistributable Package
-        // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-        var imGuiFontConfig = new ImGuiFontConfig(Path.Combine("data", "droid_sans.ttf"), 10, null);
-        _imgui = new ImGuiController(B2.g_shader.gl, _window, _input, imGuiFontConfig);
-
-        //ImGui.GetStyle().ScaleAllSizes(scale);
-        //ImGui.GetIO().FontGlobalScale = 2.0f;
-
     }
-    
-    float frameTime = 0.0f;
+
+
     private unsafe void OnWindowUpdate(double dt)
     {
         if (B2.g_glfw.WindowShouldClose(g_mainWindow))
             return;
-        
+
+        double time1 = B2.g_glfw.GetTime();
+
+        // if (GetKey(Keys.Z) == InputAction.Press)
+        // {
+        //     // Zoom out
+        //     B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
+        // }
+        // else if (GetKey(Keys.X) == InputAction.Press)
+        // {
+        //     // Zoom in
+        //     B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
+        // }
+
+        B2.g_glfw.GetWindowSize(g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
+        B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
+        B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
+
+        B2.g_glfw.GetFramebufferSize(g_mainWindow, out var bufferWidth, out var bufferHeight);
+        B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
+
+        //B2.g_draw.DrawBackground();
+
+        B2.g_glfw.GetCursorPos(g_mainWindow, out var cursorPosX, out var cursorPosY);
+        // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+
+        var io = ImGui.GetIO();
+        io.DisplaySize.X = (float)B2.g_camera.m_width;
+        io.DisplaySize.Y = (float)B2.g_camera.m_height;
+        io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
+        io.DisplayFramebufferScale.Y = bufferHeight / (float)B2.g_camera.m_height;
+
+
+        // For the Tracy profiler
+        //FrameMark;
+
+        if (s_selection != s_settings.sampleIndex)
         {
-            double time1 = B2.g_glfw.GetTime();
-            
-            // if (GetKey(Keys.Z) == InputAction.Press)
-            // {
-            //     // Zoom out
-            //     B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
-            // }
-            // else if (GetKey(Keys.X) == InputAction.Press)
-            // {
-            //     // Zoom in
-            //     B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
-            // }
-            
-            B2.g_glfw.GetWindowSize(g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
-            B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
-            B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
-            
-            B2.g_glfw.GetFramebufferSize(g_mainWindow, out var bufferWidth, out var bufferHeight);
-            B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
-            
-            //B2.g_draw.DrawBackground();
-            
-            B2.g_glfw.GetCursorPos(g_mainWindow, out var cursorPosX, out var cursorPosY);
-            // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-            // ImGui_ImplOpenGL3_NewFrame();
-            // ImGui_ImplGlfw_NewFrame();
-            // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-            
-            var io = ImGui.GetIO();
-            io.DisplaySize.X = (float)B2.g_camera.m_width;
-            io.DisplaySize.Y = (float)B2.g_camera.m_height;
-            io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
-            io.DisplayFramebufferScale.Y = bufferHeight / (float)B2.g_camera.m_height;
-            
-            
-            // For the Tracy profiler
-            //FrameMark;
-            
-            if (s_selection != s_settings.sampleIndex)
-            {
-                B2.g_camera.ResetView();
-                s_settings.sampleIndex = s_selection;
-            
-                // #todo restore all drawing settings that may have been overridden by a sample
-                s_settings.subStepCount = 4;
-                s_settings.drawJoints = true;
-                s_settings.useCameraBounds = false;
-            
-                s_sample = null;
-                s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
-            }
-            
-            B2.g_glfw.PollEvents();
-            
-            // Limit frame rate to 60Hz
-            double time2 = B2.g_glfw.GetTime();
-            double targetTime = time1 + 1.0 / 60.0;
-            while (time2 < targetTime)
-            {
-                b2Yield();
-                time2 = B2.g_glfw.GetTime();
-            }
-            
-            frameTime = (float)(time2 - time1);
-            
-            _imgui.Update((float)dt);
+            B2.g_camera.ResetView();
+            s_settings.sampleIndex = s_selection;
+
+            // #todo restore all drawing settings that may have been overridden by a sample
+            s_settings.subStepCount = 4;
+            s_settings.drawJoints = true;
+            s_settings.useCameraBounds = false;
+
+            s_sample = null;
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
         }
+
+        B2.g_glfw.PollEvents();
+
+        // Limit frame rate to 60Hz
+        double time2 = B2.g_glfw.GetTime();
+        double targetTime = time1 + 1.0 / 60.0;
+        while (time2 < targetTime)
+        {
+            b2Yield();
+            time2 = B2.g_glfw.GetTime();
+        }
+
+        _frameTime = (float)(time2 - time1);
+
+        _imgui.Update((float)dt);
     }
 
     private unsafe void OnWindowRender(double dt)
     {
         B2.g_shader.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            
+
         bool open = true;
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(B2.g_camera.m_width, B2.g_camera.m_height));
@@ -300,19 +290,21 @@ public class SampleApp
 
         //ImGui.ShowDemoWindow();
 
-        // if (B2.g_draw.m_showUI)
-        // {
-        //     snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * frameTime, s_sample.m_stepCount,
-        //         B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom);
-        //     // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
-        //
-        //     ImGui.Begin("Overlay", nullptr,
-        //         ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-        //         ImGuiWindowFlags.NoScrollbar);
-        //     ImGui.SetCursorPos(new Vector2(5.0f, B2.g_camera.m_height - 20.0f));
-        //     ImGui.TextColored(new Vector4(153, 230, 153, 255), "%s", buffer);
-        //     ImGui.End();
-        // }
+        if (B2.g_draw.m_showUI)
+        {
+            string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
+                            $"camera ({B2.g_camera.m_center.x:G}, {B2.g_camera.m_center.y:G}, {B2.g_camera.m_zoom:G})";
+            // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
+            //     B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom);
+            // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
+
+            ImGui.Begin("Overlay", ref open,
+                ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+                ImGuiWindowFlags.NoScrollbar);
+            ImGui.SetCursorPos(new Vector2(5.0f, B2.g_camera.m_height - 20.0f));
+            ImGui.TextColored(new Vector4(153, 230, 153, 255), buffer);
+            ImGui.End();
+        }
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
@@ -379,8 +371,8 @@ public class SampleApp
 
     private unsafe void CreateUI(WindowHandle* window, string glslVersion)
     {
-        // IMGUI_CHECKVERSION();
-        // ImGui.CreateContext();
+        //IMGUI_CHECKVERSION();
+        //ImGui.CreateContext();
         //
         // bool success = ImGui_ImplGlfw_InitForOpenGL(window, false);
         // if (success == false)
@@ -396,23 +388,30 @@ public class SampleApp
         //     Debug.Assert(false);
         // }
         //
-        // string fontPath = "data/droid_sans.ttf";
-        // FILE* file = fopen(fontPath, "rb");
-        //
-        // if (file != nullptr)
-        // {
-        //     ImFontConfig fontConfig;
-        //     fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-        //     B2.g_draw.m_smallFont = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
-        //     B2.g_draw.m_regularFont = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
-        //     B2.g_draw.m_mediumFont = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
-        //     B2.g_draw.m_largeFont = ImGui.GetIO().Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
-        // }
-        // else
-        // {
-        //     Console.WriteLine("\n\nERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)\n\n");
-        //     exit(EXIT_FAILURE);
-        // }
+
+        var fontPath = Path.Combine("data", "droid_sans.ttf");
+        if (!File.Exists(fontPath))
+        {
+            Console.WriteLine("ERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)");
+            //exit(EXIT_FAILURE);
+            return;
+        }
+
+        // for windows : Microsoft Visual C++ Redistributable Package
+        // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
+        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 18, null);
+        _imgui = new ImGuiController(B2.g_shader.gl, _window, _input, imGuiFontConfig);
+
+        var imGuiIo = ImGui.GetIO();
+        ImFontConfig fontConfig;
+        fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
+         // B2.g_draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
+         // B2.g_draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
+         // B2.g_draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
+         // B2.g_draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
+        
+        //ImGui.GetStyle().ScaleAllSizes(2);
+        //imGuiIo.FontGlobalScale = 2.0f;
     }
 
     public void DestroyUI()
