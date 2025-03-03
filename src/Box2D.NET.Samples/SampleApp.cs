@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using Box2D.NET.Samples.Helpers;
 using ImGuiNET;
 using Box2D.NET.Samples.Samples;
 using Silk.NET.GLFW;
@@ -27,7 +28,6 @@ namespace Box2D.NET.Samples;
 
 public class SampleApp
 {
-    private unsafe WindowHandle* g_mainWindow;
     private IWindow _window;
     private IInputContext _input;
     private ImGuiController _imgui;
@@ -104,12 +104,12 @@ public class SampleApp
         if (fullscreen)
         {
             options.Size = new Vector2D<int>((int)(1920 * s_windowScale), (int)(1080 * s_windowScale));
-            //g_mainWindow = B2.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
+            //B2.g_mainWindow = B2.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
             options.Size = new Vector2D<int>((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale));
-            //g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
+            //B2.g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
         _window = Window.Create(options);
@@ -133,24 +133,24 @@ public class SampleApp
         string glslVersion = string.Empty;
 #endif
 
-        g_mainWindow = (WindowHandle*)_window.Native?.Glfw.Value;
-        if (g_mainWindow == null)
+        B2.g_mainWindow = (WindowHandle*)_window.Handle;
+        if (B2.g_mainWindow == null)
         {
-            Console.WriteLine("Failed to open GLFW g_mainWindow.");
+            Console.WriteLine("Failed to open GLFW B2.g_mainWindow.");
             return;
         }
 
         // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         // {
-        //     B2.g_glfw.GetWindowContentScale(g_mainWindow, out s_framebufferScale, out s_framebufferScale);
+        //     B2.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
         // }
         // else
         // {
-        //     B2.g_glfw.GetWindowContentScale(g_mainWindow, out s_windowScale, out s_windowScale);
+        //     B2.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_windowScale, out s_windowScale);
         // }
 
 
-        B2.g_glfw.MakeContextCurrent(g_mainWindow);
+        B2.g_glfw.MakeContextCurrent(B2.g_mainWindow);
 
         _input = _window.CreateInput();
         // Load OpenGL functions using glad
@@ -166,12 +166,12 @@ public class SampleApp
         Console.WriteLine($"GL {glVersion}");
         Console.WriteLine($"OpenGL {B2.g_shader.gl.GetStringS(GLEnum.Version)}, GLSL {B2.g_shader.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
-        B2.g_glfw.SetWindowSizeCallback(g_mainWindow, ResizeWindowCallback);
-        B2.g_glfw.SetKeyCallback(g_mainWindow, KeyCallback);
-        B2.g_glfw.SetCharCallback(g_mainWindow, CharCallback);
-        B2.g_glfw.SetMouseButtonCallback(g_mainWindow, MouseButtonCallback);
-        B2.g_glfw.SetCursorPosCallback(g_mainWindow, MouseMotionCallback);
-        B2.g_glfw.SetScrollCallback(g_mainWindow, ScrollCallback);
+        B2.g_glfw.SetWindowSizeCallback(B2.g_mainWindow, ResizeWindowCallback);
+        B2.g_glfw.SetKeyCallback(B2.g_mainWindow, KeyCallback);
+        B2.g_glfw.SetCharCallback(B2.g_mainWindow, CharCallback);
+        B2.g_glfw.SetMouseButtonCallback(B2.g_mainWindow, MouseButtonCallback);
+        B2.g_glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
+        B2.g_glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
 
         B2.g_draw = new Draw();
         B2.g_draw.Create();
@@ -180,44 +180,46 @@ public class SampleApp
         s_selection = s_settings.sampleIndex;
 
         // todo put this in s_settings
-        CreateUI(g_mainWindow, glslVersion);
+        CreateUI(B2.g_mainWindow, glslVersion);
 
         B2.g_shader.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     }
 
 
+    private double f = 3;
+
     private unsafe void OnWindowUpdate(double dt)
     {
-        if (B2.g_glfw.WindowShouldClose(g_mainWindow))
+        if (B2.g_glfw.WindowShouldClose(B2.g_mainWindow))
             return;
 
         double time1 = B2.g_glfw.GetTime();
 
-        // if (GetKey(Keys.Z) == InputAction.Press)
-        // {
-        //     // Zoom out
-        //     B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
-        // }
-        // else if (GetKey(Keys.X) == InputAction.Press)
-        // {
-        //     // Zoom in
-        //     B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
-        // }
+        if (GlfwHelpers.GetKey(Keys.Z) == InputAction.Press)
+        {
+            // Zoom out
+            B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
+        }
+        else if (GlfwHelpers.GetKey(Keys.X) == InputAction.Press)
+        {
+            // Zoom in
+            B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
+        }
 
-        B2.g_glfw.GetWindowSize(g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
+        B2.g_glfw.GetWindowSize(B2.g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
         B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
         B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
 
-        B2.g_glfw.GetFramebufferSize(g_mainWindow, out var bufferWidth, out var bufferHeight);
+        B2.g_glfw.GetFramebufferSize(B2.g_mainWindow, out var bufferWidth, out var bufferHeight);
         B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
 
         //B2.g_draw.DrawBackground();
 
-        B2.g_glfw.GetCursorPos(g_mainWindow, out var cursorPosX, out var cursorPosY);
-        // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+        B2.g_glfw.GetCursorPos(B2.g_mainWindow, out var cursorPosX, out var cursorPosY);
+        // ImGui_ImplGlfw_CursorPosCallback(B2.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
         // ImGui_ImplOpenGL3_NewFrame();
         // ImGui_ImplGlfw_NewFrame();
-        // ImGui_ImplGlfw_CursorPosCallback(g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+        // ImGui_ImplGlfw_CursorPosCallback(B2.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
 
         var io = ImGui.GetIO();
         io.DisplaySize.X = (float)B2.g_camera.m_width;
@@ -270,6 +272,7 @@ public class SampleApp
         ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
+
         if (s_sample == null)
         {
             // delayed creation because imgui doesn't create fonts until NewFrame() is called
@@ -308,7 +311,7 @@ public class SampleApp
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-        B2.g_glfw.SwapBuffers(g_mainWindow);
+        B2.g_glfw.SwapBuffers(B2.g_mainWindow);
     }
 
     private void OnWindowClosing()
@@ -405,11 +408,11 @@ public class SampleApp
         var imGuiIo = ImGui.GetIO();
         ImFontConfig fontConfig;
         fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-         // B2.g_draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
-         // B2.g_draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
-         // B2.g_draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
-         // B2.g_draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
-        
+        // B2.g_draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
+        // B2.g_draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
+        // B2.g_draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
+        // B2.g_draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
+
         //ImGui.GetStyle().ScaleAllSizes(2);
         //imGuiIo.FontGlobalScale = 2.0f;
     }
@@ -444,7 +447,7 @@ public class SampleApp
             {
                 case Keys.Escape:
                     // Quit
-                    B2.g_glfw.SetWindowShouldClose(g_mainWindow, true);
+                    B2.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     break;
 
                 case Keys.Left:
@@ -569,7 +572,7 @@ public class SampleApp
         }
 
         double xd, yd;
-        B2.g_glfw.GetCursorPos(g_mainWindow, out xd, out yd);
+        B2.g_glfw.GetCursorPos(B2.g_mainWindow, out xd, out yd);
         B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         // Use the mouse to move things around.
@@ -715,7 +718,7 @@ public class SampleApp
 
                     if (ImGui.Button("Quit", button_sz))
                     {
-                        B2.g_glfw.SetWindowShouldClose(g_mainWindow, true);
+                        B2.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     }
 
                     ImGui.EndTabItem();

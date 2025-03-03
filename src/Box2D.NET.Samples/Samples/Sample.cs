@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
+using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -61,6 +62,7 @@ public class Sample : IDisposable
         {
             m_tasks[i] = new SampleTask();
         }
+
         m_taskCount = 0;
 
         m_threadCount = 1 + settings.workerCount;
@@ -709,16 +711,9 @@ public class Sample : IDisposable
         var segment = svgPath.Substring(startIdx, ptrIndex - startIdx);
         return float.TryParse(segment, CultureInfo.InvariantCulture, out value);
     }
-    
-    public unsafe InputAction GetKey(Keys key)
+
+    public static InputAction GetKey(Keys key)
     {
-        switch (B2.g_glfw.GetKey(B2.g_mainWindow, key))
-        {
-            case 0: return InputAction.Release;
-            case 1: return InputAction.Press;
-            case 2: return InputAction.Repeat;
-            default: return InputAction.Release;
-        }
-        
+        return GlfwHelpers.GetKey(key);
     }
 }
