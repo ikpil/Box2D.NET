@@ -1722,7 +1722,9 @@ namespace Box2D.NET
             // #endif
 
             // todo large stack item
-            B2RebuildItem[] stack = b2Alloc<B2RebuildItem>(B2_TREE_STACK_SIZE);
+            //B2RebuildItem[] stack = new B2RebuildItem[B2_TREE_STACK_SIZE];
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Length);
+            B2FixedArray1024<B2RebuildItem> stack = new B2FixedArray1024<B2RebuildItem>();
             int top = 0;
 
             stack[0].nodeIndex = b2AllocateNode(tree);
@@ -1737,7 +1739,7 @@ namespace Box2D.NET
 
             while (true)
             {
-                B2RebuildItem item = stack[top];
+                ref B2RebuildItem item = ref stack[top];
 
                 item.childCount += 1;
 
@@ -1751,7 +1753,7 @@ namespace Box2D.NET
                         break;
                     }
 
-                    B2RebuildItem parentItem = stack[(top - 1)];
+                    ref B2RebuildItem parentItem = ref stack[(top - 1)];
                     B2TreeNode parentNode = nodes[parentItem.nodeIndex];
 
                     if (parentItem.childCount == 0)
@@ -1827,7 +1829,7 @@ namespace Box2D.NET
                         Debug.Assert(top < B2_TREE_STACK_SIZE);
 
                         top += 1;
-                        B2RebuildItem newItem = stack[top];
+                        ref B2RebuildItem newItem = ref stack[top];
                         newItem.nodeIndex = b2AllocateNode(tree);
                         newItem.childCount = -1;
                         newItem.startIndex = startIndex;

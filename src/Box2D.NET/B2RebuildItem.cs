@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     // Temporary data used to track the rebuild of a tree node
-    public class B2RebuildItem
+    public struct B2RebuildItem
     {
         public int nodeIndex;
         public int childCount;
