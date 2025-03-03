@@ -1093,7 +1093,7 @@ namespace Box2D.NET
             }
 
             //int[] stack = stackalloc int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             var dummy = new B2FixedArray1024<int>();
             var stack = dummy.AsSpan();
             int stackCount = 0;
@@ -1185,7 +1185,7 @@ namespace Box2D.NET
             B2AABB segmentAABB = new B2AABB(b2Min(p1, p2), b2Max(p1, p2));
 
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
@@ -1335,7 +1335,7 @@ namespace Box2D.NET
             B2TreeNode[] nodes = tree.nodes;
 
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
@@ -1723,7 +1723,7 @@ namespace Box2D.NET
 
             // todo large stack item
             //B2RebuildItem[] stack = new B2RebuildItem[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Length);
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Size);
             B2FixedArray1024<B2RebuildItem> stack = new B2FixedArray1024<B2RebuildItem>();
             int top = 0;
 
@@ -1892,7 +1892,7 @@ namespace Box2D.NET
 
             int leafCount = 0;
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
 

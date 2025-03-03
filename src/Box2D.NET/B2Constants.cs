@@ -78,7 +78,7 @@ namespace Box2D.NET
 
         private static int Check()
         {
-            Debug.Assert(B2FixedArray8<int>.Length == B2_MAX_POLYGON_VERTICES);
+            Debug.Assert(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES);
             return 0;
         }
     }

@@ -5,17 +5,26 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#pragma warning disable CS0169
+
 namespace Box2D.NET.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct B2FixedArray4<T> where T : unmanaged
+    public struct B2FixedArray11<T> where T : unmanaged
     {
-        public const int Size = 4;
+        public const int Size = 11;
 
         public T v0000;
         public T v0001;
         public T v0002;
         public T v0003;
+        public T v0004;
+        public T v0005;
+        public T v0006;
+        public T v0007;
+        public T v0008;
+        public T v0009;
+        public T v0010;
         
         public int Length => Size;
 

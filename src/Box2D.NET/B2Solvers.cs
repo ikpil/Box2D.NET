@@ -1174,7 +1174,7 @@ public enum b2SolverBlockType
         }
 
 
-// Solve with graph coloring
+        // Solve with graph coloring
         public static void b2Solve(B2World world, B2StepContext stepContext)
         {
             world.stepIndex += 1;

@@ -10,7 +10,7 @@ namespace Box2D.NET.Core
     [StructLayout(LayoutKind.Sequential)]
     public struct B2FixedArray1024<T> where T : unmanaged
     {
-        public const int Length = 1024;
+        public const int Size = 1024;
 
         public T v0000;
         public T v0001;
@@ -1037,6 +1037,8 @@ namespace Box2D.NET.Core
         public T v1022;
         public T v1023;
 
+        public int Length => Size;
+
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1046,7 +1048,7 @@ namespace Box2D.NET.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private unsafe ref T GetElement(int index)
         {
-            if (0 > index || Length <= index)
+            if (0 > index || Size <= index)
                 throw new IndexOutOfRangeException();
 
             return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
@@ -1055,7 +1057,7 @@ namespace Box2D.NET.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe Span<T> AsSpan()
         {
-            return new Span<T>(Unsafe.AsPointer(ref v0000), Length);
+            return new Span<T>(Unsafe.AsPointer(ref v0000), Size);
         }
     }
 }
