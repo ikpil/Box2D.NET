@@ -1093,7 +1093,6 @@ namespace Box2D.NET
             }
 
             //int[] stack = stackalloc int[B2_TREE_STACK_SIZE];
-            //Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
             Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
             var dummy = new B2FixedArray1024<int>();
             var stack = dummy.AsSpan();
@@ -1185,7 +1184,9 @@ namespace Box2D.NET
             // Build a bounding box for the segment.
             B2AABB segmentAABB = new B2AABB(b2Min(p1, p2), b2Max(p1, p2));
 
-            int[] stack = new int[B2_TREE_STACK_SIZE];
+            //int[] stack = new int[B2_TREE_STACK_SIZE];
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
 
@@ -1333,7 +1334,9 @@ namespace Box2D.NET
             B2ShapeCastInput subInput = input;
             B2TreeNode[] nodes = tree.nodes;
 
-            int[] stack = new int[B2_TREE_STACK_SIZE];
+            //int[] stack = new int[B2_TREE_STACK_SIZE];
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
 
@@ -1886,7 +1889,9 @@ namespace Box2D.NET
             }
 
             int leafCount = 0;
-            int[] stack = new int[B2_TREE_STACK_SIZE];
+            //int[] stack = new int[B2_TREE_STACK_SIZE];
+            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Length);
+            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
 
             int nodeIndex = tree.root;
