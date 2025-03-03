@@ -20,20 +20,21 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 
 public class LargeWorld : Sample
 {
-    Car m_car = new Car();
-    B2Vec2 m_viewPosition;
-    float m_period;
-    int m_cycleCount;
-    int m_cycleIndex;
-    float m_gridCount;
-    float m_gridSize;
-    float m_speed;
-
-    B2Vec2 m_explosionPosition;
-    bool m_explode;
-    bool m_followCar;
-
     private static readonly int SampleLargeWorld = SampleFactory.Shared.RegisterSample("World", "Large World", Create);
+    
+    private Car m_car = new Car();
+    private B2Vec2 m_viewPosition;
+    private float m_period;
+    private int m_cycleCount;
+    private int m_cycleIndex;
+    private float m_gridCount;
+    private float m_gridSize;
+    private float m_speed;
+
+    private B2Vec2 m_explosionPosition;
+    private bool m_explode;
+    private bool m_followCar;
+
 
     private static Sample Create(Settings settings)
     {

@@ -35,13 +35,12 @@ public class BenchmarkBarrel : Sample
     private const int e_maxRows = 150;
 
 
-    B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
-    Human[] m_humans = new Human[e_maxRows * e_maxColumns];
-    int m_columnCount;
-    int m_rowCount;
+    private B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
+    private Human[] m_humans = new Human[e_maxRows * e_maxColumns];
+    private int m_columnCount;
+    private int m_rowCount;
 
-    ShapeType m_shapeType;
-
+    private ShapeType m_shapeType;
 
     private static Sample Create(Settings settings)
     {

@@ -16,12 +16,13 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class BallAndChain : Sample
 {
+    private static readonly int SampleBallAndChainIndex = SampleFactory.Shared.RegisterSample("Joints", "Ball & Chain", Create);
+    
     public const int e_count = 30;
 
-    B2JointId[] m_jointIds = new B2JointId[e_count + 1];
-    float m_frictionTorque;
+    private B2JointId[] m_jointIds = new B2JointId[e_count + 1];
+    private float m_frictionTorque;
 
-    private static readonly int SampleBallAndChainIndex = SampleFactory.Shared.RegisterSample("Joints", "Ball & Chain", Create);
 
     private static Sample Create(Settings settings)
     {

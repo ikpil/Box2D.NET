@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 public class CircleStack : Sample
 {
     private static readonly int SampleCircleStack = SampleFactory.Shared.RegisterSample("Stacking", "Circle Stack", Create);
-    List<Event> m_events;
+    private List<Event> m_events = new List<Event>();
 
     private static Sample Create(Settings settings)
     {
