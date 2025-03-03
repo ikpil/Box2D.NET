@@ -50,8 +50,8 @@ public class BenchmarkManyTumblers : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         m_groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-        m_rowCount = g_sampleDebug ? 2 : 19;
-        m_columnCount = g_sampleDebug ? 2 : 19;
+        m_rowCount = B2.g_sampleDebug ? 2 : 19;
+        m_columnCount = B2.g_sampleDebug ? 2 : 19;
 
         m_tumblerIds = null;
         m_positions = null;
@@ -129,7 +129,7 @@ public class BenchmarkManyTumblers : Sample
 
         m_bodyIds = null;
 
-        int bodiesPerTumbler = g_sampleDebug ? 8 : 50;
+        int bodiesPerTumbler = B2.g_sampleDebug ? 8 : 50;
         m_bodyCount = bodiesPerTumbler * m_tumblerCount;
 
         m_bodyIds = new B2BodyId[m_bodyCount];

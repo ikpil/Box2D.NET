@@ -9,4 +9,11 @@ public class B2
     public static Glfw g_glfw;
     public static Shader g_shader;
     public static unsafe WindowHandle* g_mainWindow;
+    
+#if NDEBUG
+    public const bool g_sampleDebug = false;
+#else
+    public const bool g_sampleDebug = true;
+#endif
+
 }

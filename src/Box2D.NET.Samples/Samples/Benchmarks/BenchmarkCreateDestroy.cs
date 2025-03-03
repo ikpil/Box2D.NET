@@ -58,8 +58,8 @@ public class BenchmarkCreateDestroy : Sample
         m_createTime = 0.0f;
         m_destroyTime = 0.0f;
 
-        m_baseCount = g_sampleDebug ? 40 : 100;
-        m_iterations = g_sampleDebug ? 1 : 10;
+        m_baseCount = B2.g_sampleDebug ? 40 : 100;
+        m_iterations = B2.g_sampleDebug ? 1 : 10;
         m_bodyCount = 0;
     }
 

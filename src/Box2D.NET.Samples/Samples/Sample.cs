@@ -28,11 +28,6 @@ public class Sample : IDisposable
     public const int k_maxContactPoints = 12 * 2048;
     public const int m_maxTasks = 64;
     public const int m_maxThreads = 64;
-#if NDEBUG
-    public const bool g_sampleDebug = false;
-#else
-    public const bool g_sampleDebug = true;
-#endif
 
     public Settings m_settings;
     public TaskScheduler m_scheduler;
@@ -712,7 +707,7 @@ public class Sample : IDisposable
         return float.TryParse(segment, CultureInfo.InvariantCulture, out value);
     }
 
-    public static InputAction GetKey(Keys key)
+    protected InputAction GetKey(Keys key)
     {
         return GlfwHelpers.GetKey(key);
     }
