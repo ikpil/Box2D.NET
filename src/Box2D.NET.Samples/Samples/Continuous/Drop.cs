@@ -17,23 +17,22 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class Drop : Sample
 {
-    List<B2BodyId> m_groundIds;
-    List<B2BodyId> m_bodyIds;
-    Human m_human;
-    int m_frameSkip;
-    int m_frameCount;
-    bool m_continuous;
-    bool m_speculative;
-
     private static readonly int SampleDrop = SampleFactory.Shared.RegisterSample("Continuous", "Drop", Create);
+    
+    private List<B2BodyId> m_groundIds = new List<B2BodyId>();
+    private List<B2BodyId> m_bodyIds = new List<B2BodyId>();
+    private Human m_human;
+    private int m_frameSkip;
+    private int m_frameCount;
+    private bool m_continuous;
+    private bool m_speculative;
 
     private static Sample Create(Settings settings)
     {
         return new Drop(settings);
     }
 
-    public Drop(Settings settings)
-        : base(settings)
+    public Drop(Settings settings) : base(settings)
     {
         if (settings.restart == false)
         {
