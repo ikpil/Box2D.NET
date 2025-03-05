@@ -91,7 +91,7 @@ public class ChainSlide : Sample
         base.Step(settings);
 
 #if DEBUG
-        B2.g_draw.DrawString(5, m_textLine, "toi hits = %d", b2_toiHitCount);
+        B2.g_draw.DrawString(5, m_textLine, $"toi hits = {b2_toiHitCount}");
         m_textLine += m_textIncrement;
 #endif
     }

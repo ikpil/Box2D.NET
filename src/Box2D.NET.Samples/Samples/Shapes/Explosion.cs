@@ -122,7 +122,7 @@ public class Explosion : Sample
 
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "reference angle = %g", m_referenceAngle);
+        B2.g_draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
         m_textLine += m_textIncrement;
 
         B2.g_draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);

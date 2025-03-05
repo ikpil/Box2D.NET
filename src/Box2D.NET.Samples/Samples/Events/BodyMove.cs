@@ -185,7 +185,7 @@ public class BodyMove : Sample
 
         B2.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
-        B2.g_draw.DrawString(5, m_textLine, "sleep count: %d", m_sleepCount);
+        B2.g_draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
         m_textLine += m_textIncrement;
     }
 }

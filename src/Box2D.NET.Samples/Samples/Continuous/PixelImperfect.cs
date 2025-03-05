@@ -68,7 +68,7 @@ public class PixelImperfect : Sample
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        B2.g_draw.DrawString(5, m_textLine, "p.x = %.9f, v.y = %.9f", p.x, v.y);
+        B2.g_draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
         m_textLine += m_textIncrement;
 
         base.Step(settings);

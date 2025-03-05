@@ -184,18 +184,18 @@ public class ConvexHull : Sample
 
         if (valid == false)
         {
-            B2.g_draw.DrawString(5, m_textLine, "generation = %d, FAILED", m_generation);
+            B2.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
             m_textLine += m_textIncrement;
         }
         else
         {
-            B2.g_draw.DrawString(5, m_textLine, "generation = %d, count = %d", m_generation, hull.count);
+            B2.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
             m_textLine += m_textIncrement;
         }
 
         if (milliseconds > 0.0f)
         {
-            B2.g_draw.DrawString(5, m_textLine, "milliseconds = %g", milliseconds);
+            B2.g_draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
             m_textLine += m_textIncrement;
         }
 
@@ -206,7 +206,7 @@ public class ConvexHull : Sample
         for (int i = 0; i < m_count; ++i)
         {
             B2.g_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
-            B2.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), "%d", i);
+            B2.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
         }
 
         for (int i = 0; i < hull.count; ++i)

@@ -129,7 +129,7 @@ public class UserConstraint : Sample
         b2Body_SetLinearVelocity(m_bodyId, vB);
         b2Body_SetAngularVelocity(m_bodyId, omegaB);
 
-        B2.g_draw.DrawString(5, m_textLine, "forces = %g, %g", m_impulses[0] * invTimeStep, m_impulses[1] * invTimeStep);
+        B2.g_draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
         m_textLine += m_textIncrement;
     }
 }

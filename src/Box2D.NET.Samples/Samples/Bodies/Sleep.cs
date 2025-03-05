@@ -17,12 +17,13 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 
 public class Sleep : Sample
 {
-    B2BodyId m_pendulumId;
-    B2ShapeId m_groundShapeId;
-    B2ShapeId[] m_sensorIds = new B2ShapeId[2];
-    bool[] m_sensorTouching = new bool[2];
-
     private static readonly int SampleSleep = SampleFactory.Shared.RegisterSample("Bodies", "Sleep", Create);
+
+    private B2BodyId m_pendulumId;
+    private B2ShapeId m_groundShapeId;
+    private B2ShapeId[] m_sensorIds = new B2ShapeId[2];
+    private bool[] m_sensorTouching = new bool[2];
+
 
     private static Sample Create(Settings settings)
     {
@@ -203,7 +204,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            B2.g_draw.DrawString(5, m_textLine, "sensor touch %d = %s", i, m_sensorTouching[i] ? "true" : "false");
+            B2.g_draw.DrawString(5, m_textLine, $"sensor touch {i} = {m_sensorTouching[i]}");
             m_textLine += m_textIncrement;
         }
     }

@@ -184,7 +184,7 @@ public class FallingHinges : Sample
             }
         }
 
-        B2.g_draw.DrawString(5, m_textLine, "sleep step = %d, hash = 0x%08x", m_sleepStep, m_hash);
+        B2.g_draw.DrawString(5, m_textLine, $"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
         m_textLine += m_textIncrement;
     }
 }

@@ -107,7 +107,7 @@ public class CircleStack : Sample
         int eventCount = m_events.Count;
         for (int i = 0; i < eventCount; ++i)
         {
-            B2.g_draw.DrawString(5, m_textLine, "%d, %d", m_events[i].indexA, m_events[i].indexB);
+            B2.g_draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
             m_textLine += m_textIncrement;
         }
     }

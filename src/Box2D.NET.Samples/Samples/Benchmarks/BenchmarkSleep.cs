@@ -19,15 +19,15 @@ public class BenchmarkSleep : Sample
     public const int e_maxBaseCount = 100;
     public const int e_maxBodyCount = e_maxBaseCount * (e_maxBaseCount + 1) / 2;
 
-    B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
-    int m_bodyCount;
-    int m_baseCount;
-    int m_iterations;
-    float m_wakeTotal;
-    float m_sleepTotal;
-    int m_wakeCount;
-    int m_sleepCount;
-    bool m_awake;
+    private B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
+    private int m_bodyCount;
+    private int m_baseCount;
+    private int m_iterations;
+    private float m_wakeTotal;
+    private float m_sleepTotal;
+    private int m_wakeCount;
+    private int m_sleepCount;
+    private bool m_awake;
 
 
     private static Sample Create(Settings settings)
@@ -144,13 +144,13 @@ public class BenchmarkSleep : Sample
 
         if (m_wakeCount > 0)
         {
-            B2.g_draw.DrawString(5, m_textLine, "wake ave = %g ms", m_wakeTotal / m_wakeCount);
+            B2.g_draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
             m_textLine += m_textIncrement;
         }
 
         if (m_sleepCount > 0)
         {
-            B2.g_draw.DrawString(5, m_textLine, "sleep ave = %g ms", m_sleepTotal / m_sleepCount);
+            B2.g_draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
             m_textLine += m_textIncrement;
         }
 

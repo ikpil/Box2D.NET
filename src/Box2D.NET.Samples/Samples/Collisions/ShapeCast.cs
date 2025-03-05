@@ -189,8 +189,7 @@ public class ShapeCast : Sample
         distanceCache.count = 0;
         B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceCache, ref distanceInput, null, 0);
 
-        B2.g_draw.DrawString(5, m_textLine, "hit = %s, iters = %d, lambda = %g, distance = %g", output.hit ? "true" : "false",
-            output.iterations, output.fraction, distanceOutput.distance);
+        B2.g_draw.DrawString(5, m_textLine, $"hit = {output.hit}, iters = {output.iterations}, lambda = {output.fraction:g}, distance = {distanceOutput.distance:g}");
         m_textLine += m_textIncrement;
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];

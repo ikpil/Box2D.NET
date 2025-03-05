@@ -314,7 +314,7 @@ public class DynamicTree : Sample
             B2.g_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
             B2.g_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
-            B2.g_draw.DrawString(5, m_textLine, "node visits = %d, leaf visits = %d", result.nodeVisits, result.leafVisits);
+            B2.g_draw.DrawString(5, m_textLine, $"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
             m_textLine += m_textIncrement;
         }
 
@@ -382,7 +382,7 @@ public class DynamicTree : Sample
                 }
 
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, "incremental : %.3f ms", ms);
+                B2.g_draw.DrawString(5, m_textLine, $"incremental : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -401,7 +401,7 @@ public class DynamicTree : Sample
                 ulong ticks = b2GetTicks();
                 int boxCount = b2DynamicTree_Rebuild(m_tree, true);
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, "full build %d : %.3f ms", boxCount, ms);
+                B2.g_draw.DrawString(5, m_textLine, $"full build {boxCount} : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -420,7 +420,7 @@ public class DynamicTree : Sample
                 ulong ticks = b2GetTicks();
                 int boxCount = b2DynamicTree_Rebuild(m_tree, false);
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, "partial rebuild %d : %.3f ms", boxCount, ms);
+                B2.g_draw.DrawString(5, m_textLine, $"partial rebuild {boxCount} : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -433,8 +433,7 @@ public class DynamicTree : Sample
         float areaRatio = b2DynamicTree_GetAreaRatio(m_tree);
 
         int hmin = (int)(MathF.Ceiling(MathF.Log((float)m_proxyCount) / MathF.Log(2.0f) - 1.0f));
-        B2.g_draw.DrawString(5, m_textLine, "proxies = %d, height = %d, hmin = %d, area ratio = %.1f", m_proxyCount, height, hmin,
-            areaRatio);
+        B2.g_draw.DrawString(5, m_textLine, $"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
         m_textLine += m_textIncrement;
 
         b2DynamicTree_Validate(m_tree);

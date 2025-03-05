@@ -388,20 +388,20 @@ public class BenchmarkCast : Sample
             }
         }
 
-        B2.g_draw.DrawString(5, m_textLine, "build time ms = %g", m_buildTime);
+        B2.g_draw.DrawString(5, m_textLine, $"build time ms = {m_buildTime:g}");
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, "hit count = %d, node visits = %d, leaf visits = %d", hitCount, nodeVisits, leafVisits);
+        B2.g_draw.DrawString(5, m_textLine, $"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, "total ms = %.3f", ms);
+        B2.g_draw.DrawString(5, m_textLine, $"total ms = {ms:F3}");
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, "min total ms = %.3f", m_minTime);
+        B2.g_draw.DrawString(5, m_textLine, $"min total ms = {m_minTime:F3}");
         m_textLine += m_textIncrement;
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
-        B2.g_draw.DrawString(5, m_textLine, "average us = %.2f", aveRayCost);
+        B2.g_draw.DrawString(5, m_textLine, $"average us = {aveRayCost:F2}");
         m_textLine += m_textIncrement;
     }
 }

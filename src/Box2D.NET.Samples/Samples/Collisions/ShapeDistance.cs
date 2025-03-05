@@ -417,22 +417,20 @@ public class ShapeDistance : Sample
         m_textLine += m_textIncrement;
         B2.g_draw.DrawString(5, m_textLine, "mouse button 1 + shift: rotate");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, "distance = %.2f, iterations = %d", output.distance, output.iterations);
+        B2.g_draw.DrawString(5, m_textLine, $"distance = {output.distance:F2}, iterations = {output.iterations}");
         m_textLine += m_textIncrement;
 
         if (m_cache.count == 1)
         {
-            B2.g_draw.DrawString(5, m_textLine, "cache = {%d}, {%d}", m_cache.indexA[0], m_cache.indexB[0]);
+            B2.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
         }
         else if (m_cache.count == 2)
         {
-            B2.g_draw.DrawString(5, m_textLine, "cache = {%d, %d}, {%d, %d}", m_cache.indexA[0], m_cache.indexA[1],
-                m_cache.indexB[0], m_cache.indexB[1]);
+            B2.g_draw.DrawString(5, m_textLine,$"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
         }
         else if (m_cache.count == 3)
         {
-            B2.g_draw.DrawString(5, m_textLine, "cache = {%d, %d, %d}, {%d, %d, %d}", m_cache.indexA[0], m_cache.indexA[1],
-                m_cache.indexA[2], m_cache.indexB[0], m_cache.indexB[1], m_cache.indexB[2]);
+            B2.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
         }
 
         m_textLine += m_textIncrement;

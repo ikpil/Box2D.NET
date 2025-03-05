@@ -130,7 +130,7 @@ public class FootSensor : Sample
             }
         }
 
-        B2.g_draw.DrawString(5, m_textLine, "count == %d", m_overlapCount);
+        B2.g_draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
         m_textLine += m_textIncrement;
 
         int capacity = b2Shape_GetSensorCapacity(m_sensorId);

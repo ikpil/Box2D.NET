@@ -270,7 +270,7 @@ public class Driving : Sample
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.x * 3.6f;
-        B2.g_draw.DrawString(5, m_textLine, "speed in kph: %.2g", kph);
+        B2.g_draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
         m_textLine += m_textIncrement;
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);

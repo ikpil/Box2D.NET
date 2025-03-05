@@ -180,7 +180,7 @@ public class Draw
         m_points.AddPoint(p, size, color);
     }
 
-    public void DrawString(int x, int y, string message, params object[] arg)
+    public void DrawString(int x, int y, string message)
     {
         // if (m_showUI == false)
         //{
@@ -193,7 +193,7 @@ public class Draw
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(B2.g_draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(x, y));
-        ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(message, arg));
+        ImGui.TextColored(new Vector4(230, 153, 153, 255), message);
         ImGui.PopFont();
         ImGui.End();
     }

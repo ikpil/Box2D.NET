@@ -61,7 +61,7 @@ public class TimeOfImpact : Sample
 
         B2TOIOutput output = b2TimeOfImpact(ref input);
 
-        B2.g_draw.DrawString(5, m_textLine, "toi = %g", output.fraction);
+        B2.g_draw.DrawString(5, m_textLine, $"toi = {output.fraction:g}");
         m_textLine += m_textIncrement;
 
         // B2.g_draw.DrawString(5, m_textLine, "max toi iters = %d, max root iters = %d", b2_toiMaxIters,
@@ -118,7 +118,7 @@ public class TimeOfImpact : Sample
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
-            B2.g_draw.DrawString(5, m_textLine, "distance = %g", distanceOutput.distance);
+            B2.g_draw.DrawString(5, m_textLine, $"distance = {distanceOutput.distance}:g");
             m_textLine += m_textIncrement;
         }
 

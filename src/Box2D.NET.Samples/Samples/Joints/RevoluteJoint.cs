@@ -202,15 +202,15 @@ public class RevoluteJoint : Sample
         base.Step(settings);
 
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
-        B2.g_draw.DrawString(5, m_textLine, "Angle (Deg) 1 = %2.1f", angle1);
+        B2.g_draw.DrawString(5, m_textLine, $"Angle (Deg) 1 = {angle1:2,F1}");
         m_textLine += m_textIncrement;
 
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
-        B2.g_draw.DrawString(5, m_textLine, "Motor Torque 1 = %4.1f", torque1);
+        B2.g_draw.DrawString(5, m_textLine, $"Motor Torque 1 = {torque1:4,F1}");
         m_textLine += m_textIncrement;
 
         float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        B2.g_draw.DrawString(5, m_textLine, "Motor Torque 2 = %4.1f", torque2);
+        B2.g_draw.DrawString(5, m_textLine, $"Motor Torque 2 = {torque2:4,F1}");
         m_textLine += m_textIncrement;
     }
 }

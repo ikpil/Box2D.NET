@@ -77,7 +77,7 @@ public class Pivot : Sample
         B2Vec2 r = b2Body_GetWorldVector(m_bodyId, new B2Vec2(0.0f, -m_lever));
 
         B2Vec2 vp = v + b2CrossSV(omega, r);
-        B2.g_draw.DrawString(5, m_textLine, "pivot velocity = (%g, %g)", vp.x, vp.y);
+        B2.g_draw.DrawString(5, m_textLine, $"pivot velocity = ({vp.x:g}, {vp.y:g})");
         m_textLine += m_textIncrement;
     }
 }

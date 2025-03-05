@@ -368,14 +368,13 @@ public class Sample : IDisposable
         {
             B2Counters s = b2World_GetCounters(m_worldId);
 
-            B2.g_draw.DrawString(5, m_textLine, "bodies/shapes/contacts/joints = %d/%d/%d/%d", s.bodyCount, s.shapeCount,
-                s.contactCount, s.jointCount);
+            B2.g_draw.DrawString(5, m_textLine, $"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
             m_textLine += m_textIncrement;
 
-            B2.g_draw.DrawString(5, m_textLine, "islands/tasks = %d/%d", s.islandCount, s.taskCount);
+            B2.g_draw.DrawString(5, m_textLine, $"islands/tasks = {s.islandCount}/{s.taskCount}");
             m_textLine += m_textIncrement;
 
-            B2.g_draw.DrawString(5, m_textLine, "tree height static/movable = %d/%d", s.staticTreeHeight, s.treeHeight);
+            B2.g_draw.DrawString(5, m_textLine, $"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
             m_textLine += m_textIncrement;
 
             int totalCount = 0;
@@ -394,10 +393,10 @@ public class Sample : IDisposable
             B2.g_draw.DrawString(5, m_textLine, buffer.ToString());
             m_textLine += m_textIncrement;
 
-            B2.g_draw.DrawString(5, m_textLine, "stack allocator size = %d K", s.stackUsed / 1024);
+            B2.g_draw.DrawString(5, m_textLine, $"stack allocator size = {s.stackUsed / 1024} K");
             m_textLine += m_textIncrement;
 
-            B2.g_draw.DrawString(5, m_textLine, "total allocation = %d K", s.byteCount / 1024);
+            B2.g_draw.DrawString(5, m_textLine, $"total allocation = {s.byteCount / 1024} K");
             m_textLine += m_textIncrement;
         }
 
