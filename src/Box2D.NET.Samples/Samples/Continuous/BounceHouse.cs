@@ -177,7 +177,7 @@ public class BounceHouse : Sample
             if (e.stepIndex > 0 && m_stepCount <= e.stepIndex + 30)
             {
                 B2.g_draw.DrawCircle(e.point, 0.1f, B2HexColor.b2_colorOrangeRed);
-                B2.g_draw.DrawString(e.point, "%.1f", e.speed);
+                B2.g_draw.DrawString(e.point, $"{e.speed:F1}");
             }
         }
 

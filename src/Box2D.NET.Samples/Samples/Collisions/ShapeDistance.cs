@@ -403,13 +403,13 @@ public class ShapeDistance : Sample
             for (int i = 0; i < m_proxyA.count; ++i)
             {
                 B2Vec2 p = m_proxyA.points[i];
-                B2.g_draw.DrawString(p, " %d", i);
+                B2.g_draw.DrawString(p, $" {i}");
             }
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
                 B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
-                B2.g_draw.DrawString(p, " %d", i);
+                B2.g_draw.DrawString(p, $" {i}");
             }
         }
 

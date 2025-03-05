@@ -198,7 +198,7 @@ public class RayCast : Sample
             if (m_showFraction)
             {
                 B2Vec2 ps = new B2Vec2(p.x + 0.05f, p.y - 0.02f);
-                B2.g_draw.DrawString(ps, "%.2f", output.fraction);
+                B2.g_draw.DrawString(ps, $"{output.fraction:F2}");
             }
         }
         else

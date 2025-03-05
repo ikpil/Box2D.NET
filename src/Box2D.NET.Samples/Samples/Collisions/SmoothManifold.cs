@@ -250,13 +250,13 @@ public class SmoothManifold : Sample
                 // uint indexA = mp.id >> 8;
                 // uint indexB = 0xFF & mp.id;
                 B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y - 0.02f);
-                B2.g_draw.DrawString(p, "0x%04x", mp.id);
+                B2.g_draw.DrawString(p, $"0x{mp.id:X4}");
             }
 
             if (m_showSeparation)
             {
                 B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y + 0.03f);
-                B2.g_draw.DrawString(p, "%.3f", mp.separation);
+                B2.g_draw.DrawString(p, $"{mp.separation:F3}");
             }
         }
     }

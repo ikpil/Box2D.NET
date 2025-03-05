@@ -74,7 +74,7 @@ public class CustomFilter : Sample
         for (int i = 0; i < e_count; ++i)
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            B2.g_draw.DrawString(new B2Vec2(p.x, p.y), "%d", i);
+            B2.g_draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
         }
     }
 

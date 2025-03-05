@@ -198,7 +198,7 @@ public class Draw
         ImGui.End();
     }
 
-    public void DrawString(B2Vec2 p, string message, params object[] arg)
+    public void DrawString(B2Vec2 p, string message)
     {
         B2Vec2 ps = B2.g_camera.ConvertWorldToScreen(p);
 
@@ -207,7 +207,7 @@ public class Draw
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
-        ImGui.TextColored(new Vector4(230, 230, 230, 255), string.Format(message, arg));
+        ImGui.TextColored(new Vector4(230, 230, 230, 255), message);
         ImGui.End();
     }
 
