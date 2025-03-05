@@ -23,6 +23,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class OverlapWorld : Sample
 {
+    private static readonly int SampleOverlapWorld = SampleFactory.Shared.RegisterSample("Collision", "Overlap World", Create);
+    
     public const int e_circleShape = 0;
     public const int e_capsuleShape = 1;
     public const int e_boxShape = 2;
@@ -58,7 +60,6 @@ public class OverlapWorld : Sample
     private bool m_dragging;
     private bool m_rotating;
 
-    private static readonly int SampleOverlapWorld = SampleFactory.Shared.RegisterSample("Collision", "Overlap World", Create);
 
     private static Sample Create(Settings settings)
     {
