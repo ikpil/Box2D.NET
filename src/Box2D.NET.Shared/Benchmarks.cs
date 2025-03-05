@@ -208,10 +208,6 @@ namespace Box2D.NET.Shared
             for (int i = 0; i < rainData.groups.Length; ++i)
             {
                 rainData.groups[i] = new Group();
-                for (int ii = 0; ii < rainData.groups[i].humans.Length; ++ii)
-                {
-                    rainData.groups[i].humans[ii] = new Human();
-                }
             }
 
             rainData.gridSize = 0.5f;
@@ -270,8 +266,8 @@ namespace Box2D.NET.Shared
 
             for (int i = 0; i < (int)RainConstants.RAIN_GROUP_SIZE; ++i)
             {
-                Human human = rainData.groups[groupIndex].humans[i];
-                CreateHuman(human, worldId, position, scale, jointFriction, jointHertz, jointDamping, i + 1, null, false);
+                ref Human human = ref rainData.groups[groupIndex].humans[i];
+                CreateHuman(ref human, worldId, position, scale, jointFriction, jointHertz, jointDamping, i + 1, null, false);
                 position.x += 0.5f;
             }
         }
@@ -284,7 +280,7 @@ namespace Box2D.NET.Shared
 
             for (int i = 0; i < (int)RainConstants.RAIN_GROUP_SIZE; ++i)
             {
-                DestroyHuman(rainData.groups[groupIndex].humans[i]);
+                DestroyHuman(ref rainData.groups[groupIndex].humans[i]);
             }
         }
 

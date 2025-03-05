@@ -7,7 +7,7 @@ using Box2D.NET.Core;
 
 namespace Box2D.NET.Shared.Primitives
 {
-    public class Human
+    public struct Human
     {
         public B2FixedArray11<Bone> bones;
         public float scale;

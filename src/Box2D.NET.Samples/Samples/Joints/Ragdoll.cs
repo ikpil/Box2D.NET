@@ -14,11 +14,12 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class Ragdoll : Sample
 {
-    Human m_human;
-    float m_jointFrictionTorque;
-    float m_jointHertz;
-    float m_jointDampingRatio;
     private static readonly int SampleRagdoll = SampleFactory.Shared.RegisterSample("Joints", "Ragdoll", Create);
+    
+    private Human m_human;
+    private float m_jointFrictionTorque;
+    private float m_jointHertz;
+    private float m_jointDampingRatio;
 
     private static Sample Create(Settings settings)
     {
@@ -48,15 +49,13 @@ public class Ragdoll : Sample
         m_jointHertz = 5.0f;
         m_jointDampingRatio = 0.5f;
 
-        m_human = new Human();
-
         Spawn();
     }
 
     void Spawn()
     {
-        CreateHuman(m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, null, false);
-        Human_ApplyRandomAngularImpulse(m_human, 10.0f);
+        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, null, false);
+        Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
     }
 
     public override void UpdateUI()

@@ -20,7 +20,7 @@ namespace Box2D.NET.Shared
 {
     public static class Humans
     {
-        public static void CreateHuman(Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
+        public static void CreateHuman(ref Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
             int groupIndex, object userData, bool colorize)
         {
             Debug.Assert(human.isSpawned == false);
@@ -499,7 +499,7 @@ namespace Box2D.NET.Shared
             human.isSpawned = true;
         }
 
-        public static void DestroyHuman(Human human)
+        public static void DestroyHuman(ref Human human)
         {
             Debug.Assert(human.isSpawned == true);
 
@@ -528,7 +528,7 @@ namespace Box2D.NET.Shared
             human.isSpawned = false;
         }
 
-        public static void Human_SetVelocity(Human human, B2Vec2 velocity)
+        public static void Human_SetVelocity(ref Human human, B2Vec2 velocity)
         {
             for (int i = 0; i < (int)BoneId.boneId_count; ++i)
             {
@@ -543,14 +543,14 @@ namespace Box2D.NET.Shared
             }
         }
 
-        public static void Human_ApplyRandomAngularImpulse(Human human, float magnitude)
+        public static void Human_ApplyRandomAngularImpulse(ref Human human, float magnitude)
         {
             Debug.Assert(human.isSpawned == true);
             float impulse = RandomFloatRange(-magnitude, magnitude);
             b2Body_ApplyAngularImpulse(human.bones[(int)BoneId.boneId_torso].bodyId, impulse, true);
         }
 
-        public static void Human_SetJointFrictionTorque(Human human, float torque)
+        public static void Human_SetJointFrictionTorque(ref Human human, float torque)
         {
             Debug.Assert(human.isSpawned == true);
             if (torque == 0.0f)
@@ -571,7 +571,7 @@ namespace Box2D.NET.Shared
             }
         }
 
-        public static void Human_SetJointSpringHertz(Human human, float hertz)
+        public static void Human_SetJointSpringHertz(ref Human human, float hertz)
         {
             Debug.Assert(human.isSpawned == true);
             if (hertz == 0.0f)
@@ -591,7 +591,7 @@ namespace Box2D.NET.Shared
             }
         }
 
-        public static void Human_SetJointDampingRatio(Human human, float dampingRatio)
+        public static void Human_SetJointDampingRatio(ref Human human, float dampingRatio)
         {
             Debug.Assert(human.isSpawned == true);
             for (int i = 1; i < (int)BoneId.boneId_count; ++i)

@@ -16,14 +16,14 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class SensorBookend : Sample
 {
-    B2BodyId m_sensorBodyId;
-    B2ShapeId m_sensorShapeId;
-
-    B2BodyId m_visitorBodyId;
-    B2ShapeId m_visitorShapeId;
-    bool m_isVisiting;
-
     private static readonly int SampleSensorBookendEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Bookend", Create);
+    
+    private B2BodyId m_sensorBodyId;
+    private B2ShapeId m_sensorShapeId;
+
+    private B2BodyId m_visitorBodyId;
+    private B2ShapeId m_visitorShapeId;
+    private bool m_isVisiting;
 
     private static Sample Create(Settings settings)
     {

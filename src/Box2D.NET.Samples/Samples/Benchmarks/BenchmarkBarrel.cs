@@ -127,7 +127,7 @@ public class BenchmarkBarrel : Sample
 
             if (m_humans[i].isSpawned)
             {
-                DestroyHuman(m_humans[i]);
+                DestroyHuman(ref m_humans[i]);
             }
         }
 
@@ -297,7 +297,7 @@ public class BenchmarkBarrel : Sample
                     float jointFriction = 0.05f;
                     float jointHertz = 5.0f;
                     float jointDamping = 0.5f;
-                    CreateHuman(m_humans[index], m_worldId, bodyDef.position, scale, jointFriction, jointHertz, jointDamping, index + 1, null, false);
+                    CreateHuman(ref m_humans[index], m_worldId, bodyDef.position, scale, jointFriction, jointHertz, jointDamping, index + 1, null, false);
                 }
 
                 index += 1;

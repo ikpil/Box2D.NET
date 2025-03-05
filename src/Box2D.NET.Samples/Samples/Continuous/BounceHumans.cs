@@ -14,12 +14,12 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class BounceHumans : Sample
 {
-    Human[] m_humans = new Human[5];
-    int m_humanCount = 0;
-    float m_countDown = 0.0f;
-    float m_time = 0.0f;
-
     private static readonly int SampleBounceHumans = SampleFactory.Shared.RegisterSample("Continuous", "Bounce Humans", Create);
+    
+    private Human[] m_humans = new Human[5];
+    private int m_humanCount = 0;
+    private float m_countDown = 0.0f;
+    private float m_time = 0.0f;
 
     private static Sample Create(Settings settings)
     {
@@ -77,7 +77,7 @@ public class BounceHumans : Sample
             float jointHertz = 1.0f;
             float jointDampingRatio = 0.1f;
 
-            CreateHuman(m_humans[m_humanCount], m_worldId, new B2Vec2(0.0f, 5.0f), 1.0f, jointFrictionTorque, jointHertz,
+            CreateHuman(ref m_humans[m_humanCount], m_worldId, new B2Vec2(0.0f, 5.0f), 1.0f, jointFrictionTorque, jointHertz,
                 jointDampingRatio, 1, null, true);
             // Human_SetVelocity( m_humans + m_humanCount, { 10.0f - 5.0f * m_humanCount, -20.0f + 5.0f * m_humanCount } );
 

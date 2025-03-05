@@ -19,18 +19,18 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class FootSensor : Sample
 {
+    private static readonly int SampleCharacterSensor = SampleFactory.Shared.RegisterSample("Events", "Foot Sensor", Create);
+
     public const uint GROUND = 0x00000001;
     public const uint PLAYER = 0x00000002;
     public const uint FOOT = 0x00000004;
     public const uint ALL_BITS = (~0u);
 
 
-    B2BodyId m_playerId;
-    B2ShapeId m_sensorId;
-    List<B2ShapeId> m_overlaps;
-    int m_overlapCount;
-
-    private static readonly int SampleCharacterSensor = SampleFactory.Shared.RegisterSample("Events", "Foot Sensor", Create);
+    private B2BodyId m_playerId;
+    private B2ShapeId m_sensorId;
+    private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
+    private int m_overlapCount;
 
     private static Sample Create(Settings settings)
     {

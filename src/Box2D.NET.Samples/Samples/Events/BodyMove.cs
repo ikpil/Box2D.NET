@@ -4,6 +4,7 @@
 
 using System.Numerics;
 using Box2D.NET.Samples.Extensions;
+using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
@@ -23,13 +24,13 @@ public class BodyMove : Sample
 
     public const int e_count = 50;
 
-    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    bool[] m_sleeping = new bool[e_count];
-    int m_count;
-    int m_sleepCount;
-    B2Vec2 m_explosionPosition;
-    float m_explosionRadius;
-    float m_explosionMagnitude;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private bool[] m_sleeping = new bool[e_count];
+    private int m_count;
+    private int m_sleepCount;
+    private B2Vec2 m_explosionPosition;
+    private float m_explosionRadius;
+    private float m_explosionMagnitude;
 
 
     private static Sample Create(Settings settings)
@@ -92,8 +93,7 @@ public class BodyMove : Sample
         for (int i = 0; i < 10 && m_count < e_count; ++i)
         {
             bodyDef.position = new B2Vec2(x, y);
-            bodyDef.userData = m_count; // @ikpil, how to fix?
-            //bodyDef.userData = m_bodyIds[m_count];
+            bodyDef.userData = BodyUserData.Create(m_count);
             m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
             m_sleeping[m_count] = false;
 
@@ -165,9 +165,9 @@ public class BodyMove : Sample
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
-            int diff = (int)@event.userData; // todo: @ikpil check struct casting
+            var diff = (BodyUserData<int>)@event.userData;
             //ptrdiff_t diff = bodyId - m_bodyIds;
-            ref bool sleeping = ref m_sleeping[diff];
+            ref bool sleeping = ref m_sleeping[diff.Value];
 
             if (@event.fellAsleep)
             {

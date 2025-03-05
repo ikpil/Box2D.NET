@@ -20,21 +20,21 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class SensorFunnel : Sample
 {
-    enum ea
+    private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
+    
+    private enum ea
     {
         e_donut = 1,
         e_human = 2,
         e_count = 32
     };
 
-    Human[] m_humans = new Human[(int)ea.e_count];
-    Donut[] m_donuts = new Donut[(int)ea.e_count];
-    bool[] m_isSpawned = new bool[(int)ea.e_count];
-    int m_type;
-    float m_wait;
-    float m_side;
-
-    private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
+    private Human[] m_humans = new Human[(int)ea.e_count];
+    private Donut[] m_donuts = new Donut[(int)ea.e_count];
+    private bool[] m_isSpawned = new bool[(int)ea.e_count];
+    private int m_type;
+    private float m_wait;
+    private float m_side;
 
     private static Sample Create(Settings settings)
     {
@@ -204,13 +204,13 @@ public class SensorFunnel : Sample
         }
         else
         {
-            Human human = m_humans[index];
+            ref Human human = ref m_humans[index];
             float scale = 2.0f;
             float jointFriction = 0.05f;
             float jointHertz = 6.0f;
             float jointDamping = 0.5f;
             bool colorize = true;
-            CreateHuman(human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, human, colorize);
+            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, human, colorize);
         }
 
         m_isSpawned[index] = true;
@@ -226,8 +226,8 @@ public class SensorFunnel : Sample
         }
         else
         {
-            Human human = m_humans[index];
-            DestroyHuman(human);
+            ref Human human = ref m_humans[index];
+            DestroyHuman(ref human);
         }
 
         m_isSpawned[index] = false;
@@ -245,7 +245,7 @@ public class SensorFunnel : Sample
                 }
                 else
                 {
-                    DestroyHuman(m_humans[i]);
+                    DestroyHuman(ref m_humans[i]);
                 }
 
                 m_isSpawned[i] = false;

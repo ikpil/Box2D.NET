@@ -140,7 +140,7 @@ public class LargeWorld : Sample
                 for (int i = 0; i < 5; ++i)
                 {
                     Human human = new Human();
-                    CreateHuman(human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, null, false);
+                    CreateHuman(ref human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, null, false);
                     humanIndex += 1;
                     position.x += 1.0f;
                 }

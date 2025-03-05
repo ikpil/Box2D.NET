@@ -20,16 +20,17 @@ namespace Box2D.NET.Samples.Samples.Events;
 // case the platform should get the pre-solve event, not the player.
 public class Platformer : Sample
 {
-    bool m_jumping;
-    float m_radius;
-    float m_force;
-    float m_impulse;
-    float m_jumpDelay;
-    B2BodyId m_playerId;
-    B2ShapeId m_playerShapeId;
-    B2BodyId m_movingPlatformId;
-
     private static readonly int SamplePlatformer = SampleFactory.Shared.RegisterSample("Events", "Platformer", Create);
+    
+    private bool m_jumping;
+    private float m_radius;
+    private float m_force;
+    private float m_impulse;
+    private float m_jumpDelay;
+    private B2BodyId m_playerId;
+    private B2ShapeId m_playerShapeId;
+    private B2BodyId m_movingPlatformId;
+
 
     private static Sample Create(Settings settings)
     {

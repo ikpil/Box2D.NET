@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Box2D.NET.Samples.Extensions;
+using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Ids;
@@ -20,23 +21,19 @@ using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
-public class BodyUserData
-{
-    public int index;
-}
-
 public class ContactEvent : Sample
 {
+    private static readonly int SampleContact = SampleFactory.Shared.RegisterSample("Events", "Contact", Create);
+
+
     public const int e_count = 20;
 
-    B2BodyId m_playerId;
-    B2ShapeId m_coreShapeId;
-    B2BodyId[] m_debrisIds = new B2BodyId[e_count];
-    BodyUserData[] m_bodyUserData = new BodyUserData[e_count];
-    float m_force;
-    float m_wait;
-
-    private static readonly int SampleWeeble = SampleFactory.Shared.RegisterSample("Events", "Contact", Create);
+    private B2BodyId m_playerId;
+    private B2ShapeId m_coreShapeId;
+    private B2BodyId[] m_debrisIds = new B2BodyId[e_count];
+    private BodyUserData<int>[] m_bodyUserData = new BodyUserData<int>[e_count];
+    private float m_force;
+    private float m_wait;
 
     private static Sample Create(Settings settings)
     {
@@ -88,7 +85,7 @@ public class ContactEvent : Sample
         for (int i = 0; i < e_count; ++i)
         {
             m_debrisIds[i] = b2_nullBodyId;
-            m_bodyUserData[i].index = i;
+            m_bodyUserData[i] = BodyUserData.Create(i);
         }
 
         m_wait = 0.5f;
