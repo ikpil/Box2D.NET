@@ -29,34 +29,34 @@ public class OverlapWorld : Sample
     public const int e_maxCount = 64;
     public const int e_maxDoomed = 16;
 
-    int m_bodyIndex;
-    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
-    ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
-    B2Polygon[] m_polygons = new B2Polygon[4];
-    B2Capsule m_capsule;
-    B2Circle m_circle;
-    B2Segment m_segment;
-    int m_ignoreIndex;
+    private int m_bodyIndex;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
+    private ShapeUserData[] m_userData;
+    private B2Polygon[] m_polygons = new B2Polygon[4];
+    private B2Capsule m_capsule;
+    private B2Circle m_circle;
+    private B2Segment m_segment;
+    private int m_ignoreIndex;
 
-    B2ShapeId[] m_doomIds = new B2ShapeId[e_maxDoomed];
-    int m_doomCount;
+    private B2ShapeId[] m_doomIds = new B2ShapeId[e_maxDoomed];
+    private int m_doomCount;
 
-    B2Circle m_queryCircle;
-    B2Capsule m_queryCapsule;
-    B2Polygon m_queryBox;
+    private B2Circle m_queryCircle;
+    private B2Capsule m_queryCapsule;
+    private B2Polygon m_queryBox;
 
-    int m_shapeType;
-    B2Transform m_transform;
+    private int m_shapeType;
+    private B2Transform m_transform;
 
-    B2Vec2 m_startPosition;
+    private B2Vec2 m_startPosition;
 
-    B2Vec2 m_position;
-    B2Vec2 m_basePosition;
-    float m_angle;
-    float m_baseAngle;
+    private B2Vec2 m_position;
+    private B2Vec2 m_basePosition;
+    private float m_angle;
+    private float m_baseAngle;
 
-    bool m_dragging;
-    bool m_rotating;
+    private bool m_dragging;
+    private bool m_rotating;
 
     private static readonly int SampleOverlapWorld = SampleFactory.Shared.RegisterSample("Collision", "Overlap World", Create);
 
@@ -96,6 +96,12 @@ public class OverlapWorld : Sample
             B2.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
+        m_userData = new ShapeUserData[e_maxCount];
+        for (int i = 0; i < m_userData.Length; ++i)
+        {
+            m_userData[i] = new ShapeUserData();
+        }
+        
         {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f), };
             B2Hull hull = b2ComputeHull(vertices, 3);
