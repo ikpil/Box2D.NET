@@ -92,7 +92,8 @@ public class BodyMove : Sample
         for (int i = 0; i < 10 && m_count < e_count; ++i)
         {
             bodyDef.position = new B2Vec2(x, y);
-            bodyDef.userData = m_bodyIds[m_count];
+            bodyDef.userData = m_count; // @ikpil, how to fix?
+            //bodyDef.userData = m_bodyIds[m_count];
             m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
             m_sleeping[m_count] = false;
 
@@ -163,9 +164,9 @@ public class BodyMove : Sample
             B2.g_draw.DrawTransform(@event.transform);
 
             // this shows a somewhat contrived way to track body sleeping
-            B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
+            //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
+            int diff = (int)@event.userData; // todo: @ikpil check struct casting
             //ptrdiff_t diff = bodyId - m_bodyIds;
-            int diff = m_bodyIds.FindIndex(bodyId);
             ref bool sleeping = ref m_sleeping[diff];
 
             if (@event.fellAsleep)
