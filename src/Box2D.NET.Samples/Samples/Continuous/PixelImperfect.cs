@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
@@ -12,9 +13,9 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // This shows that Box2D does not have pixel perfect collision.
 public class PixelImperfect : Sample
 {
-    B2BodyId m_ballId;
-
     private static readonly int SamplePixelImperfect = SampleFactory.Shared.RegisterSample("Continuous", "Pixel Imperfect", Create);
+
+    private B2BodyId m_ballId;
 
     private static Sample Create(Settings settings)
     {
@@ -63,8 +64,8 @@ public class PixelImperfect : Sample
 
     public override void Step(Settings settings)
     {
-        B2ContactData data = new B2ContactData();
-        b2Body_GetContactData(m_ballId, [data], 1);
+        Span<B2ContactData> data = stackalloc B2ContactData[1];
+        b2Body_GetContactData(m_ballId, data, data.Length);
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
@@ -21,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 public class Platformer : Sample
 {
     private static readonly int SamplePlatformer = SampleFactory.Shared.RegisterSample("Events", "Platformer", Create);
-    
+
     private bool m_jumping;
     private float m_radius;
     private float m_force;
@@ -188,7 +189,7 @@ public class Platformer : Sample
         {
             int capacity = b2Body_GetContactCapacity(m_playerId);
             capacity = b2MinInt(capacity, 4);
-            B2ContactData[] contactData = new B2ContactData[4];
+            Span<B2ContactData> contactData = stackalloc B2ContactData[capacity];
             int count = b2Body_GetContactData(m_playerId, contactData, capacity);
             for (int i = 0; i < count; ++i)
             {
@@ -252,8 +253,8 @@ public class Platformer : Sample
         base.Step(settings);
 
         {
-            B2ContactData[] contactData = new B2ContactData[1];
-            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, 1);
+            Span<B2ContactData> contactData = stackalloc B2ContactData[1];
+            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
             B2.g_draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
         m_textLine += m_textIncrement;
