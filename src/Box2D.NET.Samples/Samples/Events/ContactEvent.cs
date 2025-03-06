@@ -273,7 +273,7 @@ public class ContactEvent : Sample
 
             if (B2_ID_EQUALS(bodyIdA, m_playerId))
             {
-                BodyUserData userDataB = b2Body_GetUserData(bodyIdB) as BodyUserData;
+                BodyUserData<int> userDataB = b2Body_GetUserData(bodyIdB) as BodyUserData<int>;
                 if (userDataB == null)
                 {
                     if (B2_ID_EQUALS(@event.shapeIdA, m_coreShapeId) == false && destroyCount < e_count)
@@ -300,7 +300,7 @@ public class ContactEvent : Sample
                 }
                 else if (attachCount < e_count)
                 {
-                    debrisToAttach[attachCount] = userDataB.index;
+                    debrisToAttach[attachCount] = userDataB.Value;
                     attachCount += 1;
                 }
             }
@@ -308,7 +308,7 @@ public class ContactEvent : Sample
             {
                 // Only expect events for the player
                 Debug.Assert(B2_ID_EQUALS(bodyIdB, m_playerId));
-                BodyUserData userDataA = b2Body_GetUserData(bodyIdA) as BodyUserData;
+                BodyUserData<int> userDataA = b2Body_GetUserData(bodyIdA) as BodyUserData<int>;
                 if (userDataA == null)
                 {
                     if (B2_ID_EQUALS(@event.shapeIdB, m_coreShapeId) == false && destroyCount < e_count)
@@ -335,7 +335,7 @@ public class ContactEvent : Sample
                 }
                 else if (attachCount < e_count)
                 {
-                    debrisToAttach[attachCount] = userDataA.index;
+                    debrisToAttach[attachCount] = userDataA.Value;
                     attachCount += 1;
                 }
             }

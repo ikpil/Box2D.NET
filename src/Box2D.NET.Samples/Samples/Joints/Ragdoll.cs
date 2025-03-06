@@ -70,22 +70,22 @@ public class Ragdoll : Sample
 
         if (ImGui.SliderFloat("Friction", ref m_jointFrictionTorque, 0.0f, 1.0f, "%3.2f"))
         {
-            Human_SetJointFrictionTorque(m_human, m_jointFrictionTorque);
+            Human_SetJointFrictionTorque(ref m_human, m_jointFrictionTorque);
         }
 
         if (ImGui.SliderFloat("Hertz", ref m_jointHertz, 0.0f, 10.0f, "%3.1f"))
         {
-            Human_SetJointSpringHertz(m_human, m_jointHertz);
+            Human_SetJointSpringHertz(ref m_human, m_jointHertz);
         }
 
         if (ImGui.SliderFloat("Damping", ref m_jointDampingRatio, 0.0f, 4.0f, "%3.1f"))
         {
-            Human_SetJointDampingRatio(m_human, m_jointDampingRatio);
+            Human_SetJointDampingRatio(ref m_human, m_jointDampingRatio);
         }
 
         if (ImGui.Button("Respawn"))
         {
-            DestroyHuman(m_human);
+            DestroyHuman(ref m_human);
             Spawn();
         }
 

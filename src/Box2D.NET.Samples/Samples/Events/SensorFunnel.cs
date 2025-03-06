@@ -5,6 +5,7 @@
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Extensions;
+using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Shared.Primitives;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
@@ -210,7 +211,7 @@ public class SensorFunnel : Sample
             float jointHertz = 6.0f;
             float jointDamping = 0.5f;
             bool colorize = true;
-            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, human, colorize);
+            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, BodyUserData.Create(index), colorize);
         }
 
         m_isSpawned[index] = true;
@@ -309,10 +310,10 @@ public class SensorFunnel : Sample
             }
             else
             {
-                Human human = (Human)b2Body_GetUserData(bodyId);
+                BodyUserData<int> human = b2Body_GetUserData(bodyId) as BodyUserData<int>;
                 if (human != null)
                 {
-                    int index = m_humans.FindIndex(human);
+                    int index = human.Value;
                     Debug.Assert(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
