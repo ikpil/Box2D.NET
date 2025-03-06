@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using Box2D.NET.Core;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Types;

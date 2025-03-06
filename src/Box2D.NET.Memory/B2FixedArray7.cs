@@ -8,15 +8,18 @@ using System.Runtime.InteropServices;
 namespace Box2D.NET.Memory
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct B2FixedArray4<T> where T : unmanaged
+    public struct B2FixedArray7<T> where T : unmanaged
     {
-        public const int Size = 4;
+        public const int Size = 7;
 
         public T v0000;
         public T v0001;
         public T v0002;
         public T v0003;
-        
+        public T v0004;
+        public T v0005;
+        public T v0006;
+
         public int Length => Size;
 
         public ref T this[int index]

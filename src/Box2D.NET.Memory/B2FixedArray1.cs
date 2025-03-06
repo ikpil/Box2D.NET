@@ -5,7 +5,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Box2D.NET.Core
+namespace Box2D.NET.Memory
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct B2FixedArray1<T> where T : unmanaged

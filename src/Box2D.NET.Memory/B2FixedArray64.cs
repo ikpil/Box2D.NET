@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable CS0169
 
-namespace Box2D.NET.Core
+namespace Box2D.NET.Memory
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct B2FixedArray64<T> where T : unmanaged

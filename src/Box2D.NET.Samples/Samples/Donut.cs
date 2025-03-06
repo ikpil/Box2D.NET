@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using Box2D.NET.Memory;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Types;
@@ -17,22 +18,13 @@ public class Donut
 {
     public const int e_sides = 7;
 
-    private B2BodyId[] m_bodyIds;
-    private B2JointId[] m_jointIds;
+    private B2FixedArray7<B2BodyId> m_bodyIds;
+    private B2FixedArray7<B2JointId> m_jointIds;
     private bool m_isSpawned;
 
     public Donut()
     {
-        m_bodyIds = new B2BodyId[e_sides];
-        m_jointIds = new B2JointId[e_sides];
-
-        for (int i = 0; i < e_sides; ++i)
-        {
-            m_bodyIds[i] = b2_nullBodyId;
-            m_jointIds[i] = b2_nullJointId;
-        }
-
-        m_isSpawned = false;
+        Debug.Assert(e_sides == B2FixedArray7<B2BodyId>.Size);
     }
 
     public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, object userData)

@@ -4,7 +4,7 @@
 
 using System;
 using System.Diagnostics;
-using Box2D.NET.Core;
+using Box2D.NET.Memory;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;

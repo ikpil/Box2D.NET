@@ -5,7 +5,7 @@ using System;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using Box2D.NET.Benchmark.Fixtures;
-using Box2D.NET.Core;
+using Box2D.NET.Memory;
 
 namespace Box2D.NET.Benchmark.Box2D.NET.Core.Benchmark;
 
