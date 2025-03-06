@@ -59,6 +59,7 @@ public class SampleApp
 
         Window.PrioritizeGlfw();
 
+        // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
         B2.g_glfw = Glfw.GetApi();
         B2.g_glfw.SetErrorCallback(glfwErrorCallback);
 
