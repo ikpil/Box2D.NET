@@ -199,9 +199,9 @@ public class SensorFunnel : Sample
 
         if (m_type == (int)ea.e_donut)
         {
-            Donut donut = m_donuts[index];
+            ref Donut donut = ref m_donuts[index];
             // donut->Spawn(m_worldId, center, index + 1, donut);
-            donut.Spawn(m_worldId, center, 1.0f, 0, donut);
+            donut.Spawn(m_worldId, center, 1.0f, 0, BodyUserData.Create(index));
         }
         else
         {
@@ -222,7 +222,7 @@ public class SensorFunnel : Sample
     {
         if (m_type == (int)ea.e_donut)
         {
-            Donut donut = m_donuts[index];
+            ref Donut donut = ref m_donuts[index];
             donut.Despawn();
         }
         else
@@ -298,10 +298,10 @@ public class SensorFunnel : Sample
 
             if (m_type == (int)ea.e_donut)
             {
-                Donut donut = (Donut)b2Body_GetUserData(bodyId);
+                BodyUserData<int> donut = b2Body_GetUserData(bodyId) as BodyUserData<int>;
                 if (donut != null)
                 {
-                    int index = m_donuts.FindIndex(donut);
+                    int index = donut.Value;
                     Debug.Assert(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)

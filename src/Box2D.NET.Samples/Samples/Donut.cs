@@ -14,7 +14,7 @@ using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples;
 
-public class Donut
+public struct Donut
 {
     public const int e_sides = 7;
 
@@ -25,6 +25,7 @@ public class Donut
     public Donut()
     {
         Debug.Assert(e_sides == B2FixedArray7<B2BodyId>.Size);
+        Debug.Assert(e_sides == B2FixedArray7<B2JointId>.Size);
     }
 
     public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, object userData)
