@@ -28,12 +28,12 @@ public class BenchmarkCreateDestroy : Sample
     int m_iterations;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkCreateDestroy(settings);
+        return new BenchmarkCreateDestroy(ctx, settings);
     }
 
-    public BenchmarkCreateDestroy(Settings settings) : base(settings)
+    public BenchmarkCreateDestroy(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -33,12 +33,12 @@ public class BodyMove : Sample
     private float m_explosionMagnitude;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BodyMove(settings);
+        return new BodyMove(ctx, settings);
     }
 
-    public BodyMove(Settings settings) : base(settings)
+    public BodyMove(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

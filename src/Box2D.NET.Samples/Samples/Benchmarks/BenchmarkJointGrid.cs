@@ -10,12 +10,12 @@ public class BenchmarkJointGrid : Sample
 {
     private static readonly int BenchmarkJointGridIndex = SampleFactory.Shared.RegisterSample("Benchmark", "Joint Grid", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkJointGrid(settings);
+        return new BenchmarkJointGrid(ctx, settings);
     }
 
-    public BenchmarkJointGrid(Settings settings) : base(settings)
+    public BenchmarkJointGrid(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

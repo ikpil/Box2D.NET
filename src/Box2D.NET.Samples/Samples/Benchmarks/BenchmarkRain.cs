@@ -13,12 +13,12 @@ public class BenchmarkRain : Sample
 
     private RainData m_rainData;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkRain(settings);
+        return new BenchmarkRain(ctx, settings);
     }
 
-    public BenchmarkRain(Settings settings) : base(settings)
+    public BenchmarkRain(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

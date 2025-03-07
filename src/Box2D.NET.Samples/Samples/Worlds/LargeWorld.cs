@@ -36,12 +36,12 @@ public class LargeWorld : Sample
     private bool m_followCar;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new LargeWorld(settings);
+        return new LargeWorld(ctx, settings);
     }
 
-    public LargeWorld(Settings settings) : base(settings)
+    public LargeWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         m_period = 40.0f;
         float omega = 2.0f * B2_PI / m_period;

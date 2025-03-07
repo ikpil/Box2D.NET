@@ -13,12 +13,12 @@ public class ChainSlide : Sample
 {
     private static readonly int SampleChainSlide = SampleFactory.Shared.RegisterSample("Continuous", "Chain Slide", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ChainSlide(settings);
+        return new ChainSlide(ctx, settings);
     }
 
-    public ChainSlide(Settings settings) : base(settings)
+    public ChainSlide(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

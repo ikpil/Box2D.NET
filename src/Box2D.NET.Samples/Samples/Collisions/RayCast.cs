@@ -37,13 +37,13 @@ public class RayCast : Sample
 
     private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RayCast(settings);
+        return new RayCast(ctx, settings);
     }
 
-    public RayCast(Settings settings)
-        : base(settings)
+    public RayCast(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

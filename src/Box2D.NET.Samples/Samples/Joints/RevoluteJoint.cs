@@ -29,12 +29,12 @@ public class RevoluteJoint : Sample
     bool m_enableLimit;
     private static readonly int SampleRevolute = SampleFactory.Shared.RegisterSample("Joints", "Revolute", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RevoluteJoint(settings);
+        return new RevoluteJoint(ctx, settings);
     }
 
-    public RevoluteJoint(Settings settings) : base(settings)
+    public RevoluteJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -19,13 +19,13 @@ public class Pivot : Sample
 
     private static readonly int SamplePivot = SampleFactory.Shared.RegisterSample("Bodies", "Pivot", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Pivot(settings);
+        return new Pivot(ctx, settings);
     }
 
-    public Pivot(Settings settings)
-        : base(settings)
+    public Pivot(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

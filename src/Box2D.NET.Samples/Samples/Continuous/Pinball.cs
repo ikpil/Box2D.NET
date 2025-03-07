@@ -23,13 +23,13 @@ public class Pinball : Sample
     private B2JointId m_rightJointId;
     private B2BodyId m_ballId;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Pinball(settings);
+        return new Pinball(ctx, settings);
     }
 
-    public Pinball(Settings settings)
-        : base(settings)
+    public Pinball(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

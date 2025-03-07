@@ -6,7 +6,7 @@ using Box2D.NET.Samples.Samples;
 
 namespace Box2D.NET.Samples.Primitives;
 
-public delegate Sample SampleCreateFcn(Settings settings);
+public delegate Sample SampleCreateFcn(SampleAppContext ctx, Settings settings);
 
 public class SampleEntry
 {

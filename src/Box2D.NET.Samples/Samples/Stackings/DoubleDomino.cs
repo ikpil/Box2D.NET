@@ -13,12 +13,12 @@ public class DoubleDomino : Sample
 {
     private static readonly int SampleDoubleDomino = SampleFactory.Shared.RegisterSample("Stacking", "Double Domino", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new DoubleDomino(settings);
+        return new DoubleDomino(ctx, settings);
     }
 
-    public DoubleDomino(Settings settings) : base(settings)
+    public DoubleDomino(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

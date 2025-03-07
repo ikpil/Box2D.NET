@@ -26,12 +26,12 @@ public class CompoundShapes : Sample
 
     private static readonly int SampleCompoundShape = SampleFactory.Shared.RegisterSample("Shapes", "Compound Shapes", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new CompoundShapes(settings);
+        return new CompoundShapes(ctx, settings);
     }
 
-    public CompoundShapes(Settings settings) : base(settings)
+    public CompoundShapes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

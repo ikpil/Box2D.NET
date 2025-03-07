@@ -19,12 +19,12 @@ public class CustomFilter : Sample
     B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
     private static readonly int SampleCustomFilter = SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new CustomFilter(settings);
+        return new CustomFilter(ctx, settings);
     }
 
-    public CustomFilter(Settings settings) : base(settings)
+    public CustomFilter(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

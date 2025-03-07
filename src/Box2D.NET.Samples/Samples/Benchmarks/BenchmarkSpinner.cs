@@ -11,12 +11,12 @@ public class BenchmarkSpinner : Sample
 {
     private static readonly int SampleBenchmarkSpinner = SampleFactory.Shared.RegisterSample("Benchmark", "Spinner", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkSpinner(settings);
+        return new BenchmarkSpinner(ctx, settings);
     }
 
-    public BenchmarkSpinner(Settings settings) : base(settings)
+    public BenchmarkSpinner(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

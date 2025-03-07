@@ -14,12 +14,12 @@ public class OffsetShapes : Sample
 {
     private static readonly int SampleOffsetShapes = SampleFactory.Shared.RegisterSample("Shapes", "Offset", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new OffsetShapes(settings);
+        return new OffsetShapes(ctx, settings);
     }
 
-    public OffsetShapes(Settings settings) : base(settings)
+    public OffsetShapes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

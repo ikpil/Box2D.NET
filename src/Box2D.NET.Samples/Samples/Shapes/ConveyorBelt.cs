@@ -13,12 +13,12 @@ public class ConveyorBelt : Sample
 {
     private static readonly int SampleConveyorBelt = SampleFactory.Shared.RegisterSample("Shapes", "Conveyor Belt", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ConveyorBelt(settings);
+        return new ConveyorBelt(ctx, settings);
     }
 
-    public ConveyorBelt(Settings settings) : base(settings)
+    public ConveyorBelt(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

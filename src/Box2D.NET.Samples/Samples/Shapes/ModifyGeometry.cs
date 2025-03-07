@@ -67,17 +67,17 @@ public class ModifyGeometry : Sample
 
     private static readonly int SampleModifyGeometry = SampleFactory.Shared.RegisterSample("Shapes", "Modify Geometry", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ModifyGeometry(settings);
+        return new ModifyGeometry(ctx, settings);
     }
 
     private void SetCircle(B2Circle circle)
     {
     }
 
-    public ModifyGeometry(Settings settings)
-        : base(settings)
+    public ModifyGeometry(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

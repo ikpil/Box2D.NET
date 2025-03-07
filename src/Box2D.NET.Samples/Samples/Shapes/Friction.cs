@@ -14,12 +14,12 @@ public class Friction : Sample
 {
     private static readonly int SampleFriction = SampleFactory.Shared.RegisterSample("Shapes", "Friction", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Friction(settings);
+        return new Friction(ctx, settings);
     }
 
-    public Friction(Settings settings) : base(settings)
+    public Friction(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

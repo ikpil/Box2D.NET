@@ -21,12 +21,12 @@ public class Ragdoll : Sample
     private float m_jointHertz;
     private float m_jointDampingRatio;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Ragdoll(settings);
+        return new Ragdoll(ctx, settings);
     }
 
-    public Ragdoll(Settings settings) : base(settings)
+    public Ragdoll(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

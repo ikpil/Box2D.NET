@@ -15,12 +15,12 @@ public class Arch : Sample
 {
     private static readonly int SampleArch = SampleFactory.Shared.RegisterSample("Stacking", "Arch", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Arch(settings);
+        return new Arch(ctx, settings);
     }
 
-    public Arch(Settings settings) : base(settings)
+    public Arch(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

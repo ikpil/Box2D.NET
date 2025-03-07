@@ -40,12 +40,12 @@ public class BenchmarkCast : Sample
     bool m_topDown;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkCast(settings);
+        return new BenchmarkCast(ctx, settings);
     }
 
-    public BenchmarkCast(Settings settings) : base(settings)
+    public BenchmarkCast(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

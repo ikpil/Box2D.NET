@@ -15,12 +15,12 @@ public class SingleBox : Sample
     
     B2BodyId m_bodyId;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SingleBox(settings);
+        return new SingleBox(ctx, settings);
     }
 
-    public SingleBox(Settings settings) : base(settings)
+    public SingleBox(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

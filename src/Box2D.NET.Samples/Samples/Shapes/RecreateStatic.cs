@@ -16,12 +16,12 @@ public class RecreateStatic : Sample
     B2BodyId m_groundId;
     private static readonly int SampleSingleBox = SampleFactory.Shared.RegisterSample("Shapes", "Recreate Static", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RecreateStatic(settings);
+        return new RecreateStatic(ctx, settings);
     }
 
-    public RecreateStatic(Settings settings) : base(settings)
+    public RecreateStatic(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

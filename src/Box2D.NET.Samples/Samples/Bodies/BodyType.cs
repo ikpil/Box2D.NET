@@ -28,12 +28,12 @@ public class BodyType : Sample
 
     private static readonly int SampleBodyType = SampleFactory.Shared.RegisterSample("Bodies", "Body Type", BodyType.Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BodyType(settings);
+        return new BodyType(ctx, settings);
     }
 
-    public BodyType(Settings settings) : base(settings)
+    public BodyType(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

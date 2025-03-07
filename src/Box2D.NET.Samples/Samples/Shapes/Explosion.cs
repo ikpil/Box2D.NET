@@ -27,13 +27,13 @@ public class Explosion : Sample
 
     private static readonly int SampleExplosion = SampleFactory.Shared.RegisterSample("Shapes", "Explosion", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Explosion(settings);
+        return new Explosion(ctx, settings);
     }
 
-    public Explosion(Settings settings)
-        : base(settings)
+    public Explosion(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

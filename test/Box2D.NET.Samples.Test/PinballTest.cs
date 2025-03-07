@@ -8,7 +8,8 @@ public class PinballTest
     [Test]
     public void TestPinball()
     {
+        var ctx = new SampleAppContext();
         var settings = new Settings();
-        var pinball = new Pinball(settings);
+        var pinball = new Pinball(ctx, settings);
     }
 }

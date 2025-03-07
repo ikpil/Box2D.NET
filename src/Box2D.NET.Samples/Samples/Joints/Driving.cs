@@ -29,12 +29,12 @@ public class Driving : Sample
     private float m_speed;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Driving(settings);
+        return new Driving(ctx, settings);
     }
 
-    public Driving(Settings settings) : base(settings)
+    public Driving(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

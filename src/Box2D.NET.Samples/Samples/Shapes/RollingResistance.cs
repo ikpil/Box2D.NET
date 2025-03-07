@@ -16,12 +16,12 @@ public class RollingResistance : Sample
     float m_lift;
     private static readonly int SampleRollingResistance = SampleFactory.Shared.RegisterSample("Shapes", "Rolling Resistance", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RollingResistance(settings);
+        return new RollingResistance(ctx, settings);
     }
 
-    public RollingResistance(Settings settings) : base(settings)
+    public RollingResistance(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

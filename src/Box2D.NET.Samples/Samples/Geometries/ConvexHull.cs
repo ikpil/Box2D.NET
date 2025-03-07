@@ -21,14 +21,14 @@ public class ConvexHull : Sample
     bool m_bulk;
     private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Geometry", "Convex Hull", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ConvexHull(settings);
+        return new ConvexHull(ctx, settings);
     }
 
 
-    public ConvexHull(Settings settings)
-        : base(settings)
+    public ConvexHull(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

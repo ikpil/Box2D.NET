@@ -15,12 +15,12 @@ public class RoundedShapes : Sample
 {
     private static readonly int SampleRoundedShapes = SampleFactory.Shared.RegisterSample("Shapes", "Rounded", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RoundedShapes(settings);
+        return new RoundedShapes(ctx, settings);
     }
 
-    public RoundedShapes(Settings settings) : base(settings)
+    public RoundedShapes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

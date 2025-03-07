@@ -26,10 +26,10 @@ public class SampleFactory
         return index;
     }
 
-    public Sample Create(int index, Settings setting)
+    public Sample Create(int index, SampleAppContext ctx, Settings setting)
     {
         var entry = GetInternal(index);
-        var sample = entry.CreateFcn.Invoke(setting);
+        var sample = entry.CreateFcn.Invoke(ctx, setting);
         return sample;
     }
 
@@ -74,7 +74,7 @@ public class SampleFactory
         {
             // Attributes = {MethodAttributes} Private | Static | HideBySig | SpecialName | RTSpecialName
             // BindingFlags = {BindingFlags} Static | NonPublic
-                
+
             var method = type.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic);
             if (0 >= method.Length)
             {

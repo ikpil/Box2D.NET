@@ -25,12 +25,12 @@ public class OverlapRecovery : Sample
     float m_dampingRatio;
     private static readonly int SampleIndex4 = SampleFactory.Shared.RegisterSample("Robustness", "Overlap Recovery", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new OverlapRecovery(settings);
+        return new OverlapRecovery(ctx, settings);
     }
 
-    public OverlapRecovery(Settings settings) : base(settings)
+    public OverlapRecovery(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

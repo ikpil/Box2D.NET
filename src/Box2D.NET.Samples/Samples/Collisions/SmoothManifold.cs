@@ -13,41 +13,39 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class SmoothManifold : Sample
 {
-    enum ShapeType
+    private static readonly int SampleSmoothManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Smooth Manifold", Create);
+
+    private enum ShapeType
     {
         e_circleShape = 0,
         e_boxShape
     }
 
-    ShapeType m_shapeType;
+    private ShapeType m_shapeType;
 
-    B2ChainSegment[] m_segments;
-    int m_count;
+    private B2ChainSegment[] m_segments;
+    private int m_count;
 
-    B2Transform m_transform;
-    float m_angle;
-    float m_round;
+    private B2Transform m_transform;
+    private float m_angle;
+    private float m_round;
 
-    B2Vec2 m_basePosition;
-    B2Vec2 m_startPoint;
-    float m_baseAngle;
+    private B2Vec2 m_basePosition;
+    private B2Vec2 m_startPoint;
+    private float m_baseAngle;
 
-    bool m_dragging;
-    bool m_rotating;
-    bool m_showIds;
-    bool m_showAnchors;
-    bool m_showSeparation;
+    private bool m_dragging;
+    private bool m_rotating;
+    private bool m_showIds;
+    private bool m_showAnchors;
+    private bool m_showSeparation;
 
-    private static readonly int SampleSmoothManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Smooth Manifold", Create);
-
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SmoothManifold(settings);
+        return new SmoothManifold(ctx, settings);
     }
 
-
-    SmoothManifold(Settings settings)
-        : base(settings)
+    public SmoothManifold(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

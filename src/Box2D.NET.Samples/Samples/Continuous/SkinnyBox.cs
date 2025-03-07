@@ -25,12 +25,12 @@ public class SkinnyBox : Sample
 
     private static readonly int SampleSkinnyBox = SampleFactory.Shared.RegisterSample("Continuous", "Skinny Box", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SkinnyBox(settings);
+        return new SkinnyBox(ctx, settings);
     }
 
-    public SkinnyBox(Settings settings) : base(settings)
+    public SkinnyBox(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

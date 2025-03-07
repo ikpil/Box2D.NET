@@ -31,13 +31,13 @@ public class MotorJoint : Sample
 
     private static readonly int SampleMotorJoint = SampleFactory.Shared.RegisterSample("Joints", "Motor Joint", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new MotorJoint(settings);
+        return new MotorJoint(ctx, settings);
     }
 
-    public MotorJoint(Settings settings)
-        : base(settings)
+    public MotorJoint(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

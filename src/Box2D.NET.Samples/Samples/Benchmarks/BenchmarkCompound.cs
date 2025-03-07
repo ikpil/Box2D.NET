@@ -14,12 +14,12 @@ public class BenchmarkCompound : Sample
 {
     private static readonly int SampleCompound = SampleFactory.Shared.RegisterSample("Benchmark", "Compound", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkCompound(settings);
+        return new BenchmarkCompound(ctx, settings);
     }
 
-    public BenchmarkCompound(Settings settings) : base(settings)
+    public BenchmarkCompound(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

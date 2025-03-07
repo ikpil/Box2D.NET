@@ -28,14 +28,14 @@ public class ShapeCast : Sample
 
     private static readonly int SampleShapeCast = SampleFactory.Shared.RegisterSample("Collision", "Shape Cast", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ShapeCast(settings);
+        return new ShapeCast(ctx, settings);
     }
 
 
-    public ShapeCast(Settings settings)
-        : base(settings)
+    public ShapeCast(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

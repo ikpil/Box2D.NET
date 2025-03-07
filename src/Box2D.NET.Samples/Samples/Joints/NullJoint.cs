@@ -16,12 +16,12 @@ public class NullJoint : Sample
 {
     private static readonly int SampleNullJoint = SampleFactory.Shared.RegisterSample("Joints", "Null Joint", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new NullJoint(settings);
+        return new NullJoint(ctx, settings);
     }
 
-    public NullJoint(Settings settings) : base(settings)
+    public NullJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

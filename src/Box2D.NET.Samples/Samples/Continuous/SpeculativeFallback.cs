@@ -17,12 +17,12 @@ public class SpeculativeFallback : Sample
 {
     private static readonly int SampleSpeculativeFallback = SampleFactory.Shared.RegisterSample("Continuous", "Speculative Fallback", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SpeculativeFallback(settings);
+        return new SpeculativeFallback(ctx, settings);
     }
 
-    public SpeculativeFallback(Settings settings) : base(settings)
+    public SpeculativeFallback(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

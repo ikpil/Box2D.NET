@@ -25,12 +25,12 @@ public class Sleep : Sample
     private bool[] m_sensorTouching = new bool[2];
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Sleep(settings);
+        return new Sleep(ctx, settings);
     }
 
-    public Sleep(Settings settings) : base(settings)
+    public Sleep(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

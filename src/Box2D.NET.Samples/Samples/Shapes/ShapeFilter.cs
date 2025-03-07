@@ -30,13 +30,13 @@ public class ShapeFilter : Sample
 
     private static readonly int SampleShapeFilter = SampleFactory.Shared.RegisterSample("Shapes", "Filter", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ShapeFilter(settings);
+        return new ShapeFilter(ctx, settings);
     }
 
 
-    public ShapeFilter(Settings settings) : base(settings)
+    public ShapeFilter(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

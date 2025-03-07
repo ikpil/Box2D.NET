@@ -14,12 +14,12 @@ public class BenchmarkKinematic : Sample
 {
     private static readonly int SampleKinematic = SampleFactory.Shared.RegisterSample("Benchmark", "Kinematic", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkKinematic(settings);
+        return new BenchmarkKinematic(ctx, settings);
     }
 
-    public BenchmarkKinematic(Settings settings) : base(settings)
+    public BenchmarkKinematic(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

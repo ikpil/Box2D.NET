@@ -31,12 +31,12 @@ public class BounceHouse : Sample
     ShapeType m_shapeType;
     bool m_enableHitEvents;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BounceHouse(settings);
+        return new BounceHouse(ctx, settings);
     }
 
-    public BounceHouse(Settings settings) : base(settings)
+    public BounceHouse(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

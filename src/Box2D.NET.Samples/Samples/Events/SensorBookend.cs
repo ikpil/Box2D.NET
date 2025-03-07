@@ -25,12 +25,12 @@ public class SensorBookend : Sample
     private B2ShapeId m_visitorShapeId;
     private bool m_isVisiting;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SensorBookend(settings);
+        return new SensorBookend(ctx, settings);
     }
 
-    public SensorBookend(Settings settings) : base(settings)
+    public SensorBookend(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

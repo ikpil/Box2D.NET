@@ -17,12 +17,12 @@ public class PixelImperfect : Sample
 
     private B2BodyId m_ballId;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new PixelImperfect(settings);
+        return new PixelImperfect(ctx, settings);
     }
 
-    public PixelImperfect(Settings settings) : base(settings)
+    public PixelImperfect(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

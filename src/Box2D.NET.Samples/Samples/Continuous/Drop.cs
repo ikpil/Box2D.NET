@@ -27,12 +27,12 @@ public class Drop : Sample
     private bool m_continuous;
     private bool m_speculative;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Drop(settings);
+        return new Drop(ctx, settings);
     }
 
-    public Drop(Settings settings) : base(settings)
+    public Drop(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

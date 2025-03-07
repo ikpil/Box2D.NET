@@ -41,13 +41,13 @@ public class Manifold : Sample
 
     private static readonly int SampleManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Manifold", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Manifold(settings);
+        return new Manifold(ctx, settings);
     }
 
-    public Manifold(Settings settings)
-        : base(settings)
+    public Manifold(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

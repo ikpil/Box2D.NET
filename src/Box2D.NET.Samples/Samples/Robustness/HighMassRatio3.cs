@@ -14,14 +14,14 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 // Big box on small triangles
 public class HighMassRatio3 : Sample
 {
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new HighMassRatio3(settings);
+        return new HighMassRatio3(ctx, settings);
     }
 
     private static readonly int SampleIndex3 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio3", Create);
 
-    public HighMassRatio3(Settings settings) : base(settings)
+    public HighMassRatio3(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

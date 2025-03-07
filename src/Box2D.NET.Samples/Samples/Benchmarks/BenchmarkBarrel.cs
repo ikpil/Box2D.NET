@@ -42,12 +42,12 @@ public class BenchmarkBarrel : Sample
 
     private ShapeType m_shapeType;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkBarrel(settings);
+        return new BenchmarkBarrel(ctx, settings);
     }
 
-    public BenchmarkBarrel(Settings settings) : base(settings)
+    public BenchmarkBarrel(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -20,12 +20,12 @@ public class TimeOfImpact : Sample
     float m_radiusB = 0.0299999993f;
     private static readonly int SampleTimeOfImpact = SampleFactory.Shared.RegisterSample("Collision", "Time of Impact", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new TimeOfImpact(settings);
+        return new TimeOfImpact(ctx, settings);
     }
 
-    public TimeOfImpact(Settings settings) : base(settings)
+    public TimeOfImpact(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

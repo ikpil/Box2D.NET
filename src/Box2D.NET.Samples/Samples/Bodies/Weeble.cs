@@ -23,12 +23,12 @@ public class Weeble : Sample
 
     private static readonly int SampleWeeble = SampleFactory.Shared.RegisterSample("Bodies", "Weeble", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Weeble(settings);
+        return new Weeble(ctx, settings);
     }
 
-    public Weeble(Settings settings) : base(settings)
+    public Weeble(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -15,12 +15,12 @@ public class CardHouse : Sample
 {
     private static readonly int SampleCardHouse = SampleFactory.Shared.RegisterSample("Stacking", "Card House", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new CardHouse(settings);
+        return new CardHouse(ctx, settings);
     }
 
-    public CardHouse(Settings settings) : base(settings)
+    public CardHouse(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

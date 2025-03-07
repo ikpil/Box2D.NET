@@ -13,12 +13,12 @@ public class SoftBody : Sample
     Donut m_donut;
     private static readonly int SampleDonut = SampleFactory.Shared.RegisterSample("Joints", "Soft Body", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SoftBody(settings);
+        return new SoftBody(ctx, settings);
     }
 
-    public SoftBody(Settings settings) : base(settings)
+    public SoftBody(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

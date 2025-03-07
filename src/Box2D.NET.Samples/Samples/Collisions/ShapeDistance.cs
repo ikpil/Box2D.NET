@@ -50,9 +50,9 @@ public class ShapeDistance : Sample
 
     private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ShapeDistance(settings);
+        return new ShapeDistance(ctx, settings);
     }
 
     enum ShapeType
@@ -63,8 +63,8 @@ public class ShapeDistance : Sample
         e_box
     };
 
-    public ShapeDistance(Settings settings)
-        : base(settings)
+    public ShapeDistance(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

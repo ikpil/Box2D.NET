@@ -10,13 +10,12 @@ public class BenchmarkTumbler : Sample
 {
     private static readonly int SampleBenchmarkTumbler = SampleFactory.Shared.RegisterSample("Benchmark", "Tumbler", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkTumbler(settings);
+        return new BenchmarkTumbler(ctx, settings);
     }
 
-    public BenchmarkTumbler(Settings settings)
-        : base(settings)
+    public BenchmarkTumbler(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

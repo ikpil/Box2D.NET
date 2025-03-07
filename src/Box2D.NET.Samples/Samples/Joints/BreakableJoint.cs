@@ -26,13 +26,13 @@ public class BreakableJoint : Sample
 
     private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Joints", "Breakable", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BreakableJoint(settings);
+        return new BreakableJoint(ctx, settings);
     }
 
-    public BreakableJoint(Settings settings)
-        : base(settings)
+    public BreakableJoint(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

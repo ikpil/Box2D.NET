@@ -14,12 +14,12 @@ public class Wedge : Sample
 {
     private static readonly int SampleWedge = SampleFactory.Shared.RegisterSample("Continuous", "Wedge", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Wedge(settings);
+        return new Wedge(ctx, settings);
     }
 
-    public Wedge(Settings settings) : base(settings)
+    public Wedge(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

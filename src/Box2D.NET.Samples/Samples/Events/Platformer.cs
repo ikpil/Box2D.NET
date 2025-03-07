@@ -33,12 +33,12 @@ public class Platformer : Sample
     private B2BodyId m_movingPlatformId;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Platformer(settings);
+        return new Platformer(ctx, settings);
     }
 
-    public Platformer(Settings settings) : base(settings)
+    public Platformer(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -19,13 +19,13 @@ public class TiltedStack : Sample
 
     B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new TiltedStack(settings);
+        return new TiltedStack(ctx, settings);
     }
 
 
-    public TiltedStack(Settings settings) : base(settings)
+    public TiltedStack(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -27,14 +27,14 @@ public class Bridge : Sample
     float m_gravityScale;
     private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Bridge(settings);
+        return new Bridge(ctx, settings);
     }
 
 
-    public Bridge(Settings settings)
-        : base(settings)
+    public Bridge(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

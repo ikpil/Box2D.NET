@@ -47,7 +47,7 @@ public class Sample : IDisposable
     public B2Profile m_totalProfile;
 
 
-    public Sample(Settings settings)
+    public Sample(SampleAppContext ctx, Settings settings)
     {
         m_scheduler = new TaskScheduler();
         m_scheduler.Initialize(settings.workerCount);

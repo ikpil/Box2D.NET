@@ -31,14 +31,14 @@ public class SensorTypes : Sample
 
     private static readonly int SampleSensorTypes = SampleFactory.Shared.RegisterSample("Events", "Sensor Types", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SensorTypes(settings);
+        return new SensorTypes(ctx, settings);
     }
 
 
-    public SensorTypes(Settings settings)
-        : base(settings)
+    public SensorTypes(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

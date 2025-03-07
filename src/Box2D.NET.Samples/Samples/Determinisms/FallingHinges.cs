@@ -36,13 +36,13 @@ public class FallingHinges : Sample
     int m_sleepStep;
     private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new FallingHinges(settings);
+        return new FallingHinges(ctx, settings);
     }
 
 
-    public FallingHinges(Settings settings) : base(settings)
+    public FallingHinges(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

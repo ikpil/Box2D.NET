@@ -33,6 +33,7 @@ public class SampleApp
     private ImGuiController _imgui;
     private int s_selection = 0;
     private Sample s_sample = null;
+    private SampleAppContext s_sampleAppContext;
     private Settings s_settings;
     private bool s_rightMouseDown = false;
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
@@ -42,7 +43,8 @@ public class SampleApp
 
     public SampleApp()
     {
-        s_settings = new();
+        s_settings = new Settings();
+        s_sampleAppContext = new SampleAppContext();
     }
 
     public unsafe int Run(string[] args)
@@ -243,13 +245,13 @@ public class SampleApp
             s_settings.useCameraBounds = false;
 
             s_sample = null;
-            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
         }
-        
+
         if (s_sample == null)
         {
             // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
         }
 
         s_sample.Step(s_settings);
@@ -280,7 +282,6 @@ public class SampleApp
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
-
 
 
         if (B2.g_draw.m_showUI)
@@ -371,7 +372,7 @@ public class SampleApp
     {
         s_sample = null;
         s_settings.restart = true;
-        s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
+        s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
         s_settings.restart = false;
     }
 

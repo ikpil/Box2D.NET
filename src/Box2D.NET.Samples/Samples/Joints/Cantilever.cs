@@ -31,14 +31,14 @@ public class Cantilever : Sample
 
     private static readonly int SampleCantileverIndex = SampleFactory.Shared.RegisterSample("Joints", "Cantilever", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Cantilever(settings);
+        return new Cantilever(ctx, settings);
     }
 
 
-    public Cantilever(Settings settings)
-        : base(settings)
+    public Cantilever(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -31,13 +31,13 @@ public class DistanceJoint : Sample
     bool m_enableLimit;
     private static readonly int SampleDistanceJoint = SampleFactory.Shared.RegisterSample("Joints", "Distance Joint", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new DistanceJoint(settings);
+        return new DistanceJoint(ctx, settings);
     }
 
-    public DistanceJoint(Settings settings)
-        : base(settings)
+    public DistanceJoint(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

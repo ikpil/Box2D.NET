@@ -37,13 +37,13 @@ public class SensorFunnel : Sample
     private float m_wait;
     private float m_side;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new SensorFunnel(settings);
+        return new SensorFunnel(ctx, settings);
     }
 
 
-    public SensorFunnel(Settings settings) : base(settings)
+    public SensorFunnel(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

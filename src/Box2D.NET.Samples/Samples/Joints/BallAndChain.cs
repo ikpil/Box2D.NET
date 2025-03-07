@@ -24,12 +24,12 @@ public class BallAndChain : Sample
     private float m_frictionTorque;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BallAndChain(settings);
+        return new BallAndChain(ctx, settings);
     }
 
-    public BallAndChain(Settings settings) : base(settings)
+    public BallAndChain(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

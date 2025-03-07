@@ -36,12 +36,12 @@ public class GhostBumps : Sample
 
     private static readonly int SampleGhostCollision = SampleFactory.Shared.RegisterSample("Continuous", "Ghost Bumps", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new GhostBumps(settings);
+        return new GhostBumps(ctx, settings);
     }
 
-    public GhostBumps(Settings settings) : base(settings)
+    public GhostBumps(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

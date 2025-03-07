@@ -30,13 +30,13 @@ public class BenchmarkSleep : Sample
     private bool m_awake;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkSleep(settings);
+        return new BenchmarkSleep(ctx, settings);
     }
 
 
-    public BenchmarkSleep(Settings settings) : base(settings)
+    public BenchmarkSleep(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

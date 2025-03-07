@@ -67,13 +67,13 @@ public class RayCastWorld : Sample
 
     private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RayCastWorld(settings);
+        return new RayCastWorld(ctx, settings);
     }
 
 
-    public RayCastWorld(Settings settings) : base(settings)
+    public RayCastWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

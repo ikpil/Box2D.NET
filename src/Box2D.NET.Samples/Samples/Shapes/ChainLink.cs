@@ -14,12 +14,12 @@ public class ChainLink : Sample
 {
     private static readonly int SampleChainLink = SampleFactory.Shared.RegisterSample("Shapes", "Chain Link", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ChainLink(settings);
+        return new ChainLink(ctx, settings);
     }
 
-    public ChainLink(Settings settings) : base(settings)
+    public ChainLink(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

@@ -32,13 +32,13 @@ public class FootSensor : Sample
     private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
     private int m_overlapCount;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new FootSensor(settings);
+        return new FootSensor(ctx, settings);
     }
 
 
-    public FootSensor(Settings settings) : base(settings)
+    public FootSensor(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

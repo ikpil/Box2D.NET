@@ -10,12 +10,12 @@ public class BenchmarkLargePyramid : Sample
 {
     private static readonly int SampleBenchmarkLargePyramid = SampleFactory.Shared.RegisterSample("Benchmark", "Large Pyramid", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkLargePyramid(settings);
+        return new BenchmarkLargePyramid(ctx, settings);
     }
 
-    public BenchmarkLargePyramid(Settings settings) : base(settings)
+    public BenchmarkLargePyramid(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

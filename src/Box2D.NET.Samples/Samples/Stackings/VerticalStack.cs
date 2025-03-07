@@ -38,14 +38,14 @@ public class VerticalStack : Sample
     ShapeType m_bulletType;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new VerticalStack(settings);
+        return new VerticalStack(ctx, settings);
     }
 
 
-    public VerticalStack(Settings settings)
-        : base(settings)
+    public VerticalStack(SampleAppContext ctx, Settings settings)
+        : base(ctx, settings)
     {
         if (settings.restart == false)
         {

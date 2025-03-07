@@ -10,12 +10,12 @@ public class BenchmarkSmash : Sample
 {
     private static readonly int SampleBenchmarkSmash = SampleFactory.Shared.RegisterSample("Benchmark", "Smash", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkSmash(settings);
+        return new BenchmarkSmash(ctx, settings);
     }
 
-    public BenchmarkSmash(Settings settings) : base(settings)
+    public BenchmarkSmash(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

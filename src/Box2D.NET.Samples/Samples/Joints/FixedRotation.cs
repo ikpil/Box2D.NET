@@ -26,12 +26,12 @@ public class FixedRotation : Sample
 
     private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new FixedRotation(settings);
+        return new FixedRotation(ctx, settings);
     }
 
-    public FixedRotation(Settings settings) : base(settings)
+    public FixedRotation(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

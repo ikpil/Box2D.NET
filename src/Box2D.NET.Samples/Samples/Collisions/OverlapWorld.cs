@@ -61,9 +61,9 @@ public class OverlapWorld : Sample
     private bool m_rotating;
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new OverlapWorld(settings);
+        return new OverlapWorld(ctx, settings);
     }
 
 
@@ -89,7 +89,7 @@ public class OverlapWorld : Sample
         return true;
     }
 
-    public OverlapWorld(Settings settings) : base(settings)
+    public OverlapWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

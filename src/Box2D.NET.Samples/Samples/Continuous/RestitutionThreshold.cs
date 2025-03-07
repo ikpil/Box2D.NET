@@ -18,12 +18,12 @@ public class RestitutionThreshold : Sample
     
     private B2BodyId m_ballId;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RestitutionThreshold(settings);
+        return new RestitutionThreshold(ctx, settings);
     }
 
-    public RestitutionThreshold(Settings settings) : base(settings)
+    public RestitutionThreshold(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

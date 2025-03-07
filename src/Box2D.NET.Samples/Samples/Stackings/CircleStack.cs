@@ -16,9 +16,9 @@ public class CircleStack : Sample
     private static readonly int SampleCircleStack = SampleFactory.Shared.RegisterSample("Stacking", "Circle Stack", Create);
     private List<Event> m_events = new List<Event>();
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new CircleStack(settings);
+        return new CircleStack(ctx, settings);
     }
 
     public struct Event
@@ -32,7 +32,7 @@ public class CircleStack : Sample
         }
     };
 
-    public CircleStack(Settings settings) : base(settings)
+    public CircleStack(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

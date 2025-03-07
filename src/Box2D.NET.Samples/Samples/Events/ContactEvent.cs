@@ -35,13 +35,13 @@ public class ContactEvent : Sample
     private float m_force;
     private float m_wait;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new ContactEvent(settings);
+        return new ContactEvent(ctx, settings);
     }
 
 
-    public ContactEvent(Settings settings) : base(settings)
+    public ContactEvent(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

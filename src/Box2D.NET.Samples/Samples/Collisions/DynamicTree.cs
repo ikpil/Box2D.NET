@@ -64,13 +64,13 @@ public class DynamicTree : Sample
     }
 
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new DynamicTree(settings);
+        return new DynamicTree(ctx, settings);
     }
 
 
-    public DynamicTree(Settings settings) : base(settings)
+    public DynamicTree(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

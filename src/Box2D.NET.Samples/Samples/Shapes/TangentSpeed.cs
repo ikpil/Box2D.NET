@@ -15,12 +15,12 @@ public class TangentSpeed : Sample
     int m_count = 0;
     private static readonly int SampleTangentSpeed = SampleFactory.Shared.RegisterSample("Shapes", "Tangent Speed", Create);
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new TangentSpeed(settings);
+        return new TangentSpeed(ctx, settings);
     }
 
-    public TangentSpeed(Settings settings) : base(settings)
+    public TangentSpeed(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

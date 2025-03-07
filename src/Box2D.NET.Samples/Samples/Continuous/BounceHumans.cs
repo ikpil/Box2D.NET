@@ -21,13 +21,13 @@ public class BounceHumans : Sample
     private float m_countDown = 0.0f;
     private float m_time = 0.0f;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BounceHumans(settings);
+        return new BounceHumans(ctx, settings);
     }
 
 
-    public BounceHumans(Settings settings) : base(settings)
+    public BounceHumans(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
         B2.g_camera.m_zoom = 12.0f;

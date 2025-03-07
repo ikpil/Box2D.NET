@@ -20,13 +20,13 @@ public class Cliff : Sample
     B2BodyId[] m_bodyIds = new B2BodyId[9];
     bool m_flip;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new Cliff(settings);
+        return new Cliff(ctx, settings);
     }
 
 
-    public Cliff(Settings settings) : base(settings)
+    public Cliff(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

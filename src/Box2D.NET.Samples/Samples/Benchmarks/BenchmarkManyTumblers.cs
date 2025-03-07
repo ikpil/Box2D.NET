@@ -33,12 +33,12 @@ public class BenchmarkManyTumblers : Sample
 
     float m_angularSpeed;
 
-    private static Sample Create(Settings settings)
+    private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new BenchmarkManyTumblers(settings);
+        return new BenchmarkManyTumblers(ctx, settings);
     }
 
-    public BenchmarkManyTumblers(Settings settings) : base(settings)
+    public BenchmarkManyTumblers(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
