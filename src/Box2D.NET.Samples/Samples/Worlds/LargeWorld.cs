@@ -21,8 +21,8 @@ namespace Box2D.NET.Samples.Samples.Worlds;
 public class LargeWorld : Sample
 {
     private static readonly int SampleLargeWorld = SampleFactory.Shared.RegisterSample("World", "Large World", Create);
-    
-    private Car m_car = new Car();
+
+    private Car m_car;
     private B2Vec2 m_viewPosition;
     private float m_period;
     private int m_cycleCount;

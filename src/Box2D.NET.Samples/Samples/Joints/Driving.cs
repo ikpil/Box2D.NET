@@ -18,15 +18,16 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This is a fun demo that shows off the wheel joint
 public class Driving : Sample
 {
-    Car m_car;
-
-    float m_throttle;
-    float m_hertz;
-    float m_dampingRatio;
-    float m_torque;
-    float m_speed;
-
     private static readonly int SampleDriving = SampleFactory.Shared.RegisterSample("Joints", "Driving", Create);
+
+    private Car m_car;
+
+    private float m_throttle;
+    private float m_hertz;
+    private float m_dampingRatio;
+    private float m_torque;
+    private float m_speed;
+
 
     private static Sample Create(Settings settings)
     {
