@@ -521,7 +521,7 @@ namespace Box2D.NET
             const int k_maxIters = 20;
 
             // These store the vertices of the last simplex so that we can check for duplicates and prevent cycling.
-            int[] saveA = new int[3], saveB = new int[3];
+            Span<int> saveA = stackalloc int[3], saveB = stackalloc int[3];
 
             // Main iteration loop.
             int iter = 0;

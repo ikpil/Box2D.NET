@@ -350,7 +350,7 @@ namespace Box2D.NET
                 return b2ComputeCapsuleMass(capsule, density);
             }
 
-            B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> vertices = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             int count = shape.count;
             float radius = shape.radius;
 

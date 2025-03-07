@@ -1553,8 +1553,8 @@ namespace Box2D.NET
         {
             Debug.Assert(count > 0);
 
-            B2TreeBin[] bins = new B2TreeBin[B2_BIN_COUNT];
-            B2TreePlane[] planes = new B2TreePlane[B2_BIN_COUNT - 1];
+            Span<B2TreeBin> bins = stackalloc B2TreeBin[B2_BIN_COUNT];
+            Span<B2TreePlane> planes = stackalloc B2TreePlane[B2_BIN_COUNT - 1];
 
             B2Vec2 center = b2AABB_Center(boxes[0]);
             B2AABB centroidAABB;

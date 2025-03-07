@@ -26,7 +26,7 @@ namespace Box2D.NET
             B2Vec2 e = b2Normalize(b2Sub(p2, p1));
 
             // discard points left of e and find point furthest to the right of e
-            B2Vec2[] rightPoints = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> rightPoints = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             int rightCount = 0;
 
             int bestIndex = 0;
@@ -111,7 +111,7 @@ namespace Box2D.NET
 
             // Perform aggressive point welding. First point always remains.
             // Also compute the bounding box for later.
-            B2Vec2[] ps = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> ps = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             int n = 0;
             float linearSlop = B2_LINEAR_SLOP;
             float tolSqr = 16.0f * linearSlop * linearSlop;
@@ -184,10 +184,10 @@ namespace Box2D.NET
             n = n - 1;
 
             // split the points into points that are left and right of the line p1-p2.
-            B2Vec2[] rightPoints = new B2Vec2[B2_MAX_POLYGON_VERTICES - 2];
+            Span<B2Vec2> rightPoints = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES - 2];
             int rightCount = 0;
 
-            B2Vec2[] leftPoints = new B2Vec2[B2_MAX_POLYGON_VERTICES - 2];
+            Span<B2Vec2> leftPoints = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES - 2];
             int leftCount = 0;
 
             B2Vec2 e = b2Normalize(b2Sub(p2, p1));
