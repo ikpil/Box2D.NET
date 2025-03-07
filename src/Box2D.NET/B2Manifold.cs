@@ -20,8 +20,6 @@ namespace Box2D.NET
         /// The manifold points, up to two are possible in 2D
         public B2FixedArray2<B2ManifoldPoint> points;
 
-        private Vector<int> sda;
-
         /// The number of contacts points, will be 0, 1, or 2
         public int pointCount;
     }

@@ -1203,7 +1203,8 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a rounded polygon
-        public static B2Manifold b2CollideChainSegmentAndPolygon(B2ChainSegment segmentA, B2Transform xfA, B2Polygon polygonB, B2Transform xfB, ref B2SimplexCache cache)
+        public static B2Manifold b2CollideChainSegmentAndPolygon(B2ChainSegment segmentA, B2Transform xfA, B2Polygon polygonB, 
+            B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Manifold manifold = new B2Manifold();
 
