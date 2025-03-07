@@ -245,6 +245,14 @@ public class SampleApp
             s_sample = null;
             s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
         }
+        
+        if (s_sample == null)
+        {
+            // delayed creation because imgui doesn't create fonts until NewFrame() is called
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
+        }
+
+        s_sample.Step(s_settings);
 
         B2.g_glfw.PollEvents();
 
@@ -274,11 +282,6 @@ public class SampleApp
         ImGui.End();
 
 
-        if (s_sample == null)
-        {
-            // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_settings);
-        }
 
         if (B2.g_draw.m_showUI)
         {
@@ -286,7 +289,6 @@ public class SampleApp
             s_sample.DrawTitle(title);
         }
 
-        s_sample.Step(s_settings);
 
         B2.g_draw.Flush();
 
