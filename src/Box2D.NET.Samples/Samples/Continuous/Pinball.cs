@@ -17,11 +17,11 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // This is achieved by setting the ball body as a *bullet*.
 public class Pinball : Sample
 {
-    B2JointId m_leftJointId;
-    B2JointId m_rightJointId;
-    B2BodyId m_ballId;
-
     private static readonly int SamplePinball = SampleFactory.Shared.RegisterSample("Continuous", "Pinball", Create);
+    
+    private B2JointId m_leftJointId;
+    private B2JointId m_rightJointId;
+    private B2BodyId m_ballId;
 
     private static Sample Create(Settings settings)
     {
