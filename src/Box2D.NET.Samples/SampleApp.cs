@@ -403,7 +403,7 @@ public class SampleApp
 
         // for windows : Microsoft Visual C++ Redistributable Package
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 18, null);
+        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 14, null);
         _imgui = new ImGuiController(B2.g_shader.gl, _window, _input, imGuiFontConfig);
 
         var imGuiIo = ImGui.GetIO();

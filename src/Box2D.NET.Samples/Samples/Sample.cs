@@ -534,20 +534,20 @@ public class Sample : IDisposable
     {
         int pointCount = 0;
         B2Vec2 currentPoint = new B2Vec2();
-        int ptrIndex = 0;
-        char command = svgPath[ptrIndex];
+        int ptr = 0;
+        char command = svgPath[ptr];
 
-        while (ptrIndex < svgPath.Length)
+        while (ptr < svgPath.Length)
         {
-            if (!char.IsDigit(svgPath[ptrIndex]) && svgPath[ptrIndex] != '-')
+            if (!char.IsDigit(svgPath[ptr]) && svgPath[ptr] != '-')
             {
                 // note: command can be implicitly repeated
-                command = svgPath[ptrIndex];
+                command = svgPath[ptr];
 
                 if (command == 'M' || command == 'L' || command == 'H' || command == 'V' || command == 'm' || command == 'l' ||
                     command == 'h' || command == 'v')
                 {
-                    ptrIndex += 2; // Skip the command character and space
+                    ptr += 2; // Skip the command character and space
                 }
 
                 if (command == 'z')
@@ -556,7 +556,7 @@ public class Sample : IDisposable
                 }
             }
 
-            Debug.Assert(!char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '-');
+            Debug.Assert(char.IsDigit(svgPath[ptr]) || svgPath[ptr] == '-');
 
 
             float x = 0.0f;
@@ -565,7 +565,7 @@ public class Sample : IDisposable
             {
                 case 'M':
                 case 'L':
-                    if (Sscanf(svgPath, ref ptrIndex, out x, out y))
+                    if (Sscanf(svgPath, ref ptr, out x, out y))
                     {
                         currentPoint.x = x;
                         currentPoint.y = y;
@@ -577,7 +577,7 @@ public class Sample : IDisposable
 
                     break;
                 case 'H':
-                    if (Sscanf(svgPath, ref ptrIndex, out x))
+                    if (Sscanf(svgPath, ref ptr, out x))
                     {
                         currentPoint.x = x;
                     }
@@ -588,7 +588,7 @@ public class Sample : IDisposable
 
                     break;
                 case 'V':
-                    if (Sscanf(svgPath, ref ptrIndex, out y))
+                    if (Sscanf(svgPath, ref ptr, out y))
                     {
                         currentPoint.y = y;
                     }
@@ -600,7 +600,7 @@ public class Sample : IDisposable
                     break;
                 case 'm':
                 case 'l':
-                    if (Sscanf(svgPath, ref ptrIndex, out x, out y))
+                    if (Sscanf(svgPath, ref ptr, out x, out y))
                     {
                         currentPoint.x += x;
                         currentPoint.y += y;
@@ -612,7 +612,7 @@ public class Sample : IDisposable
 
                     break;
                 case 'h':
-                    if (Sscanf(svgPath, ref ptrIndex, out x))
+                    if (Sscanf(svgPath, ref ptr, out x))
                     {
                         currentPoint.x += x;
                     }
@@ -623,7 +623,7 @@ public class Sample : IDisposable
 
                     break;
                 case 'v':
-                    if (Sscanf(svgPath, ref ptrIndex, out y))
+                    if (Sscanf(svgPath, ref ptr, out y))
                     {
                         currentPoint.y += y;
                     }
@@ -647,18 +647,18 @@ public class Sample : IDisposable
             }
 
             // Move to the next space or end of string
-            while (ptrIndex < svgPath.Length && !char.IsWhiteSpace(svgPath[ptrIndex]))
+            while (ptr < svgPath.Length && !char.IsWhiteSpace(svgPath[ptr]))
             {
-                ptrIndex++;
+                ptr++;
             }
 
             // Skip contiguous spaces
-            while (char.IsWhiteSpace(svgPath[ptrIndex]))
+            while (char.IsWhiteSpace(svgPath[ptr]))
             {
-                ptrIndex++;
+                ptr++;
             }
 
-            ptrIndex += 0;
+            ptr += 0;
         }
 
         if (pointCount == 0)
