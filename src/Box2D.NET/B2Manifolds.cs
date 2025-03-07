@@ -1253,8 +1253,8 @@ namespace Box2D.NET
 
             // Get polygonB in frameA
             int count = polygonB.count;
-            B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
-            B2Vec2[] normals = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> vertices = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
+            Span<B2Vec2> normals = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             for (int i = 0; i < count; ++i)
             {
                 vertices[i] = b2TransformPoint(ref xf, polygonB.vertices[i]);

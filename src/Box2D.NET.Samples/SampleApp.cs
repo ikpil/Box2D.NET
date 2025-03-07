@@ -267,7 +267,7 @@ public class SampleApp
 
         _frameTime = (float)(time2 - time1);
 
-        _imgui.Update((float)dt);
+        _imgui?.Update((float)dt);
     }
 
     private unsafe void OnWindowRender(double dt)
@@ -426,6 +426,7 @@ public class SampleApp
         // ImGui_ImplGlfw_Shutdown();
         // ImGui.DestroyContext();
         _imgui.Dispose();
+        _imgui = null;
     }
 
     public unsafe void ResizeWindowCallback(WindowHandle* window, int width, int height)
