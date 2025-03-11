@@ -32,8 +32,8 @@ public class ConvexHull : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.5f, 0.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.3f;
+            m_context.g_camera.m_center = new B2Vec2(0.5f, 0.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.3f;
         }
 
         m_generation = 0;
@@ -123,7 +123,7 @@ public class ConvexHull : Sample
     {
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
+        m_context.g_draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
         m_textLine += m_textIncrement;
 
         B2Hull hull = new B2Hull();
@@ -184,34 +184,34 @@ public class ConvexHull : Sample
 
         if (valid == false)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
+            m_context.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
             m_textLine += m_textIncrement;
         }
         else
         {
-            B2.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
+            m_context.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
             m_textLine += m_textIncrement;
         }
 
         if (milliseconds > 0.0f)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
+            m_context.g_draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
             m_textLine += m_textIncrement;
         }
 
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
+        m_context.g_draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
 
         for (int i = 0; i < m_count; ++i)
         {
-            B2.g_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
-            B2.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
+            m_context.g_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
+            m_context.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
         }
 
         for (int i = 0; i < hull.count; ++i)
         {
-            B2.g_draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
+            m_context.g_draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }

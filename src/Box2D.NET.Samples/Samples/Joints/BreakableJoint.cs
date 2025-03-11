@@ -36,8 +36,8 @@ public class BreakableJoint : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.7f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -210,7 +210,7 @@ public class BreakableJoint : Sample
     {
         bool open = true;
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Breakable Joint", ref open, ImGuiWindowFlags.NoResize);
@@ -244,7 +244,7 @@ public class BreakableJoint : Sample
             else
             {
                 B2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
-                B2.g_draw.DrawString(point, $"({force.x:F1}, {force.y:F1})");
+                m_context.g_draw.DrawString(point, $"({force.x:F1}, {force.y:F1})");
             }
         }
 

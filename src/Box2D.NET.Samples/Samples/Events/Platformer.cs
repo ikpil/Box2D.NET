@@ -42,8 +42,8 @@ public class Platformer : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.5f, 7.5f);
-            B2.g_camera.m_zoom = 25.0f * 0.4f;
+            m_context.g_camera.m_center = new B2Vec2(0.5f, 7.5f);
+            m_context.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         b2World_SetPreSolveCallback(m_worldId, PreSolveStatic, this);
@@ -170,7 +170,7 @@ public class Platformer : Sample
     {
         bool open = true;
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("One-Sided Platform", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -255,14 +255,14 @@ public class Platformer : Sample
         {
             Span<B2ContactData> contactData = stackalloc B2ContactData[1];
             int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            B2.g_draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+            m_context.g_draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, "Movement: A/D/Space");
+        m_context.g_draw.DrawString(5, m_textLine, "Movement: A/D/Space");
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, $"Can jump = {canJump}");
+        m_context.g_draw.DrawString(5, m_textLine, $"Can jump = {canJump}");
         m_textLine += m_textIncrement;
 
         if (settings.hertz > 0.0f)

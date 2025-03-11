@@ -29,8 +29,8 @@ public class BounceHumans : Sample
 
     public BounceHumans(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
-        B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-        B2.g_camera.m_zoom = 12.0f;
+        m_context.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
+        m_context.g_camera.m_zoom = 12.0f;
 
         for (int i = 0; i < m_humans.Length; ++i)
         {
@@ -90,7 +90,7 @@ public class BounceHumans : Sample
         B2CosSin cs2 = b2ComputeCosSin(m_time);
         float gravity = 10.0f;
         B2Vec2 gravityVec = new B2Vec2(gravity * cs1.sine, gravity * cs2.cosine);
-        B2.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * cs1.sine, 3.0f * cs2.cosine), B2HexColor.b2_colorWhite);
+        m_context.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * cs1.sine, 3.0f * cs2.cosine), B2HexColor.b2_colorWhite);
         m_time += timeStep;
         m_countDown -= timeStep;
         b2World_SetGravity(m_worldId, gravityVec);

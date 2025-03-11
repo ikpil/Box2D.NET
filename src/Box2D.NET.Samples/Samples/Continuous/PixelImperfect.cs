@@ -26,8 +26,8 @@ public class PixelImperfect : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(7.0f, 5.0f);
-            B2.g_camera.m_zoom = 6.0f;
+            m_context.g_camera.m_center = new B2Vec2(7.0f, 5.0f);
+            m_context.g_camera.m_zoom = 6.0f;
         }
 
         float pixelsPerMeter = 30.0f;
@@ -69,7 +69,7 @@ public class PixelImperfect : Sample
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        B2.g_draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
+        m_context.g_draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
         m_textLine += m_textIncrement;
 
         base.Step(settings);

@@ -77,8 +77,8 @@ public class RayCastWorld : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(2.0f, 14.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.75f;
+            m_context.g_camera.m_center = new B2Vec2(2.0f, 14.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.75f;
         }
 
         // Ground body
@@ -281,7 +281,7 @@ public class RayCastWorld : Sample
     {
         bool open = true;
         float height = 300.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Ray-cast World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -364,9 +364,9 @@ public class RayCastWorld : Sample
     {
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
+        m_context.g_draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
+        m_context.g_draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
         m_textLine += m_textIncrement;
 
         m_textLine += m_textIncrement;
@@ -379,7 +379,7 @@ public class RayCastWorld : Sample
 
         if (m_simple)
         {
-            B2.g_draw.DrawString(5, m_textLine, "Simple closest point ray cast");
+            m_context.g_draw.DrawString(5, m_textLine, "Simple closest point ray cast");
             m_textLine += m_textIncrement;
 
             // This version doesn't have a callback, but it doesn't skip the ignored shape
@@ -388,14 +388,14 @@ public class RayCastWorld : Sample
             if (result.hit == true)
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
-                B2.g_draw.DrawPoint(result.point, 5.0f, color1);
-                B2.g_draw.DrawSegment(m_rayStart, c, color2);
+                m_context.g_draw.DrawPoint(result.point, 5.0f, color1);
+                m_context.g_draw.DrawSegment(m_rayStart, c, color2);
                 B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
-                B2.g_draw.DrawSegment(result.point, head, color3);
+                m_context.g_draw.DrawSegment(result.point, head, color3);
             }
             else
             {
-                B2.g_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_context.g_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
             }
         }
         else
@@ -403,19 +403,19 @@ public class RayCastWorld : Sample
             switch ((Mode)m_mode)
             {
                 case Mode.e_any:
-                    B2.g_draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
+                    m_context.g_draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
                     break;
 
                 case Mode.e_closest:
-                    B2.g_draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
+                    m_context.g_draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
                     break;
 
                 case Mode.e_multiple:
-                    B2.g_draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
+                    m_context.g_draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
                     break;
 
                 case Mode.e_sorted:
-                    B2.g_draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
+                    m_context.g_draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
                     break;
             }
 
@@ -464,59 +464,59 @@ public class RayCastWorld : Sample
                     B2Vec2 c = b2MulAdd(m_rayStart, context.fractions[i], rayTranslation);
                     B2Vec2 p = context.points[i];
                     B2Vec2 n = context.normals[i];
-                    B2.g_draw.DrawPoint(p, 5.0f, colors[i]);
-                    B2.g_draw.DrawSegment(m_rayStart, c, color2);
+                    m_context.g_draw.DrawPoint(p, 5.0f, colors[i]);
+                    m_context.g_draw.DrawSegment(m_rayStart, c, color2);
                     B2Vec2 head = b2MulAdd(p, 0.5f, n);
-                    B2.g_draw.DrawSegment(p, head, color3);
+                    m_context.g_draw.DrawSegment(p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
                     B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, t), transform.q);
 
                     if (m_castType == CastType.e_circleCast)
                     {
-                        B2.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorYellow);
+                        m_context.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_capsuleCast)
                     {
                         B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), t);
                         B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), t);
-                        B2.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                        m_context.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                        m_context.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
             else
             {
                 B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, rayTranslation), transform.q);
-                B2.g_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_context.g_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
 
                 if (m_castType == CastType.e_circleCast)
                 {
-                    B2.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
+                    m_context.g_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
                 }
                 else if (m_castType == CastType.e_capsuleCast)
                 {
                     B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), rayTranslation);
                     B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), rayTranslation);
-                    B2.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                    m_context.g_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    B2.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                    m_context.g_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }
 
-        B2.g_draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
+        m_context.g_draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.x -= 0.2f;
-            B2.g_draw.DrawString(p, "ign");
+            m_context.g_draw.DrawString(p, "ign");
         }
     }
 

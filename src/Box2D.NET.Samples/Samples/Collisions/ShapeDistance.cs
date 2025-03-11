@@ -68,8 +68,8 @@ public class ShapeDistance : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            B2.g_camera.m_zoom = 3.0f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_context.g_camera.m_zoom = 3.0f;
         }
 
         m_point = b2Vec2_zero;
@@ -157,11 +157,11 @@ public class ShapeDistance : Sample
                 B2Vec2 p = b2TransformPoint(ref transform, m_point);
                 if (radius > 0.0f)
                 {
-                    B2.g_draw.DrawSolidCircle(ref transform, m_point, radius, color);
+                    m_context.g_draw.DrawSolidCircle(ref transform, m_point, radius, color);
                 }
                 else
                 {
-                    B2.g_draw.DrawPoint(p, 5.0f, color);
+                    m_context.g_draw.DrawPoint(p, 5.0f, color);
                 }
             }
                 break;
@@ -173,21 +173,21 @@ public class ShapeDistance : Sample
 
                 if (radius > 0.0f)
                 {
-                    B2.g_draw.DrawSolidCapsule(p1, p2, radius, color);
+                    m_context.g_draw.DrawSolidCapsule(p1, p2, radius, color);
                 }
                 else
                 {
-                    B2.g_draw.DrawSegment(p1, p2, color);
+                    m_context.g_draw.DrawSegment(p1, p2, color);
                 }
             }
                 break;
 
             case ShapeType.e_triangle:
-                B2.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), 3, radius, color);
+                m_context.g_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), 3, radius, color);
                 break;
 
             case ShapeType.e_box:
-                B2.g_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), 4, radius, color);
+                m_context.g_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), 4, radius, color);
                 break;
 
             default:
@@ -200,7 +200,7 @@ public class ShapeDistance : Sample
     {
         bool open = true;
         float height = 310.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Distance", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -377,9 +377,9 @@ public class ShapeDistance : Sample
                 B2Vec2 pointB = new B2Vec2();
                 ComputeSimplexWitnessPoints(ref pointA, ref pointB, simplex);
 
-                B2.g_draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
-                B2.g_draw.DrawPoint(pointA, 5.0f, B2HexColor.b2_colorWhite);
-                B2.g_draw.DrawPoint(pointB, 5.0f, B2HexColor.b2_colorWhite);
+                m_context.g_draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
+                m_context.g_draw.DrawPoint(pointA, 5.0f, B2HexColor.b2_colorWhite);
+                m_context.g_draw.DrawPoint(pointB, 5.0f, B2HexColor.b2_colorWhite);
             }
 
             B2HexColor[] colors = new B2HexColor[3] { B2HexColor.b2_colorRed, B2HexColor.b2_colorGreen, B2HexColor.b2_colorBlue };
@@ -387,15 +387,15 @@ public class ShapeDistance : Sample
             for (int i = 0; i < simplex.count; ++i)
             {
                 B2SimplexVertex vertex = vertices[i];
-                B2.g_draw.DrawPoint(vertex.wA, 5.0f, colors[i]);
-                B2.g_draw.DrawPoint(vertex.wB, 5.0f, colors[i]);
+                m_context.g_draw.DrawPoint(vertex.wA, 5.0f, colors[i]);
+                m_context.g_draw.DrawPoint(vertex.wB, 5.0f, colors[i]);
             }
         }
         else
         {
-            B2.g_draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorWhite);
-            B2.g_draw.DrawPoint(output.pointA, 5.0f, B2HexColor.b2_colorWhite);
-            B2.g_draw.DrawPoint(output.pointB, 5.0f, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPoint(output.pointA, 5.0f, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPoint(output.pointB, 5.0f, B2HexColor.b2_colorWhite);
         }
 
         if (m_showIndices)
@@ -403,34 +403,34 @@ public class ShapeDistance : Sample
             for (int i = 0; i < m_proxyA.count; ++i)
             {
                 B2Vec2 p = m_proxyA.points[i];
-                B2.g_draw.DrawString(p, $" {i}");
+                m_context.g_draw.DrawString(p, $" {i}");
             }
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
                 B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
-                B2.g_draw.DrawString(p, $" {i}");
+                m_context.g_draw.DrawString(p, $" {i}");
             }
         }
 
-        B2.g_draw.DrawString(5, m_textLine, "mouse button 1: drag");
+        m_context.g_draw.DrawString(5, m_textLine, "mouse button 1: drag");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, "mouse button 1 + shift: rotate");
+        m_context.g_draw.DrawString(5, m_textLine, "mouse button 1 + shift: rotate");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, $"distance = {output.distance:F2}, iterations = {output.iterations}");
+        m_context.g_draw.DrawString(5, m_textLine, $"distance = {output.distance:F2}, iterations = {output.iterations}");
         m_textLine += m_textIncrement;
 
         if (m_cache.count == 1)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
+            m_context.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
         }
         else if (m_cache.count == 2)
         {
-            B2.g_draw.DrawString(5, m_textLine,$"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
+            m_context.g_draw.DrawString(5, m_textLine,$"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
         }
         else if (m_cache.count == 3)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
+            m_context.g_draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
         }
 
         m_textLine += m_textIncrement;

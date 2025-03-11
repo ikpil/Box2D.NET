@@ -26,8 +26,8 @@ public class SpeculativeFallback : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(1.0f, 5.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.25f;
+            m_context.g_camera.m_center = new B2Vec2(1.0f, 5.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.25f;
         }
 
         {

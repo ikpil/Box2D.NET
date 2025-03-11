@@ -34,8 +34,8 @@ public class OverlapRecovery : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            B2.g_camera.m_zoom = 25.0f * 0.15f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
+            m_context.g_camera.m_zoom = 25.0f * 0.15f;
         }
 
         m_bodyIds = null;
@@ -108,7 +108,7 @@ public class OverlapRecovery : Sample
     {
         bool open = true;
         float height = 210.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
 
         ImGui.Begin("Overlap Recovery", ref open, ImGuiWindowFlags.NoResize);

@@ -19,8 +19,8 @@ public class BenchmarkTumbler : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(1.5f, 10.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.6f;
+            m_context.g_camera.m_center = new B2Vec2(1.5f, 10.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.6f;
         }
 
         CreateTumbler(m_worldId);

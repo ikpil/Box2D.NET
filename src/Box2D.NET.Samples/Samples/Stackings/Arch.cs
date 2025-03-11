@@ -24,8 +24,8 @@ public class Arch : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.35f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 8.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.35f;
         }
 
         B2Vec2[] ps1 = new B2Vec2[]

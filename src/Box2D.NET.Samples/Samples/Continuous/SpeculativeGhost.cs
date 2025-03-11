@@ -24,8 +24,8 @@ public class SpeculativeGhost : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 1.75f);
-            B2.g_camera.m_zoom = 2.0f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 1.75f);
+            m_context.g_camera.m_zoom = 2.0f;
         }
 
         {

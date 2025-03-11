@@ -28,8 +28,8 @@ public class CustomFilter : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            B2.g_camera.m_zoom = 10.0f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_context.g_camera.m_zoom = 10.0f;
         }
 
         // Register custom filter
@@ -66,7 +66,7 @@ public class CustomFilter : Sample
 
     public override void Step(Settings settings)
     {
-        B2.g_draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
+        m_context.g_draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
         m_textLine += m_textIncrement;
 
         base.Step(settings);
@@ -74,7 +74,7 @@ public class CustomFilter : Sample
         for (int i = 0; i < e_count; ++i)
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            B2.g_draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
+            m_context.g_draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
         }
     }
 

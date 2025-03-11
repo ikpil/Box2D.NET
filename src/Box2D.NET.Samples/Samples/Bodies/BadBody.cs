@@ -25,8 +25,8 @@ public class BadBody : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(2.3f, 10.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.5f;
+            m_context.g_camera.m_center = new B2Vec2(2.3f, 10.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.5f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -77,10 +77,10 @@ public class BadBody : Sample
     {
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
+        m_context.g_draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
         m_textLine += m_textIncrement;
 
-        B2.g_draw.DrawString(5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
+        m_context.g_draw.DrawString(5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
         m_textLine += m_textIncrement;
 
         // For science

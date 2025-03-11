@@ -40,8 +40,8 @@ public class BenchmarkSleep : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 50.0f);
-            B2.g_camera.m_zoom = 25.0f * 2.2f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 50.0f);
+            m_context.g_camera.m_zoom = 25.0f * 2.2f;
         }
 
         float groundSize = 100.0f;
@@ -144,13 +144,13 @@ public class BenchmarkSleep : Sample
 
         if (m_wakeCount > 0)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
+            m_context.g_draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
             m_textLine += m_textIncrement;
         }
 
         if (m_sleepCount > 0)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
+            m_context.g_draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
             m_textLine += m_textIncrement;
         }
 

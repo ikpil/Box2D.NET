@@ -29,8 +29,8 @@ public class Pivot : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.8f, 6.4f);
-            B2.g_camera.m_zoom = 25.0f * 0.4f;
+            m_context.g_camera.m_center = new B2Vec2(0.8f, 6.4f);
+            m_context.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -77,7 +77,7 @@ public class Pivot : Sample
         B2Vec2 r = b2Body_GetWorldVector(m_bodyId, new B2Vec2(0.0f, -m_lever));
 
         B2Vec2 vp = v + b2CrossSV(omega, r);
-        B2.g_draw.DrawString(5, m_textLine, $"pivot velocity = ({vp.x:g}, {vp.y:g})");
+        m_context.g_draw.DrawString(5, m_textLine, $"pivot velocity = ({vp.x:g}, {vp.y:g})");
         m_textLine += m_textIncrement;
     }
 }

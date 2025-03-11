@@ -26,8 +26,8 @@ public class UserConstraint : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(3.0f, -1.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.15f;
+            m_context.g_camera.m_center = new B2Vec2(3.0f, -1.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.15f;
         }
 
         B2Polygon box = b2MakeBox(1.0f, 0.5f);
@@ -52,7 +52,7 @@ public class UserConstraint : Sample
         base.Step(settings);
 
         B2Transform axes = b2Transform_identity;
-        B2.g_draw.DrawTransform(axes);
+        m_context.g_draw.DrawTransform(axes);
 
         if (settings.pause)
         {
@@ -103,12 +103,12 @@ public class UserConstraint : Sample
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                B2.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
+                m_context.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            B2.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            m_context.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
             B2Vec2 axis = b2Normalize(deltaAnchor);
 
             B2Vec2 rB = b2Sub(anchorB, pB);
@@ -129,7 +129,7 @@ public class UserConstraint : Sample
         b2Body_SetLinearVelocity(m_bodyId, vB);
         b2Body_SetAngularVelocity(m_bodyId, omegaB);
 
-        B2.g_draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
+        m_context.g_draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
         m_textLine += m_textIncrement;
     }
 }

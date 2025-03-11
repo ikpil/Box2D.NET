@@ -74,8 +74,8 @@ public class DynamicTree : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            B2.g_camera.m_zoom = 25.0f * 21.0f;
+            m_context.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
+            m_context.g_camera.m_zoom = 25.0f * 21.0f;
         }
 
         m_fill = 0.25f;
@@ -186,7 +186,7 @@ public class DynamicTree : Sample
     {
         bool open = true;
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Dynamic Tree", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -299,7 +299,7 @@ public class DynamicTree : Sample
             B2AABB box = new B2AABB(b2Min(m_startPoint, m_endPoint), b2Max(m_startPoint, m_endPoint));
             b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, this);
 
-            B2.g_draw.DrawAABB(box, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawAABB(box, B2HexColor.b2_colorWhite);
         }
 
         // m_startPoint = {-1.0f, 0.5f};
@@ -310,11 +310,11 @@ public class DynamicTree : Sample
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
             B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, this);
 
-            B2.g_draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
-            B2.g_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
-            B2.g_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
+            m_context.g_draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
+            m_context.g_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
-            B2.g_draw.DrawString(5, m_textLine, $"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
+            m_context.g_draw.DrawString(5, m_textLine, $"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
             m_textLine += m_textIncrement;
         }
 
@@ -329,11 +329,11 @@ public class DynamicTree : Sample
 
             if (p.queryStamp == m_timeStamp || p.rayStamp == m_timeStamp)
             {
-                B2.g_draw.DrawAABB(p.box, qc);
+                m_context.g_draw.DrawAABB(p.box, qc);
             }
             else
             {
-                B2.g_draw.DrawAABB(p.box, c);
+                m_context.g_draw.DrawAABB(p.box, c);
             }
 
             float moveTest = RandomFloatRange(0.0f, 1.0f);
@@ -382,7 +382,7 @@ public class DynamicTree : Sample
                 }
 
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, $"incremental : {ms:F3} ms");
+                m_context.g_draw.DrawString(5, m_textLine, $"incremental : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -401,7 +401,7 @@ public class DynamicTree : Sample
                 ulong ticks = b2GetTicks();
                 int boxCount = b2DynamicTree_Rebuild(m_tree, true);
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, $"full build {boxCount} : {ms:F3} ms");
+                m_context.g_draw.DrawString(5, m_textLine, $"full build {boxCount} : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -420,7 +420,7 @@ public class DynamicTree : Sample
                 ulong ticks = b2GetTicks();
                 int boxCount = b2DynamicTree_Rebuild(m_tree, false);
                 float ms = b2GetMilliseconds(ticks);
-                B2.g_draw.DrawString(5, m_textLine, $"partial rebuild {boxCount} : {ms:F3} ms");
+                m_context.g_draw.DrawString(5, m_textLine, $"partial rebuild {boxCount} : {ms:F3} ms");
                 m_textLine += m_textIncrement;
             }
                 break;
@@ -433,7 +433,7 @@ public class DynamicTree : Sample
         float areaRatio = b2DynamicTree_GetAreaRatio(m_tree);
 
         int hmin = (int)(MathF.Ceiling(MathF.Log((float)m_proxyCount) / MathF.Log(2.0f) - 1.0f));
-        B2.g_draw.DrawString(5, m_textLine, $"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
+        m_context.g_draw.DrawString(5, m_textLine, $"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
         m_textLine += m_textIncrement;
 
         b2DynamicTree_Validate(m_tree);

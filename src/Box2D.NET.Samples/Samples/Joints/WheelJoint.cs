@@ -35,8 +35,8 @@ public class WheelJoint : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.15f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.15f;
         }
 
         B2BodyId groundId;
@@ -89,7 +89,7 @@ public class WheelJoint : Sample
     {
         bool open = true;
         float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Wheel Joint", ref open, ImGuiWindowFlags.NoResize);
@@ -143,7 +143,7 @@ public class WheelJoint : Sample
         base.Step(settings);
 
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
-        B2.g_draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
+        m_context.g_draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
         m_textLine += m_textIncrement;
     }
 }

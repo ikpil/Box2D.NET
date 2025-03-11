@@ -30,8 +30,8 @@ public class Character : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(-2.0f, 7.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.4f;
+            m_context.g_camera.m_center = new B2Vec2(-2.0f, 7.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.4f;
         }
 
         // Ground body
@@ -193,9 +193,9 @@ public class Character : Sample
     {
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
+        m_context.g_draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes.");
+        m_context.g_draw.DrawString(5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes.");
         m_textLine += m_textIncrement;
     }
 }

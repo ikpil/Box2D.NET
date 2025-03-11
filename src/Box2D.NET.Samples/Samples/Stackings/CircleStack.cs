@@ -36,8 +36,8 @@ public class CircleStack : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            B2.g_camera.m_zoom = 6.0f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_context.g_camera.m_zoom = 6.0f;
         }
 
         int shapeIndex = 0;
@@ -99,7 +99,7 @@ public class CircleStack : Sample
             int indexA = (int)userDataA;
             int indexB = (int)userDataB;
 
-            B2.g_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }
@@ -107,7 +107,7 @@ public class CircleStack : Sample
         int eventCount = m_events.Count;
         for (int i = 0; i < eventCount; ++i)
         {
-            B2.g_draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
+            m_context.g_draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
             m_textLine += m_textIncrement;
         }
     }

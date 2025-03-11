@@ -93,8 +93,8 @@ public class OverlapWorld : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
-            B2.g_camera.m_zoom = 25.0f * 0.7f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 10.0f);
+            m_context.g_camera.m_zoom = 25.0f * 0.7f;
         }
 
         m_userData = new ShapeUserData[e_maxCount];
@@ -277,7 +277,7 @@ public class OverlapWorld : Sample
     {
         bool open = true;
         float height = 330.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Overlap World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -342,9 +342,9 @@ public class OverlapWorld : Sample
     {
         base.Step(settings);
 
-        B2.g_draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
+        m_context.g_draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
         m_textLine += m_textIncrement;
-        B2.g_draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
+        m_context.g_draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
         m_textLine += m_textIncrement;
 
         m_doomCount = 0;
@@ -354,14 +354,14 @@ public class OverlapWorld : Sample
         if (m_shapeType == e_circleShape)
         {
             b2World_OverlapCircle(m_worldId, m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            B2.g_draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)
         {
             b2World_OverlapCapsule(m_worldId, m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
             B2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
             B2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
-            B2.g_draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_boxShape)
         {
@@ -372,14 +372,14 @@ public class OverlapWorld : Sample
                 points[i] = b2TransformPoint(ref transform, m_queryBox.vertices[i]);
             }
 
-            B2.g_draw.DrawPolygon(points, m_queryBox.count, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPolygon(points, m_queryBox.count, B2HexColor.b2_colorWhite);
         }
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.x -= 0.2f;
-            B2.g_draw.DrawString(p, "skip");
+            m_context.g_draw.DrawString(p, "skip");
         }
 
         for (int i = 0; i < m_doomCount; ++i)

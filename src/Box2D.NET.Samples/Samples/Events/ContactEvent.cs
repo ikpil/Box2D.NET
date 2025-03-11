@@ -45,8 +45,8 @@ public class ContactEvent : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            B2.g_camera.m_zoom = 25.0f * 1.75f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_context.g_camera.m_zoom = 25.0f * 1.75f;
         }
 
         {
@@ -147,7 +147,7 @@ public class ContactEvent : Sample
     {
         bool open = true;
         float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, B2.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Contact Event", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -159,7 +159,7 @@ public class ContactEvent : Sample
 
     public override void Step(Settings settings)
     {
-        B2.g_draw.DrawString(5, m_textLine, "move using WASD");
+        m_context.g_draw.DrawString(5, m_textLine, "move using WASD");
         m_textLine += m_textIncrement;
 
         B2Vec2 position = b2Body_GetPosition(m_playerId);
@@ -234,8 +234,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            B2.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
-                            B2.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_context.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            m_context.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -264,8 +264,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            B2.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
-                            B2.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_context.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            m_context.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }

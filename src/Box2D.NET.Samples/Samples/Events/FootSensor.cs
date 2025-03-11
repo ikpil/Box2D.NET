@@ -42,8 +42,8 @@ public class FootSensor : Sample
     {
         if (settings.restart == false)
         {
-            B2.g_camera.m_center = new B2Vec2(0.0f, 6.0f);
-            B2.g_camera.m_zoom = 7.5f;
+            m_context.g_camera.m_center = new B2Vec2(0.0f, 6.0f);
+            m_context.g_camera.m_zoom = 7.5f;
         }
 
         {
@@ -130,7 +130,7 @@ public class FootSensor : Sample
             }
         }
 
-        B2.g_draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
+        m_context.g_draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
         m_textLine += m_textIncrement;
 
         int capacity = b2Shape_GetSensorCapacity(m_sensorId);
@@ -143,7 +143,7 @@ public class FootSensor : Sample
             B2ShapeId shapeId = m_overlaps[i];
             B2AABB aabb = b2Shape_GetAABB(shapeId);
             B2Vec2 point = b2AABB_Center(aabb);
-            B2.g_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
+            m_context.g_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
         }
     }
 }

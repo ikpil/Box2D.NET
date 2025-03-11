@@ -62,10 +62,15 @@ public class SampleApp
         Window.PrioritizeGlfw();
 
         // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
-        B2.g_glfw = Glfw.GetApi();
+        s_sampleAppContext.g_glfw = Glfw.GetApi();
+        s_sampleAppContext.g_camera = new Camera();
+        s_sampleAppContext.g_shader = new Shader();
+        s_sampleAppContext.g_draw = new Draw();
+        
+        B2.g_glfw = s_sampleAppContext.g_glfw;
         B2.g_glfw.SetErrorCallback(glfwErrorCallback);
 
-        B2.g_camera = new Camera();
+        B2.g_camera = s_sampleAppContext.g_camera;
         B2.g_camera.m_width = s_settings.windowWidth;
         B2.g_camera.m_height = s_settings.windowHeight;
 
@@ -136,7 +141,8 @@ public class SampleApp
         string glslVersion = string.Empty;
 #endif
 
-        B2.g_mainWindow = (WindowHandle*)_window.Handle;
+        s_sampleAppContext.g_mainWindow = (WindowHandle*)_window.Handle;
+        B2.g_mainWindow = s_sampleAppContext.g_mainWindow;
         if (B2.g_mainWindow == null)
         {
             Console.WriteLine("Failed to open GLFW B2.g_mainWindow.");
@@ -157,7 +163,7 @@ public class SampleApp
 
         _input = _window.CreateInput();
         // Load OpenGL functions using glad
-        B2.g_shader = new Shader();
+        B2.g_shader = s_sampleAppContext.g_shader;
         B2.g_shader.gl = _window.CreateOpenGL();
         if (null == B2.g_shader.gl)
         {
@@ -176,7 +182,7 @@ public class SampleApp
         B2.g_glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
         B2.g_glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
 
-        B2.g_draw = new Draw();
+        B2.g_draw = s_sampleAppContext.g_draw;
         B2.g_draw.Create();
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);

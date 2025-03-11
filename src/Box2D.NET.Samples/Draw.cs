@@ -191,7 +191,7 @@ public class Draw
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PushFont(B2.g_draw.m_regularFont);
+        ImGui.PushFont(m_regularFont);
         ImGui.SetCursorPos(new Vector2(x, y));
         ImGui.TextColored(new Vector4(230, 153, 153, 255), message);
         ImGui.PopFont();
