@@ -122,10 +122,10 @@ public class Explosion : Sample
 
         base.Step(settings);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
+        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
         m_textLine += m_textIncrement;
 
-        m_context.g_draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
-        m_context.g_draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
     }
 }

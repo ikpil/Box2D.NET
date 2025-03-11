@@ -151,15 +151,15 @@ public class PrismaticJoint : Sample
         base.Step(settings);
 
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        m_context.g_draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
+        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
         m_textLine += m_textIncrement;
 
         float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        m_context.g_draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
+        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
         m_textLine += m_textIncrement;
 
         float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        m_context.g_draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
+        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
         m_textLine += m_textIncrement;
     }
 }

@@ -244,7 +244,7 @@ public class BreakableJoint : Sample
             else
             {
                 B2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
-                m_context.g_draw.DrawString(point, $"({force.x:F1}, {force.y:F1})");
+                m_context.draw.DrawString(point, $"({force.x:F1}, {force.y:F1})");
             }
         }
 

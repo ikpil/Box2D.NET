@@ -193,9 +193,9 @@ public class Character : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
+        m_context.draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
         m_textLine += m_textIncrement;
-        m_context.g_draw.DrawString(5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes.");
+        m_context.draw.DrawString(5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes.");
         m_textLine += m_textIncrement;
     }
 }

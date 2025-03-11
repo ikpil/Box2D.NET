@@ -232,15 +232,15 @@ public class SmoothManifold : Sample
 
             B2Vec2 p1 = mp.point;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
-            m_context.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
 
             if (m_showAnchors)
             {
-                m_context.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+                m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             }
             else
             {
-                m_context.g_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+                m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             }
 
             if (m_showIds)
@@ -248,13 +248,13 @@ public class SmoothManifold : Sample
                 // uint indexA = mp.id >> 8;
                 // uint indexB = 0xFF & mp.id;
                 B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y - 0.02f);
-                m_context.g_draw.DrawString(p, $"0x{mp.id:X4}");
+                m_context.draw.DrawString(p, $"0x{mp.id:X4}");
             }
 
             if (m_showSeparation)
             {
                 B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y + 0.03f);
-                m_context.g_draw.DrawString(p, $"{mp.separation:F3}");
+                m_context.draw.DrawString(p, $"{mp.separation:F3}");
             }
         }
     }
@@ -272,15 +272,15 @@ public class SmoothManifold : Sample
             B2ChainSegment segment = m_segments[i];
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
-            m_context.g_draw.DrawSegment(p1, p2, color1);
-            m_context.g_draw.DrawPoint(p1, 4.0f, color1);
+            m_context.draw.DrawSegment(p1, p2, color1);
+            m_context.draw.DrawPoint(p1, 4.0f, color1);
         }
 
         // chain-segment vs circle
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_context.g_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
+            m_context.draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {
@@ -293,7 +293,7 @@ public class SmoothManifold : Sample
         {
             float h = 0.5f - m_round;
             B2Polygon rox = b2MakeRoundedBox(h, h, m_round);
-            m_context.g_draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
+            m_context.draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {

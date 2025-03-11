@@ -144,13 +144,13 @@ public class BenchmarkSleep : Sample
 
         if (m_wakeCount > 0)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
+            m_context.draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
             m_textLine += m_textIncrement;
         }
 
         if (m_sleepCount > 0)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
+            m_context.draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
             m_textLine += m_textIncrement;
         }
 

@@ -161,7 +161,7 @@ public class BodyMove : Sample
         {
             // draw the transform of every body that moved (not sleeping)
             B2BodyMoveEvent @event = events.moveEvents[i];
-            m_context.g_draw.DrawTransform(@event.transform);
+            m_context.draw.DrawTransform(@event.transform);
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
@@ -184,9 +184,9 @@ public class BodyMove : Sample
             }
         }
 
-        m_context.g_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
+        m_context.draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
         m_textLine += m_textIncrement;
     }
 }

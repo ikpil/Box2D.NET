@@ -255,14 +255,14 @@ public class Platformer : Sample
         {
             Span<B2ContactData> contactData = stackalloc B2ContactData[1];
             int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            m_context.g_draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
         m_textLine += m_textIncrement;
 
-        m_context.g_draw.DrawString(5, m_textLine, "Movement: A/D/Space");
+        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
         m_textLine += m_textIncrement;
 
-        m_context.g_draw.DrawString(5, m_textLine, $"Can jump = {canJump}");
+        m_context.draw.DrawString(5, m_textLine, $"Can jump = {canJump}");
         m_textLine += m_textIncrement;
 
         if (settings.hertz > 0.0f)

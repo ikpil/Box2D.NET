@@ -143,7 +143,7 @@ public class WheelJoint : Sample
         base.Step(settings);
 
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
-        m_context.g_draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
+        m_context.draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
         m_textLine += m_textIncrement;
     }
 }

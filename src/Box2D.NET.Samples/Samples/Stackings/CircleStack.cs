@@ -99,7 +99,7 @@ public class CircleStack : Sample
             int indexA = (int)userDataA;
             int indexB = (int)userDataB;
 
-            m_context.g_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }
@@ -107,7 +107,7 @@ public class CircleStack : Sample
         int eventCount = m_events.Count;
         for (int i = 0; i < eventCount; ++i)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
+            m_context.draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
             m_textLine += m_textIncrement;
         }
     }

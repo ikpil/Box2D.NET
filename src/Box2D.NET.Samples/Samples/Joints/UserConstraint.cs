@@ -52,7 +52,7 @@ public class UserConstraint : Sample
         base.Step(settings);
 
         B2Transform axes = b2Transform_identity;
-        m_context.g_draw.DrawTransform(axes);
+        m_context.draw.DrawTransform(axes);
 
         if (settings.pause)
         {
@@ -103,12 +103,12 @@ public class UserConstraint : Sample
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                m_context.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
+                m_context.draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            m_context.g_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            m_context.draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
             B2Vec2 axis = b2Normalize(deltaAnchor);
 
             B2Vec2 rB = b2Sub(anchorB, pB);
@@ -129,7 +129,7 @@ public class UserConstraint : Sample
         b2Body_SetLinearVelocity(m_bodyId, vB);
         b2Body_SetAngularVelocity(m_bodyId, omegaB);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
+        m_context.draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
         m_textLine += m_textIncrement;
     }
 }

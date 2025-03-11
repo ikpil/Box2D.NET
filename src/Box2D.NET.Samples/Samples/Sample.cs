@@ -180,7 +180,7 @@ public class Sample : IDisposable
 
     public void DrawTitle(string title)
     {
-        m_context.g_draw.DrawString(5, 5, title);
+        m_context.draw.DrawString(5, 5, title);
         m_textLine = (int)26.0f;
     }
 
@@ -290,7 +290,7 @@ public class Sample : IDisposable
         ImGui.Begin("Overlay", ref open,
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.PushFont(m_context.g_draw.m_regularFont);
+        ImGui.PushFont(m_context.draw.m_regularFont);
         ImGui.SetCursorPos(new Vector2(5.0f, (float)m_textLine));
         ImGui.TextColored(new Vector4(230, 153, 153, 255), string.Format(text, arg));
         ImGui.PopFont();
@@ -321,15 +321,15 @@ public class Sample : IDisposable
                 timeStep = 0.0f;
             }
 
-            if (m_context.g_draw.m_showUI)
+            if (m_context.draw.m_showUI)
             {
-                m_context.g_draw.DrawString(5, m_textLine, "****PAUSED****");
+                m_context.draw.DrawString(5, m_textLine, "****PAUSED****");
                 m_textLine += m_textIncrement;
             }
         }
 
-        m_context.g_draw.m_debugDraw.drawingBounds = m_context.camera.GetViewBounds();
-        m_context.g_draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
+        m_context.draw.m_debugDraw.drawingBounds = m_context.camera.GetViewBounds();
+        m_context.draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
         // todo testing
         // b2Transform t1 = {m_context.g_draw.m_debugDraw.drawingBounds.lowerBound, b2Rot_identity};
@@ -337,17 +337,17 @@ public class Sample : IDisposable
         // m_context.g_draw.DrawSolidCircle(ref t1, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
         // m_context.g_draw.DrawSolidCircle(ref t2, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
 
-        m_context.g_draw.m_debugDraw.drawShapes = settings.drawShapes;
-        m_context.g_draw.m_debugDraw.drawJoints = settings.drawJoints;
-        m_context.g_draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
-        m_context.g_draw.m_debugDraw.drawAABBs = settings.drawAABBs;
-        m_context.g_draw.m_debugDraw.drawMass = settings.drawMass;
-        m_context.g_draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
-        m_context.g_draw.m_debugDraw.drawContacts = settings.drawContactPoints;
-        m_context.g_draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
-        m_context.g_draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
-        m_context.g_draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
-        m_context.g_draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
+        m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
+        m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
+        m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
+        m_context.draw.m_debugDraw.drawAABBs = settings.drawAABBs;
+        m_context.draw.m_debugDraw.drawMass = settings.drawMass;
+        m_context.draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
+        m_context.draw.m_debugDraw.drawContacts = settings.drawContactPoints;
+        m_context.draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
+        m_context.draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
+        m_context.draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
+        m_context.draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
 
         b2World_EnableSleeping(m_worldId, settings.enableSleep);
         b2World_EnableWarmStarting(m_worldId, settings.enableWarmStarting);
@@ -359,7 +359,7 @@ public class Sample : IDisposable
             m_taskCount = 0;
         }
 
-        b2World_Draw(m_worldId, m_context.g_draw.m_debugDraw);
+        b2World_Draw(m_worldId, m_context.draw.m_debugDraw);
 
         if (timeStep > 0.0f)
         {
@@ -370,13 +370,13 @@ public class Sample : IDisposable
         {
             B2Counters s = b2World_GetCounters(m_worldId);
 
-            m_context.g_draw.DrawString(5, m_textLine, $"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
+            m_context.draw.DrawString(5, m_textLine, $"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
             m_textLine += m_textIncrement;
 
-            m_context.g_draw.DrawString(5, m_textLine, $"islands/tasks = {s.islandCount}/{s.taskCount}");
+            m_context.draw.DrawString(5, m_textLine, $"islands/tasks = {s.islandCount}/{s.taskCount}");
             m_textLine += m_textIncrement;
 
-            m_context.g_draw.DrawString(5, m_textLine, $"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
+            m_context.draw.DrawString(5, m_textLine, $"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
             m_textLine += m_textIncrement;
 
             int totalCount = 0;
@@ -392,13 +392,13 @@ public class Sample : IDisposable
             }
 
             buffer.Append($"[{totalCount}]");
-            m_context.g_draw.DrawString(5, m_textLine, buffer.ToString());
+            m_context.draw.DrawString(5, m_textLine, buffer.ToString());
             m_textLine += m_textIncrement;
 
-            m_context.g_draw.DrawString(5, m_textLine, $"stack allocator size = {s.stackUsed / 1024} K");
+            m_context.draw.DrawString(5, m_textLine, $"stack allocator size = {s.stackUsed / 1024} K");
             m_textLine += m_textIncrement;
 
-            m_context.g_draw.DrawString(5, m_textLine, $"total allocation = {s.byteCount / 1024} K");
+            m_context.draw.DrawString(5, m_textLine, $"total allocation = {s.byteCount / 1024} K");
             m_textLine += m_textIncrement;
         }
 

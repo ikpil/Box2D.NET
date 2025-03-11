@@ -219,16 +219,16 @@ public class CompoundShapes : Sample
         if (m_drawBodyAABBs)
         {
             B2AABB aabb = b2Body_ComputeAABB(m_table1Id);
-            m_context.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            m_context.draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_table2Id);
-            m_context.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            m_context.draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship1Id);
-            m_context.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            m_context.draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship2Id);
-            m_context.g_draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
+            m_context.draw.DrawAABB(aabb, B2HexColor.b2_colorYellow);
         }
     }
 }

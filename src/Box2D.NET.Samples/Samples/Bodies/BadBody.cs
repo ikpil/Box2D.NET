@@ -77,10 +77,10 @@ public class BadBody : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
+        m_context.draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
         m_textLine += m_textIncrement;
 
-        m_context.g_draw.DrawString(5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
+        m_context.draw.DrawString(5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
         m_textLine += m_textIncrement;
 
         // For science

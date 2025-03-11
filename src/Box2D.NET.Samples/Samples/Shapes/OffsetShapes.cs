@@ -62,6 +62,6 @@ public class OffsetShapes : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawTransform(b2Transform_identity);
+        m_context.draw.DrawTransform(b2Transform_identity);
     }
 }

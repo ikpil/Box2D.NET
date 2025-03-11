@@ -66,7 +66,7 @@ public class CustomFilter : Sample
 
     public override void Step(Settings settings)
     {
-        m_context.g_draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
+        m_context.draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
         m_textLine += m_textIncrement;
 
         base.Step(settings);
@@ -74,7 +74,7 @@ public class CustomFilter : Sample
         for (int i = 0; i < e_count; ++i)
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            m_context.g_draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
+            m_context.draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
         }
     }
 

@@ -90,7 +90,7 @@ public class BounceHumans : Sample
         B2CosSin cs2 = b2ComputeCosSin(m_time);
         float gravity = 10.0f;
         B2Vec2 gravityVec = new B2Vec2(gravity * cs1.sine, gravity * cs2.cosine);
-        m_context.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * cs1.sine, 3.0f * cs2.cosine), B2HexColor.b2_colorWhite);
+        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * cs1.sine, 3.0f * cs2.cosine), B2HexColor.b2_colorWhite);
         m_time += timeStep;
         m_countDown -= timeStep;
         b2World_SetGravity(m_worldId, gravityVec);

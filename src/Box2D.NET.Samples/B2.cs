@@ -3,5 +3,4 @@
 public class B2
 {
     public static Draw g_draw;
-    public static Shader g_shader;
 }

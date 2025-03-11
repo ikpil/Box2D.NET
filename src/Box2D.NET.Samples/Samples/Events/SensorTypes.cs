@@ -187,11 +187,11 @@ public class SensorTypes : Sample
         B2Vec2 origin = new B2Vec2(5.0f, 1.0f);
         B2Vec2 translation = new B2Vec2(-10.0f, 0.0f);
         B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, b2DefaultQueryFilter());
-        m_context.g_draw.DrawSegment(origin, origin + translation, B2HexColor.b2_colorDimGray);
+        m_context.draw.DrawSegment(origin, origin + translation, B2HexColor.b2_colorDimGray);
 
         if (result.hit)
         {
-            m_context.g_draw.DrawPoint(result.point, 10.0f, B2HexColor.b2_colorCyan);
+            m_context.draw.DrawPoint(result.point, 10.0f, B2HexColor.b2_colorCyan);
         }
     }
 }

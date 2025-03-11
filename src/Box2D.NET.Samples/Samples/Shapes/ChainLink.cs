@@ -90,7 +90,7 @@ public class ChainLink : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawString(5, m_textLine, "This shows how to link together two chain shapes");
+        m_context.draw.DrawString(5, m_textLine, "This shows how to link together two chain shapes");
         m_textLine += m_textIncrement;
     }
 }

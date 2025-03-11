@@ -20,6 +20,8 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
+    private Shader _shader;
+    private GL _gl;
     private Camera _camera;
     private List<VertexData> m_points = new();
 
@@ -30,7 +32,9 @@ public class GLLines
 
     public GLLines(SampleAppContext context)
     {
+        _gl = context.gl;
         _camera = context.camera;
+        _shader = context.shader;
     }
 
 
@@ -55,47 +59,47 @@ public class GLLines
                     + "	color = f_color;\n"
                     + "}\n";
 
-        m_programId = B2.g_shader.CreateProgramFromStrings(vs, fs);
-        m_projectionUniform = B2.g_shader.gl.GetUniformLocation(m_programId, "projectionMatrix");
+        m_programId = _shader.CreateProgramFromStrings(vs, fs);
+        m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint colorAttribute = 1;
 
         // Generate
-        B2.g_shader.gl.GenVertexArrays(m_vaoId);
-        B2.g_shader.gl.GenBuffers(m_vboId);
+        _gl.GenVertexArrays(m_vaoId);
+        _gl.GenBuffers(m_vboId);
 
-        B2.g_shader.gl.BindVertexArray(m_vaoId[0]);
-        B2.g_shader.gl.EnableVertexAttribArray(vertexAttribute);
-        B2.g_shader.gl.EnableVertexAttribArray(colorAttribute);
+        _gl.BindVertexArray(m_vaoId[0]);
+        _gl.EnableVertexAttribArray(vertexAttribute);
+        _gl.EnableVertexAttribArray(colorAttribute);
 
         // Vertex buffer
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
-        B2.g_shader.gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
+        _gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
+        _gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
 
-        B2.g_shader.gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
+        _gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
         // save bandwidth by expanding color to floats in the shader
-        B2.g_shader.gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
+        _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
-        B2.g_shader.CheckErrorGL();
+        _shader.CheckErrorGL();
 
         // Cleanup
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, 0);
-        B2.g_shader.gl.BindVertexArray(0);
+        _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        _gl.BindVertexArray(0);
     }
 
     public void Destroy()
     {
         if (0 != m_vaoId[0])
         {
-            B2.g_shader.gl.DeleteVertexArrays(m_vaoId);
-            B2.g_shader.gl.DeleteBuffers(m_vboId);
+            _gl.DeleteVertexArrays(m_vaoId);
+            _gl.DeleteBuffers(m_vboId);
             m_vaoId[0] = 0;
             m_vboId[0] = 0;
         }
 
         if (0 != m_programId)
         {
-            B2.g_shader.gl.DeleteProgram(m_programId);
+            _gl.DeleteProgram(m_programId);
             m_programId = 0;
         }
     }
@@ -117,35 +121,35 @@ public class GLLines
 
         Debug.Assert(count % 2 == 0);
 
-        B2.g_shader.gl.UseProgram(m_programId);
+        _gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
         _camera.BuildProjectionMatrix(proj, 0.1f);
 
-        B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
+        _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 
-        B2.g_shader.gl.BindVertexArray(m_vaoId[0]);
+        _gl.BindVertexArray(m_vaoId[0]);
 
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
+        _gl.BindBuffer(GLEnum.ArrayBuffer, m_vboId[0]);
 
         var points = CollectionsMarshal.AsSpan(m_points);
         int @base = 0;
         while (count > 0)
         {
             int batchCount = b2MinInt(count, e_batchSize);
-            B2.g_shader.gl.BufferSubData<VertexData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
+            _gl.BufferSubData<VertexData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
 
-            B2.g_shader.gl.DrawArrays(GLEnum.Lines, 0, (uint)batchCount);
+            _gl.DrawArrays(GLEnum.Lines, 0, (uint)batchCount);
 
-            B2.g_shader.CheckErrorGL();
+            _shader.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;
         }
 
-        B2.g_shader.gl.BindBuffer(GLEnum.ArrayBuffer, 0);
-        B2.g_shader.gl.BindVertexArray(0);
-        B2.g_shader.gl.UseProgram(0);
+        _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
+        _gl.BindVertexArray(0);
+        _gl.UseProgram(0);
 
         m_points.Clear();
     }

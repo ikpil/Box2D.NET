@@ -74,7 +74,7 @@ public class RestitutionThreshold : Sample
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        m_context.g_draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
+        m_context.draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
         m_textLine += m_textIncrement;
 
         base.Step(settings);

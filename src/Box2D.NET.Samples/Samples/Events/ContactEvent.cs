@@ -159,7 +159,7 @@ public class ContactEvent : Sample
 
     public override void Step(Settings settings)
     {
-        m_context.g_draw.DrawString(5, m_textLine, "move using WASD");
+        m_context.draw.DrawString(5, m_textLine, "move using WASD");
         m_textLine += m_textIncrement;
 
         B2Vec2 position = b2Body_GetPosition(m_playerId);
@@ -234,8 +234,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
-                            m_context.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_context.draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -264,8 +264,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.g_draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
-                            m_context.g_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_context.draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }

@@ -132,14 +132,14 @@ public class MotorJoint : Sample
         b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);
 
         B2Transform transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
-        m_context.g_draw.DrawTransform(transform);
+        m_context.draw.DrawTransform(transform);
 
         base.Step(settings);
 
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"force = {force.x:3,F0}, {force.y:3,F0}, torque = {torque:3,F0}");
+        m_context.draw.DrawString(5, m_textLine, $"force = {force.x:3,F0}, {force.y:3,F0}, torque = {torque:3,F0}");
 
         m_textLine += 15;
     }

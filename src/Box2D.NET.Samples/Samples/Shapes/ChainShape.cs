@@ -224,8 +224,8 @@ public class ChainShape : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
-        m_context.g_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
+        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
+        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
 #if DEBUG
         DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);

@@ -229,7 +229,7 @@ public class LargeWorld : Sample
 
         if (m_explode)
         {
-            m_context.g_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
+            m_context.draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
         }
 
         if (GetKey(Keys.A) == InputAction.Press)

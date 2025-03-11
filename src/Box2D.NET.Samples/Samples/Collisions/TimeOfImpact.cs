@@ -61,7 +61,7 @@ public class TimeOfImpact : Sample
 
         B2TOIOutput output = b2TimeOfImpact(ref input);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"toi = {output.fraction:g}");
+        m_context.draw.DrawString(5, m_textLine, $"toi = {output.fraction:g}");
         m_textLine += m_textIncrement;
 
         // m_context.g_draw.DrawString(5, m_textLine, "max toi iters = %d, max root iters = %d", b2_toiMaxIters,
@@ -77,7 +77,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformA, m_verticesA[i]);
         }
 
-        m_context.g_draw.DrawPolygon(vertices, m_countA, B2HexColor.b2_colorGray);
+        m_context.draw.DrawPolygon(vertices, m_countA, B2HexColor.b2_colorGray);
 
         // Draw B at t = 0
         B2Transform transformB = b2GetSweepTransform(ref sweepB, 0.0f);
@@ -86,7 +86,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_context.g_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorGreen);
+        m_context.draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorGreen);
         // m_context.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorGreen );
 
         // Draw B at t = hit_time
@@ -96,7 +96,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_context.g_draw.DrawPolygon(vertices, m_countB, B2HexColor.b2_colorOrange);
+        m_context.draw.DrawPolygon(vertices, m_countB, B2HexColor.b2_colorOrange);
 
         // Draw B at t = 1
         transformB = b2GetSweepTransform(ref sweepB, 1.0f);
@@ -105,7 +105,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_context.g_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorRed);
+        m_context.draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorRed);
         // m_context.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorRed );
 
         if (output.state == B2TOIState.b2_toiStateHit)
@@ -118,7 +118,7 @@ public class TimeOfImpact : Sample
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
-            m_context.g_draw.DrawString(5, m_textLine, $"distance = {distanceOutput.distance}:g");
+            m_context.draw.DrawString(5, m_textLine, $"distance = {distanceOutput.distance}:g");
             m_textLine += m_textIncrement;
         }
 

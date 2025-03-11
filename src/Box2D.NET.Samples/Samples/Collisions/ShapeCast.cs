@@ -189,7 +189,7 @@ public class ShapeCast : Sample
         distanceCache.count = 0;
         B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceCache, ref distanceInput, null, 0);
 
-        m_context.g_draw.DrawString(5, m_textLine, $"hit = {output.hit}, iters = {output.iterations}, lambda = {output.fraction:g}, distance = {distanceOutput.distance:g}");
+        m_context.draw.DrawString(5, m_textLine, $"hit = {output.hit}, iters = {output.iterations}, lambda = {output.fraction:g}, distance = {distanceOutput.distance:g}");
         m_textLine += m_textIncrement;
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
@@ -204,16 +204,16 @@ public class ShapeCast : Sample
         {
             if (m_radiusA > 0.0f)
             {
-                m_context.g_draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusA, B2HexColor.b2_colorLightGray);
+                m_context.draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusA, B2HexColor.b2_colorLightGray);
             }
             else
             {
-                m_context.g_draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorLightGray);
+                m_context.draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorLightGray);
             }
         }
         else
         {
-            m_context.g_draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countA, m_radiusA, B2HexColor.b2_colorLightGray);
+            m_context.draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countA, m_radiusA, B2HexColor.b2_colorLightGray);
         }
 
         for (int i = 0; i < m_countB; ++i)
@@ -225,16 +225,16 @@ public class ShapeCast : Sample
         {
             if (m_radiusB > 0.0f)
             {
-                m_context.g_draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusB, B2HexColor.b2_colorGreen);
+                m_context.draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusB, B2HexColor.b2_colorGreen);
             }
             else
             {
-                m_context.g_draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorGreen);
+                m_context.draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorGreen);
             }
         }
         else
         {
-            m_context.g_draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countB, m_radiusB, B2HexColor.b2_colorGreen);
+            m_context.draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countB, m_radiusB, B2HexColor.b2_colorGreen);
         }
 
         for (int i = 0; i < m_countB; ++i)
@@ -246,26 +246,26 @@ public class ShapeCast : Sample
         {
             if (m_radiusB > 0.0f)
             {
-                m_context.g_draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusB, B2HexColor.b2_colorOrange);
+                m_context.draw.DrawSolidCircle(ref b2TransformZero, vertices[0], m_radiusB, B2HexColor.b2_colorOrange);
             }
             else
             {
-                m_context.g_draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorOrange);
+                m_context.draw.DrawPoint(vertices[0], 5.0f, B2HexColor.b2_colorOrange);
             }
         }
         else
         {
-            m_context.g_draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countB, m_radiusB, B2HexColor.b2_colorOrange);
+            m_context.draw.DrawSolidPolygon(ref b2TransformZero, vertices, m_countB, m_radiusB, B2HexColor.b2_colorOrange);
         }
 
         if (output.hit)
         {
             B2Vec2 p1 = output.point;
-            m_context.g_draw.DrawPoint(p1, 10.0f, B2HexColor.b2_colorRed);
+            m_context.draw.DrawPoint(p1, 10.0f, B2HexColor.b2_colorRed);
             B2Vec2 p2 = b2MulAdd(p1, 1.0f, output.normal);
-            m_context.g_draw.DrawSegment(p1, p2, B2HexColor.b2_colorRed);
+            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorRed);
         }
 
-        m_context.g_draw.DrawSegment(m_transformB.p, b2Add(m_transformB.p, m_translationB), B2HexColor.b2_colorGray);
+        m_context.draw.DrawSegment(m_transformB.p, b2Add(m_transformB.p, m_translationB), B2HexColor.b2_colorGray);
     }
 }

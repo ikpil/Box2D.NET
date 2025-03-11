@@ -266,12 +266,12 @@ public class Driving : Sample
             m_car.SetSpeed(-m_speed);
         }
 
-        m_context.g_draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
+        m_context.draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
         m_textLine += m_textIncrement;
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.x * 3.6f;
-        m_context.g_draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
+        m_context.draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
         m_textLine += m_textIncrement;
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);

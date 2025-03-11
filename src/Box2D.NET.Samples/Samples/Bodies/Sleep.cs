@@ -204,7 +204,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"sensor touch {i} = {m_sensorTouching[i]}");
+            m_context.draw.DrawString(5, m_textLine, $"sensor touch {i} = {m_sensorTouching[i]}");
             m_textLine += m_textIncrement;
         }
     }

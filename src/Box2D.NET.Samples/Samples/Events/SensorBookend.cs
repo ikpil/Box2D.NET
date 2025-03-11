@@ -161,7 +161,7 @@ public class SensorBookend : Sample
             }
         }
 
-        m_context.g_draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
+        m_context.draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
         m_textLine += m_textIncrement;
     }
 }

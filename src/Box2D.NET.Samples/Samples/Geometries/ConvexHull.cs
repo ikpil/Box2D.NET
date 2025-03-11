@@ -123,7 +123,7 @@ public class ConvexHull : Sample
     {
         base.Step(settings);
 
-        m_context.g_draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
+        m_context.draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
         m_textLine += m_textIncrement;
 
         B2Hull hull = new B2Hull();
@@ -184,34 +184,34 @@ public class ConvexHull : Sample
 
         if (valid == false)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
+            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
             m_textLine += m_textIncrement;
         }
         else
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
+            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
             m_textLine += m_textIncrement;
         }
 
         if (milliseconds > 0.0f)
         {
-            m_context.g_draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
+            m_context.draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
             m_textLine += m_textIncrement;
         }
 
         m_textLine += m_textIncrement;
 
-        m_context.g_draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
+        m_context.draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
 
         for (int i = 0; i < m_count; ++i)
         {
-            m_context.g_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
-            m_context.g_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
+            m_context.draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
+            m_context.draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
         }
 
         for (int i = 0; i < hull.count; ++i)
         {
-            m_context.g_draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
+            m_context.draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }
