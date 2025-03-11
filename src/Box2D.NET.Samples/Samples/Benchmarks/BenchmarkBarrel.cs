@@ -131,19 +131,19 @@ public class BenchmarkBarrel : Sample
             }
         }
 
-        m_columnCount = B2.g_sampleDebug ? 10 : e_maxColumns;
-        m_rowCount = B2.g_sampleDebug ? 40 : e_maxRows;
+        m_columnCount = m_context.sampleDebug ? 10 : e_maxColumns;
+        m_rowCount = m_context.sampleDebug ? 40 : e_maxRows;
 
         if (m_shapeType == ShapeType.e_compoundShape)
         {
-            if (B2.g_sampleDebug == false)
+            if (m_context.sampleDebug == false)
             {
                 m_columnCount = 20;
             }
         }
         else if (m_shapeType == ShapeType.e_humanShape)
         {
-            if (B2.g_sampleDebug)
+            if (m_context.sampleDebug)
             {
                 m_rowCount = 5;
                 m_columnCount = 10;

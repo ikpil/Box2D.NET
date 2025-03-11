@@ -51,15 +51,15 @@ public class BenchmarkCast : Sample
         {
             m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
             m_context.camera.m_zoom = 25.0f * 21.0f;
-            // settings.drawShapes = B2.g_sampleDebug;
+            // settings.drawShapes = m_context.g_sampleDebug;
         }
 
         m_queryType = QueryType.e_circleCast;
         m_ratio = 5.0f;
         m_grid = 1.0f;
         m_fill = 0.1f;
-        m_rowCount = B2.g_sampleDebug ? 100 : 1000;
-        m_columnCount = B2.g_sampleDebug ? 100 : 1000;
+        m_rowCount = m_context.sampleDebug ? 100 : 1000;
+        m_columnCount = m_context.sampleDebug ? 100 : 1000;
         m_minTime = 1e6f;
         m_drawIndex = 0;
         m_topDown = false;
@@ -67,7 +67,7 @@ public class BenchmarkCast : Sample
         m_radius = 0.1f;
 
         g_seed = 1234;
-        int sampleCount = B2.g_sampleDebug ? 100 : 10000;
+        int sampleCount = m_context.sampleDebug ? 100 : 10000;
         m_origins.Resize(sampleCount);
         m_translations.Resize(sampleCount);
         float extent = m_rowCount * m_grid;

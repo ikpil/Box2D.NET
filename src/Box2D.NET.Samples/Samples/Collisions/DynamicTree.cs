@@ -90,8 +90,8 @@ public class DynamicTree : Sample
         m_moveBuffer = null;
         m_moveCount = 0;
 
-        m_rowCount = B2.g_sampleDebug ? 100 : 1000;
-        m_columnCount = B2.g_sampleDebug ? 100 : 1000;
+        m_rowCount = m_context.sampleDebug ? 100 : 1000;
+        m_columnCount = m_context.sampleDebug ? 100 : 1000;
         //memset( &m_tree, 0, sizeof( m_tree ) );
         m_tree = new B2DynamicTree();
         BuildTree();

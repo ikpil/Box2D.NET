@@ -9,4 +9,10 @@ public class SampleAppContext
     public Shader g_shader;
     public Draw g_draw;
     public unsafe WindowHandle* g_mainWindow;
+
+#if NDEBUG
+    public bool sampleDebug = false;
+#else
+    public bool sampleDebug = true;
+#endif
 }
