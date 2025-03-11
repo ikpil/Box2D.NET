@@ -4,9 +4,9 @@ namespace Box2D.NET.Samples.Helpers;
 
 public static class GlfwHelpers
 {
-    public static unsafe InputAction GetKey(Keys key)
+    public static unsafe InputAction GetKey(SampleAppContext context, Keys key)
     {
-        var state = B2.g_glfw.GetKey(B2.g_mainWindow, key);
+        var state = context.g_glfw.GetKey(context.g_mainWindow, key);
         switch (state)
         {
             case 0: return InputAction.Release;
@@ -15,5 +15,4 @@ public static class GlfwHelpers
             default: return InputAction.Release;
         }
     }
- 
 }

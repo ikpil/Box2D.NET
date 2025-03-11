@@ -710,6 +710,6 @@ public class Sample : IDisposable
 
     protected InputAction GetKey(Keys key)
     {
-        return GlfwHelpers.GetKey(key);
+        return GlfwHelpers.GetKey(m_context, key);
     }
 }

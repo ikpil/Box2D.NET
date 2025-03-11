@@ -33,7 +33,7 @@ public class SampleApp
     private ImGuiController _imgui;
     private int s_selection = 0;
     private Sample s_sample = null;
-    private SampleAppContext s_sampleAppContext;
+    private SampleAppContext _ctx;
     private Settings s_settings;
     private bool s_rightMouseDown = false;
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
@@ -44,7 +44,7 @@ public class SampleApp
     public SampleApp()
     {
         s_settings = new Settings();
-        s_sampleAppContext = new SampleAppContext();
+        _ctx = new SampleAppContext();
     }
 
     public unsafe int Run(string[] args)
@@ -62,48 +62,47 @@ public class SampleApp
         Window.PrioritizeGlfw();
 
         // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
-        s_sampleAppContext.g_glfw = Glfw.GetApi();
-        s_sampleAppContext.g_camera = new Camera();
-        s_sampleAppContext.g_shader = new Shader();
-        s_sampleAppContext.g_draw = new Draw();
-        
-        B2.g_glfw = s_sampleAppContext.g_glfw;
-        B2.g_glfw.SetErrorCallback(glfwErrorCallback);
+        _ctx.g_glfw = Glfw.GetApi();
+        _ctx.g_camera = new Camera();
+        _ctx.g_shader = new Shader();
+        _ctx.g_draw = new Draw();
 
-        B2.g_camera = s_sampleAppContext.g_camera;
+        _ctx.g_glfw.SetErrorCallback(glfwErrorCallback);
+
+        B2.g_camera = _ctx.g_camera;
         B2.g_camera.m_width = s_settings.windowWidth;
         B2.g_camera.m_height = s_settings.windowHeight;
 
         var options = WindowOptions.Default;
         options.ShouldSwapAutomatically = false;
-        if (!B2.g_glfw.Init())
+        if (!_ctx.g_glfw.Init())
         {
             Console.WriteLine("Failed to initialize GLFW");
             return -1;
         }
 
-        B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
-        B2.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
-        B2.g_glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
-        B2.g_glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
+        _ctx.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
+        _ctx.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
+        _ctx.g_glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
+        _ctx.g_glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 
         // MSAA
-        B2.g_glfw.WindowHint(WindowHintInt.Samples, 4);
+        _ctx.g_glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
         options.Title = $"Box2D Version {version.major}.{version.minor}.{version.revision}";
 
-        Monitor* primaryMonitor = B2.g_glfw.GetPrimaryMonitor();
+        Monitor* primaryMonitor = _ctx.g_glfw.GetPrimaryMonitor();
         if (null != primaryMonitor)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                B2.g_glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
+                _ctx.g_glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
             }
             else
             {
-                B2.g_glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
+                _ctx.g_glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
             }
         }
 
@@ -112,12 +111,12 @@ public class SampleApp
         if (fullscreen)
         {
             options.Size = new Vector2D<int>((int)(1920 * s_windowScale), (int)(1080 * s_windowScale));
-            //B2.g_mainWindow = B2.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, B2.g_glfw.GetPrimaryMonitor(), null);
+            //B2.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, _ctx.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
             options.Size = new Vector2D<int>((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale));
-            //B2.g_mainWindow = B2.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
+            //B2.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
         _window = Window.Create(options);
@@ -127,7 +126,7 @@ public class SampleApp
         _window.Closing += OnWindowClosing;
         _window.Run();
 
-        B2.g_glfw.Terminate();
+        _ctx.g_glfw.Terminate();
         s_settings.Save();
 
         return 0;
@@ -141,8 +140,8 @@ public class SampleApp
         string glslVersion = string.Empty;
 #endif
 
-        s_sampleAppContext.g_mainWindow = (WindowHandle*)_window.Handle;
-        B2.g_mainWindow = s_sampleAppContext.g_mainWindow;
+        _ctx.g_mainWindow = (WindowHandle*)_window.Handle;
+        B2.g_mainWindow = _ctx.g_mainWindow;
         if (B2.g_mainWindow == null)
         {
             Console.WriteLine("Failed to open GLFW B2.g_mainWindow.");
@@ -151,19 +150,19 @@ public class SampleApp
 
         // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         // {
-        //     B2.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
+        //     _ctx.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
         // }
         // else
         // {
-        //     B2.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_windowScale, out s_windowScale);
+        //     _ctx.g_glfw.GetWindowContentScale(B2.g_mainWindow, out s_windowScale, out s_windowScale);
         // }
 
 
-        B2.g_glfw.MakeContextCurrent(B2.g_mainWindow);
+        _ctx.g_glfw.MakeContextCurrent(B2.g_mainWindow);
 
         _input = _window.CreateInput();
         // Load OpenGL functions using glad
-        B2.g_shader = s_sampleAppContext.g_shader;
+        B2.g_shader = _ctx.g_shader;
         B2.g_shader.gl = _window.CreateOpenGL();
         if (null == B2.g_shader.gl)
         {
@@ -175,15 +174,15 @@ public class SampleApp
         Console.WriteLine($"GL {glVersion}");
         Console.WriteLine($"OpenGL {B2.g_shader.gl.GetStringS(GLEnum.Version)}, GLSL {B2.g_shader.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
-        B2.g_glfw.SetWindowSizeCallback(B2.g_mainWindow, ResizeWindowCallback);
-        B2.g_glfw.SetKeyCallback(B2.g_mainWindow, KeyCallback);
-        B2.g_glfw.SetCharCallback(B2.g_mainWindow, CharCallback);
-        B2.g_glfw.SetMouseButtonCallback(B2.g_mainWindow, MouseButtonCallback);
-        B2.g_glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
-        B2.g_glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
+        _ctx.g_glfw.SetWindowSizeCallback(B2.g_mainWindow, ResizeWindowCallback);
+        _ctx.g_glfw.SetKeyCallback(B2.g_mainWindow, KeyCallback);
+        _ctx.g_glfw.SetCharCallback(B2.g_mainWindow, CharCallback);
+        _ctx.g_glfw.SetMouseButtonCallback(B2.g_mainWindow, MouseButtonCallback);
+        _ctx.g_glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
+        _ctx.g_glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
 
-        B2.g_draw = s_sampleAppContext.g_draw;
-        B2.g_draw.Create();
+        B2.g_draw = _ctx.g_draw;
+        B2.g_draw.Create(_ctx.g_glfw);
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
         s_selection = s_settings.sampleIndex;
@@ -199,32 +198,32 @@ public class SampleApp
 
     private unsafe void OnWindowUpdate(double dt)
     {
-        if (B2.g_glfw.WindowShouldClose(B2.g_mainWindow))
+        if (_ctx.g_glfw.WindowShouldClose(B2.g_mainWindow))
             return;
 
-        double time1 = B2.g_glfw.GetTime();
+        double time1 = _ctx.g_glfw.GetTime();
 
-        if (GlfwHelpers.GetKey(Keys.Z) == InputAction.Press)
+        if (GlfwHelpers.GetKey(_ctx, Keys.Z) == InputAction.Press)
         {
             // Zoom out
             B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
         }
-        else if (GlfwHelpers.GetKey(Keys.X) == InputAction.Press)
+        else if (GlfwHelpers.GetKey(_ctx, Keys.X) == InputAction.Press)
         {
             // Zoom in
             B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
         }
 
-        B2.g_glfw.GetWindowSize(B2.g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
+        _ctx.g_glfw.GetWindowSize(B2.g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
         B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
         B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
 
-        B2.g_glfw.GetFramebufferSize(B2.g_mainWindow, out var bufferWidth, out var bufferHeight);
+        _ctx.g_glfw.GetFramebufferSize(B2.g_mainWindow, out var bufferWidth, out var bufferHeight);
         B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
 
         //B2.g_draw.DrawBackground();
 
-        B2.g_glfw.GetCursorPos(B2.g_mainWindow, out var cursorPosX, out var cursorPosY);
+        _ctx.g_glfw.GetCursorPos(B2.g_mainWindow, out var cursorPosX, out var cursorPosY);
         // ImGui_ImplGlfw_CursorPosCallback(B2.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
         // ImGui_ImplOpenGL3_NewFrame();
         // ImGui_ImplGlfw_NewFrame();
@@ -251,26 +250,26 @@ public class SampleApp
             s_settings.useCameraBounds = false;
 
             s_sample = null;
-            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         }
 
         if (s_sample == null)
         {
             // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
+            s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         }
 
         s_sample.Step(s_settings);
 
-        B2.g_glfw.PollEvents();
+        _ctx.g_glfw.PollEvents();
 
         // Limit frame rate to 60Hz
-        double time2 = B2.g_glfw.GetTime();
+        double time2 = _ctx.g_glfw.GetTime();
         double targetTime = time1 + 1.0 / 60.0;
         while (time2 < targetTime)
         {
             b2Yield();
-            time2 = B2.g_glfw.GetTime();
+            time2 = _ctx.g_glfw.GetTime();
         }
 
         _frameTime = (float)(time2 - time1);
@@ -321,7 +320,7 @@ public class SampleApp
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-        B2.g_glfw.SwapBuffers(B2.g_mainWindow);
+        _ctx.g_glfw.SwapBuffers(B2.g_mainWindow);
     }
 
     private void OnWindowClosing()
@@ -378,7 +377,7 @@ public class SampleApp
     {
         s_sample = null;
         s_settings.restart = true;
-        s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, s_sampleAppContext, s_settings);
+        s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         s_settings.restart = false;
     }
 
@@ -458,7 +457,7 @@ public class SampleApp
             {
                 case Keys.Escape:
                     // Quit
-                    B2.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
+                    _ctx.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     break;
 
                 case Keys.Left:
@@ -583,7 +582,7 @@ public class SampleApp
         }
 
         double xd, yd;
-        B2.g_glfw.GetCursorPos(B2.g_mainWindow, out xd, out yd);
+        _ctx.g_glfw.GetCursorPos(B2.g_mainWindow, out xd, out yd);
         B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         // Use the mouse to move things around.
@@ -729,7 +728,7 @@ public class SampleApp
 
                     if (ImGui.Button("Quit", button_sz))
                     {
-                        B2.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
+                        _ctx.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     }
 
                     ImGui.EndTabItem();

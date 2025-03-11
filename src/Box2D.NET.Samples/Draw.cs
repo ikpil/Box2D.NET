@@ -6,6 +6,7 @@ using System;
 using System.Numerics;
 using Box2D.NET.Samples.Graphics;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples;
@@ -50,9 +51,9 @@ public class Draw
         m_background = null;
     }
 
-    public void Create()
+    public void Create(Glfw glfw)
     {
-        m_background = new GLBackground();
+        m_background = new GLBackground(glfw);
         m_background.Create();
         m_points = new GLPoints();
         m_points.Create();

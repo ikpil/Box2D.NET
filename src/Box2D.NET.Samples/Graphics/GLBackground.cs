@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 
 namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
 {
+    private Glfw _glfw;
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
     private uint m_programId;
@@ -16,8 +18,9 @@ public class GLBackground
     private int m_resolutionUniform;
     private int m_baseColorUniform;
 
-    public GLBackground()
+    public GLBackground(Glfw glfw)
     {
+        _glfw = glfw;
     }
 
     public void Create()
@@ -70,7 +73,7 @@ public class GLBackground
     {
         B2.g_shader.gl.UseProgram(m_programId);
 
-        double time = B2.g_glfw.GetTime();
+        double time = _glfw.GetTime();
         time = time % 100.0; // fmodf 대신 % 연산 사용
 
         // float time = (float)B2.g_glfw.GetTime();
