@@ -88,12 +88,12 @@ public class ChainDrop : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Chain Drop", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Chain Drop", ImGuiWindowFlags.NoResize);
 
         ImGui.SliderFloat("Speed", ref m_speed, -100.0f, 0.0f, "%.0f");
         ImGui.SliderFloat("Y Offset", ref m_yOffset, -1.0f, 1.0f, "%.1f");

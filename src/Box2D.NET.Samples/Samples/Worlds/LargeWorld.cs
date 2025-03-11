@@ -169,12 +169,12 @@ public class LargeWorld : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Large World", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Large World", ImGuiWindowFlags.NoResize);
 
         ImGui.SliderFloat("speed", ref m_speed, -400.0f, 400.0f, "%.0f");
         if (ImGui.Button("stop"))

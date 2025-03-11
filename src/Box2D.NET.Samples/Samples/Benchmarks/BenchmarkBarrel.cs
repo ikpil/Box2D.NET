@@ -307,11 +307,11 @@ public class BenchmarkBarrel : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 80.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
-        ImGui.Begin("Benchmark: Barrel", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
         string[] shapeTypes = ["Circle", "Capsule", "Mix", "Compound", "Human"];

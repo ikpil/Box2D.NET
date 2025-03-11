@@ -112,12 +112,12 @@ public class SkinnyBox : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 110.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
-        ImGui.Begin("Skinny Box", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Skinny Box", ImGuiWindowFlags.NoResize);
 
         ImGui.Checkbox("Capsule", ref m_capsule);
 

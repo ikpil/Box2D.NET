@@ -85,12 +85,12 @@ public class Manifold : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 300.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Manifold", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         ImGui.SliderFloat("x offset", ref m_transform.p.x, -2.0f, 2.0f, "%.2f");
         ImGui.SliderFloat("y offset", ref m_transform.p.y, -2.0f, 2.0f, "%.2f");

@@ -256,12 +256,12 @@ public class SensorFunnel : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 90.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
-        ImGui.Begin("Sensor Event", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Sensor Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.RadioButton("donut", m_type == (int)ea.e_donut))
         {

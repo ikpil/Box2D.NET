@@ -205,12 +205,12 @@ public class BodyType : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
 
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
-        ImGui.Begin("Body Type", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Body Type", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.RadioButton("Static", m_type == B2BodyType.b2_staticBody))
         {

@@ -198,12 +198,12 @@ public class ShapeDistance : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 310.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Shape Distance", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         string[] shapeTypes = ["point", "segment", "triangle", "box"];
         int shapeType = (int)m_typeA;

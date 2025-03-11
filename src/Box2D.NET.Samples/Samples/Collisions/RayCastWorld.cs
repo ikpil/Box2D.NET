@@ -279,12 +279,12 @@ public class RayCastWorld : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 300.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
-        ImGui.Begin("Ray-cast World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Ray-cast World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         ImGui.Checkbox("Simple", ref m_simple);
 

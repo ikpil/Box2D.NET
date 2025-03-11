@@ -126,12 +126,12 @@ public class DistanceJoint : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 240.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
-        ImGui.Begin("Distance Joint", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Distance Joint", ImGuiWindowFlags.NoResize);
         ImGui.PushItemWidth(100.0f);
 
         if (ImGui.SliderFloat("Length", ref m_length, 0.1f, 4.0f, "%3.1f"))

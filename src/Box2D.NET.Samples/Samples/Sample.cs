@@ -286,8 +286,7 @@ public class Sample : IDisposable
 
     public void DrawTextLine(string text, params object[] arg)
     {
-        bool open = true;
-        ImGui.Begin("Overlay", ref open,
+        ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(m_context.draw.m_regularFont);

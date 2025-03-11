@@ -215,17 +215,6 @@ public class SampleApp
         //_ctx.draw.DrawBackground();
 
         _ctx.glfw.GetCursorPos(_ctx.mainWindow, out var cursorPosX, out var cursorPosY);
-        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-
-        var io = ImGui.GetIO();
-        io.DisplaySize.X = (float)_ctx.camera.m_width;
-        io.DisplaySize.Y = (float)_ctx.camera.m_height;
-        io.DisplayFramebufferScale.X = bufferWidth / (float)_ctx.camera.m_width;
-        io.DisplayFramebufferScale.Y = bufferHeight / (float)_ctx.camera.m_height;
-
 
         // For the Tracy profiler
         //FrameMark;
@@ -240,6 +229,7 @@ public class SampleApp
             s_settings.drawJoints = true;
             s_settings.useCameraBounds = false;
 
+            s_sample?.Dispose();
             s_sample = null;
             s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         }
@@ -265,18 +255,29 @@ public class SampleApp
 
         _frameTime = (float)(time2 - time1);
 
-        _imgui?.Update((float)dt);
+        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+        // ImGui_ImplOpenGL3_NewFrame();
+        // ImGui_ImplGlfw_NewFrame();
+        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
+        if (null != _imgui)
+        {
+            var io = ImGui.GetIO();
+            io.DisplaySize = new Vector2(_ctx.camera.m_width, _ctx.camera.m_height);
+            io.DisplayFramebufferScale = new Vector2(bufferWidth / (float)_ctx.camera.m_width, bufferHeight / (float)_ctx.camera.m_height);
+            io.DeltaTime = (float)dt;
+            _imgui.Update((float)dt);
+        }
     }
 
     private unsafe void OnWindowRender(double dt)
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        bool open = true;
+        
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(_ctx.camera.m_width, _ctx.camera.m_height));
         ImGui.SetNextWindowBgAlpha(0.0f);
-        ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
+        ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
 
@@ -301,7 +302,7 @@ public class SampleApp
             //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
             // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
 
-            ImGui.Begin("Overlay", ref open,
+            ImGui.Begin("Overlay",
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
                 ImGuiWindowFlags.NoScrollbar);
             ImGui.SetCursorPos(new Vector2(5.0f, _ctx.camera.m_height - 20.0f));
@@ -316,6 +317,7 @@ public class SampleApp
 
     private void OnWindowClosing()
     {
+        s_sample?.Dispose();
         s_sample = null;
         _ctx.draw.Destroy();
         DestroyUI();
@@ -366,8 +368,10 @@ public class SampleApp
 
     private void RestartSample()
     {
+        s_sample?.Dispose();
         s_sample = null;
         s_settings.restart = true;
+        
         s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         s_settings.restart = false;
     }
@@ -428,8 +432,6 @@ public class SampleApp
 
     public unsafe void ResizeWindowCallback(WindowHandle* window, int width, int height)
     {
-        _ctx.camera.m_width = (int)(width / s_windowScale);
-        _ctx.camera.m_height = (int)(height / s_windowScale);
         s_settings.windowWidth = (int)(width / s_windowScale);
         s_settings.windowHeight = (int)(height / s_windowScale);
     }

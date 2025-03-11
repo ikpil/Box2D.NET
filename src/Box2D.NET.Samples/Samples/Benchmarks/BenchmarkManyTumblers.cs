@@ -139,11 +139,11 @@ public class BenchmarkManyTumblers : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 110.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
-        ImGui.Begin("Benchmark: Many Tumblers", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Benchmark: Many Tumblers", ImGuiWindowFlags.NoResize);
         ImGui.PushItemWidth(100.0f);
 
         bool changed = false;

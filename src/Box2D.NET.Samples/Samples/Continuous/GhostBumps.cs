@@ -268,12 +268,12 @@ public class GhostBumps : Sample
 
     public override void UpdateUI()
     {
-        bool open = true;
+        
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
-        ImGui.Begin("Ghost Bumps", ref open, ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Ghost Bumps", ImGuiWindowFlags.NoResize);
         ImGui.PushItemWidth(100.0f);
 
         if (ImGui.Checkbox("Chain", ref m_useChain))

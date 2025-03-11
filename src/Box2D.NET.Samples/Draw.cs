@@ -185,9 +185,9 @@ public class Draw
         //{
         //	return;
         // }
-        bool open = true;
+        
 
-        ImGui.Begin("Overlay", ref open,
+        ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.PushFont(m_regularFont);
@@ -201,8 +201,8 @@ public class Draw
     {
         B2Vec2 ps = _camera.ConvertWorldToScreen(p);
 
-        bool open = true;
-        ImGui.Begin("Overlay", ref open,
+        
+        ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
         ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
