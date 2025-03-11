@@ -24,8 +24,8 @@ public class SingleBox : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_context.g_camera.m_zoom = 3.5f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 2.5f);
+            m_context.camera.m_zoom = 3.5f;
         }
 
         float extent = 1.0f;

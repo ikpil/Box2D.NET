@@ -49,8 +49,8 @@ public class SmoothManifold : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(2.0f, 20.0f);
-            m_context.g_camera.m_zoom = 21.0f;
+            m_context.camera.m_center = new B2Vec2(2.0f, 20.0f);
+            m_context.camera.m_zoom = 21.0f;
         }
 
         m_shapeType = ShapeType.e_boxShape;
@@ -140,7 +140,7 @@ public class SmoothManifold : Sample
     {
         bool open = true;
         float height = 290.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Smooth Manifold", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

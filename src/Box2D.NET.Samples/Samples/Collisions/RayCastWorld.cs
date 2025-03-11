@@ -77,8 +77,8 @@ public class RayCastWorld : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(2.0f, 14.0f);
-            m_context.g_camera.m_zoom = 25.0f * 0.75f;
+            m_context.camera.m_center = new B2Vec2(2.0f, 14.0f);
+            m_context.camera.m_zoom = 25.0f * 0.75f;
         }
 
         // Ground body
@@ -281,7 +281,7 @@ public class RayCastWorld : Sample
     {
         bool open = true;
         float height = 300.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Ray-cast World", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

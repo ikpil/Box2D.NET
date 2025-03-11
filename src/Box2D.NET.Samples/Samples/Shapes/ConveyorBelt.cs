@@ -22,8 +22,8 @@ public class ConveyorBelt : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(2.0f, 7.5f);
-            m_context.g_camera.m_zoom = 12.0f;
+            m_context.camera.m_center = new B2Vec2(2.0f, 7.5f);
+            m_context.camera.m_zoom = 12.0f;
         }
 
         // Ground

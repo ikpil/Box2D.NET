@@ -19,12 +19,18 @@ public class GLTriangles
     // must be multiple of 3
     public const int e_batchSize = 3 * 512;
 
+    private Camera _camera;
     private List<VertexData> m_points = new List<VertexData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
     private uint m_programId;
     private int m_projectionUniform;
+
+    public GLTriangles(SampleAppContext context)
+    {
+        _camera = context.camera;
+    }
 
     public void Create()
     {
@@ -113,7 +119,7 @@ public class GLTriangles
         B2.g_shader.gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
-        B2.g_camera.BuildProjectionMatrix(proj, 0.2f);
+        _camera.BuildProjectionMatrix(proj, 0.2f);
 
         B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 

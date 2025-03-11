@@ -29,9 +29,9 @@ public class TimeOfImpact : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.6f, 2.0f);
-            m_context.g_camera.m_center = new B2Vec2(-16, 45);
-            m_context.g_camera.m_zoom = 5.0f;
+            m_context.camera.m_center = new B2Vec2(0.6f, 2.0f);
+            m_context.camera.m_center = new B2Vec2(-16, 45);
+            m_context.camera.m_zoom = 5.0f;
         }
 
         m_countA = m_verticesA.Length;

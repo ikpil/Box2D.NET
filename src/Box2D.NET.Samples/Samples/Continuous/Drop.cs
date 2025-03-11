@@ -36,8 +36,8 @@ public class Drop : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.0f, 1.5f);
-            m_context.g_camera.m_zoom = 3.0f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 1.5f);
+            m_context.camera.m_zoom = 3.0f;
             settings.enableSleep = false;
             settings.drawJoints = false;
         }

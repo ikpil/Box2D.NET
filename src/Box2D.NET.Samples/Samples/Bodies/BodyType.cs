@@ -37,8 +37,8 @@ public class BodyType : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.8f, 6.4f);
-            m_context.g_camera.m_zoom = 25.0f * 0.4f;
+            m_context.camera.m_center = new B2Vec2(0.8f, 6.4f);
+            m_context.camera.m_zoom = 25.0f * 0.4f;
         }
 
         m_type = B2BodyType.b2_dynamicBody;
@@ -208,7 +208,7 @@ public class BodyType : Sample
         bool open = true;
 
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
         ImGui.Begin("Body Type", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 

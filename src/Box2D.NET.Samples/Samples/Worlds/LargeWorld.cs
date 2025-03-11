@@ -55,8 +55,8 @@ public class LargeWorld : Sample
 
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = m_viewPosition;
-            m_context.g_camera.m_zoom = 25.0f * 1.0f;
+            m_context.camera.m_center = m_viewPosition;
+            m_context.camera.m_zoom = 25.0f * 1.0f;
             settings.drawJoints = false;
             settings.useCameraBounds = true;
         }
@@ -171,7 +171,7 @@ public class LargeWorld : Sample
     {
         bool open = true;
         float height = 160.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Large World", ref open, ImGuiWindowFlags.NoResize);
@@ -204,12 +204,12 @@ public class LargeWorld : Sample
 
         if (m_speed != 0.0f)
         {
-            m_context.g_camera.m_center = m_viewPosition;
+            m_context.camera.m_center = m_viewPosition;
         }
 
         if (m_followCar)
         {
-            m_context.g_camera.m_center.x = b2Body_GetPosition(m_car.m_chassisId).x;
+            m_context.camera.m_center.x = b2Body_GetPosition(m_car.m_chassisId).x;
         }
 
         float radius = 2.0f;

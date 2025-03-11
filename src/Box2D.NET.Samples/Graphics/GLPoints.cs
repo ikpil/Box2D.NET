@@ -16,12 +16,19 @@ public class GLPoints
 {
     public const int e_batchSize = 2048;
 
+    private Camera _camera;
     private List<PointData> m_points = new List<PointData>();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
     private uint m_programId;
     private int m_projectionUniform;
+
+    public GLPoints(SampleAppContext context)
+    {
+        _camera = context.camera;
+    }
+
 
     public void Create()
     {
@@ -114,7 +121,7 @@ public class GLPoints
         B2.g_shader.gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
-        B2.g_camera.BuildProjectionMatrix(proj, 0.0f);
+        _camera.BuildProjectionMatrix(proj, 0.0f);
 
         B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
         B2.g_shader.gl.BindVertexArray(m_vaoId[0]);

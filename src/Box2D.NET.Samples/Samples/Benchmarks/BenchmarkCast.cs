@@ -49,8 +49,8 @@ public class BenchmarkCast : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_context.g_camera.m_zoom = 25.0f * 21.0f;
+            m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
+            m_context.camera.m_zoom = 25.0f * 21.0f;
             // settings.drawShapes = B2.g_sampleDebug;
         }
 
@@ -161,7 +161,7 @@ public class BenchmarkCast : Sample
     {
         bool open = true;
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Cast", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

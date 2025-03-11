@@ -14,6 +14,7 @@ namespace Box2D.NET.Samples;
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {
+    private Camera _camera;
     public bool m_showUI;
 
     public GLBackground m_background;
@@ -51,23 +52,25 @@ public class Draw
         m_background = null;
     }
 
-    public void Create(Glfw glfw)
+    public void Create(SampleAppContext context)
     {
-        m_background = new GLBackground(glfw);
+        _camera = context.camera;
+        
+        m_background = new GLBackground(context);
         m_background.Create();
-        m_points = new GLPoints();
+        m_points = new GLPoints(context);
         m_points.Create();
-        m_lines = new GLLines();
+        m_lines = new GLLines(context);
         m_lines.Create();
-        m_triangles = new GLTriangles();
+        m_triangles = new GLTriangles(context);
         m_triangles.Create();
-        m_circles = new GLCircles();
+        m_circles = new GLCircles(context);
         m_circles.Create();
-        m_solidCircles = new GLSolidCircles();
+        m_solidCircles = new GLSolidCircles(context);
         m_solidCircles.Create();
-        m_solidCapsules = new GLSolidCapsules();
+        m_solidCapsules = new GLSolidCapsules(context);
         m_solidCapsules.Create();
-        m_solidPolygons = new GLSolidPolygons();
+        m_solidPolygons = new GLSolidPolygons(context);
         m_solidPolygons.Create();
 
         B2AABB bounds = new B2AABB(new B2Vec2(-float.MaxValue, -float.MaxValue), new B2Vec2(float.MaxValue, float.MaxValue));
@@ -201,7 +204,7 @@ public class Draw
 
     public void DrawString(B2Vec2 p, string message)
     {
-        B2Vec2 ps = B2.g_camera.ConvertWorldToScreen(p);
+        B2Vec2 ps = _camera.ConvertWorldToScreen(p);
 
         bool open = true;
         ImGui.Begin("Overlay", ref open,

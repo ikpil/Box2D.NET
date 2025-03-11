@@ -26,8 +26,8 @@ public class UserConstraint : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(3.0f, -1.0f);
-            m_context.g_camera.m_zoom = 25.0f * 0.15f;
+            m_context.camera.m_center = new B2Vec2(3.0f, -1.0f);
+            m_context.camera.m_zoom = 25.0f * 0.15f;
         }
 
         B2Polygon box = b2MakeBox(1.0f, 0.5f);

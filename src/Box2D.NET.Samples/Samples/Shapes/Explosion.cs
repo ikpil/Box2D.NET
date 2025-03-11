@@ -37,8 +37,8 @@ public class Explosion : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.g_camera.m_zoom = 14.0f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_context.camera.m_zoom = 14.0f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -84,7 +84,7 @@ public class Explosion : Sample
     {
         bool open = true;
         float height = 160.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Explosion", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

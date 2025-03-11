@@ -20,12 +20,19 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
+    private Camera _camera;
     private List<VertexData> m_points = new();
 
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
     private uint m_programId;
     private int m_projectionUniform;
+
+    public GLLines(SampleAppContext context)
+    {
+        _camera = context.camera;
+    }
+
 
     public void Create()
     {
@@ -113,7 +120,7 @@ public class GLLines
         B2.g_shader.gl.UseProgram(m_programId);
 
         float[] proj = new float[16];
-        B2.g_camera.BuildProjectionMatrix(proj, 0.1f);
+        _camera.BuildProjectionMatrix(proj, 0.1f);
 
         B2.g_shader.gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 

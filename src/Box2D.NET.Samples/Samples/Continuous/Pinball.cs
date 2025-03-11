@@ -33,8 +33,8 @@ public class Pinball : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.0f, 9.0f);
-            m_context.g_camera.m_zoom = 25.0f * 0.5f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 9.0f);
+            m_context.camera.m_zoom = 25.0f * 0.5f;
         }
 
         settings.drawJoints = false;

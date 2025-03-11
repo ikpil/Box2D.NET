@@ -328,7 +328,7 @@ public class Sample : IDisposable
             }
         }
 
-        m_context.g_draw.m_debugDraw.drawingBounds = m_context.g_camera.GetViewBounds();
+        m_context.g_draw.m_debugDraw.drawingBounds = m_context.camera.GetViewBounds();
         m_context.g_draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
         // todo testing

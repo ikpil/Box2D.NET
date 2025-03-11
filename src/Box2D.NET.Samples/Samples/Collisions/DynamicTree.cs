@@ -74,8 +74,8 @@ public class DynamicTree : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_context.g_camera.m_zoom = 25.0f * 21.0f;
+            m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
+            m_context.camera.m_zoom = 25.0f * 21.0f;
         }
 
         m_fill = 0.25f;
@@ -186,7 +186,7 @@ public class DynamicTree : Sample
     {
         bool open = true;
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Dynamic Tree", ref open, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

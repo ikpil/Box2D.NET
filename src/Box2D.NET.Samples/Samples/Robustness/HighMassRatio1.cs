@@ -24,8 +24,8 @@ public class HighMassRatio1 : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(3.0f, 14.0f);
-            m_context.g_camera.m_zoom = 25.0f;
+            m_context.camera.m_center = new B2Vec2(3.0f, 14.0f);
+            m_context.camera.m_zoom = 25.0f;
         }
 
         float extent = 1.0f;

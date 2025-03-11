@@ -23,8 +23,8 @@ public class DoohickeyFarm : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_context.g_camera.m_zoom = 25.0f * 0.35f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_context.camera.m_zoom = 25.0f * 0.35f;
         }
 
         {

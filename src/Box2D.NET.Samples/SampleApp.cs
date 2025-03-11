@@ -62,47 +62,46 @@ public class SampleApp
         Window.PrioritizeGlfw();
 
         // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
-        _ctx.g_glfw = Glfw.GetApi();
-        _ctx.g_camera = new Camera();
+        _ctx.glfw = Glfw.GetApi();
+        _ctx.camera = new Camera();
         _ctx.g_shader = new Shader();
         _ctx.g_draw = new Draw();
 
-        _ctx.g_glfw.SetErrorCallback(glfwErrorCallback);
+        _ctx.glfw.SetErrorCallback(glfwErrorCallback);
 
-        B2.g_camera = _ctx.g_camera;
-        B2.g_camera.m_width = s_settings.windowWidth;
-        B2.g_camera.m_height = s_settings.windowHeight;
+        _ctx.camera.m_width = s_settings.windowWidth;
+        _ctx.camera.m_height = s_settings.windowHeight;
 
         var options = WindowOptions.Default;
         options.ShouldSwapAutomatically = false;
-        if (!_ctx.g_glfw.Init())
+        if (!_ctx.glfw.Init())
         {
             Console.WriteLine("Failed to initialize GLFW");
             return -1;
         }
 
-        _ctx.g_glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
-        _ctx.g_glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
-        _ctx.g_glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
-        _ctx.g_glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
+        _ctx.glfw.WindowHint(WindowHintInt.ContextVersionMajor, 3);
+        _ctx.glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
+        _ctx.glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
+        _ctx.glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 
         // MSAA
-        _ctx.g_glfw.WindowHint(WindowHintInt.Samples, 4);
+        _ctx.glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
         options.Title = $"Box2D Version {version.major}.{version.minor}.{version.revision}";
 
-        Monitor* primaryMonitor = _ctx.g_glfw.GetPrimaryMonitor();
+        Monitor* primaryMonitor = _ctx.glfw.GetPrimaryMonitor();
         if (null != primaryMonitor)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                _ctx.g_glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
+                _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
             }
             else
             {
-                _ctx.g_glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
+                _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
             }
         }
 
@@ -115,8 +114,8 @@ public class SampleApp
         }
         else
         {
-            options.Size = new Vector2D<int>((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale));
-            //B2.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(B2.g_camera.m_width * s_windowScale), (int)(B2.g_camera.m_height * s_windowScale), buffer, null, null);
+            options.Size = new Vector2D<int>((int)(_ctx.camera.m_width * s_windowScale), (int)(_ctx.camera.m_height * s_windowScale));
+            //B2.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(_ctx.g_camera.m_width * s_windowScale), (int)(_ctx.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
         _window = Window.Create(options);
@@ -126,7 +125,7 @@ public class SampleApp
         _window.Closing += OnWindowClosing;
         _window.Run();
 
-        _ctx.g_glfw.Terminate();
+        _ctx.glfw.Terminate();
         s_settings.Save();
 
         return 0;
@@ -158,7 +157,7 @@ public class SampleApp
         // }
 
 
-        _ctx.g_glfw.MakeContextCurrent(B2.g_mainWindow);
+        _ctx.glfw.MakeContextCurrent(B2.g_mainWindow);
 
         _input = _window.CreateInput();
         // Load OpenGL functions using glad
@@ -174,15 +173,15 @@ public class SampleApp
         Console.WriteLine($"GL {glVersion}");
         Console.WriteLine($"OpenGL {B2.g_shader.gl.GetStringS(GLEnum.Version)}, GLSL {B2.g_shader.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
-        _ctx.g_glfw.SetWindowSizeCallback(B2.g_mainWindow, ResizeWindowCallback);
-        _ctx.g_glfw.SetKeyCallback(B2.g_mainWindow, KeyCallback);
-        _ctx.g_glfw.SetCharCallback(B2.g_mainWindow, CharCallback);
-        _ctx.g_glfw.SetMouseButtonCallback(B2.g_mainWindow, MouseButtonCallback);
-        _ctx.g_glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
-        _ctx.g_glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
+        _ctx.glfw.SetWindowSizeCallback(B2.g_mainWindow, ResizeWindowCallback);
+        _ctx.glfw.SetKeyCallback(B2.g_mainWindow, KeyCallback);
+        _ctx.glfw.SetCharCallback(B2.g_mainWindow, CharCallback);
+        _ctx.glfw.SetMouseButtonCallback(B2.g_mainWindow, MouseButtonCallback);
+        _ctx.glfw.SetCursorPosCallback(B2.g_mainWindow, MouseMotionCallback);
+        _ctx.glfw.SetScrollCallback(B2.g_mainWindow, ScrollCallback);
 
         B2.g_draw = _ctx.g_draw;
-        B2.g_draw.Create(_ctx.g_glfw);
+        B2.g_draw.Create(_ctx);
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
         s_selection = s_settings.sampleIndex;
@@ -198,42 +197,42 @@ public class SampleApp
 
     private unsafe void OnWindowUpdate(double dt)
     {
-        if (_ctx.g_glfw.WindowShouldClose(B2.g_mainWindow))
+        if (_ctx.glfw.WindowShouldClose(B2.g_mainWindow))
             return;
 
-        double time1 = _ctx.g_glfw.GetTime();
+        double time1 = _ctx.glfw.GetTime();
 
         if (GlfwHelpers.GetKey(_ctx, Keys.Z) == InputAction.Press)
         {
             // Zoom out
-            B2.g_camera.m_zoom = b2MinFloat(1.005f * B2.g_camera.m_zoom, 100.0f);
+            _ctx.camera.m_zoom = b2MinFloat(1.005f * _ctx.camera.m_zoom, 100.0f);
         }
         else if (GlfwHelpers.GetKey(_ctx, Keys.X) == InputAction.Press)
         {
             // Zoom in
-            B2.g_camera.m_zoom = b2MaxFloat(0.995f * B2.g_camera.m_zoom, 0.5f);
+            _ctx.camera.m_zoom = b2MaxFloat(0.995f * _ctx.camera.m_zoom, 0.5f);
         }
 
-        _ctx.g_glfw.GetWindowSize(B2.g_mainWindow, out B2.g_camera.m_width, out B2.g_camera.m_height);
-        B2.g_camera.m_width = (int)(B2.g_camera.m_width / s_windowScale);
-        B2.g_camera.m_height = (int)(B2.g_camera.m_height / s_windowScale);
+        _ctx.glfw.GetWindowSize(B2.g_mainWindow, out _ctx.camera.m_width, out _ctx.camera.m_height);
+        _ctx.camera.m_width = (int)(_ctx.camera.m_width / s_windowScale);
+        _ctx.camera.m_height = (int)(_ctx.camera.m_height / s_windowScale);
 
-        _ctx.g_glfw.GetFramebufferSize(B2.g_mainWindow, out var bufferWidth, out var bufferHeight);
+        _ctx.glfw.GetFramebufferSize(B2.g_mainWindow, out var bufferWidth, out var bufferHeight);
         B2.g_shader.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
 
         //B2.g_draw.DrawBackground();
 
-        _ctx.g_glfw.GetCursorPos(B2.g_mainWindow, out var cursorPosX, out var cursorPosY);
+        _ctx.glfw.GetCursorPos(B2.g_mainWindow, out var cursorPosX, out var cursorPosY);
         // ImGui_ImplGlfw_CursorPosCallback(B2.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
         // ImGui_ImplOpenGL3_NewFrame();
         // ImGui_ImplGlfw_NewFrame();
         // ImGui_ImplGlfw_CursorPosCallback(B2.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
 
         var io = ImGui.GetIO();
-        io.DisplaySize.X = (float)B2.g_camera.m_width;
-        io.DisplaySize.Y = (float)B2.g_camera.m_height;
-        io.DisplayFramebufferScale.X = bufferWidth / (float)B2.g_camera.m_width;
-        io.DisplayFramebufferScale.Y = bufferHeight / (float)B2.g_camera.m_height;
+        io.DisplaySize.X = (float)_ctx.camera.m_width;
+        io.DisplaySize.Y = (float)_ctx.camera.m_height;
+        io.DisplayFramebufferScale.X = bufferWidth / (float)_ctx.camera.m_width;
+        io.DisplayFramebufferScale.Y = bufferHeight / (float)_ctx.camera.m_height;
 
 
         // For the Tracy profiler
@@ -241,7 +240,7 @@ public class SampleApp
 
         if (s_selection != s_settings.sampleIndex)
         {
-            B2.g_camera.ResetView();
+            _ctx.camera.ResetView();
             s_settings.sampleIndex = s_selection;
 
             // #todo restore all drawing settings that may have been overridden by a sample
@@ -261,15 +260,15 @@ public class SampleApp
 
         s_sample.Step(s_settings);
 
-        _ctx.g_glfw.PollEvents();
+        _ctx.glfw.PollEvents();
 
         // Limit frame rate to 60Hz
-        double time2 = _ctx.g_glfw.GetTime();
+        double time2 = _ctx.glfw.GetTime();
         double targetTime = time1 + 1.0 / 60.0;
         while (time2 < targetTime)
         {
             b2Yield();
-            time2 = _ctx.g_glfw.GetTime();
+            time2 = _ctx.glfw.GetTime();
         }
 
         _frameTime = (float)(time2 - time1);
@@ -283,7 +282,7 @@ public class SampleApp
 
         bool open = true;
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
-        ImGui.SetNextWindowSize(new Vector2(B2.g_camera.m_width, B2.g_camera.m_height));
+        ImGui.SetNextWindowSize(new Vector2(_ctx.camera.m_width, _ctx.camera.m_height));
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ref open, ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
@@ -305,22 +304,22 @@ public class SampleApp
         if (B2.g_draw.m_showUI)
         {
             string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
-                            $"camera ({B2.g_camera.m_center.x:G}, {B2.g_camera.m_center.y:G}, {B2.g_camera.m_zoom:G})";
+                            $"camera ({_ctx.camera.m_center.x:G}, {_ctx.camera.m_center.y:G}, {_ctx.camera.m_zoom:G})";
             // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
-            //     B2.g_camera.m_center.x, B2.g_camera.m_center.y, B2.g_camera.m_zoom);
+            //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
             // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
 
             ImGui.Begin("Overlay", ref open,
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
                 ImGuiWindowFlags.NoScrollbar);
-            ImGui.SetCursorPos(new Vector2(5.0f, B2.g_camera.m_height - 20.0f));
+            ImGui.SetCursorPos(new Vector2(5.0f, _ctx.camera.m_height - 20.0f));
             ImGui.TextColored(new Vector4(153, 230, 153, 255), buffer);
             ImGui.End();
         }
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-        _ctx.g_glfw.SwapBuffers(B2.g_mainWindow);
+        _ctx.glfw.SwapBuffers(B2.g_mainWindow);
     }
 
     private void OnWindowClosing()
@@ -437,8 +436,8 @@ public class SampleApp
 
     public unsafe void ResizeWindowCallback(WindowHandle* window, int width, int height)
     {
-        B2.g_camera.m_width = (int)(width / s_windowScale);
-        B2.g_camera.m_height = (int)(height / s_windowScale);
+        _ctx.camera.m_width = (int)(width / s_windowScale);
+        _ctx.camera.m_height = (int)(height / s_windowScale);
         s_settings.windowWidth = (int)(width / s_windowScale);
         s_settings.windowHeight = (int)(height / s_windowScale);
     }
@@ -457,7 +456,7 @@ public class SampleApp
             {
                 case Keys.Escape:
                     // Quit
-                    _ctx.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
+                    _ctx.glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     break;
 
                 case Keys.Left:
@@ -469,7 +468,7 @@ public class SampleApp
                     }
                     else
                     {
-                        B2.g_camera.m_center.x -= 0.5f;
+                        _ctx.camera.m_center.x -= 0.5f;
                     }
 
                     break;
@@ -483,7 +482,7 @@ public class SampleApp
                     }
                     else
                     {
-                        B2.g_camera.m_center.x += 0.5f;
+                        _ctx.camera.m_center.x += 0.5f;
                     }
 
                     break;
@@ -497,7 +496,7 @@ public class SampleApp
                     }
                     else
                     {
-                        B2.g_camera.m_center.y -= 0.5f;
+                        _ctx.camera.m_center.y -= 0.5f;
                     }
 
                     break;
@@ -511,13 +510,13 @@ public class SampleApp
                     }
                     else
                     {
-                        B2.g_camera.m_center.y += 0.5f;
+                        _ctx.camera.m_center.y += 0.5f;
                     }
 
                     break;
 
                 case Keys.Home:
-                    B2.g_camera.ResetView();
+                    _ctx.camera.ResetView();
                     break;
 
                 case Keys.R:
@@ -582,13 +581,13 @@ public class SampleApp
         }
 
         double xd, yd;
-        _ctx.g_glfw.GetCursorPos(B2.g_mainWindow, out xd, out yd);
+        _ctx.glfw.GetCursorPos(B2.g_mainWindow, out xd, out yd);
         B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
 
         // Use the mouse to move things around.
         if (button == (int)MouseButton.Left)
         {
-            B2Vec2 pw = B2.g_camera.ConvertScreenToWorld(ps);
+            B2Vec2 pw = _ctx.camera.ConvertScreenToWorld(ps);
             if (action == InputAction.Press)
             {
                 s_sample.MouseDown(pw, button, mods);
@@ -603,7 +602,7 @@ public class SampleApp
         {
             if (action == InputAction.Press)
             {
-                s_clickPointWS = B2.g_camera.ConvertScreenToWorld(ps);
+                s_clickPointWS = _ctx.camera.ConvertScreenToWorld(ps);
                 s_rightMouseDown = true;
             }
 
@@ -620,15 +619,15 @@ public class SampleApp
 
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
 
-        B2Vec2 pw = B2.g_camera.ConvertScreenToWorld(ps);
+        B2Vec2 pw = _ctx.camera.ConvertScreenToWorld(ps);
         s_sample?.MouseMove(pw);
 
         if (s_rightMouseDown)
         {
             B2Vec2 diff = b2Sub(pw, s_clickPointWS);
-            B2.g_camera.m_center.x -= diff.x;
-            B2.g_camera.m_center.y -= diff.y;
-            s_clickPointWS = B2.g_camera.ConvertScreenToWorld(ps);
+            _ctx.camera.m_center.x -= diff.x;
+            _ctx.camera.m_center.y -= diff.y;
+            s_clickPointWS = _ctx.camera.ConvertScreenToWorld(ps);
         }
     }
 
@@ -642,11 +641,11 @@ public class SampleApp
 
         if (dy > 0)
         {
-            B2.g_camera.m_zoom /= 1.1f;
+            _ctx.camera.m_zoom /= 1.1f;
         }
         else
         {
-            B2.g_camera.m_zoom *= 1.1f;
+            _ctx.camera.m_zoom *= 1.1f;
         }
     }
 
@@ -657,8 +656,8 @@ public class SampleApp
         float menuWidth = 180.0f;
         if (B2.g_draw.m_showUI)
         {
-            ImGui.SetNextWindowPos(new Vector2(B2.g_camera.m_width - menuWidth - 10.0f, 10.0f));
-            ImGui.SetNextWindowSize(new Vector2(menuWidth, B2.g_camera.m_height - 20.0f));
+            ImGui.SetNextWindowPos(new Vector2(_ctx.camera.m_width - menuWidth - 10.0f, 10.0f));
+            ImGui.SetNextWindowSize(new Vector2(menuWidth, _ctx.camera.m_height - 20.0f));
 
             ImGui.Begin("Tools", ref B2.g_draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
@@ -728,7 +727,7 @@ public class SampleApp
 
                     if (ImGui.Button("Quit", button_sz))
                     {
-                        _ctx.g_glfw.SetWindowShouldClose(B2.g_mainWindow, true);
+                        _ctx.glfw.SetWindowShouldClose(B2.g_mainWindow, true);
                     }
 
                     ImGui.EndTabItem();

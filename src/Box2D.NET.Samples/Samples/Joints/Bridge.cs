@@ -38,7 +38,7 @@ public class Bridge : Sample
     {
         if (settings.restart == false)
         {
-            m_context.g_camera.m_zoom = 25.0f * 2.5f;
+            m_context.camera.m_zoom = 25.0f * 2.5f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -133,7 +133,7 @@ public class Bridge : Sample
     {
         bool open = true;
         float height = 80.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.g_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Bridge", ref open, ImGuiWindowFlags.NoResize);
