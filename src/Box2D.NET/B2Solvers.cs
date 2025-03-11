@@ -381,7 +381,7 @@ namespace Box2D.NET
             return true;
         }
 
-// Continuous collision of dynamic versus static
+        // Continuous collision of dynamic versus static
         public static void b2SolveContinuous(B2World world, int bodySimIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);

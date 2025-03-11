@@ -29,15 +29,11 @@ public class GLLines
     private uint m_programId;
     private int m_projectionUniform;
 
-    public GLLines(SampleAppContext context)
+    public void Create(SampleAppContext context)
     {
         _gl = context.gl;
         _camera = context.camera;
-    }
 
-
-    public void Create()
-    {
         string vs = "#version 330\n"
                     + "uniform mat4 projectionMatrix;\n"
                     + "layout(location = 0) in vec2 v_position;\n"

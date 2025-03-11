@@ -29,14 +29,12 @@ public class GLSolidCircles
     private int m_projectionUniform;
     private int m_pixelScaleUniform;
 
-    public GLSolidCircles(SampleAppContext context)
+
+    public void Create(SampleAppContext context)
     {
         _camera = context.camera;
         _gl = context.gl;
-    }
 
-    public void Create()
-    {
         m_programId = _gl.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");

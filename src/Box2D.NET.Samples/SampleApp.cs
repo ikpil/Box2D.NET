@@ -44,7 +44,7 @@ public class SampleApp
     public SampleApp()
     {
         s_settings = new Settings();
-        _ctx = new SampleAppContext();
+        _ctx = SampleAppContext.Create();
     }
 
     public unsafe int Run(string[] args)
@@ -61,10 +61,6 @@ public class SampleApp
 
         Window.PrioritizeGlfw();
 
-        // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
-        _ctx.glfw = Glfw.GetApi();
-        _ctx.camera = new Camera();
-        _ctx.draw = new Draw();
 
         _ctx.glfw.SetErrorCallback(glfwErrorCallback);
 

@@ -27,14 +27,11 @@ public class GLSolidPolygons
     int m_projectionUniform;
     int m_pixelScaleUniform;
 
-    public GLSolidPolygons(SampleAppContext context)
+    public void Create(SampleAppContext context)
     {
         _camera = context.camera;
         _gl = context.gl;
-    }
 
-    public void Create()
-    {
         m_programId = _gl.CreateProgramFromFiles("data/solid_polygon.vs", "data/solid_polygon.fs");
 
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");

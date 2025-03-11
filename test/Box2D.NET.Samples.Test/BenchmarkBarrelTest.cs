@@ -1,21 +1,21 @@
 ﻿using Box2D.NET.Samples.Samples.Benchmarks;
+using NUnit.Framework;
 
 namespace Box2D.NET.Samples.Test;
 
-public class BarrelTest
+public class BenchmarkBarrelTest
 {
     [Test]
     public void TestPinball()
     {
         var ctx = SampleAppContext.Create();
-        var settings = new Settings();
-        
-        var pinball = new BenchmarkBarrel(ctx, settings);
+        var settings = Helpers.CreateSettings();
 
-        for (int i = 0; i < 37; ++i)
+        using var barrel = new BenchmarkBarrel(ctx, settings);
+
+        for (int i = 0; i < 120; ++i)
         {
-            pinball.Step(settings);
+            barrel.Step(settings);
         }
     }
-
 }

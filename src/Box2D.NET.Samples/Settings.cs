@@ -41,6 +41,7 @@ public class Settings
     public bool singleStep = false;
     public bool restart = false;
 
+
     public void Save()
     {
         string json = JsonConvert.SerializeObject(this, Formatting.Indented);

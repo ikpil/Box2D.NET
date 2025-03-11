@@ -37,48 +37,20 @@ public class Draw
     public Draw()
     {
         m_showUI = true;
-        m_points = null;
-        m_lines = null;
-        m_triangles = null;
-        m_circles = null;
-        m_solidCircles = null;
-        m_solidCapsules = null;
-        m_solidPolygons = null;
-        m_debugDraw = null;
 
-        m_smallFont = default;
-        m_mediumFont = default;
-        m_largeFont = default;
-        m_regularFont = default;
-        m_background = null;
-    }
+        m_background = new GLBackground();
+        m_points = new GLPoints();
+        m_lines = new GLLines();
+        m_triangles = new GLTriangles();
+        m_circles = new GLCircles();
+        m_solidCircles = new GLSolidCircles();
+        m_solidCapsules = new GLSolidCapsules();
+        m_solidPolygons = new GLSolidPolygons();
 
-    public void Create(SampleAppContext context)
-    {
-        _camera = context.camera;
-        _gl = context.gl;
-
-        m_background = new GLBackground(context);
-        m_background.Create();
-        m_points = new GLPoints(context);
-        m_points.Create();
-        m_lines = new GLLines(context);
-        m_lines.Create();
-        m_triangles = new GLTriangles(context);
-        m_triangles.Create();
-        m_circles = new GLCircles(context);
-        m_circles.Create();
-        m_solidCircles = new GLSolidCircles(context);
-        m_solidCircles.Create();
-        m_solidCapsules = new GLSolidCapsules(context);
-        m_solidCapsules.Create();
-        m_solidPolygons = new GLSolidPolygons(context);
-        m_solidPolygons.Create();
 
         B2AABB bounds = new B2AABB(new B2Vec2(-float.MaxValue, -float.MaxValue), new B2Vec2(float.MaxValue, float.MaxValue));
 
         m_debugDraw = new B2DebugDraw();
-
         m_debugDraw.DrawPolygon = DrawPolygonFcn;
         m_debugDraw.DrawSolidPolygon = DrawSolidPolygonFcn;
         m_debugDraw.DrawCircle = DrawCircleFcn;
@@ -103,6 +75,27 @@ public class Draw
         m_debugDraw.drawFrictionImpulses = false;
 
         m_debugDraw.context = this;
+
+        m_smallFont = default;
+        m_mediumFont = default;
+        m_largeFont = default;
+        m_regularFont = default;
+    }
+
+    public void Create(SampleAppContext context)
+    {
+        _camera = context.camera;
+        _gl = context.gl;
+
+
+        m_background.Create(context);
+        m_points.Create(context);
+        m_lines.Create(context);
+        m_triangles.Create(context);
+        m_circles.Create(context);
+        m_solidCircles.Create(context);
+        m_solidCapsules.Create(context);
+        m_solidPolygons.Create(context);
     }
 
     public void Destroy()

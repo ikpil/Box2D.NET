@@ -21,15 +21,12 @@ public class GLBackground
     private int m_resolutionUniform;
     private int m_baseColorUniform;
 
-    public GLBackground(SampleAppContext context)
+    public void Create(SampleAppContext context)
     {
         _glfw = context.glfw;
         _gl = context.gl;
         _camera = context.camera;
-    }
-
-    public void Create()
-    {
+        
         m_programId = _gl.CreateProgramFromFiles("data/background.vs", "data/background.fs");
         m_timeUniform = _gl.GetUniformLocation(m_programId, "time");
         m_resolutionUniform = _gl.GetUniformLocation(m_programId, "resolution");

@@ -27,14 +27,11 @@ public class GLCircles
     private int m_projectionUniform;
     private int m_pixelScaleUniform;
 
-    public GLCircles(SampleAppContext context)
+    public void Create(SampleAppContext context)
     {
         _camera = context.camera;
         _gl = context.gl;
-    }
 
-    public void Create()
-    {
         m_programId = _gl.CreateProgramFromFiles("data/circle.vs", "data/circle.fs");
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");
