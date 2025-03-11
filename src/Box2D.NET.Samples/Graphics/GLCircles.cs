@@ -17,7 +17,6 @@ public class GLCircles
 {
     public const int e_batchSize = 2048;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<CircleData> m_circles = new List<CircleData>();
@@ -32,12 +31,11 @@ public class GLCircles
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
 
     public void Create()
     {
-        m_programId = _shader.CreateProgramFromFiles("data/circle.vs", "data/circle.fs");
+        m_programId = _gl.CreateProgramFromFiles("data/circle.vs", "data/circle.fs");
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");
         uint vertexAttribute = 0;
@@ -82,7 +80,7 @@ public class GLCircles
         _gl.VertexAttribDivisor(radiusInstance, 1);
         _gl.VertexAttribDivisor(colorInstance, 1);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -144,7 +142,7 @@ public class GLCircles
             _gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, circles.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

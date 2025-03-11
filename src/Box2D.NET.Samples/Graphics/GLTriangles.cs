@@ -19,7 +19,6 @@ public class GLTriangles
     // must be multiple of 3
     public const int e_batchSize = 3 * 512;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<VertexData> m_points = new List<VertexData>();
@@ -33,7 +32,6 @@ public class GLTriangles
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
 
     public void Create()
@@ -57,7 +55,7 @@ public class GLTriangles
                     "	color = f_color;\n" +
                     "}\n";
 
-        m_programId = _shader.CreateProgramFromStrings(vs, fs);
+        m_programId = _gl.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint colorAttribute = 1;
@@ -78,7 +76,7 @@ public class GLTriangles
         // color will get automatically expanded to floats in the shader
         _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -142,7 +140,7 @@ public class GLTriangles
             _gl.BufferSubData<VertexData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
             _gl.DrawArrays(GLEnum.Triangles, 0, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

@@ -17,7 +17,6 @@ public class GLSolidCapsules
 {
     public const int e_batchSize = 2048;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<CapsuleData> m_capsules = new List<CapsuleData>();
@@ -32,12 +31,11 @@ public class GLSolidCapsules
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
-    
+
     public void Create()
     {
-        m_programId = _shader.CreateProgramFromFiles("data/solid_capsule.vs", "data/solid_capsule.fs");
+        m_programId = _gl.CreateProgramFromFiles("data/solid_capsule.vs", "data/solid_capsule.fs");
 
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");
@@ -88,7 +86,7 @@ public class GLSolidCapsules
         _gl.VertexAttribDivisor(lengthInstance, 1);
         _gl.VertexAttribDivisor(colorInstance, 1);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -165,7 +163,7 @@ public class GLSolidCapsules
             _gl.BufferSubData<CapsuleData>(GLEnum.ArrayBuffer, 0, capsules.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

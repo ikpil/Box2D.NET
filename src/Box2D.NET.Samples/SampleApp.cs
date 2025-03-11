@@ -64,7 +64,6 @@ public class SampleApp
         // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
         _ctx.glfw = Glfw.GetApi();
         _ctx.camera = new Camera();
-        _ctx.shader = new Shader();
         _ctx.draw = new Draw();
 
         _ctx.glfw.SetErrorCallback(glfwErrorCallback);
@@ -166,7 +165,6 @@ public class SampleApp
             Console.WriteLine("Failed to initialize glad");
             return;
         }
-        _ctx.shader.SetGL(_ctx.gl);
 
         var glVersion = _ctx.gl.GetStringS(StringName.Version);
         Console.WriteLine($"GL {glVersion}");
@@ -179,8 +177,7 @@ public class SampleApp
         _ctx.glfw.SetCursorPosCallback(_ctx.mainWindow, MouseMotionCallback);
         _ctx.glfw.SetScrollCallback(_ctx.mainWindow, ScrollCallback);
 
-        B2.g_draw = _ctx.draw;
-        B2.g_draw.Create(_ctx);
+        _ctx.draw.Create(_ctx);
 
         s_settings.sampleIndex = b2ClampInt(s_settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
         s_selection = s_settings.sampleIndex;
@@ -219,7 +216,7 @@ public class SampleApp
         _ctx.glfw.GetFramebufferSize(_ctx.mainWindow, out var bufferWidth, out var bufferHeight);
         _ctx.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
 
-        //B2.g_draw.DrawBackground();
+        //_ctx.draw.DrawBackground();
 
         _ctx.glfw.GetCursorPos(_ctx.mainWindow, out var cursorPosX, out var cursorPosY);
         // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
@@ -287,20 +284,20 @@ public class SampleApp
         ImGui.End();
 
 
-        if (B2.g_draw.m_showUI)
+        if (_ctx.draw.m_showUI)
         {
             var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
             s_sample.DrawTitle(title);
         }
 
 
-        B2.g_draw.Flush();
+        _ctx.draw.Flush();
 
         UpdateUI();
 
         //ImGui.ShowDemoWindow();
 
-        if (B2.g_draw.m_showUI)
+        if (_ctx.draw.m_showUI)
         {
             string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
                             $"camera ({_ctx.camera.m_center.x:G}, {_ctx.camera.m_center.y:G}, {_ctx.camera.m_zoom:G})";
@@ -324,7 +321,7 @@ public class SampleApp
     private void OnWindowClosing()
     {
         s_sample = null;
-        B2.g_draw.Destroy();
+        _ctx.draw.Destroy();
         DestroyUI();
     }
 
@@ -415,10 +412,10 @@ public class SampleApp
         var imGuiIo = ImGui.GetIO();
         ImFontConfig fontConfig;
         fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-        // B2.g_draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
-        // B2.g_draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
-        // B2.g_draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
-        // B2.g_draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
+        // _ctx.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
+        // _ctx.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
+        // _ctx.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
+        // _ctx.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
 
         //ImGui.GetStyle().ScaleAllSizes(2);
         //imGuiIo.FontGlobalScale = 2.0f;
@@ -551,7 +548,7 @@ public class SampleApp
                     break;
 
                 case Keys.Tab:
-                    B2.g_draw.m_showUI = !B2.g_draw.m_showUI;
+                    _ctx.draw.m_showUI = !_ctx.draw.m_showUI;
                     break;
 
                 default:
@@ -653,12 +650,12 @@ public class SampleApp
         int maxWorkers = Environment.ProcessorCount;
 
         float menuWidth = 180.0f;
-        if (B2.g_draw.m_showUI)
+        if (_ctx.draw.m_showUI)
         {
             ImGui.SetNextWindowPos(new Vector2(_ctx.camera.m_width - menuWidth - 10.0f, 10.0f));
             ImGui.SetNextWindowSize(new Vector2(menuWidth, _ctx.camera.m_height - 20.0f));
 
-            ImGui.Begin("Tools", ref B2.g_draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin("Tools", ref _ctx.draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
             if (ImGui.BeginTabBar("ControlTabs", ImGuiTabBarFlags.None))
             {

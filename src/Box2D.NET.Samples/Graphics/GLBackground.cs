@@ -10,7 +10,6 @@ namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
 {
-    private Shader _shader;
     private Camera _camera;
     private Glfw _glfw;
     private GL _gl;
@@ -27,12 +26,11 @@ public class GLBackground
         _glfw = context.glfw;
         _gl = context.gl;
         _camera = context.camera;
-        _shader = context.shader;
     }
 
     public void Create()
     {
-        m_programId = _shader.CreateProgramFromFiles("data/background.vs", "data/background.fs");
+        m_programId = _gl.CreateProgramFromFiles("data/background.vs", "data/background.fs");
         m_timeUniform = _gl.GetUniformLocation(m_programId, "time");
         m_resolutionUniform = _gl.GetUniformLocation(m_programId, "resolution");
         m_baseColorUniform = _gl.GetUniformLocation(m_programId, "baseColor");
@@ -52,7 +50,7 @@ public class GLBackground
         _gl.BufferData<B2Vec2>(GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw);
         _gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);

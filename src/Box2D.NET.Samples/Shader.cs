@@ -6,31 +6,19 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Box2D.NET.Samples;
 using Silk.NET.OpenGL;
 
-public class Shader
+public static class Shader
 {
-    private GL _gl;
-    
-    public Shader()
+    public static void DumpInfoGL(this GL gl)
     {
-    }
+        string renderer = gl.GetStringS(StringName.Renderer);
+        string vendor = gl.GetStringS(StringName.Vendor);
+        string version = gl.GetStringS(StringName.Version);
+        string glslVersion = gl.GetStringS(StringName.ShadingLanguageVersion);
 
-    public void SetGL(GL gl)
-    {
-        _gl = gl;
-    }
-    
-    public void DumpInfoGL()
-    {
-        string renderer = _gl.GetStringS(StringName.Renderer);
-        string vendor = _gl.GetStringS(StringName.Vendor);
-        string version = _gl.GetStringS(StringName.Version);
-        string glslVersion = _gl.GetStringS(StringName.ShadingLanguageVersion);
-
-        int major = _gl.GetInteger(GetPName.MajorVersion);
-        int minor = _gl.GetInteger(GetPName.MinorVersion);
+        int major = gl.GetInteger(GetPName.MajorVersion);
+        int minor = gl.GetInteger(GetPName.MinorVersion);
 
         Console.WriteLine("-------------------------------------------------------------");
         Console.WriteLine($"GL Vendor    : {vendor}");
@@ -41,9 +29,9 @@ public class Shader
         Console.WriteLine("-------------------------------------------------------------");
     }
 
-    public void CheckErrorGL()
+    public static void CheckErrorGL(this GL gl)
     {
-        GLEnum errCode = _gl.GetError();
+        GLEnum errCode = gl.GetError();
         if (errCode != GLEnum.NoError)
         {
             Console.WriteLine($"OpenGL error = {errCode}");
@@ -51,17 +39,17 @@ public class Shader
         }
     }
 
-    public void PrintLogGL(uint obj)
+    public static void PrintLogGL(this GL gl, uint obj)
     {
         Span<int> log_length = stackalloc int[1];
 
-        if (_gl.IsShader(obj))
+        if (gl.IsShader(obj))
         {
-            _gl.GetShader(obj, GLEnum.InfoLogLength, log_length);
+            gl.GetShader(obj, GLEnum.InfoLogLength, log_length);
         }
-        else if (_gl.IsProgram(obj))
+        else if (gl.IsProgram(obj))
         {
-            _gl.GetProgram(obj, GLEnum.InfoLogLength, log_length);
+            gl.GetProgram(obj, GLEnum.InfoLogLength, log_length);
         }
         else
         {
@@ -71,75 +59,75 @@ public class Shader
 
         string log = string.Empty;
 
-        if (_gl.IsShader(obj))
+        if (gl.IsShader(obj))
         {
-            log = _gl.GetShaderInfoLog(obj);
+            log = gl.GetShaderInfoLog(obj);
         }
-        else if (_gl.IsProgram(obj))
+        else if (gl.IsProgram(obj))
         {
-            log = _gl.GetProgramInfoLog(obj);
+            log = gl.GetProgramInfoLog(obj);
         }
 
         Console.WriteLine($"PrintLogGL: {log}");
     }
 
-    public uint sCreateShaderFromString(string source, GLEnum type)
+    public static uint sCreateShaderFromString(this GL gl, string source, GLEnum type)
     {
-        uint shader = _gl.CreateShader(type);
+        uint shader = gl.CreateShader(type);
 
-        _gl.ShaderSource(shader, source);
-        _gl.CompileShader(shader);
+        gl.ShaderSource(shader, source);
+        gl.CompileShader(shader);
 
         Span<int> success = stackalloc int[1];
-        _gl.GetShader(shader, GLEnum.CompileStatus, success);
+        gl.GetShader(shader, GLEnum.CompileStatus, success);
 
         if (success[0] == 0)
         {
             Console.WriteLine("Error compiling shader of type %d!\n", type);
-            PrintLogGL(shader);
-            _gl.DeleteShader(shader);
+            gl.PrintLogGL(shader);
+            gl.DeleteShader(shader);
             return 0;
         }
 
         return shader;
     }
 
-    public uint CreateProgramFromStrings(string vertexString, string fragmentString)
+    public static uint CreateProgramFromStrings(this GL gl, string vertexString, string fragmentString)
     {
-        uint vertex = sCreateShaderFromString(vertexString, GLEnum.VertexShader);
+        uint vertex = gl.sCreateShaderFromString(vertexString, GLEnum.VertexShader);
         if (vertex == 0)
         {
             return 0;
         }
 
-        uint fragment = sCreateShaderFromString(fragmentString, GLEnum.FragmentShader);
+        uint fragment = gl.sCreateShaderFromString(fragmentString, GLEnum.FragmentShader);
         if (fragment == 0)
         {
             return 0;
         }
 
-        uint program = _gl.CreateProgram();
-        _gl.AttachShader(program, vertex);
-        _gl.AttachShader(program, fragment);
+        uint program = gl.CreateProgram();
+        gl.AttachShader(program, vertex);
+        gl.AttachShader(program, fragment);
 
-        _gl.LinkProgram(program);
+        gl.LinkProgram(program);
 
         Span<int> success = stackalloc int[1];
-        _gl.GetProgram(program, GLEnum.LinkStatus, success);
+        gl.GetProgram(program, GLEnum.LinkStatus, success);
         if (success[0] == 0)
         {
             Console.WriteLine("glLinkProgram:");
-            PrintLogGL(program);
+            gl.PrintLogGL(program);
             return 0;
         }
 
-        _gl.DeleteShader(vertex);
-        _gl.DeleteShader(fragment);
+        gl.DeleteShader(vertex);
+        gl.DeleteShader(fragment);
 
         return program;
     }
 
-    public uint sCreateShaderFromFile(string filename, GLEnum type)
+    public static uint sCreateShaderFromFile(this GL gl, string filename, GLEnum type)
     {
         if (!File.Exists(filename))
         {
@@ -151,54 +139,54 @@ public class Shader
         var source = Encoding.UTF8.GetString(bytes);
 
 
-        uint shader = _gl.CreateShader(type);
+        uint shader = gl.CreateShader(type);
 
-        _gl.ShaderSource(shader, source);
-        _gl.CompileShader(shader);
+        gl.ShaderSource(shader, source);
+        gl.CompileShader(shader);
 
         Span<int> success = stackalloc int[1];
-        _gl.GetShader(shader, GLEnum.CompileStatus, success);
+        gl.GetShader(shader, GLEnum.CompileStatus, success);
 
         if (success[0] == 0)
         {
             Console.WriteLine($"Error compiling shader of type {type}!");
-            PrintLogGL(shader);
+            gl.PrintLogGL(shader);
         }
 
         return shader;
     }
 
-    public uint CreateProgramFromFiles(string vertexPath, string fragmentPath)
+    public static uint CreateProgramFromFiles(this GL gl, string vertexPath, string fragmentPath)
     {
-        uint vertex = sCreateShaderFromFile(vertexPath, GLEnum.VertexShader);
+        uint vertex = gl.sCreateShaderFromFile(vertexPath, GLEnum.VertexShader);
         if (vertex == 0)
         {
             return 0;
         }
 
-        uint fragment = sCreateShaderFromFile(fragmentPath, GLEnum.FragmentShader);
+        uint fragment = gl.sCreateShaderFromFile(fragmentPath, GLEnum.FragmentShader);
         if (fragment == 0)
         {
             return 0;
         }
 
-        uint program = _gl.CreateProgram();
-        _gl.AttachShader(program, vertex);
-        _gl.AttachShader(program, fragment);
+        uint program = gl.CreateProgram();
+        gl.AttachShader(program, vertex);
+        gl.AttachShader(program, fragment);
 
-        _gl.LinkProgram(program);
+        gl.LinkProgram(program);
 
         Span<int> success = stackalloc int[1];
-        _gl.GetProgram(program, GLEnum.LinkStatus, success);
+        gl.GetProgram(program, GLEnum.LinkStatus, success);
         if (success[0] == 0)
         {
             Console.WriteLine("glLinkProgram:");
-            PrintLogGL(program);
+            gl.PrintLogGL(program);
             return 0;
         }
 
-        _gl.DeleteShader(vertex);
-        _gl.DeleteShader(fragment);
+        gl.DeleteShader(vertex);
+        gl.DeleteShader(fragment);
 
         return program;
     }

@@ -16,7 +16,6 @@ public class GLPoints
 {
     public const int e_batchSize = 2048;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<PointData> m_points = new List<PointData>();
@@ -30,7 +29,6 @@ public class GLPoints
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
 
 
@@ -57,7 +55,7 @@ public class GLPoints
                     "	color = f_color;\n" +
                     "}\n";
 
-        m_programId = _shader.CreateProgramFromStrings(vs, fs);
+        m_programId = _gl.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint sizeAttribute = 1;
@@ -81,7 +79,7 @@ public class GLPoints
         // save bandwidth by expanding color to floats in the shader
         _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PointData>.Size, IntPtr.Zero + 12);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -141,7 +139,7 @@ public class GLPoints
             _gl.BufferSubData<PointData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
             _gl.DrawArrays(GLEnum.Points, 0, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

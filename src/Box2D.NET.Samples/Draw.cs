@@ -6,6 +6,7 @@ using System;
 using System.Numerics;
 using Box2D.NET.Samples.Graphics;
 using ImGuiNET;
+using Silk.NET.OpenGL;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples;
@@ -13,7 +14,7 @@ namespace Box2D.NET.Samples;
 // This class implements Box2D debug drawing callbacks
 public class Draw
 {
-    private Shader _shader;
+    private GL _gl;
     private Camera _camera;
     public bool m_showUI;
 
@@ -55,8 +56,8 @@ public class Draw
     public void Create(SampleAppContext context)
     {
         _camera = context.camera;
-        _shader = context.shader;
-        
+        _gl = context.gl;
+
         m_background = new GLBackground(context);
         m_background.Create();
         m_points = new GLPoints(context);
@@ -238,7 +239,7 @@ public class Draw
         m_circles.Flush();
         m_lines.Flush();
         m_points.Flush();
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
     }
 
     public void DrawBackground()

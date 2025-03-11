@@ -20,7 +20,6 @@ public class GLLines
     // must be multiple of 2
     public const int e_batchSize = 2 * 2048;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<VertexData> m_points = new();
@@ -34,7 +33,6 @@ public class GLLines
     {
         _gl = context.gl;
         _camera = context.camera;
-        _shader = context.shader;
     }
 
 
@@ -59,7 +57,7 @@ public class GLLines
                     + "	color = f_color;\n"
                     + "}\n";
 
-        m_programId = _shader.CreateProgramFromStrings(vs, fs);
+        m_programId = _gl.CreateProgramFromStrings(vs, fs);
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint colorAttribute = 1;
@@ -80,7 +78,7 @@ public class GLLines
         // save bandwidth by expanding color to floats in the shader
         _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -141,7 +139,7 @@ public class GLLines
 
             _gl.DrawArrays(GLEnum.Lines, 0, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

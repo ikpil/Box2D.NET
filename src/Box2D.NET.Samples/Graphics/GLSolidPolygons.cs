@@ -17,7 +17,6 @@ public class GLSolidPolygons
 {
     public const int e_batchSize = 512;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<PolygonData> m_polygons = new List<PolygonData>();
@@ -32,12 +31,11 @@ public class GLSolidPolygons
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
-        
+
     public void Create()
     {
-        m_programId = _shader.CreateProgramFromFiles("data/solid_polygon.vs", "data/solid_polygon.fs");
+        m_programId = _gl.CreateProgramFromFiles("data/solid_polygon.vs", "data/solid_polygon.fs");
 
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");
@@ -104,7 +102,7 @@ public class GLSolidPolygons
         _gl.VertexAttribDivisor(instanceRadius, 1);
         _gl.VertexAttribDivisor(instanceColor, 1);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -154,7 +152,7 @@ public class GLSolidPolygons
         }
 
         _gl.UseProgram(m_programId);
-            _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         float[] proj = new float[16];
         _camera.BuildProjectionMatrix(proj, 0.2f);
@@ -176,7 +174,7 @@ public class GLSolidPolygons
 
             _gl.BufferSubData<PolygonData>(GLEnum.ArrayBuffer, 0, polygons.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

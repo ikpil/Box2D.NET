@@ -8,7 +8,6 @@ public class SampleAppContext
     public Glfw glfw;
     public GL gl;
     public Camera camera;
-    public Shader shader;
     public Draw draw;
     public unsafe WindowHandle* mainWindow;
 

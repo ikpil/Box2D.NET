@@ -19,7 +19,6 @@ public class GLSolidCircles
 {
     public const int e_batchSize = 2048;
 
-    private Shader _shader;
     private GL _gl;
     private Camera _camera;
     private List<SolidCircleData> m_circles = new List<SolidCircleData>();
@@ -34,12 +33,11 @@ public class GLSolidCircles
     {
         _camera = context.camera;
         _gl = context.gl;
-        _shader = context.shader;
     }
 
     public void Create()
     {
-        m_programId = _shader.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
+        m_programId = _gl.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
         m_projectionUniform = _gl.GetUniformLocation(m_programId, "projectionMatrix");
         m_pixelScaleUniform = _gl.GetUniformLocation(m_programId, "pixelScale");
 
@@ -86,7 +84,7 @@ public class GLSolidCircles
         _gl.VertexAttribDivisor(radiusInstance, 1);
         _gl.VertexAttribDivisor(colorInstance, 1);
 
-        _shader.CheckErrorGL();
+        _gl.CheckErrorGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -148,7 +146,7 @@ public class GLSolidCircles
             _gl.BufferSubData<SolidCircleData>(GLEnum.ArrayBuffer, 0, circles.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
-            _shader.CheckErrorGL();
+            _gl.CheckErrorGL();
 
             count -= e_batchSize;
             @base += e_batchSize;
