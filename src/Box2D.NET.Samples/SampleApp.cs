@@ -114,16 +114,43 @@ public class SampleApp
         }
 
         _window = Window.Create(options);
+        _window.Closing += OnWindowClosing;
         _window.Load += OnWindowLoad;
+        _window.Resize += OnWindowResize;
+        _window.FramebufferResize += OnWindowFrameBufferResize;
         _window.Update += OnWindowUpdate;
         _window.Render += OnWindowRender;
-        _window.Closing += OnWindowClosing;
         _window.Run();
 
         _ctx.glfw.Terminate();
         s_settings.Save();
 
         return 0;
+    }
+    
+    private void OnWindowClosing()
+    {
+        s_sample?.Dispose();
+        s_sample = null;
+        _ctx.draw.Destroy();
+        DestroyUI();
+    }
+
+    private void OnWindowResize(Vector2D<int> resize)
+    {
+        var width = resize.X;
+        var height = resize.Y;
+        s_settings.windowWidth = (int)(width / s_windowScale);
+        s_settings.windowHeight = (int)(height / s_windowScale);
+
+        _ctx.camera.m_width = (int)(width / s_windowScale);
+        _ctx.camera.m_height = (int)(height / s_windowScale);
+ 
+    }
+
+    private void OnWindowFrameBufferResize(Vector2D<int> resize)
+    {
+        _ctx.gl.Viewport(0, 0, (uint)resize.X, (uint)resize.Y);
     }
 
     private unsafe void OnWindowLoad()
@@ -166,7 +193,8 @@ public class SampleApp
         Console.WriteLine($"GL {glVersion}");
         Console.WriteLine($"OpenGL {_ctx.gl.GetStringS(GLEnum.Version)}, GLSL {_ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
-        _ctx.glfw.SetWindowSizeCallback(_ctx.mainWindow, ResizeWindowCallback);
+        // _ctx.glfw.SetWindowSizeCallback(_ctx.mainWindow, ResizeWindowCallback);
+        // _ctx.glfw.SetFramebufferSizeCallback(_ctx.mainWindow, ResizeFramebufferCallback);
         _ctx.glfw.SetKeyCallback(_ctx.mainWindow, KeyCallback);
         _ctx.glfw.SetCharCallback(_ctx.mainWindow, CharCallback);
         _ctx.glfw.SetMouseButtonCallback(_ctx.mainWindow, MouseButtonCallback);
@@ -183,9 +211,6 @@ public class SampleApp
 
         _ctx.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     }
-
-
-    private double f = 3;
 
     private unsafe void OnWindowUpdate(double dt)
     {
@@ -205,12 +230,7 @@ public class SampleApp
             _ctx.camera.m_zoom = b2MaxFloat(0.995f * _ctx.camera.m_zoom, 0.5f);
         }
 
-        _ctx.glfw.GetWindowSize(_ctx.mainWindow, out _ctx.camera.m_width, out _ctx.camera.m_height);
-        _ctx.camera.m_width = (int)(_ctx.camera.m_width / s_windowScale);
-        _ctx.camera.m_height = (int)(_ctx.camera.m_height / s_windowScale);
-
         _ctx.glfw.GetFramebufferSize(_ctx.mainWindow, out var bufferWidth, out var bufferHeight);
-        _ctx.gl.Viewport(0, 0, (uint)bufferWidth, (uint)bufferHeight);
 
         //_ctx.draw.DrawBackground();
 
@@ -272,24 +292,20 @@ public class SampleApp
     private unsafe void OnWindowRender(double dt)
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+        _ctx.draw.Flush();
         
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(_ctx.camera.m_width, _ctx.camera.m_height));
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
-
-
+        
         if (_ctx.draw.m_showUI)
         {
             var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
             s_sample.DrawTitle(title);
         }
-
-
-        _ctx.draw.Flush();
-
+        
         UpdateUI();
 
         //ImGui.ShowDemoWindow();
@@ -301,7 +317,7 @@ public class SampleApp
             // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
             //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
             // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
-
+        
             ImGui.Begin("Overlay",
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
                 ImGuiWindowFlags.NoScrollbar);
@@ -315,13 +331,6 @@ public class SampleApp
         _ctx.glfw.SwapBuffers(_ctx.mainWindow);
     }
 
-    private void OnWindowClosing()
-    {
-        s_sample?.Dispose();
-        s_sample = null;
-        _ctx.draw.Destroy();
-        DestroyUI();
-    }
 
     public bool IsPowerOfTwo(int x)
     {
@@ -409,9 +418,9 @@ public class SampleApp
         var imGuiFontConfig = new ImGuiFontConfig(fontPath, 14, null);
         _imgui = new ImGuiController(_ctx.gl, _window, _input, imGuiFontConfig);
 
-        var imGuiIo = ImGui.GetIO();
-        ImFontConfig fontConfig;
-        fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
+        // var imGuiIo = ImGui.GetIO();
+        // ImFontConfig fontConfig;
+        // fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
         // _ctx.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
         // _ctx.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
         // _ctx.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
@@ -428,12 +437,6 @@ public class SampleApp
         // ImGui.DestroyContext();
         _imgui.Dispose();
         _imgui = null;
-    }
-
-    public unsafe void ResizeWindowCallback(WindowHandle* window, int width, int height)
-    {
-        s_settings.windowWidth = (int)(width / s_windowScale);
-        s_settings.windowHeight = (int)(height / s_windowScale);
     }
 
     private unsafe void KeyCallback(WindowHandle* window, Keys key, int scancode, InputAction action, KeyModifiers mods)
