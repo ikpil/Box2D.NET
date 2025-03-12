@@ -22,7 +22,7 @@ public class ConvexHull : Sample
     private bool m_auto;
     private bool m_bulk;
 
-    private B2Hull m_hull = null;
+    private B2Hull m_hull;
     private bool m_valid = false;
     private float m_milliseconds = 0.0f;
 
@@ -130,7 +130,7 @@ public class ConvexHull : Sample
     {
         base.Step(settings);
 
-        m_hull = null;
+        m_hull = new B2Hull();
         m_valid = false;
         m_milliseconds = 0.0f;
 
@@ -149,7 +149,7 @@ public class ConvexHull : Sample
                     continue;
                 }
 
-                m_valid = b2ValidateHull(m_hull);
+                m_valid = b2ValidateHull(ref m_hull);
                 if (m_valid == false || m_bulk == false)
                 {
                     m_bulk = false;
@@ -178,7 +178,7 @@ public class ConvexHull : Sample
             m_hull = b2ComputeHull(m_points, m_count);
             if (m_hull.count > 0)
             {
-                m_valid = b2ValidateHull(m_hull);
+                m_valid = b2ValidateHull(ref m_hull);
                 if (m_valid == false)
                 {
                     m_auto = false;
@@ -213,7 +213,7 @@ public class ConvexHull : Sample
 
         m_textLine += m_textIncrement;
 
-        m_context.draw.DrawPolygon(m_hull.points, m_hull.count, B2HexColor.b2_colorGray);
+        m_context.draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
 
         for (int i = 0; i < m_count; ++i)
         {

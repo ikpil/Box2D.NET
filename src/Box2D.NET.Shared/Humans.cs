@@ -217,7 +217,7 @@ namespace Box2D.NET.Shared
             points[3] = new B2Vec2(-0.03f * s, -0.14f * s);
 
             B2Hull footHull = b2ComputeHull(points, 4);
-            B2Polygon footPolygon = b2MakePolygon(footHull, 0.015f * s);
+            B2Polygon footPolygon = b2MakePolygon(ref footHull, 0.015f * s);
 
             // lower left leg
             {

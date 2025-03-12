@@ -95,13 +95,13 @@ public class CompoundShapes : Sample
             vertices[1] = new B2Vec2(0.0f, 4.0f / 3.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon left = b2MakePolygon(hull, 0.0f);
+            B2Polygon left = b2MakePolygon(ref hull, 0.0f);
 
             vertices[0] = new B2Vec2(2.0f, 0.0f);
             vertices[1] = new B2Vec2(0.0f, 4.0f / 3.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             hull = b2ComputeHull(vertices, 3);
-            B2Polygon right = b2MakePolygon(hull, 0.0f);
+            B2Polygon right = b2MakePolygon(ref hull, 0.0f);
 
             b2CreatePolygonShape(m_ship1Id, ref shapeDef, ref left);
             b2CreatePolygonShape(m_ship1Id, ref shapeDef, ref right);
@@ -121,13 +121,13 @@ public class CompoundShapes : Sample
             vertices[1] = new B2Vec2(1.0f, 2.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon left = b2MakePolygon(hull, 0.0f);
+            B2Polygon left = b2MakePolygon(ref hull, 0.0f);
 
             vertices[0] = new B2Vec2(2.0f, 0.0f);
             vertices[1] = new B2Vec2(-1.0f, 2.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             hull = b2ComputeHull(vertices, 3);
-            B2Polygon right = b2MakePolygon(hull, 0.0f);
+            B2Polygon right = b2MakePolygon(ref hull, 0.0f);
 
             b2CreatePolygonShape(m_ship2Id, ref shapeDef, ref left);
             b2CreatePolygonShape(m_ship2Id, ref shapeDef, ref right);

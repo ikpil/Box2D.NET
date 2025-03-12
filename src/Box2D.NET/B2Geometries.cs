@@ -59,9 +59,9 @@ namespace Box2D.NET
 
         /// Make a convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakePolygon(B2Hull hull, float radius)
+        public static B2Polygon b2MakePolygon(ref B2Hull hull, float radius)
         {
-            Debug.Assert(b2ValidateHull(hull));
+            Debug.Assert(b2ValidateHull(ref hull));
 
             if (hull.count < 3)
             {
@@ -96,16 +96,16 @@ namespace Box2D.NET
 
         /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakeOffsetPolygon(B2Hull hull, B2Vec2 position, B2Rot rotation)
+        public static B2Polygon b2MakeOffsetPolygon(ref B2Hull hull, B2Vec2 position, B2Rot rotation)
         {
-            return b2MakeOffsetRoundedPolygon(hull, position, rotation, 0.0f);
+            return b2MakeOffsetRoundedPolygon(ref hull, position, rotation, 0.0f);
         }
 
         /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakeOffsetRoundedPolygon(B2Hull hull, B2Vec2 position, B2Rot rotation, float radius)
+        public static B2Polygon b2MakeOffsetRoundedPolygon(ref B2Hull hull, B2Vec2 position, B2Rot rotation, float radius)
         {
-            Debug.Assert(b2ValidateHull(hull));
+            Debug.Assert(b2ValidateHull(ref hull));
 
             if (hull.count < 3)
             {

@@ -17,6 +17,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 // Tests manifolds and contact points
 public class Manifold : Sample
 {
+    private static readonly int SampleManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Manifold", Create);
+    
     B2SimplexCache m_smgroxCache1;
     B2SimplexCache m_smgroxCache2;
     B2SimplexCache m_smgcapCache1;
@@ -39,7 +41,6 @@ public class Manifold : Sample
     bool m_showSeparation;
     bool m_enableCaching;
 
-    private static readonly int SampleManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Manifold", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -465,7 +466,7 @@ public class Manifold : Sample
 
         // wox-wox
         {
-            B2Polygon wox = b2MakePolygon(m_wedge, m_round);
+            B2Polygon wox = b2MakePolygon(ref m_wedge, m_round);
 
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
@@ -490,8 +491,8 @@ public class Manifold : Sample
 
             B2Hull h1 = b2ComputeHull(p1s, 3);
             B2Hull h2 = b2ComputeHull(p2s, 3);
-            B2Polygon w1 = b2MakePolygon(h1, 0.158798501f);
-            B2Polygon w2 = b2MakePolygon(h2, 0.205900759f);
+            B2Polygon w1 = b2MakePolygon(ref h1, 0.158798501f);
+            B2Polygon w2 = b2MakePolygon(ref h2, 0.205900759f);
 
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
@@ -516,7 +517,7 @@ public class Manifold : Sample
             B2Polygon box = b2MakeBox(1.0f, 1.0f);
             B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.05f, 0.0f), new B2Vec2(0.05f, 0.0f), new B2Vec2(0.0f, 0.1f) };
             B2Hull hull = b2ComputeHull(points, 3);
-            B2Polygon tri = b2MakePolygon(hull, 0.0f);
+            B2Polygon tri = b2MakePolygon(ref hull, 0.0f);
 
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);

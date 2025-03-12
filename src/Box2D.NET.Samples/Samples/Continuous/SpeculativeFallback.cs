@@ -47,7 +47,7 @@ public class SpeculativeFallback : Sample
                 new B2Vec2(-2.0f, 4.2f),
             };
             B2Hull hull = b2ComputeHull(points, 5);
-            B2Polygon poly = b2MakePolygon(hull, 0.0f);
+            B2Polygon poly = b2MakePolygon(ref hull, 0.0f);
             b2CreatePolygonShape(groundId, ref shapeDef, ref poly);
         }
 

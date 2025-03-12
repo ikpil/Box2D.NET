@@ -178,20 +178,20 @@ public class BenchmarkBarrel : Sample
 
         B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.1f, -0.5f), new B2Vec2(0.1f, -0.5f), new B2Vec2(0.0f, 0.5f) };
         B2Hull wedgeHull = b2ComputeHull(points, 3);
-        B2Polygon wedge = b2MakePolygon(wedgeHull, 0.0f);
+        B2Polygon wedge = b2MakePolygon(ref wedgeHull, 0.0f);
 
         B2Vec2[] vertices = new B2Vec2[3];
         vertices[0] = new B2Vec2(-1.0f, 0.0f);
         vertices[1] = new B2Vec2(0.5f, 1.0f);
         vertices[2] = new B2Vec2(0.0f, 2.0f);
         B2Hull hull = b2ComputeHull(vertices, 3);
-        B2Polygon left = b2MakePolygon(hull, 0.0f);
+        B2Polygon left = b2MakePolygon(ref hull, 0.0f);
 
         vertices[0] = new B2Vec2(1.0f, 0.0f);
         vertices[1] = new B2Vec2(-0.5f, 1.0f);
         vertices[2] = new B2Vec2(0.0f, 2.0f);
         hull = b2ComputeHull(vertices, 3);
-        B2Polygon right = b2MakePolygon(hull, 0.0f);
+        B2Polygon right = b2MakePolygon(ref hull, 0.0f);
 
         // b2Polygon top = b2MakeOffsetBox(0.8f, 0.2f, {0.0f, 0.8f}, 0.0f);
         // b2Polygon leftLeg = b2MakeOffsetBox(0.2f, 0.5f, {-0.6f, 0.5f}, 0.0f);

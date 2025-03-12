@@ -61,7 +61,7 @@ public class B2ShapeTest
             }
 
             B2Hull hull = b2ComputeHull(points, 2 * N);
-            B2Polygon ac = b2MakePolygon(hull, 0.0f);
+            B2Polygon ac = b2MakePolygon(ref hull, 0.0f);
             B2MassData ma = b2ComputePolygonMass(ac, 1.0f);
 
             Assert.That(ma.mass < md.mass && md.mass < mdr.mass);

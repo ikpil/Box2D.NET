@@ -57,7 +57,7 @@ public class RayCast : Sample
 
         B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-2.0f, 0.0f), new B2Vec2(2.0f, 0.0f), new B2Vec2(2.0f, 3.0f) };
         B2Hull hull = b2ComputeHull(vertices, 3);
-        m_triangle = b2MakePolygon(hull, 0.0f);
+        m_triangle = b2MakePolygon(ref hull, 0.0f);
 
         m_segment = new B2Segment(new B2Vec2(-3.0f, 0.0f), new B2Vec2(3.0f, 0.0f));
 

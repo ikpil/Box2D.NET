@@ -45,7 +45,7 @@ public class HighMassRatio3 : Sample
             float extent = 1.0f;
             B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.5f * extent, 0.0f), new B2Vec2(0.5f * extent, 0.0f), new B2Vec2(0.0f, 1.0f * extent) };
             B2Hull hull = b2ComputeHull(points, 3);
-            B2Polygon smallTriangle = b2MakePolygon(hull, 0.0f);
+            B2Polygon smallTriangle = b2MakePolygon(ref hull, 0.0f);
             B2Polygon bigBox = b2MakeBox(10.0f * extent, 10.0f * extent);
 
             {

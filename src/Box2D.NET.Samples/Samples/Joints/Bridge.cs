@@ -102,7 +102,7 @@ public class Bridge : Sample
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f) };
 
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon triangle = b2MakePolygon(hull, 0.0f);
+            B2Polygon triangle = b2MakePolygon(ref hull, 0.0f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;

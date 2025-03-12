@@ -285,7 +285,7 @@ namespace Box2D.NET
         /// - convexity
         /// - collinear points
         /// This is expensive and should not be called at runtime.
-        public static bool b2ValidateHull(B2Hull hull)
+        public static bool b2ValidateHull(ref B2Hull hull)
         {
             if (hull.count < 3 || B2_MAX_POLYGON_VERTICES < hull.count)
             {

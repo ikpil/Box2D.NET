@@ -80,7 +80,7 @@ public class Arch : Sample
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 B2Vec2[] ps = new B2Vec2[4] { ps1[i], ps2[i], ps2[i + 1], ps1[i + 1] };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
@@ -95,7 +95,7 @@ public class Arch : Sample
                     new B2Vec2(-ps2[i + 1].x, ps2[i + 1].y),
                 };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
@@ -103,7 +103,7 @@ public class Arch : Sample
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 B2Vec2[] ps = new B2Vec2[4] { ps1[8], ps2[8], new B2Vec2(-ps2[8].x, ps2[8].y), new B2Vec2(-ps1[8].x, ps1[8].y) };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
             }
 
