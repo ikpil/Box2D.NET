@@ -1,22 +1,21 @@
-﻿using System;
 using Box2D.NET.Samples.Samples.Continuous;
 using NUnit.Framework;
 
-namespace Box2D.NET.Samples.Test;
+namespace Box2D.NET.Samples.Test.Samples;
 
-public class PinballTest
+public class SpeculativeFallbackTest
 {
     [Test]
-    public void TestPinball()
+    public void TestSpeculativeFallback()
     {
         var ctx = SampleAppContext.Create();
         var settings = Helpers.CreateSettings();
 
-        using var pinball = new Pinball(ctx, settings);
+        using var testObject = new SpeculativeFallback(ctx, settings);
 
         for (int i = 0; i < 37; ++i)
         {
-            pinball.Step(settings);
+            testObject.Step(settings);
         }
     }
 }
