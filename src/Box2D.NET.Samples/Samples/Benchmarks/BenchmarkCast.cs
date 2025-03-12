@@ -23,22 +23,27 @@ public class BenchmarkCast : Sample
 {
     private static readonly int SampleBenchmarkCast = SampleFactory.Shared.RegisterSample("Benchmark", "Cast", Create);
     
-    QueryType m_queryType;
+    private QueryType m_queryType;
 
-    List<B2Vec2> m_origins = new List<B2Vec2>();
-    List<B2Vec2> m_translations = new List<B2Vec2>();
-    float m_minTime;
-    float m_buildTime;
+    private List<B2Vec2> m_origins = new List<B2Vec2>();
+    private List<B2Vec2> m_translations = new List<B2Vec2>();
+    private float m_minTime;
+    private float m_buildTime;
 
-    int m_rowCount, m_columnCount;
-    int m_updateType;
-    int m_drawIndex;
-    float m_radius;
-    float m_fill;
-    float m_ratio;
-    float m_grid;
-    bool m_topDown;
+    private int m_rowCount, m_columnCount;
+    private int m_updateType;
+    private int m_drawIndex;
+    private float m_radius;
+    private float m_fill;
+    private float m_ratio;
+    private float m_grid;
+    private bool m_topDown;
 
+    private int sampleCount;
+    private int hitCount = 0;
+    private int nodeVisits = 0;
+    private int leafVisits = 0;
+    private float ms = 0.0f;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -67,7 +72,7 @@ public class BenchmarkCast : Sample
         m_radius = 0.1f;
 
         g_seed = 1234;
-        int sampleCount = m_context.sampleDebug ? 100 : 10000;
+        sampleCount = m_context.sampleDebug ? 100 : 10000;
         m_origins.Resize(sampleCount);
         m_translations.Resize(sampleCount);
         float extent = m_rowCount * m_grid;
@@ -157,81 +162,6 @@ public class BenchmarkCast : Sample
         m_minTime = 1e6f;
     }
 
-    public override void UpdateUI()
-    {
-        
-        float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
-
-        ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(100.0f);
-
-        bool changed = false;
-
-        string[] queryTypes = { "Ray", "Circle", "Overlap" };
-        int queryType = (int)m_queryType;
-        if (ImGui.Combo("Query", ref queryType, queryTypes, queryTypes.Length))
-        {
-            m_queryType = (QueryType)queryType;
-            if (m_queryType == QueryType.e_overlap)
-            {
-                m_radius = 5.0f;
-            }
-            else
-            {
-                m_radius = 0.1f;
-            }
-
-            changed = true;
-        }
-
-        if (ImGui.SliderInt("rows", ref m_rowCount, 0, 1000, "%d"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.SliderInt("columns", ref m_columnCount, 0, 1000, "%d"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.SliderFloat("fill", ref m_fill, 0.0f, 1.0f, "%.2f"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.SliderFloat("grid", ref m_grid, 0.5f, 2.0f, "%.2f"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.SliderFloat("ratio", ref m_ratio, 1.0f, 10.0f, "%.2f"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.Checkbox("top down", ref m_topDown))
-        {
-            changed = true;
-        }
-
-        if (ImGui.Button("Draw Next"))
-        {
-            m_drawIndex = (m_drawIndex + 1) % m_origins.Count;
-        }
-
-        ImGui.PopItemWidth();
-        ImGui.End();
-
-        if (changed)
-        {
-            BuildScene();
-        }
-    }
-
-
     static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         CastResult result = context as CastResult;
@@ -255,17 +185,19 @@ public class BenchmarkCast : Sample
         return true;
     }
 
+
+    
     public override void Step(Settings settings)
     {
         base.Step(settings);
 
         B2QueryFilter filter = b2DefaultQueryFilter();
         filter.maskBits = 1;
-        int hitCount = 0;
-        int nodeVisits = 0;
-        int leafVisits = 0;
-        float ms = 0.0f;
-        int sampleCount = (int)m_origins.Count;
+        hitCount = 0;
+        nodeVisits = 0;
+        leafVisits = 0;
+        ms = 0.0f;
+        sampleCount = (int)m_origins.Count;
 
         if (m_queryType == QueryType.e_rayCast)
         {
@@ -386,6 +318,81 @@ public class BenchmarkCast : Sample
             {
                 m_context.draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
             }
+        }
+    }
+    
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
+        float height = 240.0f;
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
+
+        ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+
+        ImGui.PushItemWidth(100.0f);
+
+        bool changed = false;
+
+        string[] queryTypes = { "Ray", "Circle", "Overlap" };
+        int queryType = (int)m_queryType;
+        if (ImGui.Combo("Query", ref queryType, queryTypes, queryTypes.Length))
+        {
+            m_queryType = (QueryType)queryType;
+            if (m_queryType == QueryType.e_overlap)
+            {
+                m_radius = 5.0f;
+            }
+            else
+            {
+                m_radius = 0.1f;
+            }
+
+            changed = true;
+        }
+
+        if (ImGui.SliderInt("rows", ref m_rowCount, 0, 1000, "%d"))
+        {
+            changed = true;
+        }
+
+        if (ImGui.SliderInt("columns", ref m_columnCount, 0, 1000, "%d"))
+        {
+            changed = true;
+        }
+
+        if (ImGui.SliderFloat("fill", ref m_fill, 0.0f, 1.0f, "%.2f"))
+        {
+            changed = true;
+        }
+
+        if (ImGui.SliderFloat("grid", ref m_grid, 0.5f, 2.0f, "%.2f"))
+        {
+            changed = true;
+        }
+
+        if (ImGui.SliderFloat("ratio", ref m_ratio, 1.0f, 10.0f, "%.2f"))
+        {
+            changed = true;
+        }
+
+        if (ImGui.Checkbox("top down", ref m_topDown))
+        {
+            changed = true;
+        }
+
+        if (ImGui.Button("Draw Next"))
+        {
+            m_drawIndex = (m_drawIndex + 1) % m_origins.Count;
+        }
+
+        ImGui.PopItemWidth();
+        ImGui.End();
+
+        if (changed)
+        {
+            BuildScene();
         }
 
         m_context.draw.DrawString(5, m_textLine, $"build time ms = {m_buildTime:g}");

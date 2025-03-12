@@ -20,12 +20,12 @@ public class BenchmarkCreateDestroy : Sample
     public const int e_maxBaseCount = 100;
     public const int e_maxBodyCount = e_maxBaseCount * (e_maxBaseCount + 1) / 2;
 
-    float m_createTime;
-    float m_destroyTime;
-    B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
-    int m_bodyCount;
-    int m_baseCount;
-    int m_iterations;
+    private float m_createTime;
+    private float m_destroyTime;
+    private B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
+    private int m_bodyCount;
+    private int m_baseCount;
+    private int m_iterations;
 
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
@@ -130,12 +130,18 @@ public class BenchmarkCreateDestroy : Sample
             CreateScene();
         }
 
+
+        base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
         DrawTextLine("total: create = %g ms, destroy = %g ms", m_createTime, m_destroyTime);
 
         float createPerBody = 1000.0f * m_createTime / m_iterations / m_bodyCount;
         float destroyPerBody = 1000.0f * m_destroyTime / m_iterations / m_bodyCount;
         DrawTextLine("body: create = %g us, destroy = %g us", createPerBody, destroyPerBody);
-
-        base.Step(settings);
     }
 }

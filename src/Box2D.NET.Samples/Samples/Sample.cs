@@ -142,6 +142,61 @@ public class Sample : IDisposable
 
     public virtual void UpdateUI()
     {
+        if (m_settings.drawProfile)
+        {
+            B2Profile p = b2World_GetProfile(m_worldId);
+
+            B2Profile aveProfile = new B2Profile();
+            if (m_stepCount > 0)
+            {
+                float scale = 1.0f / m_stepCount;
+                aveProfile.step = scale * m_totalProfile.step;
+                aveProfile.pairs = scale * m_totalProfile.pairs;
+                aveProfile.collide = scale * m_totalProfile.collide;
+                aveProfile.solve = scale * m_totalProfile.solve;
+                aveProfile.mergeIslands = scale * m_totalProfile.mergeIslands;
+                aveProfile.prepareStages = scale * m_totalProfile.prepareStages;
+                aveProfile.solveConstraints = scale * m_totalProfile.solveConstraints;
+                aveProfile.prepareConstraints = scale * m_totalProfile.prepareConstraints;
+                aveProfile.integrateVelocities = scale * m_totalProfile.integrateVelocities;
+                aveProfile.warmStart = scale * m_totalProfile.warmStart;
+                aveProfile.solveImpulses = scale * m_totalProfile.solveImpulses;
+                aveProfile.integratePositions = scale * m_totalProfile.integratePositions;
+                aveProfile.relaxImpulses = scale * m_totalProfile.relaxImpulses;
+                aveProfile.applyRestitution = scale * m_totalProfile.applyRestitution;
+                aveProfile.storeImpulses = scale * m_totalProfile.storeImpulses;
+                aveProfile.transforms = scale * m_totalProfile.transforms;
+                aveProfile.splitIslands = scale * m_totalProfile.splitIslands;
+                aveProfile.hitEvents = scale * m_totalProfile.hitEvents;
+                aveProfile.refit = scale * m_totalProfile.refit;
+                aveProfile.bullets = scale * m_totalProfile.bullets;
+                aveProfile.sleepIslands = scale * m_totalProfile.sleepIslands;
+                aveProfile.sensors = scale * m_totalProfile.sensors;
+            }
+
+            DrawTextLine("step [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.step, aveProfile.step, m_maxProfile.step);
+            DrawTextLine("pairs [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.pairs, aveProfile.pairs, m_maxProfile.pairs);
+            DrawTextLine("collide [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.collide, aveProfile.collide, m_maxProfile.collide);
+            DrawTextLine("solve [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solve, aveProfile.solve, m_maxProfile.solve);
+            DrawTextLine("> merge islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.mergeIslands, aveProfile.mergeIslands, m_maxProfile.mergeIslands);
+            DrawTextLine("> prepare tasks [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.prepareStages, aveProfile.prepareStages, m_maxProfile.prepareStages);
+            DrawTextLine("> solve constraints [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solveConstraints, aveProfile.solveConstraints, m_maxProfile.solveConstraints);
+            DrawTextLine(">> prepare constraints [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.prepareConstraints, aveProfile.prepareConstraints, m_maxProfile.prepareConstraints);
+            DrawTextLine(">> integrate velocities [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.integrateVelocities, aveProfile.integrateVelocities, m_maxProfile.integrateVelocities);
+            DrawTextLine(">> warm start [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.warmStart, aveProfile.warmStart, m_maxProfile.warmStart);
+            DrawTextLine(">> solve impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solveImpulses, aveProfile.solveImpulses, m_maxProfile.solveImpulses);
+            DrawTextLine(">> integrate positions [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.integratePositions, aveProfile.integratePositions, m_maxProfile.integratePositions);
+            DrawTextLine(">> relax impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.relaxImpulses, aveProfile.relaxImpulses, m_maxProfile.relaxImpulses);
+            DrawTextLine(">> apply restitution [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.applyRestitution, aveProfile.applyRestitution, m_maxProfile.applyRestitution);
+            DrawTextLine(">> store impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.storeImpulses, aveProfile.storeImpulses, m_maxProfile.storeImpulses);
+            DrawTextLine(">> split islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.splitIslands, aveProfile.splitIslands, m_maxProfile.splitIslands);
+            DrawTextLine("> update transforms [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.transforms, aveProfile.transforms, m_maxProfile.transforms);
+            DrawTextLine("> hit events [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.hitEvents, aveProfile.hitEvents, m_maxProfile.hitEvents);
+            DrawTextLine("> refit BVH [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.refit, aveProfile.refit, m_maxProfile.refit);
+            DrawTextLine("> sleep islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.sleepIslands, aveProfile.sleepIslands, m_maxProfile.sleepIslands);
+            DrawTextLine("> bullets [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.bullets, aveProfile.bullets, m_maxProfile.bullets);
+            DrawTextLine("sensors [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.sensors, aveProfile.sensors, m_maxProfile.sensors);
+        }
     }
 
 
@@ -449,77 +504,6 @@ public class Sample : IDisposable
             m_totalProfile.bullets += p.bullets;
             m_totalProfile.sleepIslands += p.sleepIslands;
             m_totalProfile.sensors += p.sensors;
-        }
-
-        if (settings.drawProfile)
-        {
-            B2Profile p = b2World_GetProfile(m_worldId);
-
-            B2Profile aveProfile = new B2Profile();
-            if (m_stepCount > 0)
-            {
-                float scale = 1.0f / m_stepCount;
-                aveProfile.step = scale * m_totalProfile.step;
-                aveProfile.pairs = scale * m_totalProfile.pairs;
-                aveProfile.collide = scale * m_totalProfile.collide;
-                aveProfile.solve = scale * m_totalProfile.solve;
-                aveProfile.mergeIslands = scale * m_totalProfile.mergeIslands;
-                aveProfile.prepareStages = scale * m_totalProfile.prepareStages;
-                aveProfile.solveConstraints = scale * m_totalProfile.solveConstraints;
-                aveProfile.prepareConstraints = scale * m_totalProfile.prepareConstraints;
-                aveProfile.integrateVelocities = scale * m_totalProfile.integrateVelocities;
-                aveProfile.warmStart = scale * m_totalProfile.warmStart;
-                aveProfile.solveImpulses = scale * m_totalProfile.solveImpulses;
-                aveProfile.integratePositions = scale * m_totalProfile.integratePositions;
-                aveProfile.relaxImpulses = scale * m_totalProfile.relaxImpulses;
-                aveProfile.applyRestitution = scale * m_totalProfile.applyRestitution;
-                aveProfile.storeImpulses = scale * m_totalProfile.storeImpulses;
-                aveProfile.transforms = scale * m_totalProfile.transforms;
-                aveProfile.splitIslands = scale * m_totalProfile.splitIslands;
-                aveProfile.hitEvents = scale * m_totalProfile.hitEvents;
-                aveProfile.refit = scale * m_totalProfile.refit;
-                aveProfile.bullets = scale * m_totalProfile.bullets;
-                aveProfile.sleepIslands = scale * m_totalProfile.sleepIslands;
-                aveProfile.sensors = scale * m_totalProfile.sensors;
-            }
-
-            DrawTextLine("step [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.step, aveProfile.step, m_maxProfile.step);
-            DrawTextLine("pairs [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.pairs, aveProfile.pairs, m_maxProfile.pairs);
-            DrawTextLine("collide [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.collide, aveProfile.collide, m_maxProfile.collide);
-            DrawTextLine("solve [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solve, aveProfile.solve, m_maxProfile.solve);
-            DrawTextLine("> merge islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.mergeIslands, aveProfile.mergeIslands,
-                m_maxProfile.mergeIslands);
-            DrawTextLine("> prepare tasks [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.prepareStages, aveProfile.prepareStages,
-                m_maxProfile.prepareStages);
-            DrawTextLine("> solve constraints [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solveConstraints, aveProfile.solveConstraints,
-                m_maxProfile.solveConstraints);
-            DrawTextLine(">> prepare constraints [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.prepareConstraints,
-                aveProfile.prepareConstraints, m_maxProfile.prepareConstraints);
-            DrawTextLine(">> integrate velocities [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.integrateVelocities,
-                aveProfile.integrateVelocities, m_maxProfile.integrateVelocities);
-            DrawTextLine(">> warm start [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.warmStart, aveProfile.warmStart,
-                m_maxProfile.warmStart);
-            DrawTextLine(">> solve impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.solveImpulses, aveProfile.solveImpulses,
-                m_maxProfile.solveImpulses);
-            DrawTextLine(">> integrate positions [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.integratePositions,
-                aveProfile.integratePositions, m_maxProfile.integratePositions);
-            DrawTextLine(">> relax impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.relaxImpulses, aveProfile.relaxImpulses,
-                m_maxProfile.relaxImpulses);
-            DrawTextLine(">> apply restitution [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.applyRestitution, aveProfile.applyRestitution,
-                m_maxProfile.applyRestitution);
-            DrawTextLine(">> store impulses [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.storeImpulses, aveProfile.storeImpulses,
-                m_maxProfile.storeImpulses);
-            DrawTextLine(">> split islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.splitIslands, aveProfile.splitIslands,
-                m_maxProfile.splitIslands);
-            DrawTextLine("> update transforms [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.transforms, aveProfile.transforms,
-                m_maxProfile.transforms);
-            DrawTextLine("> hit events [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.hitEvents, aveProfile.hitEvents,
-                m_maxProfile.hitEvents);
-            DrawTextLine("> refit BVH [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.refit, aveProfile.refit, m_maxProfile.refit);
-            DrawTextLine("> sleep islands [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.sleepIslands, aveProfile.sleepIslands,
-                m_maxProfile.sleepIslands);
-            DrawTextLine("> bullets [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.bullets, aveProfile.bullets, m_maxProfile.bullets);
-            DrawTextLine("sensors [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.sensors, aveProfile.sensors, m_maxProfile.sensors);
         }
     }
 

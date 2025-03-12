@@ -205,6 +205,7 @@ public class BodyType : Sample
 
     public override void UpdateUI()
     {
+        base.UpdateUI();
         
 
         float height = 140.0f;

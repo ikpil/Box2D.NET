@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 public class BenchmarkSleep : Sample
 {
     private static readonly int SampleBenchmarkSleep = SampleFactory.Shared.RegisterSample("Benchmark", "Sleep", Create);
-    
+
     public const int e_maxBaseCount = 100;
     public const int e_maxBodyCount = e_maxBaseCount * (e_maxBaseCount + 1) / 2;
 
@@ -142,6 +142,14 @@ public class BenchmarkSleep : Sample
             m_awake = !m_awake;
         }
 
+
+        base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
         if (m_wakeCount > 0)
         {
             m_context.draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
@@ -153,7 +161,5 @@ public class BenchmarkSleep : Sample
             m_context.draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
             m_textLine += m_textIncrement;
         }
-
-        base.Step(settings);
     }
 }

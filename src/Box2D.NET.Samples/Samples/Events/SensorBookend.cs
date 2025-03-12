@@ -89,6 +89,7 @@ public class SensorBookend : Sample
 
     public override void UpdateUI()
     {
+        base.UpdateUI();
         
         float height = 90.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

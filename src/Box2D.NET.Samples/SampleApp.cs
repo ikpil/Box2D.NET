@@ -127,7 +127,7 @@ public class SampleApp
 
         return 0;
     }
-    
+
     private void OnWindowClosing()
     {
         s_sample?.Dispose();
@@ -145,7 +145,6 @@ public class SampleApp
 
         _ctx.camera.m_width = (int)(width / s_windowScale);
         _ctx.camera.m_height = (int)(height / s_windowScale);
- 
     }
 
     private void OnWindowFrameBufferResize(Vector2D<int> resize)
@@ -293,19 +292,19 @@ public class SampleApp
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
         _ctx.draw.Flush();
-        
+
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(_ctx.camera.m_width, _ctx.camera.m_height));
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
-        
+
         if (_ctx.draw.m_showUI)
         {
             var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
             s_sample.DrawTitle(title);
         }
-        
+
         UpdateUI();
 
         //ImGui.ShowDemoWindow();
@@ -317,7 +316,7 @@ public class SampleApp
             // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
             //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
             // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
-        
+
             ImGui.Begin("Overlay",
                 ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
                 ImGuiWindowFlags.NoScrollbar);
@@ -380,7 +379,7 @@ public class SampleApp
         s_sample?.Dispose();
         s_sample = null;
         s_settings.restart = true;
-        
+
         s_sample = SampleFactory.Shared.Create(s_settings.sampleIndex, _ctx, s_settings);
         s_settings.restart = false;
     }
@@ -413,21 +412,23 @@ public class SampleApp
             return;
         }
 
+
         // for windows : Microsoft Visual C++ Redistributable Package
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 14, null);
+        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 18, null);
         _imgui = new ImGuiController(_ctx.gl, _window, _input, imGuiFontConfig);
-
-        // var imGuiIo = ImGui.GetIO();
-        // ImFontConfig fontConfig;
-        // fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-        // _ctx.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, &fontConfig);
-        // _ctx.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, &fontConfig);
-        // _ctx.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, &fontConfig);
-        // _ctx.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, &fontConfig);
 
         //ImGui.GetStyle().ScaleAllSizes(2);
         //imGuiIo.FontGlobalScale = 2.0f;
+
+        // var imGuiIo = ImGui.GetIO();
+        // var s = new ImFontConfig();
+        // ImFontConfigPtr fontConfig = new ImFontConfigPtr(&s);
+        // fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
+        // _ctx.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, fontConfig, IntPtr.Zero);
+        // _ctx.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, fontConfig, IntPtr.Zero);
+        // _ctx.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, fontConfig, IntPtr.Zero);
+        // _ctx.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, fontConfig, IntPtr.Zero);
     }
 
     public void DestroyUI()

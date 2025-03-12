@@ -43,7 +43,12 @@ public class BenchmarkSpinner : Sample
             // 0.5 : 2197, 660
             settings.pause = true;
         }
+    }
 
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
 #if DEBUG
         DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);
 #endif
