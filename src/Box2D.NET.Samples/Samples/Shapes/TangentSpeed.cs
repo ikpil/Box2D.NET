@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Samples.Helpers;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
@@ -44,7 +45,7 @@ public class TangentSpeed : Sample
 
             float scale = 0.2f;
             B2Vec2[] points = new B2Vec2[20];
-            int count = ParsePath(path, offset, points, 20, scale, true);
+            int count = SvgParser.ParsePath(path, offset, points, 20, scale, true);
 
             B2SurfaceMaterial[] materials = new B2SurfaceMaterial[20];
             for (int i = 0; i < 20; ++i)
