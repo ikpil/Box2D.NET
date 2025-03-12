@@ -216,7 +216,7 @@ namespace Box2D.NET
 
             generation = 0;
 
-            profile = null;
+            profile = new B2Profile();
 
             preSolveFcn = null;
             preSolveContext = null;

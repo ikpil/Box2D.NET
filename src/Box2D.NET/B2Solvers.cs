@@ -933,7 +933,7 @@ public enum b2SolverBlockType
             B2StepContext context = workerContext.context;
             int activeColorCount = context.activeColorCount;
             ArraySegment<B2SolverStage> stages = context.stages;
-            B2Profile profile = context.world.profile;
+            ref B2Profile profile = ref context.world.profile;
 
             if (workerIndex == 0)
             {

@@ -714,7 +714,7 @@ namespace Box2D.NET
             b2Array_Clear(ref world.contactHitEvents);
 
             // world.profile = ( b2Profile ){ 0 };
-            world.profile.Clear();
+            world.profile = new B2Profile();
 
             if (timeStep == 0.0f)
             {
