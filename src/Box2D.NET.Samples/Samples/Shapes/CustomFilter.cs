@@ -13,11 +13,12 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // This shows how to use custom filtering
 public class CustomFilter : Sample
 {
+    private static readonly int SampleCustomFilter = SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
+
     public const int e_count = 10;
 
-    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
-    private static readonly int SampleCustomFilter = SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -66,16 +67,7 @@ public class CustomFilter : Sample
 
     public override void Step(Settings settings)
     {
-        m_context.draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
-        m_textLine += m_textIncrement;
-
         base.Step(settings);
-
-        for (int i = 0; i < e_count; ++i)
-        {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            m_context.draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
-        }
     }
 
     bool ShouldCollide(B2ShapeId shapeIdA, B2ShapeId shapeIdB)
@@ -99,5 +91,19 @@ public class CustomFilter : Sample
         CustomFilter customFilter = context as CustomFilter;
 
         return customFilter.ShouldCollide(shapeIdA, shapeIdB);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+
+        m_context.draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
+        m_textLine += m_textIncrement;
+
+        for (int i = 0; i < e_count; ++i)
+        {
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
+            m_context.draw.DrawString(new B2Vec2(p.x, p.y), $"{i}");
+        }
     }
 }

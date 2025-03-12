@@ -23,27 +23,27 @@ public class DynamicTree : Sample
 {
     private static readonly int SampleDynamicTree = SampleFactory.Shared.RegisterSample("Collision", "Dynamic Tree", Create);
     
-    B2DynamicTree m_tree;
-    int m_rowCount, m_columnCount;
-    Proxy[] m_proxies;
-    int[] m_moveBuffer;
-    int m_moveCount;
-    int m_proxyCapacity;
-    int m_proxyCount;
-    int m_timeStamp;
-    int m_updateType;
-    float m_fill;
-    float m_moveFraction;
-    float m_moveDelta;
-    float m_ratio;
-    float m_grid;
+    private B2DynamicTree m_tree;
+    private int m_rowCount, m_columnCount;
+    private Proxy[] m_proxies;
+    private int[] m_moveBuffer;
+    private int m_moveCount;
+    private int m_proxyCapacity;
+    private int m_proxyCount;
+    private int m_timeStamp;
+    private int m_updateType;
+    private float m_fill;
+    private float m_moveFraction;
+    private float m_moveDelta;
+    private float m_ratio;
+    private float m_grid;
 
-    B2Vec2 m_startPoint;
-    B2Vec2 m_endPoint;
+    private B2Vec2 m_startPoint;
+    private B2Vec2 m_endPoint;
 
-    bool m_rayDrag;
-    bool m_queryDrag;
-    bool m_validate;
+    private bool m_rayDrag;
+    private bool m_queryDrag;
+    private bool m_validate;
 
     static bool QueryCallback(int proxyId, int userData, object context)
     {
