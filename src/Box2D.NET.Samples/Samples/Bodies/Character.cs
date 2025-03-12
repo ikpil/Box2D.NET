@@ -192,7 +192,12 @@ public class Character : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
+    }
 
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
         m_context.draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
         m_textLine += m_textIncrement;
         m_context.draw.DrawString(5, m_textLine, "Limitation: square and hexagon can snag on aligned boxes.");

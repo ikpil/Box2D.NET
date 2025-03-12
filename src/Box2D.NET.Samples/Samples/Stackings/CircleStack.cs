@@ -88,7 +88,12 @@ public class CircleStack : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
+    }
 
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+        
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
         {

@@ -89,6 +89,11 @@ public class ChainSlide : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
 
 #if DEBUG
         m_context.draw.DrawString(5, m_textLine, $"toi hits = {b2_toiHitCount}");

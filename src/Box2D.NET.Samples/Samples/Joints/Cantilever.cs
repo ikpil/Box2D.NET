@@ -17,19 +17,20 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // joint is stiff as possible.
 public class Cantilever : Sample
 {
+    private static readonly int SampleCantileverIndex = SampleFactory.Shared.RegisterSample("Joints", "Cantilever", Create);
+    
     public const int e_count = 8;
 
-    float m_linearHertz;
-    float m_linearDampingRatio;
-    float m_angularHertz;
-    float m_angularDampingRatio;
-    float m_gravityScale;
-    B2BodyId m_tipId;
-    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    B2JointId[] m_jointIds = new B2JointId[e_count];
-    bool m_collideConnected;
+    private float m_linearHertz;
+    private float m_linearDampingRatio;
+    private float m_angularHertz;
+    private float m_angularDampingRatio;
+    private float m_gravityScale;
+    private B2BodyId m_tipId;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private B2JointId[] m_jointIds = new B2JointId[e_count];
+    private bool m_collideConnected;
 
-    private static readonly int SampleCantileverIndex = SampleFactory.Shared.RegisterSample("Joints", "Cantilever", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -37,8 +38,7 @@ public class Cantilever : Sample
     }
 
 
-    public Cantilever(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Cantilever(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -158,14 +158,14 @@ public class Cantilever : Sample
 
         ImGui.PopItemWidth();
         ImGui.End();
+        
+        B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
+        m_context.draw.DrawString(5, m_textLine, $"tip-y = {tipPosition.y:F2}");
+        m_textLine += m_textIncrement;
     }
 
     public override void Step(Settings settings)
     {
         base.Step(settings);
-
-        B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
-        m_context.draw.DrawString(5, m_textLine, $"tip-y = {tipPosition.y:F2}");
-        m_textLine += m_textIncrement;
     }
 }

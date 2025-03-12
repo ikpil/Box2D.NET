@@ -146,7 +146,10 @@ public class ContactEvent : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        m_context.draw.DrawString(5, m_textLine, "move using WASD");
+        m_textLine += m_textIncrement;
+
         float height = 60.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -160,9 +163,6 @@ public class ContactEvent : Sample
 
     public override void Step(Settings settings)
     {
-        m_context.draw.DrawString(5, m_textLine, "move using WASD");
-        m_textLine += m_textIncrement;
-
         B2Vec2 position = b2Body_GetPosition(m_playerId);
 
         if (GetKey(Keys.A) == InputAction.Press)

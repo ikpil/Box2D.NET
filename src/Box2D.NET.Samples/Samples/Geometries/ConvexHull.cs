@@ -12,14 +12,20 @@ namespace Box2D.NET.Samples.Samples.Geometries;
 
 public class ConvexHull : Sample
 {
+    private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Geometry", "Convex Hull", Create);
+
     public const int e_count = B2_MAX_POLYGON_VERTICES;
 
-    B2Vec2[] m_points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
-    int m_count;
-    int m_generation;
-    bool m_auto;
-    bool m_bulk;
-    private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Geometry", "Convex Hull", Create);
+    private B2Vec2[] m_points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+    private int m_count;
+    private int m_generation;
+    private bool m_auto;
+    private bool m_bulk;
+
+    private B2Hull m_hull = null;
+    private bool m_valid = false;
+    private float m_milliseconds = 0.0f;
+
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -119,16 +125,14 @@ public class ConvexHull : Sample
         }
     }
 
+
     public override void Step(Settings settings)
     {
         base.Step(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
-        m_textLine += m_textIncrement;
-
-        B2Hull hull = new B2Hull();
-        bool valid = false;
-        float milliseconds = 0.0f;
+        m_hull = null;
+        m_valid = false;
+        m_milliseconds = 0.0f;
 
         if (m_bulk)
         {
@@ -137,16 +141,16 @@ public class ConvexHull : Sample
             for (int i = 0; i < 10000; ++i)
             {
                 Generate();
-                hull = b2ComputeHull(m_points, m_count);
-                if (hull.count == 0)
+                m_hull = b2ComputeHull(m_points, m_count);
+                if (m_hull.count == 0)
                 {
                     // m_bulk = false;
                     // break;
                     continue;
                 }
 
-                valid = b2ValidateHull(hull);
-                if (valid == false || m_bulk == false)
+                m_valid = b2ValidateHull(m_hull);
+                if (m_valid == false || m_bulk == false)
                 {
                     m_bulk = false;
                     break;
@@ -171,37 +175,45 @@ public class ConvexHull : Sample
                 Generate();
             }
 
-            hull = b2ComputeHull(m_points, m_count);
-            if (hull.count > 0)
+            m_hull = b2ComputeHull(m_points, m_count);
+            if (m_hull.count > 0)
             {
-                valid = b2ValidateHull(hull);
-                if (valid == false)
+                m_valid = b2ValidateHull(m_hull);
+                if (m_valid == false)
                 {
                     m_auto = false;
                 }
             }
         }
+    }
 
-        if (valid == false)
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+
+        m_context.draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
+        m_textLine += m_textIncrement;
+
+        if (m_valid == false)
         {
             m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
             m_textLine += m_textIncrement;
         }
         else
         {
-            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {hull.count}");
+            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {m_hull.count}");
             m_textLine += m_textIncrement;
         }
 
-        if (milliseconds > 0.0f)
+        if (m_milliseconds > 0.0f)
         {
-            m_context.draw.DrawString(5, m_textLine, $"milliseconds = {milliseconds:G}");
+            m_context.draw.DrawString(5, m_textLine, $"milliseconds = {m_milliseconds:G}");
             m_textLine += m_textIncrement;
         }
 
         m_textLine += m_textIncrement;
 
-        m_context.draw.DrawPolygon(hull.points, hull.count, B2HexColor.b2_colorGray);
+        m_context.draw.DrawPolygon(m_hull.points, m_hull.count, B2HexColor.b2_colorGray);
 
         for (int i = 0; i < m_count; ++i)
         {
@@ -209,9 +221,9 @@ public class ConvexHull : Sample
             m_context.draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
         }
 
-        for (int i = 0; i < hull.count; ++i)
+        for (int i = 0; i < m_hull.count; ++i)
         {
-            m_context.draw.DrawPoint(hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
+            m_context.draw.DrawPoint(m_hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }
