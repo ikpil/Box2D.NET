@@ -22,7 +22,7 @@ namespace Box2D.NET
         public static int b2_toiHitCount;
         public static int b2_toiSeparatedCount;
 #endif
-        
+
         /// Evaluate the transform sweep at a specific time.
         public static B2Transform b2GetSweepTransform(ref B2Sweep sweep, float time)
         {
@@ -184,7 +184,7 @@ namespace Box2D.NET
             return bestIndex;
         }
 
-        static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, B2Transform transformA, ref B2ShapeProxy proxyB, B2Transform transformB)
+        public static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, B2Transform transformA, ref B2ShapeProxy proxyB, B2Transform transformB)
         {
             Debug.Assert(cache.count <= 3);
             B2Simplex s = new B2Simplex();
@@ -192,10 +192,10 @@ namespace Box2D.NET
             // Copy data from cache.
             s.count = cache.count;
 
-            B2SimplexVertex[] vertices = { s.v1, s.v2, s.v3 };
+            Span<B2SimplexVertex> vertices = s.AsSpan();
             for (int i = 0; i < s.count; ++i)
             {
-                B2SimplexVertex v = vertices[i];
+                ref B2SimplexVertex v = ref vertices[i];
                 v.indexA = cache.indexA[i];
                 v.indexB = cache.indexB[i];
                 B2Vec2 wALocal = proxyA.points[v.indexA];
@@ -211,7 +211,7 @@ namespace Box2D.NET
             // If the cache is empty or invalid ...
             if (s.count == 0)
             {
-                B2SimplexVertex v = vertices[0];
+                ref B2SimplexVertex v = ref vertices[0];
                 v.indexA = 0;
                 v.indexB = 0;
                 B2Vec2 wALocal = proxyA.points[0];
@@ -226,10 +226,10 @@ namespace Box2D.NET
             return s;
         }
 
-        public static void b2MakeSimplexCache(ref B2SimplexCache cache, B2Simplex simplex)
+        public static void b2MakeSimplexCache(ref B2SimplexCache cache, ref B2Simplex simplex)
         {
             cache.count = (ushort)simplex.count;
-            B2SimplexVertex[] vertices = { simplex.v1, simplex.v2, simplex.v3 };
+            Span<B2SimplexVertex> vertices = simplex.AsSpan();
             for (int i = 0; i < simplex.count; ++i)
             {
                 cache.indexA[i] = (byte)vertices[i].indexA;
@@ -244,7 +244,7 @@ namespace Box2D.NET
         // vector of the simplex. For example, the normal vector of a line segment
         // can be computed more accurately because it does not involve barycentric
         // coordinates.
-        public static B2Vec2 b2ComputeSimplexSearchDirection(B2Simplex simplex)
+        public static B2Vec2 b2ComputeSimplexSearchDirection(ref B2Simplex simplex)
         {
             switch (simplex.count)
             {
@@ -273,7 +273,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2Vec2 b2ComputeSimplexClosestPoint(B2Simplex s)
+        public static B2Vec2 b2ComputeSimplexClosestPoint(ref B2Simplex s)
         {
             switch (s.count)
             {
@@ -296,7 +296,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, B2Simplex s)
+        public static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
         {
             switch (s.count)
             {
@@ -350,7 +350,7 @@ namespace Box2D.NET
         // Solution
         // a1 = d12_1 / d12
         // a2 = d12_2 / d12
-        public static void b2SolveSimplex2(B2Simplex s)
+        public static void b2SolveSimplex2(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -384,7 +384,7 @@ namespace Box2D.NET
             s.count = 2;
         }
 
-        public static void b2SolveSimplex3(B2Simplex s)
+        public static void b2SolveSimplex3(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -517,7 +517,7 @@ namespace Box2D.NET
             }
 
             // Get simplex vertices as an array.
-            B2SimplexVertex[] vertices = { simplex.v1, simplex.v2, simplex.v3 };
+            Span<B2SimplexVertex> vertices = simplex.AsSpan();
             const int k_maxIters = 20;
 
             // These store the vertices of the last simplex so that we can check for duplicates and prevent cycling.
@@ -541,11 +541,11 @@ namespace Box2D.NET
                         break;
 
                     case 2:
-                        b2SolveSimplex2(simplex);
+                        b2SolveSimplex2(ref simplex);
                         break;
 
                     case 3:
-                        b2SolveSimplex3(simplex);
+                        b2SolveSimplex3(ref simplex);
                         break;
 
                     default:
@@ -566,7 +566,7 @@ namespace Box2D.NET
                 }
 
                 // Get search direction.
-                B2Vec2 d = b2ComputeSimplexSearchDirection(simplex);
+                B2Vec2 d = b2ComputeSimplexSearchDirection(ref simplex);
 
                 // Ensure the search direction is numerically fit.
                 if (b2Dot(d, d) < FLT_EPSILON * FLT_EPSILON)
@@ -582,7 +582,7 @@ namespace Box2D.NET
 
                 // Compute a tentative new simplex vertex using support points.
                 // support = support(b, d) - support(a, -d)
-                B2SimplexVertex vertex = vertices[simplex.count];
+                ref B2SimplexVertex vertex = ref vertices[simplex.count];
                 vertex.indexA = b2FindSupport(ref proxyA, b2InvRotateVector(transformA.q, b2Neg(d)));
                 vertex.wA = b2TransformPoint(ref transformA, proxyA.points[vertex.indexA]);
                 vertex.indexB = b2FindSupport(ref proxyB, b2InvRotateVector(transformB.q, d));
@@ -620,13 +620,13 @@ namespace Box2D.NET
             }
 
             // Prepare output
-            b2ComputeSimplexWitnessPoints(ref output.pointA, ref output.pointB, simplex);
+            b2ComputeSimplexWitnessPoints(ref output.pointA, ref output.pointB, ref simplex);
             output.distance = b2Distance(output.pointA, output.pointB);
             output.iterations = iter;
             output.simplexCount = simplexIndex;
 
             // Cache the simplex
-            b2MakeSimplexCache(ref cache, simplex);
+            b2MakeSimplexCache(ref cache, ref simplex);
 
             // Apply radii if requested
             if (input.useRadii)
@@ -696,7 +696,7 @@ namespace Box2D.NET
             simplex.count = 0;
 
             // Get simplex vertices as an array.
-            B2SimplexVertex[] vertices = { simplex.v1, simplex.v2, simplex.v3 };
+            Span<B2SimplexVertex> vertices = simplex.AsSpan();
 
             // Get an initial point in A - B
             int indexA = b2FindSupport(ref proxyA, b2Neg(r));
@@ -754,7 +754,7 @@ namespace Box2D.NET
                 // Shift by lambda * r because we want the closest point to the current clip point.
                 // Note that the support point p is not shifted because we want the plane equation
                 // to be formed in unshifted space.
-                B2SimplexVertex vertex = vertices[simplex.count];
+                ref B2SimplexVertex vertex = ref vertices[simplex.count];
                 vertex.indexA = indexB;
                 vertex.wA = new B2Vec2(wB.x + lambda * r.x, wB.y + lambda * r.y);
                 vertex.indexB = indexA;
@@ -769,11 +769,11 @@ namespace Box2D.NET
                         break;
 
                     case 2:
-                        b2SolveSimplex2(simplex);
+                        b2SolveSimplex2(ref simplex);
                         break;
 
                     case 3:
-                        b2SolveSimplex3(simplex);
+                        b2SolveSimplex3(ref simplex);
                         break;
 
                     default:
@@ -790,7 +790,7 @@ namespace Box2D.NET
 
                 // Get search direction.
                 // todo use more accurate segment perpendicular
-                v = b2ComputeSimplexClosestPoint(simplex);
+                v = b2ComputeSimplexClosestPoint(ref simplex);
 
                 // Iteration count is equated to the number of support point calls.
                 ++iter;
@@ -804,7 +804,7 @@ namespace Box2D.NET
 
             // Prepare output.
             B2Vec2 pointA = new B2Vec2(), pointB = new B2Vec2();
-            b2ComputeSimplexWitnessPoints(ref pointB, ref pointA, simplex);
+            b2ComputeSimplexWitnessPoints(ref pointB, ref pointA, ref simplex);
 
             B2Vec2 n = b2Normalize(b2Neg(v));
             B2Vec2 point = new B2Vec2(pointA.x + proxyA.radius * n.x, pointA.y + proxyA.radius * n.y);
@@ -816,7 +816,6 @@ namespace Box2D.NET
             output.hit = true;
             return output;
         }
-
 
 
         public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2Sweep sweepA, ref B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
@@ -1080,7 +1079,7 @@ namespace Box2D.NET
 
                 distanceIterations += 1;
 #if B2_SNOOP_TOI_COUNTERS
-            b2_toiDistanceIterations += 1;
+                b2_toiDistanceIterations += 1;
 #endif
 
                 // If the shapes are overlapped, we give up on continuous collision.
@@ -1089,7 +1088,7 @@ namespace Box2D.NET
                     // Failure!
                     output.state = B2TOIState.b2_toiStateOverlapped;
 #if B2_SNOOP_TOI_COUNTERS
-                b2_toiOverlappedCount += 1;
+                    b2_toiOverlappedCount += 1;
 #endif
                     output.fraction = 0.0f;
                     break;
@@ -1100,7 +1099,7 @@ namespace Box2D.NET
                     // Victory!
                     output.state = B2TOIState.b2_toiStateHit;
 #if B2_SNOOP_TOI_COUNTERS
-                b2_toiHitCount += 1;
+                    b2_toiHitCount += 1;
 #endif
                     output.fraction = t1;
                     break;
@@ -1151,7 +1150,7 @@ namespace Box2D.NET
                         // Victory!
                         output.state = B2TOIState.b2_toiStateSeparated;
 #if B2_SNOOP_TOI_COUNTERS
-                    b2_toiSeparatedCount += 1;
+                        b2_toiSeparatedCount += 1;
 #endif
                         output.fraction = tMax;
                         done = true;
@@ -1175,7 +1174,7 @@ namespace Box2D.NET
                     {
                         output.state = B2TOIState.b2_toiStateFailed;
 #if B2_SNOOP_TOI_COUNTERS
-                    b2_toiFailedCount += 1;
+                        b2_toiFailedCount += 1;
 #endif
                         output.fraction = t1;
                         done = true;
@@ -1188,7 +1187,7 @@ namespace Box2D.NET
                         // Victory! t1 should hold the TOI (could be 0.0).
                         output.state = B2TOIState.b2_toiStateHit;
 #if B2_SNOOP_TOI_COUNTERS
-                    b2_toiHitCount += 1;
+                        b2_toiHitCount += 1;
 #endif
                         output.fraction = t1;
                         done = true;
@@ -1216,7 +1215,7 @@ namespace Box2D.NET
                         rootIterationCount += 1;
 
 #if B2_SNOOP_TOI_COUNTERS
-                    ++b2_toiRootIterations;
+                        ++b2_toiRootIterations;
 #endif
 
                         float s = b2EvaluateSeparation(fcn, indexA, indexB, t);
@@ -1247,7 +1246,7 @@ namespace Box2D.NET
                     }
 
 #if B2_SNOOP_TOI_COUNTERS
-                b2_toiMaxRootIterations = b2MaxInt( b2_toiMaxRootIterations, rootIterationCount );
+                    b2_toiMaxRootIterations = b2MaxInt(b2_toiMaxRootIterations, rootIterationCount);
 #endif
 
                     pushBackIterations += 1;
@@ -1268,7 +1267,7 @@ namespace Box2D.NET
                     // Root finder got stuck. Semi-victory.
                     output.state = B2TOIState.b2_toiStateFailed;
 #if B2_SNOOP_TOI_COUNTERS
-                b2_toiFailedCount += 1;
+                    b2_toiFailedCount += 1;
 #endif
                     output.fraction = t1;
                     break;
@@ -1276,11 +1275,11 @@ namespace Box2D.NET
             }
 
 #if B2_SNOOP_TOI_COUNTERS
-        b2_toiMaxDistanceIterations = b2MaxInt( b2_toiMaxDistanceIterations, distanceIterations );
+            b2_toiMaxDistanceIterations = b2MaxInt(b2_toiMaxDistanceIterations, distanceIterations);
 
-        float time = b2GetMilliseconds( ticks );
-        b2_toiMaxTime = b2MaxFloat( b2_toiMaxTime, time );
-        b2_toiTime += time;
+            float time = b2GetMilliseconds(ticks);
+            b2_toiMaxTime = b2MaxFloat(b2_toiMaxTime, time);
+            b2_toiTime += time;
 #endif
 
             return output;

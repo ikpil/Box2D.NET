@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
@@ -324,7 +325,7 @@ public class ShapeDistance : Sample
         return new B2Vec2(a1 * w1.x + a2 * w2.x + a3 * w3.x, a1 * w1.y + a2 * w2.y + a3 * w3.y);
     }
 
-    void ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, B2Simplex s)
+    void ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
     {
         switch (s.count)
         {
@@ -386,15 +387,15 @@ public class ShapeDistance : Sample
 
         if (m_drawSimplex)
         {
-            B2Simplex simplex = m_simplexes[m_simplexIndex];
-            B2SimplexVertex[] vertices = new B2SimplexVertex[3] { simplex.v1, simplex.v2, simplex.v3 };
+            ref B2Simplex simplex = ref m_simplexes[m_simplexIndex];
+            Span<B2SimplexVertex> vertices = simplex.AsSpan();
 
             if (m_simplexIndex > 0)
             {
                 // The first recorded simplex does not have valid barycentric coordinates
                 B2Vec2 pointA = new B2Vec2();
                 B2Vec2 pointB = new B2Vec2();
-                ComputeSimplexWitnessPoints(ref pointA, ref pointB, simplex);
+                ComputeSimplexWitnessPoints(ref pointA, ref pointB, ref simplex);
 
                 m_context.draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
                 m_context.draw.DrawPoint(pointA, 5.0f, B2HexColor.b2_colorWhite);
@@ -405,7 +406,7 @@ public class ShapeDistance : Sample
 
             for (int i = 0; i < simplex.count; ++i)
             {
-                B2SimplexVertex vertex = vertices[i];
+                ref B2SimplexVertex vertex = ref vertices[i];
                 m_context.draw.DrawPoint(vertex.wA, 5.0f, colors[i]);
                 m_context.draw.DrawPoint(vertex.wB, 5.0f, colors[i]);
             }

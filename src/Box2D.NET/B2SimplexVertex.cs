@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// Simplex vertex for debugging the GJK algorithm
-    public class B2SimplexVertex
+    public struct B2SimplexVertex
     {
         public B2Vec2 wA; // support point in proxyA
         public B2Vec2 wB; // support point in proxyB
