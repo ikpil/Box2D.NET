@@ -16,12 +16,12 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 
 public class Weeble : Sample
 {
-    B2BodyId m_weebleId;
-    B2Vec2 m_explosionPosition;
-    float m_explosionRadius;
-    float m_explosionMagnitude;
-
     private static readonly int SampleWeeble = SampleFactory.Shared.RegisterSample("Bodies", "Weeble", Create);
+    
+    private B2BodyId m_weebleId;
+    private B2Vec2 m_explosionPosition;
+    private float m_explosionRadius;
+    private float m_explosionMagnitude;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -122,9 +122,9 @@ public class Weeble : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
 
         m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 

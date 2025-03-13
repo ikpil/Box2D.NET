@@ -277,18 +277,6 @@ public class OverlapWorld : Sample
     {
         base.UpdateUI();
 
-        m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
-        m_textLine += m_textIncrement;
-
-        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
-        {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
-            p.x -= 0.2f;
-            m_context.draw.DrawString(p, "skip");
-        }
-
         float height = 330.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
@@ -398,6 +386,23 @@ public class OverlapWorld : Sample
 
             b2DestroyBody(m_bodyIds[index]);
             m_bodyIds[index] = b2_nullBodyId;
+        }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
+        m_textLine += m_textIncrement;
+        m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
+        m_textLine += m_textIncrement;
+
+        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
+        {
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            p.x -= 0.2f;
+            m_context.draw.DrawString(p, "skip");
         }
     }
 }

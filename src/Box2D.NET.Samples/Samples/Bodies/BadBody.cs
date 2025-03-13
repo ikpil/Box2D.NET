@@ -82,9 +82,9 @@ public class BadBody : Sample
         b2Body_ApplyForceToCenter(m_badBodyId, new B2Vec2(0.0f, 10.0f), true);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings setting)
     {
-        base.UpdateUI();
+        base.Draw(setting);
         
         m_context.draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
         m_textLine += m_textIncrement;

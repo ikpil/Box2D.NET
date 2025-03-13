@@ -16,17 +16,17 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 
 public class BodyType : Sample
 {
-    B2BodyId m_attachmentId;
-    B2BodyId m_secondAttachmentId;
-    B2BodyId m_platformId;
-    B2BodyId m_secondPayloadId;
-    B2BodyId m_touchingBodyId;
-    B2BodyId m_floatingBodyId;
-    B2BodyType m_type;
-    float m_speed;
-    bool m_isEnabled;
-
     private static readonly int SampleBodyType = SampleFactory.Shared.RegisterSample("Bodies", "Body Type", BodyType.Create);
+
+    private B2BodyId m_attachmentId;
+    private B2BodyId m_secondAttachmentId;
+    private B2BodyId m_platformId;
+    private B2BodyId m_secondPayloadId;
+    private B2BodyId m_touchingBodyId;
+    private B2BodyId m_floatingBodyId;
+    private B2BodyType m_type;
+    private float m_speed;
+    private bool m_isEnabled;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -206,7 +206,7 @@ public class BodyType : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
 
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

@@ -146,9 +146,9 @@ public class BenchmarkSleep : Sample
         base.Step(settings);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
         
         if (m_wakeCount > 0)
         {

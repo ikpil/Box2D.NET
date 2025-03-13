@@ -16,6 +16,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class ShapeDistance : Sample
 {
+    private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
+
     public const int SIMPLEX_CAPACITY = 20;
 
     B2Polygon m_box;
@@ -48,7 +50,14 @@ public class ShapeDistance : Sample
     bool m_useCache;
     bool m_drawSimplex;
 
-    private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
+
+    // 
+    public B2Vec2 _outputPointA;
+    public B2Vec2 _outputPointB;
+
+    public float _outputDistance;
+    public int _outputIterations;
+
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -199,7 +208,7 @@ public class ShapeDistance : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 310.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -361,6 +370,15 @@ public class ShapeDistance : Sample
         B2DistanceOutput output = b2ShapeDistance(ref m_cache, ref input, m_simplexes, SIMPLEX_CAPACITY);
 
         m_simplexCount = output.simplexCount;
+        _outputPointA = output.pointA;
+        _outputPointB = output.pointB;
+        _outputDistance = output.distance;
+        _outputIterations = output.iterations;
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
 
         var empty = b2Transform_identity;
         DrawShape(m_typeA, ref empty, m_radiusA, B2HexColor.b2_colorCyan);
@@ -394,9 +412,9 @@ public class ShapeDistance : Sample
         }
         else
         {
-            m_context.draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(output.pointA, 5.0f, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(output.pointB, 5.0f, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawPoint(_outputPointA, 5.0f, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawPoint(_outputPointB, 5.0f, B2HexColor.b2_colorWhite);
         }
 
         if (m_showIndices)
@@ -418,7 +436,7 @@ public class ShapeDistance : Sample
         m_textLine += m_textIncrement;
         m_context.draw.DrawString(5, m_textLine, "mouse button 1 + shift: rotate");
         m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, $"distance = {output.distance:F2}, iterations = {output.iterations}");
+        m_context.draw.DrawString(5, m_textLine, $"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
         m_textLine += m_textIncrement;
 
         if (m_cache.count == 1)
@@ -427,7 +445,7 @@ public class ShapeDistance : Sample
         }
         else if (m_cache.count == 2)
         {
-            m_context.draw.DrawString(5, m_textLine,$"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
+            m_context.draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
         }
         else if (m_cache.count == 3)
         {

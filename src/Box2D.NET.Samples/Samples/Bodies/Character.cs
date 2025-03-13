@@ -17,9 +17,9 @@ public class Character : Sample
 {
     private static readonly int SampleCharacter = SampleFactory.Shared.RegisterSample("Bodies", "Character", Create);
 
-    B2BodyId m_circleCharacterId;
-    B2BodyId m_capsuleCharacterId;
-    B2BodyId m_boxCharacterId;
+    private B2BodyId m_circleCharacterId;
+    private B2BodyId m_capsuleCharacterId;
+    private B2BodyId m_boxCharacterId;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -189,14 +189,9 @@ public class Character : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
-    }
-
-    public override void UpdateUI()
-    {
-        base.UpdateUI();
+        base.Draw(settings);
         
         m_context.draw.DrawString(5, m_textLine, "This tests various character collision shapes.");
         m_textLine += m_textIncrement;

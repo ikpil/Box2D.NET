@@ -18,20 +18,21 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 public class BenchmarkManyTumblers : Sample
 {
     private static readonly int SampleBenchmarkManyTumblers = SampleFactory.Shared.RegisterSample("Benchmark", "Many Tumblers", Create);
-    B2BodyId m_groundId;
+    
+    private B2BodyId m_groundId;
 
-    int m_rowCount;
-    int m_columnCount;
+    private int m_rowCount;
+    private int m_columnCount;
 
-    B2BodyId[] m_tumblerIds;
-    B2Vec2[] m_positions;
-    int m_tumblerCount;
+    private B2BodyId[] m_tumblerIds;
+    private B2Vec2[] m_positions;
+    private int m_tumblerCount;
 
-    B2BodyId[] m_bodyIds;
-    int m_bodyCount;
-    int m_bodyIndex;
+    private B2BodyId[] m_bodyIds;
+    private int m_bodyCount;
+    private int m_bodyIndex;
 
-    float m_angularSpeed;
+    private float m_angularSpeed;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

@@ -28,6 +28,11 @@ public class ShapeCast : Sample
     private B2Vec2 m_translationB;
     private bool m_rayDrag;
 
+    // for step
+    private B2CastOutput output;
+    private B2Transform transformB2;
+    private float distance;
+
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new ShapeCast(ctx, settings);
@@ -160,13 +165,11 @@ public class ShapeCast : Sample
         }
     }
 
+
     public override void Step(Settings settings)
     {
         base.Step(settings);
-    }
 
-    public override void Draw(Settings settings)
-    {
         B2ShapeCastPairInput input = new B2ShapeCastPairInput();
         input.proxyA = b2MakeProxy(m_vAs, m_countA, m_radiusA);
         input.proxyB = b2MakeProxy(m_vBs, m_countB, m_radiusB);
@@ -175,9 +178,9 @@ public class ShapeCast : Sample
         input.translationB = m_translationB;
         input.maxFraction = 1.0f;
 
-        B2CastOutput output = b2ShapeCast(ref input);
+        output = b2ShapeCast(ref input);
 
-        B2Transform transformB2;
+        transformB2 = new B2Transform();
         transformB2.q = m_transformB.q;
         transformB2.p = b2MulAdd(m_transformB.p, output.fraction, input.translationB);
 
@@ -191,7 +194,14 @@ public class ShapeCast : Sample
         distanceCache.count = 0;
         B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceCache, ref distanceInput, null, 0);
 
-        m_context.draw.DrawString(5, m_textLine, $"hit = {output.hit}, iters = {output.iterations}, lambda = {output.fraction:g}, distance = {distanceOutput.distance:g}");
+        distance = distanceOutput.distance;
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        m_context.draw.DrawString(5, m_textLine, $"hit = {output.hit}, iters = {output.iterations}, lambda = {output.fraction:g}, distance = {distance:g}");
         m_textLine += m_textIncrement;
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];

@@ -19,27 +19,27 @@ public class Manifold : Sample
 {
     private static readonly int SampleManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Manifold", Create);
     
-    B2SimplexCache m_smgroxCache1;
-    B2SimplexCache m_smgroxCache2;
-    B2SimplexCache m_smgcapCache1;
-    B2SimplexCache m_smgcapCache2;
+    private B2SimplexCache m_smgroxCache1;
+    private B2SimplexCache m_smgroxCache2;
+    private B2SimplexCache m_smgcapCache1;
+    private B2SimplexCache m_smgcapCache2;
 
-    B2Hull m_wedge;
+    private B2Hull m_wedge;
 
-    B2Transform m_transform;
-    float m_angle;
-    float m_round;
+    private B2Transform m_transform;
+    private float m_angle;
+    private float m_round;
 
-    B2Vec2 m_basePosition;
-    B2Vec2 m_startPoint;
-    float m_baseAngle;
+    private B2Vec2 m_basePosition;
+    private B2Vec2 m_startPoint;
+    private float m_baseAngle;
 
-    bool m_dragging;
-    bool m_rotating;
-    bool m_showIds;
-    bool m_showAnchors;
-    bool m_showSeparation;
-    bool m_enableCaching;
+    private bool m_dragging;
+    private bool m_rotating;
+    private bool m_showIds;
+    private bool m_showAnchors;
+    private bool m_showSeparation;
+    private bool m_enableCaching;
 
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
@@ -47,8 +47,7 @@ public class Manifold : Sample
         return new Manifold(ctx, settings);
     }
 
-    public Manifold(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Manifold(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

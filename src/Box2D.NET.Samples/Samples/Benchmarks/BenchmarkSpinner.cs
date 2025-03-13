@@ -45,9 +45,9 @@ public class BenchmarkSpinner : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
         
 #if DEBUG
         DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);

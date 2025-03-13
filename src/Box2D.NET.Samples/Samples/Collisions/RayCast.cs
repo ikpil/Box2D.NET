@@ -13,37 +13,37 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class RayCast : Sample
 {
-    B2Polygon m_box;
-    B2Polygon m_triangle;
-    B2Circle m_circle;
-    B2Capsule m_capsule;
-    B2Segment m_segment;
-
-    B2Transform m_transform;
-    float m_angle;
-
-    B2Vec2 m_rayStart;
-    B2Vec2 m_rayEnd;
-
-    B2Vec2 m_basePosition;
-    float m_baseAngle;
-
-    B2Vec2 m_startPosition;
-
-    bool m_rayDrag;
-    bool m_translating;
-    bool m_rotating;
-    bool m_showFraction;
-
     private static readonly int SampleIndex = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast", Create);
+
+    private B2Polygon m_box;
+    private B2Polygon m_triangle;
+    private B2Circle m_circle;
+    private B2Capsule m_capsule;
+    private B2Segment m_segment;
+
+    private B2Transform m_transform;
+    private float m_angle;
+
+    private B2Vec2 m_rayStart;
+    private B2Vec2 m_rayEnd;
+
+    private B2Vec2 m_basePosition;
+    private float m_baseAngle;
+
+    private B2Vec2 m_startPosition;
+
+    private bool m_rayDrag;
+    private bool m_translating;
+    private bool m_rotating;
+    private bool m_showFraction;
+
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new RayCast(ctx, settings);
     }
 
-    public RayCast(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public RayCast(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -81,7 +81,7 @@ public class RayCast : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 230.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));

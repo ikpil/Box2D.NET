@@ -282,49 +282,6 @@ public class RayCastWorld : Sample
     {
         base.UpdateUI();
 
-        m_context.draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
-        m_textLine += m_textIncrement;
-
-        m_textLine += m_textIncrement;
-
-        if (m_simple)
-        {
-            m_context.draw.DrawString(5, m_textLine, "Simple closest point ray cast");
-            m_textLine += m_textIncrement;
-        }
-        else
-        {
-            switch ((Mode)m_mode)
-            {
-                case Mode.e_any:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
-                    break;
-
-                case Mode.e_closest:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
-                    break;
-
-                case Mode.e_multiple:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
-                    break;
-
-                case Mode.e_sorted:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
-                    break;
-            }
-
-            m_textLine += m_textIncrement;
-        }
-
-        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
-        {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
-            p.x -= 0.2f;
-            m_context.draw.DrawString(p, "ign");
-        }
-
         float height = 300.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
@@ -525,6 +482,54 @@ public class RayCastWorld : Sample
         }
 
         m_context.draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        m_context.draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
+        m_textLine += m_textIncrement;
+        m_context.draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
+        m_textLine += m_textIncrement;
+
+        m_textLine += m_textIncrement;
+
+        if (m_simple)
+        {
+            m_context.draw.DrawString(5, m_textLine, "Simple closest point ray cast");
+            m_textLine += m_textIncrement;
+        }
+        else
+        {
+            switch ((Mode)m_mode)
+            {
+                case Mode.e_any:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
+                    break;
+
+                case Mode.e_closest:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
+                    break;
+
+                case Mode.e_multiple:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
+                    break;
+
+                case Mode.e_sorted:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
+                    break;
+            }
+
+            m_textLine += m_textIncrement;
+        }
+
+        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
+        {
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            p.x -= 0.2f;
+            m_context.draw.DrawString(p, "ign");
+        }
     }
 
 

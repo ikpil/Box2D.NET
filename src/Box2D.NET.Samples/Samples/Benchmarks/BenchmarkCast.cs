@@ -22,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 public class BenchmarkCast : Sample
 {
     private static readonly int SampleBenchmarkCast = SampleFactory.Shared.RegisterSample("Benchmark", "Cast", Create);
-    
+
     private QueryType m_queryType;
 
     private List<B2Vec2> m_origins = new List<B2Vec2>();
@@ -186,7 +186,6 @@ public class BenchmarkCast : Sample
     }
 
 
-    
     public override void Step(Settings settings)
     {
         base.Step(settings);
@@ -320,11 +319,11 @@ public class BenchmarkCast : Sample
             }
         }
     }
-    
+
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 240.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
@@ -394,6 +393,11 @@ public class BenchmarkCast : Sample
         {
             BuildScene();
         }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
 
         m_context.draw.DrawString(5, m_textLine, $"build time ms = {m_buildTime:g}");
         m_textLine += m_textIncrement;

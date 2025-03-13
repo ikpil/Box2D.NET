@@ -67,14 +67,9 @@ public class Pivot : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
-    }
-
-    public override void UpdateUI()
-    {
-        base.UpdateUI();
+        base.Draw(settings);
 
         B2Vec2 v = b2Body_GetLinearVelocity(m_bodyId);
         float omega = b2Body_GetAngularVelocity(m_bodyId);
