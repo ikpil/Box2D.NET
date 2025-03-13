@@ -32,6 +32,8 @@ public class Platformer : Sample
     private B2ShapeId m_playerShapeId;
     private B2BodyId m_movingPlatformId;
 
+    //
+    private bool m_canJump;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -169,7 +171,20 @@ public class Platformer : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        {
+            Span<B2ContactData> contactData = stackalloc B2ContactData[1];
+            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
+            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+        }
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawString(5, m_textLine, $"Can jump = {m_canJump}");
+        m_textLine += m_textIncrement;
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -182,9 +197,10 @@ public class Platformer : Sample
         ImGui.End();
     }
 
+
     public override void Step(Settings settings)
     {
-        bool canJump = false;
+        m_canJump = false;
         B2Vec2 velocity = b2Body_GetLinearVelocity(m_playerId);
         if (m_jumpDelay == 0.0f && m_jumping == false && velocity.y < 0.01f)
         {
@@ -208,7 +224,7 @@ public class Platformer : Sample
 
                 if (sign * contactData[i].manifold.normal.y > 0.9f)
                 {
-                    canJump = true;
+                    m_canJump = true;
                     break;
                 }
             }
@@ -239,7 +255,7 @@ public class Platformer : Sample
         var keyState = GetKey(Keys.Space);
         if (keyState == InputAction.Press)
         {
-            if (canJump)
+            if (m_canJump)
             {
                 b2Body_ApplyLinearImpulseToCenter(m_playerId, new B2Vec2(0.0f, m_impulse), true);
                 m_jumpDelay = 0.5f;
@@ -253,18 +269,6 @@ public class Platformer : Sample
 
         base.Step(settings);
 
-        {
-            Span<B2ContactData> contactData = stackalloc B2ContactData[1];
-            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
-        }
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawString(5, m_textLine, $"Can jump = {canJump}");
-        m_textLine += m_textIncrement;
 
         if (settings.hertz > 0.0f)
         {

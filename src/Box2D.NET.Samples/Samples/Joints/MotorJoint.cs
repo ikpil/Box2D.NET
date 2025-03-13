@@ -22,14 +22,15 @@ namespace Box2D.NET.Samples.Samples.Joints;
 /// like top-down dry friction.
 public class MotorJoint : Sample
 {
-    B2JointId m_jointId;
-    float m_time;
-    float m_maxForce;
-    float m_maxTorque;
-    float m_correctionFactor;
-    bool m_go;
-
     private static readonly int SampleMotorJoint = SampleFactory.Shared.RegisterSample("Joints", "Motor Joint", Create);
+
+    private B2JointId m_jointId;
+    private float m_time;
+    private float m_maxForce;
+    private float m_maxTorque;
+    private float m_correctionFactor;
+    private bool m_go;
+
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -87,7 +88,13 @@ public class MotorJoint : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
+        float torque = b2Joint_GetConstraintTorque(m_jointId);
+
+        m_context.draw.DrawString(5, m_textLine, $"force = {force.x:3,F0}, {force.y:3,F0}, torque = {torque:3,F0}");
+        m_textLine += 15;
+
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -136,12 +143,5 @@ public class MotorJoint : Sample
         m_context.draw.DrawTransform(transform);
 
         base.Step(settings);
-
-        B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
-        float torque = b2Joint_GetConstraintTorque(m_jointId);
-
-        m_context.draw.DrawString(5, m_textLine, $"force = {force.x:3,F0}, {force.y:3,F0}, torque = {torque:3,F0}");
-
-        m_textLine += 15;
     }
 }

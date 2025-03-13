@@ -24,7 +24,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 public class OverlapWorld : Sample
 {
     private static readonly int SampleOverlapWorld = SampleFactory.Shared.RegisterSample("Collision", "Overlap World", Create);
-    
+
     public const int e_circleShape = 0;
     public const int e_capsuleShape = 1;
     public const int e_boxShape = 2;
@@ -102,7 +102,7 @@ public class OverlapWorld : Sample
         {
             m_userData[i] = new ShapeUserData();
         }
-        
+
         {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f), };
             B2Hull hull = b2ComputeHull(vertices, 3);
@@ -276,7 +276,19 @@ public class OverlapWorld : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
+        m_textLine += m_textIncrement;
+        m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
+        m_textLine += m_textIncrement;
+
+        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
+        {
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            p.x -= 0.2f;
+            m_context.draw.DrawString(p, "skip");
+        }
+
         float height = 330.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
@@ -343,11 +355,6 @@ public class OverlapWorld : Sample
     {
         base.Step(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
-        m_textLine += m_textIncrement;
-
         m_doomCount = 0;
 
         B2Transform transform = new B2Transform(m_position, b2MakeRot(m_angle));
@@ -374,13 +381,6 @@ public class OverlapWorld : Sample
             }
 
             m_context.draw.DrawPolygon(points, m_queryBox.count, B2HexColor.b2_colorWhite);
-        }
-
-        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
-        {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
-            p.x -= 0.2f;
-            m_context.draw.DrawString(p, "skip");
         }
 
         for (int i = 0; i < m_doomCount; ++i)

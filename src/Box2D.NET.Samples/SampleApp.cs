@@ -291,13 +291,16 @@ public class SampleApp
     private unsafe void OnWindowRender(double dt)
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        _ctx.draw.Flush();
 
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
         ImGui.SetNextWindowSize(new Vector2(_ctx.camera.m_width, _ctx.camera.m_height));
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
+
+        s_sample.Draw(s_settings);
+        
+        _ctx.draw.Flush();
 
         if (_ctx.draw.m_showUI)
         {

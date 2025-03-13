@@ -21,11 +21,11 @@ public class GLSolidPolygons
     private Camera _camera;
     private List<PolygonData> m_polygons = new List<PolygonData>();
 
-    uint[] m_vaoId = new uint[1];
-    uint[] m_vboIds = new uint[2];
-    uint m_programId;
-    int m_projectionUniform;
-    int m_pixelScaleUniform;
+    private uint[] m_vaoId = new uint[1];
+    private uint[] m_vboIds = new uint[2];
+    private uint m_programId;
+    private int m_projectionUniform;
+    private int m_pixelScaleUniform;
 
     public void Create(SampleAppContext context)
     {

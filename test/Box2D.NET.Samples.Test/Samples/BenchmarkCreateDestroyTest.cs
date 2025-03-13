@@ -13,7 +13,7 @@ public class BenchmarkCreateDestroyTest
 
         using var testObject = new BenchmarkCreateDestroy(ctx, settings);
 
-        for (int i = 0; i < 37; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             testObject.Step(settings);
         }

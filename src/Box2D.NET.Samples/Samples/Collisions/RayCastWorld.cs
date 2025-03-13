@@ -22,6 +22,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class RayCastWorld : Sample
 {
+    private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
+
     enum Mode
     {
         e_any = 0,
@@ -40,32 +42,31 @@ public class RayCastWorld : Sample
 
     public const int e_maxCount = 64;
 
-    int m_bodyIndex;
-    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
-    ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
-    B2Polygon[] m_polygons = new B2Polygon[4];
-    B2Capsule m_capsule;
-    B2Circle m_circle;
-    B2Segment m_segment;
+    private int m_bodyIndex;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
+    private ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
+    private B2Polygon[] m_polygons = new B2Polygon[4];
+    private B2Capsule m_capsule;
+    private B2Circle m_circle;
+    private B2Segment m_segment;
 
-    bool m_simple;
+    private bool m_simple;
 
-    int m_mode;
-    int m_ignoreIndex;
+    private int m_mode;
+    private int m_ignoreIndex;
 
-    CastType m_castType;
-    float m_castRadius;
+    private CastType m_castType;
+    private float m_castRadius;
 
-    B2Vec2 m_angleAnchor;
-    float m_baseAngle;
-    float m_angle;
-    bool m_rotating;
+    private B2Vec2 m_angleAnchor;
+    private float m_baseAngle;
+    private float m_angle;
+    private bool m_rotating;
 
-    B2Vec2 m_rayStart;
-    B2Vec2 m_rayEnd;
-    bool m_dragging;
+    private B2Vec2 m_rayStart;
+    private B2Vec2 m_rayEnd;
+    private bool m_dragging;
 
-    private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -280,7 +281,50 @@ public class RayCastWorld : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        m_context.draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
+        m_textLine += m_textIncrement;
+        m_context.draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
+        m_textLine += m_textIncrement;
+
+        m_textLine += m_textIncrement;
+
+        if (m_simple)
+        {
+            m_context.draw.DrawString(5, m_textLine, "Simple closest point ray cast");
+            m_textLine += m_textIncrement;
+        }
+        else
+        {
+            switch ((Mode)m_mode)
+            {
+                case Mode.e_any:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
+                    break;
+
+                case Mode.e_closest:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
+                    break;
+
+                case Mode.e_multiple:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
+                    break;
+
+                case Mode.e_sorted:
+                    m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
+                    break;
+            }
+
+            m_textLine += m_textIncrement;
+        }
+
+        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
+        {
+            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            p.x -= 0.2f;
+            m_context.draw.DrawString(p, "ign");
+        }
+
         float height = 300.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
@@ -365,13 +409,6 @@ public class RayCastWorld : Sample
     {
         base.Step(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
-        m_textLine += m_textIncrement;
-
-        m_textLine += m_textIncrement;
-
         B2HexColor color1 = B2HexColor.b2_colorGreen;
         B2HexColor color2 = B2HexColor.b2_colorLightGray;
         B2HexColor color3 = B2HexColor.b2_colorMagenta;
@@ -380,9 +417,6 @@ public class RayCastWorld : Sample
 
         if (m_simple)
         {
-            m_context.draw.DrawString(5, m_textLine, "Simple closest point ray cast");
-            m_textLine += m_textIncrement;
-
             // This version doesn't have a callback, but it doesn't skip the ignored shape
             B2RayResult result = b2World_CastRayClosest(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter());
 
@@ -401,27 +435,6 @@ public class RayCastWorld : Sample
         }
         else
         {
-            switch ((Mode)m_mode)
-            {
-                case Mode.e_any:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
-                    break;
-
-                case Mode.e_closest:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
-                    break;
-
-                case Mode.e_multiple:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
-                    break;
-
-                case Mode.e_sorted:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
-                    break;
-            }
-
-            m_textLine += m_textIncrement;
-
             b2CastResultFcn[] fcns = [RayCastAnyCallback, RayCastClosestCallback, RayCastMultipleCallback, RayCastSortedCallback];
             b2CastResultFcn modeFcn = fcns[m_mode];
 
@@ -512,17 +525,10 @@ public class RayCastWorld : Sample
         }
 
         m_context.draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
-
-        if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
-        {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
-            p.x -= 0.2f;
-            m_context.draw.DrawString(p, "ign");
-        }
     }
 
 
-// This callback finds the closest hit. This is the most common callback used in games.
+    // This callback finds the closest hit. This is the most common callback used in games.
     static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
@@ -546,9 +552,9 @@ public class RayCastWorld : Sample
         return fraction;
     }
 
-// This callback finds any hit. For this type of query we are usually just checking for obstruction,
-// so the hit data is not relevant.
-// NOTE: shape hits are not ordered, so this may not return the closest hit
+    // This callback finds any hit. For this type of query we are usually just checking for obstruction,
+    // so the hit data is not relevant.
+    // NOTE: shape hits are not ordered, so this may not return the closest hit
     static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;
@@ -571,12 +577,12 @@ public class RayCastWorld : Sample
         return 0.0f;
     }
 
-// This ray cast collects multiple hits along the ray.
-// The shapes are not necessary reported in order, so we might not capture
-// the closest shape.
-// NOTE: shape hits are not ordered, so this may return hits in any order. This means that
-// if you limit the number of results, you may discard the closest hit. You can see this
-// behavior in the sample.
+    // This ray cast collects multiple hits along the ray.
+    // The shapes are not necessary reported in order, so we might not capture
+    // the closest shape.
+    // NOTE: shape hits are not ordered, so this may return hits in any order. This means that
+    // if you limit the number of results, you may discard the closest hit. You can see this
+    // behavior in the sample.
     static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         RayCastContext rayContext = (RayCastContext)context;

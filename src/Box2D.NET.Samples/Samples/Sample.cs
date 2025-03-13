@@ -4,7 +4,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Numerics;
 using System.Text;
 using Box2D.NET.Samples.Helpers;
@@ -198,7 +197,7 @@ public class Sample : IDisposable
             DrawTextLine("sensors [ave] (max) = %5.2f [%6.2f] (%6.2f)", p.sensors, aveProfile.sensors, m_maxProfile.sensors);
         }
     }
-
+    
 
     private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
     {
@@ -505,6 +504,11 @@ public class Sample : IDisposable
             m_totalProfile.sleepIslands += p.sleepIslands;
             m_totalProfile.sensors += p.sensors;
         }
+    }
+
+    public virtual void Draw(Settings settings)
+    {
+        
     }
 
     public void ShiftOrigin(B2Vec2 newOrigin)

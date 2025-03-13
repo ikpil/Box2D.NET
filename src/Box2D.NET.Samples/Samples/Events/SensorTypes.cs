@@ -16,29 +16,28 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class SensorTypes : Sample
 {
+    private static readonly int SampleSensorTypes = SampleFactory.Shared.RegisterSample("Events", "Sensor Types", Create);
+
     public const uint GROUND = 0x00000001;
     public const uint SENSOR = 0x00000002;
     public const uint DEFAULT = 0x00000004;
     public const uint ALL_BITS = (~0u);
 
-    B2ShapeId m_staticSensorId;
-    B2ShapeId m_kinematicSensorId;
-    B2ShapeId m_dynamicSensorId;
+    private B2ShapeId m_staticSensorId;
+    private B2ShapeId m_kinematicSensorId;
+    private B2ShapeId m_dynamicSensorId;
 
-    B2BodyId m_kinematicBodyId;
+    private B2BodyId m_kinematicBodyId;
 
-    List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
+    private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
 
-    private static readonly int SampleSensorTypes = SampleFactory.Shared.RegisterSample("Events", "Sensor Types", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new SensorTypes(ctx, settings);
     }
 
-
-    public SensorTypes(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public SensorTypes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -179,6 +178,11 @@ public class SensorTypes : Sample
         }
 
         base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
 
         PrintOverlaps(m_staticSensorId, "static");
         PrintOverlaps(m_kinematicSensorId, "kinematic");

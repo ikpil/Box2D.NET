@@ -14,18 +14,17 @@ namespace Box2D.NET.Samples.Samples.Bodies;
 // This shows how to set the initial angular velocity to get a specific movement.
 public class Pivot : Sample
 {
-    B2BodyId m_bodyId;
-    float m_lever;
-
     private static readonly int SamplePivot = SampleFactory.Shared.RegisterSample("Bodies", "Pivot", Create);
+
+    private B2BodyId m_bodyId;
+    private float m_lever;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new Pivot(ctx, settings);
     }
 
-    public Pivot(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Pivot(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -71,6 +70,11 @@ public class Pivot : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
 
         B2Vec2 v = b2Body_GetLinearVelocity(m_bodyId);
         float omega = b2Body_GetAngularVelocity(m_bodyId);

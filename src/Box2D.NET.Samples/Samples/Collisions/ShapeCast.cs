@@ -11,22 +11,22 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class ShapeCast : Sample
 {
+    private static readonly int SampleShapeCast = SampleFactory.Shared.RegisterSample("Collision", "Shape Cast", Create);
+
     public const int e_vertexCount = 8;
 
-    B2Vec2[] m_vAs = new B2Vec2[B2_MAX_POLYGON_VERTICES];
-    int m_countA;
-    float m_radiusA;
+    private B2Vec2[] m_vAs = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+    private int m_countA;
+    private float m_radiusA;
 
-    B2Vec2[] m_vBs = new B2Vec2[B2_MAX_POLYGON_VERTICES];
-    int m_countB;
-    float m_radiusB;
+    private B2Vec2[] m_vBs = new B2Vec2[B2_MAX_POLYGON_VERTICES];
+    private int m_countB;
+    private float m_radiusB;
 
-    B2Transform m_transformA;
-    B2Transform m_transformB;
-    B2Vec2 m_translationB;
-    bool m_rayDrag;
-
-    private static readonly int SampleShapeCast = SampleFactory.Shared.RegisterSample("Collision", "Shape Cast", Create);
+    private B2Transform m_transformA;
+    private B2Transform m_transformB;
+    private B2Vec2 m_translationB;
+    private bool m_rayDrag;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -34,8 +34,7 @@ public class ShapeCast : Sample
     }
 
 
-    public ShapeCast(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ShapeCast(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -164,7 +163,10 @@ public class ShapeCast : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
+    }
 
+    public override void Draw(Settings settings)
+    {
         B2ShapeCastPairInput input = new B2ShapeCastPairInput();
         input.proxyA = b2MakeProxy(m_vAs, m_countA, m_radiusA);
         input.proxyB = b2MakeProxy(m_vBs, m_countB, m_radiusB);

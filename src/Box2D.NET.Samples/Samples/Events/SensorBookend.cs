@@ -17,7 +17,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 public class SensorBookend : Sample
 {
     private static readonly int SampleSensorBookendEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Bookend", Create);
-    
+
     private B2BodyId m_sensorBodyId;
     private B2ShapeId m_sensorShapeId;
 
@@ -90,7 +90,10 @@ public class SensorBookend : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        m_context.draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
+        m_textLine += m_textIncrement;
+
         float height = 90.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
@@ -161,8 +164,5 @@ public class SensorBookend : Sample
                 m_isVisiting = false;
             }
         }
-
-        m_context.draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
-        m_textLine += m_textIncrement;
     }
 }

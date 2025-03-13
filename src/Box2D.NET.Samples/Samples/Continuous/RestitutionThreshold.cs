@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 public class RestitutionThreshold : Sample
 {
     private static readonly int SampleRestitutionThreshold = SampleFactory.Shared.RegisterSample("Continuous", "Restitution Threshold", Create);
-    
+
     private B2BodyId m_ballId;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
@@ -72,11 +72,16 @@ public class RestitutionThreshold : Sample
         Span<B2ContactData> data = stackalloc B2ContactData[1];
         b2Body_GetContactData(m_ballId, data, data.Length);
 
+        base.Step(settings);
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
+
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
         m_context.draw.DrawString(5, m_textLine, $"p.x = {p.x:F9}, v.y = {v.y:F9}");
         m_textLine += m_textIncrement;
-
-        base.Step(settings);
     }
 }

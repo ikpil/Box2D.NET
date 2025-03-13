@@ -19,13 +19,13 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // This shows how to use explosions and demonstrates the projected perimeter
 public class Explosion : Sample
 {
-    List<B2JointId> m_jointIds = new List<B2JointId>();
-    float m_radius;
-    float m_falloff;
-    float m_impulse;
-    float m_referenceAngle;
-
     private static readonly int SampleExplosion = SampleFactory.Shared.RegisterSample("Shapes", "Explosion", Create);
+
+    private List<B2JointId> m_jointIds = new List<B2JointId>();
+    private float m_radius;
+    private float m_falloff;
+    private float m_impulse;
+    private float m_referenceAngle;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -84,6 +84,12 @@ public class Explosion : Sample
     {
         base.UpdateUI();
         
+        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
+
         float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -123,10 +129,5 @@ public class Explosion : Sample
 
         base.Step(settings);
 
-        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
-        m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
     }
 }

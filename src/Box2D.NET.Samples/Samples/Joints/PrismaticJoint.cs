@@ -16,15 +16,16 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class PrismaticJoint : Sample
 {
-    B2JointId m_jointId;
-    float m_motorSpeed;
-    float m_motorForce;
-    float m_hertz;
-    float m_dampingRatio;
-    bool m_enableSpring;
-    bool m_enableMotor;
-    bool m_enableLimit;
     private static readonly int SamplePrismatic = SampleFactory.Shared.RegisterSample("Joints", "Prismatic", Create);
+
+    private B2JointId m_jointId;
+    private float m_motorSpeed;
+    private float m_motorForce;
+    private float m_hertz;
+    private float m_dampingRatio;
+    private bool m_enableSpring;
+    private bool m_enableMotor;
+    private bool m_enableLimit;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -89,7 +90,19 @@ public class PrismaticJoint : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        float force = b2PrismaticJoint_GetMotorForce(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
+        m_textLine += m_textIncrement;
+
+        float translation = b2PrismaticJoint_GetTranslation(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
+        m_textLine += m_textIncrement;
+
+        float speed = b2PrismaticJoint_GetSpeed(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
+        m_textLine += m_textIncrement;
+
         float height = 220.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -150,17 +163,5 @@ public class PrismaticJoint : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
-
-        float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
-        m_textLine += m_textIncrement;
-
-        float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
-        m_textLine += m_textIncrement;
-
-        float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
-        m_textLine += m_textIncrement;
     }
 }

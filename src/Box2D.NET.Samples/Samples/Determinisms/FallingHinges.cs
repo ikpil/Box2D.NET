@@ -28,13 +28,14 @@ namespace Box2D.NET.Samples.Samples.Determinisms;
 
 public class FallingHinges : Sample
 {
+    private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
+
     public const int e_columns = 4;
     public const int e_rows = 30;
 
-    B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
-    uint m_hash;
-    int m_sleepStep;
-    private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
+    private B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
+    private uint m_hash;
+    private int m_sleepStep;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -183,6 +184,11 @@ public class FallingHinges : Sample
                 Console.WriteLine($"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
             }
         }
+    }
+
+    public override void UpdateUI()
+    {
+        base.UpdateUI();
 
         m_context.draw.DrawString(5, m_textLine, $"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
         m_textLine += m_textIncrement;

@@ -17,17 +17,18 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class RevoluteJoint : Sample
 {
-    B2BodyId m_ball;
-    B2JointId m_jointId1;
-    B2JointId m_jointId2;
-    float m_motorSpeed;
-    float m_motorTorque;
-    float m_hertz;
-    float m_dampingRatio;
-    bool m_enableSpring;
-    bool m_enableMotor;
-    bool m_enableLimit;
     private static readonly int SampleRevolute = SampleFactory.Shared.RegisterSample("Joints", "Revolute", Create);
+
+    private B2BodyId m_ball;
+    private B2JointId m_jointId1;
+    private B2JointId m_jointId2;
+    private float m_motorSpeed;
+    private float m_motorTorque;
+    private float m_hertz;
+    private float m_dampingRatio;
+    private bool m_enableSpring;
+    private bool m_enableMotor;
+    private bool m_enableLimit;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -140,7 +141,19 @@ public class RevoluteJoint : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
+        float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
+        m_context.draw.DrawString(5, m_textLine, $"Angle (Deg) 1 = {angle1:2,F1}");
+        m_textLine += m_textIncrement;
+
+        float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
+        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 1 = {torque1:4,F1}");
+        m_textLine += m_textIncrement;
+
+        float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
+        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 2 = {torque2:4,F1}");
+        m_textLine += m_textIncrement;
+
         float height = 220.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -201,17 +214,5 @@ public class RevoluteJoint : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
-
-        float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
-        m_context.draw.DrawString(5, m_textLine, $"Angle (Deg) 1 = {angle1:2,F1}");
-        m_textLine += m_textIncrement;
-
-        float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 1 = {torque1:4,F1}");
-        m_textLine += m_textIncrement;
-
-        float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 2 = {torque2:4,F1}");
-        m_textLine += m_textIncrement;
     }
 }
