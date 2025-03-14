@@ -298,15 +298,14 @@ public class SampleApp
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
-        s_sample.Draw(s_settings);
-        
-        _ctx.draw.Flush();
-
         if (_ctx.draw.m_showUI)
         {
             var title = SampleFactory.Shared.GetTitle(s_settings.sampleIndex);
             s_sample.DrawTitle(title);
         }
+
+        s_sample.Draw(s_settings);
+        _ctx.draw.Flush();
 
         UpdateUI();
 

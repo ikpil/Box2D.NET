@@ -22,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 public class DynamicTree : Sample
 {
     private static readonly int SampleDynamicTree = SampleFactory.Shared.RegisterSample("Collision", "Dynamic Tree", Create);
-    
+
     private B2DynamicTree m_tree;
     private int m_rowCount, m_columnCount;
     private Proxy[] m_proxies;
@@ -105,12 +105,14 @@ public class DynamicTree : Sample
         m_validate = true;
     }
 
-    public void Release()
+    public override void Dispose()
     {
         m_proxies = null;
         m_moveBuffer = null;
         b2DynamicTree_Destroy(m_tree);
         m_tree = null;
+
+        base.Dispose();
     }
 
     void BuildTree()
@@ -185,7 +187,7 @@ public class DynamicTree : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 320.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));

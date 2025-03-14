@@ -18,14 +18,14 @@ public class Draw
     private Camera _camera;
     public bool m_showUI;
 
-    public GLBackground m_background;
-    public GLPoints m_points;
-    public GLLines m_lines;
-    public GLTriangles m_triangles;
-    public GLCircles m_circles;
-    public GLSolidCircles m_solidCircles;
-    public GLSolidCapsules m_solidCapsules;
-    public GLSolidPolygons m_solidPolygons;
+    private GLBackground m_background;
+    private GLPoints m_points;
+    private GLLines m_lines;
+    private GLTriangles m_triangles;
+    private GLCircles m_circles;
+    private GLSolidCircles m_solidCircles;
+    private GLSolidCapsules m_solidCapsules;
+    private GLSolidPolygons m_solidPolygons;
     public B2DebugDraw m_debugDraw;
 
     public ImFontPtr m_smallFont;
