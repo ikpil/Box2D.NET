@@ -10,8 +10,9 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class SoftBody : Sample
 {
-    Donut m_donut;
     private static readonly int SampleDonut = SampleFactory.Shared.RegisterSample("Joints", "Soft Body", Create);
+    
+    private Donut m_donut;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

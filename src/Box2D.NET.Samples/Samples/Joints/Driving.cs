@@ -215,17 +215,6 @@ public class Driving : Sample
     {
         base.UpdateUI();
         
-        m_context.draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
-        m_textLine += m_textIncrement;
-
-        B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
-        float kph = linearVelocity.x * 3.6f;
-        m_context.draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
-        m_textLine += m_textIncrement;
-
-        B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
-        m_context.camera.m_center.x = carPosition.x;
-        
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
@@ -279,5 +268,21 @@ public class Driving : Sample
         }
 
         base.Step(settings);
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
+        m_textLine += m_textIncrement;
+
+        B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
+        float kph = linearVelocity.x * 3.6f;
+        m_context.draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
+        m_textLine += m_textIncrement;
+
+        B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
+        m_context.camera.m_center.x = carPosition.x;
     }
 }

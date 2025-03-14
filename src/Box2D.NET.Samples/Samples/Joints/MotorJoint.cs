@@ -31,6 +31,7 @@ public class MotorJoint : Sample
     private float m_correctionFactor;
     private bool m_go;
 
+    private B2Transform _transform;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -123,6 +124,7 @@ public class MotorJoint : Sample
         ImGui.End();
     }
 
+
     public override void Step(Settings settings)
     {
         if (m_go && settings.hertz > 0.0f)
@@ -139,9 +141,15 @@ public class MotorJoint : Sample
         b2MotorJoint_SetLinearOffset(m_jointId, linearOffset);
         b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);
 
-        B2Transform transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
-        m_context.draw.DrawTransform(transform);
+        _transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
 
         base.Step(settings);
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        m_context.draw.DrawTransform(_transform);
     }
 }

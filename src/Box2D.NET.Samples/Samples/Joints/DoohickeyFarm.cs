@@ -48,8 +48,4 @@ public class DoohickeyFarm : Sample
         }
     }
 
-    public override void Step(Settings settings)
-    {
-        base.Step(settings);
-    }
 }

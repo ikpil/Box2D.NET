@@ -18,7 +18,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 public class Cantilever : Sample
 {
     private static readonly int SampleCantileverIndex = SampleFactory.Shared.RegisterSample("Joints", "Cantilever", Create);
-    
+
     public const int e_count = 8;
 
     private float m_linearHertz;
@@ -100,7 +100,7 @@ public class Cantilever : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 180.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -158,14 +158,15 @@ public class Cantilever : Sample
 
         ImGui.PopItemWidth();
         ImGui.End();
-        
+    }
+
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
         B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
         m_context.draw.DrawString(5, m_textLine, $"tip-y = {tipPosition.y:F2}");
         m_textLine += m_textIncrement;
-    }
-
-    public override void Step(Settings settings)
-    {
-        base.Step(settings);
     }
 }

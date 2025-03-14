@@ -91,18 +91,6 @@ public class PrismaticJoint : Sample
     {
         base.UpdateUI();
 
-        float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
-        m_textLine += m_textIncrement;
-
-        float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
-        m_textLine += m_textIncrement;
-
-        float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
-        m_textLine += m_textIncrement;
-
         float height = 220.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -160,8 +148,20 @@ public class PrismaticJoint : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
+        
+        float force = b2PrismaticJoint_GetMotorForce(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
+        m_textLine += m_textIncrement;
+
+        float translation = b2PrismaticJoint_GetTranslation(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
+        m_textLine += m_textIncrement;
+
+        float speed = b2PrismaticJoint_GetSpeed(m_jointId);
+        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
+        m_textLine += m_textIncrement;
     }
 }

@@ -15,16 +15,16 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class WheelJoint : Sample
 {
-    B2JointId m_jointId;
-    float m_hertz;
-    float m_dampingRatio;
-    float m_motorSpeed;
-    float m_motorTorque;
-    bool m_enableSpring;
-    bool m_enableMotor;
-    bool m_enableLimit;
-
     private static readonly int SampleWheel = SampleFactory.Shared.RegisterSample("Joints", "Wheel", Create);
+    
+    private B2JointId m_jointId;
+    private float m_hertz;
+    private float m_dampingRatio;
+    private float m_motorSpeed;
+    private float m_motorTorque;
+    private bool m_enableSpring;
+    private bool m_enableMotor;
+    private bool m_enableLimit;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -139,10 +139,10 @@ public class WheelJoint : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
-
+        base.Draw(settings);
+        
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
         m_context.draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
         m_textLine += m_textIncrement;

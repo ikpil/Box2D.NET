@@ -16,21 +16,19 @@ namespace Box2D.NET.Samples.Samples.Joints;
 
 public class ScissorLift : Sample
 {
-    B2JointId m_liftJointId;
-    float m_motorForce;
-    float m_motorSpeed;
-    bool m_enableMotor;
-
     private static readonly int SampleScissorLift = SampleFactory.Shared.RegisterSample("Joints", "Scissor Lift", Create);
+
+    private B2JointId m_liftJointId;
+    private float m_motorForce;
+    private float m_motorSpeed;
+    private bool m_enableMotor;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new ScissorLift(ctx, settings);
     }
 
-
-    public ScissorLift(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ScissorLift(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -204,7 +202,7 @@ public class ScissorLift : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -230,10 +228,5 @@ public class ScissorLift : Sample
         }
 
         ImGui.End();
-    }
-
-    public override void Step(Settings settings)
-    {
-        base.Step(settings);
     }
 }

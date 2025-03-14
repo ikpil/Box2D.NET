@@ -17,14 +17,14 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This test ensures joints work correctly with bodies that have fixed rotation
 public class FixedRotation : Sample
 {
+    private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
+    
     public const int e_count = 6;
 
-    B2BodyId m_groundId;
-    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    B2JointId[] m_jointIds = new B2JointId[e_count];
-    bool m_fixedRotation;
-
-    private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
+    private B2BodyId m_groundId;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private B2JointId[] m_jointIds = new B2JointId[e_count];
+    private bool m_fixedRotation;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

@@ -19,13 +19,14 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // A suspension bridge
 public class Bridge : Sample
 {
+    private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
+    
     public const int e_count = 160;
 
-    B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    B2JointId[] m_jointIds = new B2JointId[e_count + 1];
-    float m_frictionTorque;
-    float m_gravityScale;
-    private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private B2JointId[] m_jointIds = new B2JointId[e_count + 1];
+    private float m_frictionTorque;
+    private float m_gravityScale;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -33,8 +34,7 @@ public class Bridge : Sample
     }
 
 
-    public Bridge(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Bridge(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

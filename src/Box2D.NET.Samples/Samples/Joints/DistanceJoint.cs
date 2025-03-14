@@ -16,28 +16,28 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // Test the distance joint and all options
 public class DistanceJoint : Sample
 {
+    private static readonly int SampleDistanceJoint = SampleFactory.Shared.RegisterSample("Joints", "Distance Joint", Create);
+
     public const int e_maxCount = 10;
 
-    B2BodyId m_groundId;
-    B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
-    B2JointId[] m_jointIds = new B2JointId[e_maxCount];
-    int m_count;
-    float m_hertz;
-    float m_dampingRatio;
-    float m_length;
-    float m_minLength;
-    float m_maxLength;
-    bool m_enableSpring;
-    bool m_enableLimit;
-    private static readonly int SampleDistanceJoint = SampleFactory.Shared.RegisterSample("Joints", "Distance Joint", Create);
+    private B2BodyId m_groundId;
+    private B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
+    private B2JointId[] m_jointIds = new B2JointId[e_maxCount];
+    private int m_count;
+    private float m_hertz;
+    private float m_dampingRatio;
+    private float m_length;
+    private float m_minLength;
+    private float m_maxLength;
+    private bool m_enableSpring;
+    private bool m_enableLimit;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new DistanceJoint(ctx, settings);
     }
 
-    public DistanceJoint(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public DistanceJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -127,7 +127,7 @@ public class DistanceJoint : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 240.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));

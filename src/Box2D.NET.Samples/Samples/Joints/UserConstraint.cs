@@ -13,9 +13,10 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This shows how you can implement a constraint outside of Box2D
 public class UserConstraint : Sample
 {
-    B2BodyId m_bodyId;
-    float[] m_impulses = new float[2];
     private static readonly int SampleUserConstraintIndex = SampleFactory.Shared.RegisterSample("Joints", "User Constraint", Create);
+
+    private B2BodyId m_bodyId;
+    private float[] m_impulses = new float[2];
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -64,8 +65,6 @@ public class UserConstraint : Sample
         {
             return;
         }
-
-        float invTimeStep = settings.hertz;
 
         const float hertz = 3.0f;
         const float zeta = 0.7f;
@@ -128,7 +127,13 @@ public class UserConstraint : Sample
 
         b2Body_SetLinearVelocity(m_bodyId, vB);
         b2Body_SetAngularVelocity(m_bodyId, omegaB);
+    }
 
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        float invTimeStep = settings.hertz;
         m_context.draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
         m_textLine += m_textIncrement;
     }
