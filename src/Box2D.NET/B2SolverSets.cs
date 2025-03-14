@@ -333,7 +333,7 @@ namespace Box2D.NET
                     int colorIndex = contact.colorIndex;
                     Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
 
-                    B2GraphColor color = world.constraintGraph.colors[colorIndex];
+                    ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
 
                     // Remove bodies from graph coloring associated with this constraint
                     if (colorIndex != B2_OVERFLOW_INDEX)
@@ -383,7 +383,7 @@ namespace Box2D.NET
 
                     Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
 
-                    B2GraphColor color = world.constraintGraph.colors[colorIndex];
+                    ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
 
                     B2JointSim awakeJointSim = b2Array_Get(ref color.jointSims, localIndex);
 
@@ -598,7 +598,7 @@ namespace Box2D.NET
             if (sourceSet.setIndex == (int)B2SetType.b2_awakeSet)
             {
                 Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-                B2GraphColor color = world.constraintGraph.colors[colorIndex];
+                ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
 
                 sourceSim = b2Array_Get(ref color.jointSims, localIndex);
             }

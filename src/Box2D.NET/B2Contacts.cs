@@ -454,7 +454,7 @@ namespace Box2D.NET
             {
                 // contact lives in constraint graph
                 Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
-                B2GraphColor color = world.constraintGraph.colors[contact.colorIndex];
+                ref B2GraphColor color = ref world.constraintGraph.colors[contact.colorIndex];
                 return b2Array_Get(ref color.contactSims, contact.localIndex);
             }
 

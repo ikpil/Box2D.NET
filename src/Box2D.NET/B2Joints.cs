@@ -120,7 +120,7 @@ namespace Box2D.NET
             if (joint.setIndex == (int)B2SetType.b2_awakeSet)
             {
                 Debug.Assert(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
-                B2GraphColor color = world.constraintGraph.colors[joint.colorIndex];
+                ref B2GraphColor color = ref world.constraintGraph.colors[joint.colorIndex];
                 return b2Array_Get(ref color.jointSims, joint.localIndex);
             }
 
@@ -1153,7 +1153,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
-            B2ConstraintGraph graph = context.graph;
+            ref B2ConstraintGraph graph = ref context.graph;
             B2JointSim[] joints = graph.colors[B2_OVERFLOW_INDEX].jointSims.data;
             int jointCount = graph.colors[B2_OVERFLOW_INDEX].jointSims.count;
 
@@ -1170,7 +1170,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
-            B2ConstraintGraph graph = context.graph;
+            ref B2ConstraintGraph graph = ref context.graph;
             B2JointSim[] joints = graph.colors[B2_OVERFLOW_INDEX].jointSims.data;
             int jointCount = graph.colors[B2_OVERFLOW_INDEX].jointSims.count;
 
@@ -1187,7 +1187,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
 
-            B2ConstraintGraph graph = context.graph;
+            ref B2ConstraintGraph graph = ref context.graph;
             B2JointSim[] joints = graph.colors[B2_OVERFLOW_INDEX].jointSims.data;
             int jointCount = graph.colors[B2_OVERFLOW_INDEX].jointSims.count;
 

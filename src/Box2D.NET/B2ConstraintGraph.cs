@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2ConstraintGraph
+    public struct B2ConstraintGraph
     {
         // including overflow at the end
         public B2GraphColor[] colors;

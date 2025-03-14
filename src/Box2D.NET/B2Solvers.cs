@@ -155,7 +155,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.warm_joints, "WarmJoints", B2HexColor.b2_colorGold, true);
 
-            B2GraphColor color = context.graph.colors[colorIndex];
+            ref B2GraphColor color = ref context.graph.colors[colorIndex];
             B2JointSim[] joints = color.jointSims.data;
             Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
             Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
@@ -173,7 +173,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
 
-            B2GraphColor color = context.graph.colors[colorIndex];
+            ref B2GraphColor color = ref context.graph.colors[colorIndex];
             B2JointSim[] joints = color.jointSims.data;
             Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
             Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
@@ -1216,7 +1216,7 @@ public enum b2SolverBlockType
                 b2TracyCZoneNC(B2TracyCZone.prepare_stages, "Prepare Stages", B2HexColor.b2_colorDarkOrange, true);
                 ulong prepareTicks = b2GetTicks();
 
-                B2ConstraintGraph graph = world.constraintGraph;
+                ref B2ConstraintGraph graph = ref world.constraintGraph;
                 B2GraphColor[] colors = graph.colors;
 
                 stepContext.sims = awakeSet.bodySims.data;
@@ -1368,7 +1368,7 @@ public enum b2SolverBlockType
                     for (int i = 0; i < activeColorCount; ++i)
                     {
                         int j = activeColorIndices[i];
-                        B2GraphColor color = colors[j];
+                        ref B2GraphColor color = ref colors[j];
 
                         int colorContactCount = color.contactSims.count;
 
@@ -1759,7 +1759,7 @@ public enum b2SolverBlockType
                 B2GraphColor[] colors = world.constraintGraph.colors;
                 for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
                 {
-                    B2GraphColor color = colors[i];
+                    ref B2GraphColor color = ref colors[i];
                     int contactCount = color.contactSims.count;
                     B2ContactSim[] contactSims = color.contactSims.data;
                     for (int j = 0; j < contactCount; ++j)

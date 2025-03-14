@@ -37,13 +37,8 @@ namespace Box2D.NET
             Debug.Assert(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
             Debug.Assert(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
 
-            // @ikpil, new b2ConstraintGraph
             graph = new B2ConstraintGraph();
             graph.colors = new B2GraphColor[B2_GRAPH_COLOR_COUNT];
-            for (int i = 0; i < graph.colors.Length; ++i)
-            {
-                graph.colors[i] = new B2GraphColor();
-            }
 
             bodyCapacity = b2MaxInt(bodyCapacity, 8);
 
@@ -51,7 +46,7 @@ namespace Box2D.NET
             // No bitset for overflow color.
             for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
             {
-                B2GraphColor color = graph.colors[i];
+                ref B2GraphColor color = ref graph.colors[i];
                 color.bodySet = b2CreateBitSet(bodyCapacity);
                 color.contactSims = b2Array_Create<B2ContactSim>();
                 color.jointSims = b2Array_Create<B2JointSim>();
@@ -69,11 +64,11 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2DestroyGraph(B2ConstraintGraph graph)
+        public static void b2DestroyGraph(ref B2ConstraintGraph graph)
         {
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
-                B2GraphColor color = graph.colors[i];
+                ref B2GraphColor color = ref graph.colors[i];
 
                 // The bit set should never be used on the overflow color
                 Debug.Assert(i != B2_OVERFLOW_INDEX || color.bodySet.bits == null);
@@ -94,7 +89,7 @@ namespace Box2D.NET
             Debug.Assert(0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag));
             Debug.Assert(0 != (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag));
 
-            B2ConstraintGraph graph = world.constraintGraph;
+            ref B2ConstraintGraph graph = ref world.constraintGraph;
             int colorIndex = B2_OVERFLOW_INDEX;
 
             int bodyIdA = contact.edges[0].bodyId;
@@ -110,7 +105,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color0 = graph.colors[i];
+                    ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdA) || b2GetBit(ref color0.bodySet, bodyIdB))
                     {
                         continue;
@@ -127,7 +122,7 @@ namespace Box2D.NET
                 // No static contacts in color 0
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color0 = graph.colors[i];
+                    ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdA))
                     {
                         continue;
@@ -143,7 +138,7 @@ namespace Box2D.NET
                 // No static contacts in color 0
                 for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color0 = graph.colors[i];
+                    ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdB))
                     {
                         continue;
@@ -156,7 +151,7 @@ namespace Box2D.NET
             }
 #endif
 
-            B2GraphColor color = graph.colors[colorIndex];
+            ref B2GraphColor color = ref graph.colors[colorIndex];
             contact.colorIndex = colorIndex;
             contact.localIndex = color.contactSims.count;
 
@@ -207,10 +202,10 @@ namespace Box2D.NET
 
         public static void b2RemoveContactFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
-            B2ConstraintGraph graph = world.constraintGraph;
+            ref B2ConstraintGraph graph = ref world.constraintGraph;
 
             Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-            B2GraphColor color = graph.colors[colorIndex];
+            ref B2GraphColor color = ref graph.colors[colorIndex];
 
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
@@ -235,7 +230,7 @@ namespace Box2D.NET
             }
         }
 
-        public static int b2AssignJointColor(B2ConstraintGraph graph, int bodyIdA, int bodyIdB, bool staticA, bool staticB)
+        public static int b2AssignJointColor(ref B2ConstraintGraph graph, int bodyIdA, int bodyIdB, bool staticA, bool staticB)
         {
             Debug.Assert(staticA == false || staticB == false);
 
@@ -244,7 +239,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color = graph.colors[i];
+                    ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA) || b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
@@ -259,7 +254,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color = graph.colors[i];
+                    ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA))
                     {
                         continue;
@@ -273,7 +268,7 @@ namespace Box2D.NET
             {
                 for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
                 {
-                    B2GraphColor color = graph.colors[i];
+                    ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
@@ -292,7 +287,7 @@ namespace Box2D.NET
 
         public static ref B2JointSim b2CreateJointInGraph(B2World world, B2Joint joint)
         {
-            B2ConstraintGraph graph = world.constraintGraph;
+            ref B2ConstraintGraph graph = ref world.constraintGraph;
 
             int bodyIdA = joint.edges[0].bodyId;
             int bodyIdB = joint.edges[1].bodyId;
@@ -301,7 +296,7 @@ namespace Box2D.NET
             bool staticA = bodyA.setIndex == (int)B2SetType.b2_staticSet;
             bool staticB = bodyB.setIndex == (int)B2SetType.b2_staticSet;
 
-            int colorIndex = b2AssignJointColor(graph, bodyIdA, bodyIdB, staticA, staticB);
+            int colorIndex = b2AssignJointColor(ref graph, bodyIdA, bodyIdB, staticA, staticB);
 
             ref B2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
@@ -321,10 +316,10 @@ namespace Box2D.NET
 
         public static void b2RemoveJointFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
-            B2ConstraintGraph graph = world.constraintGraph;
+            ref B2ConstraintGraph graph = ref world.constraintGraph;
 
             Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-            B2GraphColor color = graph.colors[colorIndex];
+            ref B2GraphColor color = ref graph.colors[colorIndex];
 
             if (colorIndex != B2_OVERFLOW_INDEX)
             {

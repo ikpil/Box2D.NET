@@ -6,7 +6,7 @@ using System;
 
 namespace Box2D.NET
 {
-    public class B2GraphColor
+    public struct B2GraphColor
     {
         // This bitset is indexed by bodyId so this is over-sized to encompass static bodies
         // however I never traverse these bits or use the bit count for anything

@@ -21,8 +21,8 @@ namespace Box2D.NET
             b2TracyCZoneNC(B2TracyCZone.prepare_overflow_contact, "Prepare Overflow Contact", B2HexColor.b2_colorYellow, true);
 
             B2World world = context.world;
-            B2ConstraintGraph graph = context.graph;
-            B2GraphColor color = graph.colors[B2_OVERFLOW_INDEX];
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2ContactSim[] contacts = color.contactSims.data;
@@ -156,8 +156,8 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.warmstart_overflow_contact, "WarmStart Overflow Contact", B2HexColor.b2_colorDarkOrange, true);
 
-            B2ConstraintGraph graph = context.graph;
-            B2GraphColor color = graph.colors[B2_OVERFLOW_INDEX];
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
@@ -223,8 +223,8 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
-            B2ConstraintGraph graph = context.graph;
-            B2GraphColor color = graph.colors[B2_OVERFLOW_INDEX];
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
@@ -378,8 +378,8 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.overflow_resitution, "Overflow Restitution", B2HexColor.b2_colorViolet, true);
 
-            B2ConstraintGraph graph = context.graph;
-            B2GraphColor color = graph.colors[B2_OVERFLOW_INDEX];
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
@@ -474,8 +474,8 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
-            B2ConstraintGraph graph = context.graph;
-            B2GraphColor color = graph.colors[B2_OVERFLOW_INDEX];
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
             B2ContactSim[] contacts = color.contactSims.data;
             int contactCount = color.contactSims.count;

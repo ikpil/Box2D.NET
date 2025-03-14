@@ -148,7 +148,6 @@ namespace Box2D.NET
         {
             stackAllocator = null;
             broadPhase = null;
-            constraintGraph = null;
 
             bodyIdPool = null;
 

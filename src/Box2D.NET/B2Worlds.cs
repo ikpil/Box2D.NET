@@ -348,7 +348,7 @@ namespace Box2D.NET
 
             b2Array_Destroy(ref world.solverSets);
 
-            b2DestroyGraph(world.constraintGraph);
+            b2DestroyGraph(ref world.constraintGraph);
             b2DestroyBroadPhase(world.broadPhase);
 
             b2DestroyIdPool(ref world.bodyIdPool);
@@ -525,7 +525,7 @@ namespace Box2D.NET
             int contactIndex = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
-                B2GraphColor color = graphColors[i];
+                ref B2GraphColor color = ref graphColors[i];
                 int count = color.contactSims.count;
                 B2ContactSim[] @base = color.contactSims.data;
                 for (int j = 0; j < count; ++j)
@@ -606,7 +606,7 @@ namespace Box2D.NET
                     {
                         // contact lives in constraint graph
                         Debug.Assert(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
-                        B2GraphColor color = graphColors[colorIndex];
+                        ref B2GraphColor color = ref graphColors[colorIndex];
                         contactSim = b2Array_Get(ref color.contactSims, localIndex);
                     }
                     else
@@ -1083,7 +1083,7 @@ namespace Box2D.NET
                             {
                                 Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
 
-                                B2GraphColor gc = world.constraintGraph.colors[contact.colorIndex];
+                                ref B2GraphColor gc = ref world.constraintGraph.colors[contact.colorIndex];
                                 B2ContactSim contactSim = b2Array_Get(ref gc.contactSims, contact.localIndex);
                                 int pointCount = contactSim.manifold.pointCount;
                                 B2Vec2 normal = contactSim.manifold.normal;
@@ -1373,7 +1373,7 @@ namespace Box2D.NET
 
                 for (int colorIndex = 0; colorIndex < B2_GRAPH_COLOR_COUNT; ++colorIndex)
                 {
-                    B2GraphColor graphColor = world.constraintGraph.colors[colorIndex];
+                    ref B2GraphColor graphColor = ref world.constraintGraph.colors[colorIndex];
 
                     int contactCount = graphColor.contactSims.count;
                     for (int contactIndex = 0; contactIndex < contactCount; ++contactIndex)
@@ -1981,7 +1981,7 @@ namespace Box2D.NET
             jointSimCapacity = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
-                B2GraphColor c = world.constraintGraph.colors[i];
+                ref B2GraphColor c = ref world.constraintGraph.colors[i];
                 bodyBitSetBytes += b2GetBitSetBytes(ref c.bodySet);
                 contactSimCapacity += c.contactSims.capacity;
                 jointSimCapacity += c.jointSims.capacity;
@@ -3079,7 +3079,7 @@ void b2World_Dump()
             // Validate constraint graph
             for (int colorIndex = 0; colorIndex < B2_GRAPH_COLOR_COUNT; ++colorIndex)
             {
-                B2GraphColor color = world.constraintGraph.colors[colorIndex];
+                ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
                 {
                     Debug.Assert(color.contactSims.count >= 0);
                     totalContactCount += color.contactSims.count;
