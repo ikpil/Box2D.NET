@@ -2,10 +2,12 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Memory;
+
 namespace Box2D.NET
 {
     /// Counters that give details of the simulation size.
-    public class B2Counters
+    public struct B2Counters
     {
         public int bodyCount;
         public int shapeCount;
@@ -17,6 +19,6 @@ namespace Box2D.NET
         public int treeHeight;
         public int byteCount;
         public int taskCount;
-        public readonly int[] colorCounts = new int[12];
+        public B2FixedArray12<int> colorCounts;
     }
 }

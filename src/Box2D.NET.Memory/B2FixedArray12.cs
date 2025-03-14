@@ -5,23 +5,29 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+#pragma warning disable CS0169
+
 namespace Box2D.NET.Memory
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct B2FixedArray2<T> where T : unmanaged
+    public struct B2FixedArray12<T> where T : unmanaged
     {
-        public const int Size = 2;
+        public const int Size = 12;
 
         public T v0000;
         public T v0001;
+        public T v0002;
+        public T v0003;
+        public T v0004;
+        public T v0005;
+        public T v0006;
+        public T v0007;
+        public T v0008;
+        public T v0009;
+        public T v0010;
+        public T v0011;
 
         public int Length => Size;
-
-        public B2FixedArray2(T v0000, T v0001)
-        {
-            this.v0000 = v0000;
-            this.v0001 = v0001;
-        }
 
         public ref T this[int index]
         {

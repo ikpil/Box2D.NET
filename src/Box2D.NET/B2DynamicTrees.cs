@@ -1050,6 +1050,7 @@ namespace Box2D.NET
                     {
                         int a = 3;
                     }
+
                     Debug.Assert((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }
@@ -1597,12 +1598,13 @@ namespace Box2D.NET
             // Assign boxes to bins and compute bin boxes
             // TODO_ERIN optimize
             float binCount = B2_BIN_COUNT;
-            float[] lowerBoundArray = new float[2] { centroidAABB.lowerBound.x, centroidAABB.lowerBound.y };
+            B2FixedArray2<float> lowerBoundArray = new B2FixedArray2<float>(centroidAABB.lowerBound.x, centroidAABB.lowerBound.y);
+
             float minC = lowerBoundArray[axisIndex];
             for (int i = 0; i < count; ++i)
             {
                 B2Vec2 c = b2AABB_Center(boxes[i]);
-                float[] cArray = new float[2] { c.x, c.y };
+                B2FixedArray2<float> cArray = new B2FixedArray2<float>(c.x, c.y);
                 int binIndex = (int)(binCount * (cArray[axisIndex] - minC) * invD);
                 binIndex = b2ClampInt(binIndex, 0, B2_BIN_COUNT - 1);
                 binIndices[i] = binIndex;

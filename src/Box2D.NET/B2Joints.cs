@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
@@ -1264,7 +1265,7 @@ namespace Box2D.NET
 
             if (draw.drawGraphColors)
             {
-                B2HexColor[] colors = new B2HexColor[B2_GRAPH_COLOR_COUNT]
+                Span<B2HexColor> colors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT]
                 {
                     B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen,
                     B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue, B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink,
