@@ -574,6 +574,8 @@ public class SampleApp
     private unsafe void MouseButtonCallback(WindowHandle* window, MouseButton button, InputAction action, KeyModifiers mods)
     {
         //ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+        // var io = ImGui.GetIO();
+        // io.AddMouseButtonEvent((float)xd, (float)yd);
 
         if (ImGui.GetIO().WantCaptureMouse)
         {
@@ -633,8 +635,10 @@ public class SampleApp
 
     private unsafe void ScrollCallback(WindowHandle* window, double dx, double dy)
     {
-        //ImGui_ImplGlfw_ScrollCallback(window, dx, dy);
-        if (ImGui.GetIO().WantCaptureMouse)
+        var io = ImGui.GetIO();
+        io.AddMouseWheelEvent((float)dx, (float)dy);
+        
+        if (io.WantCaptureMouse)
         {
             return;
         }
