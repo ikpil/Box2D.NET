@@ -138,10 +138,11 @@ public class BenchmarkCreateDestroy : Sample
     {
         base.Draw(settings);
 
-        DrawTextLine("total: create = %g ms, destroy = %g ms", m_createTime, m_destroyTime);
+        DrawTextLine($"total: create = {m_createTime} ms, destroy = {m_destroyTime} ms");
 
         float createPerBody = 1000.0f * m_createTime / m_iterations / m_bodyCount;
         float destroyPerBody = 1000.0f * m_destroyTime / m_iterations / m_bodyCount;
-        DrawTextLine("body: create = %g us, destroy = %g us", createPerBody, destroyPerBody);
+
+        DrawTextLine($"body: create = {createPerBody} us, destroy = {destroyPerBody} us");
     }
 }

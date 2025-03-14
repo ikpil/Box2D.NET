@@ -12,7 +12,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 public class SingleBox : Sample
 {
     private static readonly int SampleSingleBox = SampleFactory.Shared.RegisterSample("Stacking", "Single Box", Create);
-    
+
     B2BodyId m_bodyId;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
@@ -55,6 +55,6 @@ public class SingleBox : Sample
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawTextLine("(x, y) = (%.2g, %.2g)", position.x, position.y);
+        DrawTextLine($"(x, y) = ({position.x:G2}, {position.y:G2})");
     }
 }

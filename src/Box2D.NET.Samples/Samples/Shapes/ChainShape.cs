@@ -192,7 +192,7 @@ public class ChainShape : Sample
         m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
 #if DEBUG
-        DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);
+        DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
 #endif
 
         float height = 155.0f;

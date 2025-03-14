@@ -50,7 +50,7 @@ public class BenchmarkSpinner : Sample
         base.Draw(settings);
         
 #if DEBUG
-        DrawTextLine("toi calls, hits = %d, %d", b2_toiCalls, b2_toiHitCount);
+        DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
 #endif
     }
 }
