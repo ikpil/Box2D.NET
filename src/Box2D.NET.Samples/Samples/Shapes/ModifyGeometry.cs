@@ -17,10 +17,12 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // dynamic and kinematic shapes because static shapes don't look for new collisions.
 public class ModifyGeometry : Sample
 {
-    B2ShapeId m_shapeId;
-    B2ShapeType m_shapeType;
-    object m_shape;
-    float m_scale;
+    private static readonly int SampleModifyGeometry = SampleFactory.Shared.RegisterSample("Shapes", "Modify Geometry", Create);
+    
+    private B2ShapeId m_shapeId;
+    private B2ShapeType m_shapeType;
+    private object m_shape;
+    private float m_scale;
 
     //union
     //{
@@ -65,7 +67,6 @@ public class ModifyGeometry : Sample
     }
     //}
 
-    private static readonly int SampleModifyGeometry = SampleFactory.Shared.RegisterSample("Shapes", "Modify Geometry", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -208,10 +209,5 @@ public class ModifyGeometry : Sample
         }
 
         ImGui.End();
-    }
-
-    public override void Step(Settings settings)
-    {
-        base.Step(settings);
     }
 }

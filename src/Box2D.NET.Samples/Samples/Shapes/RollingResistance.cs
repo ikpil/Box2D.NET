@@ -12,9 +12,10 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class RollingResistance : Sample
 {
-    float m_resistScale;
-    float m_lift;
     private static readonly int SampleRollingResistance = SampleFactory.Shared.RegisterSample("Shapes", "Rolling Resistance", Create);
+
+    private float m_resistScale;
+    private float m_lift;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -87,9 +88,9 @@ public class RollingResistance : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
 
         for (int i = 0; i < 20; ++i)
         {

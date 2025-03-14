@@ -58,9 +58,9 @@ public class OffsetShapes : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
 
         m_context.draw.DrawTransform(b2Transform_identity);
     }

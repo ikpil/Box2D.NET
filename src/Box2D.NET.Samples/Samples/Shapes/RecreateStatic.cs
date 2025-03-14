@@ -13,8 +13,9 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // This sample tests a static shape being recreated every step.
 public class RecreateStatic : Sample
 {
-    B2BodyId m_groundId;
     private static readonly int SampleSingleBox = SampleFactory.Shared.RegisterSample("Shapes", "Recreate Static", Create);
+    
+    private B2BodyId m_groundId;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

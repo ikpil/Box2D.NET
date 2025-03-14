@@ -93,9 +93,9 @@ public class CustomFilter : Sample
         return customFilter.ShouldCollide(shapeIdA, shapeIdB);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
 
         m_context.draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
         m_textLine += m_textIncrement;

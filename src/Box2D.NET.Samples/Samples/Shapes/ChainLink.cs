@@ -91,10 +91,10 @@ public class ChainLink : Sample
         base.Step(settings);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
-        
+        base.Draw(settings);
+
         m_context.draw.DrawString(5, m_textLine, "This shows how to link together two chain shapes");
         m_textLine += m_textIncrement;
     }

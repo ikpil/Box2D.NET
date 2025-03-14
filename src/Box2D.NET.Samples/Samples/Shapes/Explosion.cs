@@ -83,12 +83,6 @@ public class Explosion : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
-        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
-        m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
 
         float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -128,6 +122,16 @@ public class Explosion : Sample
         }
 
         base.Step(settings);
+    }
 
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
+        m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
     }
 }

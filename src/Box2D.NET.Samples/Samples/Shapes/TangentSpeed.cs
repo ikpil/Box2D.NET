@@ -11,10 +11,10 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class TangentSpeed : Sample
 {
-    public const int m_totalCount = 200;
-
-    int m_count = 0;
     private static readonly int SampleTangentSpeed = SampleFactory.Shared.RegisterSample("Shapes", "Tangent Speed", Create);
+    
+    public const int m_totalCount = 200;
+    private int m_count = 0;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

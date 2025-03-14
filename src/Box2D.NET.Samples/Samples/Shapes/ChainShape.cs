@@ -16,6 +16,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 
 public class ChainShape : Sample
 {
+    private static readonly int SampleChainShape = SampleFactory.Shared.RegisterSample("Shapes", "Chain Shape", Create);
+
     enum ShapeType
     {
         e_circleShape = 0,
@@ -23,24 +25,20 @@ public class ChainShape : Sample
         e_boxShape
     };
 
-    B2BodyId m_groundId;
-    B2BodyId m_bodyId;
-    B2ChainId m_chainId;
-    ShapeType m_shapeType;
-    B2ShapeId m_shapeId;
-    float m_restitution;
-    float m_friction;
-
-    private static readonly int SampleChainShape = SampleFactory.Shared.RegisterSample("Shapes", "Chain Shape", Create);
+    private B2BodyId m_groundId;
+    private B2BodyId m_bodyId;
+    private B2ChainId m_chainId;
+    private ShapeType m_shapeType;
+    private B2ShapeId m_shapeId;
+    private float m_restitution;
+    private float m_friction;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new ChainShape(ctx, settings);
     }
 
-
-    public ChainShape(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ChainShape(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -226,10 +224,5 @@ public class ChainShape : Sample
         }
 
         ImGui.End();
-    }
-
-    public override void Step(Settings settings)
-    {
-        base.Step(settings);
     }
 }

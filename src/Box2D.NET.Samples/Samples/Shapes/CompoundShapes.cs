@@ -18,13 +18,13 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // This also shows how to get the combined AABB for the body.
 public class CompoundShapes : Sample
 {
-    B2BodyId m_table1Id;
-    B2BodyId m_table2Id;
-    B2BodyId m_ship1Id;
-    B2BodyId m_ship2Id;
-    bool m_drawBodyAABBs;
-
     private static readonly int SampleCompoundShape = SampleFactory.Shared.RegisterSample("Shapes", "Compound Shapes", Create);
+
+    private B2BodyId m_table1Id;
+    private B2BodyId m_table2Id;
+    private B2BodyId m_ship1Id;
+    private B2BodyId m_ship2Id;
+    private bool m_drawBodyAABBs;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -196,7 +196,7 @@ public class CompoundShapes : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
@@ -213,9 +213,9 @@ public class CompoundShapes : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
 
         if (m_drawBodyAABBs)
         {

@@ -15,15 +15,16 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 
 public class OverlapRecovery : Sample
 {
-    B2BodyId[] m_bodyIds;
-    int m_bodyCount;
-    int m_baseCount;
-    float m_overlap;
-    float m_extent;
-    float m_pushout;
-    float m_hertz;
-    float m_dampingRatio;
     private static readonly int SampleIndex4 = SampleFactory.Shared.RegisterSample("Robustness", "Overlap Recovery", Create);
+
+    private B2BodyId[] m_bodyIds;
+    private int m_bodyCount;
+    private int m_baseCount;
+    private float m_overlap;
+    private float m_extent;
+    private float m_pushout;
+    private float m_hertz;
+    private float m_dampingRatio;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -107,7 +108,7 @@ public class OverlapRecovery : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 210.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));

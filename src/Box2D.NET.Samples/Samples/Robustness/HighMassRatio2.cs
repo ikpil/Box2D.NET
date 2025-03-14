@@ -13,12 +13,12 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 // Big box on small boxes
 public class HighMassRatio2 : Sample
 {
+    private static readonly int SampleIndex2 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio2", Create);
+
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new HighMassRatio2(ctx, settings);
     }
-
-    private static readonly int SampleIndex2 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio2", Create);
 
     public HighMassRatio2(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
