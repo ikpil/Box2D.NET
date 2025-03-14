@@ -17,8 +17,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 public class BounceHouse : Sample
 {
     private static readonly int SampleBounceHouse = SampleFactory.Shared.RegisterSample("Continuous", "Bounce House", Create);
-    
-    public enum ShapeType
+
+    enum ShapeType
     {
         e_circleShape = 0,
         e_capsuleShape,
@@ -26,10 +26,10 @@ public class BounceHouse : Sample
     };
 
 
-    HitEvent[] m_hitEvents = new HitEvent[4];
-    B2BodyId m_bodyId;
-    ShapeType m_shapeType;
-    bool m_enableHitEvents;
+    private HitEvent[] m_hitEvents = new HitEvent[4];
+    private B2BodyId m_bodyId;
+    private ShapeType m_shapeType;
+    private bool m_enableHitEvents;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -126,7 +126,7 @@ public class BounceHouse : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -172,6 +172,17 @@ public class BounceHouse : Sample
             e.stepIndex = m_stepCount;
         }
 
+
+        if (m_stepCount == 1000)
+        {
+            m_stepCount += 0;
+        }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
         for (int i = 0; i < 4; ++i)
         {
             ref HitEvent e = ref m_hitEvents[i];
@@ -180,11 +191,6 @@ public class BounceHouse : Sample
                 m_context.draw.DrawCircle(e.point, 0.1f, B2HexColor.b2_colorOrangeRed);
                 m_context.draw.DrawString(e.point, $"{e.speed:F1}");
             }
-        }
-
-        if (m_stepCount == 1000)
-        {
-            m_stepCount += 0;
         }
     }
 }

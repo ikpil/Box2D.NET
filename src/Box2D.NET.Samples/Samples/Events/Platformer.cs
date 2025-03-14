@@ -171,20 +171,7 @@ public class Platformer : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-
-        {
-            Span<B2ContactData> contactData = stackalloc B2ContactData[1];
-            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
-        }
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
-        m_textLine += m_textIncrement;
-
-        m_context.draw.DrawString(5, m_textLine, $"Can jump = {m_canJump}");
-        m_textLine += m_textIncrement;
-
+        
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -196,7 +183,6 @@ public class Platformer : Sample
 
         ImGui.End();
     }
-
 
     public override void Step(Settings settings)
     {
@@ -275,4 +261,23 @@ public class Platformer : Sample
             m_jumpDelay = b2MaxFloat(0.0f, m_jumpDelay - 1.0f / settings.hertz);
         }
     }
+    
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        {
+            Span<B2ContactData> contactData = stackalloc B2ContactData[1];
+            int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
+            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+        }
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
+        m_textLine += m_textIncrement;
+
+        m_context.draw.DrawString(5, m_textLine, $"Can jump = {m_canJump}");
+        m_textLine += m_textIncrement;
+    }
+
 }

@@ -91,8 +91,6 @@ public class SensorBookend : Sample
     {
         base.UpdateUI();
 
-        m_context.draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
-        m_textLine += m_textIncrement;
 
         float height = 90.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -164,5 +162,13 @@ public class SensorBookend : Sample
                 m_isVisiting = false;
             }
         }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawString(5, m_textLine, $"visiting == {m_isVisiting}");
+        m_textLine += m_textIncrement;
     }
 }

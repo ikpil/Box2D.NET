@@ -70,9 +70,9 @@ public class PixelImperfect : Sample
         base.Step(settings);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
         
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);

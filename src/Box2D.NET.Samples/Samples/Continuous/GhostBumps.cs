@@ -18,6 +18,8 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 // This sample shows ghost bumps
 public class GhostBumps : Sample
 {
+    private static readonly int SampleGhostCollision = SampleFactory.Shared.RegisterSample("Continuous", "Ghost Bumps", Create);
+    
     private enum ShapeType
     {
         e_circleShape = 0,
@@ -25,16 +27,15 @@ public class GhostBumps : Sample
         e_boxShape
     }
 
-    B2BodyId m_groundId;
-    B2BodyId m_bodyId;
-    B2ShapeId m_shapeId;
-    ShapeType m_shapeType;
-    float m_round;
-    float m_friction;
-    float m_bevel;
-    bool m_useChain;
+    private B2BodyId m_groundId;
+    private B2BodyId m_bodyId;
+    private B2ShapeId m_shapeId;
+    private ShapeType m_shapeType;
+    private float m_round;
+    private float m_friction;
+    private float m_bevel;
+    private bool m_useChain;
 
-    private static readonly int SampleGhostCollision = SampleFactory.Shared.RegisterSample("Continuous", "Ghost Bumps", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

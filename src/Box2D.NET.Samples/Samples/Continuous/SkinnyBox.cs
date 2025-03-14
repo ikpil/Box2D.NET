@@ -16,14 +16,15 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class SkinnyBox : Sample
 {
-    B2BodyId m_bodyId, m_bulletId;
-    float m_angularVelocity;
-    float m_x;
-    bool m_capsule;
-    bool m_autoTest;
-    bool m_bullet;
-
     private static readonly int SampleSkinnyBox = SampleFactory.Shared.RegisterSample("Continuous", "Skinny Box", Create);
+    
+    private B2BodyId m_bodyId, m_bulletId;
+    private float m_angularVelocity;
+    private float m_x;
+    private bool m_capsule;
+    private bool m_autoTest;
+    private bool m_bullet;
+
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

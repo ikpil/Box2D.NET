@@ -166,11 +166,6 @@ public class BodyMove : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-
-        m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
-
-        m_context.draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
-        m_textLine += m_textIncrement;
         
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -191,5 +186,16 @@ public class BodyMove : Sample
         ImGui.SliderFloat("Magnitude", ref m_explosionMagnitude, -20.0f, 20.0f, "%.1f");
 
         ImGui.End();
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+
+        m_context.draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
+        m_textLine += m_textIncrement;
+
     }
 }

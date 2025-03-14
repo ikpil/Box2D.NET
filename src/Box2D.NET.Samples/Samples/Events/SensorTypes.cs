@@ -180,9 +180,9 @@ public class SensorTypes : Sample
         base.Step(settings);
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
 
         PrintOverlaps(m_staticSensorId, "static");
         PrintOverlaps(m_kinematicSensorId, "kinematic");

@@ -28,8 +28,7 @@ public class Pinball : Sample
         return new Pinball(ctx, settings);
     }
 
-    public Pinball(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Pinball(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {

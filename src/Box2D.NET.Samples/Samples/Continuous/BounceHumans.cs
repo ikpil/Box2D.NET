@@ -15,11 +15,16 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 public class BounceHumans : Sample
 {
     private static readonly int SampleBounceHumans = SampleFactory.Shared.RegisterSample("Continuous", "Bounce Humans", Create);
-    
+
     private Human[] m_humans = new Human[5];
     private int m_humanCount = 0;
     private float m_countDown = 0.0f;
     private float m_time = 0.0f;
+
+
+    //
+    private B2CosSin _cs1;
+    private B2CosSin _cs2;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -69,6 +74,7 @@ public class BounceHumans : Sample
         b2CreateCircleShape(groundId, ref shapeDef, ref circle);
     }
 
+
     public override void Step(Settings settings)
     {
         if (m_humanCount < 5 && m_countDown <= 0.0f)
@@ -86,15 +92,21 @@ public class BounceHumans : Sample
         }
 
         float timeStep = 1.0f / 60.0f;
-        B2CosSin cs1 = b2ComputeCosSin(0.5f * m_time);
-        B2CosSin cs2 = b2ComputeCosSin(m_time);
+        _cs1 = b2ComputeCosSin(0.5f * m_time);
+        _cs2 = b2ComputeCosSin(m_time);
         float gravity = 10.0f;
-        B2Vec2 gravityVec = new B2Vec2(gravity * cs1.sine, gravity * cs2.cosine);
-        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * cs1.sine, 3.0f * cs2.cosine), B2HexColor.b2_colorWhite);
+        B2Vec2 gravityVec = new B2Vec2(gravity * _cs1.sine, gravity * _cs2.cosine);
         m_time += timeStep;
         m_countDown -= timeStep;
         b2World_SetGravity(m_worldId, gravityVec);
 
         base.Step(settings);
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
     }
 }

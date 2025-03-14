@@ -129,7 +129,11 @@ public class FootSensor : Sample
                 m_overlapCount -= 1;
             }
         }
+    }
 
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
 
         int capacity = b2Shape_GetSensorCapacity(m_sensorId);
         m_overlaps.Clear();
@@ -143,12 +147,7 @@ public class FootSensor : Sample
             B2Vec2 point = b2AABB_Center(aabb);
             m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
         }
-    }
-
-    public override void UpdateUI()
-    {
-        base.UpdateUI();
-
+        
         m_context.draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
         m_textLine += m_textIncrement;
     }

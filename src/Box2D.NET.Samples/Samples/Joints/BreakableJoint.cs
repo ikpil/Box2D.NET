@@ -19,20 +19,19 @@ namespace Box2D.NET.Samples.Samples.Joints;
 // This sample shows how to break joints when the internal reaction force becomes large.
 public class BreakableJoint : Sample
 {
+    private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Joints", "Breakable", Create);
+
     public const int e_count = 6;
 
-    B2JointId[] m_jointIds = new B2JointId[e_count];
-    float m_breakForce;
-
-    private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Joints", "Breakable", Create);
+    private B2JointId[] m_jointIds = new B2JointId[e_count];
+    private float m_breakForce;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new BreakableJoint(ctx, settings);
     }
 
-    public BreakableJoint(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public BreakableJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -209,7 +208,7 @@ public class BreakableJoint : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -227,6 +226,7 @@ public class BreakableJoint : Sample
         ImGui.End();
     }
 
+
     public override void Step(Settings settings)
     {
         for (int i = 0; i < e_count; ++i)
@@ -242,13 +242,28 @@ public class BreakableJoint : Sample
                 b2DestroyJoint(m_jointIds[i]);
                 m_jointIds[i] = b2_nullJointId;
             }
-            else
+        }
+
+        base.Step(settings);
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        for (int i = 0; i < e_count; ++i)
+        {
+            if (B2_IS_NULL(m_jointIds[i]))
+            {
+                continue;
+            }
+
+            B2Vec2 force = b2Joint_GetConstraintForce(m_jointIds[i]);
+            if (b2LengthSquared(force) <= m_breakForce * m_breakForce)
             {
                 B2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
                 m_context.draw.DrawString(point, $"({force.x:F1}, {force.y:F1})");
             }
         }
-
-        base.Step(settings);
     }
 }

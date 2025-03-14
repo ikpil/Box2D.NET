@@ -10,6 +10,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class TimeOfImpact : Sample
 {
+    private static readonly int SampleTimeOfImpact = SampleFactory.Shared.RegisterSample("Collision", "Time of Impact", Create);
+    
     B2Vec2[] m_verticesA = new B2Vec2[4] { new B2Vec2(-16.25f, 44.75f), new B2Vec2(-15.75f, 44.75f), new B2Vec2(-15.75f, 45.25f), new B2Vec2(-16.25f, 45.25f) };
     B2Vec2[] m_verticesB = new B2Vec2[2] { new B2Vec2(0.0f, -0.125000000f), new B2Vec2(0.0f, 0.125000000f) };
 
@@ -18,7 +20,6 @@ public class TimeOfImpact : Sample
 
     float m_radiusA = 0.0f;
     float m_radiusB = 0.0299999993f;
-    private static readonly int SampleTimeOfImpact = SampleFactory.Shared.RegisterSample("Collision", "Time of Impact", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

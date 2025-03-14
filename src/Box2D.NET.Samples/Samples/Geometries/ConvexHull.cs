@@ -33,8 +33,7 @@ public class ConvexHull : Sample
     }
 
 
-    public ConvexHull(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ConvexHull(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -187,9 +186,9 @@ public class ConvexHull : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void Draw(Settings settings)
     {
-        base.UpdateUI();
+        base.Draw(settings);
 
         m_context.draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
         m_textLine += m_textIncrement;

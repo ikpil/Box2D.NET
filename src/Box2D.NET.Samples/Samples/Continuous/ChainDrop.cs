@@ -14,20 +14,19 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 
 public class ChainDrop : Sample
 {
-    B2BodyId m_bodyId;
-    B2ShapeId m_shapeId;
-    float m_yOffset;
-    float m_speed;
-
     private static readonly int SampleChainDrop = SampleFactory.Shared.RegisterSample("Continuous", "Chain Drop", Create);
+    
+    private B2BodyId m_bodyId;
+    private B2ShapeId m_shapeId;
+    private float m_yOffset;
+    private float m_speed;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
         return new ChainDrop(ctx, settings);
     }
 
-    public ChainDrop(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ChainDrop(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
