@@ -156,7 +156,7 @@ public class BounceHouse : Sample
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
         {
-            B2ContactHitEvent @event = events.hitEvents[i];
+            ref B2ContactHitEvent @event = ref events.hitEvents[i];
 
             ref HitEvent e = ref m_hitEvents[0];
             for (int j = 1; j < 4; ++j)

@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A hit touch event is generated when two shapes collide with a speed faster than the hit speed threshold.
-    public class B2ContactHitEvent
+    public struct B2ContactHitEvent
     {
         /// Id of the first shape
         public B2ShapeId shapeIdA;

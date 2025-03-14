@@ -92,7 +92,7 @@ public class CircleStack : Sample
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
         {
-            B2ContactHitEvent @event = events.hitEvents[i];
+            ref B2ContactHitEvent @event = ref events.hitEvents[i];
 
             object userDataA = b2Shape_GetUserData(@event.shapeIdA);
             object userDataB = b2Shape_GetUserData(@event.shapeIdB);
