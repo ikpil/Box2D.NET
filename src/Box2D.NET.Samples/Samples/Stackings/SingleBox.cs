@@ -48,9 +48,10 @@ public class SingleBox : Sample
         b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
     }
 
-    public override void Step(Settings settings)
+
+    public override void Draw(Settings settings)
     {
-        base.Step(settings);
+        base.Draw(settings);
 
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 

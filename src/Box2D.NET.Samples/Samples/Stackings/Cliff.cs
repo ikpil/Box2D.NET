@@ -17,8 +17,8 @@ public class Cliff : Sample
 {
     private static readonly int SampleCliff = SampleFactory.Shared.RegisterSample("Stacking", "Cliff", Create);
 
-    B2BodyId[] m_bodyIds = new B2BodyId[9];
-    bool m_flip;
+    private B2BodyId[] m_bodyIds = new B2BodyId[9];
+    private bool m_flip;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {

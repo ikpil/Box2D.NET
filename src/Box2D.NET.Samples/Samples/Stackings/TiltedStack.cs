@@ -17,7 +17,7 @@ public class TiltedStack : Sample
     public const int e_columns = 10;
     public const int e_rows = 10;
 
-    B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
+    private B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
