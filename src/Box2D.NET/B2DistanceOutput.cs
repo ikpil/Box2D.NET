@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// Output for b2ShapeDistance
-    public ref struct B2DistanceOutput
+    public struct B2DistanceOutput
     {
         public B2Vec2 pointA; // Closest point on shapeA
 

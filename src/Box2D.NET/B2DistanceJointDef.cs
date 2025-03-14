@@ -11,7 +11,7 @@ namespace Box2D.NET
     /// local anchor points so that the initial configuration can violate the
     /// constraint slightly. This helps when saving and loading a game.
     /// @ingroup distance_joint
-    public ref struct B2DistanceJointDef
+    public struct B2DistanceJointDef
     {
         /// The first attached body
         public B2BodyId bodyIdA;

@@ -8,7 +8,7 @@ namespace Box2D.NET
     ///
     /// A typical usage is to control the movement of a dynamic body with respect to the ground.
     /// @ingroup motor_joint
-    public ref struct B2MotorJointDef
+    public struct B2MotorJointDef
     {
         /// The first attached body
         public B2BodyId bodyIdA;

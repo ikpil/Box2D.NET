@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// Input for b2ShapeDistance
-    public ref struct B2DistanceInput
+    public struct B2DistanceInput
     {
         /// The proxy for shape A
         public B2ShapeProxy proxyA;

@@ -9,7 +9,7 @@ namespace Box2D.NET
     /// Low level shape cast input in generic form. This allows casting an arbitrary point
     /// cloud wrap with a radius. For example, a circle is a single point with a non-zero radius.
     /// A capsule is two points with a non-zero radius. A box is four points with a zero radius.
-    public ref struct B2ShapeCastInput
+    public struct B2ShapeCastInput
     {
         /// A point cloud to cast
         //public B2Vec2[] points = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];

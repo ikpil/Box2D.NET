@@ -11,7 +11,7 @@ namespace Box2D.NET
     /// configuration can violate the constraint slightly. The joint translation is zero
     /// when the local anchor points coincide in world space.
     /// @ingroup wheel_joint
-    public ref struct B2WheelJointDef
+    public struct B2WheelJointDef
     {
         /// The first attached body
         public B2BodyId bodyIdA;

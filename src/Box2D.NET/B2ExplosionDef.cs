@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// The explosion definition is used to configure options for explosions. Explosions
     /// consider shape geometry when computing the impulse.
     /// @ingroup world
-    public ref struct B2ExplosionDef
+    public struct B2ExplosionDef
     {
         /// Mask bits to filter shapes
         public ulong maskBits;

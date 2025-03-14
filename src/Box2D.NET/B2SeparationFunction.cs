@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public ref struct B2SeparationFunction
+    public struct B2SeparationFunction
     {
         public B2ShapeProxy proxyA;
         public B2ShapeProxy proxyB;

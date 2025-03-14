@@ -10,7 +10,7 @@ namespace Box2D.NET
     /// soft-body simulation.
     /// @note The approximate solver in Box2D cannot hold many bodies together rigidly
     /// @ingroup weld_joint
-    public ref struct B2WeldJointDef
+    public struct B2WeldJointDef
     {
         /// The first attached body
         public B2BodyId bodyIdA;

@@ -9,7 +9,7 @@ namespace Box2D.NET
     /// Body definitions are temporary objects used to bundle creation parameters.
     /// Must be initialized using b2DefaultBodyDef().
     /// @ingroup body
-    public ref struct B2BodyDef
+    public struct B2BodyDef
     {
         /// The body type: static, kinematic, or dynamic.
         public B2BodyType type;
