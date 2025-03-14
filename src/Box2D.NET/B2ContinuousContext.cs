@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2ContinuousContext
+    public struct B2ContinuousContext
     {
         public B2World world;
         public B2BodySim fastBodySim;

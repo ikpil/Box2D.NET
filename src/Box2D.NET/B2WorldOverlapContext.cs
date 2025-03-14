@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2WorldOverlapContext
+    public struct B2WorldOverlapContext
     {
         public B2World world;
         public b2OverlapResultFcn fcn;

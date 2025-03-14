@@ -49,12 +49,12 @@ public class DynamicTree : Sample
     private float _ms;
     private float _boxCount;
 
-    static bool QueryCallback(int proxyId, int userData, object context)
+    static bool QueryCallback(int proxyId, int userData, ref DynamicTreeContext context)
     {
-        DynamicTree sample = context as DynamicTree;
-        Proxy proxy = sample.m_proxies[userData];
+        ref DynamicTreeContext sample = ref context;
+        Proxy proxy = sample.tree.m_proxies[userData];
         Debug.Assert(proxy.proxyId == proxyId);
-        proxy.queryStamp = sample.m_timeStamp;
+        proxy.queryStamp = sample.tree.m_timeStamp;
         return true;
     }
 
@@ -416,14 +416,23 @@ public class DynamicTree : Sample
         m_timeStamp += 1;
     }
 
+    public struct DynamicTreeContext
+    {
+        public DynamicTree tree;
+    }
+
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
 
         if (m_queryDrag)
         {
+            var dynamicTreeContext = new DynamicTreeContext();
+            dynamicTreeContext.tree = this;
+                
             B2AABB box = new B2AABB(b2Min(m_startPoint, m_endPoint), b2Max(m_startPoint, m_endPoint));
-            b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, this);
+            
+            b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
             m_context.draw.DrawAABB(box, B2HexColor.b2_colorWhite);
         }

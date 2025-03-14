@@ -168,9 +168,9 @@ namespace Box2D.NET
 
 
         // This is called from b2DynamicTree::Query when we are gathering pairs.
-        public static bool b2PairQueryCallback(int proxyId, int shapeId, object context)
+        public static bool b2PairQueryCallback(int proxyId, int shapeId, ref B2QueryPairContext context)
         {
-            B2QueryPairContext queryContext = context as B2QueryPairContext;
+            ref B2QueryPairContext queryContext = ref context;
             B2BroadPhase broadPhase = queryContext.world.broadPhase;
 
             int proxyKey = B2_PROXY_KEY(proxyId, queryContext.queryTreeType);
@@ -314,9 +314,9 @@ namespace Box2D.NET
 
 // Warning: writing to these globals significantly slows multithreading performance
 #if B2_SNOOP_PAIR_COUNTERS
-b2TreeStats b2_dynamicStats;
-b2TreeStats b2_kinematicStats;
-b2TreeStats b2_staticStats;
+        b2TreeStats b2_dynamicStats;
+        b2TreeStats b2_kinematicStats;
+        b2TreeStats b2_staticStats;
 #endif
 
         public static void b2FindPairsTask(int startIndex, int endIndex, uint threadIndex, object context)
@@ -363,12 +363,12 @@ b2TreeStats b2_staticStats;
                 {
                     // consider using bits = groupIndex > 0 ? B2_DEFAULT_MASK_BITS : maskBits
                     queryContext.queryTreeType = B2BodyType.b2_kinematicBody;
-                    B2TreeStats statsKinematic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_kinematicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                    B2TreeStats statsKinematic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_kinematicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
                     stats.nodeVisits += statsKinematic.nodeVisits;
                     stats.leafVisits += statsKinematic.leafVisits;
 
                     queryContext.queryTreeType = B2BodyType.b2_staticBody;
-                    B2TreeStats statsStatic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_staticBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                    B2TreeStats statsStatic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_staticBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
                     stats.nodeVisits += statsStatic.nodeVisits;
                     stats.leafVisits += statsStatic.leafVisits;
                 }
@@ -376,7 +376,7 @@ b2TreeStats b2_staticStats;
                 // All proxies collide with dynamic proxies
                 // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
                 queryContext.queryTreeType = B2BodyType.b2_dynamicBody;
-                B2TreeStats statsDynamic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_dynamicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, queryContext);
+                B2TreeStats statsDynamic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_dynamicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
                 stats.nodeVisits += statsDynamic.nodeVisits;
                 stats.leafVisits += statsDynamic.leafVisits;
             }

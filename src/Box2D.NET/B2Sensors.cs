@@ -37,11 +37,11 @@ namespace Box2D.NET
         // Each sensor has an double buffered array of overlaps
         // These overlaps use a shape reference with index and generation
 
-        public static bool b2SensorQueryCallback(int proxyId, int shapeId, object context)
+        public static bool b2SensorQueryCallback(int proxyId, int shapeId, ref B2SensorQueryContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2SensorQueryContext queryContext = context as B2SensorQueryContext;
+            ref B2SensorQueryContext queryContext = ref context;
             B2Shape sensorShape = queryContext.sensorShape;
             int sensorShapeId = sensorShape.id;
 
@@ -154,9 +154,9 @@ namespace Box2D.NET
                 B2AABB queryBounds = sensorShape.aabb;
 
                 // Query all trees
-                b2DynamicTree_Query(trees[0], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, queryContext);
-                b2DynamicTree_Query(trees[1], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, queryContext);
-                b2DynamicTree_Query(trees[2], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, queryContext);
+                b2DynamicTree_Query(trees[0], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
+                b2DynamicTree_Query(trees[1], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
+                b2DynamicTree_Query(trees[2], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
 
                 // Sort the overlaps to enable finding begin and end events.
                 Array.Sort(sensor.overlaps2.data, 0, sensor.overlaps2.count, B2ShapeRefComparer.Shared);

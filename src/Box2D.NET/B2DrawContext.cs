@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2DrawContext
+    public struct B2DrawContext
     {
         public B2World world;
         public B2DebugDraw draw;

@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2QueryPairContext
+    public struct B2QueryPairContext
     {
         public B2World world;
         public B2MoveResult moveResult;

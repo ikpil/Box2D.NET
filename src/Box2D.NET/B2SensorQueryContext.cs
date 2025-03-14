@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2SensorQueryContext
+    public struct B2SensorQueryContext
     {
         public B2World world;
         public B2SensorTaskContext taskContext;

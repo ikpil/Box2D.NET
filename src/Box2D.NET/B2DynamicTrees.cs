@@ -18,7 +18,7 @@ namespace Box2D.NET
 
         /// This function receives proxies found in the AABB query.
         /// @return true if the query should continue
-        public delegate bool b2TreeQueryCallbackFcn(int proxyId, int userData, object context);
+        public delegate bool b2TreeQueryCallbackFcn<T>(int proxyId, int userData, ref T context);
 
         /// This function receives clipped ray cast input for a proxy. The function
         /// returns the new ray fraction.
@@ -1084,7 +1084,7 @@ namespace Box2D.NET
 
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_Query(B2DynamicTree tree, B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn callback, object context)
+        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1118,7 +1118,7 @@ namespace Box2D.NET
                     if (b2IsLeaf(node))
                     {
                         // callback to user code with proxy id
-                        bool proceed = callback(nodeId, node.userData, context);
+                        bool proceed = callback(nodeId, node.userData, ref context);
                         result.leafVisits += 1;
 
                         if (proceed == false)

@@ -869,11 +869,11 @@ namespace Box2D.NET
         }
 
 
-        public static bool DrawQueryCallback(int proxyId, int shapeId, object context)
+        public static bool DrawQueryCallback(int proxyId, int shapeId, ref B2DrawContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2DrawContext drawContext = context as B2DrawContext;
+            ref B2DrawContext drawContext = ref context;
             B2World world = drawContext.world;
             B2DebugDraw draw = drawContext.draw;
 
@@ -994,8 +994,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_Query(world.broadPhase.trees[i], draw.drawingBounds, B2_DEFAULT_MASK_BITS, DrawQueryCallback,
-                    drawContext);
+                b2DynamicTree_Query(world.broadPhase.trees[i], draw.drawingBounds, B2_DEFAULT_MASK_BITS, DrawQueryCallback, ref drawContext);
             }
 
             uint wordCount = (uint)world.debugBodySet.blockCount;
@@ -2001,11 +2000,11 @@ namespace Box2D.NET
         }
 
 
-        static bool TreeQueryCallback(int proxyId, int shapeId, object context)
+        static bool TreeQueryCallback(int proxyId, int shapeId, ref B2WorldQueryContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2WorldQueryContext worldContext = context as B2WorldQueryContext;
+            ref B2WorldQueryContext worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2041,7 +2040,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeQueryCallback, worldContext);
+                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeQueryCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2051,11 +2050,11 @@ namespace Box2D.NET
         }
 
 
-        public static bool TreeOverlapCallback(int proxyId, int shapeId, object context)
+        public static bool TreeOverlapCallback(int proxyId, int shapeId, ref B2WorldOverlapContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2WorldOverlapContext worldContext = context as B2WorldOverlapContext;
+            ref B2WorldOverlapContext worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2121,7 +2120,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, worldContext);
+                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2153,7 +2152,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, worldContext);
+                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2185,7 +2184,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, worldContext);
+                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2614,29 +2613,11 @@ void b2World_Dump()
             return world.gravity;
         }
 
-        public class ExplosionContext
-        {
-            public B2World world;
-            public B2Vec2 position;
-            public float radius;
-            public float falloff;
-            public float impulsePerLength;
-
-            public ExplosionContext(B2World world, B2Vec2 position, float radius, float falloff, float impulsePerLength)
-            {
-                this.world = world;
-                this.position = position;
-                this.radius = radius;
-                this.falloff = falloff;
-                this.impulsePerLength = impulsePerLength;
-            }
-        };
-
-        public static bool ExplosionCallback(int proxyId, int shapeId, object context)
+        public static bool ExplosionCallback(int proxyId, int shapeId, ref B2ExplosionContext context)
         {
             B2_UNUSED(proxyId);
 
-            ExplosionContext explosionContext = context as ExplosionContext;
+            ref B2ExplosionContext explosionContext = ref context;
             B2World world = explosionContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2728,7 +2709,7 @@ void b2World_Dump()
                 return;
             }
 
-            ExplosionContext explosionContext = new ExplosionContext(world, position, radius, falloff, impulsePerLength);
+            B2ExplosionContext explosionContext = new B2ExplosionContext(world, position, radius, falloff, impulsePerLength);
 
             B2AABB aabb;
             aabb.lowerBound.x = position.x - (radius + falloff);
@@ -2736,7 +2717,7 @@ void b2World_Dump()
             aabb.upperBound.x = position.x + (radius + falloff);
             aabb.upperBound.y = position.y + (radius + falloff);
 
-            b2DynamicTree_Query(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, explosionContext);
+            b2DynamicTree_Query(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, ref explosionContext);
         }
 
         public static void b2World_RebuildStaticTree(B2WorldId worldId)

@@ -208,12 +208,12 @@ namespace Box2D.NET
         }
 
 
-// This is called from b2DynamicTree_Query for continuous collision
-        public static bool b2ContinuousQueryCallback(int proxyId, int shapeId, object context)
+        // This is called from b2DynamicTree_Query for continuous collision
+        public static bool b2ContinuousQueryCallback(int proxyId, int shapeId, ref B2ContinuousContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2ContinuousContext continuousContext = context as B2ContinuousContext;
+            ref B2ContinuousContext continuousContext = ref context;
             B2Shape fastShape = continuousContext.fastShape;
             B2BodySim fastBodySim = continuousContext.fastBodySim;
 
@@ -436,12 +436,12 @@ namespace Box2D.NET
                     continue;
                 }
 
-                b2DynamicTree_Query(staticTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, context);
+                b2DynamicTree_Query(staticTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
 
                 if (isBullet)
                 {
-                    b2DynamicTree_Query(kinematicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, context);
-                    b2DynamicTree_Query(dynamicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, context);
+                    b2DynamicTree_Query(kinematicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                    b2DynamicTree_Query(dynamicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
                 }
             }
 
