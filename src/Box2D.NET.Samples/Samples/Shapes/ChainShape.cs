@@ -115,12 +115,12 @@ public class ChainShape : Sample
         //	points[count - 1 - i] = temp;
         // }
 
-        // Console.WriteLine("{");
+        // Logger.Information("{");
         // for (int i = 0; i < count; ++i)
         //{
-        //	Console.WriteLine("{%.9g, %.9g},", points[i].x, points[i].y);
+        //	Logger.Information("{%.9g, %.9g},", points[i].x, points[i].y);
         // }
-        // Console.WriteLine("};\n");
+        // Logger.Information("};\n");
 
         B2SurfaceMaterial material = new B2SurfaceMaterial();
         material.friction = 0.2f;

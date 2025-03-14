@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using Box2D.NET.Samples.Helpers;
 using ImGuiNET;
 using Box2D.NET.Samples.Samples;
+using Serilog;
 using Silk.NET.GLFW;
 using Silk.NET.Input;
 using Silk.NET.Maths;
@@ -28,6 +29,8 @@ namespace Box2D.NET.Samples;
 
 public class SampleApp
 {
+    private static readonly ILogger Logger = Log.ForContext<SampleApp>();
+    
     private IWindow _window;
     private IInputContext _input;
     private ImGuiController _imgui;
@@ -71,7 +74,7 @@ public class SampleApp
         options.ShouldSwapAutomatically = false;
         if (!_ctx.glfw.Init())
         {
-            Console.WriteLine("Failed to initialize GLFW");
+            Logger.Information("Failed to initialize GLFW");
             return -1;
         }
 
@@ -163,7 +166,7 @@ public class SampleApp
         _ctx.mainWindow = (WindowHandle*)_window.Handle;
         if (_ctx.mainWindow == null)
         {
-            Console.WriteLine("Failed to open GLFW _ctx.g_mainWindow.");
+            Logger.Information("Failed to open GLFW _ctx.g_mainWindow.");
             return;
         }
 
@@ -184,13 +187,13 @@ public class SampleApp
         _ctx.gl = _window.CreateOpenGL();
         if (null == _ctx.gl)
         {
-            Console.WriteLine("Failed to initialize glad");
+            Logger.Information("Failed to initialize glad");
             return;
         }
 
         var glVersion = _ctx.gl.GetStringS(StringName.Version);
-        Console.WriteLine($"GL {glVersion}");
-        Console.WriteLine($"OpenGL {_ctx.gl.GetStringS(GLEnum.Version)}, GLSL {_ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
+        Logger.Information($"GL {glVersion}");
+        Logger.Information($"OpenGL {_ctx.gl.GetStringS(GLEnum.Version)}, GLSL {_ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
         // _ctx.glfw.SetWindowSizeCallback(_ctx.mainWindow, ResizeWindowCallback);
         // _ctx.glfw.SetFramebufferSizeCallback(_ctx.mainWindow, ResizeFramebufferCallback);
@@ -367,13 +370,13 @@ public class SampleApp
 
     private int AssertFcn(string condition, string fileName, int lineNumber)
     {
-        Console.WriteLine("SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber);
+        Logger.Information("SAMPLE ASSERTION: %s, %s, line %d\n", condition, fileName, lineNumber);
         return 1;
     }
 
     private void glfwErrorCallback(ErrorCode error, string description)
     {
-        Console.WriteLine($"GLFW error occurred. Code: {error}. Description: {description}");
+        Logger.Information($"GLFW error occurred. Code: {error}. Description: {description}");
     }
 
     private void RestartSample()
@@ -394,14 +397,14 @@ public class SampleApp
         // bool success = ImGui_ImplGlfw_InitForOpenGL(window, false);
         // if (success == false)
         // {
-        //     Console.WriteLine("ImGui_ImplGlfw_InitForOpenGL failed\n");
+        //     Logger.Information("ImGui_ImplGlfw_InitForOpenGL failed\n");
         //     Debug.Assert(false);
         // }
         //
         // success = ImGui_ImplOpenGL3_Init(glslVersion);
         // if (success == false)
         // {
-        //     Console.WriteLine("ImGui_ImplOpenGL3_Init failed\n");
+        //     Logger.Information("ImGui_ImplOpenGL3_Init failed\n");
         //     Debug.Assert(false);
         // }
         //
@@ -409,7 +412,7 @@ public class SampleApp
         var fontPath = Path.Combine("data", "droid_sans.ttf");
         if (!File.Exists(fontPath))
         {
-            Console.WriteLine("ERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)");
+            Logger.Information("ERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)");
             //exit(EXIT_FAILURE);
             return;
         }

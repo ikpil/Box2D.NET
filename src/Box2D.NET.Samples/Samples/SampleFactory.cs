@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Box2D.NET.Samples.Primitives;
+using Box2D.NET.Samples.Samples.Determinisms;
+using Serilog;
 
 namespace Box2D.NET.Samples.Samples;
 
 public class SampleFactory
 {
+    private static readonly ILogger Logger = Log.ForContext<FallingHinges>();
+
     public static readonly SampleFactory Shared = new SampleFactory();
 
     private readonly List<SampleEntry> _sampleEntries;
@@ -78,13 +82,13 @@ public class SampleFactory
             var method = type.GetConstructors(BindingFlags.Static | BindingFlags.NonPublic);
             if (0 >= method.Length)
             {
-                Console.WriteLine($"can not load sample - {type.Name}");
+                Logger.Information($"can not load sample - {type.Name}");
                 continue;
             }
 
             method[0].Invoke(null, null);
             var title = GetTitle(index);
-            Console.WriteLine($"loaded sample - {title}");
+            Logger.Information($"loaded sample - {title}");
 
             ++index;
         }

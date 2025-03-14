@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
+using Serilog;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Graphics;
@@ -15,6 +16,8 @@ namespace Box2D.NET.Samples.Graphics;
 // Draw capsules using SDF-based shader
 public class GLSolidCapsules
 {
+    private static readonly ILogger Logger = Log.ForContext<GLSolidCapsules>();
+    
     public const int e_batchSize = 2048;
 
     private GL _gl;
@@ -114,7 +117,7 @@ public class GLSolidCapsules
         float length = b2Length(d);
         if (length < 0.001f)
         {
-            Console.WriteLine("WARNING: sample app: capsule too short!\n");
+            Logger.Information("WARNING: sample app: capsule too short!\n");
             return;
         }
 

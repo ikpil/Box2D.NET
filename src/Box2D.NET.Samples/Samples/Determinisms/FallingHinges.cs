@@ -4,6 +4,8 @@
 
 using System;
 using System.Diagnostics;
+using Box2D.NET.Samples.Graphics;
+using Serilog;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
@@ -25,9 +27,10 @@ namespace Box2D.NET.Samples.Samples.Determinisms;
 // Once all the bodies go to sleep the step counter and transform hash is emitted which
 // can then be transferred to the unit test and tested in GitHub build actions.
 // See CrossPlatformTest in the unit tests.
-
 public class FallingHinges : Sample
 {
+    private static readonly ILogger Logger = Log.ForContext<FallingHinges>();
+
     private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
 
     public const int e_columns = 4;
@@ -147,14 +150,14 @@ public class FallingHinges : Sample
         for (int i = 0; i < bodyCount; ++i)
         {
             B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-            //Console.WriteLine("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
-            Console.WriteLine($"{i} {xf.p.x:F9} {xf.p.y:F9} {xf.q.c:F9} {xf.q.s:F9}");
+            //Logger.Information("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
+            Logger.Information($"{i} {xf.p.x:F9} {xf.p.y:F9} {xf.q.c:F9} {xf.q.s:F9}");
             xf.TryWriteBytes(bxf);
             hash = b2Hash(hash, bxf, bxf.Length);
         }
 
-        //Console.WriteLine("hash = 0x%08x\n", hash);
-        Console.WriteLine($"hash = 0x{hash:X8}");
+        //Logger.Information("hash = 0x%08x\n", hash);
+        Logger.Information($"hash = 0x{hash:X8}");
     }
 
     public override void Step(Settings settings)
@@ -173,15 +176,15 @@ public class FallingHinges : Sample
                 for (int i = 0; i < bodyCount; ++i)
                 {
                     B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-                    //Console.WriteLine( "%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s );
+                    //Logger.Information( "%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s );
                     xf.TryWriteBytes(bxf);
                     hash = b2Hash(hash, bxf, bxf.Length);
                 }
 
                 m_sleepStep = m_stepCount - 1;
                 m_hash = hash;
-                //Console.WriteLine("sleep step = %d, hash = 0x%08x\n", m_sleepStep, m_hash);
-                Console.WriteLine($"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
+                //Logger.Information("sleep step = %d, hash = 0x%08x\n", m_sleepStep, m_hash);
+                Logger.Information($"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
             }
         }
     }

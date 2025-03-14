@@ -6,10 +6,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using Box2D.NET.Samples;
+using Serilog;
 using Silk.NET.OpenGL;
 
 public static class Shader
 {
+    private static readonly ILogger Logger = Log.ForContext(typeof(Shader));
+
     public static void DumpInfoGL(this GL gl)
     {
         string renderer = gl.GetStringS(StringName.Renderer);
@@ -20,13 +24,13 @@ public static class Shader
         int major = gl.GetInteger(GetPName.MajorVersion);
         int minor = gl.GetInteger(GetPName.MinorVersion);
 
-        Console.WriteLine("-------------------------------------------------------------");
-        Console.WriteLine($"GL Vendor    : {vendor}");
-        Console.WriteLine($"GL Renderer  : {renderer}");
-        Console.WriteLine($"GL Version   : {version}");
-        Console.WriteLine($"GL Version   : {major}.{minor}");
-        Console.WriteLine($"GLSL Version : {glslVersion}");
-        Console.WriteLine("-------------------------------------------------------------");
+        Logger.Information("-------------------------------------------------------------");
+        Logger.Information($"GL Vendor    : {vendor}");
+        Logger.Information($"GL Renderer  : {renderer}");
+        Logger.Information($"GL Version   : {version}");
+        Logger.Information($"GL Version   : {major}.{minor}");
+        Logger.Information($"GLSL Version : {glslVersion}");
+        Logger.Information("-------------------------------------------------------------");
     }
 
     public static void CheckErrorGL(this GL gl)
@@ -34,7 +38,7 @@ public static class Shader
         GLEnum errCode = gl.GetError();
         if (errCode != GLEnum.NoError)
         {
-            Console.WriteLine($"OpenGL error = {errCode}");
+            Logger.Information($"OpenGL error = {errCode}");
             Debug.Assert(false);
         }
     }
@@ -53,7 +57,7 @@ public static class Shader
         }
         else
         {
-            Console.WriteLine("PrintLogGL: Not a shader or a program");
+            Logger.Information("PrintLogGL: Not a shader or a program");
             return;
         }
 
@@ -68,7 +72,7 @@ public static class Shader
             log = gl.GetProgramInfoLog(obj);
         }
 
-        Console.WriteLine($"PrintLogGL: {log}");
+        Logger.Information($"PrintLogGL: {log}");
     }
 
     public static uint sCreateShaderFromString(this GL gl, string source, GLEnum type)
@@ -83,7 +87,7 @@ public static class Shader
 
         if (success[0] == 0)
         {
-            Console.WriteLine("Error compiling shader of type %d!\n", type);
+            Logger.Information("Error compiling shader of type %d!\n", type);
             gl.PrintLogGL(shader);
             gl.DeleteShader(shader);
             return 0;
@@ -116,7 +120,7 @@ public static class Shader
         gl.GetProgram(program, GLEnum.LinkStatus, success);
         if (success[0] == 0)
         {
-            Console.WriteLine("glLinkProgram:");
+            Logger.Information("glLinkProgram:");
             gl.PrintLogGL(program);
             return 0;
         }
@@ -131,7 +135,7 @@ public static class Shader
     {
         if (!File.Exists(filename))
         {
-            Console.WriteLine($"Error opening {filename}");
+            Logger.Information($"Error opening {filename}");
             return 0;
         }
 
@@ -149,7 +153,7 @@ public static class Shader
 
         if (success[0] == 0)
         {
-            Console.WriteLine($"Error compiling shader of type {type}!");
+            Logger.Information($"Error compiling shader of type {type}!");
             gl.PrintLogGL(shader);
         }
 
@@ -180,7 +184,7 @@ public static class Shader
         gl.GetProgram(program, GLEnum.LinkStatus, success);
         if (success[0] == 0)
         {
-            Console.WriteLine("glLinkProgram:");
+            Logger.Information("glLinkProgram:");
             gl.PrintLogGL(program);
             return 0;
         }
