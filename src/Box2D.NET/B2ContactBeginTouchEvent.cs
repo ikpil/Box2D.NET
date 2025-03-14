@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A begin touch event is generated when two shapes begin touching.
-    public class B2ContactBeginTouchEvent
+    public struct B2ContactBeginTouchEvent
     {
         /// Id of the first shape
         public B2ShapeId shapeIdA;
@@ -16,10 +16,6 @@ namespace Box2D.NET
         /// The initial contact manifold. This is recorded before the solver is called,
         /// so all the impulses will be zero.
         public B2Manifold manifold;
-
-        public B2ContactBeginTouchEvent()
-        {
-        }
 
         public B2ContactBeginTouchEvent(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold)
         {
