@@ -20,7 +20,6 @@ public static class Program
             .Enrich.WithThreadId()
             .Enrich.WithThreadName()
             .WriteTo.Async(c => c.LogMessageBroker(outputTemplate: format))
-            .WriteTo.Async(c => c.Console(outputTemplate: format))
             .WriteTo.Async(c => c.File(
                 "logs/log.log",
                 rollingInterval: RollingInterval.Hour,
@@ -28,6 +27,7 @@ public static class Program
                 retainedFileCountLimit: null,
                 outputTemplate: format)
             )
+            .WriteTo.Async(c => c.Console(outputTemplate: format))
             .CreateLogger();
     }
 

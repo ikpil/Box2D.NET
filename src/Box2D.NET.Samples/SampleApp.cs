@@ -420,7 +420,7 @@ public class SampleApp
 
         // for windows : Microsoft Visual C++ Redistributable Package
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 16, null);
+        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 15, null);
         _imgui = new ImGuiController(_ctx.gl, _window, _input, imGuiFontConfig);
 
         //ImGui.GetStyle().ScaleAllSizes(2);
