@@ -147,9 +147,6 @@ public class ContactEvent : Sample
     {
         base.UpdateUI();
 
-        m_context.draw.DrawString(5, m_textLine, "move using WASD");
-        m_textLine += m_textIncrement;
-
         float height = 60.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -430,5 +427,13 @@ public class ContactEvent : Sample
                 m_wait += 0.5f;
             }
         }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+        
+        m_context.draw.DrawString(5, m_textLine, "move using WASD");
+        m_textLine += m_textIncrement;
     }
 }
