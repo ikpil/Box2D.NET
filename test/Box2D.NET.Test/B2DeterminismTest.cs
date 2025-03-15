@@ -43,10 +43,10 @@ public class b2TaskTester : IDisposable
     {
         _semaphore.Dispose();
         _semaphore = null;
-        
+
         Debug.Assert(0 >= _runningTasks.Count);
     }
-    
+
     private IEnumerable<int> Next(int itemCount, int minRange)
     {
         if (itemCount <= minRange)
@@ -82,34 +82,35 @@ public class b2TaskTester : IDisposable
 
         if (taskCount < e_maxTasks)
         {
-            int loop = 0;
-            int idx = 0;
-            foreach (var count in Next(itemCount, minRange))
+            uint loop = 0;
+            int index = 0;
+            int remain = itemCount;
+            while (0 < remain)
             {
-                int startIndex = idx;
-                int endIndex = idx + count;
-                idx = endIndex;
+                var stepCount = Math.Min(remain, minRange);
+                remain -= stepCount;
 
-                uint workerIndex = (uint)(++loop % _workerCount);
-                var task = Task.Run(async () =>
+                uint workerIndex = (loop++) % (uint)_workerCount;
+                var startIndex = index;
+                var endIndex = startIndex + stepCount;
+
+                index = endIndex;
+
+                var running = Task.Run(async () =>
                 {
                     await _semaphore.WaitAsync();
                     try
                     {
-                        box2dTask(startIndex, endIndex, workerIndex, box2dContext);
+                        box2dTask.Invoke(startIndex, endIndex, workerIndex, box2dContext);
                     }
                     finally
                     {
                         _semaphore.Release();
                     }
                 });
-                
-                _runningTasks.Enqueue(task);
+
+                _runningTasks.Enqueue(running);
             }
-
-            ++taskCount;
-
-            return box2dTask;
         }
         else
         {
@@ -117,6 +118,9 @@ public class b2TaskTester : IDisposable
 
             return null;
         }
+
+        ++taskCount;
+        return box2dTask;
     }
 
     public void FinishTask(object userTask, object userContext)
