@@ -6,7 +6,7 @@
 
 ---
 
-![GitHub License](https://img.shields.io/github/license/ikpil/Box2D.NET?style=for-the-badge)
+[![GitHub License](https://img.shields.io/github/license/ikpil/Box2D.NET?style=for-the-badge)](https://github.com/ikpil/Box2D.NET/blob/main/LICENSE)
 ![Languages](https://img.shields.io/github/languages/top/ikpil/Box2D.NET?style=for-the-badge)
 ![GitHub repo size](https://img.shields.io/github/repo-size/ikpil/Box2D.NET?style=for-the-badge)
 [![GitHub Repo stars](https://img.shields.io/github/stars/ikpil/Box2D.NET?style=for-the-badge&logo=github)](https://github.com/ikpil/Box2D.NET)
