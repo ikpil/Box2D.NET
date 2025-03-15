@@ -17,10 +17,10 @@ public class SampleAppContext
     public GL gl;
     public unsafe WindowHandle* mainWindow;
 
-#if NDEBUG
-    public bool sampleDebug = false;
-#else
+#if DEBUG
     public bool sampleDebug = true;
+#else
+    public bool sampleDebug = false;
 #endif
 
     private static string CreateSignature(string member, string file, int line)

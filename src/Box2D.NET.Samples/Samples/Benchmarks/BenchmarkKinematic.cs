@@ -29,10 +29,10 @@ public class BenchmarkKinematic : Sample
 
         float grid = 1.0f;
 
-#if NDEBUG
-        int span = 100;
-#else
+#if DEBUG
         int span = 20;
+#else
+        int span = 100;
 #endif
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
