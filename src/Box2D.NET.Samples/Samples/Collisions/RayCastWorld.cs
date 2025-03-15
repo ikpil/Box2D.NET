@@ -127,6 +127,11 @@ public class RayCastWorld : Sample
         }
 
         m_polygons[3] = b2MakeBox(0.5f, 0.5f);
+        for (int i = 0; i < m_userData.Length; ++i)
+        {
+            m_userData[i] = new ShapeUserData();
+        }
+
         m_capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
         m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
         m_segment = new B2Segment(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f));
