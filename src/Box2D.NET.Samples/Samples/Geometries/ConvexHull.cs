@@ -212,7 +212,10 @@ public class ConvexHull : Sample
 
         m_textLine += m_textIncrement;
 
-        m_context.draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
+        if (0 < m_hull.count)
+        {
+            m_context.draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
+        }
 
         for (int i = 0; i < m_count; ++i)
         {
