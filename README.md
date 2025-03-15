@@ -17,7 +17,10 @@
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/ikpil?style=for-the-badge&logo=GitHub-Sponsors&link=https%3A%2F%2Fgithub.com%2Fsponsors%2Fikpil)](https://github.com/sponsors/ikpil)
 
 ---
-[![demo](https://user-images.githubusercontent.com/313821/423102962-0dc4a92b-0f1a-407d-9e65-fc507e09962b.gif)](https://github.com/ikpil/Box2D.NET)
+
+[![demo](https://github.com/ikpil/ikpil/blob/main/img/423102962-0dc4a92b-0f1a-407d-9e65-fc507e09962b.gif?raw=true)](https://github.com/ikpil/Box2D.NET)
+
+---
 
 We have been porting it since February 7, 2025.
 The reference point is based on the Box2D commit 28adacf - "Fix default chain def (#878)".
@@ -25,7 +28,6 @@ The reference point is based on the Box2D commit 28adacf - "Fix default chain de
 Currently, the goal is to pass unit tests.
 I will upload it to nuget as soon as it's ready.
 
----
 
 # history
 
