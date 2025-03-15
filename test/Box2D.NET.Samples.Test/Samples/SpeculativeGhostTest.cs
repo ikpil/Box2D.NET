@@ -8,7 +8,7 @@ public class SpeculativeGhostTest
     [Test]
     public void TestSpeculativeGhost()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new SpeculativeGhost(ctx, settings);

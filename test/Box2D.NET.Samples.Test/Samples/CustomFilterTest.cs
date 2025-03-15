@@ -8,7 +8,7 @@ public class CustomFilterTest
     [Test]
     public void TestCustomFilter()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new CustomFilter(ctx, settings);

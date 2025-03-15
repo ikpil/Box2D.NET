@@ -8,7 +8,7 @@ public class WeebleTest
     [Test]
     public void TestWeeble()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Weeble(ctx, settings);

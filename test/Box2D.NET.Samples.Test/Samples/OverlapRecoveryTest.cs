@@ -8,7 +8,7 @@ public class OverlapRecoveryTest
     [Test]
     public void TestOverlapRecovery()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new OverlapRecovery(ctx, settings);

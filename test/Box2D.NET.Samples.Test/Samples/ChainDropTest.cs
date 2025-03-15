@@ -8,7 +8,7 @@ public class ChainDropTest
     [Test]
     public void TestChainDrop()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ChainDrop(ctx, settings);

@@ -8,7 +8,7 @@ public class BenchmarkManyTumblersTest
     [Test]
     public void TestBenchmarkManyTumblers()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkManyTumblers(ctx, settings);

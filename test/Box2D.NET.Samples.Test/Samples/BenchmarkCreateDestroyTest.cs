@@ -8,7 +8,7 @@ public class BenchmarkCreateDestroyTest
     [Test]
     public void TestBenchmarkCreateDestroy()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkCreateDestroy(ctx, settings);

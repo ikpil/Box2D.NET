@@ -8,7 +8,7 @@ public class BenchmarkSmashTest
     [Test]
     public void TestBenchmarkSmash()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkSmash(ctx, settings);

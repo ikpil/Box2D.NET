@@ -8,7 +8,7 @@ public class PrismaticJointTest
     [Test]
     public void TestPrismaticJoint()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new PrismaticJoint(ctx, settings);

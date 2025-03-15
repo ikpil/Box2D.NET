@@ -8,7 +8,7 @@ public class DistanceJointTest
     [Test]
     public void TestDistanceJoint()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new DistanceJoint(ctx, settings);

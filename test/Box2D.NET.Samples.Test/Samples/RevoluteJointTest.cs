@@ -8,7 +8,7 @@ public class RevoluteJointTest
     [Test]
     public void TestRevoluteJoint()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new RevoluteJoint(ctx, settings);

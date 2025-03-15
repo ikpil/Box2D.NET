@@ -8,7 +8,7 @@ public class LargeWorldTest
     [Test]
     public void TestLargeWorld()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new LargeWorld(ctx, settings);

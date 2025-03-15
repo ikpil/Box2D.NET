@@ -8,7 +8,7 @@ public class RagdollTest
     [Test]
     public void TestRagdoll()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Ragdoll(ctx, settings);

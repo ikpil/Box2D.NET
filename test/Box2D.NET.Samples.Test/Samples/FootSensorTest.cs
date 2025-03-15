@@ -8,7 +8,7 @@ public class FootSensorTest
     [Test]
     public void TestFootSensor()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new FootSensor(ctx, settings);

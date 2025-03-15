@@ -8,7 +8,7 @@ public class CliffTest
     [Test]
     public void TestCliff()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Cliff(ctx, settings);

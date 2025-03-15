@@ -8,7 +8,7 @@ public class DropTest
     [Test]
     public void TestDrop()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Drop(ctx, settings);

@@ -8,7 +8,7 @@ public class HighMassRatio1Test
     [Test]
     public void TestHighMassRatio1()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new HighMassRatio1(ctx, settings);

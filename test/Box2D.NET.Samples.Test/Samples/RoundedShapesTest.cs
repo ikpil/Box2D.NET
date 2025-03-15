@@ -8,7 +8,7 @@ public class RoundedShapesTest
     [Test]
     public void TestRoundedShapes()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new RoundedShapes(ctx, settings);

@@ -8,7 +8,7 @@ public class SoftBodyTest
     [Test]
     public void TestSoftBody()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new SoftBody(ctx, settings);

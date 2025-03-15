@@ -8,7 +8,7 @@ public class BodyMoveTest
     [Test]
     public void TestBodyMove()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BodyMove(ctx, settings);

@@ -8,7 +8,7 @@ public class WheelJointTest
     [Test]
     public void TestWheelJoint()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new WheelJoint(ctx, settings);

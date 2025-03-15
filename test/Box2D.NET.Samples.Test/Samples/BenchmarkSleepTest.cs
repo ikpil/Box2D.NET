@@ -8,7 +8,7 @@ public class BenchmarkSleepTest
     [Test]
     public void TestBenchmarkSleep()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkSleep(ctx, settings);

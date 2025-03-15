@@ -8,7 +8,7 @@ public class SleepTest
     [Test]
     public void TestSleep()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Sleep(ctx, settings);

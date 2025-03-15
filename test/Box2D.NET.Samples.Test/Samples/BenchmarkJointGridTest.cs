@@ -8,7 +8,7 @@ public class BenchmarkJointGridTest
     [Test]
     public void TestBenchmarkJointGrid()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkJointGrid(ctx, settings);

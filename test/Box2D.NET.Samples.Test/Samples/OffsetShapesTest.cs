@@ -8,7 +8,7 @@ public class OffsetShapesTest
     [Test]
     public void TestOffsetShapes()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new OffsetShapes(ctx, settings);

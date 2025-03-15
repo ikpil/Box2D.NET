@@ -8,7 +8,7 @@ public class FallingHingesTest
     [Test]
     public void TestFallingHinges()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new FallingHinges(ctx, settings);

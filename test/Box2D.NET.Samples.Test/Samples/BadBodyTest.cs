@@ -8,7 +8,7 @@ public class BadBodyTest
     [Test]
     public void TestBadBody()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BadBody(ctx, settings);

@@ -8,7 +8,7 @@ public class SensorTypesTest
     [Test]
     public void TestSensorTypes()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new SensorTypes(ctx, settings);

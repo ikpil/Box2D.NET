@@ -8,7 +8,7 @@ public class ChainSlideTest
     [Test]
     public void TestChainSlide()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ChainSlide(ctx, settings);

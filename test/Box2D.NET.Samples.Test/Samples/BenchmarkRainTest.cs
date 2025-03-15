@@ -8,7 +8,7 @@ public class BenchmarkRainTest
     [Test]
     public void TestBenchmarkRain()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkRain(ctx, settings);

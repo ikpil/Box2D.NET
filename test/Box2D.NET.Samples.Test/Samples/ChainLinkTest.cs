@@ -8,7 +8,7 @@ public class ChainLinkTest
     [Test]
     public void TestChainLink()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ChainLink(ctx, settings);

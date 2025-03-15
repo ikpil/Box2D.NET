@@ -23,23 +23,35 @@ public class SampleAppContext
     public bool sampleDebug = true;
 #endif
 
-    public static SampleAppContext Create([CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+    private static string CreateSignature(string member, string file, int line)
     {
-        return CreateFor(member, file, line);
+        return $"{member}() {Path.GetFileName(file)}:{line}";
     }
 
-    public static SampleAppContext CreateFor(string member, string file, int line)
+    public static SampleAppContext Create([CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
     {
-        var sig = $"{member}() {Path.GetFileName(file)}:line";
-        var context = new SampleAppContext(sig);
+        // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
+        var glfw = Glfw.GetApi();
+        var sig = CreateSignature(member, file, line);
+        return CreateFor(sig, glfw);
+    }
+
+    public static SampleAppContext CreateWithoutGLFW([CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+    {
+        var sig = CreateSignature(member, file, line);
+        return CreateFor(sig, null);
+    }
+
+    public static SampleAppContext CreateFor(string sig, Glfw glfw)
+    {
+        var context = new SampleAppContext(sig, glfw);
         return context;
     }
 
-    private SampleAppContext(string signature)
+    private SampleAppContext(string signature, Glfw glfw)
     {
-        // for windows - https://learn.microsoft.com/ko-kr/cpp/windows/latest-supported-vc-redist
         Signature = signature;
-        glfw = Glfw.GetApi();
+        this.glfw = glfw;
         camera = new Camera();
         draw = new Draw();
     }

@@ -8,7 +8,7 @@ public class ChainShapeTest
     [Test]
     public void TestChainShape()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ChainShape(ctx, settings);

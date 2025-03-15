@@ -8,7 +8,7 @@ public class VerticalStackTest
     [Test]
     public void TestVerticalStack()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new VerticalStack(ctx, settings);

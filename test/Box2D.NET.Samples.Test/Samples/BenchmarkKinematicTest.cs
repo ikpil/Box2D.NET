@@ -8,7 +8,7 @@ public class BenchmarkKinematicTest
     [Test]
     public void TestBenchmarkKinematic()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BenchmarkKinematic(ctx, settings);

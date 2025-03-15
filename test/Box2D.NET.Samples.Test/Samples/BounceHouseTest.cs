@@ -8,7 +8,7 @@ public class BounceHouseTest
     [Test]
     public void TestBounceHouse()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BounceHouse(ctx, settings);

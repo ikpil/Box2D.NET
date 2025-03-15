@@ -8,7 +8,7 @@ public class ConveyorBeltTest
     [Test]
     public void TestConveyorBelt()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ConveyorBelt(ctx, settings);

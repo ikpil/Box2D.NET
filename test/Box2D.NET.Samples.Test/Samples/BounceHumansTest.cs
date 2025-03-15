@@ -8,7 +8,7 @@ public class BounceHumansTest
     [Test]
     public void TestBounceHumans()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new BounceHumans(ctx, settings);

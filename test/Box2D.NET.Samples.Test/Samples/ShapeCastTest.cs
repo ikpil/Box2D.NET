@@ -8,7 +8,7 @@ public class ShapeCastTest
     [Test]
     public void TestShapeCast()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new ShapeCast(ctx, settings);

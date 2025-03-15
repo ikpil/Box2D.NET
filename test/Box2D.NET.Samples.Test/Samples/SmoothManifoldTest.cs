@@ -8,7 +8,7 @@ public class SmoothManifoldTest
     [Test]
     public void TestSmoothManifold()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new SmoothManifold(ctx, settings);

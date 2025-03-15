@@ -8,7 +8,7 @@ public class OverlapWorldTest
     [Test]
     public void TestOverlapWorld()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new OverlapWorld(ctx, settings);

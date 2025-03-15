@@ -8,7 +8,7 @@ public class RestitutionThresholdTest
     [Test]
     public void TestRestitutionThreshold()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new RestitutionThreshold(ctx, settings);

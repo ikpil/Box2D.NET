@@ -8,7 +8,7 @@ public class FixedRotationTest
     [Test]
     public void TestFixedRotation()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new FixedRotation(ctx, settings);

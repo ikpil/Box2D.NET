@@ -8,7 +8,7 @@ public class RayCastTest
     [Test]
     public void TestRayCast()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new RayCast(ctx, settings);

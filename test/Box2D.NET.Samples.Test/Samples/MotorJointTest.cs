@@ -8,7 +8,7 @@ public class MotorJointTest
     [Test]
     public void TestMotorJoint()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new MotorJoint(ctx, settings);

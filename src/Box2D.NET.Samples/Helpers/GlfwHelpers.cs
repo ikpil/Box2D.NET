@@ -6,6 +6,9 @@ public static class GlfwHelpers
 {
     public static unsafe InputAction GetKey(SampleAppContext context, Keys key)
     {
+        if (null == context.glfw)
+            return InputAction.Release;
+        
         var state = context.glfw.GetKey(context.mainWindow, key);
         switch (state)
         {

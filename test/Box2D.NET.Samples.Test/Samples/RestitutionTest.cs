@@ -8,7 +8,7 @@ public class RestitutionTest
     [Test]
     public void TestRestitution()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Restitution(ctx, settings);

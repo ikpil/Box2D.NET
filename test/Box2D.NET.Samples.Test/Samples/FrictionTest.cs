@@ -8,7 +8,7 @@ public class FrictionTest
     [Test]
     public void TestFriction()
     {
-        var ctx = SampleAppContext.Create();
+        var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
         using var testObject = new Friction(ctx, settings);
