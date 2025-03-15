@@ -15,12 +15,12 @@ namespace Box2D.NET
 
         public static int b2AtomicLoadInt(ref B2AtomicInt a)
         {
-            return Interlocked.Add(ref a.value, 0);
+            return Interlocked.CompareExchange(ref a.value, 0, 0);
         }
 
         public static int b2AtomicFetchAddInt(ref B2AtomicInt a, int increment)
         {
-            return Interlocked.Add(ref a.value, increment);
+            return Interlocked.Add(ref a.value, increment) - increment;
         }
 
         public static bool b2AtomicCompareExchangeInt(ref B2AtomicInt a, int expected, int desired)
