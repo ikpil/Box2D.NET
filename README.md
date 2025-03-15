@@ -1,3 +1,4 @@
+ 
 # Box2D.NET
 
 *Box2D.NET is C# Box2D, a port of [Box2D](https://github.com/erincatto/box2d) to the C# language.*  
@@ -22,13 +23,39 @@
 
 ---
 
-Currently, the goal is to pass unit tests.
-I will upload it to nuget as soon as it's ready.
+## 🚀 Features
 
-# history
+Box2D.NET is divided into multiple modules, each contained in its own folder:
 
-- 2025-03-15 : Sample completed
-- 2025-02-23 : Shared completed
-- 2025-02-22 : all test complete!
-- 2025-02-16 : compile success
-- 2025-02-07 : start 
+  - [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) : A module providing efficient structures and APIs for memory and array management. 
+  - [Box2D.NET](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET) : A C# port of the Box2D physics engine for 2D physics simulations.
+  - [Box2D.NET.Shared](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Shared) : Shared code and utilities for Box2D.NET, for use in sample projects and by library users.
+  - [Box2D.NET.Samples](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Samples) : Sample projects to showcase the features of Box2D.NET
+  - [Box2D.NET.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Test) : Unit tests for Box2D.NET.
+  - [Box2D.NET.Samples.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Samples.Test) : Unit tests for Box2D.NET.Samples
+
+## ⚡ Getting Started
+
+- To verify the run for all modules, run [Box2D.NET.Samples](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Samples/Box2D.NET.Samples.csproj)
+    - on the Windows platform, you need to install the redistributable package
+    - [Microsoft Visual C++ Redistributable Package](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)
+
+#### ▶️ Running With Command Prompt
+
+```shell
+dotnet run --project src/Box2D.NET.Samples --framework net9.0 -c Release
+```
+
+## 🛠️ Integration
+
+There are a few ways to integrate [Box2D.NET](https://github.com/ikpil/DotRecast/tree/main/src/Box2D.NET) and [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) into your project.
+Source integration is the most popular and most flexible. Additionally, NuGet installation will also be supported in the future.
+
+## 📚 Documentation & Links
+
+- DotRecast Links
+    - [Box2D.NET/issues](https://github.com/ikpil/Box2D.NET/issues)
+
+- Official Links
+    - [box2d/issue](https://github.com/erincatto/box2d/issues)
+    - [box2d.org](https://box2d.org)
