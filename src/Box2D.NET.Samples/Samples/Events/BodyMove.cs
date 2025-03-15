@@ -137,7 +137,7 @@ public class BodyMove : Sample
         for (int i = 0; i < events.moveCount; ++i)
         {
             // draw the transform of every body that moved (not sleeping)
-            B2BodyMoveEvent @event = events.moveEvents[i];
+            ref B2BodyMoveEvent @event = ref events.moveEvents[i];
             m_context.draw.DrawTransform(@event.transform);
 
             // this shows a somewhat contrived way to track body sleeping

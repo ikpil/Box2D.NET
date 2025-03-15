@@ -14,7 +14,7 @@ namespace Box2D.NET
     /// calling functions such as b2Body_GetTransform() because this data is delivered as a contiguous array
     /// and it is only populated with bodies that have moved.
     /// @note If sleeping is disabled all dynamic and kinematic bodies will trigger move events.
-    public class B2BodyMoveEvent
+    public struct B2BodyMoveEvent
     {
         public B2Transform transform;
         public B2BodyId bodyId;

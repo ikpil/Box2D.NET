@@ -224,7 +224,7 @@ namespace Box2D.NET
                     // It could happen the body is forced asleep before it ever moves.
                     if (body.bodyMoveIndex != B2_NULL_INDEX)
                     {
-                        B2BodyMoveEvent moveEvent = b2Array_Get(ref world.bodyMoveEvents, body.bodyMoveIndex);
+                        ref B2BodyMoveEvent moveEvent = ref b2Array_Get(ref world.bodyMoveEvents, body.bodyMoveIndex);
                         Debug.Assert(moveEvent.bodyId.index1 - 1 == bodyId);
                         Debug.Assert(moveEvent.bodyId.generation == body.generation);
                         moveEvent.fellAsleep = true;
