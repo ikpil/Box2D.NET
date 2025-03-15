@@ -8,7 +8,7 @@ namespace Box2D.NET
     ///	These include things like setting the transform, destroying a body or shape, or changing
     ///	a filter. You will also get an end event if the sensor or visitor are destroyed.
     ///	Therefore you should always confirm the shape id is valid using b2Shape_IsValid.
-    public class B2SensorEndTouchEvent
+    public struct B2SensorEndTouchEvent
     {
         /// The id of the sensor shape
         ///	@warning this shape may have been destroyed
@@ -19,10 +19,6 @@ namespace Box2D.NET
         ///	@warning this shape may have been destroyed
         ///	@see b2Shape_IsValid
         public B2ShapeId visitorShapeId;
-
-        public B2SensorEndTouchEvent()
-        {
-        }
 
         public B2SensorEndTouchEvent(B2ShapeId sensorShapeId, B2ShapeId visitorShapeId)
         {

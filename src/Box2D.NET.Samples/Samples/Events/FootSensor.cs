@@ -108,7 +108,7 @@ public class FootSensor : Sample
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            B2SensorBeginTouchEvent @event = sensorEvents.beginEvents[i];
+            ref B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
 
             Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
 
@@ -120,7 +120,7 @@ public class FootSensor : Sample
 
         for (int i = 0; i < sensorEvents.endCount; ++i)
         {
-            B2SensorEndTouchEvent @event = sensorEvents.endEvents[i];
+            ref B2SensorEndTouchEvent @event = ref sensorEvents.endEvents[i];
 
             Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
 

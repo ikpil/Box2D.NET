@@ -172,7 +172,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            B2SensorBeginTouchEvent @event = sensorEvents.beginEvents[i];
+            ref B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
             if (B2_ID_EQUALS(@event.visitorShapeId, m_groundShapeId))
             {
                 if (B2_ID_EQUALS(@event.sensorShapeId, m_sensorIds[0]))
@@ -188,7 +188,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < sensorEvents.endCount; ++i)
         {
-            B2SensorEndTouchEvent @event = sensorEvents.endEvents[i];
+            ref B2SensorEndTouchEvent @event = ref sensorEvents.endEvents[i];
             if (B2_ID_EQUALS(@event.visitorShapeId, m_groundShapeId))
             {
                 if (B2_ID_EQUALS(@event.sensorShapeId, m_sensorIds[0]))

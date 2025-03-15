@@ -293,7 +293,7 @@ public class SensorFunnel : Sample
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            B2SensorBeginTouchEvent @event = sensorEvents.beginEvents[i];
+            ref B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
             B2ShapeId visitorId = @event.visitorShapeId;
             B2BodyId bodyId = b2Shape_GetBody(visitorId);
 

@@ -142,7 +142,7 @@ public class SensorBookend : Sample
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
-            B2SensorBeginTouchEvent @event = sensorEvents.beginEvents[i];
+            ref B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
 
             if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId))
             {
@@ -153,7 +153,7 @@ public class SensorBookend : Sample
 
         for (int i = 0; i < sensorEvents.endCount; ++i)
         {
-            B2SensorEndTouchEvent @event = sensorEvents.endEvents[i];
+            ref B2SensorEndTouchEvent @event = ref sensorEvents.endEvents[i];
 
             bool wasVisitorDestroyed = b2Shape_IsValid(@event.visitorShapeId) == false;
             if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId) || wasVisitorDestroyed)
