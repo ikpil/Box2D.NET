@@ -64,7 +64,7 @@ public class BenchmarkCompound : Sample
         }
 
         {
-#if NDEBUG
+#if DEBUG
             int span = 5;
             int count = 5;
 #else
