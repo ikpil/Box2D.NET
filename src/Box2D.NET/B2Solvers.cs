@@ -69,7 +69,7 @@ namespace Box2D.NET
         }
 
 
-// Integrate velocities and apply damping
+        // Integrate velocities and apply damping
         public static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.integrate_velocity, "IntVel", B2HexColor.b2_colorDeepPink, true);

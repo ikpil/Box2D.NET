@@ -29,14 +29,13 @@ public class VerticalStack : Sample
         e_boxShape
     };
 
-    B2BodyId[] m_bullets = new B2BodyId[e_maxBullets];
-    B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
-    int m_columnCount;
-    int m_rowCount;
-    int m_bulletCount;
-    ShapeType m_shapeType;
-    ShapeType m_bulletType;
-
+    private B2BodyId[] m_bullets = new B2BodyId[e_maxBullets];
+    private B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
+    private int m_columnCount;
+    private int m_rowCount;
+    private int m_bulletCount;
+    private ShapeType m_shapeType;
+    private ShapeType m_bulletType;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -44,8 +43,7 @@ public class VerticalStack : Sample
     }
 
 
-    public VerticalStack(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public VerticalStack(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
