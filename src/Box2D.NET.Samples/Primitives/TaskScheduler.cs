@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,12 +18,11 @@ public class TaskScheduler
 
     public void Initialize(int workerCount)
     {
-        //Debug.Assert(false);
         _workerCount = workerCount;
         _semaphore = new SemaphoreSlim(workerCount);
         _runningTasks = new ConcurrentQueue<Task>();
         _workers = new ConcurrentQueue<uint>();
-        for (int i = 0; i < workerCount; ++i)
+        for (int i = 0; i < _workerCount; ++i)
         {
             _workers.Enqueue((uint)i);
         }
@@ -32,6 +30,13 @@ public class TaskScheduler
 
     public void AddTaskSetToPipe(SampleTask task)
     {
+        // single thread
+        if (1 >= _workerCount)
+        {
+            task.m_task.Invoke(0, task.m_SetSize, 0, task.m_taskContext);
+            return;
+        }
+
         uint loop = 0;
         int index = 0;
         int remain = task.m_SetSize;
