@@ -46,7 +46,7 @@ namespace Box2D.NET
             return set;
         }
 
-        public static void b2DestroySet(B2HashSet set)
+        public static void b2DestroySet(ref B2HashSet set)
         {
             b2Free(set.items, set.capacity);
             set.items = null;
@@ -54,7 +54,7 @@ namespace Box2D.NET
             set.capacity = 0;
         }
 
-        public static void b2ClearSet(B2HashSet set)
+        public static void b2ClearSet(ref B2HashSet set)
         {
             set.count = 0;
             //memset(set.items, 0, set.capacity);
@@ -85,7 +85,7 @@ namespace Box2D.NET
             // return 11400714819323198485ull * key;
         }
 
-        public static int b2FindSlot(B2HashSet set, ulong key, uint hash)
+        public static int b2FindSlot(ref B2HashSet set, ulong key, uint hash)
         {
 #if B2_SNOOP_TABLE_COUNTERS
 		b2AtomicFetchAddInt(ref  &b2_findCount, 1 );
@@ -105,9 +105,9 @@ namespace Box2D.NET
             return index;
         }
 
-        public static void b2AddKeyHaveCapacity(B2HashSet set, ulong key, uint hash)
+        public static void b2AddKeyHaveCapacity(ref B2HashSet set, ulong key, uint hash)
         {
-            int index = b2FindSlot(set, key, hash);
+            int index = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
             Debug.Assert(items[index].hash == 0);
 
@@ -116,7 +116,7 @@ namespace Box2D.NET
             set.count += 1;
         }
 
-        public static void b2GrowTable(B2HashSet set)
+        public static void b2GrowTable(ref B2HashSet set)
         {
             uint oldCount = set.count;
             B2_UNUSED(oldCount);
@@ -144,7 +144,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                b2AddKeyHaveCapacity(set, item.key, item.hash);
+                b2AddKeyHaveCapacity(ref set, item.key, item.hash);
             }
 
             Debug.Assert(set.count == oldCount);
@@ -152,16 +152,16 @@ namespace Box2D.NET
             b2Free(oldItems, oldCapacity);
         }
 
-        public static bool b2ContainsKey(B2HashSet set, ulong key)
+        public static bool b2ContainsKey(ref B2HashSet set, ulong key)
         {
             // key of zero is a sentinel
             Debug.Assert(key != 0);
             uint hash = b2KeyHash(key);
-            int index = b2FindSlot(set, key, hash);
+            int index = b2FindSlot(ref set, key, hash);
             return set.items[index].key == key;
         }
 
-        public static int b2GetHashSetBytes(B2HashSet set)
+        public static int b2GetHashSetBytes(ref B2HashSet set)
         {
             // TODO: @ikpil, size check
             //return set.capacity * sizeof(b2SetItem);
@@ -169,7 +169,7 @@ namespace Box2D.NET
         }
 
         // Returns true if key was already in set
-        public static bool b2AddKey(B2HashSet set, ulong key)
+        public static bool b2AddKey(ref B2HashSet set, ulong key)
         {
             // key of zero is a sentinel
             Debug.Assert(key != 0);
@@ -177,7 +177,7 @@ namespace Box2D.NET
             uint hash = b2KeyHash(key);
             Debug.Assert(hash != 0);
 
-            int index = b2FindSlot(set, key, hash);
+            int index = b2FindSlot(ref set, key, hash);
             if (set.items[index].hash != 0)
             {
                 // Already in set
@@ -187,19 +187,19 @@ namespace Box2D.NET
 
             if (2 * set.count >= set.capacity)
             {
-                b2GrowTable(set);
+                b2GrowTable(ref set);
             }
 
-            b2AddKeyHaveCapacity(set, key, hash);
+            b2AddKeyHaveCapacity(ref set, key, hash);
             return false;
         }
 
         // Returns true if the key was found
         // See https://en.wikipedia.org/wiki/Open_addressing
-        public static bool b2RemoveKey(B2HashSet set, ulong key)
+        public static bool b2RemoveKey(ref B2HashSet set, ulong key)
         {
             uint hash = b2KeyHash(key);
-            int i = b2FindSlot(set, key, hash);
+            int i = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
             if (items[i].hash == 0)
             {

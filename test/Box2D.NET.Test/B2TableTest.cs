@@ -38,7 +38,7 @@ public class B2TableTest
                 for (int j = i + 1; j < N; ++j)
                 {
                     ulong key = B2_SHAPE_PAIR_KEY(i, j);
-                    b2AddKey(set, key);
+                    b2AddKey(ref set, key);
                 }
             }
 
@@ -54,7 +54,7 @@ public class B2TableTest
                     if (j == i + 1)
                     {
                         ulong key = B2_SHAPE_PAIR_KEY(i, j);
-                        b2RemoveKey(set, key);
+                        b2RemoveKey(ref set, key);
                         removed[k++] = true;
                         removeCount += 1;
                     }
@@ -82,7 +82,7 @@ public class B2TableTest
                 for (int j = i + 1; j < N; ++j)
                 {
                     ulong key = B2_SHAPE_PAIR_KEY(j, i);
-                    Assert.That(b2ContainsKey(set, key) || removed[k], $"b2ContainsKey(set, {key}) = {b2ContainsKey(set, key)} || removed[{k}] = {removed[k]}");
+                    Assert.That(b2ContainsKey(ref set, key) || removed[k], $"b2ContainsKey(set, {key}) = {b2ContainsKey(ref set, key)} || removed[{k}] = {removed[k]}");
                     k += 1;
                 }
             }
@@ -105,13 +105,13 @@ public class B2TableTest
                 for (int j = i + 1; j < N; ++j)
                 {
                     ulong key = B2_SHAPE_PAIR_KEY(i, j);
-                    b2RemoveKey(set, key);
+                    b2RemoveKey(ref set, key);
                 }
             }
 
             Assert.That(set.count, Is.EqualTo(0));
 
-            b2DestroySet(set);
+            b2DestroySet(ref set);
         }
     }
 }

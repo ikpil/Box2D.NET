@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2HashSet
+    public struct B2HashSet
     {
         public B2SetItem[] items;
         public int capacity;

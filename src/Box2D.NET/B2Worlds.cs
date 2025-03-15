@@ -1937,11 +1937,11 @@ namespace Box2D.NET
             writer.Write("static tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_staticBody]));
             writer.Write("kinematic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody]));
             writer.Write("dynamic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody]));
-            B2HashSet moveSet = world.broadPhase.moveSet;
-            writer.Write("moveSet: {0} ({1}, {2})\n", b2GetHashSetBytes(moveSet), moveSet.count, moveSet.capacity);
+            ref B2HashSet moveSet = ref world.broadPhase.moveSet;
+            writer.Write("moveSet: {0} ({1}, {2})\n", b2GetHashSetBytes(ref moveSet), moveSet.count, moveSet.capacity);
             writer.Write("moveArray: {0}\n", b2Array_ByteCount(ref world.broadPhase.moveArray));
-            B2HashSet pairSet = world.broadPhase.pairSet;
-            writer.Write("pairSet: {0} ({1}, {2})\n", b2GetHashSetBytes(pairSet), pairSet.count, pairSet.capacity);
+            ref B2HashSet pairSet = ref world.broadPhase.pairSet;
+            writer.Write("pairSet: {0} ({1}, {2})\n", b2GetHashSetBytes(ref pairSet), pairSet.count, pairSet.capacity);
             writer.Write("\n");
 
             // solver sets

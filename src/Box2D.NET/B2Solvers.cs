@@ -1966,7 +1966,7 @@ public enum b2SolverBlockType
                         Debug.Assert(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
                         // all fast bullet shapes should already be in the move buffer
-                        Debug.Assert(b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1)));
+                        Debug.Assert(b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1)));
 
                         b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
 

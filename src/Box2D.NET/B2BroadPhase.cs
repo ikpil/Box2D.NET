@@ -39,13 +39,13 @@ namespace Box2D.NET
         {
             trees = null;
             proxyCount = 0;
-            moveSet = null;
+            moveSet = new B2HashSet();
             b2Array_Clear(ref moveArray);
             moveResults = null;
             movePairs = null;
             movePairCapacity = 0;
             movePairIndex = new B2AtomicInt();
-            pairSet = null;
+            pairSet = new B2HashSet();
         }
     }
 }

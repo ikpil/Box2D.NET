@@ -41,7 +41,7 @@ namespace Box2D.NET
         public static void b2BufferMove(B2BroadPhase bp, int queryProxy)
         {
             // Adding 1 because 0 is the sentinel
-            bool alreadyAdded = b2AddKey(bp.moveSet, (ulong)(queryProxy + 1));
+            bool alreadyAdded = b2AddKey(ref bp.moveSet, (ulong)(queryProxy + 1));
             if (alreadyAdded == false)
             {
                 b2Array_Push(ref bp.moveArray, queryProxy);
@@ -84,9 +84,9 @@ namespace Box2D.NET
                 b2DynamicTree_Destroy(bp.trees[i]);
             }
 
-            b2DestroySet(bp.moveSet);
+            b2DestroySet(ref bp.moveSet);
             b2Array_Destroy(ref bp.moveArray);
-            b2DestroySet(bp.pairSet);
+            b2DestroySet(ref bp.pairSet);
 
             //memset( bp, 0, sizeof( b2BroadPhase ) );
             bp.Clear();
@@ -100,7 +100,7 @@ namespace Box2D.NET
 
         public static void b2UnBufferMove(B2BroadPhase bp, int proxyKey)
         {
-            bool found = b2RemoveKey(bp.moveSet, (ulong)(proxyKey + 1));
+            bool found = b2RemoveKey(ref bp.moveSet, (ulong)(proxyKey + 1));
 
             if (found)
             {
@@ -202,7 +202,7 @@ namespace Box2D.NET
             {
                 if (treeType == B2BodyType.b2_dynamicBody && proxyKey < queryProxyKey)
                 {
-                    bool moved = b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1));
+                    bool moved = b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1));
                     if (moved)
                     {
                         // Both proxies are moving. Avoid duplicate pairs.
@@ -213,7 +213,7 @@ namespace Box2D.NET
             else
             {
                 Debug.Assert(treeType == B2BodyType.b2_dynamicBody);
-                bool moved = b2ContainsKey(broadPhase.moveSet, (ulong)(proxyKey + 1));
+                bool moved = b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1));
                 if (moved)
                 {
                     // Both proxies are moving. Avoid duplicate pairs.
@@ -222,7 +222,7 @@ namespace Box2D.NET
             }
 
             ulong pairKey = B2_SHAPE_PAIR_KEY(shapeId, queryContext.queryShapeIndex);
-            if (b2ContainsKey(broadPhase.pairSet, pairKey))
+            if (b2ContainsKey(ref broadPhase.pairSet, pairKey))
             {
                 // contact exists
                 return true;
@@ -470,7 +470,7 @@ namespace Box2D.NET
 
             // Reset move buffer
             b2Array_Clear(ref bp.moveArray);
-            b2ClearSet(bp.moveSet);
+            b2ClearSet(ref bp.moveSet);
 
             b2FreeArenaItem(alloc, bp.movePairs);
             bp.movePairs = null;
