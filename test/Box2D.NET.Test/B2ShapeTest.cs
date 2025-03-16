@@ -35,7 +35,7 @@ public class B2ShapeTest
             float radius = capsule.radius;
             float length = b2Distance(capsule.center1, capsule.center2);
 
-            B2MassData md = b2ComputeCapsuleMass(capsule, 1.0f);
+            B2MassData md = b2ComputeCapsuleMass(ref capsule, 1.0f);
 
             // Box that full contains capsule
             B2Polygon r = b2MakeBox(radius, radius + 0.5f * length);

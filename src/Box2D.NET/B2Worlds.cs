@@ -821,7 +821,7 @@ namespace Box2D.NET
             {
                 case B2ShapeType.b2_capsuleShape:
                 {
-                    B2Capsule capsule = shape.us.capsule;
+                    ref readonly B2Capsule capsule = ref shape.us.capsule;
                     B2Vec2 p1 = b2TransformPoint(ref xf, capsule.center1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, capsule.center2);
                     draw.DrawSolidCapsule(p1, p2, capsule.radius, color, draw.context);
@@ -2129,7 +2129,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_OverlapCapsule(B2WorldId worldId, B2Capsule capsule, B2Transform transform, B2QueryFilter filter,
+        public static B2TreeStats b2World_OverlapCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Transform transform, B2QueryFilter filter,
             b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2144,7 +2144,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(transform.p));
             Debug.Assert(b2IsValidRotation(transform.q));
 
-            B2AABB aabb = b2ComputeCapsuleAABB(capsule, transform);
+            B2AABB aabb = b2ComputeCapsuleAABB(ref capsule, transform);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius), transform, context
             );
@@ -2389,7 +2389,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_CastCapsule(B2WorldId worldId, B2Capsule capsule, B2Transform originTransform, B2Vec2 translation,
+        public static B2TreeStats b2World_CastCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Transform originTransform, B2Vec2 translation,
             B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();

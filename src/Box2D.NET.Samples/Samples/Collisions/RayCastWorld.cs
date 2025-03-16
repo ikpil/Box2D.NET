@@ -423,7 +423,7 @@ public class RayCastWorld : Sample
                     break;
 
                 case CastType.e_capsuleCast:
-                    b2World_CastCapsule(m_worldId, capsule, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastCapsule(m_worldId, ref capsule, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
 
                 case CastType.e_polygonCast:

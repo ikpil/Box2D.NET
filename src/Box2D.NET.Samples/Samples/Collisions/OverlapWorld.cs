@@ -354,7 +354,7 @@ public class OverlapWorld : Sample
         }
         else if (m_shapeType == e_capsuleShape)
         {
-            b2World_OverlapCapsule(m_worldId, m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            b2World_OverlapCapsule(m_worldId, ref m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
             B2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
             B2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
             m_context.draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, B2HexColor.b2_colorWhite);

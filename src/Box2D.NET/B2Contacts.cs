@@ -81,13 +81,13 @@ namespace Box2D.NET
         public static B2Manifold b2CapsuleAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideCapsuleAndCircle(shapeA.us.capsule, xfA, shapeB.us.circle, xfB);
+            return b2CollideCapsuleAndCircle(ref shapeA.us.capsule, xfA, shapeB.us.circle, xfB);
         }
 
         public static B2Manifold b2CapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideCapsules(shapeA.us.capsule, xfA, shapeB.us.capsule, xfB);
+            return b2CollideCapsules(ref shapeA.us.capsule, xfA, ref shapeB.us.capsule, xfB);
         }
 
         public static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
@@ -99,7 +99,7 @@ namespace Box2D.NET
         public static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCapsule(ref shapeA.us.polygon, xfA, shapeB.us.capsule, xfB);
+            return b2CollidePolygonAndCapsule(ref shapeA.us.polygon, xfA, ref shapeB.us.capsule, xfB);
         }
 
         public static B2Manifold b2PolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
@@ -117,7 +117,7 @@ namespace Box2D.NET
         public static B2Manifold b2SegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideSegmentAndCapsule(shapeA.us.segment, xfA, shapeB.us.capsule, xfB);
+            return b2CollideSegmentAndCapsule(shapeA.us.segment, xfA, ref shapeB.us.capsule, xfB);
         }
 
         public static B2Manifold b2SegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
@@ -134,7 +134,7 @@ namespace Box2D.NET
 
         public static B2Manifold b2ChainSegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
-            return b2CollideChainSegmentAndCapsule(shapeA.us.chainSegment, xfA, shapeB.us.capsule, xfB, ref cache);
+            return b2CollideChainSegmentAndCapsule(shapeA.us.chainSegment, xfA, ref shapeB.us.capsule, xfB, ref cache);
         }
 
         public static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
