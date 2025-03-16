@@ -24,7 +24,7 @@ namespace Box2D.NET
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
-            
+
             int contactCount = color.contactSims.count;
             B2ContactSim[] contacts = color.contactSims.data;
             B2BodyState[] awakeStates = context.states;
@@ -1228,8 +1228,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #else
 
-// This is a load and transpose
-        public static B2BodyStateW b2GatherBodies(B2BodyState[] states, int[] indices)
+        // This is a load and transpose
+        public static B2BodyStateW b2GatherBodies(B2BodyState[] states, ReadOnlySpan<int> indices)
         {
             B2BodyState identity = b2_identityBodyState;
 
@@ -1251,8 +1251,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             return simdBody;
         }
 
-// This writes only the velocities back to the solver bodies
-        public static void b2ScatterBodies(B2BodyState[] states, int[] indices, ref B2BodyStateW simdBody)
+        // This writes only the velocities back to the solver bodies
+        public static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
             if (indices[0] != B2_NULL_INDEX)
             {
@@ -1294,8 +1294,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_contact, "Prepare Contact", B2HexColor.b2_colorYellow, true);
             B2World world = context.world;
-            ArraySegment<B2ContactSim> contacts = context.contacts;
-            ArraySegment<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
+            Span<B2ContactSim> contacts = context.contacts;
+            Span<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
             B2BodyState[] awakeStates = context.states;
 #if B2_VALIDATE
             B2Body[] bodies = world.bodies.data;
@@ -1309,7 +1309,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                B2ContactConstraintSIMD constraint = constraints[i];
+                ref B2ContactConstraintSIMD constraint = ref constraints[i];
 
                 for (int j = 0; j < B2_SIMD_WIDTH; ++j)
                 {
@@ -1529,13 +1529,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.warm_start_contact, "Warm Start", B2HexColor.b2_colorGreen, true);
 
             B2BodyState[] states = context.states;
-            ArraySegment<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                B2ContactConstraintSIMD c = constraints[i];
-                B2BodyStateW bA = b2GatherBodies(states, c.indexA);
-                B2BodyStateW bB = b2GatherBodies(states, c.indexB);
+                ref B2ContactConstraintSIMD c = ref constraints[i];
+                B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
+                B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
                 B2FloatW tangentX = c.normal.Y;
                 B2FloatW tangentY = b2SubW(b2ZeroW(), c.normal.X);
@@ -1575,8 +1575,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 bA.w = b2MulSubW(bA.w, c.invIA, c.rollingImpulse);
                 bB.w = b2MulAddW(bB.w, c.invIB, c.rollingImpulse);
 
-                b2ScatterBodies(states, c.indexA, ref bA);
-                b2ScatterBodies(states, c.indexB, ref bB);
+                b2ScatterBodies(states, c.indexA.AsSpan(), ref bA);
+                b2ScatterBodies(states, c.indexB.AsSpan(), ref bB);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.warm_start_contact);
@@ -1587,16 +1587,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
             B2BodyState[] states = context.states;
-            ArraySegment<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
             B2FloatW minBiasVel = b2SplatW(-context.world.contactMaxPushSpeed);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                B2ContactConstraintSIMD c = constraints[i];
+                ref B2ContactConstraintSIMD c = ref constraints[i];
 
-                B2BodyStateW bA = b2GatherBodies(states, c.indexA);
-                B2BodyStateW bB = b2GatherBodies(states, c.indexB);
+                B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
+                B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
                 B2FloatW biasRate, massScale, impulseScale;
                 if (useBias)
@@ -1806,8 +1806,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.w = b2MulAddW(bB.w, c.invIB, deltaLambda);
                 }
 
-                b2ScatterBodies(states, c.indexA, ref bA);
-                b2ScatterBodies(states, c.indexB, ref bB);
+                b2ScatterBodies(states, c.indexA.AsSpan(), ref bA);
+                b2ScatterBodies(states, c.indexB.AsSpan(), ref bB);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
@@ -1818,16 +1818,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.restitution, "Restitution", B2HexColor.b2_colorDodgerBlue, true);
 
             B2BodyState[] states = context.states;
-            ArraySegment<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
             B2FloatW threshold = b2SplatW(context.world.restitutionThreshold);
             B2FloatW zero = b2ZeroW();
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                B2ContactConstraintSIMD c = constraints[i];
+                ref B2ContactConstraintSIMD c = ref constraints[i];
 
-                B2BodyStateW bA = b2GatherBodies(states, c.indexA);
-                B2BodyStateW bB = b2GatherBodies(states, c.indexB);
+                B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
+                B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
                 // first point non-penetration constraint
                 {
@@ -1905,8 +1905,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
                 }
 
-                b2ScatterBodies(states, c.indexA, ref bA);
-                b2ScatterBodies(states, c.indexB, ref bB);
+                b2ScatterBodies(states, c.indexA.AsSpan(), ref bA);
+                b2ScatterBodies(states, c.indexB.AsSpan(), ref bB);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.restitution);
@@ -1916,14 +1916,14 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
-            ArraySegment<B2ContactSim> contacts = context.contacts;
-            ArraySegment<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
+            Span<B2ContactSim> contacts = context.contacts;
+            Span<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
 
             B2Manifold dummy = new B2Manifold();
 
             for (int constraintIndex = startIndex; constraintIndex < endIndex; ++constraintIndex)
             {
-                B2ContactConstraintSIMD c = constraints[constraintIndex];
+                ref B2ContactConstraintSIMD c = ref constraints[constraintIndex];
                 ref B2FloatW rollingImpulse = ref c.rollingImpulse;
                 ref B2FloatW normalImpulse1 = ref c.normalImpulse1;
                 ref B2FloatW normalImpulse2 = ref c.normalImpulse2;

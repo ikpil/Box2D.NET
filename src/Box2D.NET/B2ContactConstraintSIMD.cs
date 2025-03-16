@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using Box2D.NET.Memory;
 using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
@@ -10,10 +11,10 @@ namespace Box2D.NET
     // Uses fixed anchors for Jacobians for better behavior on rolling shapes (circles & capsules)
     // http://mmacklin.com/smallsteps.pdf
     // https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf
-    public class B2ContactConstraintSIMD
+    public struct B2ContactConstraintSIMD
     {
-        public int[] indexA = new int[B2_SIMD_WIDTH];
-        public int[] indexB = new int[B2_SIMD_WIDTH];
+        public B2FixedArray4<int> indexA; // = new int[B2_SIMD_WIDTH];
+        public B2FixedArray4<int> indexB; // = new int[B2_SIMD_WIDTH];
 
         public B2FloatW invMassA, invMassB;
         public B2FloatW invIA, invIB;

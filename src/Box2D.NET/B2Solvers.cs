@@ -7,6 +7,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Box2D.NET.Memory;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Atomics;
@@ -1351,6 +1352,7 @@ public enum b2SolverBlockType
                 ArraySegment<B2JointSim> joints =
                     b2AllocateArenaItem<B2JointSim>(world.stackAllocator, awakeJointCount, "joint pointers");
 
+                Debug.Assert(B2FixedArray4<B2ContactConstraintSIMD>.Size == B2_SIMD_WIDTH);
                 int simdConstraintSize = b2GetContactConstraintSIMDByteCount();
                 ArraySegment<B2ContactConstraintSIMD> simdContactConstraints =
                     b2AllocateArenaItem<B2ContactConstraintSIMD>(world.stackAllocator, simdContactCount /** simdConstraintSize */, "contact constraint");
