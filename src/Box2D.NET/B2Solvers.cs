@@ -481,19 +481,19 @@ namespace Box2D.NET
 
                     // Must recompute aabb at the interpolated transform
                     B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-                    aabb.lowerBound.x -= speculativeDistance;
-                    aabb.lowerBound.y -= speculativeDistance;
-                    aabb.upperBound.x += speculativeDistance;
-                    aabb.upperBound.y += speculativeDistance;
+                    aabb.lowerBound.X -= speculativeDistance;
+                    aabb.lowerBound.Y -= speculativeDistance;
+                    aabb.upperBound.X += speculativeDistance;
+                    aabb.upperBound.Y += speculativeDistance;
                     shape.aabb = aabb;
 
                     if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                     {
                         B2AABB fatAABB;
-                        fatAABB.lowerBound.x = aabb.lowerBound.x - aabbMargin;
-                        fatAABB.lowerBound.y = aabb.lowerBound.y - aabbMargin;
-                        fatAABB.upperBound.x = aabb.upperBound.x + aabbMargin;
-                        fatAABB.upperBound.y = aabb.upperBound.y + aabbMargin;
+                        fatAABB.lowerBound.X = aabb.lowerBound.X - aabbMargin;
+                        fatAABB.lowerBound.Y = aabb.lowerBound.Y - aabbMargin;
+                        fatAABB.upperBound.X = aabb.upperBound.X + aabbMargin;
+                        fatAABB.upperBound.Y = aabb.upperBound.Y + aabbMargin;
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
@@ -522,10 +522,10 @@ namespace Box2D.NET
                     if (b2AABB_Contains(shape.fatAABB, shape.aabb) == false)
                     {
                         B2AABB fatAABB;
-                        fatAABB.lowerBound.x = shape.aabb.lowerBound.x - aabbMargin;
-                        fatAABB.lowerBound.y = shape.aabb.lowerBound.y - aabbMargin;
-                        fatAABB.upperBound.x = shape.aabb.upperBound.x + aabbMargin;
-                        fatAABB.upperBound.y = shape.aabb.upperBound.y + aabbMargin;
+                        fatAABB.lowerBound.X = shape.aabb.lowerBound.X - aabbMargin;
+                        fatAABB.lowerBound.Y = shape.aabb.lowerBound.Y - aabbMargin;
+                        fatAABB.upperBound.X = shape.aabb.upperBound.X + aabbMargin;
+                        fatAABB.upperBound.Y = shape.aabb.upperBound.Y + aabbMargin;
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
@@ -693,10 +693,10 @@ namespace Box2D.NET
                     else
                     {
                         B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-                        aabb.lowerBound.x -= speculativeDistance;
-                        aabb.lowerBound.y -= speculativeDistance;
-                        aabb.upperBound.x += speculativeDistance;
-                        aabb.upperBound.y += speculativeDistance;
+                        aabb.lowerBound.X -= speculativeDistance;
+                        aabb.lowerBound.Y -= speculativeDistance;
+                        aabb.upperBound.X += speculativeDistance;
+                        aabb.upperBound.Y += speculativeDistance;
                         shape.aabb = aabb;
 
                         Debug.Assert(shape.enlargedAABB == false);
@@ -704,10 +704,10 @@ namespace Box2D.NET
                         if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                         {
                             B2AABB fatAABB;
-                            fatAABB.lowerBound.x = aabb.lowerBound.x - aabbMargin;
-                            fatAABB.lowerBound.y = aabb.lowerBound.y - aabbMargin;
-                            fatAABB.upperBound.x = aabb.upperBound.x + aabbMargin;
-                            fatAABB.upperBound.y = aabb.upperBound.y + aabbMargin;
+                            fatAABB.lowerBound.X = aabb.lowerBound.X - aabbMargin;
+                            fatAABB.lowerBound.Y = aabb.lowerBound.Y - aabbMargin;
+                            fatAABB.upperBound.X = aabb.upperBound.X + aabbMargin;
+                            fatAABB.upperBound.Y = aabb.upperBound.Y + aabbMargin;
                             shape.fatAABB = fatAABB;
 
                             shape.enlargedAABB = true;

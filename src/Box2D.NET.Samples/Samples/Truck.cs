@@ -51,8 +51,8 @@ public class Truck
 
         for (int i = 0; i < 5; ++i)
         {
-            vertices[i].x *= 0.85f * scale;
-            vertices[i].y *= 0.85f * scale;
+            vertices[i].X *= 0.85f * scale;
+            vertices[i].Y *= 0.85f * scale;
         }
 
         B2Hull hull = b2ComputeHull(vertices, 5);

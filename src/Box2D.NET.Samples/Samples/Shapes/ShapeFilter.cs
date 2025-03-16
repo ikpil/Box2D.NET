@@ -211,13 +211,13 @@ public class ShapeFilter : Sample
         base.Draw(settings);
         
         B2Vec2 p1 = b2Body_GetPosition(m_player1Id);
-        m_context.draw.DrawString(new B2Vec2(p1.x - 0.5f, p1.y), "player 1");
+        m_context.draw.DrawString(new B2Vec2(p1.X - 0.5f, p1.Y), "player 1");
 
         B2Vec2 p2 = b2Body_GetPosition(m_player2Id);
-        m_context.draw.DrawString(new B2Vec2(p2.x - 0.5f, p2.y), "player 2");
+        m_context.draw.DrawString(new B2Vec2(p2.X - 0.5f, p2.Y), "player 2");
 
         B2Vec2 p3 = b2Body_GetPosition(m_player3Id);
-        m_context.draw.DrawString(new B2Vec2(p3.x - 0.5f, p3.y), "player 3");
+        m_context.draw.DrawString(new B2Vec2(p3.X - 0.5f, p3.Y), "player 3");
 
     }
 }

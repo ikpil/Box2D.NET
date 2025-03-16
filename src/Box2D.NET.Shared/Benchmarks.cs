@@ -256,8 +256,8 @@ namespace Box2D.NET.Shared
             float groupDistance = 1.0f * span / (int)RainConstants.RAIN_COLUMN_COUNT;
 
             B2Vec2 position;
-            position.x = -0.5f * span + groupDistance * (columnIndex + 0.5f);
-            position.y = 40.0f + 45.0f * rowIndex;
+            position.X = -0.5f * span + groupDistance * (columnIndex + 0.5f);
+            position.Y = 40.0f + 45.0f * rowIndex;
 
             float scale = 1.0f;
             float jointFriction = 0.05f;
@@ -268,7 +268,7 @@ namespace Box2D.NET.Shared
             {
                 ref Human human = ref rainData.groups[groupIndex].humans[i];
                 CreateHuman(ref human, worldId, position, scale, jointFriction, jointHertz, jointDamping, i + 1, null, false);
-                position.x += 0.5f;
+                position.X += 0.5f;
             }
         }
 
@@ -330,7 +330,7 @@ namespace Box2D.NET.Shared
                 B2Vec2 p = new B2Vec2(40.0f, 0.0f);
                 for (int i = 0; i < SPINNER_POINT_COUNT; ++i)
                 {
-                    points[i] = new B2Vec2(p.x, p.y + 32.0f);
+                    points[i] = new B2Vec2(p.X, p.Y + 32.0f);
                     p = b2RotateVector(q, p);
                 }
                 
@@ -463,8 +463,8 @@ namespace Box2D.NET.Shared
                 {
                     for (int j = 0; j < rows; ++j)
                     {
-                        bodyDef.position.x = i * d + 30.0f;
-                        bodyDef.position.y = (j - rows / 2.0f) * d;
+                        bodyDef.position.X = i * d + 30.0f;
+                        bodyDef.position.Y = (j - rows / 2.0f) * d;
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
                         b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                     }

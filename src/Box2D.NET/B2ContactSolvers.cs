@@ -815,46 +815,46 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
 
         public static B2FloatW b2AddW(B2FloatW a, B2FloatW b)
         {
-            return new B2FloatW(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
+            return new B2FloatW(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         }
 
         public static B2FloatW b2SubW(B2FloatW a, B2FloatW b)
         {
-            return new B2FloatW(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
+            return new B2FloatW(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         }
 
         public static B2FloatW b2MulW(B2FloatW a, B2FloatW b)
         {
-            return new B2FloatW(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
+            return new B2FloatW(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
         }
 
         public static B2FloatW b2MulAddW(B2FloatW a, B2FloatW b, B2FloatW c)
         {
-            return new B2FloatW(a.x + b.x * c.x, a.y + b.y * c.y, a.z + b.z * c.z, a.w + b.w * c.w);
+            return new B2FloatW(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
         }
 
         public static B2FloatW b2MulSubW(B2FloatW a, B2FloatW b, B2FloatW c)
         {
-            return new B2FloatW(a.x - b.x * c.x, a.y - b.y * c.y, a.z - b.z * c.z, a.w - b.w * c.w);
+            return new B2FloatW(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
         }
 
         public static B2FloatW b2MinW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
-                a.x <= b.x ? a.x : b.x,
-                a.y <= b.y ? a.y : b.y,
-                a.z <= b.z ? a.z : b.z,
-                a.w <= b.w ? a.w : b.w
+                a.X <= b.X ? a.X : b.X,
+                a.Y <= b.Y ? a.Y : b.Y,
+                a.Z <= b.Z ? a.Z : b.Z,
+                a.W <= b.W ? a.W : b.W
             );
         }
 
         public static B2FloatW b2MaxW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
-                a.x >= b.x ? a.x : b.x,
-                a.y >= b.y ? a.y : b.y,
-                a.z >= b.z ? a.z : b.z,
-                a.w >= b.w ? a.w : b.w
+                a.X >= b.X ? a.X : b.X,
+                a.Y >= b.Y ? a.Y : b.Y,
+                a.Z >= b.Z ? a.Z : b.Z,
+                a.W >= b.W ? a.W : b.W
             );
         }
 
@@ -862,30 +862,30 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
         public static B2FloatW b2ClampSymW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
-                b2ClampFloat(a.x, -b.x, b.x),
-                b2ClampFloat(a.y, -b.y, b.y),
-                b2ClampFloat(a.z, -b.z, b.z),
-                b2ClampFloat(a.w, -b.w, b.w)
+                b2ClampFloat(a.X, -b.X, b.X),
+                b2ClampFloat(a.Y, -b.Y, b.Y),
+                b2ClampFloat(a.Z, -b.Z, b.Z),
+                b2ClampFloat(a.W, -b.W, b.W)
             );
         }
 
         public static B2FloatW b2OrW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
-                a.x != 0.0f || b.x != 0.0f ? 1.0f : 0.0f,
-                a.y != 0.0f || b.y != 0.0f ? 1.0f : 0.0f,
-                a.z != 0.0f || b.z != 0.0f ? 1.0f : 0.0f,
-                a.w != 0.0f || b.w != 0.0f ? 1.0f : 0.0f
+                a.X != 0.0f || b.X != 0.0f ? 1.0f : 0.0f,
+                a.Y != 0.0f || b.Y != 0.0f ? 1.0f : 0.0f,
+                a.Z != 0.0f || b.Z != 0.0f ? 1.0f : 0.0f,
+                a.W != 0.0f || b.W != 0.0f ? 1.0f : 0.0f
             );
         }
 
         public static B2FloatW b2GreaterThanW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
-                a.x > b.x ? 1.0f : 0.0f,
-                a.y > b.y ? 1.0f : 0.0f,
-                a.z > b.z ? 1.0f : 0.0f,
-                a.w > b.w ? 1.0f : 0.0f
+                a.X > b.X ? 1.0f : 0.0f,
+                a.Y > b.Y ? 1.0f : 0.0f,
+                a.Z > b.Z ? 1.0f : 0.0f,
+                a.W > b.W ? 1.0f : 0.0f
             );
         }
 
@@ -893,10 +893,10 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
         {
             // TODO: @ikpil check float equal
             return new B2FloatW(
-                a.x == b.x ? 1.0f : 0.0f,
-                a.y == b.y ? 1.0f : 0.0f,
-                a.z == b.z ? 1.0f : 0.0f,
-                a.w == b.w ? 1.0f : 0.0f
+                a.X == b.X ? 1.0f : 0.0f,
+                a.Y == b.Y ? 1.0f : 0.0f,
+                a.Z == b.Z ? 1.0f : 0.0f,
+                a.W == b.W ? 1.0f : 0.0f
             );
         }
 
@@ -905,10 +905,10 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
         {
             return new B2FloatW()
             {
-                x = mask.x != 0.0f ? b.x : a.x,
-                y = mask.y != 0.0f ? b.y : a.y,
-                z = mask.z != 0.0f ? b.z : a.z,
-                w = mask.w != 0.0f ? b.w : a.w,
+                X = mask.X != 0.0f ? b.X : a.X,
+                Y = mask.Y != 0.0f ? b.Y : a.Y,
+                Z = mask.Z != 0.0f ? b.Z : a.Z,
+                W = mask.W != 0.0f ? b.W : a.W,
             };
         }
 
@@ -1239,12 +1239,12 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState s4 = indices[3] == B2_NULL_INDEX ? identity : states[indices[3]];
 
             B2BodyStateW simdBody = new B2BodyStateW();
-            simdBody.v.X = new B2FloatW(s1.linearVelocity.x, s2.linearVelocity.x, s3.linearVelocity.x, s4.linearVelocity.x);
-            simdBody.v.Y = new B2FloatW(s1.linearVelocity.y, s2.linearVelocity.y, s3.linearVelocity.y, s4.linearVelocity.y);
+            simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
+            simdBody.v.Y = new B2FloatW(s1.linearVelocity.Y, s2.linearVelocity.Y, s3.linearVelocity.Y, s4.linearVelocity.Y);
             simdBody.w = new B2FloatW(s1.angularVelocity, s2.angularVelocity, s3.angularVelocity, s4.angularVelocity);
             simdBody.flags = new B2FloatW((float)s1.flags, (float)s2.flags, (float)s3.flags, (float)s4.flags);
-            simdBody.dp.X = new B2FloatW(s1.deltaPosition.x, s2.deltaPosition.x, s3.deltaPosition.x, s4.deltaPosition.x);
-            simdBody.dp.Y = new B2FloatW(s1.deltaPosition.y, s2.deltaPosition.y, s3.deltaPosition.y, s4.deltaPosition.y);
+            simdBody.dp.X = new B2FloatW(s1.deltaPosition.X, s2.deltaPosition.X, s3.deltaPosition.X, s4.deltaPosition.X);
+            simdBody.dp.Y = new B2FloatW(s1.deltaPosition.Y, s2.deltaPosition.Y, s3.deltaPosition.Y, s4.deltaPosition.Y);
             simdBody.dq.C = new B2FloatW(s1.deltaRotation.c, s2.deltaRotation.c, s3.deltaRotation.c, s4.deltaRotation.c);
             simdBody.dq.S = new B2FloatW(s1.deltaRotation.s, s2.deltaRotation.s, s3.deltaRotation.s, s4.deltaRotation.s);
 
@@ -1257,33 +1257,33 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             if (indices[0] != B2_NULL_INDEX)
             {
                 B2BodyState state = states[indices[0]];
-                state.linearVelocity.x = simdBody.v.X.x;
-                state.linearVelocity.y = simdBody.v.Y.x;
-                state.angularVelocity = simdBody.w.x;
+                state.linearVelocity.X = simdBody.v.X.X;
+                state.linearVelocity.Y = simdBody.v.Y.X;
+                state.angularVelocity = simdBody.w.X;
             }
 
             if (indices[1] != B2_NULL_INDEX)
             {
                 B2BodyState state = states[indices[1]];
-                state.linearVelocity.x = simdBody.v.X.y;
-                state.linearVelocity.y = simdBody.v.Y.y;
-                state.angularVelocity = simdBody.w.y;
+                state.linearVelocity.X = simdBody.v.X.Y;
+                state.linearVelocity.Y = simdBody.v.Y.Y;
+                state.angularVelocity = simdBody.w.Y;
             }
 
             if (indices[2] != B2_NULL_INDEX)
             {
                 B2BodyState state = states[indices[2]];
-                state.linearVelocity.x = simdBody.v.X.z;
-                state.linearVelocity.y = simdBody.v.Y.z;
-                state.angularVelocity = simdBody.w.z;
+                state.linearVelocity.X = simdBody.v.X.Z;
+                state.linearVelocity.Y = simdBody.v.Y.Z;
+                state.angularVelocity = simdBody.w.Z;
             }
 
             if (indices[3] != B2_NULL_INDEX)
             {
                 B2BodyState state = states[indices[3]];
-                state.linearVelocity.x = simdBody.v.X.w;
-                state.linearVelocity.y = simdBody.v.Y.w;
-                state.angularVelocity = simdBody.w.w;
+                state.linearVelocity.X = simdBody.v.X.W;
+                state.linearVelocity.Y = simdBody.v.Y.W;
+                state.angularVelocity = simdBody.w.W;
             }
         }
 
@@ -1370,8 +1370,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         B2Softness soft = (indexA == B2_NULL_INDEX || indexB == B2_NULL_INDEX) ? staticSoftness : contactSoftness;
 
                         B2Vec2 normal = manifold.normal;
-                        constraint.normal.X[j] = normal.x;
-                        constraint.normal.Y[j] = normal.y;
+                        constraint.normal.X[j] = normal.X;
+                        constraint.normal.Y[j] = normal.Y;
 
                         constraint.friction[j] = contactSim.friction;
                         constraint.tangentSpeed[j] = contactSim.tangentSpeed;
@@ -1391,10 +1391,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2 rA = mp.anchorA;
                             B2Vec2 rB = mp.anchorB;
 
-                            constraint.anchorA1.X[j] = rA.x;
-                            constraint.anchorA1.Y[j] = rA.y;
-                            constraint.anchorB1.X[j] = rB.x;
-                            constraint.anchorB1.Y[j] = rB.y;
+                            constraint.anchorA1.X[j] = rA.X;
+                            constraint.anchorA1.Y[j] = rA.Y;
+                            constraint.anchorB1.X[j] = rB.X;
+                            constraint.anchorB1.Y[j] = rB.Y;
 
                             constraint.baseSeparation1[j] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
 
@@ -1428,10 +1428,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2 rA = mp.anchorA;
                             B2Vec2 rB = mp.anchorB;
 
-                            constraint.anchorA2.X[j] = rA.x;
-                            constraint.anchorA2.Y[j] = rA.y;
-                            constraint.anchorB2.X[j] = rB.x;
-                            constraint.anchorB2.Y[j] = rB.y;
+                            constraint.anchorA2.X[j] = rA.X;
+                            constraint.anchorA2.Y[j] = rA.Y;
+                            constraint.anchorB2.X[j] = rB.X;
+                            constraint.anchorB2.Y[j] = rB.Y;
 
                             constraint.baseSeparation2[j] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
 

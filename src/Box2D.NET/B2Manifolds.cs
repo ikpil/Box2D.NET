@@ -865,8 +865,8 @@ namespace Box2D.NET
                     }
 
                     float invDistance = 1.0f / distance;
-                    normal.x *= invDistance;
-                    normal.y *= invDistance;
+                    normal.X *= invDistance;
+                    normal.Y *= invDistance;
 
                     B2Vec2 c1 = b2MulAdd(v11, localPolyA.radius, normal);
                     B2Vec2 c2 = b2MulAdd(v21, -localPolyB.radius, normal);
@@ -889,8 +889,8 @@ namespace Box2D.NET
                     }
 
                     float invDistance = 1.0f / distance;
-                    normal.x *= invDistance;
-                    normal.y *= invDistance;
+                    normal.X *= invDistance;
+                    normal.Y *= invDistance;
 
                     B2Vec2 c1 = b2MulAdd(v11, localPolyA.radius, normal);
                     B2Vec2 c2 = b2MulAdd(v22, -localPolyB.radius, normal);
@@ -913,8 +913,8 @@ namespace Box2D.NET
                     }
 
                     float invDistance = 1.0f / distance;
-                    normal.x *= invDistance;
-                    normal.y *= invDistance;
+                    normal.X *= invDistance;
+                    normal.Y *= invDistance;
 
                     B2Vec2 c1 = b2MulAdd(v12, localPolyA.radius, normal);
                     B2Vec2 c2 = b2MulAdd(v21, -localPolyB.radius, normal);
@@ -937,8 +937,8 @@ namespace Box2D.NET
                     }
 
                     float invDistance = 1.0f / distance;
-                    normal.x *= invDistance;
-                    normal.y *= invDistance;
+                    normal.X *= invDistance;
+                    normal.Y *= invDistance;
 
                     B2Vec2 c1 = b2MulAdd(v12, localPolyA.radius, normal);
                     B2Vec2 c2 = b2MulAdd(v22, -localPolyB.radius, normal);
@@ -1051,7 +1051,7 @@ namespace Box2D.NET
             else
             {
                 float ee = b2Dot(e, e);
-                pA = new B2Vec2(u * p1.x + v * p2.x, u * p1.y + v * p2.y);
+                pA = new B2Vec2(u * p1.X + v * p2.X, u * p1.Y + v * p2.Y);
                 pA = ee > 0.0f ? b2MulSV(1.0f / ee, pA) : p1;
             }
 

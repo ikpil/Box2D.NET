@@ -9,12 +9,12 @@ namespace Box2D.NET
     public struct B2Vec2
     {
         /// coordinates
-        public float x, y;
+        public float X, Y;
 
         public B2Vec2(float x, float y)
         {
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         /*
@@ -48,43 +48,43 @@ namespace Box2D.NET
         /// Unary negate a vector
         public static B2Vec2 operator-( B2Vec2 a )
         {
-            return new B2Vec2(-a.x, -a.y);
+            return new B2Vec2(-a.X, -a.Y);
         }
         
         /// Binary vector addition
         public static B2Vec2 operator+( B2Vec2 a, B2Vec2 b )
         {
-            return new B2Vec2(a.x + b.x, a.y + b.y);
+            return new B2Vec2(a.X + b.X, a.Y + b.Y);
         }
         
         /// Binary vector subtraction
         public static B2Vec2 operator-( B2Vec2 a, B2Vec2 b )
         {
-            return new B2Vec2(a.x - b.x, a.y - b.y);
+            return new B2Vec2(a.X - b.X, a.Y - b.Y);
         }
         
         /// Binary scalar and vector multiplication
         public static B2Vec2 operator*( float a, B2Vec2 b )
         {
-            return new B2Vec2(a * b.x, a * b.y);
+            return new B2Vec2(a * b.X, a * b.Y);
         }
         
         /// Binary scalar and vector multiplication
         public static B2Vec2 operator*( B2Vec2 a, float b )
         {
-            return new B2Vec2(a.x * b, a.y * b);
+            return new B2Vec2(a.X * b, a.Y * b);
         }
         
         /// Binary vector equality
         public static bool operator==( B2Vec2 a, B2Vec2 b )
         {
-            return a.x == b.x && a.y == b.y;
+            return a.X == b.X && a.Y == b.Y;
         }
         
         /// Binary vector inequality
         public static bool operator!=( B2Vec2 a, B2Vec2 b )
         {
-            return a.x != b.x || a.y != b.y;
+            return a.X != b.X || a.Y != b.Y;
         }
     }
 }

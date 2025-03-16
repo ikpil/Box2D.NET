@@ -83,7 +83,7 @@ public class LargeWorld : Sample
                 // This makes a noticeable improvement in stability far from the origin.
                 if (i % 10 == 0)
                 {
-                    bodyDef.position.x = xBody;
+                    bodyDef.position.X = xBody;
                     groundId = b2CreateBody(m_worldId, ref bodyDef);
                     xShape = 0.0f;
                 }
@@ -123,15 +123,15 @@ public class LargeWorld : Sample
 
                 for (int i = 0; i < 10; ++i)
                 {
-                    bodyDef.position.y = 10.0f;
+                    bodyDef.position.Y = 10.0f;
                     for (int j = 0; j < 5; ++j)
                     {
                         B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                         b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
-                        bodyDef.position.y += 0.5f;
+                        bodyDef.position.Y += 0.5f;
                     }
 
-                    bodyDef.position.x += 0.6f;
+                    bodyDef.position.X += 0.6f;
                 }
             }
             else if (remainder == 1)
@@ -142,7 +142,7 @@ public class LargeWorld : Sample
                     Human human = new Human();
                     CreateHuman(ref human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, null, false);
                     humanIndex += 1;
-                    position.x += 1.0f;
+                    position.X += 1.0f;
                 }
             }
             else
@@ -153,7 +153,7 @@ public class LargeWorld : Sample
                 {
                     Donut donut = new Donut();
                     donut.Spawn(m_worldId, position, 0.75f, 0, null);
-                    position.x += 2.0f;
+                    position.X += 2.0f;
                 }
             }
         }
@@ -200,8 +200,8 @@ public class LargeWorld : Sample
             timeStep = 0.0f;
         }
 
-        m_viewPosition.x += timeStep * m_speed;
-        m_viewPosition.x = b2ClampFloat(m_viewPosition.x, -span, span);
+        m_viewPosition.X += timeStep * m_speed;
+        m_viewPosition.X = b2ClampFloat(m_viewPosition.X, -span, span);
 
         if (m_speed != 0.0f)
         {
@@ -210,13 +210,13 @@ public class LargeWorld : Sample
 
         if (m_followCar)
         {
-            m_context.camera.m_center.x = b2Body_GetPosition(m_car.m_chassisId).x;
+            m_context.camera.m_center.X = b2Body_GetPosition(m_car.m_chassisId).X;
         }
 
         float radius = 2.0f;
         if ((m_stepCount & 0x1) == 0x1 && m_explode)
         {
-            m_explosionPosition.x = (0.5f + m_cycleIndex) * m_period - span;
+            m_explosionPosition.X = (0.5f + m_cycleIndex) * m_period - span;
 
             B2ExplosionDef def = b2DefaultExplosionDef();
             def.position = m_explosionPosition;

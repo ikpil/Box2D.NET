@@ -23,10 +23,10 @@ public class B2DistanceTest
 
         Assert.That(result.fraction1 - 0.5f, Is.LessThan(FLT_EPSILON));
         Assert.That(result.fraction2 - 1.0f, Is.LessThan(FLT_EPSILON));
-        Assert.That(result.closest1.x + 1.0f, Is.LessThan(FLT_EPSILON));
-        Assert.That(result.closest1.y, Is.LessThan(FLT_EPSILON));
-        Assert.That(result.closest2.x - 1.0f, Is.LessThan(FLT_EPSILON));
-        Assert.That(result.closest2.y, Is.LessThan(FLT_EPSILON));
+        Assert.That(result.closest1.X + 1.0f, Is.LessThan(FLT_EPSILON));
+        Assert.That(result.closest1.Y, Is.LessThan(FLT_EPSILON));
+        Assert.That(result.closest2.X - 1.0f, Is.LessThan(FLT_EPSILON));
+        Assert.That(result.closest2.Y, Is.LessThan(FLT_EPSILON));
         Assert.That(result.distanceSquared - 4.0f, Is.LessThan(FLT_EPSILON));
     }
 

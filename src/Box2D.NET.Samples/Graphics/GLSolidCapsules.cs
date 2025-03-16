@@ -121,11 +121,11 @@ public class GLSolidCapsules
             return;
         }
 
-        B2Vec2 axis = new B2Vec2(d.x / length, d.y / length);
+        B2Vec2 axis = new B2Vec2(d.X / length, d.Y / length);
         B2Transform transform;
         transform.p = 0.5f * (p1 + p2);
-        transform.q.c = axis.x;
-        transform.q.s = axis.y;
+        transform.q.c = axis.X;
+        transform.q.s = axis.Y;
 
         RGBA8 rgba = RGBA8.MakeRGBA8(c, 1.0f);
 

@@ -88,8 +88,8 @@ public class FixedRotation : Sample
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             float length = 2.0f;
-            B2Vec2 pivot1 = new B2Vec2(position.x, position.y + 1.0f + length);
-            B2Vec2 pivot2 = new B2Vec2(position.x, position.y + 1.0f);
+            B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
+            B2Vec2 pivot2 = new B2Vec2(position.X, position.Y + 1.0f);
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
             jointDef.bodyIdA = m_groundId;
             jointDef.bodyIdB = m_bodyIds[index];
@@ -99,7 +99,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
 
         // motor joint
@@ -120,7 +120,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
 
         // prismatic joint
@@ -132,7 +132,7 @@ public class FixedRotation : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
-            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.bodyIdA = m_groundId;
             jointDef.bodyIdB = m_bodyIds[index];
@@ -142,7 +142,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
 
         // revolute joint
@@ -154,7 +154,7 @@ public class FixedRotation : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
-            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.bodyIdA = m_groundId;
             jointDef.bodyIdB = m_bodyIds[index];
@@ -163,7 +163,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
 
         // weld joint
@@ -175,7 +175,7 @@ public class FixedRotation : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
-            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
             jointDef.bodyIdA = m_groundId;
             jointDef.bodyIdB = m_bodyIds[index];
@@ -188,7 +188,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
 
         // wheel joint
@@ -200,7 +200,7 @@ public class FixedRotation : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
-            B2Vec2 pivot = new B2Vec2(position.x - 1.0f, position.y);
+            B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.bodyIdA = m_groundId;
             jointDef.bodyIdB = m_bodyIds[index];
@@ -218,7 +218,7 @@ public class FixedRotation : Sample
             m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
         }
 
-        position.x += 5.0f;
+        position.X += 5.0f;
         ++index;
     }
 

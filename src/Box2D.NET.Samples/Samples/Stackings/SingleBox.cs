@@ -56,6 +56,6 @@ public class SingleBox : Sample
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawTextLine($"(x, y) = ({position.x:G2}, {position.y:G2})");
+        DrawTextLine($"(x, y) = ({position.X:G2}, {position.Y:G2})");
     }
 }

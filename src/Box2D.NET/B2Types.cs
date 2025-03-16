@@ -115,8 +115,8 @@ namespace Box2D.NET
         public static B2WorldDef b2DefaultWorldDef()
         {
             B2WorldDef def = new B2WorldDef();
-            def.gravity.x = 0.0f;
-            def.gravity.y = -10.0f;
+            def.gravity.X = 0.0f;
+            def.gravity.Y = -10.0f;
             def.hitEventThreshold = 1.0f * b2_lengthUnitsPerMeter;
             def.restitutionThreshold = 1.0f * b2_lengthUnitsPerMeter;
             def.contactPushMaxSpeed = 3.0f * b2_lengthUnitsPerMeter;

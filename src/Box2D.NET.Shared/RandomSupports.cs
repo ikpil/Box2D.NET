@@ -59,8 +59,8 @@ namespace Box2D.NET.Shared
         public static B2Vec2 RandomVec2(float lo, float hi)
         {
             B2Vec2 v;
-            v.x = RandomFloatRange(lo, hi);
-            v.y = RandomFloatRange(lo, hi);
+            v.X = RandomFloatRange(lo, hi);
+            v.Y = RandomFloatRange(lo, hi);
             return v;
         }
 

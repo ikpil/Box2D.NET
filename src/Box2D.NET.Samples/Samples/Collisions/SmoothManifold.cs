@@ -154,8 +154,8 @@ public class SmoothManifold : Sample
             m_shapeType = (ShapeType)shapeType;
         }
 
-        ImGui.SliderFloat("x Offset", ref m_transform.p.x, -2.0f, 2.0f, "%.2f");
-        ImGui.SliderFloat("y Offset", ref m_transform.p.y, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("x Offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("y Offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
 
         if (ImGui.SliderFloat("Angle", ref m_angle, -B2_PI, B2_PI, "%.2f"))
         {
@@ -214,12 +214,12 @@ public class SmoothManifold : Sample
     {
         if (m_dragging)
         {
-            m_transform.p.x = m_basePosition.x + (p.x - m_startPoint.x);
-            m_transform.p.y = m_basePosition.y + (p.y - m_startPoint.y);
+            m_transform.p.X = m_basePosition.X + (p.X - m_startPoint.X);
+            m_transform.p.Y = m_basePosition.Y + (p.Y - m_startPoint.Y);
         }
         else if (m_rotating)
         {
-            float dx = p.x - m_startPoint.x;
+            float dx = p.X - m_startPoint.X;
             m_angle = b2ClampFloat(m_baseAngle + 1.0f * dx, -B2_PI, B2_PI);
             m_transform.q = b2MakeRot(m_angle);
         }
@@ -248,13 +248,13 @@ public class SmoothManifold : Sample
             {
                 // uint indexA = mp.id >> 8;
                 // uint indexB = 0xFF & mp.id;
-                B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y - 0.02f);
+                B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y - 0.02f);
                 m_context.draw.DrawString(p, $"0x{mp.id:X4}");
             }
 
             if (m_showSeparation)
             {
-                B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y + 0.03f);
+                B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y + 0.03f);
                 m_context.draw.DrawString(p, $"{mp.separation:F3}");
             }
         }

@@ -11,8 +11,8 @@ namespace Box2D.NET
         // Get surface area of an AABB (the perimeter length)
         public static float b2Perimeter(B2AABB a)
         {
-            float wx = a.upperBound.x - a.lowerBound.x;
-            float wy = a.upperBound.y - a.lowerBound.y;
+            float wx = a.upperBound.X - a.lowerBound.X;
+            float wy = a.upperBound.Y - a.lowerBound.Y;
             return 2.0f * (wx + wy);
         }
 
@@ -21,27 +21,27 @@ namespace Box2D.NET
         public static bool b2EnlargeAABB(ref B2AABB a, B2AABB b)
         {
             bool changed = false;
-            if (b.lowerBound.x < a.lowerBound.x)
+            if (b.lowerBound.X < a.lowerBound.X)
             {
-                a.lowerBound.x = b.lowerBound.x;
+                a.lowerBound.X = b.lowerBound.X;
                 changed = true;
             }
 
-            if (b.lowerBound.y < a.lowerBound.y)
+            if (b.lowerBound.Y < a.lowerBound.Y)
             {
-                a.lowerBound.y = b.lowerBound.y;
+                a.lowerBound.Y = b.lowerBound.Y;
                 changed = true;
             }
 
-            if (a.upperBound.x < b.upperBound.x)
+            if (a.upperBound.X < b.upperBound.X)
             {
-                a.upperBound.x = b.upperBound.x;
+                a.upperBound.X = b.upperBound.X;
                 changed = true;
             }
 
-            if (a.upperBound.y < b.upperBound.y)
+            if (a.upperBound.Y < b.upperBound.Y)
             {
-                a.upperBound.y = b.upperBound.y;
+                a.upperBound.Y = b.upperBound.Y;
                 changed = true;
             }
 
@@ -51,8 +51,8 @@ namespace Box2D.NET
         /// Do a and b overlap
         public static bool b2AABB_Overlaps(B2AABB a, B2AABB b)
         {
-            return !(b.lowerBound.x > a.upperBound.x || b.lowerBound.y > a.upperBound.y || a.lowerBound.x > b.upperBound.x ||
-                     a.lowerBound.y > b.upperBound.y);
+            return !(b.lowerBound.X > a.upperBound.X || b.lowerBound.Y > a.upperBound.Y || a.lowerBound.X > b.upperBound.X ||
+                     a.lowerBound.Y > b.upperBound.Y);
         }
 
 
@@ -60,7 +60,7 @@ namespace Box2D.NET
         public static bool b2IsValidAABB(B2AABB a)
         {
             B2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
-            bool valid = d.x >= 0.0f && d.y >= 0.0f;
+            bool valid = d.X >= 0.0f && d.Y >= 0.0f;
             valid = valid && b2IsValidVec2(a.lowerBound) && b2IsValidVec2(a.upperBound);
             return valid;
         }
@@ -82,19 +82,19 @@ namespace Box2D.NET
             B2Vec2 normal = b2Vec2_zero;
 
             // x-coordinate
-            if (absD.x < FLT_EPSILON)
+            if (absD.X < FLT_EPSILON)
             {
                 // parallel
-                if (p.x < a.lowerBound.x || a.upperBound.x < p.x)
+                if (p.X < a.lowerBound.X || a.upperBound.X < p.X)
                 {
                     return output;
                 }
             }
             else
             {
-                float inv_d = 1.0f / d.x;
-                float t1 = (a.lowerBound.x - p.x) * inv_d;
-                float t2 = (a.upperBound.x - p.x) * inv_d;
+                float inv_d = 1.0f / d.X;
+                float t1 = (a.lowerBound.X - p.X) * inv_d;
+                float t2 = (a.upperBound.X - p.X) * inv_d;
 
                 // Sign of the normal vector.
                 float s = -1.0f;
@@ -110,8 +110,8 @@ namespace Box2D.NET
                 // Push the min up
                 if (t1 > tmin)
                 {
-                    normal.y = 0.0f;
-                    normal.x = s;
+                    normal.Y = 0.0f;
+                    normal.X = s;
                     tmin = t1;
                 }
 
@@ -125,19 +125,19 @@ namespace Box2D.NET
             }
 
             // y-coordinate
-            if (absD.y < FLT_EPSILON)
+            if (absD.Y < FLT_EPSILON)
             {
                 // parallel
-                if (p.y < a.lowerBound.y || a.upperBound.y < p.y)
+                if (p.Y < a.lowerBound.Y || a.upperBound.Y < p.Y)
                 {
                     return output;
                 }
             }
             else
             {
-                float inv_d = 1.0f / d.y;
-                float t1 = (a.lowerBound.y - p.y) * inv_d;
-                float t2 = (a.upperBound.y - p.y) * inv_d;
+                float inv_d = 1.0f / d.Y;
+                float t1 = (a.lowerBound.Y - p.Y) * inv_d;
+                float t2 = (a.upperBound.Y - p.Y) * inv_d;
 
                 // Sign of the normal vector.
                 float s = -1.0f;
@@ -153,8 +153,8 @@ namespace Box2D.NET
                 // Push the min up
                 if (t1 > tmin)
                 {
-                    normal.x = 0.0f;
-                    normal.y = s;
+                    normal.X = 0.0f;
+                    normal.Y = s;
                     tmin = t1;
                 }
 

@@ -93,7 +93,7 @@ namespace Box2D.NET
         public static B2WheelJointDef b2DefaultWheelJointDef()
         {
             B2WheelJointDef def = new B2WheelJointDef();
-            def.localAxisA.y = 1.0f;
+            def.localAxisA.Y = 1.0f;
             def.enableSpring = true;
             def.hertz = 1.0f;
             def.dampingRatio = 0.7f;

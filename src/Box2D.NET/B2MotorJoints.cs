@@ -148,10 +148,10 @@ namespace Box2D.NET
             B2Vec2 rB = joint.anchorB;
 
             B2Mat22 K;
-            K.cx.x = mA + mB + rA.y * rA.y * iA + rB.y * rB.y * iB;
-            K.cx.y = -rA.y * rA.x * iA - rB.y * rB.x * iB;
-            K.cy.x = K.cx.y;
-            K.cy.y = mA + mB + rA.x * rA.x * iA + rB.x * rB.x * iB;
+            K.cx.X = mA + mB + rA.Y * rA.Y * iA + rB.Y * rB.Y * iB;
+            K.cx.Y = -rA.Y * rA.X * iA - rB.Y * rB.X * iB;
+            K.cy.X = K.cx.Y;
+            K.cy.Y = mA + mB + rA.X * rA.X * iA + rB.X * rB.X * iB;
             joint.linearMass = b2GetInverse22(K);
 
             float ka = iA + iB;
@@ -240,7 +240,7 @@ namespace Box2D.NET
 
                 B2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
                 B2Vec2 b = b2MulMV(joint.linearMass, b2Add(Cdot, linearBias));
-                B2Vec2 impulse = new B2Vec2(-b.x, -b.y);
+                B2Vec2 impulse = new B2Vec2(-b.X, -b.Y);
 
                 B2Vec2 oldImpulse = joint.linearImpulse;
                 float maxImpulse = context.h * joint.maxForce;
@@ -249,8 +249,8 @@ namespace Box2D.NET
                 if (b2LengthSquared(joint.linearImpulse) > maxImpulse * maxImpulse)
                 {
                     joint.linearImpulse = b2Normalize(joint.linearImpulse);
-                    joint.linearImpulse.x *= maxImpulse;
-                    joint.linearImpulse.y *= maxImpulse;
+                    joint.linearImpulse.X *= maxImpulse;
+                    joint.linearImpulse.Y *= maxImpulse;
                 }
 
                 impulse = b2Sub(joint.linearImpulse, oldImpulse);

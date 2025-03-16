@@ -59,7 +59,7 @@ public struct Donut
         float angle = 0.0f;
         for (int i = 0; i < e_sides; ++i)
         {
-            bodyDef.position = new B2Vec2(radius * MathF.Cos(angle) + center.x, radius * MathF.Sin(angle) + center.y);
+            bodyDef.position = new B2Vec2(radius * MathF.Cos(angle) + center.X, radius * MathF.Sin(angle) + center.Y);
             bodyDef.rotation = b2MakeRot(angle);
 
             m_bodyIds[i] = b2CreateBody(worldId, ref bodyDef);

@@ -243,8 +243,8 @@ public class ShapeDistance : Sample
 
         ImGui.Separator();
 
-        ImGui.SliderFloat("x offset", ref m_transform.p.x, -2.0f, 2.0f, "%.2f");
-        ImGui.SliderFloat("y offset", ref m_transform.p.y, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
 
         if (ImGui.SliderFloat("angle", ref m_angle, -B2_PI, B2_PI, "%.2f"))
         {
@@ -304,12 +304,12 @@ public class ShapeDistance : Sample
     {
         if (m_dragging)
         {
-            m_transform.p.x = m_basePosition.x + 0.5f * (p.x - m_startPoint.x);
-            m_transform.p.y = m_basePosition.y + 0.5f * (p.y - m_startPoint.y);
+            m_transform.p.X = m_basePosition.X + 0.5f * (p.X - m_startPoint.X);
+            m_transform.p.Y = m_basePosition.Y + 0.5f * (p.Y - m_startPoint.Y);
         }
         else if (m_rotating)
         {
-            float dx = p.x - m_startPoint.x;
+            float dx = p.X - m_startPoint.X;
             m_angle = b2ClampFloat(m_baseAngle + 1.0f * dx, -B2_PI, B2_PI);
             m_transform.q = b2MakeRot(m_angle);
         }
@@ -317,12 +317,12 @@ public class ShapeDistance : Sample
 
     static B2Vec2 Weight2(float a1, B2Vec2 w1, float a2, B2Vec2 w2)
     {
-        return new B2Vec2(a1 * w1.x + a2 * w2.x, a1 * w1.y + a2 * w2.y);
+        return new B2Vec2(a1 * w1.X + a2 * w2.X, a1 * w1.Y + a2 * w2.Y);
     }
 
     static B2Vec2 Weight3(float a1, B2Vec2 w1, float a2, B2Vec2 w2, float a3, B2Vec2 w3)
     {
-        return new B2Vec2(a1 * w1.x + a2 * w2.x + a3 * w3.x, a1 * w1.y + a2 * w2.y + a3 * w3.y);
+        return new B2Vec2(a1 * w1.X + a2 * w2.X + a3 * w3.X, a1 * w1.Y + a2 * w2.Y + a3 * w3.Y);
     }
 
     void ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)

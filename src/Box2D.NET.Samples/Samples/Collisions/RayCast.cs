@@ -90,8 +90,8 @@ public class RayCast : Sample
 
         ImGui.PushItemWidth(100.0f);
 
-        ImGui.SliderFloat("x offset", ref m_transform.p.x, -2.0f, 2.0f, "%.2f");
-        ImGui.SliderFloat("y offset", ref m_transform.p.y, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
 
         if (ImGui.SliderFloat("angle", ref m_angle, -B2_PI, B2_PI, "%.2f"))
         {
@@ -163,12 +163,12 @@ public class RayCast : Sample
         }
         else if (m_translating)
         {
-            m_transform.p.x = m_basePosition.x + 0.5f * (p.x - m_startPosition.x);
-            m_transform.p.y = m_basePosition.y + 0.5f * (p.y - m_startPosition.y);
+            m_transform.p.X = m_basePosition.X + 0.5f * (p.X - m_startPosition.X);
+            m_transform.p.Y = m_basePosition.Y + 0.5f * (p.Y - m_startPosition.Y);
         }
         else if (m_rotating)
         {
-            float dx = p.x - m_startPosition.x;
+            float dx = p.X - m_startPosition.X;
             m_angle = b2ClampFloat(m_baseAngle + 0.5f * dx, -B2_PI, B2_PI);
             m_transform.q = b2MakeRot(m_angle);
         }
@@ -198,7 +198,7 @@ public class RayCast : Sample
 
             if (m_showFraction)
             {
-                B2Vec2 ps = new B2Vec2(p.x + 0.05f, p.y - 0.02f);
+                B2Vec2 ps = new B2Vec2(p.X + 0.05f, p.Y - 0.02f);
                 m_context.draw.DrawString(ps, $"{output.fraction:F2}");
             }
         }

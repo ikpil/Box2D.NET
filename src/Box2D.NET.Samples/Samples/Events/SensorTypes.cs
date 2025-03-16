@@ -167,12 +167,12 @@ public class SensorTypes : Sample
     public override void Step(Settings settings)
     {
         B2Vec2 position = b2Body_GetPosition(m_kinematicBodyId);
-        if (position.y < 0.0f)
+        if (position.Y < 0.0f)
         {
             b2Body_SetLinearVelocity(m_kinematicBodyId, new B2Vec2(0.0f, 1.0f));
             //b2Body_SetKinematicTarget( m_kinematicBodyId );
         }
-        else if (position.y > 3.0f)
+        else if (position.Y > 3.0f)
         {
             b2Body_SetLinearVelocity(m_kinematicBodyId, new B2Vec2(0.0f, -1.0f));
         }

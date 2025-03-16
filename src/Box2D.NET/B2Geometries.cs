@@ -48,8 +48,8 @@ namespace Box2D.NET
 
             Debug.Assert(area > FLT_EPSILON);
             float invArea = 1.0f / area;
-            center.x *= invArea;
-            center.y *= invArea;
+            center.X *= invArea;
+            center.Y *= invArea;
 
             // Restore offset
             center = b2Add(origin, center);
@@ -278,8 +278,8 @@ namespace Box2D.NET
 
             B2MassData massData = new B2MassData();
             massData.mass = circleMass + boxMass;
-            massData.center.x = 0.5f * (p1.x + p2.x);
-            massData.center.y = 0.5f * (p1.y + p2.y);
+            massData.center.X = 0.5f * (p1.X + p2.X);
+            massData.center.Y = 0.5f * (p1.Y + p2.Y);
 
             // two offset half circles, both halves add up to full circle and each half is offset by half length
             // semi-circle centroid = 4 r / 3 pi
@@ -400,8 +400,8 @@ namespace Box2D.NET
                 // Area weighted centroid, r at origin
                 center = b2MulAdd(center, triangleArea * inv3, b2Add(e1, e2));
 
-                float ex1 = e1.x, ey1 = e1.y;
-                float ex2 = e2.x, ey2 = e2.y;
+                float ex1 = e1.X, ey1 = e1.Y;
+                float ex2 = e2.X, ey2 = e2.Y;
 
                 float intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
                 float inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
@@ -417,8 +417,8 @@ namespace Box2D.NET
             // Center of mass, shift back from origin at r
             Debug.Assert(area > FLT_EPSILON);
             float invArea = 1.0f / area;
-            center.x *= invArea;
-            center.y *= invArea;
+            center.X *= invArea;
+            center.Y *= invArea;
             massData.center = b2Add(r, center);
 
             // Inertia tensor relative to the local origin (point s).
@@ -436,7 +436,7 @@ namespace Box2D.NET
             B2Vec2 p = b2TransformPoint(ref xf, shape.center);
             float r = shape.radius;
 
-            B2AABB aabb = new B2AABB(new B2Vec2(p.x - r, p.y - r), new B2Vec2(p.x + r, p.y + r));
+            B2AABB aabb = new B2AABB(new B2Vec2(p.X - r, p.Y - r), new B2Vec2(p.X + r, p.Y + r));
             return aabb;
         }
 
@@ -657,7 +657,7 @@ namespace Box2D.NET
             }
 
             // Perpendicular to capsule axis, pointing right
-            B2Vec2 n = new B2Vec2(a.y, -a.x);
+            B2Vec2 n = new B2Vec2(a.Y, -a.X);
 
             float rayLength = 0;
             B2Vec2 u = b2GetLengthAndNormalize(ref rayLength, d);
@@ -672,7 +672,7 @@ namespace Box2D.NET
             // b = q + radius * ap
 
             // Cramer's rule [a -u]
-            float den = -a.x * u.y + u.x * a.y;
+            float den = -a.X * u.Y + u.X * a.Y;
             if (-FLT_EPSILON < den && den < FLT_EPSILON)
             {
                 // Ray is parallel to capsule and outside infinite length capsule
@@ -685,10 +685,10 @@ namespace Box2D.NET
             float invDen = 1.0f / den;
 
             // Cramer's rule [a b1]
-            float s21 = (a.x * b1.y - b1.x * a.y) * invDen;
+            float s21 = (a.X * b1.Y - b1.X * a.Y) * invDen;
 
             // Cramer's rule [a b2]
-            float s22 = (a.x * b2.y - b2.x * a.y) * invDen;
+            float s22 = (a.X * b2.Y - b2.X * a.Y) * invDen;
 
             float s2;
             B2Vec2 b;
@@ -710,7 +710,7 @@ namespace Box2D.NET
             }
 
             // Cramer's rule [b -u]
-            float s1 = (-b.x * u.y + u.x * b.y) * invDen;
+            float s1 = (-b.X * u.Y + u.X * b.Y) * invDen;
 
             if (s1 < 0.0f)
             {

@@ -106,8 +106,8 @@ public class FallingHinges : Sample
                     B2BodyDef bodyDef = b2DefaultBodyDef();
                     bodyDef.type = B2BodyType.b2_dynamicBody;
 
-                    bodyDef.position.x = x + offset * i;
-                    bodyDef.position.y = h + 2.0f * h * i;
+                    bodyDef.position.X = x + offset * i;
+                    bodyDef.position.Y = h + 2.0f * h * i;
 
                     // this tests the deterministic cosine and sine functions
                     bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
@@ -151,7 +151,7 @@ public class FallingHinges : Sample
         {
             B2Transform xf = b2Body_GetTransform(m_bodies[i]);
             //Logger.Information("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
-            Logger.Information($"{i} {xf.p.x:F9} {xf.p.y:F9} {xf.q.c:F9} {xf.q.s:F9}");
+            Logger.Information($"{i} {xf.p.X:F9} {xf.p.Y:F9} {xf.q.c:F9} {xf.q.s:F9}");
             xf.TryWriteBytes(bxf);
             hash = b2Hash(hash, bxf, bxf.Length);
         }

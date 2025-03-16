@@ -62,8 +62,8 @@ public class Manifold : Sample
         m_smgcapCache2 = b2_emptySimplexCache;
 
         m_transform = b2Transform_identity;
-        m_transform.p.x = 1.0f;
-        m_transform.p.y = 0.0f;
+        m_transform.p.X = 1.0f;
+        m_transform.p.Y = 0.0f;
         // m_transform.q = b2MakeRot( 0.5f * b2_pi );
         m_angle = 0.0f;
         m_round = 0.1f;
@@ -93,8 +93,8 @@ public class Manifold : Sample
 
         ImGui.Begin("Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-        ImGui.SliderFloat("x offset", ref m_transform.p.x, -2.0f, 2.0f, "%.2f");
-        ImGui.SliderFloat("y offset", ref m_transform.p.y, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
+        ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
 
         if (ImGui.SliderFloat("angle", ref m_angle, -B2_PI, B2_PI, "%.2f"))
         {
@@ -153,12 +153,12 @@ public class Manifold : Sample
     {
         if (m_dragging)
         {
-            m_transform.p.x = m_basePosition.x + 0.5f * (p.x - m_startPoint.x);
-            m_transform.p.y = m_basePosition.y + 0.5f * (p.y - m_startPoint.y);
+            m_transform.p.X = m_basePosition.X + 0.5f * (p.X - m_startPoint.X);
+            m_transform.p.Y = m_basePosition.Y + 0.5f * (p.Y - m_startPoint.Y);
         }
         else if (m_rotating)
         {
-            float dx = p.x - m_startPoint.x;
+            float dx = p.X - m_startPoint.X;
             m_angle = b2ClampFloat(m_baseAngle + 1.0f * dx, -B2_PI, B2_PI);
             m_transform.q = b2MakeRot(m_angle);
         }
@@ -188,13 +188,13 @@ public class Manifold : Sample
             {
                 // uint indexA = mp.id >> 8;
                 // uint indexB = 0xFF & mp.id;
-                B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y - 0.02f);
+                B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y - 0.02f);
                 m_context.draw.DrawString(p, $"0x{mp.id:X4}");
             }
 
             if (m_showSeparation)
             {
-                B2Vec2 p = new B2Vec2(p1.x + 0.05f, p1.y + 0.03f);
+                B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y + 0.03f);
                 m_context.draw.DrawString(p, $"{mp.separation:F3}");
             }
         }
@@ -558,7 +558,7 @@ public class Manifold : Sample
 
             DrawManifold(ref m, transform1.p, transform2.p);
 
-            offset.x += 2.0f * increment.x;
+            offset.X += 2.0f * increment.X;
         }
 
         // chain-segment vs rounded polygon
@@ -616,7 +616,7 @@ public class Manifold : Sample
             DrawManifold(ref m1, transform1.p, transform2.p);
             DrawManifold(ref m2, transform1.p, transform2.p);
 
-            offset.x += 2.0f * increment.x;
+            offset.X += 2.0f * increment.X;
         }
 
         // chain-segment vs capsule
@@ -678,7 +678,7 @@ public class Manifold : Sample
             DrawManifold(ref m1, transform1.p, transform2.p);
             DrawManifold(ref m2, transform1.p, transform2.p);
 
-            offset.x += 2.0f * increment.x;
+            offset.X += 2.0f * increment.X;
         }
     }
 }

@@ -205,7 +205,7 @@ public class Draw
         ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
-        ImGui.SetCursorPos(new Vector2(ps.x, ps.y));
+        ImGui.SetCursorPos(new Vector2(ps.X, ps.Y));
         ImGui.TextColored(new Vector4(230, 230, 230, 255), message);
         ImGui.End();
     }
@@ -213,9 +213,9 @@ public class Draw
     public void DrawAABB(B2AABB aabb, B2HexColor c)
     {
         B2Vec2 p1 = aabb.lowerBound;
-        B2Vec2 p2 = new B2Vec2(aabb.upperBound.x, aabb.lowerBound.y);
+        B2Vec2 p2 = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
         B2Vec2 p3 = aabb.upperBound;
-        B2Vec2 p4 = new B2Vec2(aabb.lowerBound.x, aabb.upperBound.y);
+        B2Vec2 p4 = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
 
         m_lines.AddLine(p1, p2, c);
         m_lines.AddLine(p2, p3, c);

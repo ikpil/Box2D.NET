@@ -46,8 +46,8 @@ public static class SvgParser
                 case 'L':
                     if (Sscanf(svgPath, ref ptr, out x, out y))
                     {
-                        currentPoint.x = x;
-                        currentPoint.y = y;
+                        currentPoint.X = x;
+                        currentPoint.Y = y;
                     }
                     else
                     {
@@ -58,7 +58,7 @@ public static class SvgParser
                 case 'H':
                     if (Sscanf(svgPath, ref ptr, out x))
                     {
-                        currentPoint.x = x;
+                        currentPoint.X = x;
                     }
                     else
                     {
@@ -69,7 +69,7 @@ public static class SvgParser
                 case 'V':
                     if (Sscanf(svgPath, ref ptr, out y))
                     {
-                        currentPoint.y = y;
+                        currentPoint.Y = y;
                     }
                     else
                     {
@@ -81,8 +81,8 @@ public static class SvgParser
                 case 'l':
                     if (Sscanf(svgPath, ref ptr, out x, out y))
                     {
-                        currentPoint.x += x;
-                        currentPoint.y += y;
+                        currentPoint.X += x;
+                        currentPoint.Y += y;
                     }
                     else
                     {
@@ -93,7 +93,7 @@ public static class SvgParser
                 case 'h':
                     if (Sscanf(svgPath, ref ptr, out x))
                     {
-                        currentPoint.x += x;
+                        currentPoint.X += x;
                     }
                     else
                     {
@@ -104,7 +104,7 @@ public static class SvgParser
                 case 'v':
                     if (Sscanf(svgPath, ref ptr, out y))
                     {
-                        currentPoint.y += y;
+                        currentPoint.Y += y;
                     }
                     else
                     {
@@ -118,7 +118,7 @@ public static class SvgParser
                     break;
             }
 
-            points[pointCount] = new B2Vec2(scale * (currentPoint.x + offset.x), -scale * (currentPoint.y + offset.y));
+            points[pointCount] = new B2Vec2(scale * (currentPoint.X + offset.X), -scale * (currentPoint.Y + offset.Y));
             pointCount += 1;
             if (pointCount == capacity)
             {

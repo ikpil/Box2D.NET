@@ -101,8 +101,8 @@ public class B2WorldTest
         // create orphaned ids, so be careful about your world management.
         b2DestroyWorld(worldId);
 
-        Assert.That(b2AbsFloat(position.x), Is.LessThan(0.01f));
-        Assert.That(b2AbsFloat(position.y - 1.00f), Is.LessThan(0.01f));
+        Assert.That(b2AbsFloat(position.X), Is.LessThan(0.01f));
+        Assert.That(b2AbsFloat(position.Y - 1.00f), Is.LessThan(0.01f));
         Assert.That(b2AbsFloat(b2Rot_GetAngle(rotation)), Is.LessThan(0.01f));
     }
 
@@ -301,8 +301,8 @@ public class B2WorldTest
         B2Vec2 g = new B2Vec2(1.0f, 2.0f);
         b2World_SetGravity(worldId, g);
         B2Vec2 v = b2World_GetGravity(worldId);
-        Assert.That(v.x, Is.EqualTo(g.x));
-        Assert.That(v.y, Is.EqualTo(g.y));
+        Assert.That(v.X, Is.EqualTo(g.X));
+        Assert.That(v.Y, Is.EqualTo(g.Y));
 
         B2ExplosionDef explosionDef = b2DefaultExplosionDef();
         b2World_Explode(worldId, ref explosionDef);
@@ -339,8 +339,8 @@ public class B2WorldTest
         // Wall from x = 1 to x = 2
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_staticBody;
-        bodyDef.position.x = 1.5f;
-        bodyDef.position.y = 11.0f;
+        bodyDef.position.X = 1.5f;
+        bodyDef.position.Y = 11.0f;
         B2BodyId wallId = b2CreateBody(worldId, ref bodyDef);
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -383,7 +383,7 @@ public class B2WorldTest
                 endCount += 1;
             }
 
-            if (bulletPos.x < -1.0f)
+            if (bulletPos.X < -1.0f)
             {
                 break;
             }

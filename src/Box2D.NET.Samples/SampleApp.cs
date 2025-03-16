@@ -318,7 +318,7 @@ public class SampleApp
         if (_ctx.draw.m_showUI)
         {
             string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
-                            $"camera ({_ctx.camera.m_center.x:G}, {_ctx.camera.m_center.y:G}, {_ctx.camera.m_zoom:G})";
+                            $"camera ({_ctx.camera.m_center.X:G}, {_ctx.camera.m_center.Y:G}, {_ctx.camera.m_zoom:G})";
             // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
             //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
             // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
@@ -472,7 +472,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _ctx.camera.m_center.x -= 0.5f;
+                        _ctx.camera.m_center.X -= 0.5f;
                     }
 
                     break;
@@ -486,7 +486,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _ctx.camera.m_center.x += 0.5f;
+                        _ctx.camera.m_center.X += 0.5f;
                     }
 
                     break;
@@ -500,7 +500,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _ctx.camera.m_center.y -= 0.5f;
+                        _ctx.camera.m_center.Y -= 0.5f;
                     }
 
                     break;
@@ -514,7 +514,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _ctx.camera.m_center.y += 0.5f;
+                        _ctx.camera.m_center.Y += 0.5f;
                     }
 
                     break;
@@ -631,8 +631,8 @@ public class SampleApp
         if (s_rightMouseDown)
         {
             B2Vec2 diff = b2Sub(pw, s_clickPointWS);
-            _ctx.camera.m_center.x -= diff.x;
-            _ctx.camera.m_center.y -= diff.y;
+            _ctx.camera.m_center.X -= diff.X;
+            _ctx.camera.m_center.Y -= diff.Y;
             s_clickPointWS = _ctx.camera.ConvertScreenToWorld(ps);
         }
     }

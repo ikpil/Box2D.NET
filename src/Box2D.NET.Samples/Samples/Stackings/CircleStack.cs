@@ -72,7 +72,7 @@ public class CircleStack : Sample
 
             for (int i = 0; i < 1; ++i)
             {
-                bodyDef.position.y = y;
+                bodyDef.position.Y = y;
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 

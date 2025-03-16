@@ -89,10 +89,10 @@ public class Arch : Sample
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 B2Vec2[] ps = new B2Vec2[4]
                 {
-                    new B2Vec2(-ps2[i].x, ps2[i].y),
-                    new B2Vec2(-ps1[i].x, ps1[i].y),
-                    new B2Vec2(-ps1[i + 1].x, ps1[i + 1].y),
-                    new B2Vec2(-ps2[i + 1].x, ps2[i + 1].y),
+                    new B2Vec2(-ps2[i].X, ps2[i].Y),
+                    new B2Vec2(-ps1[i].X, ps1[i].Y),
+                    new B2Vec2(-ps1[i + 1].X, ps1[i + 1].Y),
+                    new B2Vec2(-ps2[i + 1].X, ps2[i + 1].Y),
                 };
                 B2Hull hull = b2ComputeHull(ps, 4);
                 B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
@@ -101,7 +101,7 @@ public class Arch : Sample
 
             {
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                B2Vec2[] ps = new B2Vec2[4] { ps1[8], ps2[8], new B2Vec2(-ps2[8].x, ps2[8].y), new B2Vec2(-ps1[8].x, ps1[8].y) };
+                B2Vec2[] ps = new B2Vec2[4] { ps1[8], ps2[8], new B2Vec2(-ps2[8].X, ps2[8].Y), new B2Vec2(-ps1[8].X, ps1[8].Y) };
                 B2Hull hull = b2ComputeHull(ps, 4);
                 B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
@@ -110,7 +110,7 @@ public class Arch : Sample
             for (int i = 0; i < 4; ++i)
             {
                 B2Polygon box = b2MakeBox(2.0f, 0.5f);
-                bodyDef.position = new B2Vec2(0.0f, 0.5f + ps2[8].y + 1.0f * i);
+                bodyDef.position = new B2Vec2(0.0f, 0.5f + ps2[8].Y + 1.0f * i);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }

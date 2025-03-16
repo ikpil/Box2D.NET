@@ -159,12 +159,12 @@ namespace Box2D.NET
 
         public static B2Vec2 b2Weight2(float a1, B2Vec2 w1, float a2, B2Vec2 w2)
         {
-            return new B2Vec2(a1 * w1.x + a2 * w2.x, a1 * w1.y + a2 * w2.y);
+            return new B2Vec2(a1 * w1.X + a2 * w2.X, a1 * w1.Y + a2 * w2.Y);
         }
 
         public static B2Vec2 b2Weight3(float a1, B2Vec2 w1, float a2, B2Vec2 w2, float a3, B2Vec2 w3)
         {
-            return new B2Vec2(a1 * w1.x + a2 * w2.x + a3 * w3.x, a1 * w1.y + a2 * w2.y + a3 * w3.y);
+            return new B2Vec2(a1 * w1.X + a2 * w2.X + a3 * w3.X, a1 * w1.Y + a2 * w2.Y + a3 * w3.Y);
         }
 
         public static int b2FindSupport(ref B2ShapeProxy proxy, B2Vec2 direction)
@@ -634,7 +634,7 @@ namespace Box2D.NET
                 if (output.distance < FLT_EPSILON)
                 {
                     // Shapes are too close to safely compute normal
-                    B2Vec2 p = new B2Vec2(0.5f * (output.pointA.x + output.pointB.x), 0.5f * (output.pointA.y + output.pointB.y));
+                    B2Vec2 p = new B2Vec2(0.5f * (output.pointA.X + output.pointB.X), 0.5f * (output.pointA.Y + output.pointB.Y));
                     output.pointA = p;
                     output.pointB = p;
                     output.distance = 0.0f;
@@ -647,8 +647,8 @@ namespace Box2D.NET
                     float rB = proxyB.radius;
                     output.distance = b2MaxFloat(0.0f, output.distance - rA - rB);
                     B2Vec2 normal = b2Normalize(b2Sub(output.pointB, output.pointA));
-                    B2Vec2 offsetA = new B2Vec2(rA * normal.x, rA * normal.y);
-                    B2Vec2 offsetB = new B2Vec2(rB * normal.x, rB * normal.y);
+                    B2Vec2 offsetA = new B2Vec2(rA * normal.X, rA * normal.Y);
+                    B2Vec2 offsetB = new B2Vec2(rB * normal.X, rB * normal.Y);
                     output.pointA = b2Add(output.pointA, offsetA);
                     output.pointB = b2Sub(output.pointB, offsetB);
                 }
@@ -756,7 +756,7 @@ namespace Box2D.NET
                 // to be formed in unshifted space.
                 ref B2SimplexVertex vertex = ref vertices[simplex.count];
                 vertex.indexA = indexB;
-                vertex.wA = new B2Vec2(wB.x + lambda * r.x, wB.y + lambda * r.y);
+                vertex.wA = new B2Vec2(wB.X + lambda * r.X, wB.Y + lambda * r.Y);
                 vertex.indexB = indexA;
                 vertex.wB = wA;
                 vertex.w = b2Sub(vertex.wB, vertex.wA);
@@ -807,7 +807,7 @@ namespace Box2D.NET
             b2ComputeSimplexWitnessPoints(ref pointB, ref pointA, ref simplex);
 
             B2Vec2 n = b2Normalize(b2Neg(v));
-            B2Vec2 point = new B2Vec2(pointA.x + proxyA.radius * n.x, pointA.y + proxyA.radius * n.y);
+            B2Vec2 point = new B2Vec2(pointA.X + proxyA.radius * n.X, pointA.Y + proxyA.radius * n.Y);
 
             output.point = b2TransformPoint(ref xfA, point);
             output.normal = b2RotateVector(xfA.q, n);
@@ -857,7 +857,7 @@ namespace Box2D.NET
                 f.axis = b2Normalize(f.axis);
                 B2Vec2 normal = b2RotateVector(xfB.q, f.axis);
 
-                f.localPoint = new B2Vec2(0.5f * (localPointB1.x + localPointB2.x), 0.5f * (localPointB1.y + localPointB2.y));
+                f.localPoint = new B2Vec2(0.5f * (localPointB1.X + localPointB2.X), 0.5f * (localPointB1.Y + localPointB2.Y));
                 B2Vec2 pointB = b2TransformPoint(ref xfB, f.localPoint);
 
                 B2Vec2 localPointA = proxyA.points[cache.indexA[0]];
@@ -882,7 +882,7 @@ namespace Box2D.NET
                 f.axis = b2Normalize(f.axis);
                 B2Vec2 normal = b2RotateVector(xfA.q, f.axis);
 
-                f.localPoint = new B2Vec2(0.5f * (localPointA1.x + localPointA2.x), 0.5f * (localPointA1.y + localPointA2.y));
+                f.localPoint = new B2Vec2(0.5f * (localPointA1.X + localPointA2.X), 0.5f * (localPointA1.Y + localPointA2.Y));
                 B2Vec2 pointA = b2TransformPoint(ref xfA, f.localPoint);
 
                 B2Vec2 localPointB = proxyB.points[cache.indexB[0]];

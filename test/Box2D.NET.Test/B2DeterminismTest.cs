@@ -238,8 +238,8 @@ public class B2DeterminismTest
             B2Rot rot1 = finalRotations[0][i];
             B2Rot rot2 = finalRotations[1][i];
 
-            Assert.That(p1.x, Is.EqualTo(p2.x));
-            Assert.That(p1.y, Is.EqualTo(p2.y));
+            Assert.That(p1.X, Is.EqualTo(p2.X));
+            Assert.That(p1.Y, Is.EqualTo(p2.Y));
             Assert.That(rot1.c, Is.EqualTo(rot2.c));
             Assert.That(rot1.s, Is.EqualTo(rot2.s));
         }
@@ -304,8 +304,8 @@ public class B2DeterminismTest
                     B2BodyDef bodyDef = b2DefaultBodyDef();
                     bodyDef.type = B2BodyType.b2_dynamicBody;
 
-                    bodyDef.position.x = x + offset * i;
-                    bodyDef.position.y = h + 2.0f * h * i;
+                    bodyDef.position.X = x + offset * i;
+                    bodyDef.position.Y = h + 2.0f * h * i;
 
                     // this tests the deterministic cosine and sine functions
                     bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);

@@ -209,7 +209,7 @@ namespace Box2D.NET
             B2Vec2 perpA = b2LeftPerp(axisA);
 
             float inv_h = world.inv_h;
-            float perpForce = inv_h * joint.impulse.x;
+            float perpForce = inv_h * joint.impulse.X;
             float axialForce = inv_h * (joint.motorImpulse + joint.lowerImpulse - joint.upperImpulse);
 
             B2Vec2 force = b2Add(b2MulSV(perpForce, perpA), b2MulSV(axialForce, axisA));
@@ -218,7 +218,7 @@ namespace Box2D.NET
 
         public static float b2GetPrismaticJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.prismaticJoint.impulse.y;
+            return world.inv_h * @base.prismaticJoint.impulse.Y;
         }
 
 // Linear constraint (point-to-line)
@@ -368,8 +368,8 @@ namespace Box2D.NET
             B2Vec2 perpA = b2LeftPerp(axisA);
             float s1 = b2Cross(b2Add(d, rA), perpA);
             float s2 = b2Cross(rB, perpA);
-            float perpImpulse = joint.impulse.x;
-            float angleImpulse = joint.impulse.y;
+            float perpImpulse = joint.impulse.X;
+            float angleImpulse = joint.impulse.Y;
 
             B2Vec2 P = b2Add(b2MulSV(axialImpulse, axisA), b2MulSV(perpImpulse, perpA));
             float LA = axialImpulse * a1 + perpImpulse * s1 + angleImpulse;
@@ -545,8 +545,8 @@ namespace Box2D.NET
                 float s2 = b2Cross(rB, perpA);
 
                 B2Vec2 Cdot;
-                Cdot.x = b2Dot(perpA, b2Sub(vB, vA)) + s2 * wB - s1 * wA;
-                Cdot.y = wB - wA;
+                Cdot.X = b2Dot(perpA, b2Sub(vB, vA)) + s2 * wB - s1 * wA;
+                Cdot.Y = wB - wA;
 
                 B2Vec2 bias = b2Vec2_zero;
                 float massScale = 1.0f;
@@ -554,8 +554,8 @@ namespace Box2D.NET
                 if (useBias)
                 {
                     B2Vec2 C;
-                    C.x = b2Dot(perpA, d);
-                    C.y = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                    C.X = b2Dot(perpA, d);
+                    C.Y = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
 
                     bias = b2MulSV(context.jointSoftness.biasRate, C);
                     massScale = context.jointSoftness.massScale;
@@ -575,15 +575,15 @@ namespace Box2D.NET
 
                 B2Vec2 b = b2Solve22(K, b2Add(Cdot, bias));
                 B2Vec2 impulse;
-                impulse.x = -massScale * b.x - impulseScale * joint.impulse.x;
-                impulse.y = -massScale * b.y - impulseScale * joint.impulse.y;
+                impulse.X = -massScale * b.X - impulseScale * joint.impulse.X;
+                impulse.Y = -massScale * b.Y - impulseScale * joint.impulse.Y;
 
-                joint.impulse.x += impulse.x;
-                joint.impulse.y += impulse.y;
+                joint.impulse.X += impulse.X;
+                joint.impulse.Y += impulse.Y;
 
-                B2Vec2 P = b2MulSV(impulse.x, perpA);
-                float LA = impulse.x * s1 + impulse.y;
-                float LB = impulse.x * s2 + impulse.y;
+                B2Vec2 P = b2MulSV(impulse.X, perpA);
+                float LA = impulse.X * s1 + impulse.Y;
+                float LB = impulse.X * s2 + impulse.Y;
 
                 vA = b2MulSub(vA, mA, P);
                 wA -= iA * LA;

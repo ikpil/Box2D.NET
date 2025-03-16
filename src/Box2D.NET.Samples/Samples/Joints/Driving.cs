@@ -38,7 +38,7 @@ public class Driving : Sample
     {
         if (settings.restart == false)
         {
-            m_context.camera.m_center.y = 5.0f;
+            m_context.camera.m_center.Y = 5.0f;
             m_context.camera.m_zoom = 25.0f * 0.4f;
             settings.drawJoints = false;
         }
@@ -278,11 +278,11 @@ public class Driving : Sample
         m_textLine += m_textIncrement;
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
-        float kph = linearVelocity.x * 3.6f;
+        float kph = linearVelocity.X * 3.6f;
         m_context.draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
         m_textLine += m_textIncrement;
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
-        m_context.camera.m_center.x = carPosition.x;
+        m_context.camera.m_center.X = carPosition.X;
     }
 }

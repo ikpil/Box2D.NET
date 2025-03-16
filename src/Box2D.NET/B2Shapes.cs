@@ -60,19 +60,19 @@ namespace Box2D.NET
             float aabbMargin = B2_AABB_MARGIN;
 
             B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-            aabb.lowerBound.x -= speculativeDistance;
-            aabb.lowerBound.y -= speculativeDistance;
-            aabb.upperBound.x += speculativeDistance;
-            aabb.upperBound.y += speculativeDistance;
+            aabb.lowerBound.X -= speculativeDistance;
+            aabb.lowerBound.Y -= speculativeDistance;
+            aabb.upperBound.X += speculativeDistance;
+            aabb.upperBound.Y += speculativeDistance;
             shape.aabb = aabb;
 
             // Smaller margin for static bodies. Cannot be zero due to TOI tolerance.
             float margin = proxyType == B2BodyType.b2_staticBody ? speculativeDistance : aabbMargin;
             B2AABB fatAABB;
-            fatAABB.lowerBound.x = aabb.lowerBound.x - margin;
-            fatAABB.lowerBound.y = aabb.lowerBound.y - margin;
-            fatAABB.upperBound.x = aabb.upperBound.x + margin;
-            fatAABB.upperBound.y = aabb.upperBound.y + margin;
+            fatAABB.lowerBound.X = aabb.lowerBound.X - margin;
+            fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
+            fatAABB.upperBound.X = aabb.upperBound.X + margin;
+            fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
             shape.fatAABB = fatAABB;
         }
 

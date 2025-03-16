@@ -32,8 +32,8 @@ public class Camera
     {
         float w = m_width;
         float h = m_height;
-        float u = ps.x / w;
-        float v = (h - ps.y) / h;
+        float u = ps.X / w;
+        float v = (h - ps.Y) / h;
 
         float ratio = w / h;
         B2Vec2 extents = new B2Vec2(m_zoom * ratio, m_zoom);
@@ -41,7 +41,7 @@ public class Camera
         B2Vec2 lower = b2Sub(m_center, extents);
         B2Vec2 upper = b2Add(m_center, extents);
 
-        B2Vec2 pw = new B2Vec2((1.0f - u) * lower.x + u * upper.x, (1.0f - v) * lower.y + v * upper.y);
+        B2Vec2 pw = new B2Vec2((1.0f - u) * lower.X + u * upper.X, (1.0f - v) * lower.Y + v * upper.Y);
         return pw;
     }
 
@@ -56,8 +56,8 @@ public class Camera
         B2Vec2 lower = b2Sub(m_center, extents);
         B2Vec2 upper = b2Add(m_center, extents);
 
-        float u = (pw.x - lower.x) / (upper.x - lower.x);
-        float v = (pw.y - lower.y) / (upper.y - lower.y);
+        float u = (pw.X - lower.X) / (upper.X - lower.X);
+        float v = (pw.Y - lower.Y) / (upper.Y - lower.Y);
 
         B2Vec2 ps = new B2Vec2(u * w, (1.0f - v) * h);
         return ps;
@@ -73,8 +73,8 @@ public class Camera
 
         B2Vec2 lower = b2Sub(m_center, extents);
         B2Vec2 upper = b2Add(m_center, extents);
-        float w = upper.x - lower.x;
-        float h = upper.y - lower.y;
+        float w = upper.X - lower.X;
+        float h = upper.Y - lower.Y;
 
         m[0] = 2.0f / w;
         m[1] = 0.0f;
@@ -91,8 +91,8 @@ public class Camera
         m[10] = -1.0f;
         m[11] = 0.0f;
 
-        m[12] = -2.0f * m_center.x / w;
-        m[13] = -2.0f * m_center.y / h;
+        m[12] = -2.0f * m_center.X / w;
+        m[13] = -2.0f * m_center.Y / h;
         m[14] = zBias;
         m[15] = 1.0f;
     }

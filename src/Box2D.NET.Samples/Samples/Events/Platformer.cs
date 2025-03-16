@@ -146,7 +146,7 @@ public class Platformer : Sample
         }
 
         B2Vec2 normal = manifold.normal;
-        if (sign * normal.y > 0.95f)
+        if (sign * normal.Y > 0.95f)
         {
             return true;
         }
@@ -188,7 +188,7 @@ public class Platformer : Sample
     {
         m_canJump = false;
         B2Vec2 velocity = b2Body_GetLinearVelocity(m_playerId);
-        if (m_jumpDelay == 0.0f && m_jumping == false && velocity.y < 0.01f)
+        if (m_jumpDelay == 0.0f && m_jumping == false && velocity.Y < 0.01f)
         {
             int capacity = b2Body_GetContactCapacity(m_playerId);
             capacity = b2MinInt(capacity, 4);
@@ -208,7 +208,7 @@ public class Platformer : Sample
                     sign = 1.0f;
                 }
 
-                if (sign * contactData[i].manifold.normal.y > 0.9f)
+                if (sign * contactData[i].manifold.normal.Y > 0.9f)
                 {
                     m_canJump = true;
                     break;
@@ -219,11 +219,11 @@ public class Platformer : Sample
         // A kinematic body is moved by setting its velocity. This
         // ensure friction works correctly.
         B2Vec2 platformPosition = b2Body_GetPosition(m_movingPlatformId);
-        if (platformPosition.x < -15.0f)
+        if (platformPosition.X < -15.0f)
         {
             b2Body_SetLinearVelocity(m_movingPlatformId, new B2Vec2(2.0f, 0.0f));
         }
-        else if (platformPosition.x > 15.0f)
+        else if (platformPosition.X > 15.0f)
         {
             b2Body_SetLinearVelocity(m_movingPlatformId, new B2Vec2(-2.0f, 0.0f));
         }

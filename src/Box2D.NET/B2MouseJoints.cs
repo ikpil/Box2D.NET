@@ -115,10 +115,10 @@ namespace Box2D.NET
             //   = [1/m1+1/m2     0    ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
             //     [    0     1/m1+1/m2]           [-r1.x*r1.y r1.x*r1.x]           [-r1.x*r1.y r1.x*r1.x]
             B2Mat22 K;
-            K.cx.x = mB + iB * rB.y * rB.y;
-            K.cx.y = -iB * rB.x * rB.y;
-            K.cy.x = K.cx.y;
-            K.cy.y = mB + iB * rB.x * rB.x;
+            K.cx.X = mB + iB * rB.Y * rB.Y;
+            K.cx.Y = -iB * rB.X * rB.Y;
+            K.cy.X = K.cx.Y;
+            K.cy.Y = mB + iB * rB.X * rB.X;
 
             joint.linearMass = b2GetInverse22(K);
             joint.deltaCenter = b2Sub(bodySimB.center, joint.targetA);
@@ -192,12 +192,12 @@ namespace Box2D.NET
                 B2Vec2 b = b2MulMV(joint.linearMass, b2Add(Cdot, bias));
 
                 B2Vec2 impulse;
-                impulse.x = -massScale * b.x - impulseScale * joint.linearImpulse.x;
-                impulse.y = -massScale * b.y - impulseScale * joint.linearImpulse.y;
+                impulse.X = -massScale * b.X - impulseScale * joint.linearImpulse.X;
+                impulse.Y = -massScale * b.Y - impulseScale * joint.linearImpulse.Y;
 
                 B2Vec2 oldImpulse = joint.linearImpulse;
-                joint.linearImpulse.x += impulse.x;
-                joint.linearImpulse.y += impulse.y;
+                joint.linearImpulse.X += impulse.X;
+                joint.linearImpulse.Y += impulse.Y;
 
                 float mag = b2Length(joint.linearImpulse);
                 if (mag > maxImpulse)
@@ -205,8 +205,8 @@ namespace Box2D.NET
                     joint.linearImpulse = b2MulSV(maxImpulse, b2Normalize(joint.linearImpulse));
                 }
 
-                impulse.x = joint.linearImpulse.x - oldImpulse.x;
-                impulse.y = joint.linearImpulse.y - oldImpulse.y;
+                impulse.X = joint.linearImpulse.X - oldImpulse.X;
+                impulse.Y = joint.linearImpulse.Y - oldImpulse.Y;
 
                 vB = b2MulAdd(vB, mB, impulse);
                 wB += iB * b2Cross(rB, impulse);

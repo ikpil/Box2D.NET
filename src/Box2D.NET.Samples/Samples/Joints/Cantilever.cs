@@ -166,7 +166,7 @@ public class Cantilever : Sample
         base.Draw(settings);
 
         B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
-        m_context.draw.DrawString(5, m_textLine, $"tip-y = {tipPosition.y:F2}");
+        m_context.draw.DrawString(5, m_textLine, $"tip-y = {tipPosition.Y:F2}");
         m_textLine += m_textIncrement;
     }
 }

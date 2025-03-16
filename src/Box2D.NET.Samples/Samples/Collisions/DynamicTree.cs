@@ -160,17 +160,17 @@ public class DynamicTree : Sample
                     float width = RandomFloatRange(0.1f, 0.5f);
                     if (RandomFloat() > 0.0f)
                     {
-                        p.width.x = ratio * width;
-                        p.width.y = width;
+                        p.width.X = ratio * width;
+                        p.width.Y = width;
                     }
                     else
                     {
-                        p.width.x = width;
-                        p.width.y = ratio * width;
+                        p.width.X = width;
+                        p.width.Y = ratio * width;
                     }
 
                     p.box.lowerBound = new B2Vec2(x, y);
-                    p.box.upperBound = new B2Vec2(x + p.width.x, y + p.width.y);
+                    p.box.upperBound = new B2Vec2(x + p.width.X, y + p.width.Y);
                     p.fatBox.lowerBound = b2Sub(p.box.lowerBound, aabbMargin);
                     p.fatBox.upperBound = b2Add(p.box.upperBound, aabbMargin);
 
@@ -329,13 +329,13 @@ public class DynamicTree : Sample
                 float dx = m_moveDelta * RandomFloat();
                 float dy = m_moveDelta * RandomFloat();
 
-                p.position.x += dx;
-                p.position.y += dy;
+                p.position.X += dx;
+                p.position.Y += dy;
 
-                p.box.lowerBound.x = p.position.x + dx;
-                p.box.lowerBound.y = p.position.y + dy;
-                p.box.upperBound.x = p.position.x + dx + p.width.x;
-                p.box.upperBound.y = p.position.y + dy + p.width.y;
+                p.box.lowerBound.X = p.position.X + dx;
+                p.box.lowerBound.Y = p.position.Y + dy;
+                p.box.upperBound.X = p.position.X + dx + p.width.X;
+                p.box.upperBound.Y = p.position.Y + dy + p.width.Y;
 
                 if (b2AABB_Contains(p.fatBox, p.box) == false)
                 {

@@ -766,10 +766,10 @@ namespace Box2D.NET
         // the node pool.
         public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, B2AABB aabb, ulong categoryBits, int userData)
         {
-            Debug.Assert(-B2_HUGE < aabb.lowerBound.x && aabb.lowerBound.x < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.lowerBound.y && aabb.lowerBound.y < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.upperBound.x && aabb.upperBound.x < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.upperBound.y && aabb.upperBound.y < B2_HUGE);
+            Debug.Assert(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
+            Debug.Assert(-B2_HUGE < aabb.lowerBound.Y && aabb.lowerBound.Y < B2_HUGE);
+            Debug.Assert(-B2_HUGE < aabb.upperBound.X && aabb.upperBound.X < B2_HUGE);
+            Debug.Assert(-B2_HUGE < aabb.upperBound.Y && aabb.upperBound.Y < B2_HUGE);
 
             int proxyId = b2AllocateNode(tree);
             B2TreeNode node = tree.nodes[proxyId];
@@ -811,8 +811,8 @@ namespace Box2D.NET
         public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, B2AABB aabb)
         {
             Debug.Assert(b2IsValidAABB(aabb));
-            Debug.Assert(aabb.upperBound.x - aabb.lowerBound.x < B2_HUGE);
-            Debug.Assert(aabb.upperBound.y - aabb.lowerBound.y < B2_HUGE);
+            Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
             Debug.Assert(b2IsLeaf(tree.nodes[proxyId]));
 
@@ -830,8 +830,8 @@ namespace Box2D.NET
             B2TreeNode[] nodes = tree.nodes;
 
             Debug.Assert(b2IsValidAABB(aabb));
-            Debug.Assert(aabb.upperBound.x - aabb.lowerBound.x < B2_HUGE);
-            Debug.Assert(aabb.upperBound.y - aabb.lowerBound.y < B2_HUGE);
+            Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
             Debug.Assert(b2IsLeaf(tree.nodes[proxyId]));
 
@@ -1444,26 +1444,26 @@ namespace Box2D.NET
             }
 
             B2Vec2 d = b2Sub(upperBound, lowerBound);
-            B2Vec2 c = new B2Vec2(0.5f * (lowerBound.x + upperBound.x), 0.5f * (lowerBound.y + upperBound.y));
+            B2Vec2 c = new B2Vec2(0.5f * (lowerBound.X + upperBound.X), 0.5f * (lowerBound.Y + upperBound.Y));
 
             // Partition longest axis using the Hoare partition scheme
             // https://en.wikipedia.org/wiki/Quicksort
             // https://nicholasvadivelu.com/2021/01/11/array-partition/
             int i1 = 0, i2 = count;
-            if (d.x > d.y)
+            if (d.X > d.Y)
             {
-                float pivot = c.x;
+                float pivot = c.X;
 
                 while (i1 < i2)
                 {
-                    while (i1 < i2 && centers[i1].x < pivot)
+                    while (i1 < i2 && centers[i1].X < pivot)
                     {
                         i1 += 1;
                     }
 
                     ;
 
-                    while (i1 < i2 && centers[i2 - 1].x >= pivot)
+                    while (i1 < i2 && centers[i2 - 1].X >= pivot)
                     {
                         i2 -= 1;
                     }
@@ -1493,18 +1493,18 @@ namespace Box2D.NET
             }
             else
             {
-                float pivot = c.y;
+                float pivot = c.Y;
 
                 while (i1 < i2)
                 {
-                    while (i1 < i2 && centers[i1].y < pivot)
+                    while (i1 < i2 && centers[i1].Y < pivot)
                     {
                         i1 += 1;
                     }
 
                     ;
 
-                    while (i1 < i2 && centers[i2 - 1].y >= pivot)
+                    while (i1 < i2 && centers[i2 - 1].Y >= pivot)
                     {
                         i2 -= 1;
                     }
@@ -1574,15 +1574,15 @@ namespace Box2D.NET
             // Find longest axis
             int axisIndex;
             float invD;
-            if (d.x > d.y)
+            if (d.X > d.Y)
             {
                 axisIndex = 0;
-                invD = d.x;
+                invD = d.X;
             }
             else
             {
                 axisIndex = 1;
-                invD = d.y;
+                invD = d.Y;
             }
 
             invD = invD > 0.0f ? 1.0f / invD : 0.0f;
@@ -1598,13 +1598,13 @@ namespace Box2D.NET
             // Assign boxes to bins and compute bin boxes
             // TODO_ERIN optimize
             float binCount = B2_BIN_COUNT;
-            B2FixedArray2<float> lowerBoundArray = new B2FixedArray2<float>(centroidAABB.lowerBound.x, centroidAABB.lowerBound.y);
+            B2FixedArray2<float> lowerBoundArray = new B2FixedArray2<float>(centroidAABB.lowerBound.X, centroidAABB.lowerBound.Y);
 
             float minC = lowerBoundArray[axisIndex];
             for (int i = 0; i < count; ++i)
             {
                 B2Vec2 c = b2AABB_Center(boxes[i]);
-                B2FixedArray2<float> cArray = new B2FixedArray2<float>(c.x, c.y);
+                B2FixedArray2<float> cArray = new B2FixedArray2<float>(c.X, c.Y);
                 int binIndex = (int)(binCount * (cArray[axisIndex] - minC) * invD);
                 binIndex = b2ClampInt(binIndex, 0, B2_BIN_COUNT - 1);
                 binIndices[i] = binIndex;

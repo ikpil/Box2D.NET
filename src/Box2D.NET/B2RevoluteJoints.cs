@@ -435,17 +435,17 @@ namespace Box2D.NET
                 }
 
                 B2Mat22 K;
-                K.cx.x = mA + mB + rA.y * rA.y * iA + rB.y * rB.y * iB;
-                K.cy.x = -rA.y * rA.x * iA - rB.y * rB.x * iB;
-                K.cx.y = K.cy.x;
-                K.cy.y = mA + mB + rA.x * rA.x * iA + rB.x * rB.x * iB;
+                K.cx.X = mA + mB + rA.Y * rA.Y * iA + rB.Y * rB.Y * iB;
+                K.cy.X = -rA.Y * rA.X * iA - rB.Y * rB.X * iB;
+                K.cx.Y = K.cy.X;
+                K.cy.Y = mA + mB + rA.X * rA.X * iA + rB.X * rB.X * iB;
                 B2Vec2 b = b2Solve22(K, b2Add(Cdot, bias));
 
                 B2Vec2 impulse;
-                impulse.x = -massScale * b.x - impulseScale * joint.linearImpulse.x;
-                impulse.y = -massScale * b.y - impulseScale * joint.linearImpulse.y;
-                joint.linearImpulse.x += impulse.x;
-                joint.linearImpulse.y += impulse.y;
+                impulse.X = -massScale * b.X - impulseScale * joint.linearImpulse.X;
+                impulse.Y = -massScale * b.Y - impulseScale * joint.linearImpulse.Y;
+                joint.linearImpulse.X += impulse.X;
+                joint.linearImpulse.Y += impulse.Y;
 
                 vA = b2MulSub(vA, mA, impulse);
                 wA -= iA * b2Cross(rA, impulse);

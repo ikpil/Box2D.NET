@@ -268,7 +268,7 @@ public class OverlapWorld : Sample
         }
         else if (m_rotating)
         {
-            float dx = p.x - m_startPosition.x;
+            float dx = p.X - m_startPosition.X;
             m_angle = m_baseAngle + 1.0f * dx;
         }
     }
@@ -401,7 +401,7 @@ public class OverlapWorld : Sample
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
-            p.x -= 0.2f;
+            p.X -= 0.2f;
             m_context.draw.DrawString(p, "skip");
         }
     }

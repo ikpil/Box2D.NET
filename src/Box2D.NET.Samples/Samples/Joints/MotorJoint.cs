@@ -93,7 +93,7 @@ public class MotorJoint : Sample
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        m_context.draw.DrawString(5, m_textLine, $"force = {force.x:3,F0}, {force.y:3,F0}, torque = {torque:3,F0}");
+        m_context.draw.DrawString(5, m_textLine, $"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
         m_textLine += 15;
 
         float height = 140.0f;
@@ -133,8 +133,8 @@ public class MotorJoint : Sample
         }
 
         B2Vec2 linearOffset;
-        linearOffset.x = 6.0f * MathF.Sin(2.0f * m_time);
-        linearOffset.y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
+        linearOffset.X = 6.0f * MathF.Sin(2.0f * m_time);
+        linearOffset.Y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
 
         float angularOffset = B2_PI * MathF.Sin(-0.5f * m_time);
 

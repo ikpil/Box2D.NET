@@ -101,13 +101,13 @@ public class B2MathTest
         B2Vec2 two = new B2Vec2(2.0f, 2.0f);
 
         B2Vec2 v = b2Add(one, two);
-        Assert.That(v.x == 3.0f && v.y == 3.0f);
+        Assert.That(v.X == 3.0f && v.Y == 3.0f);
 
         v = b2Sub(zero, two);
-        Assert.That(v.x == -2.0f && v.y == -2.0f);
+        Assert.That(v.X == -2.0f && v.Y == -2.0f);
 
         v = b2Add(two, two);
-        Assert.That(v.x != 5.0f && v.y != 5.0f);
+        Assert.That(v.X != 5.0f && v.Y != 5.0f);
 
         B2Transform transform1 = new B2Transform(new B2Vec2(-2.0f, 3.0f), b2MakeRot(1.0f));
         B2Transform transform2 = new B2Transform(new B2Vec2(1.0f, 0.0f), b2MakeRot(-2.0f));
@@ -118,14 +118,14 @@ public class B2MathTest
 
         B2Vec2 u = b2TransformPoint(ref transform, two);
 
-        Assert.That(u.x - v.x, Is.LessThan(10.0f * FLT_EPSILON));
-        Assert.That(u.y - v.y, Is.LessThan(10.0f * FLT_EPSILON));
+        Assert.That(u.X - v.X, Is.LessThan(10.0f * FLT_EPSILON));
+        Assert.That(u.Y - v.Y, Is.LessThan(10.0f * FLT_EPSILON));
 
         v = b2TransformPoint(ref transform1, two);
         v = b2InvTransformPoint(transform1, v);
 
-        Assert.That(v.x - two.x, Is.LessThan(8.0f * FLT_EPSILON));
-        Assert.That(v.y - two.y, Is.LessThan(8.0f * FLT_EPSILON));
+        Assert.That(v.X - two.X, Is.LessThan(8.0f * FLT_EPSILON));
+        Assert.That(v.Y - two.Y, Is.LessThan(8.0f * FLT_EPSILON));
 
         v = b2Normalize(new B2Vec2(0.2f, -0.5f));
         for (float y = -1.0f; y <= 1.0f; y += 0.01f)
@@ -142,8 +142,8 @@ public class B2MathTest
                 B2Rot r = b2ComputeRotationBetweenUnitVectors(v, u);
 
                 B2Vec2 w = b2RotateVector(r, v);
-                Assert.That(w.x - u.x, Is.LessThan(4.0f * FLT_EPSILON));
-                Assert.That(w.y - u.y, Is.LessThan(4.0f * FLT_EPSILON));
+                Assert.That(w.X - u.X, Is.LessThan(4.0f * FLT_EPSILON));
+                Assert.That(w.Y - u.Y, Is.LessThan(4.0f * FLT_EPSILON));
             }
         }
     }

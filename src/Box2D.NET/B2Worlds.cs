@@ -944,10 +944,10 @@ namespace Box2D.NET
 
                 Span<B2Vec2> vs = stackalloc B2Vec2[4]
                 {
-                    new B2Vec2(aabb.lowerBound.x, aabb.lowerBound.y),
-                    new B2Vec2(aabb.upperBound.x, aabb.lowerBound.y),
-                    new B2Vec2(aabb.upperBound.x, aabb.upperBound.y),
-                    new B2Vec2(aabb.lowerBound.x, aabb.upperBound.y),
+                    new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y),
+                    new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y),
+                    new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y),
+                    new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y),
                 };
 
 
@@ -1289,10 +1289,10 @@ namespace Box2D.NET
                             B2Shape shape = world.shapes.data[shapeId];
                             B2AABB aabb = shape.fatAABB;
 
-                            vs[0] = new B2Vec2(aabb.lowerBound.x, aabb.lowerBound.y);
-                            vs[1] = new B2Vec2(aabb.upperBound.x, aabb.lowerBound.y);
-                            vs[2] = new B2Vec2(aabb.upperBound.x, aabb.upperBound.y);
-                            vs[3] = new B2Vec2(aabb.lowerBound.x, aabb.upperBound.y);
+                            vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
+                            vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
+                            vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
+                            vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
 
                             draw.DrawPolygon(vs, 4, color, draw.context);
 
@@ -2712,10 +2712,10 @@ void b2World_Dump()
             B2ExplosionContext explosionContext = new B2ExplosionContext(world, position, radius, falloff, impulsePerLength);
 
             B2AABB aabb;
-            aabb.lowerBound.x = position.x - (radius + falloff);
-            aabb.lowerBound.y = position.y - (radius + falloff);
-            aabb.upperBound.x = position.x + (radius + falloff);
-            aabb.upperBound.y = position.y + (radius + falloff);
+            aabb.lowerBound.X = position.X - (radius + falloff);
+            aabb.lowerBound.Y = position.Y - (radius + falloff);
+            aabb.upperBound.X = position.X + (radius + falloff);
+            aabb.upperBound.Y = position.Y + (radius + falloff);
 
             b2DynamicTree_Query(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, ref explosionContext);
         }

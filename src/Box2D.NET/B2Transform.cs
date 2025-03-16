@@ -20,10 +20,10 @@ namespace Box2D.NET
 
         public bool TryWriteBytes(Span<byte> bytes)
         {
-            if (!BitConverter.TryWriteBytes(bytes.Slice(0, 4), p.x))
+            if (!BitConverter.TryWriteBytes(bytes.Slice(0, 4), p.X))
                 return false;
 
-            if (!BitConverter.TryWriteBytes(bytes.Slice(4, 4), p.y))
+            if (!BitConverter.TryWriteBytes(bytes.Slice(4, 4), p.Y))
                 return false;
             
             if (!BitConverter.TryWriteBytes(bytes.Slice(8, 4), q.c))

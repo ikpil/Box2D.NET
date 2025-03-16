@@ -81,94 +81,94 @@ namespace Box2D.NET
         /// Vector dot product
         public static float b2Dot(B2Vec2 a, B2Vec2 b)
         {
-            return a.x * b.x + a.y * b.y;
+            return a.X * b.X + a.Y * b.Y;
         }
 
         /// Vector cross product. In 2D this yields a scalar.
         public static float b2Cross(B2Vec2 a, B2Vec2 b)
         {
-            return a.x * b.y - a.y * b.x;
+            return a.X * b.Y - a.Y * b.X;
         }
 
         /// Perform the cross product on a vector and a scalar. In 2D this produces a vector.
         public static B2Vec2 b2CrossVS(B2Vec2 v, float s)
         {
-            return new B2Vec2(s * v.y, -s * v.x);
+            return new B2Vec2(s * v.Y, -s * v.X);
         }
 
         /// Perform the cross product on a scalar and a vector. In 2D this produces a vector.
         public static B2Vec2 b2CrossSV(float s, B2Vec2 v)
         {
-            return new B2Vec2(-s * v.y, s * v.x);
+            return new B2Vec2(-s * v.Y, s * v.X);
         }
 
         /// Get a left pointing perpendicular vector. Equivalent to b2CrossSV(1.0f, v)
         public static B2Vec2 b2LeftPerp(B2Vec2 v)
         {
-            return new B2Vec2(-v.y, v.x);
+            return new B2Vec2(-v.Y, v.X);
         }
 
         /// Get a right pointing perpendicular vector. Equivalent to b2CrossVS(v, 1.0f)
         public static B2Vec2 b2RightPerp(B2Vec2 v)
         {
-            return new B2Vec2(v.y, -v.x);
+            return new B2Vec2(v.Y, -v.X);
         }
 
         /// Vector addition
         public static B2Vec2 b2Add(B2Vec2 a, B2Vec2 b)
         {
-            return new B2Vec2(a.x + b.x, a.y + b.y);
+            return new B2Vec2(a.X + b.X, a.Y + b.Y);
         }
 
         /// Vector subtraction
         public static B2Vec2 b2Sub(B2Vec2 a, B2Vec2 b)
         {
-            return new B2Vec2(a.x - b.x, a.y - b.y);
+            return new B2Vec2(a.X - b.X, a.Y - b.Y);
         }
 
         /// Vector negation
         public static B2Vec2 b2Neg(B2Vec2 a)
         {
-            return new B2Vec2(-a.x, -a.y);
+            return new B2Vec2(-a.X, -a.Y);
         }
 
         /// Vector linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
         public static B2Vec2 b2Lerp(B2Vec2 a, B2Vec2 b, float t)
         {
-            return new B2Vec2((1.0f - t) * a.x + t * b.x, (1.0f - t) * a.y + t * b.y);
+            return new B2Vec2((1.0f - t) * a.X + t * b.X, (1.0f - t) * a.Y + t * b.Y);
         }
 
         /// Component-wise multiplication
         public static B2Vec2 b2Mul(B2Vec2 a, B2Vec2 b)
         {
-            return new B2Vec2(a.x * b.x, a.y * b.y);
+            return new B2Vec2(a.X * b.X, a.Y * b.Y);
         }
 
         /// Multiply a scalar and vector
         public static B2Vec2 b2MulSV(float s, B2Vec2 v)
         {
-            return new B2Vec2(s * v.x, s * v.y);
+            return new B2Vec2(s * v.X, s * v.Y);
         }
 
         /// a + s * b
         public static B2Vec2 b2MulAdd(B2Vec2 a, float s, B2Vec2 b)
         {
-            return new B2Vec2(a.x + s * b.x, a.y + s * b.y);
+            return new B2Vec2(a.X + s * b.X, a.Y + s * b.Y);
         }
 
         /// a - s * b
         public static B2Vec2 b2MulSub(B2Vec2 a, float s, B2Vec2 b)
         {
-            return new B2Vec2(a.x - s * b.x, a.y - s * b.y);
+            return new B2Vec2(a.X - s * b.X, a.Y - s * b.Y);
         }
 
         /// Component-wise absolute vector
         public static B2Vec2 b2Abs(B2Vec2 a)
         {
             B2Vec2 b;
-            b.x = b2AbsFloat(a.x);
-            b.y = b2AbsFloat(a.y);
+            b.X = b2AbsFloat(a.X);
+            b.Y = b2AbsFloat(a.Y);
             return b;
         }
 
@@ -176,8 +176,8 @@ namespace Box2D.NET
         public static B2Vec2 b2Min(B2Vec2 a, B2Vec2 b)
         {
             B2Vec2 c;
-            c.x = b2MinFloat(a.x, b.x);
-            c.y = b2MinFloat(a.y, b.y);
+            c.X = b2MinFloat(a.X, b.X);
+            c.Y = b2MinFloat(a.Y, b.Y);
             return c;
         }
 
@@ -185,8 +185,8 @@ namespace Box2D.NET
         public static B2Vec2 b2Max(B2Vec2 a, B2Vec2 b)
         {
             B2Vec2 c;
-            c.x = b2MaxFloat(a.x, b.x);
-            c.y = b2MaxFloat(a.y, b.y);
+            c.X = b2MaxFloat(a.X, b.X);
+            c.Y = b2MaxFloat(a.Y, b.Y);
             return c;
         }
 
@@ -194,36 +194,36 @@ namespace Box2D.NET
         public static B2Vec2 b2Clamp(B2Vec2 v, B2Vec2 a, B2Vec2 b)
         {
             B2Vec2 c;
-            c.x = b2ClampFloat(v.x, a.x, b.x);
-            c.y = b2ClampFloat(v.y, a.y, b.y);
+            c.X = b2ClampFloat(v.X, a.X, b.X);
+            c.Y = b2ClampFloat(v.Y, a.Y, b.Y);
             return c;
         }
 
         /// Get the length of this vector (the norm)
         public static float b2Length(B2Vec2 v)
         {
-            return MathF.Sqrt(v.x * v.x + v.y * v.y);
+            return MathF.Sqrt(v.X * v.X + v.Y * v.Y);
         }
 
         /// Get the distance between two points
         public static float b2Distance(B2Vec2 a, B2Vec2 b)
         {
-            float dx = b.x - a.x;
-            float dy = b.y - a.y;
+            float dx = b.X - a.X;
+            float dy = b.Y - a.Y;
             return MathF.Sqrt(dx * dx + dy * dy);
         }
 
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector.
         public static B2Vec2 b2Normalize(B2Vec2 v)
         {
-            float length = MathF.Sqrt(v.x * v.x + v.y * v.y);
+            float length = MathF.Sqrt(v.X * v.X + v.Y * v.Y);
             if (length < FLT_EPSILON)
             {
                 return b2Vec2_zero;
             }
 
             float invLength = 1.0f / length;
-            B2Vec2 n = new B2Vec2(invLength * v.x, invLength * v.y);
+            B2Vec2 n = new B2Vec2(invLength * v.X, invLength * v.Y);
             return n;
         }
 
@@ -238,7 +238,7 @@ namespace Box2D.NET
             }
 
             float invLength = 1.0f / length;
-            B2Vec2 n = new B2Vec2(invLength * v.x, invLength * v.y);
+            B2Vec2 n = new B2Vec2(invLength * v.X, invLength * v.Y);
             return n;
         }
 
@@ -270,14 +270,14 @@ namespace Box2D.NET
         /// Get the length squared of this vector
         public static float b2LengthSquared(B2Vec2 v)
         {
-            return v.x * v.x + v.y * v.y;
+            return v.X * v.X + v.Y * v.Y;
         }
 
         /// Get the distance squared between points
         public static float b2DistanceSquared(B2Vec2 a, B2Vec2 b)
         {
-            B2Vec2 c = new B2Vec2(b.x - a.x, b.y - a.y);
-            return c.x * c.x + c.y * c.y;
+            B2Vec2 c = new B2Vec2(b.X - a.X, b.Y - a.Y);
+            return c.X * c.X + c.Y * c.Y;
         }
 
         /// Make a rotation using an angle in radians
@@ -421,20 +421,20 @@ namespace Box2D.NET
         /// Rotate a vector
         public static B2Vec2 b2RotateVector(B2Rot q, B2Vec2 v)
         {
-            return new B2Vec2(q.c * v.x - q.s * v.y, q.s * v.x + q.c * v.y);
+            return new B2Vec2(q.c * v.X - q.s * v.Y, q.s * v.X + q.c * v.Y);
         }
 
         /// Inverse rotate a vector
         public static B2Vec2 b2InvRotateVector(B2Rot q, B2Vec2 v)
         {
-            return new B2Vec2(q.c * v.x + q.s * v.y, -q.s * v.x + q.c * v.y);
+            return new B2Vec2(q.c * v.X + q.s * v.Y, -q.s * v.X + q.c * v.Y);
         }
 
         /// Transform a point (e.g. local space to world space)
         public static B2Vec2 b2TransformPoint(ref B2Transform t, B2Vec2 p)
         {
-            float x = (t.q.c * p.x - t.q.s * p.y) + t.p.x;
-            float y = (t.q.s * p.x + t.q.c * p.y) + t.p.y;
+            float x = (t.q.c * p.X - t.q.s * p.Y) + t.p.X;
+            float y = (t.q.s * p.X + t.q.c * p.Y) + t.p.Y;
 
             return new B2Vec2(x, y);
         }
@@ -442,8 +442,8 @@ namespace Box2D.NET
         /// Inverse transform a point (e.g. world space to local space)
         public static B2Vec2 b2InvTransformPoint(B2Transform t, B2Vec2 p)
         {
-            float vx = p.x - t.p.x;
-            float vy = p.y - t.p.y;
+            float vx = p.X - t.p.X;
+            float vy = p.Y - t.p.Y;
             return new B2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
         }
 
@@ -476,8 +476,8 @@ namespace Box2D.NET
         {
             B2Vec2 u = new B2Vec2
             {
-                x = A.cx.x * v.x + A.cy.x * v.y,
-                y = A.cx.y * v.x + A.cy.y * v.y,
+                X = A.cx.X * v.X + A.cy.X * v.Y,
+                Y = A.cx.Y * v.X + A.cy.Y * v.Y,
             };
             return u;
         }
@@ -485,7 +485,7 @@ namespace Box2D.NET
         /// Get the inverse of a 2-by-2 matrix
         public static B2Mat22 b2GetInverse22(B2Mat22 A)
         {
-            float a = A.cx.x, b = A.cy.x, c = A.cx.y, d = A.cy.y;
+            float a = A.cx.X, b = A.cy.X, c = A.cx.Y, d = A.cy.Y;
             float det = a * d - b * c;
             if (det != 0.0f)
             {
@@ -500,14 +500,14 @@ namespace Box2D.NET
         /// than computing the inverse in one-shot cases.
         public static B2Vec2 b2Solve22(B2Mat22 A, B2Vec2 b)
         {
-            float a11 = A.cx.x, a12 = A.cy.x, a21 = A.cx.y, a22 = A.cy.y;
+            float a11 = A.cx.X, a12 = A.cy.X, a21 = A.cx.Y, a22 = A.cy.Y;
             float det = a11 * a22 - a12 * a21;
             if (det != 0.0f)
             {
                 det = 1.0f / det;
             }
 
-            B2Vec2 x = new B2Vec2(det * (a22 * b.x - a12 * b.y), det * (a11 * b.y - a21 * b.x));
+            B2Vec2 x = new B2Vec2(det * (a22 * b.X - a12 * b.Y), det * (a11 * b.Y - a21 * b.X));
             return x;
         }
 
@@ -515,24 +515,24 @@ namespace Box2D.NET
         public static bool b2AABB_Contains(B2AABB a, B2AABB b)
         {
             bool s = true;
-            s = s && a.lowerBound.x <= b.lowerBound.x;
-            s = s && a.lowerBound.y <= b.lowerBound.y;
-            s = s && b.upperBound.x <= a.upperBound.x;
-            s = s && b.upperBound.y <= a.upperBound.y;
+            s = s && a.lowerBound.X <= b.lowerBound.X;
+            s = s && a.lowerBound.Y <= b.lowerBound.Y;
+            s = s && b.upperBound.X <= a.upperBound.X;
+            s = s && b.upperBound.Y <= a.upperBound.Y;
             return s;
         }
 
         /// Get the center of the AABB.
         public static B2Vec2 b2AABB_Center(B2AABB a)
         {
-            B2Vec2 b = new B2Vec2(0.5f * (a.lowerBound.x + a.upperBound.x), 0.5f * (a.lowerBound.y + a.upperBound.y));
+            B2Vec2 b = new B2Vec2(0.5f * (a.lowerBound.X + a.upperBound.X), 0.5f * (a.lowerBound.Y + a.upperBound.Y));
             return b;
         }
 
         /// Get the extents of the AABB (half-widths).
         public static B2Vec2 b2AABB_Extents(B2AABB a)
         {
-            B2Vec2 b = new B2Vec2(0.5f * (a.upperBound.x - a.lowerBound.x), 0.5f * (a.upperBound.y - a.lowerBound.y));
+            B2Vec2 b = new B2Vec2(0.5f * (a.upperBound.X - a.lowerBound.X), 0.5f * (a.upperBound.Y - a.lowerBound.Y));
             return b;
         }
 
@@ -540,10 +540,10 @@ namespace Box2D.NET
         public static B2AABB b2AABB_Union(B2AABB a, B2AABB b)
         {
             B2AABB c;
-            c.lowerBound.x = b2MinFloat(a.lowerBound.x, b.lowerBound.x);
-            c.lowerBound.y = b2MinFloat(a.lowerBound.y, b.lowerBound.y);
-            c.upperBound.x = b2MaxFloat(a.upperBound.x, b.upperBound.x);
-            c.upperBound.y = b2MaxFloat(a.upperBound.y, b.upperBound.y);
+            c.lowerBound.X = b2MinFloat(a.lowerBound.X, b.lowerBound.X);
+            c.lowerBound.Y = b2MinFloat(a.lowerBound.Y, b.lowerBound.Y);
+            c.upperBound.X = b2MaxFloat(a.upperBound.X, b.upperBound.X);
+            c.upperBound.Y = b2MaxFloat(a.upperBound.Y, b.upperBound.Y);
             return c;
         }
 
@@ -572,12 +572,12 @@ namespace Box2D.NET
         /// Is this a valid vector? Not NaN or infinity.
         public static bool b2IsValidVec2(B2Vec2 v)
         {
-            if (float.IsNaN(v.x) || float.IsNaN(v.y))
+            if (float.IsNaN(v.X) || float.IsNaN(v.Y))
             {
                 return false;
             }
 
-            if (float.IsInfinity(v.x) || float.IsInfinity(v.y))
+            if (float.IsInfinity(v.X) || float.IsInfinity(v.Y))
             {
                 return false;
             }

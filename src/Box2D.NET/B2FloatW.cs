@@ -21,10 +21,10 @@ namespace Box2D.NET
     public struct B2FloatW
     {
         private B2FixedArray4<float> _array;
-        public float x { get => _array.v0000; set => _array.v0000 = value; }
-        public float y { get => _array.v0001; set => _array.v0001 = value; }
-        public float z { get => _array.v0002; set => _array.v0002 = value; }
-        public float w { get => _array.v0003; set => _array.v0003 = value; }
+        public float X { get => _array.v0000; set => _array.v0000 = value; }
+        public float Y { get => _array.v0001; set => _array.v0001 = value; }
+        public float Z { get => _array.v0002; set => _array.v0002 = value; }
+        public float W { get => _array.v0003; set => _array.v0003 = value; }
 
 
         public B2FloatW(float x, float y, float z, float w)

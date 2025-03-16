@@ -282,9 +282,9 @@ public class BodyType : Sample
             B2Vec2 p = b2Body_GetPosition(m_platformId);
             B2Vec2 v = b2Body_GetLinearVelocity(m_platformId);
 
-            if ((p.x < -14.0f && v.x < 0.0f) || (p.x > 6.0f && v.x > 0.0f))
+            if ((p.X < -14.0f && v.X < 0.0f) || (p.X > 6.0f && v.X > 0.0f))
             {
-                v.x = -v.x;
+                v.X = -v.X;
                 b2Body_SetLinearVelocity(m_platformId, v);
             }
         }
