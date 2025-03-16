@@ -620,7 +620,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_capsuleShape:
                     return b2ComputeCapsuleAABB(ref shape.us.capsule, xf);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleAABB(shape.us.circle, xf);
+                    return b2ComputeCircleAABB(ref shape.us.circle, xf);
                 case B2ShapeType.b2_polygonShape:
                     return b2ComputePolygonAABB(ref shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
@@ -749,7 +749,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_capsuleShape:
                     return b2ComputeCapsuleMass(ref shape.us.capsule, shape.density);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleMass(shape.us.circle, shape.density);
+                    return b2ComputeCircleMass(ref shape.us.circle, shape.density);
                 case B2ShapeType.b2_polygonShape:
                     return b2ComputePolygonMass(ref shape.us.polygon, shape.density);
                 default:
@@ -840,7 +840,7 @@ namespace Box2D.NET
                     output = b2RayCastCapsule(ref localInput, ref shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, shape.us.circle);
+                    output = b2RayCastCircle(ref localInput, ref shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
                     output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
@@ -878,7 +878,7 @@ namespace Box2D.NET
                     output = b2ShapeCastCapsule(ref localInput, ref shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(ref localInput, shape.us.circle);
+                    output = b2ShapeCastCircle(ref localInput, ref shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
                     output = b2ShapeCastPolygon(ref localInput, ref shape.us.polygon);
@@ -990,7 +990,7 @@ namespace Box2D.NET
                     return b2PointInCapsule(localPoint, ref shape.us.capsule);
 
                 case B2ShapeType.b2_circleShape:
-                    return b2PointInCircle(localPoint, shape.us.circle);
+                    return b2PointInCircle(localPoint, ref shape.us.circle);
 
                 case B2ShapeType.b2_polygonShape:
                     return b2PointInPolygon(localPoint, ref shape.us.polygon);
@@ -1022,7 +1022,7 @@ namespace Box2D.NET
                     break;
 
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, shape.us.circle);
+                    output = b2RayCastCircle(ref localInput, ref shape.us.circle);
                     break;
 
                 case B2ShapeType.b2_segmentShape:
@@ -1338,7 +1338,7 @@ namespace Box2D.NET
             return shape.us.polygon;
         }
 
-        public static void b2Shape_SetCircle(B2ShapeId shapeId, B2Circle circle)
+        public static void b2Shape_SetCircle(B2ShapeId shapeId, ref B2Circle circle)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)

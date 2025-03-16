@@ -249,7 +249,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a circle
-        public static B2MassData b2ComputeCircleMass(B2Circle shape, float density)
+        public static B2MassData b2ComputeCircleMass(ref B2Circle shape, float density)
         {
             float rr = shape.radius * shape.radius;
 
@@ -338,7 +338,7 @@ namespace Box2D.NET
             if (shape.count == 1)
             {
                 B2Circle circle = new B2Circle(shape.vertices[0], shape.radius);
-                return b2ComputeCircleMass(circle, density);
+                return b2ComputeCircleMass(ref circle, density);
             }
 
             if (shape.count == 2)
@@ -431,7 +431,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed circle
-        public static B2AABB b2ComputeCircleAABB(B2Circle shape, B2Transform xf)
+        public static B2AABB b2ComputeCircleAABB(ref B2Circle shape, B2Transform xf)
         {
             B2Vec2 p = b2TransformPoint(ref xf, shape.center);
             float r = shape.radius;
@@ -490,7 +490,7 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a circle in local space
-        public static bool b2PointInCircle(B2Vec2 point, B2Circle shape)
+        public static bool b2PointInCircle(B2Vec2 point, ref B2Circle shape)
         {
             B2Vec2 center = shape.center;
             return b2DistanceSquared(point, center) <= shape.radius * shape.radius;
@@ -543,7 +543,7 @@ namespace Box2D.NET
         /// Ray cast versus circle shape in local space. Initial overlap is treated as a miss.
         // Precision Improvements for Ray / Sphere Intersection - Ray Tracing Gems 2019
         // http://www.codercorner.com/blog/?p=321
-        public static B2CastOutput b2RayCastCircle(ref B2RayCastInput input, B2Circle shape)
+        public static B2CastOutput b2RayCastCircle(ref B2RayCastInput input, ref B2Circle shape)
         {
             Debug.Assert(b2IsValidRay(ref input));
 
@@ -620,7 +620,7 @@ namespace Box2D.NET
             {
                 // Capsule is really a circle
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref input, circle);
+                return b2RayCastCircle(ref input, ref circle);
             }
 
             B2Vec2 p1 = input.origin;
@@ -642,14 +642,14 @@ namespace Box2D.NET
                 {
                     // start point behind capsule segment
                     B2Circle circle = new B2Circle(v1, shape.radius);
-                    return b2RayCastCircle(ref input, circle);
+                    return b2RayCastCircle(ref input, ref circle);
                 }
 
                 if (qa > 1.0f)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
-                    return b2RayCastCircle(ref input, circle);
+                    return b2RayCastCircle(ref input, ref circle);
                 }
 
                 // ray starts inside capsule . no hit
@@ -716,13 +716,13 @@ namespace Box2D.NET
             {
                 // ray passes behind capsule segment
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref input, circle);
+                return b2RayCastCircle(ref input, ref circle);
             }
             else if (capsuleLength < s1)
             {
                 // ray passes ahead of capsule segment
                 B2Circle circle = new B2Circle(v2, shape.radius);
-                return b2RayCastCircle(ref input, circle);
+                return b2RayCastCircle(ref input, ref circle);
             }
             else
             {
@@ -907,7 +907,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a circle. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCircle(ref B2ShapeCastInput input, B2Circle shape)
+        public static B2CastOutput b2ShapeCastCircle(ref B2ShapeCastInput input, ref B2Circle shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);

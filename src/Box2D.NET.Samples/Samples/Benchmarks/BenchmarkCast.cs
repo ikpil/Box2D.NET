@@ -248,7 +248,7 @@ public class BenchmarkCast : Sample
                 B2Vec2 translation = m_translations[i];
 
                 CastResult result = new CastResult();
-                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, circle, origin, translation, filter, CastCallback, result);
+                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, ref circle, origin, translation, filter, CastCallback, result);
 
                 if (i == m_drawIndex)
                 {

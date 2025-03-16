@@ -419,7 +419,7 @@ public class RayCastWorld : Sample
                     break;
 
                 case CastType.e_circleCast:
-                    b2World_CastCircle(m_worldId, circle, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastCircle(m_worldId, ref circle, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
 
                 case CastType.e_capsuleCast:
