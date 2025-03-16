@@ -821,7 +821,7 @@ namespace Box2D.NET
             {
                 case B2ShapeType.b2_capsuleShape:
                 {
-                    B2Capsule capsule = shape.capsule;
+                    B2Capsule capsule = shape.us.capsule;
                     B2Vec2 p1 = b2TransformPoint(ref xf, capsule.center1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, capsule.center2);
                     draw.DrawSolidCapsule(p1, p2, capsule.radius, color, draw.context);
@@ -830,7 +830,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_circleShape:
                 {
-                    B2Circle circle = shape.circle;
+                    B2Circle circle = shape.us.circle;
                     xf.p = b2TransformPoint(ref xf, circle.center);
                     draw.DrawSolidCircle(ref xf, circle.radius, color, draw.context);
                 }
@@ -838,14 +838,14 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Polygon poly = shape.polygon;
+                    B2Polygon poly = shape.us.polygon;
                     draw.DrawSolidPolygon(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;
 
                 case B2ShapeType.b2_segmentShape:
                 {
-                    B2Segment segment = shape.segment;
+                    B2Segment segment = shape.us.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);
@@ -854,7 +854,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_chainSegmentShape:
                 {
-                    B2Segment segment = shape.chainSegment.segment;
+                    B2Segment segment = shape.us.chainSegment.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);
