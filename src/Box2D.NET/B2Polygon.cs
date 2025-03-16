@@ -12,7 +12,7 @@ namespace Box2D.NET
     /// In most cases you should not need many vertices for a convex polygon.
     /// @warning DO NOT fill this out manually, instead use a helper function like
     /// b2MakePolygon or b2MakeBox.
-    public class B2Polygon
+    public struct B2Polygon
     {
         /// The polygon vertices
         public B2FixedArray8<B2Vec2> vertices; // = new B2Vec2[B2Constants.B2_MAX_POLYGON_VERTICES];
@@ -28,16 +28,5 @@ namespace Box2D.NET
 
         /// The number of polygon vertices
         public int count;
-
-        public B2Polygon Clone()
-        {
-            var p = new B2Polygon();
-            p.vertices = vertices;
-            p.normals = normals;
-            p.centroid = centroid;
-            p.radius = radius;
-            p.count = count;
-            return p;
-        }
     }
 }

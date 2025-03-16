@@ -6,7 +6,7 @@ namespace Box2D.NET
 {
     /// A solid capsule can be viewed as two semicircles connected
     /// by a rectangle.
-    public class B2Capsule
+    public struct B2Capsule
     {
         /// Local center of the first semicircle
         public B2Vec2 center1;
@@ -22,11 +22,6 @@ namespace Box2D.NET
             this.center1 = center1;
             this.center2 = center2;
             this.radius = radius;
-        }
-
-        public B2Capsule Clone()
-        {
-            return new B2Capsule(center1, center2, radius);
         }
     }
 }
