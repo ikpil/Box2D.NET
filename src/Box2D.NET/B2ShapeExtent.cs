@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2ShapeExtent
+    public struct B2ShapeExtent
     {
         public float minExtent;
         public float maxExtent;
