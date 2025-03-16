@@ -45,12 +45,12 @@ namespace Box2D.NET
             flags = (ushort)B2TreeNodeFlags.b2_allocatedNode,
         };
 
-        public static bool b2IsLeaf(B2TreeNode node)
+        public static bool b2IsLeaf(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_leafNode);
         }
 
-        public static bool b2IsAllocated(B2TreeNode node)
+        public static bool b2IsAllocated(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode);
         }
@@ -70,10 +70,6 @@ namespace Box2D.NET
             tree.nodeCount = 0;
             tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
             //memset( tree.nodes, 0, tree.nodeCapacity * sizeof( b2TreeNode ) );
-            foreach (var node in tree.nodes)
-            {
-                node.Clear();
-            }
 
             // Build a linked list for the free list.
             for (int i = 0; i < tree.nodeCapacity - 1; ++i)
@@ -123,16 +119,9 @@ namespace Box2D.NET
                 tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
                 Debug.Assert(oldNodes != null);
                 //memcpy( tree->nodes, oldNodes, tree->nodeCount * sizeof( b2TreeNode ) );
-                for (int i = 0; i < tree.nodeCount; ++i)
-                {
-                    tree.nodes[i].CopyFrom(oldNodes[i]);
-                }
+                Array.Copy(oldNodes, 0, tree.nodes, 0, oldCapacity);
 
                 //memset( tree->nodes + tree->nodeCount, 0, ( tree->nodeCapacity - tree->nodeCount ) * sizeof( b2TreeNode ) );
-                for (int i = tree.nodeCount; i < tree.nodeCapacity; ++i)
-                {
-                    tree.nodes[i].Clear();
-                }
 
                 b2Free(oldNodes, oldCapacity);
 
@@ -149,9 +138,9 @@ namespace Box2D.NET
 
             // Peel a node off the free list.
             int nodeIndex = tree.freeList;
-            B2TreeNode node = tree.nodes[nodeIndex];
+            ref B2TreeNode node = ref tree.nodes[nodeIndex];
             tree.freeList = node.next;
-            node.CopyFrom(b2_defaultTreeNode);
+            node = b2_defaultTreeNode;
             ++tree.nodeCount;
             return nodeIndex;
         }
@@ -336,7 +325,7 @@ namespace Box2D.NET
 
             B2TreeNode[] nodes = tree.nodes;
 
-            B2TreeNode A = nodes[iA];
+            ref B2TreeNode A = ref nodes[iA];
             if (A.height < 2)
             {
                 return;
@@ -347,8 +336,8 @@ namespace Box2D.NET
             Debug.Assert(0 <= iB && iB < tree.nodeCapacity);
             Debug.Assert(0 <= iC && iC < tree.nodeCapacity);
 
-            B2TreeNode B = nodes[iB];
-            B2TreeNode C = nodes[iC];
+            ref B2TreeNode B = ref nodes[iB];
+            ref B2TreeNode C = ref nodes[iC];
 
             if (B.height == 0)
             {
@@ -357,8 +346,8 @@ namespace Box2D.NET
 
                 int iF = C.child1;
                 int iG = C.child2;
-                B2TreeNode F = nodes[iF];
-                B2TreeNode G = nodes[iG];
+                ref B2TreeNode F = ref nodes[iF];
+                ref B2TreeNode G = ref nodes[iG];
                 Debug.Assert(0 <= iF && iF < tree.nodeCapacity);
                 Debug.Assert(0 <= iG && iG < tree.nodeCapacity);
 
@@ -423,8 +412,8 @@ namespace Box2D.NET
 
                 int iD = B.child1;
                 int iE = B.child2;
-                B2TreeNode D = nodes[iD];
-                B2TreeNode E = nodes[iE];
+                ref B2TreeNode D = ref nodes[iD];
+                ref B2TreeNode E = ref nodes[iE];
                 Debug.Assert(0 <= iD && iD < tree.nodeCapacity);
                 Debug.Assert(0 <= iE && iE < tree.nodeCapacity);
 
@@ -488,10 +477,10 @@ namespace Box2D.NET
                 int iF = C.child1;
                 int iG = C.child2;
 
-                B2TreeNode D = nodes[iD];
-                B2TreeNode E = nodes[iE];
-                B2TreeNode F = nodes[iF];
-                B2TreeNode G = nodes[iG];
+                ref B2TreeNode D = ref nodes[iD];
+                ref B2TreeNode E = ref nodes[iE];
+                ref B2TreeNode F = ref nodes[iF];
+                ref B2TreeNode G = ref nodes[iG];
 
                 Debug.Assert(0 <= iD && iD < tree.nodeCapacity);
                 Debug.Assert(0 <= iE && iE < tree.nodeCapacity);
@@ -734,9 +723,9 @@ namespace Box2D.NET
                 int index = grandParent;
                 while (index != B2_NULL_INDEX)
                 {
-                    B2TreeNode node = nodes[index];
-                    B2TreeNode child1 = nodes[node.child1];
-                    B2TreeNode child2 = nodes[node.child2];
+                    ref B2TreeNode node = ref nodes[index];
+                    ref B2TreeNode child1 = ref nodes[node.child1];
+                    ref B2TreeNode child2 = ref nodes[node.child2];
 
                     // Fast union using SSE
                     //__m128 aabb1 = _mm_load_ps(&child1.aabb.lowerBound.x);
@@ -772,7 +761,7 @@ namespace Box2D.NET
             Debug.Assert(-B2_HUGE < aabb.upperBound.Y && aabb.upperBound.Y < B2_HUGE);
 
             int proxyId = b2AllocateNode(tree);
-            B2TreeNode node = tree.nodes[proxyId];
+            ref B2TreeNode node = ref tree.nodes[proxyId];
 
             node.aabb = aabb;
             node.userData = userData;
@@ -792,7 +781,7 @@ namespace Box2D.NET
         public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
             Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(tree.nodes[proxyId]));
+            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
             b2FreeNode(tree, proxyId);
@@ -814,7 +803,7 @@ namespace Box2D.NET
             Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(tree.nodes[proxyId]));
+            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
 
@@ -833,7 +822,7 @@ namespace Box2D.NET
             Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(tree.nodes[proxyId]));
+            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
 
             // Caller must ensure this
             Debug.Assert(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
@@ -885,14 +874,14 @@ namespace Box2D.NET
                 return 0.0f;
             }
 
-            B2TreeNode root = tree.nodes[tree.root];
+            ref B2TreeNode root = ref tree.nodes[tree.root];
             float rootArea = b2Perimeter(root.aabb);
 
             float totalArea = 0.0f;
             for (int i = 0; i < tree.nodeCapacity; ++i)
             {
-                B2TreeNode node = tree.nodes[i];
-                if (b2IsAllocated(node) == false || b2IsLeaf(node) || i == tree.root)
+                ref B2TreeNode node = ref tree.nodes[i];
+                if (b2IsAllocated(ref node) == false || b2IsLeaf(ref node) || i == tree.root)
                 {
                     continue;
                 }
@@ -907,9 +896,9 @@ namespace Box2D.NET
         public static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
         {
             Debug.Assert(0 <= nodeId && nodeId < tree.nodeCapacity);
-            B2TreeNode node = tree.nodes[nodeId];
+            ref B2TreeNode node = ref tree.nodes[nodeId];
 
-            if (b2IsLeaf(node))
+            if (b2IsLeaf(ref node))
             {
                 return 0;
             }
@@ -932,11 +921,11 @@ namespace Box2D.NET
                 Debug.Assert(tree.nodes[index].parent == B2_NULL_INDEX);
             }
 
-            B2TreeNode node = tree.nodes[index];
+            ref B2TreeNode node = ref tree.nodes[index];
 
             Debug.Assert(node.flags == 0 || (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0);
 
-            if (b2IsLeaf(node))
+            if (b2IsLeaf(ref node))
             {
                 Debug.Assert(node.height == 0);
                 return;
@@ -967,9 +956,9 @@ namespace Box2D.NET
                 return;
             }
 
-            B2TreeNode node = tree.nodes[index];
+            ref B2TreeNode node = ref tree.nodes[index];
 
-            if (b2IsLeaf(node))
+            if (b2IsLeaf(ref node))
             {
                 Debug.Assert(node.height == 0);
                 return;
@@ -1043,7 +1032,7 @@ namespace Box2D.NET
             B2TreeNode[] nodes = tree.nodes;
             for (int i = 0; i < capacity; ++i)
             {
-                B2TreeNode node = nodes[i];
+                ref B2TreeNode node = ref nodes[i];
                 if (0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode))
                 {
                     if ((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) != 0)
@@ -1110,12 +1099,12 @@ namespace Box2D.NET
                     continue;
                 }
 
-                B2TreeNode node = tree.nodes[nodeId];
+                ref B2TreeNode node = ref tree.nodes[nodeId];
                 result.nodeVisits += 1;
 
                 if (b2AABB_Overlaps(node.aabb, aabb) && (node.categoryBits & maskBits) != 0)
                 {
-                    if (b2IsLeaf(node))
+                    if (b2IsLeaf(ref node))
                     {
                         // callback to user code with proxy id
                         bool proceed = callback(nodeId, node.userData, ref context);
@@ -1205,7 +1194,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                B2TreeNode node = nodes[nodeId];
+                ref B2TreeNode node = ref nodes[nodeId];
                 result.nodeVisits += 1;
 
                 B2AABB nodeAABB = node.aabb;
@@ -1227,7 +1216,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                if (b2IsLeaf(node))
+                if (b2IsLeaf(ref node))
                 {
                     subInput.maxFraction = maxFraction;
 
@@ -1351,7 +1340,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                B2TreeNode node = nodes[nodeId];
+                ref B2TreeNode node = ref nodes[nodeId];
                 stats.nodeVisits += 1;
 
                 if ((node.categoryBits & maskBits) == 0 || b2AABB_Overlaps(node.aabb, totalAABB) == false)
@@ -1371,7 +1360,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                if (b2IsLeaf(node))
+                if (b2IsLeaf(ref node))
                 {
                     subInput.maxFraction = maxFraction;
 
@@ -1756,7 +1745,7 @@ namespace Box2D.NET
                     }
 
                     ref B2RebuildItem parentItem = ref stack[(top - 1)];
-                    B2TreeNode parentNode = nodes[parentItem.nodeIndex];
+                    ref B2TreeNode parentNode = ref nodes[parentItem.nodeIndex];
 
                     if (parentItem.childCount == 0)
                     {
@@ -1770,15 +1759,15 @@ namespace Box2D.NET
                         parentNode.child2 = item.nodeIndex;
                     }
 
-                    B2TreeNode node = nodes[item.nodeIndex];
+                    ref B2TreeNode node = ref nodes[item.nodeIndex];
 
                     Debug.Assert(node.parent == B2_NULL_INDEX);
                     node.parent = parentItem.nodeIndex;
 
                     Debug.Assert(node.child1 != B2_NULL_INDEX);
                     Debug.Assert(node.child2 != B2_NULL_INDEX);
-                    B2TreeNode c1 = nodes[node.child1];
-                    B2TreeNode c2 = nodes[node.child2];
+                    ref B2TreeNode c1 = ref nodes[node.child1];
+                    ref B2TreeNode c2 = ref nodes[node.child2];
 
                     node.aabb = b2AABB_Union(c1.aabb, c2.aabb);
                     node.height = (ushort)(1 + b2MaxUInt16(c1.height, c2.height));
@@ -1807,7 +1796,7 @@ namespace Box2D.NET
                     if (count == 1)
                     {
                         int childIndex = leafIndices[startIndex];
-                        B2TreeNode node = nodes[item.nodeIndex];
+                        ref B2TreeNode node = ref nodes[item.nodeIndex];
 
                         if (item.childCount == 0)
                         {
@@ -1821,7 +1810,7 @@ namespace Box2D.NET
                             node.child2 = childIndex;
                         }
 
-                        B2TreeNode childNode = nodes[childIndex];
+                        ref B2TreeNode childNode = ref nodes[childIndex];
                         Debug.Assert(childNode.parent == B2_NULL_INDEX);
                         childNode.parent = item.nodeIndex;
                     }
@@ -1847,13 +1836,13 @@ namespace Box2D.NET
                 }
             }
 
-            B2TreeNode rootNode = nodes[stack[0].nodeIndex];
+            ref B2TreeNode rootNode = ref nodes[stack[0].nodeIndex];
             Debug.Assert(rootNode.parent == B2_NULL_INDEX);
             Debug.Assert(rootNode.child1 != B2_NULL_INDEX);
             Debug.Assert(rootNode.child2 != B2_NULL_INDEX);
 
-            B2TreeNode child1 = nodes[rootNode.child1];
-            B2TreeNode child2 = nodes[rootNode.child2];
+            ref B2TreeNode child1 = ref nodes[rootNode.child1];
+            ref B2TreeNode child2 = ref nodes[rootNode.child2];
 
             rootNode.aabb = b2AABB_Union(child1.aabb, child2.aabb);
             rootNode.height = (ushort)(1 + b2MaxUInt16(child1.height, child2.height));
@@ -1900,7 +1889,7 @@ namespace Box2D.NET
 
             int nodeIndex = tree.root;
             B2TreeNode[] nodes = tree.nodes;
-            B2TreeNode node = nodes[nodeIndex];
+            ref B2TreeNode node = ref nodes[nodeIndex];
 
             // These are the nodes that get sorted to rebuild the tree.
             // I'm using indices because the node pool may grow during the build.
@@ -1948,7 +1937,7 @@ namespace Box2D.NET
                         Debug.Assert(stackCount < B2_TREE_STACK_SIZE);
                     }
 
-                    node = nodes[nodeIndex];
+                    node = ref nodes[nodeIndex];
 
                     // Remove doomed node
                     b2FreeNode(tree, doomedNodeIndex);
@@ -1962,7 +1951,7 @@ namespace Box2D.NET
                 }
 
                 nodeIndex = stack[--stackCount];
-                node = nodes[nodeIndex];
+                node = ref nodes[nodeIndex];
             }
 
 #if B2_VALIDATE

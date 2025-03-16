@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A node in the dynamic tree. This is private data placed here for performance reasons.
-    public class B2TreeNode
+    public struct B2TreeNode
     {
         /// The node bounding box
         public B2AABB aabb; // 16
@@ -42,29 +42,5 @@ namespace Box2D.NET
 
         public ushort height; // 2
         public ushort flags; // 2
-
-        public void Clear()
-        {
-            aabb = new B2AABB(); // 16
-            categoryBits = 0; // 8
-            parent = 0;
-            next = 0;
-            child1 = 0; // 4
-            child2 = 0;
-            userData = 0;
-            height = 0; // 2
-            flags = 0; // 2
-        }
-
-        public void CopyFrom(B2TreeNode other)
-        {
-            aabb = other.aabb;
-            categoryBits = other.categoryBits;
-            parent = other.parent;
-            child1 = other.child1;
-            child2 = other.child2;
-            height = other.height;
-            flags = other.flags;
-        }
     }
 }
