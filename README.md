@@ -20,7 +20,7 @@
 
 ---
 
-[![demo](https://raw.githubusercontent.com/ikpil/ikpil/refs/heads/main/img/423227516-755634a3-bdb4-4118-8222-95ceb3856257.gif)](https://github.com/ikpil/Box2D.NET)
+[![demo](https://raw.githubusercontent.com/ikpil/ikpil/refs/heads/main/img/423227516-755634a3-bdb4-4118-8222-95ceb3856257.gif)](https://www.youtube.com/watch?v=_a1QxD4Al_w)
 
 ---
 
@@ -54,12 +54,12 @@ dotnet run --project src/Box2D.NET.Samples --framework net9.0 -c Release
 
 ## 🛠️ Integration
 
-There are a few ways to integrate [Box2D.NET](https://github.com/ikpil/DotRecast/tree/main/src/Box2D.NET) and [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) into your project.
+There are a few ways to integrate [Box2D.NET](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET) and [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) into your project.
 Source integration is the most popular and most flexible. Additionally, NuGet installation will also be supported in the future.
 
 ## 📚 Documentation & Links
 
-- DotRecast Links
+- Box2D.NET Links
     - [Box2D.NET/issues](https://github.com/ikpil/Box2D.NET/issues)
 
 - Official Links
