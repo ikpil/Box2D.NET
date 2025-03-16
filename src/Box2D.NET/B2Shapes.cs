@@ -27,11 +27,11 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return shape.capsule.radius;
+                    return shape.us.capsule.radius;
                 case B2ShapeType.b2_circleShape:
-                    return shape.circle.radius;
+                    return shape.us.circle.radius;
                 case B2ShapeType.b2_polygonShape:
-                    return shape.polygon.radius;
+                    return shape.us.polygon.radius;
                 default:
                     return 0.0f;
             }
@@ -98,23 +98,23 @@ namespace Box2D.NET
             switch (geometry)
             {
                 case B2Capsule capsule:
-                    shape.capsule = capsule.Clone();
+                    shape.us.capsule = capsule.Clone();
                     break;
 
                 case B2Circle circle:
-                    shape.circle = circle.Clone();
+                    shape.us.circle = circle.Clone();
                     break;
 
                 case B2Polygon polygon:
-                    shape.polygon = polygon.Clone();
+                    shape.us.polygon = polygon.Clone();
                     break;
 
                 case B2Segment segment:
-                    shape.segment = segment.Clone();
+                    shape.us.segment = segment.Clone();
                     break;
 
                 case B2ChainSegment chainSegment:
-                    shape.chainSegment = chainSegment.Clone();
+                    shape.us.chainSegment = chainSegment.Clone();
                     break;
 
                 default:
@@ -247,7 +247,7 @@ namespace Box2D.NET
             return b2CreateShape(bodyId, ref def, ref segment, B2ShapeType.b2_segmentShape);
         }
 
-// Destroy a shape on a body. This doesn't need to be called when destroying a body.
+        // Destroy a shape on a body. This doesn't need to be called when destroying a body.
         public static void b2DestroyShapeInternal(B2World world, B2Shape shape, B2Body body, bool wakeBodies)
         {
             int shapeId = shape.id;
@@ -618,15 +618,15 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2ComputeCapsuleAABB(shape.capsule, xf);
+                    return b2ComputeCapsuleAABB(shape.us.capsule, xf);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleAABB(shape.circle, xf);
+                    return b2ComputeCircleAABB(shape.us.circle, xf);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonAABB(shape.polygon, xf);
+                    return b2ComputePolygonAABB(shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
-                    return b2ComputeSegmentAABB(shape.segment, xf);
+                    return b2ComputeSegmentAABB(shape.us.segment, xf);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2ComputeSegmentAABB(shape.chainSegment.segment, xf);
+                    return b2ComputeSegmentAABB(shape.us.chainSegment.segment, xf);
                 default:
                 {
                     Debug.Assert(false);
@@ -641,35 +641,35 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2Lerp(shape.capsule.center1, shape.capsule.center2, 0.5f);
+                    return b2Lerp(shape.us.capsule.center1, shape.us.capsule.center2, 0.5f);
                 case B2ShapeType.b2_circleShape:
-                    return shape.circle.center;
+                    return shape.us.circle.center;
                 case B2ShapeType.b2_polygonShape:
-                    return shape.polygon.centroid;
+                    return shape.us.polygon.centroid;
                 case B2ShapeType.b2_segmentShape:
-                    return b2Lerp(shape.segment.point1, shape.segment.point2, 0.5f);
+                    return b2Lerp(shape.us.segment.point1, shape.us.segment.point2, 0.5f);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2Lerp(shape.chainSegment.segment.point1, shape.chainSegment.segment.point2, 0.5f);
+                    return b2Lerp(shape.us.chainSegment.segment.point1, shape.us.chainSegment.segment.point2, 0.5f);
                 default:
                     return b2Vec2_zero;
             }
         }
 
-// todo_erin maybe compute this on shape creation
+        // todo_erin maybe compute this on shape creation
         public static float b2GetShapePerimeter(B2Shape shape)
         {
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return 2.0f * b2Length(b2Sub(shape.capsule.center1, shape.capsule.center2)) +
-                           2.0f * B2_PI * shape.capsule.radius;
+                    return 2.0f * b2Length(b2Sub(shape.us.capsule.center1, shape.us.capsule.center2)) +
+                           2.0f * B2_PI * shape.us.capsule.radius;
                 case B2ShapeType.b2_circleShape:
-                    return 2.0f * B2_PI * shape.circle.radius;
+                    return 2.0f * B2_PI * shape.us.circle.radius;
                 case B2ShapeType.b2_polygonShape:
                 {
-                    ReadOnlySpan<B2Vec2> points = shape.polygon.vertices.AsSpan();
-                    int count = shape.polygon.count;
-                    float perimeter = 2.0f * B2_PI * shape.polygon.radius;
+                    ReadOnlySpan<B2Vec2> points = shape.us.polygon.vertices.AsSpan();
+                    int count = shape.us.polygon.count;
+                    float perimeter = 2.0f * B2_PI * shape.us.polygon.radius;
                     Debug.Assert(count > 0);
                     B2Vec2 prev = points[count - 1];
                     for (int i = 0; i < count; ++i)
@@ -682,33 +682,33 @@ namespace Box2D.NET
                     return perimeter;
                 }
                 case B2ShapeType.b2_segmentShape:
-                    return 2.0f * b2Length(b2Sub(shape.segment.point1, shape.segment.point2));
+                    return 2.0f * b2Length(b2Sub(shape.us.segment.point1, shape.us.segment.point2));
                 case B2ShapeType.b2_chainSegmentShape:
-                    return 2.0f * b2Length(b2Sub(shape.chainSegment.segment.point1, shape.chainSegment.segment.point2));
+                    return 2.0f * b2Length(b2Sub(shape.us.chainSegment.segment.point1, shape.us.chainSegment.segment.point2));
                 default:
                     return 0.0f;
             }
         }
 
-// This projects the shape perimeter onto an infinite line
+        // This projects the shape perimeter onto an infinite line
         public static float b2GetShapeProjectedPerimeter(B2Shape shape, B2Vec2 line)
         {
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
                 {
-                    B2Vec2 axis = b2Sub(shape.capsule.center2, shape.capsule.center1);
+                    B2Vec2 axis = b2Sub(shape.us.capsule.center2, shape.us.capsule.center1);
                     float projectedLength = b2AbsFloat(b2Dot(axis, line));
-                    return projectedLength + 2.0f * shape.capsule.radius;
+                    return projectedLength + 2.0f * shape.us.capsule.radius;
                 }
 
                 case B2ShapeType.b2_circleShape:
-                    return 2.0f * shape.circle.radius;
+                    return 2.0f * shape.us.circle.radius;
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    ReadOnlySpan<B2Vec2> points = shape.polygon.vertices.AsSpan();
-                    int count = shape.polygon.count;
+                    ReadOnlySpan<B2Vec2> points = shape.us.polygon.vertices.AsSpan();
+                    int count = shape.us.polygon.count;
                     Debug.Assert(count > 0);
                     float value = b2Dot(points[0], line);
                     float lower = value;
@@ -720,20 +720,20 @@ namespace Box2D.NET
                         upper = b2MaxFloat(upper, value);
                     }
 
-                    return (upper - lower) + 2.0f * shape.polygon.radius;
+                    return (upper - lower) + 2.0f * shape.us.polygon.radius;
                 }
 
                 case B2ShapeType.b2_segmentShape:
                 {
-                    float value1 = b2Dot(shape.segment.point1, line);
-                    float value2 = b2Dot(shape.segment.point2, line);
+                    float value1 = b2Dot(shape.us.segment.point1, line);
+                    float value2 = b2Dot(shape.us.segment.point2, line);
                     return b2AbsFloat(value2 - value1);
                 }
 
                 case B2ShapeType.b2_chainSegmentShape:
                 {
-                    float value1 = b2Dot(shape.chainSegment.segment.point1, line);
-                    float value2 = b2Dot(shape.chainSegment.segment.point2, line);
+                    float value1 = b2Dot(shape.us.chainSegment.segment.point1, line);
+                    float value2 = b2Dot(shape.us.chainSegment.segment.point2, line);
                     return b2AbsFloat(value2 - value1);
                 }
 
@@ -747,11 +747,11 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2ComputeCapsuleMass(shape.capsule, shape.density);
+                    return b2ComputeCapsuleMass(shape.us.capsule, shape.density);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleMass(shape.circle, shape.density);
+                    return b2ComputeCircleMass(shape.us.circle, shape.density);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonMass(shape.polygon, shape.density);
+                    return b2ComputePolygonMass(shape.us.polygon, shape.density);
                 default:
                     return new B2MassData();
             }
@@ -765,25 +765,25 @@ namespace Box2D.NET
             {
                 case B2ShapeType.b2_capsuleShape:
                 {
-                    float radius = shape.capsule.radius;
+                    float radius = shape.us.capsule.radius;
                     extent.minExtent = radius;
-                    B2Vec2 c1 = b2Sub(shape.capsule.center1, localCenter);
-                    B2Vec2 c2 = b2Sub(shape.capsule.center2, localCenter);
+                    B2Vec2 c1 = b2Sub(shape.us.capsule.center1, localCenter);
+                    B2Vec2 c2 = b2Sub(shape.us.capsule.center2, localCenter);
                     extent.maxExtent = MathF.Sqrt(b2MaxFloat(b2LengthSquared(c1), b2LengthSquared(c2))) + radius;
                 }
                     break;
 
                 case B2ShapeType.b2_circleShape:
                 {
-                    float radius = shape.circle.radius;
+                    float radius = shape.us.circle.radius;
                     extent.minExtent = radius;
-                    extent.maxExtent = b2Length(b2Sub(shape.circle.center, localCenter)) + radius;
+                    extent.maxExtent = b2Length(b2Sub(shape.us.circle.center, localCenter)) + radius;
                 }
                     break;
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Polygon poly = shape.polygon;
+                    B2Polygon poly = shape.us.polygon;
                     float minExtent = B2_HUGE;
                     float maxExtentSqr = 0.0f;
                     int count = poly.count;
@@ -805,8 +805,8 @@ namespace Box2D.NET
                 case B2ShapeType.b2_segmentShape:
                 {
                     extent.minExtent = 0.0f;
-                    B2Vec2 c1 = b2Sub(shape.segment.point1, localCenter);
-                    B2Vec2 c2 = b2Sub(shape.segment.point2, localCenter);
+                    B2Vec2 c1 = b2Sub(shape.us.segment.point1, localCenter);
+                    B2Vec2 c2 = b2Sub(shape.us.segment.point2, localCenter);
                     extent.maxExtent = MathF.Sqrt(b2MaxFloat(b2LengthSquared(c1), b2LengthSquared(c2)));
                 }
                     break;
@@ -814,8 +814,8 @@ namespace Box2D.NET
                 case B2ShapeType.b2_chainSegmentShape:
                 {
                     extent.minExtent = 0.0f;
-                    B2Vec2 c1 = b2Sub(shape.chainSegment.segment.point1, localCenter);
-                    B2Vec2 c2 = b2Sub(shape.chainSegment.segment.point2, localCenter);
+                    B2Vec2 c1 = b2Sub(shape.us.chainSegment.segment.point1, localCenter);
+                    B2Vec2 c2 = b2Sub(shape.us.chainSegment.segment.point2, localCenter);
                     extent.maxExtent = MathF.Sqrt(b2MaxFloat(b2LengthSquared(c1), b2LengthSquared(c2)));
                 }
                     break;
@@ -837,19 +837,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(ref localInput, shape.capsule);
+                    output = b2RayCastCapsule(ref localInput, shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, shape.circle);
+                    output = b2RayCastCircle(ref localInput, shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, shape.polygon);
+                    output = b2RayCastPolygon(ref localInput, shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.segment, false);
+                    output = b2RayCastSegment(ref localInput, shape.us.segment, false);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, shape.us.chainSegment.segment, true);
                     break;
                 default:
                     return output;
@@ -875,19 +875,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2ShapeCastCapsule(ref localInput, shape.capsule);
+                    output = b2ShapeCastCapsule(ref localInput, shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(ref localInput, shape.circle);
+                    output = b2ShapeCastCircle(ref localInput, shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(ref localInput, shape.polygon);
+                    output = b2ShapeCastPolygon(ref localInput, shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(ref localInput, shape.segment);
+                    output = b2ShapeCastSegment(ref localInput, shape.us.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2ShapeCastSegment(ref localInput, shape.chainSegment.segment);
+                    output = b2ShapeCastSegment(ref localInput, shape.us.chainSegment.segment);
                     break;
                 default:
                     return output;
@@ -924,15 +924,15 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2MakeProxy(shape.capsule.center1, shape.capsule.center2, 2, shape.capsule.radius);
+                    return b2MakeProxy(shape.us.capsule.center1, shape.us.capsule.center2, 2, shape.us.capsule.radius);
                 case B2ShapeType.b2_circleShape:
-                    return b2MakeProxy(shape.circle.center, 1, shape.circle.radius);
+                    return b2MakeProxy(shape.us.circle.center, 1, shape.us.circle.radius);
                 case B2ShapeType.b2_polygonShape:
-                    return b2MakeProxy(shape.polygon.vertices.AsSpan(), shape.polygon.count, shape.polygon.radius);
+                    return b2MakeProxy(shape.us.polygon.vertices.AsSpan(), shape.us.polygon.count, shape.us.polygon.radius);
                 case B2ShapeType.b2_segmentShape:
-                    return b2MakeProxy(shape.segment.point1, shape.segment.point2, 2, 0.0f);
+                    return b2MakeProxy(shape.us.segment.point1, shape.us.segment.point2, 2, 0.0f);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2MakeProxy(shape.chainSegment.segment.point1, shape.chainSegment.segment.point2, 2, 0.0f);
+                    return b2MakeProxy(shape.us.chainSegment.segment.point1, shape.us.chainSegment.segment.point2, 2, 0.0f);
                 default:
                 {
                     Debug.Assert(false);
@@ -987,13 +987,13 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2PointInCapsule(localPoint, shape.capsule);
+                    return b2PointInCapsule(localPoint, shape.us.capsule);
 
                 case B2ShapeType.b2_circleShape:
-                    return b2PointInCircle(localPoint, shape.circle);
+                    return b2PointInCircle(localPoint, shape.us.circle);
 
                 case B2ShapeType.b2_polygonShape:
-                    return b2PointInPolygon(localPoint, shape.polygon);
+                    return b2PointInPolygon(localPoint, shape.us.polygon);
 
                 default:
                     return false;
@@ -1018,23 +1018,23 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(ref localInput, shape.capsule);
+                    output = b2RayCastCapsule(ref localInput, shape.us.capsule);
                     break;
 
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, shape.circle);
+                    output = b2RayCastCircle(ref localInput, shape.us.circle);
                     break;
 
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.segment, false);
+                    output = b2RayCastSegment(ref localInput, shape.us.segment, false);
                     break;
 
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, shape.polygon);
+                    output = b2RayCastPolygon(ref localInput, shape.us.polygon);
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, shape.us.chainSegment.segment, true);
                     break;
 
                 default:
@@ -1303,7 +1303,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             Debug.Assert(shape.type == B2ShapeType.b2_circleShape);
-            return shape.circle;
+            return shape.us.circle;
         }
 
         public static B2Segment b2Shape_GetSegment(B2ShapeId shapeId)
@@ -1311,7 +1311,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             Debug.Assert(shape.type == B2ShapeType.b2_segmentShape);
-            return shape.segment;
+            return shape.us.segment;
         }
 
         public static B2ChainSegment b2Shape_GetChainSegment(B2ShapeId shapeId)
@@ -1319,7 +1319,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             Debug.Assert(shape.type == B2ShapeType.b2_chainSegmentShape);
-            return shape.chainSegment;
+            return shape.us.chainSegment;
         }
 
         public static B2Capsule b2Shape_GetCapsule(B2ShapeId shapeId)
@@ -1327,7 +1327,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             Debug.Assert(shape.type == B2ShapeType.b2_capsuleShape);
-            return shape.capsule;
+            return shape.us.capsule;
         }
 
         public static B2Polygon b2Shape_GetPolygon(B2ShapeId shapeId)
@@ -1335,7 +1335,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             Debug.Assert(shape.type == B2ShapeType.b2_polygonShape);
-            return shape.polygon;
+            return shape.us.polygon;
         }
 
         public static void b2Shape_SetCircle(B2ShapeId shapeId, B2Circle circle)
@@ -1347,7 +1347,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.circle = new B2Circle(circle.center, circle.radius);
+            shape.us.circle = new B2Circle(circle.center, circle.radius);
             shape.type = B2ShapeType.b2_circleShape;
 
             // need to wake bodies so they can react to the shape change
@@ -1365,7 +1365,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.capsule = new B2Capsule(capsule.center1, capsule.center2, capsule.radius);
+            shape.us.capsule = new B2Capsule(capsule.center1, capsule.center2, capsule.radius);
             shape.type = B2ShapeType.b2_capsuleShape;
 
             // need to wake bodies so they can react to the shape change
@@ -1383,7 +1383,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.segment = new B2Segment(segment.point1, segment.point2);
+            shape.us.segment = new B2Segment(segment.point1, segment.point2);
             shape.type = B2ShapeType.b2_segmentShape;
 
             // need to wake bodies so they can react to the shape change
@@ -1401,7 +1401,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.polygon = polygon.Clone();
+            shape.us.polygon = polygon.Clone();
             shape.type = B2ShapeType.b2_polygonShape;
 
             // need to wake bodies so they can react to the shape change
@@ -1416,7 +1416,7 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             if (shape.type == B2ShapeType.b2_chainSegmentShape)
             {
-                int chainId = shape.chainSegment.chainId;
+                int chainId = shape.us.chainSegment.chainId;
                 if (chainId != B2_NULL_INDEX)
                 {
                     B2ChainShape chain = b2Array_Get(ref world.chainShapes, chainId);

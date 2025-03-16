@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+
 namespace Box2D.NET
 {
     public class B2Shape
@@ -29,14 +30,7 @@ namespace Box2D.NET
         public uint customColor;
 
         // TODO: @ikpil, check union
-        // union
-        // {
-        public B2Capsule capsule;
-        public B2Circle circle;
-        public B2Polygon polygon;
-        public B2Segment segment;
-        public B2ChainSegment chainSegment;
-        //};
+        public B2ShapeUnion us;
 
         public ushort generation;
         public bool enableContactEvents;
