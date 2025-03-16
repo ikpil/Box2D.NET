@@ -9,16 +9,20 @@ namespace Box2D.NET
     public class B2ArenaAllocator
     {
         private readonly object _lock;
-        private int _count;
-        private IB2ArenaAllocatable[] _allocators;
 
-        public B2ArenaAllocator()
+        private int _capacity;
+        private IB2ArenaAllocatable[] _allocators;
+        private int _allocatorCount;
+
+        public B2ArenaAllocator(int capacity)
         {
             _lock = new object();
+            _capacity = capacity;
             _allocators = Array.Empty<IB2ArenaAllocatable>();
+            _allocatorCount = 0;
         }
 
-        public B2ArenaAllocatorImpl<T> Touch<T>() where T : new()
+        public B2ArenaAllocatorImpl<T> GetOrCreateImpl<T>() where T : new()
         {
             var index = B2ArenaAllocatorIndexer.Index<T>();
             if (_allocators.Length <= index || null == _allocators[index])
@@ -40,8 +44,8 @@ namespace Box2D.NET
                     // new 
                     if (null == _allocators[index])
                     {
-                        _allocators[index] = B2ArenaAllocators.b2CreateArenaAllocator<T>(16);
-                        _count++;
+                        _allocators[index] = B2ArenaAllocators.b2CreateArenaAllocator<T>(_capacity);
+                        _allocatorCount++;
                     }
                 }
             }
@@ -51,7 +55,7 @@ namespace Box2D.NET
 
         public Span<IB2ArenaAllocatable> AsSpan()
         {
-            return new Span<IB2ArenaAllocatable>(_allocators, 0, _count);
+            return new Span<IB2ArenaAllocatable>(_allocators, 0, _allocatorCount);
         }
     }
 }

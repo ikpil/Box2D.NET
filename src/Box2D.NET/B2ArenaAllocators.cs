@@ -13,7 +13,7 @@ namespace Box2D.NET
     {
         public static B2ArenaAllocator b2CreateArenaAllocator(int capacity)
         {
-            var allocator = new B2ArenaAllocator();
+            var allocator = new B2ArenaAllocator(capacity);
             return allocator;
         }
 
@@ -38,7 +38,7 @@ namespace Box2D.NET
 
         public static ArraySegment<T> b2AllocateArenaItem<T>(B2ArenaAllocator allocator, int size, string name) where T : new()
         {
-            var alloc = allocator.Touch<T>();
+            var alloc = allocator.GetOrCreateImpl<T>();
             // ensure allocation is 32 byte aligned to support 256-bit SIMD
             int size32 = ((size - 1) | 0x1F) + 1;
 
@@ -74,7 +74,7 @@ namespace Box2D.NET
 
         public static void b2FreeArenaItem<T>(B2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
         {
-            var alloc = allocator.Touch<T>();
+            var alloc = allocator.GetOrCreateImpl<T>();
             int entryCount = alloc.entries.count;
             Debug.Assert(entryCount > 0);
             B2ArenaEntry<T> entry = alloc.entries.data[entryCount - 1];
