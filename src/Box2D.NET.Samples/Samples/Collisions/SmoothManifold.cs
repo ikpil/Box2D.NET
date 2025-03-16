@@ -286,7 +286,7 @@ public class SmoothManifold : Sample
             for (int i = 0; i < m_count; ++i)
             {
                 B2ChainSegment segment = m_segments[i];
-                B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, circle, transform2);
+                B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, ref circle, transform2);
                 DrawManifold(ref m);
             }
         }

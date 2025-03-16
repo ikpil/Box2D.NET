@@ -349,7 +349,7 @@ public class OverlapWorld : Sample
 
         if (m_shapeType == e_circleShape)
         {
-            b2World_OverlapCircle(m_worldId, m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            b2World_OverlapCircle(m_worldId, ref m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
             m_context.draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)

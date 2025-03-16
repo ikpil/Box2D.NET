@@ -830,7 +830,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_circleShape:
                 {
-                    B2Circle circle = shape.us.circle;
+                    ref readonly B2Circle circle = ref shape.us.circle;
                     xf.p = b2TransformPoint(ref xf, circle.center);
                     draw.DrawSolidCircle(ref xf, circle.radius, color, draw.context);
                 }
@@ -2094,10 +2094,10 @@ namespace Box2D.NET
             b2OverlapResultFcn fcn, object context)
         {
             B2Circle circle = new B2Circle(point, 0.0f);
-            return b2World_OverlapCircle(worldId, circle, transform, filter, fcn, context);
+            return b2World_OverlapCircle(worldId, ref circle, transform, filter, fcn, context);
         }
 
-        public static B2TreeStats b2World_OverlapCircle(B2WorldId worldId, B2Circle circle, B2Transform transform, B2QueryFilter filter,
+        public static B2TreeStats b2World_OverlapCircle(B2WorldId worldId, ref B2Circle circle, B2Transform transform, B2QueryFilter filter,
             b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2112,7 +2112,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(transform.p));
             Debug.Assert(b2IsValidRotation(transform.q));
 
-            B2AABB aabb = b2ComputeCircleAABB(circle, transform);
+            B2AABB aabb = b2ComputeCircleAABB(ref circle, transform);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, b2MakeProxy(circle.center, 1, circle.radius), transform, context
             );
@@ -2346,7 +2346,7 @@ namespace Box2D.NET
             return input.maxFraction;
         }
 
-        public static B2TreeStats b2World_CastCircle(B2WorldId worldId, B2Circle circle, B2Transform originTransform, B2Vec2 translation,
+        public static B2TreeStats b2World_CastCircle(B2WorldId worldId, ref B2Circle circle, B2Transform originTransform, B2Vec2 translation,
             B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();

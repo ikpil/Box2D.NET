@@ -224,7 +224,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideCircles(circle1, transform1, circle2, transform2);
+            B2Manifold m = b2CollideCircles(ref circle1, transform1, ref circle2, transform2);
 
             m_context.draw.DrawSolidCircle(ref transform1, circle1.center, circle1.radius, color1);
             m_context.draw.DrawSolidCircle(ref transform2, circle2.center, circle2.radius, color2);
@@ -242,7 +242,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideCapsuleAndCircle(ref capsule, transform1, circle, transform2);
+            B2Manifold m = b2CollideCapsuleAndCircle(ref capsule, transform1, ref circle, transform2);
 
             B2Vec2 v1 = b2TransformPoint(ref transform1, capsule.center1);
             B2Vec2 v2 = b2TransformPoint(ref transform1, capsule.center2);
@@ -263,7 +263,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideSegmentAndCircle(segment, transform1, circle, transform2);
+            B2Manifold m = b2CollideSegmentAndCircle(segment, transform1, ref circle, transform2);
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
@@ -285,7 +285,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollidePolygonAndCircle(ref box, transform1, circle, transform2);
+            B2Manifold m = b2CollidePolygonAndCircle(ref box, transform1, ref circle, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box.vertices.AsSpan(), box.count, m_round, color1);
             m_context.draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
@@ -545,7 +545,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, circle, transform2);
+            B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, ref circle, transform2);
 
             B2Vec2 g1 = b2TransformPoint(ref transform1, segment.ghost1);
             B2Vec2 g2 = b2TransformPoint(ref transform1, segment.ghost2);

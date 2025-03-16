@@ -24,7 +24,7 @@ public class B2ShapeTest
     public void ShapeMassTest()
     {
         {
-            B2MassData md = b2ComputeCircleMass(circle, 1.0f);
+            B2MassData md = b2ComputeCircleMass(ref circle, 1.0f);
             Assert.That(md.mass - B2_PI, Is.LessThan(FLT_EPSILON));
             Assert.That(md.center.X, Is.EqualTo(1.0f));
             Assert.That(md.center.Y, Is.EqualTo(0.0f));
@@ -81,7 +81,7 @@ public class B2ShapeTest
     public void ShapeAABBTest()
     {
         {
-            B2AABB b = b2ComputeCircleAABB(circle, b2Transform_identity);
+            B2AABB b = b2ComputeCircleAABB(ref circle, b2Transform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 2.0f, Is.LessThan(FLT_EPSILON));
@@ -113,9 +113,9 @@ public class B2ShapeTest
 
         {
             bool hit;
-            hit = b2PointInCircle(p1, circle);
+            hit = b2PointInCircle(p1, ref circle);
             Assert.That(hit, Is.EqualTo(true));
-            hit = b2PointInCircle(p2, circle);
+            hit = b2PointInCircle(p2, ref circle);
             Assert.That(hit, Is.EqualTo(false));
         }
 
@@ -134,7 +134,7 @@ public class B2ShapeTest
         B2RayCastInput input = new B2RayCastInput(new B2Vec2(-4.0f, 0.0f), new B2Vec2(8.0f, 0.0f), 1.0f);
 
         {
-            B2CastOutput output = b2RayCastCircle(ref input, circle);
+            B2CastOutput output = b2RayCastCircle(ref input, ref circle);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
