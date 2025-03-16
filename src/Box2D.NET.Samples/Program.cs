@@ -10,8 +10,6 @@ using Box2D.NET.Samples;
 
 public static class Program
 {
-    public const int IMGUI_DISABLE_OBSOLETE_FUNCTIONS = 1; // todo: @ikpil check!?
-
     private static void InitializeLogger()
     {
         var format = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj} [{ThreadName}:{ThreadId}]{NewLine}{Exception}";

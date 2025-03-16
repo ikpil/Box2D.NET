@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
@@ -343,12 +344,12 @@ public class SampleApp
 
     public byte[] AllocFcn(uint size, int alignment)
     {
-//         // Allocation must be a multiple of alignment or risk a seg fault
-//         // https://en.cppreference.com/w/c/memory/aligned_alloc
-//         Debug.Assert(IsPowerOfTwo(alignment));
-//         size_t sizeAligned = ((size - 1) | (alignment - 1)) + 1;
-//         Debug.Assert((sizeAligned & (alignment - 1)) == 0);
-//
+         // Allocation must be a multiple of alignment or risk a seg fault
+         // https://en.cppreference.com/w/c/memory/aligned_alloc
+         Debug.Assert(IsPowerOfTwo(alignment));
+         long sizeAligned = ((size - 1) | (uint)(alignment - 1)) + 1;
+         Debug.Assert((sizeAligned & (alignment - 1)) == 0);
+
 // #if defined( _WIN64 ) || defined( _WIN32 )
 //         void* ptr = _aligned_malloc( sizeAligned, alignment );
 // #else
