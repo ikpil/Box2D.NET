@@ -36,17 +36,24 @@ namespace Box2D.NET
     public static class B2Solvers
     {
         // TODO: @ikpil. check SIMD
-// #if BOX2D_ENABLE_SIMD
-// #if B2_SIMD_WIDTH == 8
-//     public const int B2_SIMD_SHIFT = 3;
-// #elif B2_SIMD_WIDTH == 4
-//     public const int B2_SIMD_SHIFT = 2;
-// #else
-//     public const int B2_SIMD_SHIFT = 0;
-// #endif
-// #else
-        public const int B2_SIMD_SHIFT = 0;
-//#endif
+        public static readonly int B2_SIMD_SHIFT = b2SIMDShift();
+
+        public static int b2SIMDShift()
+        {
+            if (8 == B2_SIMD_WIDTH)
+            {
+                return 3;
+            }
+            else if (4 == B2_SIMD_WIDTH)
+            {
+                return 2;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
 
         public static B2Softness b2MakeSoft(float hertz, float zeta, float h)
         {
@@ -551,8 +558,8 @@ namespace Box2D.NET
             Debug.Assert(endIndex <= world.bodyMoveEvents.count);
             B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 
-           ref B2BitSet enlargedSimBitSet = ref world.taskContexts.data[threadIndex].enlargedSimBitSet;
-           ref B2BitSet awakeIslandBitSet = ref world.taskContexts.data[threadIndex].awakeIslandBitSet;
+            ref B2BitSet enlargedSimBitSet = ref world.taskContexts.data[threadIndex].enlargedSimBitSet;
+            ref B2BitSet awakeIslandBitSet = ref world.taskContexts.data[threadIndex].awakeIslandBitSet;
             B2TaskContext taskContext = world.taskContexts.data[threadIndex];
 
             bool enableContinuous = world.enableContinuous;
