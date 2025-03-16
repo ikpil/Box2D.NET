@@ -6,7 +6,7 @@ using Box2D.NET.Memory;
 
 namespace Box2D.NET
 {
-    public class B2ContactConstraint
+    public struct B2ContactConstraint
     {
         public int indexA;
         public int indexB;

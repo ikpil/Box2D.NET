@@ -23,7 +23,8 @@ namespace Box2D.NET
             B2World world = context.world;
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
-            ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
+            
             int contactCount = color.contactSims.count;
             B2ContactSim[] contacts = color.contactSims.data;
             B2BodyState[] awakeStates = context.states;
@@ -60,7 +61,7 @@ namespace Box2D.NET
                 Debug.Assert(indexB == validIndexB);
 #endif
 
-                B2ContactConstraint constraint = constraints[i];
+                ref B2ContactConstraint constraint = ref constraints[i];
                 constraint.indexA = indexA;
                 constraint.indexB = indexB;
                 constraint.normal = manifold.normal;
@@ -158,7 +159,7 @@ namespace Box2D.NET
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
-            ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -169,7 +170,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < contactCount; ++i)
             {
-                B2ContactConstraint constraint = constraints[i];
+                ref B2ContactConstraint constraint = ref constraints[i];
 
                 int indexA = constraint.indexA;
                 int indexB = constraint.indexB;
@@ -225,7 +226,7 @@ namespace Box2D.NET
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
-            ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -239,7 +240,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < contactCount; ++i)
             {
-                B2ContactConstraint constraint = constraints[i];
+                ref B2ContactConstraint constraint = ref constraints[i];
                 float mA = constraint.invMassA;
                 float iA = constraint.invIA;
                 float mB = constraint.invMassB;
@@ -380,7 +381,7 @@ namespace Box2D.NET
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
-            ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -393,7 +394,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < contactCount; ++i)
             {
-                B2ContactConstraint constraint = constraints[i];
+                ref B2ContactConstraint constraint = ref constraints[i];
 
                 float restitution = constraint.restitution;
                 if (restitution == 0.0f)
@@ -476,7 +477,7 @@ namespace Box2D.NET
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
-            ArraySegment<B2ContactConstraint> constraints = color.overflowConstraints;
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
             B2ContactSim[] contacts = color.contactSims.data;
             int contactCount = color.contactSims.count;
 
@@ -484,7 +485,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < contactCount; ++i)
             {
-                B2ContactConstraint constraint = constraints[i];
+                ref B2ContactConstraint constraint = ref constraints[i];
                 B2ContactSim contact = contacts[i];
                 ref B2Manifold manifold = ref contact.manifold;
                 int pointCount = manifold.pointCount;
