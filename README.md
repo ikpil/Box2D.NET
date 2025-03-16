@@ -2,7 +2,7 @@
 
 # Box2D.NET
 
-*Box2D.NET is C# Box2D, a port of [Box2D](https://github.com/erincatto/box2d) to the C# language.*  
+*Box2D.NET is a C# port of the [Box2D](https://github.com/erincatto/box2d) physics engine.*  
 *If you'd like to support the project, we'd appreciate starring(⭐) our repos on Github for more visibility.*
 
 ---
@@ -24,7 +24,12 @@
 
 ---
 
-## 🚀 Features
+## ✨ Features
+
+- 🌿 Purity - Fully implemented in pure C#.
+- 💻 Compatibility - Ensuring seamless integration with the .NET platform and Unity3D.
+- 🌍 Cross-Platform Support - Easily integrates with all major platforms, including Linux, Windows, macOS
+
 
 Box2D.NET is divided into multiple modules, each contained in its own folder:
 
@@ -35,7 +40,7 @@ Box2D.NET is divided into multiple modules, each contained in its own folder:
   - [Box2D.NET.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Test) : Unit tests for Box2D.NET.
   - [Box2D.NET.Samples.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Samples.Test) : Unit tests for Box2D.NET.Samples
 
-## ⚡ Getting Started
+## 🚀 Getting Started
 
 - To verify the run for all modules, run [Box2D.NET.Samples](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Samples/Box2D.NET.Samples.csproj)
     - on the Windows platform, you need to install the redistributable package
