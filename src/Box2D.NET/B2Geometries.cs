@@ -264,7 +264,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a capsule
-        public static B2MassData b2ComputeCapsuleMass(B2Capsule shape, float density)
+        public static B2MassData b2ComputeCapsuleMass(ref B2Capsule shape, float density)
         {
             float radius = shape.radius;
             float rr = radius * radius;
@@ -347,7 +347,7 @@ namespace Box2D.NET
                 // capsule.center1 = shape.vertices[0];
                 // capsule.center2 = shape.vertices[1];
                 // capsule.radius = shape.radius;
-                return b2ComputeCapsuleMass(capsule, density);
+                return b2ComputeCapsuleMass(ref capsule, density);
             }
 
             Span<B2Vec2> vertices = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
@@ -441,7 +441,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed capsule
-        public static B2AABB b2ComputeCapsuleAABB(B2Capsule shape, B2Transform xf)
+        public static B2AABB b2ComputeCapsuleAABB(ref B2Capsule shape, B2Transform xf)
         {
             B2Vec2 v1 = b2TransformPoint(ref xf, shape.center1);
             B2Vec2 v2 = b2TransformPoint(ref xf, shape.center2);
@@ -497,7 +497,7 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a capsule in local space
-        public static bool b2PointInCapsule(B2Vec2 point, B2Capsule shape)
+        public static bool b2PointInCapsule(B2Vec2 point, ref B2Capsule shape)
         {
             float rr = shape.radius * shape.radius;
             B2Vec2 p1 = shape.center1;
@@ -602,7 +602,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
-        public static B2CastOutput b2RayCastCapsule(ref B2RayCastInput input, B2Capsule shape)
+        public static B2CastOutput b2RayCastCapsule(ref B2RayCastInput input, ref B2Capsule shape)
         {
             Debug.Assert(b2IsValidRay(ref input));
 
@@ -922,7 +922,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCapsule(ref B2ShapeCastInput input, B2Capsule shape)
+        public static B2CastOutput b2ShapeCastCapsule(ref B2ShapeCastInput input, ref B2Capsule shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
