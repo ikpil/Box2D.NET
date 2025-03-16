@@ -110,10 +110,6 @@ public class SmoothManifold : Sample
         points[35] = new B2Vec2(-19.2605f, 14.54175f);
 
         m_segments = new B2ChainSegment[m_count];
-        for (int i = 0; i < m_segments.Length; ++i)
-        {
-            m_segments[i] = new B2ChainSegment();
-        }
 
         for (int i = 0; i < m_count; ++i)
         {
@@ -270,7 +266,7 @@ public class SmoothManifold : Sample
 
         for (int i = 0; i < m_count; ++i)
         {
-            B2ChainSegment segment = m_segments[i];
+            ref readonly B2ChainSegment segment = ref m_segments[i];
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
             m_context.draw.DrawSegment(p1, p2, color1);
@@ -285,8 +281,8 @@ public class SmoothManifold : Sample
 
             for (int i = 0; i < m_count; ++i)
             {
-                B2ChainSegment segment = m_segments[i];
-                B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, ref circle, transform2);
+                ref B2ChainSegment segment = ref m_segments[i];
+                B2Manifold m = b2CollideChainSegmentAndCircle(ref segment, transform1, ref circle, transform2);
                 DrawManifold(ref m);
             }
         }
@@ -298,9 +294,9 @@ public class SmoothManifold : Sample
 
             for (int i = 0; i < m_count; ++i)
             {
-                B2ChainSegment segment = m_segments[i];
+                ref B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, ref rox, transform2, ref cache);
+                B2Manifold m = b2CollideChainSegmentAndPolygon(ref segment, transform1, ref rox, transform2, ref cache);
                 DrawManifold(ref m);
             }
         }

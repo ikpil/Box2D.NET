@@ -545,7 +545,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, ref circle, transform2);
+            B2Manifold m = b2CollideChainSegmentAndCircle(ref segment, transform1, ref circle, transform2);
 
             B2Vec2 g1 = b2TransformPoint(ref transform1, segment.ghost1);
             B2Vec2 g2 = b2TransformPoint(ref transform1, segment.ghost2);
@@ -587,8 +587,8 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m1 = b2CollideChainSegmentAndPolygon(segment1, transform1, ref rox, transform2, ref m_smgroxCache1);
-            B2Manifold m2 = b2CollideChainSegmentAndPolygon(segment2, transform1, ref rox, transform2, ref m_smgroxCache2);
+            B2Manifold m1 = b2CollideChainSegmentAndPolygon(ref segment1, transform1, ref rox, transform2, ref m_smgroxCache1);
+            B2Manifold m2 = b2CollideChainSegmentAndPolygon(ref segment2, transform1, ref rox, transform2, ref m_smgroxCache2);
 
             {
                 B2Vec2 g2 = b2TransformPoint(ref transform1, segment1.ghost2);
@@ -642,8 +642,8 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m1 = b2CollideChainSegmentAndCapsule(segment1, transform1, ref capsule, transform2, ref m_smgcapCache1);
-            B2Manifold m2 = b2CollideChainSegmentAndCapsule(segment2, transform1, ref capsule, transform2, ref m_smgcapCache2);
+            B2Manifold m1 = b2CollideChainSegmentAndCapsule(ref segment1, transform1, ref capsule, transform2, ref m_smgcapCache1);
+            B2Manifold m2 = b2CollideChainSegmentAndCapsule(ref segment2, transform1, ref capsule, transform2, ref m_smgcapCache2);
 
             {
                 B2Vec2 g2 = b2TransformPoint(ref transform1, segment1.ghost2);
