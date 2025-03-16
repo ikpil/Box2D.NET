@@ -109,6 +109,9 @@ public class BenchmarkBarrel : Sample
         }
 
         m_shapeType = ShapeType.e_compoundShape;
+        
+        m_columnCount = m_context.sampleDebug ? 10 : e_maxColumns;
+        m_rowCount = m_context.sampleDebug ? 40 : e_maxRows;
 
         CreateScene();
     }
@@ -131,8 +134,6 @@ public class BenchmarkBarrel : Sample
             }
         }
 
-        m_columnCount = m_context.sampleDebug ? 10 : e_maxColumns;
-        m_rowCount = m_context.sampleDebug ? 40 : e_maxRows;
 
         if (m_shapeType == ShapeType.e_compoundShape)
         {
@@ -309,19 +310,35 @@ public class BenchmarkBarrel : Sample
     {
         base.UpdateUI();
         
-        float height = 80.0f;
+        float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
         ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
-        string[] shapeTypes = ["Circle", "Capsule", "Mix", "Compound", "Human"];
+        if (ImGui.SliderInt("rows", ref m_rowCount, 1, e_maxRows, "%d"))
+        {
+            changed = true;
+        }
 
+        if (ImGui.SliderInt("columns", ref m_columnCount, 1, e_maxColumns, "%d"))
+        {
+            changed = true;
+        }
+
+        string[] shapeTypes = ["Circle", "Capsule", "Mix", "Compound", "Human"];
         int shapeType = (int)m_shapeType;
-        changed = changed || ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length);
+        if (ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length))
+        {
+            changed = true;
+        }
+            
         m_shapeType = (ShapeType)shapeType;
 
-        changed = changed || ImGui.Button("Reset Scene");
+        if (ImGui.Button("Reset Scene"))
+        {
+            changed = true;
+        }
 
         if (changed)
         {
