@@ -477,7 +477,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed line segment
-        public static B2AABB b2ComputeSegmentAABB(B2Segment shape, B2Transform xf)
+        public static B2AABB b2ComputeSegmentAABB(ref B2Segment shape, B2Transform xf)
         {
             B2Vec2 v1 = b2TransformPoint(ref xf, shape.point1);
             B2Vec2 v2 = b2TransformPoint(ref xf, shape.point2);
@@ -738,7 +738,7 @@ namespace Box2D.NET
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
         // Ray vs line segment
-        public static B2CastOutput b2RayCastSegment(ref B2RayCastInput input, B2Segment shape, bool oneSided)
+        public static B2CastOutput b2RayCastSegment(ref B2RayCastInput input, ref B2Segment shape, bool oneSided)
         {
             if (oneSided)
             {
@@ -937,7 +937,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a line segment. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastSegment(ref B2ShapeCastInput input, B2Segment shape)
+        public static B2CastOutput b2ShapeCastSegment(ref B2ShapeCastInput input, ref B2Segment shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);

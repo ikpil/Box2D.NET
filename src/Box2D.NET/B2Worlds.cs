@@ -845,7 +845,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_segmentShape:
                 {
-                    B2Segment segment = shape.us.segment;
+                    ref readonly B2Segment segment = ref shape.us.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);
@@ -854,7 +854,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_chainSegmentShape:
                 {
-                    B2Segment segment = shape.us.chainSegment.segment;
+                    ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
                     draw.DrawSegment(p1, p2, color, draw.context);

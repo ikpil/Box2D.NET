@@ -97,7 +97,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputeSegmentAABB(segment, b2Transform_identity);
+            B2AABB b = b2ComputeSegmentAABB(ref segment, b2Transform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X, Is.LessThan(FLT_EPSILON));
@@ -150,7 +150,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastSegment(ref input, segment, true);
+            B2CastOutput output = b2RayCastSegment(ref input, ref segment, true);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));

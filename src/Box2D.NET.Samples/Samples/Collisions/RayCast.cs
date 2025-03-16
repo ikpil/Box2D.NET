@@ -324,7 +324,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastSegment(ref input, m_segment, false);
+            B2CastOutput localOutput = b2RayCastSegment(ref input, ref m_segment, false);
             if (localOutput.hit)
             {
                 output = localOutput;
