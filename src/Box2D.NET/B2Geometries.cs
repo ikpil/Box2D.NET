@@ -233,9 +233,9 @@ namespace Box2D.NET
         }
 
         /// Transform a polygon. This is useful for transferring a shape from one body to another.
-        public static B2Polygon b2TransformPolygon(B2Transform transform, B2Polygon polygon)
+        public static B2Polygon b2TransformPolygon(B2Transform transform, ref B2Polygon polygon)
         {
-            B2Polygon p = polygon.Clone();
+            B2Polygon p = polygon;
 
             for (int i = 0; i < p.count; ++i)
             {
@@ -307,7 +307,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a polygon
-        public static B2MassData b2ComputePolygonMass(B2Polygon shape, float density)
+        public static B2MassData b2ComputePolygonMass(ref B2Polygon shape, float density)
         {
             // Polygon mass, centroid, and inertia.
             // Let rho be the polygon density in mass per unit area.
@@ -455,7 +455,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed polygon
-        public static B2AABB b2ComputePolygonAABB(B2Polygon shape, B2Transform xf)
+        public static B2AABB b2ComputePolygonAABB(ref B2Polygon shape, B2Transform xf)
         {
             Debug.Assert(shape.count > 0);
             B2Vec2 lower = b2TransformPoint(ref xf, shape.vertices[0]);
@@ -525,7 +525,7 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a convex polygon in local space
-        public static bool b2PointInPolygon(B2Vec2 point, B2Polygon shape)
+        public static bool b2PointInPolygon(B2Vec2 point, ref B2Polygon shape)
         {
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, 0.0f);
@@ -820,7 +820,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
-        public static B2CastOutput b2RayCastPolygon(ref B2RayCastInput input, B2Polygon shape)
+        public static B2CastOutput b2RayCastPolygon(ref B2RayCastInput input, ref B2Polygon shape)
         {
             Debug.Assert(b2IsValidRay(ref input));
 
@@ -952,7 +952,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastPolygon(ref B2ShapeCastInput input, B2Polygon shape)
+        public static B2CastOutput b2ShapeCastPolygon(ref B2ShapeCastInput input, ref B2Polygon shape)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);

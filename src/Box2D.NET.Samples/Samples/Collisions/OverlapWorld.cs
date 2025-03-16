@@ -361,7 +361,7 @@ public class OverlapWorld : Sample
         }
         else if (m_shapeType == e_boxShape)
         {
-            b2World_OverlapPolygon(m_worldId, m_queryBox, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
+            b2World_OverlapPolygon(m_worldId, ref m_queryBox, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
             B2Vec2[] points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
             for (int i = 0; i < m_queryBox.count; ++i)
             {

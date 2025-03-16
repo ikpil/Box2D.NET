@@ -391,7 +391,7 @@ public class ContactEvent : Sample
                 case B2ShapeType.b2_polygonShape:
                 {
                     B2Polygon originalPolygon = b2Shape_GetPolygon(shapeId[0]);
-                    B2Polygon polygon = b2TransformPolygon(relativeTransform, originalPolygon);
+                    B2Polygon polygon = b2TransformPolygon(relativeTransform, ref originalPolygon);
 
                     b2CreatePolygonShape(m_playerId, ref shapeDef, ref polygon);
                 }

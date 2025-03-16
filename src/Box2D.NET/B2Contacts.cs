@@ -93,19 +93,19 @@ namespace Box2D.NET
         public static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCircle(shapeA.us.polygon, xfA, shapeB.us.circle, xfB);
+            return b2CollidePolygonAndCircle(ref shapeA.us.polygon, xfA, shapeB.us.circle, xfB);
         }
 
         public static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCapsule(shapeA.us.polygon, xfA, shapeB.us.capsule, xfB);
+            return b2CollidePolygonAndCapsule(ref shapeA.us.polygon, xfA, shapeB.us.capsule, xfB);
         }
 
         public static B2Manifold b2PolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygons(shapeA.us.polygon, xfA, shapeB.us.polygon, xfB);
+            return b2CollidePolygons(ref shapeA.us.polygon, xfA, ref shapeB.us.polygon, xfB);
         }
 
         public static B2Manifold b2SegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
@@ -123,7 +123,7 @@ namespace Box2D.NET
         public static B2Manifold b2SegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideSegmentAndPolygon(shapeA.us.segment, xfA, shapeB.us.polygon, xfB);
+            return b2CollideSegmentAndPolygon(shapeA.us.segment, xfA, ref shapeB.us.polygon, xfB);
         }
 
         public static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
@@ -139,7 +139,7 @@ namespace Box2D.NET
 
         public static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
-            return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, xfA, shapeB.us.polygon, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, xfA, ref shapeB.us.polygon, xfB, ref cache);
         }
 
         public static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)

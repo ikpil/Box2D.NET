@@ -145,7 +145,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a polygon and a circle
-        public static B2Manifold b2CollidePolygonAndCircle(B2Polygon polygonA, B2Transform xfA, B2Circle circleB, B2Transform xfB)
+        public static B2Manifold b2CollidePolygonAndCircle(ref B2Polygon polygonA, B2Transform xfA, B2Circle circleB, B2Transform xfB)
         {
             B2Manifold manifold = new B2Manifold();
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
@@ -542,29 +542,29 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a polygon and capsule
-        public static B2Manifold b2CollidePolygonAndCapsule(B2Polygon polygonA, B2Transform xfA, B2Capsule capsuleB, B2Transform xfB)
+        public static B2Manifold b2CollidePolygonAndCapsule(ref B2Polygon polygonA, B2Transform xfA, B2Capsule capsuleB, B2Transform xfB)
         {
             B2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollidePolygons(polygonA, xfA, polyB, xfB);
+            return b2CollidePolygons(ref polygonA, xfA, ref polyB, xfB);
         }
 
         // Polygon clipper used to compute contact points when there are potentially two contact points.
-        public static B2Manifold b2ClipPolygons(B2Polygon polyA, B2Polygon polyB, int edgeA, int edgeB, bool flip)
+        public static B2Manifold b2ClipPolygons(ref B2Polygon polyA, ref B2Polygon polyB, int edgeA, int edgeB, bool flip)
         {
             B2Manifold manifold = new B2Manifold();
 
             // reference polygon
-            B2Polygon poly1;
+            ref B2Polygon poly1 = ref polyA;
             int i11, i12;
 
             // incident polygon
-            B2Polygon poly2;
+            ref B2Polygon poly2 = ref polyB;
             int i21, i22;
 
             if (flip)
             {
-                poly1 = polyB;
-                poly2 = polyA;
+                poly1 = ref polyB;
+                poly2 = ref polyA;
                 i11 = edgeB;
                 i12 = edgeB + 1 < polyB.count ? edgeB + 1 : 0;
                 i21 = edgeA;
@@ -572,8 +572,8 @@ namespace Box2D.NET
             }
             else
             {
-                poly1 = polyA;
-                poly2 = polyB;
+                poly1 = ref polyA;
+                poly2 = ref polyB;
                 i11 = edgeA;
                 i12 = edgeA + 1 < polyA.count ? edgeA + 1 : 0;
                 i21 = edgeB;
@@ -687,7 +687,7 @@ namespace Box2D.NET
         }
 
         // Find the max separation between poly1 and poly2 using edge normals from poly1.
-        public static float b2FindMaxSeparation(ref int edgeIndex, B2Polygon poly1, B2Polygon poly2)
+        public static float b2FindMaxSeparation(ref int edgeIndex, ref B2Polygon poly1, B2Polygon poly2)
         {
             int count1 = poly1.count;
             int count2 = poly2.count;
@@ -743,7 +743,7 @@ namespace Box2D.NET
         // else
         //   clip edges
         // end
-        public static B2Manifold b2CollidePolygons(B2Polygon polygonA, B2Transform xfA, B2Polygon polygonB, B2Transform xfB)
+        public static B2Manifold b2CollidePolygons(ref B2Polygon polygonA, B2Transform xfA, ref B2Polygon polygonB, B2Transform xfB)
         {
             B2Vec2 origin = polygonA.vertices[0];
 
@@ -776,10 +776,10 @@ namespace Box2D.NET
             }
 
             int edgeA = 0;
-            float separationA = b2FindMaxSeparation(ref edgeA, localPolyA, localPolyB);
+            float separationA = b2FindMaxSeparation(ref edgeA, ref localPolyA, localPolyB);
 
             int edgeB = 0;
-            float separationB = b2FindMaxSeparation(ref edgeB, localPolyB, localPolyA);
+            float separationB = b2FindMaxSeparation(ref edgeB, ref localPolyB, localPolyA);
 
             float radius = localPolyA.radius + localPolyB.radius;
 
@@ -952,13 +952,13 @@ namespace Box2D.NET
                 else
                 {
                     // Edge region
-                    manifold = b2ClipPolygons(localPolyA, localPolyB, edgeA, edgeB, flip);
+                    manifold = b2ClipPolygons(ref localPolyA, ref localPolyB, edgeA, edgeB, flip);
                 }
             }
             else
             {
                 // Polygons overlap
-                manifold = b2ClipPolygons(localPolyA, localPolyB, edgeA, edgeB, flip);
+                manifold = b2ClipPolygons(ref localPolyA, ref localPolyB, edgeA, edgeB, flip);
             }
 
             // Convert manifold to world space
@@ -987,10 +987,10 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between an segment and a polygon
-        public static B2Manifold b2CollideSegmentAndPolygon(B2Segment segmentA, B2Transform xfA, B2Polygon polygonB, B2Transform xfB)
+        public static B2Manifold b2CollideSegmentAndPolygon(B2Segment segmentA, B2Transform xfA, ref B2Polygon polygonB, B2Transform xfB)
         {
             B2Polygon polygonA = b2MakeCapsule(segmentA.point1, segmentA.point2, 0.0f);
-            return b2CollidePolygons(polygonA, xfA, polygonB, xfB);
+            return b2CollidePolygons(ref polygonA, xfA, ref polygonB, xfB);
         }
 
         /// Compute the contact manifold between a chain segment and a circle
@@ -1085,7 +1085,7 @@ namespace Box2D.NET
         public static B2Manifold b2CollideChainSegmentAndCapsule(B2ChainSegment segmentA, B2Transform xfA, B2Capsule capsuleB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollideChainSegmentAndPolygon(segmentA, xfA, polyB, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(segmentA, xfA, ref polyB, xfB, ref cache);
         }
 
         public static B2Manifold b2ClipSegments(B2Vec2 a1, B2Vec2 a2, B2Vec2 b1, B2Vec2 b2, B2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
@@ -1203,7 +1203,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a rounded polygon
-        public static B2Manifold b2CollideChainSegmentAndPolygon(B2ChainSegment segmentA, B2Transform xfA, B2Polygon polygonB, 
+        public static B2Manifold b2CollideChainSegmentAndPolygon(B2ChainSegment segmentA, B2Transform xfA, ref B2Polygon polygonB, 
             B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Manifold manifold = new B2Manifold();

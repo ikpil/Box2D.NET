@@ -76,7 +76,7 @@ namespace Box2D.NET
             shape.fatAABB = fatAABB;
         }
 
-        public static B2Shape b2CreateShapeInternal<T>(B2World world, B2Body body, B2Transform transform, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType)
+        public static B2Shape b2CreateShapeInternal<T>(B2World world, B2Body body, B2Transform transform, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType) where T : struct
         {
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
             Debug.Assert(b2IsValidFloat(def.friction) && def.friction >= 0.0f);
@@ -98,23 +98,23 @@ namespace Box2D.NET
             switch (geometry)
             {
                 case B2Capsule capsule:
-                    shape.us.capsule = capsule.Clone();
+                    shape.us.capsule = capsule;
                     break;
 
                 case B2Circle circle:
-                    shape.us.circle = circle.Clone();
+                    shape.us.circle = circle;
                     break;
 
                 case B2Polygon polygon:
-                    shape.us.polygon = polygon.Clone();
+                    shape.us.polygon = polygon;
                     break;
 
                 case B2Segment segment:
-                    shape.us.segment = segment.Clone();
+                    shape.us.segment = segment;
                     break;
 
                 case B2ChainSegment chainSegment:
-                    shape.us.chainSegment = chainSegment.Clone();
+                    shape.us.chainSegment = chainSegment;
                     break;
 
                 default:
@@ -183,7 +183,7 @@ namespace Box2D.NET
             return shape;
         }
 
-        public static B2ShapeId b2CreateShape<T>(B2BodyId bodyId, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType)
+        public static B2ShapeId b2CreateShape<T>(B2BodyId bodyId, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType) where T : struct
         {
             B2_CHECK_DEF(ref def);
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
@@ -622,7 +622,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_circleShape:
                     return b2ComputeCircleAABB(shape.us.circle, xf);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonAABB(shape.us.polygon, xf);
+                    return b2ComputePolygonAABB(ref shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
                     return b2ComputeSegmentAABB(shape.us.segment, xf);
                 case B2ShapeType.b2_chainSegmentShape:
@@ -751,7 +751,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_circleShape:
                     return b2ComputeCircleMass(shape.us.circle, shape.density);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonMass(shape.us.polygon, shape.density);
+                    return b2ComputePolygonMass(ref shape.us.polygon, shape.density);
                 default:
                     return new B2MassData();
             }
@@ -783,7 +783,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Polygon poly = shape.us.polygon;
+                    ref readonly B2Polygon poly = ref shape.us.polygon;
                     float minExtent = B2_HUGE;
                     float maxExtentSqr = 0.0f;
                     int count = poly.count;
@@ -843,7 +843,7 @@ namespace Box2D.NET
                     output = b2RayCastCircle(ref localInput, shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, shape.us.polygon);
+                    output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
                     output = b2RayCastSegment(ref localInput, shape.us.segment, false);
@@ -881,7 +881,7 @@ namespace Box2D.NET
                     output = b2ShapeCastCircle(ref localInput, shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(ref localInput, shape.us.polygon);
+                    output = b2ShapeCastPolygon(ref localInput, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
                     output = b2ShapeCastSegment(ref localInput, shape.us.segment);
@@ -993,7 +993,7 @@ namespace Box2D.NET
                     return b2PointInCircle(localPoint, shape.us.circle);
 
                 case B2ShapeType.b2_polygonShape:
-                    return b2PointInPolygon(localPoint, shape.us.polygon);
+                    return b2PointInPolygon(localPoint, ref shape.us.polygon);
 
                 default:
                     return false;
@@ -1030,7 +1030,7 @@ namespace Box2D.NET
                     break;
 
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, shape.us.polygon);
+                    output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:
@@ -1392,7 +1392,7 @@ namespace Box2D.NET
             b2ResetProxy(world, shape, wakeBodies, destroyProxy);
         }
 
-        public static void b2Shape_SetPolygon(B2ShapeId shapeId, B2Polygon polygon)
+        public static void b2Shape_SetPolygon(B2ShapeId shapeId, ref B2Polygon polygon)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1401,7 +1401,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.us.polygon = polygon.Clone();
+            shape.us.polygon = polygon;
             shape.type = B2ShapeType.b2_polygonShape;
 
             // need to wake bodies so they can react to the shape change

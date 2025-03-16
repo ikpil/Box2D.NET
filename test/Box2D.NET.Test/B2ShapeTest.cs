@@ -39,7 +39,7 @@ public class B2ShapeTest
 
             // Box that full contains capsule
             B2Polygon r = b2MakeBox(radius, radius + 0.5f * length);
-            B2MassData mdr = b2ComputePolygonMass(r, 1.0f);
+            B2MassData mdr = b2ComputePolygonMass(ref r, 1.0f);
 
             // Approximate capsule using convex hull
             B2Vec2[] points = new B2Vec2[2 * N];
@@ -62,14 +62,14 @@ public class B2ShapeTest
 
             B2Hull hull = b2ComputeHull(points, 2 * N);
             B2Polygon ac = b2MakePolygon(ref hull, 0.0f);
-            B2MassData ma = b2ComputePolygonMass(ac, 1.0f);
+            B2MassData ma = b2ComputePolygonMass(ref ac, 1.0f);
 
             Assert.That(ma.mass < md.mass && md.mass < mdr.mass);
             Assert.That(ma.rotationalInertia < md.rotationalInertia && md.rotationalInertia < mdr.rotationalInertia);
         }
 
         {
-            B2MassData md = b2ComputePolygonMass(box, 1.0f);
+            B2MassData md = b2ComputePolygonMass(ref box, 1.0f);
             Assert.That(md.mass - 4.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(md.center.X, Is.LessThan(FLT_EPSILON));
             Assert.That(md.center.Y, Is.LessThan(FLT_EPSILON));
@@ -89,7 +89,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputePolygonAABB(box, b2Transform_identity);
+            B2AABB b = b2ComputePolygonAABB(ref box, b2Transform_identity);
             Assert.That(b.lowerBound.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 1.0f, Is.LessThan(FLT_EPSILON));
@@ -121,9 +121,9 @@ public class B2ShapeTest
 
         {
             bool hit;
-            hit = b2PointInPolygon(p1, box);
+            hit = b2PointInPolygon(p1, ref box);
             Assert.That(hit, Is.EqualTo(true));
-            hit = b2PointInPolygon(p2, box);
+            hit = b2PointInPolygon(p2, ref box);
             Assert.That(hit, Is.EqualTo(false));
         }
     }
@@ -142,7 +142,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastPolygon(ref input, box);
+            B2CastOutput output = b2RayCastPolygon(ref input, ref box);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));

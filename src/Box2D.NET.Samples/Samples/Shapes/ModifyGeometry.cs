@@ -24,49 +24,7 @@ public class ModifyGeometry : Sample
     private object m_shape;
     private float m_scale;
 
-    //union
-    //{
-    B2Circle m_circle
-    {
-        get => B2ShapeType.b2_circleShape == m_shapeType ? (B2Circle)m_shape : null;
-        set
-        {
-            m_shape = value;
-            m_shapeType = B2ShapeType.b2_circleShape;
-        }
-    }
-
-    B2Capsule m_capsule
-    {
-        get => B2ShapeType.b2_capsuleShape == m_shapeType ? (B2Capsule)m_shape : null;
-        set
-        {
-            m_shape = value;
-            m_shapeType = B2ShapeType.b2_capsuleShape;
-        }
-    }
-
-    B2Segment m_segment
-    {
-        get => B2ShapeType.b2_segmentShape == m_shapeType ? (B2Segment)m_shape : null;
-        set
-        {
-            m_shape = value;
-            m_shapeType = B2ShapeType.b2_segmentShape;
-        }
-    }
-
-    B2Polygon m_polygon
-    {
-        get => B2ShapeType.b2_polygonShape == m_shapeType ? (B2Polygon)m_shape : null;
-        set
-        {
-            m_shape = value;
-            m_shapeType = B2ShapeType.b2_polygonShape;
-        }
-    }
-    //}
-
+    private B2ShapeUnion m_us;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -108,7 +66,7 @@ public class ModifyGeometry : Sample
             m_shapeType = B2ShapeType.b2_circleShape;
             m_scale = 1.0f;
             var circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_circle = circle; // todo : @ikpil, fix it!!
+            m_us.circle = circle; // todo : @ikpil, fix it!!
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
@@ -123,23 +81,23 @@ public class ModifyGeometry : Sample
         switch (m_shapeType)
         {
             case B2ShapeType.b2_circleShape:
-                m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f * m_scale);
-                b2Shape_SetCircle(m_shapeId, m_circle);
+                m_us.circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f * m_scale);
+                b2Shape_SetCircle(m_shapeId, m_us.circle);
                 break;
 
             case B2ShapeType.b2_capsuleShape:
-                m_capsule = new B2Capsule(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.0f, 0.5f * m_scale), 0.5f * m_scale);
-                b2Shape_SetCapsule(m_shapeId, m_capsule);
+                m_us.capsule = new B2Capsule(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.0f, 0.5f * m_scale), 0.5f * m_scale);
+                b2Shape_SetCapsule(m_shapeId, m_us.capsule);
                 break;
 
             case B2ShapeType.b2_segmentShape:
-                m_segment = new B2Segment(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.75f * m_scale, 0.0f));
-                b2Shape_SetSegment(m_shapeId, m_segment);
+                m_us.segment = new B2Segment(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.75f * m_scale, 0.0f));
+                b2Shape_SetSegment(m_shapeId, m_us.segment);
                 break;
 
             case B2ShapeType.b2_polygonShape:
-                m_polygon = b2MakeBox(0.5f * m_scale, 0.75f * m_scale);
-                b2Shape_SetPolygon(m_shapeId, m_polygon);
+                m_us.polygon = b2MakeBox(0.5f * m_scale, 0.75f * m_scale);
+                b2Shape_SetPolygon(m_shapeId, ref m_us.polygon);
                 break;
 
             default:
