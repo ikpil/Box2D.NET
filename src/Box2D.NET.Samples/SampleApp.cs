@@ -89,7 +89,7 @@ public class SampleApp
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
-        options.Title = $"Box2D Version {version.major}.{version.minor}.{version.revision}";
+        options.Title = $"Box2D.NET Version {version.major}.{version.minor}.{version.revision}";
 
         Monitor* primaryMonitor = _ctx.glfw.GetPrimaryMonitor();
         if (null != primaryMonitor)
