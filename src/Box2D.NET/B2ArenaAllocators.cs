@@ -77,7 +77,7 @@ namespace Box2D.NET
             var alloc = allocator.GetOrCreateImpl<T>();
             int entryCount = alloc.entries.count;
             Debug.Assert(entryCount > 0);
-            B2ArenaEntry<T> entry = alloc.entries.data[entryCount - 1];
+            ref B2ArenaEntry<T> entry = ref alloc.entries.data[entryCount - 1];
             Debug.Assert(mem == entry.data);
             if (entry.usedMalloc)
             {
