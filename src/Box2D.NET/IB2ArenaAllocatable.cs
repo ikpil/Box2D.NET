@@ -10,5 +10,7 @@ namespace Box2D.NET
         int index { get; }
         int allocation { get; }
         int maxAllocation { get; }
+
+        int Grow();
     }
 }

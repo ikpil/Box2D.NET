@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
-
 namespace Box2D.NET
 {
     /// Surface materials allow chain shapes to have per segment surface properties.

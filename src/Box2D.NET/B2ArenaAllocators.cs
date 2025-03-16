@@ -99,16 +99,7 @@ namespace Box2D.NET
             for (int i = 0; i < allocs.Length; ++i)
             {
                 var alloc = allocs[i];
-                // TODO: @ikpil. check
-                // // Stack must not be in use
-                // Debug.Assert(alloc.allocation == 0);
-                //
-                // if (alloc.maxAllocation > alloc.capacity)
-                // {
-                //     b2Free(alloc.data.Array, alloc.capacity);
-                //     alloc.capacity = alloc.maxAllocation + alloc.maxAllocation / 2;
-                //     alloc.data = b2Alloc<T>(alloc.capacity);
-                // }
+                alloc.Grow();
             }
         }
 

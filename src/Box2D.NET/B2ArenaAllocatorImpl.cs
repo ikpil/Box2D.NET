@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Diagnostics;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -20,5 +22,20 @@ namespace Box2D.NET
         public int maxAllocation { get; set; }
 
         public B2Array<B2ArenaEntry<T>> entries;
+
+        public int Grow()
+        {
+            // Stack must not be in use
+            Debug.Assert(allocation == 0);
+
+            if (maxAllocation > capacity)
+            {
+                b2Free(data.Array, capacity);
+                capacity = maxAllocation + maxAllocation / 2;
+                data = b2Alloc<T>(capacity);
+            }
+
+            return capacity;
+        }
     }
 }
