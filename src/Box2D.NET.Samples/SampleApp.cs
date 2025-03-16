@@ -31,7 +31,7 @@ namespace Box2D.NET.Samples;
 public class SampleApp
 {
     private static readonly ILogger Logger = Log.ForContext<SampleApp>();
-    
+
     private IWindow _window;
     private IInputContext _input;
     private ImGuiController _imgui;
@@ -344,11 +344,11 @@ public class SampleApp
 
     public byte[] AllocFcn(uint size, int alignment)
     {
-         // Allocation must be a multiple of alignment or risk a seg fault
-         // https://en.cppreference.com/w/c/memory/aligned_alloc
-         Debug.Assert(IsPowerOfTwo(alignment));
-         long sizeAligned = ((size - 1) | (uint)(alignment - 1)) + 1;
-         Debug.Assert((sizeAligned & (alignment - 1)) == 0);
+        // Allocation must be a multiple of alignment or risk a seg fault
+        // https://en.cppreference.com/w/c/memory/aligned_alloc
+        Debug.Assert(IsPowerOfTwo(alignment));
+        long sizeAligned = ((size - 1) | (uint)(alignment - 1)) + 1;
+        Debug.Assert((sizeAligned & (alignment - 1)) == 0);
 
 // #if defined( _WIN64 ) || defined( _WIN32 )
 //         void* ptr = _aligned_malloc( sizeAligned, alignment );
@@ -641,7 +641,7 @@ public class SampleApp
     {
         var io = ImGui.GetIO();
         io.AddMouseWheelEvent((float)dx, (float)dy);
-        
+
         if (io.WantCaptureMouse)
         {
             return;
@@ -659,7 +659,7 @@ public class SampleApp
 
     private unsafe void UpdateUI()
     {
-        int maxWorkers = Environment.ProcessorCount;
+        int maxWorkers = (int)(Environment.ProcessorCount * 1.5f);
 
         float menuWidth = 180.0f;
         if (_ctx.draw.m_showUI)

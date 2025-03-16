@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Box2D.NET.Shared.Primitives;
 using static Box2D.NET.B2Types;
@@ -428,7 +430,7 @@ namespace Box2D.NET.Shared
             return b2RevoluteJoint_GetAngle(spinnerData.spinnerId);
         }
 
-        public static void CreateSmash(B2WorldId worldId)
+        public static void CreateSmash(B2WorldId worldId, int rows, int columns, List<B2BodyId> bodyIds)
         {
             b2World_SetGravity(worldId, b2Vec2_zero);
 
@@ -444,6 +446,7 @@ namespace Box2D.NET.Shared
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.density = 8.0f;
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                bodyIds.Add(bodyId);
             }
 
             {
@@ -456,9 +459,6 @@ namespace Box2D.NET.Shared
 
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-                int columns = BENCHMARK_DEBUG ? 20 : 120;
-                int rows = BENCHMARK_DEBUG ? 10 : 80;
-
                 for (int i = 0; i < columns; ++i)
                 {
                     for (int j = 0; j < rows; ++j)
@@ -467,6 +467,7 @@ namespace Box2D.NET.Shared
                         bodyDef.position.Y = (j - rows / 2.0f) * d;
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
                         b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                        bodyIds.Add(bodyId);
                     }
                 }
             }
