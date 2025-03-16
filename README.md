@@ -1,4 +1,5 @@
- 
+![Box2D Logo](https://raw.githubusercontent.com/ikpil/ikpil/refs/heads/main/img/box2d_logo.svg)
+
 # Box2D.NET
 
 *Box2D.NET is C# Box2D, a port of [Box2D](https://github.com/erincatto/box2d) to the C# language.*  
@@ -19,7 +20,7 @@
 
 ---
 
-[![demo](https://github.com/ikpil/ikpil/blob/main/img/423102962-0dc4a92b-0f1a-407d-9e65-fc507e09962b.gif?raw=true)](https://github.com/ikpil/Box2D.NET)
+[![demo](https://raw.githubusercontent.com/ikpil/ikpil/refs/heads/main/img/423102962-0dc4a92b-0f1a-407d-9e65-fc507e09962b.gif)](https://github.com/ikpil/Box2D.NET)
 
 ---
 
