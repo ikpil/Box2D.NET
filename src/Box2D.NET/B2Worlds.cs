@@ -838,7 +838,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    B2Polygon poly = shape.us.polygon;
+                    ref readonly B2Polygon poly = ref shape.us.polygon;
                     draw.DrawSolidPolygon(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;
@@ -2161,7 +2161,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_OverlapPolygon(B2WorldId worldId, B2Polygon polygon, B2Transform transform, B2QueryFilter filter,
+        public static B2TreeStats b2World_OverlapPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Transform transform, B2QueryFilter filter,
             b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2176,7 +2176,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(transform.p));
             Debug.Assert(b2IsValidRotation(transform.q));
 
-            B2AABB aabb = b2ComputePolygonAABB(polygon, transform);
+            B2AABB aabb = b2ComputePolygonAABB(ref polygon, transform);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, b2MakeProxy(polygon.vertices.AsSpan(), polygon.count, polygon.radius), transform, context
             );
@@ -2433,7 +2433,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_CastPolygon(B2WorldId worldId, B2Polygon polygon, B2Transform originTransform, B2Vec2 translation,
+        public static B2TreeStats b2World_CastPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Transform originTransform, B2Vec2 translation,
             B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();

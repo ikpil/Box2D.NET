@@ -300,7 +300,7 @@ public class SmoothManifold : Sample
             {
                 B2ChainSegment segment = m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, rox, transform2, ref cache);
+                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, ref rox, transform2, ref cache);
                 DrawManifold(ref m);
             }
         }

@@ -285,7 +285,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollidePolygonAndCircle(box, transform1, circle, transform2);
+            B2Manifold m = b2CollidePolygonAndCircle(ref box, transform1, circle, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box.vertices.AsSpan(), box.count, m_round, color1);
             m_context.draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
@@ -326,7 +326,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollidePolygonAndCapsule(box, transform1, capsule, transform2);
+            B2Manifold m = b2CollidePolygonAndCapsule(ref box, transform1, capsule, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box.vertices.AsSpan(), box.count, box.radius, color1);
 
@@ -372,7 +372,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollidePolygons(box1, transform1, box, transform2);
+            B2Manifold m = b2CollidePolygons(ref box1, transform1, ref box, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box1.vertices.AsSpan(), box1.count, box1.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform2, box.vertices.AsSpan(), box.count, box.radius, color2);
@@ -391,7 +391,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({0.0f, -0.1f}, offset), {0.0f, 1.0f}};
 
-            B2Manifold m = b2CollidePolygons(box1, transform1, box, transform2);
+            B2Manifold m = b2CollidePolygons(ref box1, transform1, ref box, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box1.vertices.AsSpan(), box1.count, box1.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform2, box.vertices.AsSpan(), box.count, box.radius, color2);
@@ -411,7 +411,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({0.0f, -0.1f}, offset), {0.0f, 1.0f}};
 
-            B2Manifold m = b2CollidePolygons(box, transform1, rox, transform2);
+            B2Manifold m = b2CollidePolygons(ref box, transform1, ref rox, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box.vertices.AsSpan(), box.count, box.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
@@ -431,7 +431,7 @@ public class Manifold : Sample
             // b2Transform transform1 = {{6.48024225f, 2.07872653f}, {-0.938356698f, 0.345668465f}};
             // b2Transform transform2 = {{5.52862263f, 2.51146317f}, {-0.859374702f, -0.511346340f}};
 
-            B2Manifold m = b2CollidePolygons(rox, transform1, rox, transform2);
+            B2Manifold m = b2CollidePolygons(ref rox, transform1, ref rox, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, rox.vertices.AsSpan(), rox.count, rox.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
@@ -451,7 +451,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({-1.44583416f, 0.397352695f}, offset), m_transform.q};
 
-            B2Manifold m = b2CollideSegmentAndPolygon(segment, transform1, rox, transform2);
+            B2Manifold m = b2CollideSegmentAndPolygon(segment, transform1, ref rox, transform2);
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
@@ -471,7 +471,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({0.0f, -0.1f}, offset), {0.0f, 1.0f}};
 
-            B2Manifold m = b2CollidePolygons(wox, transform1, wox, transform2);
+            B2Manifold m = b2CollidePolygons(ref wox, transform1, ref wox, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, wox.vertices.AsSpan(), wox.count, wox.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform1, wox.vertices.AsSpan(), wox.count, 0.0f, color1);
@@ -497,7 +497,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({0.0f, -0.1f}, offset), {0.0f, 1.0f}};
 
-            B2Manifold m = b2CollidePolygons(w1, transform1, w2, transform2);
+            B2Manifold m = b2CollidePolygons(ref w1, transform1, ref w2, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, w1.vertices.AsSpan(), w1.count, w1.radius, color1);
             m_context.draw.DrawSolidPolygon(ref transform1, w1.vertices.AsSpan(), w1.count, 0.0f, color1);
@@ -522,7 +522,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({0.0f, -0.1f}, offset), {0.0f, 1.0f}};
 
-            B2Manifold m = b2CollidePolygons(box, transform1, tri, transform2);
+            B2Manifold m = b2CollidePolygons(ref box, transform1, ref tri, transform2);
 
             m_context.draw.DrawSolidPolygon(ref transform1, box.vertices.AsSpan(), box.count, 0.0f, color1);
             m_context.draw.DrawSolidPolygon(ref transform2, tri.vertices.AsSpan(), tri.count, 0.0f, color2);
@@ -587,8 +587,8 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m1 = b2CollideChainSegmentAndPolygon(segment1, transform1, rox, transform2, ref m_smgroxCache1);
-            B2Manifold m2 = b2CollideChainSegmentAndPolygon(segment2, transform1, rox, transform2, ref m_smgroxCache2);
+            B2Manifold m1 = b2CollideChainSegmentAndPolygon(segment1, transform1, ref rox, transform2, ref m_smgroxCache1);
+            B2Manifold m2 = b2CollideChainSegmentAndPolygon(segment2, transform1, ref rox, transform2, ref m_smgroxCache2);
 
             {
                 B2Vec2 g2 = b2TransformPoint(ref transform1, segment1.ghost2);

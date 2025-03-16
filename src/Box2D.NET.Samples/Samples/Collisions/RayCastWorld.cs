@@ -427,7 +427,7 @@ public class RayCastWorld : Sample
                     break;
 
                 case CastType.e_polygonCast:
-                    b2World_CastPolygon(m_worldId, box, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastPolygon(m_worldId, ref box, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
             }
 
