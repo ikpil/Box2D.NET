@@ -19,8 +19,11 @@ namespace Box2D.NET
 
         public static void b2DestroyArenaAllocator(B2ArenaAllocator allocator)
         {
-            // Array_Destroy(allocator.entries);
-            // b2Free(allocator.data, allocator.capacity);
+            var allocs = allocator.AsSpan();
+            for (int i = 0; i < allocs.Length; ++i)
+            {
+                allocs[i].Destroy();
+            }
         }
 
         public static B2ArenaAllocatorImpl<T> b2CreateArenaAllocator<T>(int capacity) where T : new()

@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Arrays;
 
 namespace Box2D.NET
 {
@@ -36,6 +37,18 @@ namespace Box2D.NET
             }
 
             return capacity;
+        }
+
+        public void Destroy()
+        {
+            b2Array_Destroy(ref entries);
+            b2Free(data, capacity);
+
+            data = null;
+            capacity = 0;
+            index = 0;
+            allocation = 0;
+            maxAllocation = 0;
         }
     }
 }

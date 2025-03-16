@@ -12,5 +12,6 @@ namespace Box2D.NET
         int maxAllocation { get; }
 
         int Grow();
+        void Destroy();
     }
 }
