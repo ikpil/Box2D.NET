@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A line segment with two-sided collision.
-    public class B2Segment // todo: @ikpil class or struct?
+    public struct B2Segment
     {
         /// The first point
         public B2Vec2 point1;
@@ -17,11 +17,6 @@ namespace Box2D.NET
         {
             this.point1 = point1;
             this.point2 = point2;
-        }
-
-        public B2Segment Clone()
-        {
-            return new B2Segment(point1, point2);
         }
     }
 }

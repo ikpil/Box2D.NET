@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A solid circle
-    public class B2Circle
+    public struct B2Circle
     {
         /// The local center
         public B2Vec2 center;
@@ -17,11 +17,6 @@ namespace Box2D.NET
         {
             this.center = center;
             this.radius = radius;
-        }
-
-        public B2Circle Clone()
-        {
-            return new B2Circle(center, radius);
         }
     }
 }
