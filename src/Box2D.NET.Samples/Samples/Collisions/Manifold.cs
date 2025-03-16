@@ -263,7 +263,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideSegmentAndCircle(segment, transform1, ref circle, transform2);
+            B2Manifold m = b2CollideSegmentAndCircle(ref segment, transform1, ref circle, transform2);
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
@@ -347,7 +347,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideSegmentAndCapsule(segment, transform1, ref capsule, transform2);
+            B2Manifold m = b2CollideSegmentAndCapsule(ref segment, transform1, ref capsule, transform2);
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
@@ -451,7 +451,7 @@ public class Manifold : Sample
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             // b2Transform transform2 = {b2Add({-1.44583416f, 0.397352695f}, offset), m_transform.q};
 
-            B2Manifold m = b2CollideSegmentAndPolygon(segment, transform1, ref rox, transform2);
+            B2Manifold m = b2CollideSegmentAndPolygon(ref segment, transform1, ref rox, transform2);
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);

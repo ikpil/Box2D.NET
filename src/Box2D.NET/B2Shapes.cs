@@ -624,9 +624,9 @@ namespace Box2D.NET
                 case B2ShapeType.b2_polygonShape:
                     return b2ComputePolygonAABB(ref shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
-                    return b2ComputeSegmentAABB(shape.us.segment, xf);
+                    return b2ComputeSegmentAABB(ref shape.us.segment, xf);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2ComputeSegmentAABB(shape.us.chainSegment.segment, xf);
+                    return b2ComputeSegmentAABB(ref shape.us.chainSegment.segment, xf);
                 default:
                 {
                     Debug.Assert(false);
@@ -846,10 +846,10 @@ namespace Box2D.NET
                     output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.us.segment, false);
+                    output = b2RayCastSegment(ref localInput, ref shape.us.segment, false);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.us.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, ref shape.us.chainSegment.segment, true);
                     break;
                 default:
                     return output;
@@ -884,10 +884,10 @@ namespace Box2D.NET
                     output = b2ShapeCastPolygon(ref localInput, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(ref localInput, shape.us.segment);
+                    output = b2ShapeCastSegment(ref localInput, ref shape.us.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2ShapeCastSegment(ref localInput, shape.us.chainSegment.segment);
+                    output = b2ShapeCastSegment(ref localInput, ref shape.us.chainSegment.segment);
                     break;
                 default:
                     return output;
@@ -1026,7 +1026,7 @@ namespace Box2D.NET
                     break;
 
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.us.segment, false);
+                    output = b2RayCastSegment(ref localInput, ref shape.us.segment, false);
                     break;
 
                 case B2ShapeType.b2_polygonShape:
@@ -1034,7 +1034,7 @@ namespace Box2D.NET
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, shape.us.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref localInput, ref shape.us.chainSegment.segment, true);
                     break;
 
                 default:
@@ -1374,7 +1374,7 @@ namespace Box2D.NET
             b2ResetProxy(world, shape, wakeBodies, destroyProxy);
         }
 
-        public static void b2Shape_SetSegment(B2ShapeId shapeId, B2Segment segment)
+        public static void b2Shape_SetSegment(B2ShapeId shapeId, ref B2Segment segment)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
