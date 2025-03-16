@@ -13,9 +13,6 @@ namespace Box2D.NET
     // I could remove the need to free entries individually.
     public class B2ArenaAllocatorImpl<T> : IB2ArenaAllocatable where T : new()
     {
-        private static readonly object _lock = new object();
-        private static B2ArenaAllocatorImpl<T> _shared;
-
         public ArraySegment<T> data;
         public int capacity { get; set; }
         public int index { get; set; }
@@ -23,59 +20,5 @@ namespace Box2D.NET
         public int maxAllocation { get; set; }
 
         public B2Array<B2ArenaEntry<T>> entries;
-
-        public static B2ArenaAllocatorImpl<T> Touch(B2ArenaAllocator allocator)
-        {
-            if (null == _shared)
-            {
-                lock (_lock)
-                {
-                    if (null == _shared)
-                    {
-                        _shared = B2ArenaAllocators.b2CreateArenaAllocator<T>(16); // TODO: @ikpil, test
-                        allocator.Add(_shared);
-                    }
-                }
-            }
-
-            return _shared;
-        }
-    }
-
-    public class B2ArenaAllocator
-    {
-        private readonly object _lock;
-        private IB2ArenaAllocatable[] _allocators;
-
-        public B2ArenaAllocator()
-        {
-            _lock = new object();
-            _allocators = Array.Empty<IB2ArenaAllocatable>();
-        }
-
-        public B2ArenaAllocatorImpl<T> Touch<T>() where T : new()
-        {
-            return B2ArenaAllocatorImpl<T>.Touch(this);
-        }
-
-        public void Add<T>(B2ArenaAllocatorImpl<T> alloc) where T : new()
-        {
-            lock (_lock)
-            {
-                IB2ArenaAllocatable[] temp = new IB2ArenaAllocatable[_allocators.Length + 1];
-                if (0 < _allocators.Length)
-                {
-                    Array.Copy(_allocators, temp, _allocators.Length);
-                }
-
-                temp[_allocators.Length] = alloc;
-                _allocators = temp;
-            }
-        }
-
-        public IB2ArenaAllocatable[] AsArray()
-        {
-            return _allocators;
-        }
     }
 }

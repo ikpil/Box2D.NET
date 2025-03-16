@@ -94,7 +94,7 @@ namespace Box2D.NET
 
         public static void b2GrowArena(B2ArenaAllocator allocator)
         {
-            var allocs = allocator.AsArray();
+            var allocs = allocator.AsSpan();
 
             for (int i = 0; i < allocs.Length; ++i)
             {
@@ -116,7 +116,7 @@ namespace Box2D.NET
         public static int b2GetArenaCapacity(B2ArenaAllocator allocator)
         {
             int capacity = 0;
-            var allocs = allocator.AsArray();
+            var allocs = allocator.AsSpan();
             for (int i = 0; i < allocs.Length; ++i)
             {
                 capacity += allocs[i].maxAllocation;
@@ -128,7 +128,7 @@ namespace Box2D.NET
         public static int b2GetArenaAllocation(B2ArenaAllocator allocator)
         {
             int allocation = 0;
-            var allocs = allocator.AsArray();
+            var allocs = allocator.AsSpan();
             for (int i = 0; i < allocs.Length; ++i)
             {
                 allocation += allocs[i].allocation;
@@ -140,7 +140,7 @@ namespace Box2D.NET
         public static int b2GetMaxArenaAllocation(B2ArenaAllocator allocator)
         {
             int maxAllocation = 0;
-            var allocs = allocator.AsArray();
+            var allocs = allocator.AsSpan();
             for (int i = 0; i < allocs.Length; ++i)
             {
                 maxAllocation += allocs[i].maxAllocation;
