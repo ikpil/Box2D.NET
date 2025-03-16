@@ -15,7 +15,7 @@ namespace Box2D.NET
      * @{
      */
     /// Result of computing the distance between two line segments
-    public class B2SegmentDistanceResult
+    public struct B2SegmentDistanceResult
     {
         /// The closest point on the first segment
         public B2Vec2 closest1;
