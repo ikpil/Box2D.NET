@@ -2193,29 +2193,11 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public class WorldRayCastContext
-        {
-            public B2World world;
-            public b2CastResultFcn fcn;
-            public B2QueryFilter filter;
-            public float fraction;
-            public object userContext;
-
-            public WorldRayCastContext(B2World world, b2CastResultFcn fcn, B2QueryFilter filter, float fraction, object userContext)
-            {
-                this.world = world;
-                this.fcn = fcn;
-                this.filter = filter;
-                this.fraction = fraction;
-                this.userContext = userContext;
-            }
-        }
-
         public static float RayCastCallback(ref B2RayCastInput input, int proxyId, int shapeId, object context)
         {
             B2_UNUSED(proxyId);
 
-            WorldRayCastContext worldContext = context as WorldRayCastContext;
+            B2WorldRayCastContext worldContext = context as B2WorldRayCastContext;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2265,7 +2247,7 @@ namespace Box2D.NET
 
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
 
-            WorldRayCastContext worldContext = new WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2285,7 +2267,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-// This callback finds the closest hit. This is the most common callback used in games.
+        // This callback finds the closest hit. This is the most common callback used in games.
         public static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
         {
             B2RayResult rayResult = context as B2RayResult;
@@ -2312,7 +2294,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(translation));
 
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
-            WorldRayCastContext worldContext = new WorldRayCastContext(world, b2RayCastClosestFcn, filter, 1.0f, result);
+            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, b2RayCastClosestFcn, filter, 1.0f, result);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2336,7 +2318,7 @@ namespace Box2D.NET
         {
             B2_UNUSED(proxyId);
 
-            WorldRayCastContext worldContext = context as WorldRayCastContext;
+            B2WorldRayCastContext worldContext = context as B2WorldRayCastContext;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2387,7 +2369,7 @@ namespace Box2D.NET
             input.translation = translation;
             input.maxFraction = 1.0f;
 
-            WorldRayCastContext worldContext = new WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2431,7 +2413,7 @@ namespace Box2D.NET
             input.translation = translation;
             input.maxFraction = 1.0f;
 
-            WorldRayCastContext worldContext = new WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2478,7 +2460,7 @@ namespace Box2D.NET
             input.translation = translation;
             input.maxFraction = 1.0f;
 
-            WorldRayCastContext worldContext = new WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
