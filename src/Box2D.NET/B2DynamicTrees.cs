@@ -38,9 +38,15 @@ namespace Box2D.NET
         {
             aabb = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f)),
             categoryBits = B2_DEFAULT_CATEGORY_BITS,
-            parent = B2_NULL_INDEX,
+            pn =
+            {
+                parent = B2_NULL_INDEX,
+            },
             child1 = B2_NULL_INDEX,
-            child2 = B2_NULL_INDEX,
+            cu =
+            {
+                child2 = B2_NULL_INDEX,
+            },
             height = 0,
             flags = (ushort)B2TreeNodeFlags.b2_allocatedNode,
         };
@@ -74,10 +80,10 @@ namespace Box2D.NET
             // Build a linked list for the free list.
             for (int i = 0; i < tree.nodeCapacity - 1; ++i)
             {
-                tree.nodes[i].next = i + 1;
+                tree.nodes[i].pn.next = i + 1;
             }
 
-            tree.nodes[tree.nodeCapacity - 1].next = B2_NULL_INDEX;
+            tree.nodes[tree.nodeCapacity - 1].pn.next = B2_NULL_INDEX;
             tree.freeList = 0;
 
             tree.proxyCount = 0;
@@ -129,17 +135,17 @@ namespace Box2D.NET
                 // todo avoid building freelist?
                 for (int i = tree.nodeCount; i < tree.nodeCapacity - 1; ++i)
                 {
-                    tree.nodes[i].next = i + 1;
+                    tree.nodes[i].pn.next = i + 1;
                 }
 
-                tree.nodes[tree.nodeCapacity - 1].next = B2_NULL_INDEX;
+                tree.nodes[tree.nodeCapacity - 1].pn.next = B2_NULL_INDEX;
                 tree.freeList = tree.nodeCount;
             }
 
             // Peel a node off the free list.
             int nodeIndex = tree.freeList;
             ref B2TreeNode node = ref tree.nodes[nodeIndex];
-            tree.freeList = node.next;
+            tree.freeList = node.pn.next;
             node = b2_defaultTreeNode;
             ++tree.nodeCount;
             return nodeIndex;
@@ -150,7 +156,7 @@ namespace Box2D.NET
         {
             Debug.Assert(0 <= nodeId && nodeId < tree.nodeCapacity);
             Debug.Assert(0 < tree.nodeCount);
-            tree.nodes[nodeId].next = tree.freeList;
+            tree.nodes[nodeId].pn.next = tree.freeList;
             tree.nodes[nodeId].flags = 0;
             tree.freeList = nodeId;
             --tree.nodeCount;
@@ -198,7 +204,7 @@ namespace Box2D.NET
             while (nodes[index].height > 0)
             {
                 int child1 = nodes[index].child1;
-                int child2 = nodes[index].child2;
+                int child2 = nodes[index].cu.child2;
 
                 // Cost of creating a new parent for this node and the new leaf
                 float cost = directCost + inheritedCost;
@@ -332,7 +338,7 @@ namespace Box2D.NET
             }
 
             int iB = A.child1;
-            int iC = A.child2;
+            int iC = A.cu.child2;
             Debug.Assert(0 <= iB && iB < tree.nodeCapacity);
             Debug.Assert(0 <= iC && iC < tree.nodeCapacity);
 
@@ -345,7 +351,7 @@ namespace Box2D.NET
                 Debug.Assert(C.height > 0);
 
                 int iF = C.child1;
-                int iG = C.child2;
+                int iG = C.cu.child2;
                 ref B2TreeNode F = ref nodes[iF];
                 ref B2TreeNode G = ref nodes[iG];
                 Debug.Assert(0 <= iF && iF < tree.nodeCapacity);
@@ -374,8 +380,8 @@ namespace Box2D.NET
                     A.child1 = iF;
                     C.child1 = iB;
 
-                    B.parent = iC;
-                    F.parent = iA;
+                    B.pn.parent = iC;
+                    F.pn.parent = iA;
 
                     C.aabb = aabbBG;
 
@@ -390,10 +396,10 @@ namespace Box2D.NET
                 {
                     // Swap B and G
                     A.child1 = iG;
-                    C.child2 = iB;
+                    C.cu.child2 = iB;
 
-                    B.parent = iC;
-                    G.parent = iA;
+                    B.pn.parent = iC;
+                    G.pn.parent = iA;
 
                     C.aabb = aabbBF;
 
@@ -411,7 +417,7 @@ namespace Box2D.NET
                 Debug.Assert(B.height > 0);
 
                 int iD = B.child1;
-                int iE = B.child2;
+                int iE = B.cu.child2;
                 ref B2TreeNode D = ref nodes[iD];
                 ref B2TreeNode E = ref nodes[iE];
                 Debug.Assert(0 <= iD && iD < tree.nodeCapacity);
@@ -437,11 +443,11 @@ namespace Box2D.NET
                 if (costCD < costCE)
                 {
                     // Swap C and D
-                    A.child2 = iD;
+                    A.cu.child2 = iD;
                     B.child1 = iC;
 
-                    C.parent = iB;
-                    D.parent = iA;
+                    C.pn.parent = iB;
+                    D.pn.parent = iA;
 
                     B.aabb = aabbCE;
 
@@ -455,11 +461,11 @@ namespace Box2D.NET
                 else
                 {
                     // Swap C and E
-                    A.child2 = iE;
-                    B.child2 = iC;
+                    A.cu.child2 = iE;
+                    B.cu.child2 = iC;
 
-                    C.parent = iB;
-                    E.parent = iA;
+                    C.pn.parent = iB;
+                    E.pn.parent = iA;
 
                     B.aabb = aabbCD;
                     B.height = (ushort)(1 + b2MaxUInt16(C.height, D.height));
@@ -473,9 +479,9 @@ namespace Box2D.NET
             else
             {
                 int iD = B.child1;
-                int iE = B.child2;
+                int iE = B.cu.child2;
                 int iF = C.child1;
-                int iG = C.child2;
+                int iG = C.cu.child2;
 
                 ref B2TreeNode D = ref nodes[iD];
                 ref B2TreeNode E = ref nodes[iE];
@@ -539,8 +545,8 @@ namespace Box2D.NET
                         A.child1 = iF;
                         C.child1 = iB;
 
-                        B.parent = iC;
-                        F.parent = iA;
+                        B.pn.parent = iC;
+                        F.pn.parent = iA;
 
                         C.aabb = aabbBG;
                         C.height = (ushort)(1 + b2MaxUInt16(B.height, G.height));
@@ -553,10 +559,10 @@ namespace Box2D.NET
 
                     case B2RotateType.b2_rotateBG:
                         A.child1 = iG;
-                        C.child2 = iB;
+                        C.cu.child2 = iB;
 
-                        B.parent = iC;
-                        G.parent = iA;
+                        B.pn.parent = iC;
+                        G.pn.parent = iA;
 
                         C.aabb = aabbBF;
                         C.height = (ushort)(1 + b2MaxUInt16(B.height, F.height));
@@ -568,11 +574,11 @@ namespace Box2D.NET
                         break;
 
                     case B2RotateType.b2_rotateCD:
-                        A.child2 = iD;
+                        A.cu.child2 = iD;
                         B.child1 = iC;
 
-                        C.parent = iB;
-                        D.parent = iA;
+                        C.pn.parent = iB;
+                        D.pn.parent = iA;
 
                         B.aabb = aabbCE;
                         B.height = (ushort)(1 + b2MaxUInt16(C.height, E.height));
@@ -584,11 +590,11 @@ namespace Box2D.NET
                         break;
 
                     case B2RotateType.b2_rotateCE:
-                        A.child2 = iE;
-                        B.child2 = iC;
+                        A.cu.child2 = iE;
+                        B.cu.child2 = iC;
 
-                        C.parent = iB;
-                        E.parent = iA;
+                        C.pn.parent = iB;
+                        E.pn.parent = iA;
 
                         B.aabb = aabbCD;
                         B.height = (ushort)(1 + b2MaxUInt16(C.height, D.height));
@@ -611,7 +617,7 @@ namespace Box2D.NET
             if (tree.root == B2_NULL_INDEX)
             {
                 tree.root = leaf;
-                tree.nodes[tree.root].parent = B2_NULL_INDEX;
+                tree.nodes[tree.root].pn.parent = B2_NULL_INDEX;
                 return;
             }
 
@@ -620,13 +626,13 @@ namespace Box2D.NET
             int sibling = b2FindBestSibling(tree, leafAABB);
 
             // Stage 2: create a new parent for the leaf and sibling
-            int oldParent = tree.nodes[sibling].parent;
+            int oldParent = tree.nodes[sibling].pn.parent;
             int newParent = b2AllocateNode(tree);
 
             // warning: node pointer can change after allocation
             B2TreeNode[] nodes = tree.nodes;
-            nodes[newParent].parent = oldParent;
-            nodes[newParent].userData = -1;
+            nodes[newParent].pn.parent = oldParent;
+            nodes[newParent].cu.userData = -1;
             nodes[newParent].aabb = b2AABB_Union(leafAABB, nodes[sibling].aabb);
             nodes[newParent].categoryBits = nodes[leaf].categoryBits | nodes[sibling].categoryBits;
             nodes[newParent].height = (ushort)(nodes[sibling].height + 1);
@@ -640,30 +646,30 @@ namespace Box2D.NET
                 }
                 else
                 {
-                    nodes[oldParent].child2 = newParent;
+                    nodes[oldParent].cu.child2 = newParent;
                 }
 
                 nodes[newParent].child1 = sibling;
-                nodes[newParent].child2 = leaf;
-                nodes[sibling].parent = newParent;
-                nodes[leaf].parent = newParent;
+                nodes[newParent].cu.child2 = leaf;
+                nodes[sibling].pn.parent = newParent;
+                nodes[leaf].pn.parent = newParent;
             }
             else
             {
                 // The sibling was the root.
                 nodes[newParent].child1 = sibling;
-                nodes[newParent].child2 = leaf;
-                nodes[sibling].parent = newParent;
-                nodes[leaf].parent = newParent;
+                nodes[newParent].cu.child2 = leaf;
+                nodes[sibling].pn.parent = newParent;
+                nodes[leaf].pn.parent = newParent;
                 tree.root = newParent;
             }
 
             // Stage 3: walk back up the tree fixing heights and AABBs
-            int index = nodes[leaf].parent;
+            int index = nodes[leaf].pn.parent;
             while (index != B2_NULL_INDEX)
             {
                 int child1 = nodes[index].child1;
-                int child2 = nodes[index].child2;
+                int child2 = nodes[index].cu.child2;
 
                 Debug.Assert(child1 != B2_NULL_INDEX);
                 Debug.Assert(child2 != B2_NULL_INDEX);
@@ -678,7 +684,7 @@ namespace Box2D.NET
                     b2RotateNodes(tree, index);
                 }
 
-                index = nodes[index].parent;
+                index = nodes[index].pn.parent;
             }
         }
 
@@ -692,12 +698,12 @@ namespace Box2D.NET
 
             B2TreeNode[] nodes = tree.nodes;
 
-            int parent = nodes[leaf].parent;
-            int grandParent = nodes[parent].parent;
+            int parent = nodes[leaf].pn.parent;
+            int grandParent = nodes[parent].pn.parent;
             int sibling;
             if (nodes[parent].child1 == leaf)
             {
-                sibling = nodes[parent].child2;
+                sibling = nodes[parent].cu.child2;
             }
             else
             {
@@ -713,10 +719,10 @@ namespace Box2D.NET
                 }
                 else
                 {
-                    nodes[grandParent].child2 = sibling;
+                    nodes[grandParent].cu.child2 = sibling;
                 }
 
-                nodes[sibling].parent = grandParent;
+                nodes[sibling].pn.parent = grandParent;
                 b2FreeNode(tree, parent);
 
                 // Adjust ancestor bounds.
@@ -725,7 +731,7 @@ namespace Box2D.NET
                 {
                     ref B2TreeNode node = ref nodes[index];
                     ref B2TreeNode child1 = ref nodes[node.child1];
-                    ref B2TreeNode child2 = ref nodes[node.child2];
+                    ref B2TreeNode child2 = ref nodes[node.cu.child2];
 
                     // Fast union using SSE
                     //__m128 aabb1 = _mm_load_ps(&child1.aabb.lowerBound.x);
@@ -739,13 +745,13 @@ namespace Box2D.NET
                     node.categoryBits = child1.categoryBits | child2.categoryBits;
                     node.height = (ushort)(1 + b2MaxUInt16(child1.height, child2.height));
 
-                    index = node.parent;
+                    index = node.pn.parent;
                 }
             }
             else
             {
                 tree.root = sibling;
-                tree.nodes[sibling].parent = B2_NULL_INDEX;
+                tree.nodes[sibling].pn.parent = B2_NULL_INDEX;
                 b2FreeNode(tree, parent);
             }
         }
@@ -764,7 +770,7 @@ namespace Box2D.NET
             ref B2TreeNode node = ref tree.nodes[proxyId];
 
             node.aabb = aabb;
-            node.userData = userData;
+            node.cu.userData = userData;
             node.categoryBits = categoryBits;
             node.height = 0;
             node.flags = (ushort)(B2TreeNodeFlags.b2_allocatedNode | B2TreeNodeFlags.b2_leafNode);
@@ -829,12 +835,12 @@ namespace Box2D.NET
 
             nodes[proxyId].aabb = aabb;
 
-            int parentIndex = nodes[proxyId].parent;
+            int parentIndex = nodes[proxyId].pn.parent;
             while (parentIndex != B2_NULL_INDEX)
             {
                 bool changed = b2EnlargeAABB(ref nodes[parentIndex].aabb, aabb);
                 nodes[parentIndex].flags |= (int)B2TreeNodeFlags.b2_enlargedNode;
-                parentIndex = nodes[parentIndex].parent;
+                parentIndex = nodes[parentIndex].pn.parent;
 
                 if (changed == false)
                 {
@@ -851,7 +857,7 @@ namespace Box2D.NET
                 }
 
                 nodes[parentIndex].flags |= (int)B2TreeNodeFlags.b2_enlargedNode;
-                parentIndex = nodes[parentIndex].parent;
+                parentIndex = nodes[parentIndex].pn.parent;
             }
         }
 
@@ -904,7 +910,7 @@ namespace Box2D.NET
             }
 
             int height1 = b2ComputeHeight(tree, node.child1);
-            int height2 = b2ComputeHeight(tree, node.child2);
+            int height2 = b2ComputeHeight(tree, node.cu.child2);
             return 1 + b2MaxInt(height1, height2);
         }
 
@@ -918,7 +924,7 @@ namespace Box2D.NET
 
             if (index == tree.root)
             {
-                Debug.Assert(tree.nodes[index].parent == B2_NULL_INDEX);
+                Debug.Assert(tree.nodes[index].pn.parent == B2_NULL_INDEX);
             }
 
             ref B2TreeNode node = ref tree.nodes[index];
@@ -932,13 +938,13 @@ namespace Box2D.NET
             }
 
             int child1 = node.child1;
-            int child2 = node.child2;
+            int child2 = node.cu.child2;
 
             Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
             Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
 
-            Debug.Assert(tree.nodes[child1].parent == index);
-            Debug.Assert(tree.nodes[child2].parent == index);
+            Debug.Assert(tree.nodes[child1].pn.parent == index);
+            Debug.Assert(tree.nodes[child2].pn.parent == index);
 
             if (0 != ((tree.nodes[child1].flags | tree.nodes[child2].flags) & (ushort)B2TreeNodeFlags.b2_enlargedNode))
             {
@@ -965,7 +971,7 @@ namespace Box2D.NET
             }
 
             int child1 = node.child1;
-            int child2 = node.child2;
+            int child2 = node.cu.child2;
 
             Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
             Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
@@ -1010,7 +1016,7 @@ namespace Box2D.NET
             while (freeIndex != B2_NULL_INDEX)
             {
                 Debug.Assert(0 <= freeIndex && freeIndex < tree.nodeCapacity);
-                freeIndex = tree.nodes[freeIndex].next;
+                freeIndex = tree.nodes[freeIndex].pn.next;
                 ++freeCount;
             }
 
@@ -1061,7 +1067,7 @@ namespace Box2D.NET
         /// Get proxy user data
         public static int b2DynamicTree_GetUserData(B2DynamicTree tree, int proxyId)
         {
-            return tree.nodes[proxyId].userData;
+            return tree.nodes[proxyId].cu.userData;
         }
 
         /// Get the AABB of a proxy
@@ -1107,7 +1113,7 @@ namespace Box2D.NET
                     if (b2IsLeaf(ref node))
                     {
                         // callback to user code with proxy id
-                        bool proceed = callback(nodeId, node.userData, ref context);
+                        bool proceed = callback(nodeId, node.cu.userData, ref context);
                         result.leafVisits += 1;
 
                         if (proceed == false)
@@ -1120,7 +1126,7 @@ namespace Box2D.NET
                         if (stackCount < B2_TREE_STACK_SIZE - 1)
                         {
                             stack[stackCount++] = node.child1;
-                            stack[stackCount++] = node.child2;
+                            stack[stackCount++] = node.cu.child2;
                         }
                         else
                         {
@@ -1220,7 +1226,7 @@ namespace Box2D.NET
                 {
                     subInput.maxFraction = maxFraction;
 
-                    float value = callback(ref subInput, nodeId, node.userData, context);
+                    float value = callback(ref subInput, nodeId, node.cu.userData, context);
                     result.leafVisits += 1;
 
                     // The user may return -1 to indicate this shape should be skipped
@@ -1245,16 +1251,16 @@ namespace Box2D.NET
                     if (stackCount < B2_TREE_STACK_SIZE - 1)
                     {
                         B2Vec2 c1 = b2AABB_Center(nodes[node.child1].aabb);
-                        B2Vec2 c2 = b2AABB_Center(nodes[node.child2].aabb);
+                        B2Vec2 c2 = b2AABB_Center(nodes[node.cu.child2].aabb);
                         if (b2DistanceSquared(c1, p1) < b2DistanceSquared(c2, p1))
                         {
-                            stack[stackCount++] = node.child2;
+                            stack[stackCount++] = node.cu.child2;
                             stack[stackCount++] = node.child1;
                         }
                         else
                         {
                             stack[stackCount++] = node.child1;
-                            stack[stackCount++] = node.child2;
+                            stack[stackCount++] = node.cu.child2;
                         }
                     }
                     else
@@ -1364,7 +1370,7 @@ namespace Box2D.NET
                 {
                     subInput.maxFraction = maxFraction;
 
-                    float value = callback(ref subInput, nodeId, node.userData, context);
+                    float value = callback(ref subInput, nodeId, node.cu.userData, context);
                     stats.leafVisits += 1;
 
                     if (value == 0.0f)
@@ -1387,16 +1393,16 @@ namespace Box2D.NET
                     if (stackCount < B2_TREE_STACK_SIZE - 1)
                     {
                         B2Vec2 c1 = b2AABB_Center(nodes[node.child1].aabb);
-                        B2Vec2 c2 = b2AABB_Center(nodes[node.child2].aabb);
+                        B2Vec2 c2 = b2AABB_Center(nodes[node.cu.child2].aabb);
                         if (b2DistanceSquared(c1, p1) < b2DistanceSquared(c2, p1))
                         {
-                            stack[stackCount++] = node.child2;
+                            stack[stackCount++] = node.cu.child2;
                             stack[stackCount++] = node.child1;
                         }
                         else
                         {
                             stack[stackCount++] = node.child1;
-                            stack[stackCount++] = node.child2;
+                            stack[stackCount++] = node.cu.child2;
                         }
                     }
                     else
@@ -1701,7 +1707,7 @@ namespace Box2D.NET
 
             if (leafCount == 1)
             {
-                nodes[leafIndices[0]].parent = B2_NULL_INDEX;
+                nodes[leafIndices[0]].pn.parent = B2_NULL_INDEX;
                 return leafIndices[0];
             }
 
@@ -1755,19 +1761,19 @@ namespace Box2D.NET
                     else
                     {
                         Debug.Assert(parentItem.childCount == 1);
-                        Debug.Assert(parentNode.child2 == B2_NULL_INDEX);
-                        parentNode.child2 = item.nodeIndex;
+                        Debug.Assert(parentNode.cu.child2 == B2_NULL_INDEX);
+                        parentNode.cu.child2 = item.nodeIndex;
                     }
 
                     ref B2TreeNode node = ref nodes[item.nodeIndex];
 
-                    Debug.Assert(node.parent == B2_NULL_INDEX);
-                    node.parent = parentItem.nodeIndex;
+                    Debug.Assert(node.pn.parent == B2_NULL_INDEX);
+                    node.pn.parent = parentItem.nodeIndex;
 
                     Debug.Assert(node.child1 != B2_NULL_INDEX);
-                    Debug.Assert(node.child2 != B2_NULL_INDEX);
+                    Debug.Assert(node.cu.child2 != B2_NULL_INDEX);
                     ref B2TreeNode c1 = ref nodes[node.child1];
-                    ref B2TreeNode c2 = ref nodes[node.child2];
+                    ref B2TreeNode c2 = ref nodes[node.cu.child2];
 
                     node.aabb = b2AABB_Union(c1.aabb, c2.aabb);
                     node.height = (ushort)(1 + b2MaxUInt16(c1.height, c2.height));
@@ -1806,13 +1812,13 @@ namespace Box2D.NET
                         else
                         {
                             Debug.Assert(item.childCount == 1);
-                            Debug.Assert(node.child2 == B2_NULL_INDEX);
-                            node.child2 = childIndex;
+                            Debug.Assert(node.cu.child2 == B2_NULL_INDEX);
+                            node.cu.child2 = childIndex;
                         }
 
                         ref B2TreeNode childNode = ref nodes[childIndex];
-                        Debug.Assert(childNode.parent == B2_NULL_INDEX);
-                        childNode.parent = item.nodeIndex;
+                        Debug.Assert(childNode.pn.parent == B2_NULL_INDEX);
+                        childNode.pn.parent = item.nodeIndex;
                     }
                     else
                     {
@@ -1837,12 +1843,12 @@ namespace Box2D.NET
             }
 
             ref B2TreeNode rootNode = ref nodes[stack[0].nodeIndex];
-            Debug.Assert(rootNode.parent == B2_NULL_INDEX);
+            Debug.Assert(rootNode.pn.parent == B2_NULL_INDEX);
             Debug.Assert(rootNode.child1 != B2_NULL_INDEX);
-            Debug.Assert(rootNode.child2 != B2_NULL_INDEX);
+            Debug.Assert(rootNode.cu.child2 != B2_NULL_INDEX);
 
             ref B2TreeNode child1 = ref nodes[rootNode.child1];
-            ref B2TreeNode child2 = ref nodes[rootNode.child2];
+            ref B2TreeNode child2 = ref nodes[rootNode.cu.child2];
 
             rootNode.aabb = b2AABB_Union(child1.aabb, child2.aabb);
             rootNode.height = (ushort)(1 + b2MaxUInt16(child1.height, child2.height));
@@ -1919,7 +1925,7 @@ namespace Box2D.NET
                     leafCount += 1;
 
                     // Detach
-                    node.parent = B2_NULL_INDEX;
+                    node.pn.parent = B2_NULL_INDEX;
                 }
                 else
                 {
@@ -1930,7 +1936,7 @@ namespace Box2D.NET
 
                     if (stackCount < B2_TREE_STACK_SIZE)
                     {
-                        stack[stackCount++] = node.child2;
+                        stack[stackCount++] = node.cu.child2;
                     }
                     else
                     {
