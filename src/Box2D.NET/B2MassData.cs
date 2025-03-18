@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// This holds the mass data computed for a shape.
-    public class B2MassData // TODO: @ikpil class or struct
+    public struct B2MassData
     {
         /// The mass of the shape, usually in kilograms.
         public float mass;
@@ -15,10 +15,6 @@ namespace Box2D.NET
 
         /// The rotational inertia of the shape about the local origin.
         public float rotationalInertia;
-
-        public B2MassData()
-        {
-        }
 
         public B2MassData(float mass, B2Vec2 center, float rotationalInertia)
         {
