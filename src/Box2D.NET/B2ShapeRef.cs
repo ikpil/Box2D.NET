@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2ShapeRef
+    public struct B2ShapeRef
     {
         public int shapeId;
         public ushort generation;

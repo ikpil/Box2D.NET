@@ -296,7 +296,7 @@ namespace Box2D.NET
                 B2Sensor sensor = b2Array_Get(ref world.sensors, shape.sensorIndex);
                 for (int i = 0; i < sensor.overlaps2.count; ++i)
                 {
-                    B2ShapeRef @ref = sensor.overlaps2.data[i];
+                    ref readonly B2ShapeRef @ref = ref sensor.overlaps2.data[i];
                     B2SensorEndTouchEvent @event = new B2SensorEndTouchEvent()
                     {
                         sensorShapeId = new B2ShapeId(shapeId + 1, world.worldId, shape.generation),
@@ -1632,7 +1632,7 @@ namespace Box2D.NET
             B2Sensor sensor = b2Array_Get(ref world.sensors, shape.sensorIndex);
 
             int count = b2MinInt(sensor.overlaps2.count, capacity);
-            B2ShapeRef[] refs = sensor.overlaps2.data;
+            ref readonly B2ShapeRef[] refs = ref sensor.overlaps2.data;
             for (int i = 0; i < count; ++i)
             {
                 overlaps[i] = new B2ShapeId(refs[i].shapeId + 1, shapeId.world0, refs[i].generation);

@@ -91,10 +91,10 @@ namespace Box2D.NET
             return true;
         }
 
-        public static int b2CompareShapeRefs(B2ShapeRef a, B2ShapeRef b)
+        public static int b2CompareShapeRefs(ref B2ShapeRef a, ref B2ShapeRef b)
         {
-            B2ShapeRef sa = a;
-            B2ShapeRef sb = b;
+            ref readonly B2ShapeRef sa = ref a;
+            ref readonly B2ShapeRef sb = ref b;
 
             if (sa.shapeId < sb.shapeId)
             {
@@ -172,8 +172,8 @@ namespace Box2D.NET
                 {
                     for (int i = 0; i < count1; ++i)
                     {
-                        B2ShapeRef s1 = sensor.overlaps1.data[i];
-                        B2ShapeRef s2 = sensor.overlaps2.data[i];
+                        ref readonly B2ShapeRef s1 = ref sensor.overlaps1.data[i];
+                        ref readonly B2ShapeRef s2 = ref sensor.overlaps2.data[i];
 
                         if (s1.shapeId != s2.shapeId || s1.generation != s2.generation)
                         {
@@ -241,16 +241,16 @@ namespace Box2D.NET
 
                     int count1 = sensor.overlaps1.count;
                     int count2 = sensor.overlaps2.count;
-                    B2ShapeRef[] refs1 = sensor.overlaps1.data;
-                    B2ShapeRef[] refs2 = sensor.overlaps2.data;
+                    ref readonly B2ShapeRef[] refs1 = ref sensor.overlaps1.data;
+                    ref readonly B2ShapeRef[] refs2 = ref sensor.overlaps2.data;
 
                     // overlaps1 can have overlaps that end
                     // overlaps2 can have overlaps that begin
                     int index1 = 0, index2 = 0;
                     while (index1 < count1 && index2 < count2)
                     {
-                        B2ShapeRef r1 = refs1[index1];
-                        B2ShapeRef r2 = refs2[index2];
+                        ref readonly B2ShapeRef r1 = ref refs1[index1];
+                        ref readonly B2ShapeRef r2 = ref refs2[index2];
                         if (r1.shapeId == r2.shapeId)
                         {
                             if (r1.generation < r2.generation)
@@ -297,7 +297,7 @@ namespace Box2D.NET
                     while (index1 < count1)
                     {
                         // end
-                        B2ShapeRef r1 = refs1[index1];
+                        ref readonly B2ShapeRef r1 = ref refs1[index1];
                         B2ShapeId visitorId = new B2ShapeId(r1.shapeId + 1, world.worldId, r1.generation);
                         B2SensorEndTouchEvent @event = new B2SensorEndTouchEvent(sensorId, visitorId);
                         b2Array_Push(ref world.sensorEndEvents[world.endEventArrayIndex], @event);
@@ -307,7 +307,7 @@ namespace Box2D.NET
                     while (index2 < count2)
                     {
                         // begin
-                        B2ShapeRef r2 = refs2[index2];
+                        ref readonly B2ShapeRef r2 = ref refs2[index2];
                         B2ShapeId visitorId = new B2ShapeId(r2.shapeId + 1, world.worldId, r2.generation);
                         B2SensorBeginTouchEvent @event = new B2SensorBeginTouchEvent(sensorId, visitorId);
                         b2Array_Push(ref world.sensorBeginEvents, @event);
@@ -328,7 +328,7 @@ namespace Box2D.NET
             B2Sensor sensor = b2Array_Get(ref world.sensors, sensorShape.sensorIndex);
             for (int i = 0; i < sensor.overlaps2.count; ++i)
             {
-                B2ShapeRef @ref = sensor.overlaps2.data[i];
+                ref readonly B2ShapeRef @ref = ref sensor.overlaps2.data[i];
                 B2SensorEndTouchEvent @event = new B2SensorEndTouchEvent()
                 {
                     sensorShapeId = new B2ShapeId(sensorShape.id + 1, world.worldId, sensorShape.generation),
