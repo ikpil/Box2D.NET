@@ -16,7 +16,7 @@ namespace Box2D.NET.Memory
         public T v0001;
         public T v0002;
         public T v0003;
-        
+
         public int Length => Size;
 
         public ref T this[int index]
@@ -35,9 +35,9 @@ namespace Box2D.NET.Memory
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Span<T> AsSpan()
+        public Span<T> AsSpan()
         {
-            return new Span<T>(Unsafe.AsPointer(ref v0000), Size);
+            return MemoryMarshal.CreateSpan(ref v0000, Size);
         }
     }
 }

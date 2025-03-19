@@ -14,71 +14,71 @@ namespace Box2D.NET.Memory
     {
         public const int Size = 64;
 
-        public T v0000;
-        public T v0001;
-        public T v0002;
-        public T v0003;
-        public T v0004;
-        public T v0005;
-        public T v0006;
-        public T v0007;
-        public T v0008;
-        public T v0009;
-        public T v0010;
-        public T v0011;
-        public T v0012;
-        public T v0013;
-        public T v0014;
-        public T v0015;
-        public T v0016;
-        public T v0017;
-        public T v0018;
-        public T v0019;
-        public T v0020;
-        public T v0021;
-        public T v0022;
-        public T v0023;
-        public T v0024;
-        public T v0025;
-        public T v0026;
-        public T v0027;
-        public T v0028;
-        public T v0029;
-        public T v0030;
-        public T v0031;
-        public T v0032;
-        public T v0033;
-        public T v0034;
-        public T v0035;
-        public T v0036;
-        public T v0037;
-        public T v0038;
-        public T v0039;
-        public T v0040;
-        public T v0041;
-        public T v0042;
-        public T v0043;
-        public T v0044;
-        public T v0045;
-        public T v0046;
-        public T v0047;
-        public T v0048;
-        public T v0049;
-        public T v0050;
-        public T v0051;
-        public T v0052;
-        public T v0053;
-        public T v0054;
-        public T v0055;
-        public T v0056;
-        public T v0057;
-        public T v0058;
-        public T v0059;
-        public T v0060;
-        public T v0061;
-        public T v0062;
-        public T v0063;
-        
+        private T _v0000;
+        private T _v0001;
+        private T _v0002;
+        private T _v0003;
+        private T _v0004;
+        private T _v0005;
+        private T _v0006;
+        private T _v0007;
+        private T _v0008;
+        private T _v0009;
+        private T _v0010;
+        private T _v0011;
+        private T _v0012;
+        private T _v0013;
+        private T _v0014;
+        private T _v0015;
+        private T _v0016;
+        private T _v0017;
+        private T _v0018;
+        private T _v0019;
+        private T _v0020;
+        private T _v0021;
+        private T _v0022;
+        private T _v0023;
+        private T _v0024;
+        private T _v0025;
+        private T _v0026;
+        private T _v0027;
+        private T _v0028;
+        private T _v0029;
+        private T _v0030;
+        private T _v0031;
+        private T _v0032;
+        private T _v0033;
+        private T _v0034;
+        private T _v0035;
+        private T _v0036;
+        private T _v0037;
+        private T _v0038;
+        private T _v0039;
+        private T _v0040;
+        private T _v0041;
+        private T _v0042;
+        private T _v0043;
+        private T _v0044;
+        private T _v0045;
+        private T _v0046;
+        private T _v0047;
+        private T _v0048;
+        private T _v0049;
+        private T _v0050;
+        private T _v0051;
+        private T _v0052;
+        private T _v0053;
+        private T _v0054;
+        private T _v0055;
+        private T _v0056;
+        private T _v0057;
+        private T _v0058;
+        private T _v0059;
+        private T _v0060;
+        private T _v0061;
+        private T _v0062;
+        private T _v0063;
+
         public int Length => Size;
 
         public ref T this[int index]
@@ -93,13 +93,13 @@ namespace Box2D.NET.Memory
             if (0 > index || Size <= index)
                 throw new IndexOutOfRangeException();
 
-            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
+            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref _v0000), index));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Span<T> AsSpan()
+        public Span<T> AsSpan()
         {
-            return new Span<T>(Unsafe.AsPointer(ref v0000), Size);
+            return MemoryMarshal.CreateSpan(ref _v0000, Size);
         }
     }
 }

@@ -12,10 +12,10 @@ namespace Box2D.NET.Memory
     {
         public const int Size = 1;
 
-        public T v0000;
+        private T _v0000;
 
         public int Length => Size;
-        
+
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -28,13 +28,13 @@ namespace Box2D.NET.Memory
             if (0 > index || Size <= index)
                 throw new IndexOutOfRangeException();
 
-            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref v0000), index));
+            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref _v0000), index));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Span<T> AsSpan()
+        public Span<T> AsSpan()
         {
-            return new Span<T>(Unsafe.AsPointer(ref v0000), Size);
+            return MemoryMarshal.CreateSpan(ref _v0000, Size);
         }
     }
 }
