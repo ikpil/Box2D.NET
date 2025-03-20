@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.InteropServices;
 using Box2D.NET.Memory;
 
 namespace Box2D.NET
@@ -18,24 +19,24 @@ namespace Box2D.NET
 #else
     // scalar math
     // TODO: @ikpil, check SIMD
+    [StructLayout(LayoutKind.Sequential)]
     public struct B2FloatW
     {
-        private B2FixedArray4<float> _array;
-        public float X { get => _array.v0000; set => _array.v0000 = value; }
-        public float Y { get => _array.v0001; set => _array.v0001 = value; }
-        public float Z { get => _array.v0002; set => _array.v0002 = value; }
-        public float W { get => _array.v0003; set => _array.v0003 = value; }
+        public float X;
+        public float Y;
+        public float Z;
+        public float W;
 
 
         public B2FloatW(float x, float y, float z, float w)
         {
-            _array.v0000 = x;
-            _array.v0001 = y;
-            _array.v0002 = z;
-            _array.v0003 = w;
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
         }
 
-        public ref float this[int index] => ref _array[index];
+        public ref float this[int index] => ref MemoryMarshal.CreateSpan(ref X, 4)[index];
     }
 #endif
 }

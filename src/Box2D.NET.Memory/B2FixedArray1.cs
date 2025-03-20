@@ -19,16 +19,7 @@ namespace Box2D.NET.Memory
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref GetElement(index);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private unsafe ref T GetElement(int index)
-        {
-            if (0 > index || Size <= index)
-                throw new IndexOutOfRangeException();
-
-            return ref Unsafe.AsRef<T>(Unsafe.Add<T>(Unsafe.AsPointer(ref _v0000), index));
+            get => ref AsSpan()[index];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

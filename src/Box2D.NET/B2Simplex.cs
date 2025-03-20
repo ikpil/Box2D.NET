@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace Box2D.NET
 {
     /// Simplex from the GJK algorithm
+    [StructLayout(LayoutKind.Sequential)]
     public struct B2Simplex
     {
         public B2SimplexVertex v1;
