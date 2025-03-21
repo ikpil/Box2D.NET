@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using Box2D.NET.Memory;
-
 namespace Box2D.NET.Samples.Primitives;
 
 // Context for ray cast callbacks. Do what you want with this.

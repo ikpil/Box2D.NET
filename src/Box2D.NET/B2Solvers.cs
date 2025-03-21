@@ -7,7 +7,6 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Box2D.NET.Memory;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Atomics;

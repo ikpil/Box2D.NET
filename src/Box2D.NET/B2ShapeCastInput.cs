@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using Box2D.NET.Memory;
-
 namespace Box2D.NET
 {
     /// Low level shape cast input in generic form. This allows casting an arbitrary point

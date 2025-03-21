@@ -165,21 +165,21 @@ namespace Box2D.NET
             return world.inv_h * @base.wheelJoint.motorImpulse;
         }
 
-// Linear constraint (point-to-line)
-// d = pB - pA = xB + rB - xA - rA
-// C = dot(ay, d)
-// Cdot = dot(d, cross(wA, ay)) + dot(ay, vB + cross(wB, rB) - vA - cross(wA, rA))
-//      = -dot(ay, vA) - dot(cross(d + rA, ay), wA) + dot(ay, vB) + dot(cross(rB, ay), vB)
-// J = [-ay, -cross(d + rA, ay), ay, cross(rB, ay)]
+        // Linear constraint (point-to-line)
+        // d = pB - pA = xB + rB - xA - rA
+        // C = dot(ay, d)
+        // Cdot = dot(d, cross(wA, ay)) + dot(ay, vB + cross(wB, rB) - vA - cross(wA, rA))
+        //      = -dot(ay, vA) - dot(cross(d + rA, ay), wA) + dot(ay, vB) + dot(cross(rB, ay), vB)
+        // J = [-ay, -cross(d + rA, ay), ay, cross(rB, ay)]
 
-// Spring linear constraint
-// C = dot(ax, d)
-// Cdot = = -dot(ax, vA) - dot(cross(d + rA, ax), wA) + dot(ax, vB) + dot(cross(rB, ax), vB)
-// J = [-ax -cross(d+rA, ax) ax cross(rB, ax)]
+        // Spring linear constraint
+        // C = dot(ax, d)
+        // Cdot = = -dot(ax, vA) - dot(cross(d + rA, ax), wA) + dot(ax, vB) + dot(cross(rB, ax), vB)
+        // J = [-ax -cross(d+rA, ax) ax cross(rB, ax)]
 
-// Motor rotational constraint
-// Cdot = wB - wA
-// J = [0 0 -1 0 0 1]
+        // Motor rotational constraint
+        // Cdot = wB - wA
+        // J = [0 0 -1 0 0 1]
 
         public static void b2PrepareWheelJoint(B2JointSim @base, B2StepContext context)
         {

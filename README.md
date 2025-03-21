@@ -33,7 +33,6 @@
 
 Box2D.NET is divided into multiple modules, each contained in its own folder:
 
-  - [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) : A module providing efficient structures and APIs for memory and array management. 
   - [Box2D.NET](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET) : A C# port of the Box2D physics engine for 2D physics simulations.
   - [Box2D.NET.Shared](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Shared) : Shared code and utilities for Box2D.NET, for use in sample projects and by library users.
   - [Box2D.NET.Samples](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Samples) : Sample projects to showcase the features of Box2D.NET
@@ -54,8 +53,8 @@ dotnet run --project src/Box2D.NET.Samples --framework net9.0 -c Release
 
 ## 🛠️ Integration
 
-There are a few ways to integrate [Box2D.NET](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET) and [Box2D.NET.Memory](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Memory) into your project.
-Source integration is the most popular and most flexible. Additionally, NuGet installation will also be supported in the future.
+- There are a few ways to integrate [Box2D.NET](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET) into your project.
+- Source integration is the most popular and most flexible. Additionally, NuGet installation will also be supported in the future.
 
 ## 📚 Documentation & Links
 

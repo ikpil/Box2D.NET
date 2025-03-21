@@ -5,14 +5,21 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Box2D.NET.Memory
+namespace Box2D.NET
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct B2FixedArray1<T> where T : unmanaged
+    public struct B2FixedArray8<T> where T : unmanaged
     {
-        public const int Size = 1;
+        public const int Size = 8;
 
         private T _v0000;
+        private T _v0001;
+        private T _v0002;
+        private T _v0003;
+        private T _v0004;
+        private T _v0005;
+        private T _v0006;
+        private T _v0007;
 
         public int Length => Size;
 
@@ -27,5 +34,6 @@ namespace Box2D.NET.Memory
         {
             return MemoryMarshal.CreateSpan(ref _v0000, Size);
         }
+
     }
 }

@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using Box2D.NET.Memory;
-
 namespace Box2D.NET
 {
     /// A solid convex polygon. It is assumed that the interior of the polygon is to
