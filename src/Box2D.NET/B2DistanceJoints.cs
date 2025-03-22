@@ -20,7 +20,7 @@ namespace Box2D.NET
         public static void b2DistanceJoint_SetLength(B2JointId jointId, float length)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
             joint.length = b2ClampFloat(length, B2_LINEAR_SLOP, B2_HUGE);
             joint.impulse = 0.0f;
@@ -31,27 +31,27 @@ namespace Box2D.NET
         public static float b2DistanceJoint_GetLength(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.length;
         }
 
         public static void b2DistanceJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             joint.enableLimit = enableLimit;
         }
 
         public static bool b2DistanceJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return joint.distanceJoint.enableLimit;
+            return joint.uj.distanceJoint.enableLimit;
         }
 
         public static void b2DistanceJoint_SetLengthRange(B2JointId jointId, float minLength, float maxLength)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
             minLength = b2ClampFloat(minLength, B2_LINEAR_SLOP, B2_HUGE);
             maxLength = b2ClampFloat(maxLength, B2_LINEAR_SLOP, B2_HUGE);
@@ -65,14 +65,14 @@ namespace Box2D.NET
         public static float b2DistanceJoint_GetMinLength(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.minLength;
         }
 
         public static float b2DistanceJoint_GetMaxLength(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.maxLength;
         }
 
@@ -100,91 +100,91 @@ namespace Box2D.NET
         public static void b2DistanceJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            @base.distanceJoint.enableSpring = enableSpring;
+            @base.uj.distanceJoint.enableSpring = enableSpring;
         }
 
         public static bool b2DistanceJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return @base.distanceJoint.enableSpring;
+            return @base.uj.distanceJoint.enableSpring;
         }
 
         public static void b2DistanceJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            @base.distanceJoint.hertz = hertz;
+            @base.uj.distanceJoint.hertz = hertz;
         }
 
         public static void b2DistanceJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            @base.distanceJoint.dampingRatio = dampingRatio;
+            @base.uj.distanceJoint.dampingRatio = dampingRatio;
         }
 
         public static float b2DistanceJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.hertz;
         }
 
         public static float b2DistanceJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.dampingRatio;
         }
 
         public static void b2DistanceJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            if (enableMotor != joint.distanceJoint.enableMotor)
+            if (enableMotor != joint.uj.distanceJoint.enableMotor)
             {
-                joint.distanceJoint.enableMotor = enableMotor;
-                joint.distanceJoint.motorImpulse = 0.0f;
+                joint.uj.distanceJoint.enableMotor = enableMotor;
+                joint.uj.distanceJoint.motorImpulse = 0.0f;
             }
         }
 
         public static bool b2DistanceJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return joint.distanceJoint.enableMotor;
+            return joint.uj.distanceJoint.enableMotor;
         }
 
         public static void b2DistanceJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            joint.distanceJoint.motorSpeed = motorSpeed;
+            joint.uj.distanceJoint.motorSpeed = motorSpeed;
         }
 
         public static float b2DistanceJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return joint.distanceJoint.motorSpeed;
+            return joint.uj.distanceJoint.motorSpeed;
         }
 
         public static float b2DistanceJoint_GetMotorForce(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return world.inv_h * @base.distanceJoint.motorImpulse;
+            return world.inv_h * @base.uj.distanceJoint.motorImpulse;
         }
 
         public static void b2DistanceJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            joint.distanceJoint.maxMotorForce = force;
+            joint.uj.distanceJoint.maxMotorForce = force;
         }
 
         public static float b2DistanceJoint_GetMaxMotorForce(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            return joint.distanceJoint.maxMotorForce;
+            return joint.uj.distanceJoint.maxMotorForce;
         }
 
         public static B2Vec2 b2GetDistanceJointForce(B2World world, B2JointSim @base)
         {
-            ref readonly B2DistanceJoint joint = ref @base.distanceJoint;
+            ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
             B2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
@@ -245,7 +245,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
@@ -289,7 +289,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref readonly B2DistanceJoint joint = ref @base.distanceJoint;
+            ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
@@ -321,7 +321,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2DistanceJoint joint = ref @base.distanceJoint;
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
@@ -513,7 +513,7 @@ namespace Box2D.NET
         {
             Debug.Assert(@base.type == B2JointType.b2_distanceJoint);
 
-            ref readonly B2DistanceJoint joint = ref @base.distanceJoint;
+            ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

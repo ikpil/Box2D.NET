@@ -18,77 +18,77 @@ namespace Box2D.NET
         public static float b2WeldJoint_GetReferenceAngle(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.weldJoint.referenceAngle;
+            return joint.uj.weldJoint.referenceAngle;
         }
 
         public static void b2WeldJoint_SetReferenceAngle(B2JointId jointId, float angleInRadians)
         {
             Debug.Assert(b2IsValidFloat(angleInRadians));
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
+            joint.uj.weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
         }
 
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
             Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.weldJoint.linearHertz = hertz;
+            joint.uj.weldJoint.linearHertz = hertz;
         }
 
         public static float b2WeldJoint_GetLinearHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.weldJoint.linearHertz;
+            return joint.uj.weldJoint.linearHertz;
         }
 
         public static void b2WeldJoint_SetLinearDampingRatio(B2JointId jointId, float dampingRatio)
         {
             Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.weldJoint.linearDampingRatio = dampingRatio;
+            joint.uj.weldJoint.linearDampingRatio = dampingRatio;
         }
 
         public static float b2WeldJoint_GetLinearDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.weldJoint.linearDampingRatio;
+            return joint.uj.weldJoint.linearDampingRatio;
         }
 
         public static void b2WeldJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
             Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.weldJoint.angularHertz = hertz;
+            joint.uj.weldJoint.angularHertz = hertz;
         }
 
         public static float b2WeldJoint_GetAngularHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.weldJoint.angularHertz;
+            return joint.uj.weldJoint.angularHertz;
         }
 
         public static void b2WeldJoint_SetAngularDampingRatio(B2JointId jointId, float dampingRatio)
         {
             Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.weldJoint.angularDampingRatio = dampingRatio;
+            joint.uj.weldJoint.angularDampingRatio = dampingRatio;
         }
 
         public static float b2WeldJoint_GetAngularDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.weldJoint.angularDampingRatio;
+            return joint.uj.weldJoint.angularDampingRatio;
         }
 
         public static B2Vec2 b2GetWeldJointForce(B2World world, B2JointSim @base)
         {
-            B2Vec2 force = b2MulSV(world.inv_h, @base.weldJoint.linearImpulse);
+            B2Vec2 force = b2MulSV(world.inv_h, @base.uj.weldJoint.linearImpulse);
             return force;
         }
 
         public static float b2GetWeldJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.weldJoint.angularImpulse;
+            return world.inv_h * @base.uj.weldJoint.angularImpulse;
         }
 
 // Point-to-point constraint
@@ -138,7 +138,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2WeldJoint joint = ref @base.weldJoint;
+            ref B2WeldJoint joint = ref @base.uj.weldJoint;
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
@@ -189,7 +189,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref readonly B2WeldJoint joint = ref @base.weldJoint;
+            ref readonly B2WeldJoint joint = ref @base.uj.weldJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -216,7 +216,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2WeldJoint joint = ref @base.weldJoint;
+            ref B2WeldJoint joint = ref @base.uj.weldJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];

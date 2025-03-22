@@ -18,72 +18,72 @@ namespace Box2D.NET
         public static void b2MotorJoint_SetLinearOffset(B2JointId jointId, B2Vec2 linearOffset)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.motorJoint.linearOffset = linearOffset;
+            joint.uj.motorJoint.linearOffset = linearOffset;
         }
 
         public static B2Vec2 b2MotorJoint_GetLinearOffset(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            return joint.motorJoint.linearOffset;
+            return joint.uj.motorJoint.linearOffset;
         }
 
         public static void b2MotorJoint_SetAngularOffset(B2JointId jointId, float angularOffset)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.motorJoint.angularOffset = b2ClampFloat(angularOffset, -B2_PI, B2_PI);
+            joint.uj.motorJoint.angularOffset = b2ClampFloat(angularOffset, -B2_PI, B2_PI);
         }
 
         public static float b2MotorJoint_GetAngularOffset(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            return joint.motorJoint.angularOffset;
+            return joint.uj.motorJoint.angularOffset;
         }
 
         public static void b2MotorJoint_SetMaxForce(B2JointId jointId, float maxForce)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.motorJoint.maxForce = b2MaxFloat(0.0f, maxForce);
+            joint.uj.motorJoint.maxForce = b2MaxFloat(0.0f, maxForce);
         }
 
         public static float b2MotorJoint_GetMaxForce(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            return joint.motorJoint.maxForce;
+            return joint.uj.motorJoint.maxForce;
         }
 
         public static void b2MotorJoint_SetMaxTorque(B2JointId jointId, float maxTorque)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.motorJoint.maxTorque = b2MaxFloat(0.0f, maxTorque);
+            joint.uj.motorJoint.maxTorque = b2MaxFloat(0.0f, maxTorque);
         }
 
         public static float b2MotorJoint_GetMaxTorque(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            return joint.motorJoint.maxTorque;
+            return joint.uj.motorJoint.maxTorque;
         }
 
         public static void b2MotorJoint_SetCorrectionFactor(B2JointId jointId, float correctionFactor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.motorJoint.correctionFactor = b2ClampFloat(correctionFactor, 0.0f, 1.0f);
+            joint.uj.motorJoint.correctionFactor = b2ClampFloat(correctionFactor, 0.0f, 1.0f);
         }
 
         public static float b2MotorJoint_GetCorrectionFactor(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            return joint.motorJoint.correctionFactor;
+            return joint.uj.motorJoint.correctionFactor;
         }
 
         public static B2Vec2 b2GetMotorJointForce(B2World world, B2JointSim @base)
         {
-            B2Vec2 force = b2MulSV(world.inv_h, @base.motorJoint.linearImpulse);
+            B2Vec2 force = b2MulSV(world.inv_h, @base.uj.motorJoint.linearImpulse);
             return force;
         }
 
         public static float b2GetMotorJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.motorJoint.angularImpulse;
+            return world.inv_h * @base.uj.motorJoint.angularImpulse;
         }
 
 // Point-to-point constraint
@@ -134,7 +134,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2MotorJoint joint = ref @base.motorJoint;
+            ref B2MotorJoint joint = ref @base.uj.motorJoint;
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
@@ -171,7 +171,7 @@ namespace Box2D.NET
             float iA = @base.invIA;
             float iB = @base.invIB;
 
-            ref readonly B2MotorJoint joint = ref @base.motorJoint;
+            ref readonly B2MotorJoint joint = ref @base.uj.motorJoint;
 
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
@@ -201,7 +201,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2MotorJoint joint = ref @base.motorJoint;
+            ref B2MotorJoint joint = ref @base.uj.motorJoint;
             B2BodyState bodyA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState bodyB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 

@@ -21,18 +21,10 @@ namespace Box2D.NET
 
         public float invMassA, invMassB;
         public float invIA, invIB;
-        
+
+
         // TODO: @ikpil, check union
-        // union
-        // {
-        public B2DistanceJoint distanceJoint;
-        public B2MotorJoint motorJoint;
-        public B2MouseJoint mouseJoint;
-        public B2RevoluteJoint revoluteJoint;
-        public B2PrismaticJoint prismaticJoint;
-        public B2WeldJoint weldJoint;
-        public B2WheelJoint wheelJoint;
-        //};
+        public B2JointUnion uj;
 
         public void Clear()
         {
@@ -46,15 +38,9 @@ namespace Box2D.NET
             invMassB = 0.0f;
             invIA = 0.0f;
             invIB = 0.0f;
-            distanceJoint = new B2DistanceJoint();
-            motorJoint = new B2MotorJoint();
-            mouseJoint = new B2MouseJoint();
-            revoluteJoint = new B2RevoluteJoint();
-            prismaticJoint = new B2PrismaticJoint();
-            weldJoint = new B2WeldJoint();
-            wheelJoint = new B2WheelJoint();
+            uj = new B2JointUnion();
         }
-        
+
         public void CopyFrom(B2JointSim other)
         {
             jointId = other.jointId;
@@ -67,13 +53,7 @@ namespace Box2D.NET
             invMassB = other.invMassB;
             invIA = other.invIA;
             invIB = other.invIB;
-            distanceJoint = other.distanceJoint;
-            motorJoint = other.motorJoint;
-            mouseJoint = other.mouseJoint;
-            revoluteJoint = other.revoluteJoint;
-            prismaticJoint = other.prismaticJoint;
-            weldJoint = other.weldJoint;
-            wheelJoint = other.wheelJoint;
+            uj = other.uj;
         }
     }
 }

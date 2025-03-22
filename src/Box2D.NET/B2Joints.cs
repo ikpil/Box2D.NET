@@ -378,21 +378,21 @@ namespace Box2D.NET
             joint.localOriginAnchorB = def.localAnchorB;
 
             B2DistanceJoint empty = new B2DistanceJoint();
-            joint.distanceJoint = empty;
-            joint.distanceJoint.length = b2MaxFloat(def.length, B2_LINEAR_SLOP);
-            joint.distanceJoint.hertz = def.hertz;
-            joint.distanceJoint.dampingRatio = def.dampingRatio;
-            joint.distanceJoint.minLength = b2MaxFloat(def.minLength, B2_LINEAR_SLOP);
-            joint.distanceJoint.maxLength = b2MaxFloat(def.minLength, def.maxLength);
-            joint.distanceJoint.maxMotorForce = def.maxMotorForce;
-            joint.distanceJoint.motorSpeed = def.motorSpeed;
-            joint.distanceJoint.enableSpring = def.enableSpring;
-            joint.distanceJoint.enableLimit = def.enableLimit;
-            joint.distanceJoint.enableMotor = def.enableMotor;
-            joint.distanceJoint.impulse = 0.0f;
-            joint.distanceJoint.lowerImpulse = 0.0f;
-            joint.distanceJoint.upperImpulse = 0.0f;
-            joint.distanceJoint.motorImpulse = 0.0f;
+            joint.uj.distanceJoint = empty;
+            joint.uj.distanceJoint.length = b2MaxFloat(def.length, B2_LINEAR_SLOP);
+            joint.uj.distanceJoint.hertz = def.hertz;
+            joint.uj.distanceJoint.dampingRatio = def.dampingRatio;
+            joint.uj.distanceJoint.minLength = b2MaxFloat(def.minLength, B2_LINEAR_SLOP);
+            joint.uj.distanceJoint.maxLength = b2MaxFloat(def.minLength, def.maxLength);
+            joint.uj.distanceJoint.maxMotorForce = def.maxMotorForce;
+            joint.uj.distanceJoint.motorSpeed = def.motorSpeed;
+            joint.uj.distanceJoint.enableSpring = def.enableSpring;
+            joint.uj.distanceJoint.enableLimit = def.enableLimit;
+            joint.uj.distanceJoint.enableMotor = def.enableMotor;
+            joint.uj.distanceJoint.impulse = 0.0f;
+            joint.uj.distanceJoint.lowerImpulse = 0.0f;
+            joint.uj.distanceJoint.upperImpulse = 0.0f;
+            joint.uj.distanceJoint.motorImpulse = 0.0f;
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -425,12 +425,12 @@ namespace Box2D.NET
             joint.type = B2JointType.b2_motorJoint;
             joint.localOriginAnchorA = new B2Vec2(0.0f, 0.0f);
             joint.localOriginAnchorB = new B2Vec2(0.0f, 0.0f);
-            joint.motorJoint = new B2MotorJoint();
-            joint.motorJoint.linearOffset = def.linearOffset;
-            joint.motorJoint.angularOffset = def.angularOffset;
-            joint.motorJoint.maxForce = def.maxForce;
-            joint.motorJoint.maxTorque = def.maxTorque;
-            joint.motorJoint.correctionFactor = b2ClampFloat(def.correctionFactor, 0.0f, 1.0f);
+            joint.uj.motorJoint = new B2MotorJoint();
+            joint.uj.motorJoint.linearOffset = def.linearOffset;
+            joint.uj.motorJoint.angularOffset = def.angularOffset;
+            joint.uj.motorJoint.maxForce = def.maxForce;
+            joint.uj.motorJoint.maxTorque = def.maxTorque;
+            joint.uj.motorJoint.correctionFactor = b2ClampFloat(def.correctionFactor, 0.0f, 1.0f);
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -468,11 +468,11 @@ namespace Box2D.NET
             joint.localOriginAnchorB = b2InvTransformPoint(transformB, def.target);
 
             B2MouseJoint empty = new B2MouseJoint();
-            joint.mouseJoint = empty;
-            joint.mouseJoint.targetA = def.target;
-            joint.mouseJoint.hertz = def.hertz;
-            joint.mouseJoint.dampingRatio = def.dampingRatio;
-            joint.mouseJoint.maxForce = def.maxForce;
+            joint.uj.mouseJoint = empty;
+            joint.uj.mouseJoint.targetA = def.target;
+            joint.uj.mouseJoint.hertz = def.hertz;
+            joint.uj.mouseJoint.dampingRatio = def.dampingRatio;
+            joint.uj.mouseJoint.maxForce = def.maxForce;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
@@ -529,26 +529,26 @@ namespace Box2D.NET
             joint.localOriginAnchorB = def.localAnchorB;
 
             B2RevoluteJoint empty = new B2RevoluteJoint();
-            joint.revoluteJoint = empty;
+            joint.uj.revoluteJoint = empty;
 
-            joint.revoluteJoint.referenceAngle = b2ClampFloat(def.referenceAngle, -B2_PI, B2_PI);
-            joint.revoluteJoint.linearImpulse = b2Vec2_zero;
-            joint.revoluteJoint.axialMass = 0.0f;
-            joint.revoluteJoint.springImpulse = 0.0f;
-            joint.revoluteJoint.motorImpulse = 0.0f;
-            joint.revoluteJoint.lowerImpulse = 0.0f;
-            joint.revoluteJoint.upperImpulse = 0.0f;
-            joint.revoluteJoint.hertz = def.hertz;
-            joint.revoluteJoint.dampingRatio = def.dampingRatio;
-            joint.revoluteJoint.lowerAngle = b2MinFloat(def.lowerAngle, def.upperAngle);
-            joint.revoluteJoint.upperAngle = b2MaxFloat(def.lowerAngle, def.upperAngle);
-            joint.revoluteJoint.lowerAngle = b2ClampFloat(joint.revoluteJoint.lowerAngle, -B2_PI, B2_PI);
-            joint.revoluteJoint.upperAngle = b2ClampFloat(joint.revoluteJoint.upperAngle, -B2_PI, B2_PI);
-            joint.revoluteJoint.maxMotorTorque = def.maxMotorTorque;
-            joint.revoluteJoint.motorSpeed = def.motorSpeed;
-            joint.revoluteJoint.enableSpring = def.enableSpring;
-            joint.revoluteJoint.enableLimit = def.enableLimit;
-            joint.revoluteJoint.enableMotor = def.enableMotor;
+            joint.uj.revoluteJoint.referenceAngle = b2ClampFloat(def.referenceAngle, -B2_PI, B2_PI);
+            joint.uj.revoluteJoint.linearImpulse = b2Vec2_zero;
+            joint.uj.revoluteJoint.axialMass = 0.0f;
+            joint.uj.revoluteJoint.springImpulse = 0.0f;
+            joint.uj.revoluteJoint.motorImpulse = 0.0f;
+            joint.uj.revoluteJoint.lowerImpulse = 0.0f;
+            joint.uj.revoluteJoint.upperImpulse = 0.0f;
+            joint.uj.revoluteJoint.hertz = def.hertz;
+            joint.uj.revoluteJoint.dampingRatio = def.dampingRatio;
+            joint.uj.revoluteJoint.lowerAngle = b2MinFloat(def.lowerAngle, def.upperAngle);
+            joint.uj.revoluteJoint.upperAngle = b2MaxFloat(def.lowerAngle, def.upperAngle);
+            joint.uj.revoluteJoint.lowerAngle = b2ClampFloat(joint.uj.revoluteJoint.lowerAngle, -B2_PI, B2_PI);
+            joint.uj.revoluteJoint.upperAngle = b2ClampFloat(joint.uj.revoluteJoint.upperAngle, -B2_PI, B2_PI);
+            joint.uj.revoluteJoint.maxMotorTorque = def.maxMotorTorque;
+            joint.uj.revoluteJoint.motorSpeed = def.motorSpeed;
+            joint.uj.revoluteJoint.enableSpring = def.enableSpring;
+            joint.uj.revoluteJoint.enableLimit = def.enableLimit;
+            joint.uj.revoluteJoint.enableMotor = def.enableMotor;
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -583,25 +583,25 @@ namespace Box2D.NET
             joint.localOriginAnchorB = def.localAnchorB;
 
             B2PrismaticJoint empty = new B2PrismaticJoint();
-            joint.prismaticJoint = empty;
+            joint.uj.prismaticJoint = empty;
 
-            joint.prismaticJoint.localAxisA = b2Normalize(def.localAxisA);
-            joint.prismaticJoint.referenceAngle = def.referenceAngle;
-            joint.prismaticJoint.impulse = b2Vec2_zero;
-            joint.prismaticJoint.axialMass = 0.0f;
-            joint.prismaticJoint.springImpulse = 0.0f;
-            joint.prismaticJoint.motorImpulse = 0.0f;
-            joint.prismaticJoint.lowerImpulse = 0.0f;
-            joint.prismaticJoint.upperImpulse = 0.0f;
-            joint.prismaticJoint.hertz = def.hertz;
-            joint.prismaticJoint.dampingRatio = def.dampingRatio;
-            joint.prismaticJoint.lowerTranslation = def.lowerTranslation;
-            joint.prismaticJoint.upperTranslation = def.upperTranslation;
-            joint.prismaticJoint.maxMotorForce = def.maxMotorForce;
-            joint.prismaticJoint.motorSpeed = def.motorSpeed;
-            joint.prismaticJoint.enableSpring = def.enableSpring;
-            joint.prismaticJoint.enableLimit = def.enableLimit;
-            joint.prismaticJoint.enableMotor = def.enableMotor;
+            joint.uj.prismaticJoint.localAxisA = b2Normalize(def.localAxisA);
+            joint.uj.prismaticJoint.referenceAngle = def.referenceAngle;
+            joint.uj.prismaticJoint.impulse = b2Vec2_zero;
+            joint.uj.prismaticJoint.axialMass = 0.0f;
+            joint.uj.prismaticJoint.springImpulse = 0.0f;
+            joint.uj.prismaticJoint.motorImpulse = 0.0f;
+            joint.uj.prismaticJoint.lowerImpulse = 0.0f;
+            joint.uj.prismaticJoint.upperImpulse = 0.0f;
+            joint.uj.prismaticJoint.hertz = def.hertz;
+            joint.uj.prismaticJoint.dampingRatio = def.dampingRatio;
+            joint.uj.prismaticJoint.lowerTranslation = def.lowerTranslation;
+            joint.uj.prismaticJoint.upperTranslation = def.upperTranslation;
+            joint.uj.prismaticJoint.maxMotorForce = def.maxMotorForce;
+            joint.uj.prismaticJoint.motorSpeed = def.motorSpeed;
+            joint.uj.prismaticJoint.enableSpring = def.enableSpring;
+            joint.uj.prismaticJoint.enableLimit = def.enableLimit;
+            joint.uj.prismaticJoint.enableMotor = def.enableMotor;
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -636,14 +636,14 @@ namespace Box2D.NET
             joint.localOriginAnchorB = def.localAnchorB;
 
             B2WeldJoint empty = new B2WeldJoint();
-            joint.weldJoint = empty;
-            joint.weldJoint.referenceAngle = def.referenceAngle;
-            joint.weldJoint.linearHertz = def.linearHertz;
-            joint.weldJoint.linearDampingRatio = def.linearDampingRatio;
-            joint.weldJoint.angularHertz = def.angularHertz;
-            joint.weldJoint.angularDampingRatio = def.angularDampingRatio;
-            joint.weldJoint.linearImpulse = b2Vec2_zero;
-            joint.weldJoint.angularImpulse = 0.0f;
+            joint.uj.weldJoint = empty;
+            joint.uj.weldJoint.referenceAngle = def.referenceAngle;
+            joint.uj.weldJoint.linearHertz = def.linearHertz;
+            joint.uj.weldJoint.linearDampingRatio = def.linearDampingRatio;
+            joint.uj.weldJoint.angularHertz = def.angularHertz;
+            joint.uj.weldJoint.angularDampingRatio = def.angularDampingRatio;
+            joint.uj.weldJoint.linearImpulse = b2Vec2_zero;
+            joint.uj.weldJoint.angularImpulse = 0.0f;
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -677,22 +677,22 @@ namespace Box2D.NET
             joint.localOriginAnchorA = def.localAnchorA;
             joint.localOriginAnchorB = def.localAnchorB;
 
-            joint.wheelJoint = new B2WheelJoint();
-            joint.wheelJoint.localAxisA = b2Normalize(def.localAxisA);
-            joint.wheelJoint.perpMass = 0.0f;
-            joint.wheelJoint.axialMass = 0.0f;
-            joint.wheelJoint.motorImpulse = 0.0f;
-            joint.wheelJoint.lowerImpulse = 0.0f;
-            joint.wheelJoint.upperImpulse = 0.0f;
-            joint.wheelJoint.lowerTranslation = def.lowerTranslation;
-            joint.wheelJoint.upperTranslation = def.upperTranslation;
-            joint.wheelJoint.maxMotorTorque = def.maxMotorTorque;
-            joint.wheelJoint.motorSpeed = def.motorSpeed;
-            joint.wheelJoint.hertz = def.hertz;
-            joint.wheelJoint.dampingRatio = def.dampingRatio;
-            joint.wheelJoint.enableSpring = def.enableSpring;
-            joint.wheelJoint.enableLimit = def.enableLimit;
-            joint.wheelJoint.enableMotor = def.enableMotor;
+            joint.uj.wheelJoint = new B2WheelJoint();
+            joint.uj.wheelJoint.localAxisA = b2Normalize(def.localAxisA);
+            joint.uj.wheelJoint.perpMass = 0.0f;
+            joint.uj.wheelJoint.axialMass = 0.0f;
+            joint.uj.wheelJoint.motorImpulse = 0.0f;
+            joint.uj.wheelJoint.lowerImpulse = 0.0f;
+            joint.uj.wheelJoint.upperImpulse = 0.0f;
+            joint.uj.wheelJoint.lowerTranslation = def.lowerTranslation;
+            joint.uj.wheelJoint.upperTranslation = def.upperTranslation;
+            joint.uj.wheelJoint.maxMotorTorque = def.maxMotorTorque;
+            joint.uj.wheelJoint.motorSpeed = def.motorSpeed;
+            joint.uj.wheelJoint.hertz = def.hertz;
+            joint.uj.wheelJoint.dampingRatio = def.dampingRatio;
+            joint.uj.wheelJoint.enableSpring = def.enableSpring;
+            joint.uj.wheelJoint.enableLimit = def.enableLimit;
+            joint.uj.wheelJoint.enableMotor = def.enableMotor;
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
             if (def.collideConnected == false)
@@ -1227,7 +1227,7 @@ namespace Box2D.NET
 
                 case B2JointType.b2_mouseJoint:
                 {
-                    B2Vec2 target = jointSim.mouseJoint.targetA;
+                    B2Vec2 target = jointSim.uj.mouseJoint.targetA;
 
                     B2HexColor c1 = B2HexColor.b2_colorGreen;
                     draw.DrawPoint(target, 4.0f, c1, draw.context);

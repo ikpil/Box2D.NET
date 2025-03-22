@@ -18,63 +18,63 @@ namespace Box2D.NET
         {
             Debug.Assert(b2IsValidVec2(target));
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            @base.mouseJoint.targetA = target;
+            @base.uj.mouseJoint.targetA = target;
         }
 
         public static B2Vec2 b2MouseJoint_GetTarget(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            return @base.mouseJoint.targetA;
+            return @base.uj.mouseJoint.targetA;
         }
 
         public static void b2MouseJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            @base.mouseJoint.hertz = hertz;
+            @base.uj.mouseJoint.hertz = hertz;
         }
 
         public static float b2MouseJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            return @base.mouseJoint.hertz;
+            return @base.uj.mouseJoint.hertz;
         }
 
         public static void b2MouseJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            @base.mouseJoint.dampingRatio = dampingRatio;
+            @base.uj.mouseJoint.dampingRatio = dampingRatio;
         }
 
         public static float b2MouseJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            return @base.mouseJoint.dampingRatio;
+            return @base.uj.mouseJoint.dampingRatio;
         }
 
         public static void b2MouseJoint_SetMaxForce(B2JointId jointId, float maxForce)
         {
             Debug.Assert(b2IsValidFloat(maxForce) && maxForce >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            @base.mouseJoint.maxForce = maxForce;
+            @base.uj.mouseJoint.maxForce = maxForce;
         }
 
         public static float b2MouseJoint_GetMaxForce(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
-            return @base.mouseJoint.maxForce;
+            return @base.uj.mouseJoint.maxForce;
         }
 
         public static B2Vec2 b2GetMouseJointForce(B2World world, B2JointSim @base)
         {
-            B2Vec2 force = b2MulSV(world.inv_h, @base.mouseJoint.linearImpulse);
+            B2Vec2 force = b2MulSV(world.inv_h, @base.uj.mouseJoint.linearImpulse);
             return force;
         }
 
         public static float b2GetMouseJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.mouseJoint.angularImpulse;
+            return world.inv_h * @base.uj.mouseJoint.angularImpulse;
         }
 
         public static void b2PrepareMouseJoint(B2JointSim @base, B2StepContext context)
@@ -97,7 +97,7 @@ namespace Box2D.NET
             @base.invMassB = bodySimB.invMass;
             @base.invIB = bodySimB.invInertia;
 
-            ref B2MouseJoint joint = ref @base.mouseJoint;
+            ref B2MouseJoint joint = ref @base.uj.mouseJoint;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
             joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
 
@@ -137,7 +137,7 @@ namespace Box2D.NET
             float mB = @base.invMassB;
             float iB = @base.invIB;
 
-            ref readonly B2MouseJoint joint = ref @base.mouseJoint;
+            ref readonly B2MouseJoint joint = ref @base.uj.mouseJoint;
 
             B2BodyState stateB = context.states[joint.indexB];
             B2Vec2 vB = stateB.linearVelocity;
@@ -158,7 +158,7 @@ namespace Box2D.NET
             float mB = @base.invMassB;
             float iB = @base.invIB;
 
-            ref B2MouseJoint joint = ref @base.mouseJoint;
+            ref B2MouseJoint joint = ref @base.uj.mouseJoint;
             B2BodyState stateB = context.states[joint.indexB];
 
             B2Vec2 vB = stateB.linearVelocity;

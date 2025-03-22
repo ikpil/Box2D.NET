@@ -20,134 +20,134 @@ namespace Box2D.NET
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
 
-            if (enableSpring != joint.wheelJoint.enableSpring)
+            if (enableSpring != joint.uj.wheelJoint.enableSpring)
             {
-                joint.wheelJoint.enableSpring = enableSpring;
-                joint.wheelJoint.springImpulse = 0.0f;
+                joint.uj.wheelJoint.enableSpring = enableSpring;
+                joint.uj.wheelJoint.springImpulse = 0.0f;
             }
         }
 
         public static bool b2WheelJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.enableSpring;
+            return joint.uj.wheelJoint.enableSpring;
         }
 
         public static void b2WheelJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            joint.wheelJoint.hertz = hertz;
+            joint.uj.wheelJoint.hertz = hertz;
         }
 
         public static float b2WheelJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.hertz;
+            return joint.uj.wheelJoint.hertz;
         }
 
         public static void b2WheelJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            joint.wheelJoint.dampingRatio = dampingRatio;
+            joint.uj.wheelJoint.dampingRatio = dampingRatio;
         }
 
         public static float b2WheelJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.dampingRatio;
+            return joint.uj.wheelJoint.dampingRatio;
         }
 
         public static void b2WheelJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            if (joint.wheelJoint.enableLimit != enableLimit)
+            if (joint.uj.wheelJoint.enableLimit != enableLimit)
             {
-                joint.wheelJoint.lowerImpulse = 0.0f;
-                joint.wheelJoint.upperImpulse = 0.0f;
-                joint.wheelJoint.enableLimit = enableLimit;
+                joint.uj.wheelJoint.lowerImpulse = 0.0f;
+                joint.uj.wheelJoint.upperImpulse = 0.0f;
+                joint.uj.wheelJoint.enableLimit = enableLimit;
             }
         }
 
         public static bool b2WheelJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.enableLimit;
+            return joint.uj.wheelJoint.enableLimit;
         }
 
         public static float b2WheelJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.lowerTranslation;
+            return joint.uj.wheelJoint.lowerTranslation;
         }
 
         public static float b2WheelJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.upperTranslation;
+            return joint.uj.wheelJoint.upperTranslation;
         }
 
         public static void b2WheelJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            if (lower != joint.wheelJoint.lowerTranslation || upper != joint.wheelJoint.upperTranslation)
+            if (lower != joint.uj.wheelJoint.lowerTranslation || upper != joint.uj.wheelJoint.upperTranslation)
             {
-                joint.wheelJoint.lowerTranslation = b2MinFloat(lower, upper);
-                joint.wheelJoint.upperTranslation = b2MaxFloat(lower, upper);
-                joint.wheelJoint.lowerImpulse = 0.0f;
-                joint.wheelJoint.upperImpulse = 0.0f;
+                joint.uj.wheelJoint.lowerTranslation = b2MinFloat(lower, upper);
+                joint.uj.wheelJoint.upperTranslation = b2MaxFloat(lower, upper);
+                joint.uj.wheelJoint.lowerImpulse = 0.0f;
+                joint.uj.wheelJoint.upperImpulse = 0.0f;
             }
         }
 
         public static void b2WheelJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            if (joint.wheelJoint.enableMotor != enableMotor)
+            if (joint.uj.wheelJoint.enableMotor != enableMotor)
             {
-                joint.wheelJoint.motorImpulse = 0.0f;
-                joint.wheelJoint.enableMotor = enableMotor;
+                joint.uj.wheelJoint.motorImpulse = 0.0f;
+                joint.uj.wheelJoint.enableMotor = enableMotor;
             }
         }
 
         public static bool b2WheelJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.enableMotor;
+            return joint.uj.wheelJoint.enableMotor;
         }
 
         public static void b2WheelJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            joint.wheelJoint.motorSpeed = motorSpeed;
+            joint.uj.wheelJoint.motorSpeed = motorSpeed;
         }
 
         public static float b2WheelJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.motorSpeed;
+            return joint.uj.wheelJoint.motorSpeed;
         }
 
         public static float b2WheelJoint_GetMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return world.inv_h * joint.wheelJoint.motorImpulse;
+            return world.inv_h * joint.uj.wheelJoint.motorImpulse;
         }
 
         public static void b2WheelJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            joint.wheelJoint.maxMotorTorque = torque;
+            joint.uj.wheelJoint.maxMotorTorque = torque;
         }
 
         public static float b2WheelJoint_GetMaxMotorTorque(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            return joint.wheelJoint.maxMotorTorque;
+            return joint.uj.wheelJoint.maxMotorTorque;
         }
 
         public static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
-            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             // This is a frame behind
             B2Vec2 axisA = joint.axisA;
@@ -162,7 +162,7 @@ namespace Box2D.NET
 
         public static float b2GetWheelJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.wheelJoint.motorImpulse;
+            return world.inv_h * @base.uj.wheelJoint.motorImpulse;
         }
 
         // Linear constraint (point-to-line)
@@ -214,7 +214,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2WheelJoint joint = ref @base.wheelJoint;
+            ref B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
@@ -275,7 +275,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -316,7 +316,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2WheelJoint joint = ref @base.wheelJoint;
+            ref B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -519,7 +519,7 @@ namespace Box2D.NET
         {
             Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
-            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

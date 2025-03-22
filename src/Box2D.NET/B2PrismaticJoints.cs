@@ -19,130 +19,130 @@ namespace Box2D.NET
         public static void b2PrismaticJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            if (enableSpring != joint.prismaticJoint.enableSpring)
+            if (enableSpring != joint.uj.prismaticJoint.enableSpring)
             {
-                joint.prismaticJoint.enableSpring = enableSpring;
-                joint.prismaticJoint.springImpulse = 0.0f;
+                joint.uj.prismaticJoint.enableSpring = enableSpring;
+                joint.uj.prismaticJoint.springImpulse = 0.0f;
             }
         }
 
         public static bool b2PrismaticJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.enableSpring;
+            return joint.uj.prismaticJoint.enableSpring;
         }
 
         public static void b2PrismaticJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            joint.prismaticJoint.hertz = hertz;
+            joint.uj.prismaticJoint.hertz = hertz;
         }
 
         public static float b2PrismaticJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.hertz;
+            return joint.uj.prismaticJoint.hertz;
         }
 
         public static void b2PrismaticJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            joint.prismaticJoint.dampingRatio = dampingRatio;
+            joint.uj.prismaticJoint.dampingRatio = dampingRatio;
         }
 
         public static float b2PrismaticJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.dampingRatio;
+            return joint.uj.prismaticJoint.dampingRatio;
         }
 
         public static void b2PrismaticJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            if (enableLimit != joint.prismaticJoint.enableLimit)
+            if (enableLimit != joint.uj.prismaticJoint.enableLimit)
             {
-                joint.prismaticJoint.enableLimit = enableLimit;
-                joint.prismaticJoint.lowerImpulse = 0.0f;
-                joint.prismaticJoint.upperImpulse = 0.0f;
+                joint.uj.prismaticJoint.enableLimit = enableLimit;
+                joint.uj.prismaticJoint.lowerImpulse = 0.0f;
+                joint.uj.prismaticJoint.upperImpulse = 0.0f;
             }
         }
 
         public static bool b2PrismaticJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.enableLimit;
+            return joint.uj.prismaticJoint.enableLimit;
         }
 
         public static float b2PrismaticJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.lowerTranslation;
+            return joint.uj.prismaticJoint.lowerTranslation;
         }
 
         public static float b2PrismaticJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.upperTranslation;
+            return joint.uj.prismaticJoint.upperTranslation;
         }
 
         public static void b2PrismaticJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             // TODO: @ikpil, check epsilon
-            if (lower != joint.prismaticJoint.lowerTranslation || upper != joint.prismaticJoint.upperTranslation)
+            if (lower != joint.uj.prismaticJoint.lowerTranslation || upper != joint.uj.prismaticJoint.upperTranslation)
             {
-                joint.prismaticJoint.lowerTranslation = b2MinFloat(lower, upper);
-                joint.prismaticJoint.upperTranslation = b2MaxFloat(lower, upper);
-                joint.prismaticJoint.lowerImpulse = 0.0f;
-                joint.prismaticJoint.upperImpulse = 0.0f;
+                joint.uj.prismaticJoint.lowerTranslation = b2MinFloat(lower, upper);
+                joint.uj.prismaticJoint.upperTranslation = b2MaxFloat(lower, upper);
+                joint.uj.prismaticJoint.lowerImpulse = 0.0f;
+                joint.uj.prismaticJoint.upperImpulse = 0.0f;
             }
         }
 
         public static void b2PrismaticJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            if (enableMotor != joint.prismaticJoint.enableMotor)
+            if (enableMotor != joint.uj.prismaticJoint.enableMotor)
             {
-                joint.prismaticJoint.enableMotor = enableMotor;
-                joint.prismaticJoint.motorImpulse = 0.0f;
+                joint.uj.prismaticJoint.enableMotor = enableMotor;
+                joint.uj.prismaticJoint.motorImpulse = 0.0f;
             }
         }
 
         public static bool b2PrismaticJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.enableMotor;
+            return joint.uj.prismaticJoint.enableMotor;
         }
 
         public static void b2PrismaticJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            joint.prismaticJoint.motorSpeed = motorSpeed;
+            joint.uj.prismaticJoint.motorSpeed = motorSpeed;
         }
 
         public static float b2PrismaticJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.motorSpeed;
+            return joint.uj.prismaticJoint.motorSpeed;
         }
 
         public static float b2PrismaticJoint_GetMotorForce(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return world.inv_h * @base.prismaticJoint.motorImpulse;
+            return world.inv_h * @base.uj.prismaticJoint.motorImpulse;
         }
 
         public static void b2PrismaticJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            joint.prismaticJoint.maxMotorForce = force;
+            joint.uj.prismaticJoint.maxMotorForce = force;
         }
 
         public static float b2PrismaticJoint_GetMaxMotorForce(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            return joint.prismaticJoint.maxMotorForce;
+            return joint.uj.prismaticJoint.maxMotorForce;
         }
 
         public static float b2PrismaticJoint_GetTranslation(B2JointId jointId)
@@ -152,7 +152,7 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
 
-            ref readonly B2PrismaticJoint joint = ref jointSim.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref jointSim.uj.prismaticJoint;
             B2Vec2 axisA = b2RotateVector(transformA.q, joint.localAxisA);
             B2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localOriginAnchorB);
@@ -179,7 +179,7 @@ namespace Box2D.NET
             B2Transform transformA = bodySimA.transform;
             B2Transform transformB = bodySimB.transform;
 
-            ref readonly B2PrismaticJoint prismatic = ref jointSim.prismaticJoint;
+            ref readonly B2PrismaticJoint prismatic = ref jointSim.uj.prismaticJoint;
             B2Vec2 axisA = b2RotateVector(transformA.q, prismatic.localAxisA);
             B2Vec2 cA = bodySimA.center;
             B2Vec2 cB = bodySimB.center;
@@ -203,7 +203,7 @@ namespace Box2D.NET
             int idA = @base.bodyIdA;
             B2Transform transformA = b2GetBodyTransform(world, idA);
 
-            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
             B2Vec2 axisA = b2RotateVector(transformA.q, joint.localAxisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
@@ -218,7 +218,7 @@ namespace Box2D.NET
 
         public static float b2GetPrismaticJointTorque(B2World world, B2JointSim @base)
         {
-            return world.inv_h * @base.prismaticJoint.impulse.Y;
+            return world.inv_h * @base.uj.prismaticJoint.impulse.Y;
         }
 
 // Linear constraint (point-to-line)
@@ -299,7 +299,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2PrismaticJoint joint = ref @base.prismaticJoint;
+            ref B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
@@ -348,7 +348,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -393,7 +393,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2PrismaticJoint joint = ref @base.prismaticJoint;
+            ref B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -624,7 +624,7 @@ void b2PrismaticJoint::Dump()
         {
             Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
 
-            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

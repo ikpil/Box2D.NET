@@ -18,41 +18,41 @@ namespace Box2D.NET
         public static void b2RevoluteJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            if (enableSpring != joint.revoluteJoint.enableSpring)
+            if (enableSpring != joint.uj.revoluteJoint.enableSpring)
             {
-                joint.revoluteJoint.enableSpring = enableSpring;
-                joint.revoluteJoint.springImpulse = 0.0f;
+                joint.uj.revoluteJoint.enableSpring = enableSpring;
+                joint.uj.revoluteJoint.springImpulse = 0.0f;
             }
         }
 
         public static bool b2RevoluteJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.enableSpring;
+            return joint.uj.revoluteJoint.enableSpring;
         }
 
         public static void b2RevoluteJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            joint.revoluteJoint.hertz = hertz;
+            joint.uj.revoluteJoint.hertz = hertz;
         }
 
         public static float b2RevoluteJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.hertz;
+            return joint.uj.revoluteJoint.hertz;
         }
 
         public static void b2RevoluteJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            joint.revoluteJoint.dampingRatio = dampingRatio;
+            joint.uj.revoluteJoint.dampingRatio = dampingRatio;
         }
 
         public static float b2RevoluteJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.dampingRatio;
+            return joint.uj.revoluteJoint.dampingRatio;
         }
 
         public static float b2RevoluteJoint_GetAngle(B2JointId jointId)
@@ -62,7 +62,7 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
 
-            float angle = b2RelativeAngle(transformB.q, transformA.q) - jointSim.revoluteJoint.referenceAngle;
+            float angle = b2RelativeAngle(transformB.q, transformA.q) - jointSim.uj.revoluteJoint.referenceAngle;
             angle = b2UnwindAngle(angle);
             return angle;
         }
@@ -70,100 +70,100 @@ namespace Box2D.NET
         public static void b2RevoluteJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            if (enableLimit != joint.revoluteJoint.enableLimit)
+            if (enableLimit != joint.uj.revoluteJoint.enableLimit)
             {
-                joint.revoluteJoint.enableLimit = enableLimit;
-                joint.revoluteJoint.lowerImpulse = 0.0f;
-                joint.revoluteJoint.upperImpulse = 0.0f;
+                joint.uj.revoluteJoint.enableLimit = enableLimit;
+                joint.uj.revoluteJoint.lowerImpulse = 0.0f;
+                joint.uj.revoluteJoint.upperImpulse = 0.0f;
             }
         }
 
         public static bool b2RevoluteJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.enableLimit;
+            return joint.uj.revoluteJoint.enableLimit;
         }
 
         public static float b2RevoluteJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.lowerAngle;
+            return joint.uj.revoluteJoint.lowerAngle;
         }
 
         public static float b2RevoluteJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.upperAngle;
+            return joint.uj.revoluteJoint.upperAngle;
         }
 
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            if (lower != joint.revoluteJoint.lowerAngle || upper != joint.revoluteJoint.upperAngle)
+            if (lower != joint.uj.revoluteJoint.lowerAngle || upper != joint.uj.revoluteJoint.upperAngle)
             {
-                joint.revoluteJoint.lowerAngle = b2MinFloat(lower, upper);
-                joint.revoluteJoint.upperAngle = b2MaxFloat(lower, upper);
-                joint.revoluteJoint.lowerImpulse = 0.0f;
-                joint.revoluteJoint.upperImpulse = 0.0f;
+                joint.uj.revoluteJoint.lowerAngle = b2MinFloat(lower, upper);
+                joint.uj.revoluteJoint.upperAngle = b2MaxFloat(lower, upper);
+                joint.uj.revoluteJoint.lowerImpulse = 0.0f;
+                joint.uj.revoluteJoint.upperImpulse = 0.0f;
             }
         }
 
         public static void b2RevoluteJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            if (enableMotor != joint.revoluteJoint.enableMotor)
+            if (enableMotor != joint.uj.revoluteJoint.enableMotor)
             {
-                joint.revoluteJoint.enableMotor = enableMotor;
-                joint.revoluteJoint.motorImpulse = 0.0f;
+                joint.uj.revoluteJoint.enableMotor = enableMotor;
+                joint.uj.revoluteJoint.motorImpulse = 0.0f;
             }
         }
 
         public static bool b2RevoluteJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.enableMotor;
+            return joint.uj.revoluteJoint.enableMotor;
         }
 
         public static void b2RevoluteJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            joint.revoluteJoint.motorSpeed = motorSpeed;
+            joint.uj.revoluteJoint.motorSpeed = motorSpeed;
         }
 
         public static float b2RevoluteJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.motorSpeed;
+            return joint.uj.revoluteJoint.motorSpeed;
         }
 
         public static float b2RevoluteJoint_GetMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return world.inv_h * joint.revoluteJoint.motorImpulse;
+            return world.inv_h * joint.uj.revoluteJoint.motorImpulse;
         }
 
         public static void b2RevoluteJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            joint.revoluteJoint.maxMotorTorque = torque;
+            joint.uj.revoluteJoint.maxMotorTorque = torque;
         }
 
         public static float b2RevoluteJoint_GetMaxMotorTorque(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return joint.revoluteJoint.maxMotorTorque;
+            return joint.uj.revoluteJoint.maxMotorTorque;
         }
 
         public static B2Vec2 b2GetRevoluteJointForce(B2World world, B2JointSim @base)
         {
-            B2Vec2 force = b2MulSV(world.inv_h, @base.revoluteJoint.linearImpulse);
+            B2Vec2 force = b2MulSV(world.inv_h, @base.uj.revoluteJoint.linearImpulse);
             return force;
         }
 
         public static float b2GetRevoluteJointTorque(B2World world, B2JointSim @base)
         {
-            ref readonly B2RevoluteJoint revolute = ref @base.revoluteJoint;
+            ref readonly B2RevoluteJoint revolute = ref @base.uj.revoluteJoint;
             float torque = world.inv_h * (revolute.motorImpulse + revolute.lowerImpulse - revolute.upperImpulse);
             return torque;
         }
@@ -231,7 +231,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            ref B2RevoluteJoint joint = ref @base.revoluteJoint;
+            ref B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
@@ -270,7 +270,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref readonly B2RevoluteJoint joint = ref @base.revoluteJoint;
+            ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
@@ -298,7 +298,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            ref B2RevoluteJoint joint = ref @base.revoluteJoint;
+            ref B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -486,7 +486,7 @@ namespace Box2D.NET
         {
             Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
 
-            ref readonly B2RevoluteJoint joint = ref @base.revoluteJoint;
+            ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
