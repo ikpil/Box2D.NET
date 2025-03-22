@@ -36,7 +36,7 @@ namespace Box2D.NET
         private float TestFloat()
         {
             long ticks = DateTime.UtcNow.Ticks;
-            return (ticks % 100000) / 100000f;
+            return float.MaxValue - ((ticks % 100000) / 100000f);
         }
 
         private B2Vec2 TestVec2()
@@ -57,8 +57,8 @@ namespace Box2D.NET
 
         private void CheckSizeSeries()
         {
-            ThrowIf(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES, "");
-            ThrowIf(B2FixedArray8<B2Vec2>.Size == B2_MAX_POLYGON_VERTICES, "");
+            ThrowIf(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES, "B2FixedArray8<int> and B2_MAX_POLYGON_VERTICES have the same size, which is unexpected.");
+            ThrowIf(B2FixedArray8<B2Vec2>.Size == B2_MAX_POLYGON_VERTICES, "B2FixedArray8<B2Vec2> and B2_MAX_POLYGON_VERTICES have the same size, which is unexpected.");
         }
 
         private void CheckFixedArraySeries()
@@ -79,19 +79,19 @@ namespace Box2D.NET
             var array64 = new B2FixedArray64<B2Vec2>();
             var array1024 = new B2FixedArray1024<B2Vec2>();
 
-            ThrowIfInvalidFixedArray(array1.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array2.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array3.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array4.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array1.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array2.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array3.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array4.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
 
-            ThrowIfInvalidFixedArray(array7.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array8.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array11.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array12.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array7.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array8.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array11.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array12.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
 
-            ThrowIfInvalidFixedArray(array16.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array64.AsSpan(), TestVec2, "");
-            ThrowIfInvalidFixedArray(array1024.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array16.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array64.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
+            ThrowIfInvalidFixedArray(array1024.AsSpan(), TestVec2, "Fixed array does not maintain expected structure after assignment.");
         }
 
         private void ThrowIfInvalidFixedArray<T>(Span<T> span, Func<T> randomValue, string message)
@@ -140,7 +140,7 @@ namespace Box2D.NET
                 maxSize = Math.Max(maxSize, weldJointSize);
                 maxSize = Math.Max(maxSize, wheelJointSize);
 
-                ThrowIf(unionSize == maxSize, "");
+                ThrowIf(unionSize == maxSize, "B2JointUnion size is equal to the maximum joint size, indicating potential memory misalignment.");
             }
 
             // shape union
@@ -160,7 +160,7 @@ namespace Box2D.NET
                 maxSize = Math.Max(maxSize, segmentSize);
                 maxSize = Math.Max(maxSize, chainSegmentSize);
 
-                ThrowIf(unionSize == maxSize, "");
+                ThrowIf(unionSize == maxSize, "B2ShapeUnion size is equal to the maximum shape size, indicating potential memory misalignment.");
             }
 
             // B2TreeNodeConnectionUnion
@@ -174,7 +174,7 @@ namespace Box2D.NET
                 maxSize = Math.Max(maxSize, parentSize);
                 maxSize = Math.Max(maxSize, nextSize);
 
-                ThrowIf(unionSize == maxSize, "");
+                ThrowIf(unionSize == maxSize, "B2TreeNodeConnectionUnion size is equal to the maximum node size, indicating potential memory misalignment.");
             }
 
             // B2TreeNodeDataUnion
@@ -187,7 +187,7 @@ namespace Box2D.NET
                 maxSize = Math.Max(maxSize, child2Size);
                 maxSize = Math.Max(maxSize, userDataSize);
 
-                ThrowIf(unionSize == maxSize, "");
+                ThrowIf(unionSize == maxSize, "B2TreeNodeDataUnion size is equal to the maximum data size, indicating potential memory misalignment.");
             }
         }
 
@@ -199,10 +199,10 @@ namespace Box2D.NET
             temp.Z = temp.Y + 1;
             temp.W = temp.Z + 1;
 
-            ThrowIf(temp.X.Equals(temp[0]), "");
-            ThrowIf(temp.Y.Equals(temp[1]), "");
-            ThrowIf(temp.Z.Equals(temp[2]), "");
-            ThrowIf(temp.W.Equals(temp[3]), "");
+            ThrowIf(temp.X.Equals(temp[0]), "B2FloatW indexer does not return expected values.");
+            ThrowIf(temp.Y.Equals(temp[1]), "B2FloatW indexer does not return expected values.");
+            ThrowIf(temp.Z.Equals(temp[2]), "B2FloatW indexer does not return expected values.");
+            ThrowIf(temp.W.Equals(temp[3]), "B2FloatW indexer does not return expected values.");
         }
 
         private void CheckB2Simplex()
@@ -242,12 +242,12 @@ namespace Box2D.NET
 
         private void ThrowIfInvalidB2SimplexVertex(ref B2SimplexVertex ori, ref B2SimplexVertex span)
         {
-            ThrowIf(ori.wA == span.wA, "");
-            ThrowIf(ori.wB == span.wB, "");
-            ThrowIf(ori.w == span.w, "");
-            ThrowIf(ori.a.Equals(span.a), "");
-            ThrowIf(ori.indexA == span.indexA, "");
-            ThrowIf(ori.indexB == span.indexB, "");
+            ThrowIf(ori.wA == span.wA, "B2SimplexVertex data mismatch detected.");
+            ThrowIf(ori.wB == span.wB, "B2SimplexVertex data mismatch detected.");
+            ThrowIf(ori.w == span.w, "B2SimplexVertex data mismatch detected.");
+            ThrowIf(ori.a.Equals(span.a), "B2SimplexVertex data mismatch detected.");
+            ThrowIf(ori.indexA == span.indexA, "B2SimplexVertex data mismatch detected.");
+            ThrowIf(ori.indexB == span.indexB, "B2SimplexVertex data mismatch detected.");
         }
     }
 }
