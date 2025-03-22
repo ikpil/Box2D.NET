@@ -26,15 +26,23 @@ namespace Box2D.NET
             // check union series
             CheckUnionSeries();
 
+            CheckB2FloatW();
+
+            CheckB2Simplex();
+
             return 0;
         }
 
-        private B2Vec2 RandVec2()
+        private float TestFloat()
         {
             long ticks = DateTime.UtcNow.Ticks;
+            return (ticks % 100000) / 100000f;
+        }
 
+        private B2Vec2 TestVec2()
+        {
             var random = new B2Vec2();
-            random.X = (ticks % 100000) / 100000f;
+            random.X = TestFloat();
             random.Y = random.X + 1.0f;
             return random;
         }
@@ -71,19 +79,19 @@ namespace Box2D.NET
             var array64 = new B2FixedArray64<B2Vec2>();
             var array1024 = new B2FixedArray1024<B2Vec2>();
 
-            ThrowIfInvalidFixedArray(array1.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array2.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array3.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array4.AsSpan(), RandVec2, "");
+            ThrowIfInvalidFixedArray(array1.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array2.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array3.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array4.AsSpan(), TestVec2, "");
 
-            ThrowIfInvalidFixedArray(array7.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array8.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array11.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array12.AsSpan(), RandVec2, "");
+            ThrowIfInvalidFixedArray(array7.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array8.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array11.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array12.AsSpan(), TestVec2, "");
 
-            ThrowIfInvalidFixedArray(array16.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array64.AsSpan(), RandVec2, "");
-            ThrowIfInvalidFixedArray(array1024.AsSpan(), RandVec2, "");
+            ThrowIfInvalidFixedArray(array16.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array64.AsSpan(), TestVec2, "");
+            ThrowIfInvalidFixedArray(array1024.AsSpan(), TestVec2, "");
         }
 
         private void ThrowIfInvalidFixedArray<T>(Span<T> span, Func<T> randomValue, string message)
@@ -181,6 +189,65 @@ namespace Box2D.NET
 
                 ThrowIf(unionSize == maxSize, "");
             }
+        }
+
+        private void CheckB2FloatW()
+        {
+            var temp = new B2FloatW();
+            temp.X = TestFloat();
+            temp.Y = temp.X + 1;
+            temp.Z = temp.Y + 1;
+            temp.W = temp.Z + 1;
+
+            ThrowIf(temp.X.Equals(temp[0]), "");
+            ThrowIf(temp.Y.Equals(temp[1]), "");
+            ThrowIf(temp.Z.Equals(temp[2]), "");
+            ThrowIf(temp.W.Equals(temp[3]), "");
+        }
+
+        private void CheckB2Simplex()
+        {
+            var temp = new B2Simplex();
+
+            // v1
+            temp.v1.wA = TestVec2();
+            temp.v1.wB = temp.v1.wA + TestVec2();
+            temp.v1.w = temp.v1.wB + TestVec2();
+            temp.v1.a = TestFloat();
+            temp.v1.indexA = int.MinValue;
+            temp.v1.indexA = int.MaxValue;
+
+            // v2
+            temp.v2.wA = temp.v1.wA + TestVec2();
+            temp.v2.wB = temp.v2.wA + TestVec2();
+            temp.v2.w = temp.v2.wB + TestVec2();
+            temp.v2.a = TestFloat();
+            temp.v2.indexA = temp.v1.indexA + 1;
+            temp.v2.indexA = temp.v1.indexA - 1;
+
+            // v3
+            temp.v3.wA = temp.v2.wA + TestVec2();
+            temp.v3.wB = temp.v3.wA + TestVec2();
+            temp.v3.w = temp.v3.wB + TestVec2();
+            temp.v3.a = TestFloat();
+            temp.v3.indexA = temp.v2.indexA + 1;
+            temp.v3.indexA = temp.v2.indexA - 1;
+
+            // check!
+            Span<B2SimplexVertex> span = temp.AsSpan();
+            ThrowIfInvalidB2SimplexVertex(ref temp.v1, ref span[0]);
+            ThrowIfInvalidB2SimplexVertex(ref temp.v2, ref span[1]);
+            ThrowIfInvalidB2SimplexVertex(ref temp.v3, ref span[2]);
+        }
+
+        private void ThrowIfInvalidB2SimplexVertex(ref B2SimplexVertex ori, ref B2SimplexVertex span)
+        {
+            ThrowIf(ori.wA == span.wA, "");
+            ThrowIf(ori.wB == span.wB, "");
+            ThrowIf(ori.w == span.w, "");
+            ThrowIf(ori.a.Equals(span.a), "");
+            ThrowIf(ori.indexA == span.indexA, "");
+            ThrowIf(ori.indexB == span.indexB, "");
         }
     }
 }
