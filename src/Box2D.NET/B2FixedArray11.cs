@@ -39,6 +39,5 @@ namespace Box2D.NET
         {
             return MemoryMarshal.CreateSpan(ref _v0000, Size);
         }
-
     }
 }
