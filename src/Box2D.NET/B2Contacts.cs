@@ -40,7 +40,7 @@ namespace Box2D.NET
         // - As long as contacts are created in deterministic order, island link order is deterministic.
         // - This keeps the order of contacts in islands deterministic
 
-        private static B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
+        private static readonly B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
         private static bool s_initialized = false;
 
         public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)

@@ -81,31 +81,37 @@ namespace Box2D.NET
         // }
 
         // Used to prevent the compiler from warning about unused variables
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1>(T1 a)
         {
             // ...
         }
 
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2>(T1 a, T2 b)
         {
             // ...
         }
 
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2, T3>(T1 a, T2 b, T3 c)
         {
             // ...
         }
 
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2, T3, T4>(T1 a, T2 b, T3 c, T4 d)
         {
             // ...
         }
 
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2, T3, T4, T5>(T1 a, T2 b, T3 c, T4 d, T5 e)
         {
             // ...
         }
 
+        [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2, T3, T4, T5, T6>(T1 a, T2 b, T3 c, T4 d, T5 e, T6 f)
         {
             // ...
@@ -141,27 +147,31 @@ namespace Box2D.NET
         TracyCZoneEnd(ctx);
     }
 #else
+        [Conditional("DEBUG")]
         public static void b2TracyCZoneC(B2TracyCZone ctx, B2HexColor color, bool active)
         {
         }
 
+        [Conditional("DEBUG")]
         public static void b2TracyCZoneNC(B2TracyCZone ctx, string name, B2HexColor color, bool active)
         {
         }
 
+        [Conditional("DEBUG")]
         public static void b2TracyCZoneEnd(B2TracyCZone ctx)
         {
         }
 
+        [Conditional("DEBUG")]
         public static void TracyCFrameMark()
         {
         }
 #endif
 
         // Returns the number of elements of an array
-        public static int B2_ARRAY_COUNT<T>(T[] A)
+        public static int B2_ARRAY_COUNT<T>(T[] a)
         {
-            return A.Length;
+            return a.Length;
         }
 
         public static void B2_CHECK_DEF(ref B2WheelJointDef def)
