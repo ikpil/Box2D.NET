@@ -1272,15 +1272,26 @@ public enum b2SolverBlockType
 
                 // Configure blocks for tasks parallel-for each active graph color
                 // The blocks are a mix of SIMD contact blocks and joint blocks
-                Span<int> activeColorIndices = stackalloc int[B2_GRAPH_COLOR_COUNT];
+                Debug.Assert(B2FixedArray12<int>.Size == B2_GRAPH_COLOR_COUNT);
+                B2FixedArray12<int> arrayActiveColorIndices = new B2FixedArray12<int>();
+                
+                B2FixedArray12<int> arrayColorContactCounts = new B2FixedArray12<int>();
+                B2FixedArray12<int> arrayColorContactBlockSizes = new B2FixedArray12<int>();
+                B2FixedArray12<int> arrayColorContactBlockCounts = new B2FixedArray12<int>();
+                
+                B2FixedArray12<int> arrayColorJointCounts = new B2FixedArray12<int>();
+                B2FixedArray12<int> arrayColorJointBlockSizes = new B2FixedArray12<int>();
+                B2FixedArray12<int> arrayColorJointBlockCounts = new B2FixedArray12<int>();
 
-                Span<int> colorContactCounts = stackalloc int[B2_GRAPH_COLOR_COUNT];
-                Span<int> colorContactBlockSizes = stackalloc int[B2_GRAPH_COLOR_COUNT];
-                Span<int> colorContactBlockCounts = stackalloc int[B2_GRAPH_COLOR_COUNT];
+                Span<int> activeColorIndices = arrayActiveColorIndices.AsSpan();
 
-                Span<int> colorJointCounts = stackalloc int[B2_GRAPH_COLOR_COUNT];
-                Span<int> colorJointBlockSizes = stackalloc int[B2_GRAPH_COLOR_COUNT];
-                Span<int> colorJointBlockCounts = stackalloc int[B2_GRAPH_COLOR_COUNT];
+                Span<int> colorContactCounts = arrayColorContactCounts.AsSpan();
+                Span<int> colorContactBlockSizes = arrayColorContactBlockSizes.AsSpan();
+                Span<int> colorContactBlockCounts = arrayColorContactBlockCounts.AsSpan();
+
+                Span<int> colorJointCounts = arrayColorJointCounts.AsSpan();
+                Span<int> colorJointBlockSizes = arrayColorJointBlockSizes.AsSpan();
+                Span<int> colorJointBlockCounts = arrayColorJointBlockCounts.AsSpan();
 
                 int graphBlockCount = 0;
 
