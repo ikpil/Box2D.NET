@@ -416,11 +416,6 @@ public class DynamicTree : Sample
         m_timeStamp += 1;
     }
 
-    public struct DynamicTreeContext
-    {
-        public DynamicTree tree;
-    }
-
     public override void Draw(Settings settings)
     {
         base.Draw(settings);

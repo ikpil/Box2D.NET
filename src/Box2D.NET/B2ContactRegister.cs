@@ -6,7 +6,7 @@ namespace Box2D.NET
 {
     public struct B2ContactRegister
     {
-        public B2Contacts.b2ManifoldFcn fcn;
+        public b2ManifoldFcn fcn;
         public bool primary;
     }
 }

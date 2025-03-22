@@ -15,24 +15,6 @@ namespace Box2D.NET
     {
         public const int B2_TREE_STACK_SIZE = 1024;
 
-        /// This function receives proxies found in the AABB query.
-        /// @return true if the query should continue
-        public delegate bool b2TreeQueryCallbackFcn<T>(int proxyId, int userData, ref T context);
-
-        /// This function receives clipped ray cast input for a proxy. The function
-        /// returns the new ray fraction.
-        /// - return a value of 0 to terminate the ray cast
-        /// - return a value less than input->maxFraction to clip the ray
-        /// - return a value of input->maxFraction to continue the ray cast without clipping
-        public delegate float b2TreeRayCastCallbackFcn(ref B2RayCastInput input, int proxyId, int userData, object context);
-
-        /// This function receives clipped ray cast input for a proxy. The function
-        /// returns the new ray fraction.
-        /// - return a value of 0 to terminate the ray cast
-        /// - return a value less than input->maxFraction to clip the ray
-        /// - return a value of input->maxFraction to continue the ray cast without clipping
-        public delegate float b2TreeShapeCastCallbackFcn(ref B2ShapeCastInput input, int proxyId, int userData, object context);
-
         public static readonly B2TreeNode b2_defaultTreeNode = new B2TreeNode()
         {
             aabb = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f)),

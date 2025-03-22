@@ -21,18 +21,6 @@ namespace Box2D.NET
 {
     public static class B2Contacts
     {
-        public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
-        {
-            if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
-            {
-                return filterA.groupIndex > 0;
-            }
-
-            bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
-            return collide;
-        }
-
-
         // Contacts and determinism
         // A deterministic simulation requires contacts to exist in the same order in b2Island no matter the thread count.
         // The order must reproduce from run to run. This is necessary because the Gauss-Seidel constraint solver is order dependent.
@@ -52,25 +40,19 @@ namespace Box2D.NET
         // - As long as contacts are created in deterministic order, island link order is deterministic.
         // - This keeps the order of contacts in islands deterministic
 
-        // Manifold functions should compute important results in local space to improve precision. However, this
-        // interface function takes two world transforms instead of a relative transform for these reasons:
-        //
-        // First:
-        // The anchors need to be computed relative to the shape origin in world space. This is necessary so the
-        // solver does not need to access static body transforms. Not even in constraint preparation. This approach
-        // has world space vectors yet retains precision.
-        //
-        // Second:
-        // b3ManifoldPoint::point is very useful for debugging and it is in world space.
-        //
-        // Third:
-        // The user may call the manifold functions directly and they should be easy to use and have easy to use
-        // results.
-        public delegate B2Manifold b2ManifoldFcn(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache);
+        private static B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
+        private static bool s_initialized = false;
 
+        public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
+        {
+            if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
+            {
+                return filterA.groupIndex > 0;
+            }
 
-        public static B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
-        public static bool s_initialized = false;
+            bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
+            return collide;
+        }
 
         public static B2Manifold b2CircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {

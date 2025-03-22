@@ -110,20 +110,6 @@ namespace Box2D.NET
             // ...
         }
 
-
-        /// Prototype for user allocation function
-        /// @param size the allocation size in bytes
-        /// @param alignment the required alignment, guaranteed to be a power of 2
-        public delegate byte[] b2AllocFcn(uint size, int alignment);
-
-        /// Prototype for user free function
-        /// @param mem the memory previously allocated through `b2AllocFcn`
-        public delegate void b2FreeFcn(byte[] mem);
-
-        /// Prototype for the user assert callback. Return 0 to skip the debugger break.
-        public delegate int b2AssertFcn(string condition, string fileName, int lineNumber);
-
-
         /// @return the total bytes allocated by Box2D
         public static int b2GetByteCount()
         {

@@ -22,7 +22,7 @@ public class SampleFactory
         _sampleEntries = new List<SampleEntry>();
     }
 
-    public int RegisterSample(string category, string name, SampleCreateFcn fcn)
+    public int RegisterSample(string category, string name, Func<SampleAppContext, Settings, Sample> fcn)
     {
         int index = _sampleEntries.Count;
         var entry = new SampleEntry(category, name, fcn);

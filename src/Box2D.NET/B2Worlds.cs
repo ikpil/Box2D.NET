@@ -2230,8 +2230,7 @@ namespace Box2D.NET
             return input.maxFraction;
         }
 
-        public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, b2CastResultFcn fcn,
-            object context)
+        public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
