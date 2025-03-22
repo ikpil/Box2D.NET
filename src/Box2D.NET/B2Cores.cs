@@ -19,6 +19,7 @@ namespace Box2D.NET
         // TODO: @ikpil. check SIMD
         // Define SIMD
         public static bool BOX2D_ENABLE_SIMD = true;
+
 // 	#if defined( B2_CPU_X86_X64 )
 // 		#if defined( BOX2D_AVX2 )
 // 			#define B2_SIMD_AVX2

@@ -106,6 +106,9 @@ namespace Box2D.NET
 
         public static B2WorldId b2CreateWorld(ref B2WorldDef def)
         {
+            // check
+            B2RuntimeValidator.Shared.ThrowIfSafeRuntimePlatform();
+            
             Debug.Assert(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
             B2_CHECK_DEF(ref def);
 

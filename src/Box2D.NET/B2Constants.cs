@@ -72,13 +72,5 @@ namespace Box2D.NET
         // @base
         /// Simple djb2 hash function for determinism testing
         public const int B2_HASH_INIT = 5381;
-
-        private static readonly int _ = Check();
-
-        private static int Check()
-        {
-            Debug.Assert(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES);
-            return 0;
-        }
     }
 }
