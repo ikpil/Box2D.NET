@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2WorldRayCastContext
+    public struct B2WorldRayCastContext
     {
         public B2World world;
         public b2CastResultFcn fcn;

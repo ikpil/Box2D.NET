@@ -141,14 +141,14 @@ namespace Box2D.NET
     /// - return a value of 0 to terminate the ray cast
     /// - return a value less than input->maxFraction to clip the ray
     /// - return a value of input->maxFraction to continue the ray cast without clipping
-    public delegate float b2TreeRayCastCallbackFcn(ref B2RayCastInput input, int proxyId, int userData, object context);
+    public delegate float b2TreeRayCastCallbackFcn<T>(ref B2RayCastInput input, int proxyId, int userData, ref T context) where T : struct;
 
     /// This function receives clipped ray cast input for a proxy. The function
     /// returns the new ray fraction.
     /// - return a value of 0 to terminate the ray cast
     /// - return a value less than input->maxFraction to clip the ray
     /// - return a value of input->maxFraction to continue the ray cast without clipping
-    public delegate float b2TreeShapeCastCallbackFcn(ref B2ShapeCastInput input, int proxyId, int userData, object context);
+    public delegate float b2TreeShapeCastCallbackFcn<T>(ref B2ShapeCastInput input, int proxyId, int userData, ref T context) where T : struct;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Draw

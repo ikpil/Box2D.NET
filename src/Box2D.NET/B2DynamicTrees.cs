@@ -1133,7 +1133,8 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the ray
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_RayCast(B2DynamicTree tree, ref B2RayCastInput input, ulong maskBits, b2TreeRayCastCallbackFcn callback, object context)
+        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, ref B2RayCastInput input, ulong maskBits, 
+            b2TreeRayCastCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1207,7 +1208,7 @@ namespace Box2D.NET
                 {
                     subInput.maxFraction = maxFraction;
 
-                    float value = callback(ref subInput, nodeId, node.cu.userData, context);
+                    float value = callback(ref subInput, nodeId, node.cu.userData, ref context);
                     result.leafVisits += 1;
 
                     // The user may return -1 to indicate this shape should be skipped
@@ -1265,7 +1266,8 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_ShapeCast(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits, b2TreeShapeCastCallbackFcn callback, object context)
+        public static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits, 
+            b2TreeShapeCastCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats stats = new B2TreeStats();
 
@@ -1351,7 +1353,7 @@ namespace Box2D.NET
                 {
                     subInput.maxFraction = maxFraction;
 
-                    float value = callback(ref subInput, nodeId, node.cu.userData, context);
+                    float value = callback(ref subInput, nodeId, node.cu.userData, ref context);
                     stats.leafVisits += 1;
 
                     if (value == 0.0f)

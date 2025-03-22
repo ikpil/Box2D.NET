@@ -2195,11 +2195,11 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, int shapeId, object context)
+        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, int shapeId, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2WorldRayCastContext worldContext = context as B2WorldRayCastContext;
+            ref B2WorldRayCastContext worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2253,7 +2253,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, worldContext);
+                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2300,7 +2300,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, worldContext);
+                    b2DynamicTree_RayCast(world.broadPhase.trees[i], ref input, filter.maskBits, RayCastCallback, ref worldContext);
                 result.nodeVisits += treeResult.nodeVisits;
                 result.leafVisits += treeResult.leafVisits;
 
@@ -2315,11 +2315,11 @@ namespace Box2D.NET
             return result;
         }
 
-        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, int shapeId, object context)
+        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, int shapeId, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
-            B2WorldRayCastContext worldContext = context as B2WorldRayCastContext;
+            ref B2WorldRayCastContext worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2375,7 +2375,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2419,7 +2419,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2466,7 +2466,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
