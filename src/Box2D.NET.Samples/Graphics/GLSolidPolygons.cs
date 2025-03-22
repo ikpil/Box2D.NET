@@ -151,9 +151,11 @@ public class GLSolidPolygons
         _gl.UseProgram(m_programId);
         _gl.CheckErrorGL();
 
-        float[] proj = new float[16];
+        B2FixedArray16<float> array16 = new B2FixedArray16<float>();
+        Span<float> proj = array16.AsSpan();
+        
         _camera.BuildProjectionMatrix(proj, 0.2f);
-
+        
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
         _gl.Uniform1(m_pixelScaleUniform, _camera.m_height / _camera.m_zoom);
 

@@ -117,7 +117,9 @@ public class GLLines
 
         _gl.UseProgram(m_programId);
 
-        float[] proj = new float[16];
+        B2FixedArray16<float> array16 = new B2FixedArray16<float>();
+        Span<float> proj = array16.AsSpan();
+
         _camera.BuildProjectionMatrix(proj, 0.1f);
 
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
