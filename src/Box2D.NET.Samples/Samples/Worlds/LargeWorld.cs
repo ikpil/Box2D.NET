@@ -4,7 +4,7 @@
 
 using System;
 using System.Numerics;
-using Box2D.NET.Shared.Primitives;
+using Box2D.NET.Shared;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Joints;
@@ -170,7 +170,7 @@ public class LargeWorld : Sample
     public override void UpdateUI()
     {
         base.UpdateUI();
-        
+
         float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));

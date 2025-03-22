@@ -4,7 +4,7 @@
 
 using System.Diagnostics;
 
-namespace Box2D.NET.Shared.Primitives
+namespace Box2D.NET.Shared
 {
     public struct Human
     {

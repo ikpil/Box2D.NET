@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Collections.Generic;
-using Box2D.NET.Shared.Primitives;
+using Box2D.NET.Shared;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;

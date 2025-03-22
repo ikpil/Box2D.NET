@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Extensions;
 using Box2D.NET.Samples.Primitives;
-using Box2D.NET.Shared.Primitives;
+using Box2D.NET.Shared;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
