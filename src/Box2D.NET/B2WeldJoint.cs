@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2WeldJoint
+    public struct B2WeldJoint
     {
         public float referenceAngle;
         public float linearHertz;

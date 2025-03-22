@@ -152,7 +152,7 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
 
-            B2PrismaticJoint joint = jointSim.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref jointSim.prismaticJoint;
             B2Vec2 axisA = b2RotateVector(transformA.q, joint.localAxisA);
             B2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localOriginAnchorB);
@@ -179,7 +179,7 @@ namespace Box2D.NET
             B2Transform transformA = bodySimA.transform;
             B2Transform transformB = bodySimB.transform;
 
-            B2PrismaticJoint prismatic = jointSim.prismaticJoint;
+            ref readonly B2PrismaticJoint prismatic = ref jointSim.prismaticJoint;
             B2Vec2 axisA = b2RotateVector(transformA.q, prismatic.localAxisA);
             B2Vec2 cA = bodySimA.center;
             B2Vec2 cB = bodySimB.center;
@@ -203,7 +203,7 @@ namespace Box2D.NET
             int idA = @base.bodyIdA;
             B2Transform transformA = b2GetBodyTransform(world, idA);
 
-            B2PrismaticJoint joint = @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
 
             B2Vec2 axisA = b2RotateVector(transformA.q, joint.localAxisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
@@ -299,7 +299,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            B2PrismaticJoint joint = @base.prismaticJoint;
+            ref B2PrismaticJoint joint = ref @base.prismaticJoint;
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
@@ -348,7 +348,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2PrismaticJoint joint = @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -393,7 +393,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2PrismaticJoint joint = @base.prismaticJoint;
+            ref B2PrismaticJoint joint = ref @base.prismaticJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -624,7 +624,7 @@ void b2PrismaticJoint::Dump()
         {
             Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
 
-            B2PrismaticJoint joint = @base.prismaticJoint;
+            ref readonly B2PrismaticJoint joint = ref @base.prismaticJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

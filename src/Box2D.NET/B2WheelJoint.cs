@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2WheelJoint
+    public struct B2WheelJoint
     {
         public B2Vec2 localAxisA;
         public float perpImpulse;

@@ -97,7 +97,7 @@ namespace Box2D.NET
             @base.invMassB = bodySimB.invMass;
             @base.invIB = bodySimB.invInertia;
 
-            B2MouseJoint joint = @base.mouseJoint;
+            ref B2MouseJoint joint = ref @base.mouseJoint;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
             joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
 
@@ -137,7 +137,7 @@ namespace Box2D.NET
             float mB = @base.invMassB;
             float iB = @base.invIB;
 
-            B2MouseJoint joint = @base.mouseJoint;
+            ref readonly B2MouseJoint joint = ref @base.mouseJoint;
 
             B2BodyState stateB = context.states[joint.indexB];
             B2Vec2 vB = stateB.linearVelocity;
@@ -158,7 +158,7 @@ namespace Box2D.NET
             float mB = @base.invMassB;
             float iB = @base.invIB;
 
-            B2MouseJoint joint = @base.mouseJoint;
+            ref B2MouseJoint joint = ref @base.mouseJoint;
             B2BodyState stateB = context.states[joint.indexB];
 
             B2Vec2 vB = stateB.linearVelocity;

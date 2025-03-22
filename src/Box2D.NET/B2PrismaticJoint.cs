@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2PrismaticJoint
+    public struct B2PrismaticJoint
     {
         public B2Vec2 localAxisA;
         public B2Vec2 impulse;

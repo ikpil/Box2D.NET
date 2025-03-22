@@ -134,7 +134,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            B2MotorJoint joint = @base.motorJoint;
+            ref B2MotorJoint joint = ref @base.motorJoint;
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
@@ -171,7 +171,7 @@ namespace Box2D.NET
             float iA = @base.invIA;
             float iB = @base.invIB;
 
-            B2MotorJoint joint = @base.motorJoint;
+            ref readonly B2MotorJoint joint = ref @base.motorJoint;
 
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
@@ -201,7 +201,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2MotorJoint joint = @base.motorJoint;
+            ref B2MotorJoint joint = ref @base.motorJoint;
             B2BodyState bodyA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState bodyB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 

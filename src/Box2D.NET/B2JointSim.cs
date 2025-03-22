@@ -21,7 +21,7 @@ namespace Box2D.NET
 
         public float invMassA, invMassB;
         public float invIA, invIB;
-
+        
         // TODO: @ikpil, check union
         // union
         // {
@@ -46,13 +46,13 @@ namespace Box2D.NET
             invMassB = 0.0f;
             invIA = 0.0f;
             invIB = 0.0f;
-            distanceJoint = null;
-            motorJoint = null;
-            mouseJoint = null;
-            revoluteJoint = null;
-            prismaticJoint = null;
-            weldJoint = null;
-            wheelJoint = null;
+            distanceJoint = new B2DistanceJoint();
+            motorJoint = new B2MotorJoint();
+            mouseJoint = new B2MouseJoint();
+            revoluteJoint = new B2RevoluteJoint();
+            prismaticJoint = new B2PrismaticJoint();
+            weldJoint = new B2WeldJoint();
+            wheelJoint = new B2WheelJoint();
         }
         
         public void CopyFrom(B2JointSim other)

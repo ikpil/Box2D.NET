@@ -147,7 +147,7 @@ namespace Box2D.NET
 
         public static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
-            B2WheelJoint joint = @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
 
             // This is a frame behind
             B2Vec2 axisA = joint.axisA;
@@ -214,7 +214,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            B2WheelJoint joint = @base.wheelJoint;
+            ref B2WheelJoint joint = ref @base.wheelJoint;
 
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
@@ -275,7 +275,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2WheelJoint joint = @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -316,7 +316,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2WheelJoint joint = @base.wheelJoint;
+            ref B2WheelJoint joint = ref @base.wheelJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -519,7 +519,7 @@ namespace Box2D.NET
         {
             Debug.Assert(@base.type == B2JointType.b2_wheelJoint);
 
-            B2WheelJoint joint = @base.wheelJoint;
+            ref readonly B2WheelJoint joint = ref @base.wheelJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

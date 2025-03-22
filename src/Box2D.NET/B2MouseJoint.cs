@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2MouseJoint
+    public struct B2MouseJoint
     {
         public B2Vec2 targetA;
         public float hertz;

@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2MotorJoint
+    public struct B2MotorJoint
     {
         public B2Vec2 linearOffset;
         public float angularOffset;

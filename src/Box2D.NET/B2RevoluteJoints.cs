@@ -163,7 +163,7 @@ namespace Box2D.NET
 
         public static float b2GetRevoluteJointTorque(B2World world, B2JointSim @base)
         {
-            B2RevoluteJoint revolute = @base.revoluteJoint;
+            ref readonly B2RevoluteJoint revolute = ref @base.revoluteJoint;
             float torque = world.inv_h * (revolute.motorImpulse + revolute.lowerImpulse - revolute.upperImpulse);
             return torque;
         }
@@ -231,7 +231,7 @@ namespace Box2D.NET
             @base.invIA = iA;
             @base.invIB = iB;
 
-            B2RevoluteJoint joint = @base.revoluteJoint;
+            ref B2RevoluteJoint joint = ref @base.revoluteJoint;
 
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
@@ -270,7 +270,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2RevoluteJoint joint = @base.revoluteJoint;
+            ref readonly B2RevoluteJoint joint = ref @base.revoluteJoint;
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
@@ -298,7 +298,7 @@ namespace Box2D.NET
             // dummy state for static bodies
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
 
-            B2RevoluteJoint joint = @base.revoluteJoint;
+            ref B2RevoluteJoint joint = ref @base.revoluteJoint;
 
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
@@ -486,7 +486,7 @@ namespace Box2D.NET
         {
             Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
 
-            B2RevoluteJoint joint = @base.revoluteJoint;
+            ref readonly B2RevoluteJoint joint = ref @base.revoluteJoint;
 
             B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
             B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);

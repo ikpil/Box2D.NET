@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2DistanceJoint
+    public struct B2DistanceJoint
     {
         public float length;
         public float hertz;

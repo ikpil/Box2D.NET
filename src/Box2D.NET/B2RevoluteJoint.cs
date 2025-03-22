@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    public class B2RevoluteJoint
+    public struct B2RevoluteJoint
     {
         public B2Vec2 linearImpulse;
         public float springImpulse;
