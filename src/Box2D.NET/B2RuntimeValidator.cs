@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using static Box2D.NET.B2Constants;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -57,8 +58,9 @@ namespace Box2D.NET
 
         private void CheckSizeSeries()
         {
-            ThrowIf(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES, "B2FixedArray8<int> and B2_MAX_POLYGON_VERTICES have the same size, which is unexpected.");
-            ThrowIf(B2FixedArray8<B2Vec2>.Size == B2_MAX_POLYGON_VERTICES, "B2FixedArray8<B2Vec2> and B2_MAX_POLYGON_VERTICES have the same size, which is unexpected.");
+            ThrowIf(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES, $"B2FixedArray8<int> and {nameof(B2_MAX_POLYGON_VERTICES)} have the same size, which is unexpected.");
+            ThrowIf(B2FixedArray8<B2Vec2>.Size == B2_MAX_POLYGON_VERTICES, $"B2FixedArray8<B2Vec2> and {nameof(B2_MAX_POLYGON_VERTICES)} have the same size, which is unexpected.");
+            ThrowIf(B2FixedArray4<int>.Size == B2_SIMD_WIDTH, $"B2FixedArray4<int> and {nameof(B2_SIMD_WIDTH)}have the same size, which is unexpected.");
         }
 
         private void CheckFixedArraySeries()
