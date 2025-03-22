@@ -9,7 +9,7 @@ using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
-    public class B2ArenaAllocators
+    public static class B2ArenaAllocators
     {
         public static B2ArenaAllocator b2CreateArenaAllocator(int capacity)
         {
