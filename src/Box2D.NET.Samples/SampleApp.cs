@@ -51,7 +51,7 @@ public class SampleApp
         _ctx = SampleAppContext.Create();
     }
 
-    public unsafe int Run(string[] args)
+    public int Run(string[] args)
     {
         // Install memory hooks
         b2SetAllocator(AllocFcn, FreeFcn);
@@ -91,16 +91,19 @@ public class SampleApp
         B2Version version = b2GetVersion();
         options.Title = $"Box2D.NET Version {version.major}.{version.minor}.{version.revision}";
 
-        Monitor* primaryMonitor = _ctx.glfw.GetPrimaryMonitor();
-        if (null != primaryMonitor)
+        unsafe
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            Monitor* primaryMonitor = _ctx.glfw.GetPrimaryMonitor();
+            if (null != primaryMonitor)
             {
-                _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
-            }
-            else
-            {
-                _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
+                }
+                else
+                {
+                    _ctx.glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
+                }
             }
         }
 
@@ -118,18 +121,30 @@ public class SampleApp
         }
 
         _window = Window.Create(options);
-        _window.Closing += OnWindowClosing;
-        _window.Load += OnWindowLoad;
+        _window.Closing += OnWindowClosingSafe;
+        _window.Load += OnWindowLoadSafe;
         _window.Resize += OnWindowResize;
         _window.FramebufferResize += OnWindowFrameBufferResize;
-        _window.Update += OnWindowUpdate;
-        _window.Render += OnWindowRender;
+        _window.Update += OnWindowUpdateSafe;
+        _window.Render += OnWindowRenderSafe;
         _window.Run();
 
         _ctx.glfw.Terminate();
         s_settings.Save();
 
         return 0;
+    }
+
+    private void OnWindowClosingSafe()
+    {
+        try
+        {
+            OnWindowClosing();
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e, "");
+        }
     }
 
     private void OnWindowClosing()
@@ -156,32 +171,44 @@ public class SampleApp
         _ctx.gl.Viewport(0, 0, (uint)resize.X, (uint)resize.Y);
     }
 
-    private unsafe void OnWindowLoad()
+    private void OnWindowLoadSafe()
     {
-#if __APPLE__
-        string glslVersion = "#version 150";
-#else
-        string glslVersion = string.Empty;
-#endif
-
-        _ctx.mainWindow = (WindowHandle*)_window.Handle;
-        if (_ctx.mainWindow == null)
+        try
         {
-            Logger.Information("Failed to open GLFW _ctx.g_mainWindow.");
-            return;
+            OnWindowLoad();
         }
+        catch (Exception e)
+        {
+            Logger.Error(e, "");
+        }
+    }
 
-        // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        // {
-        //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
-        // }
-        // else
-        // {
-        //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_windowScale, out s_windowScale);
-        // }
+    private void OnWindowLoad()
+    {
+        string glslVersion = string.Empty;
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            glslVersion = "#version 150";
 
+        unsafe
+        {
+            _ctx.mainWindow = (WindowHandle*)_window.Handle;
+            if (_ctx.mainWindow == null)
+            {
+                Logger.Information("Failed to open GLFW _ctx.g_mainWindow.");
+                return;
+            }
 
-        _ctx.glfw.MakeContextCurrent(_ctx.mainWindow);
+            // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            // {
+            //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
+            // }
+            // else
+            // {
+            //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_windowScale, out s_windowScale);
+            // }
+
+            _ctx.glfw.MakeContextCurrent(_ctx.mainWindow);
+        }
 
         _input = _window.CreateInput();
         // Load OpenGL functions using glad
@@ -196,13 +223,16 @@ public class SampleApp
         Logger.Information($"GL {glVersion}");
         Logger.Information($"OpenGL {_ctx.gl.GetStringS(GLEnum.Version)}, GLSL {_ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
 
-        // _ctx.glfw.SetWindowSizeCallback(_ctx.mainWindow, ResizeWindowCallback);
-        // _ctx.glfw.SetFramebufferSizeCallback(_ctx.mainWindow, ResizeFramebufferCallback);
-        _ctx.glfw.SetKeyCallback(_ctx.mainWindow, KeyCallback);
-        _ctx.glfw.SetCharCallback(_ctx.mainWindow, CharCallback);
-        _ctx.glfw.SetMouseButtonCallback(_ctx.mainWindow, MouseButtonCallback);
-        _ctx.glfw.SetCursorPosCallback(_ctx.mainWindow, MouseMotionCallback);
-        _ctx.glfw.SetScrollCallback(_ctx.mainWindow, ScrollCallback);
+        unsafe
+        {
+            // _ctx.glfw.SetWindowSizeCallback(_ctx.mainWindow, ResizeWindowCallback);
+            // _ctx.glfw.SetFramebufferSizeCallback(_ctx.mainWindow, ResizeFramebufferCallback);
+            _ctx.glfw.SetKeyCallback(_ctx.mainWindow, KeyCallback);
+            _ctx.glfw.SetCharCallback(_ctx.mainWindow, CharCallback);
+            _ctx.glfw.SetMouseButtonCallback(_ctx.mainWindow, MouseButtonCallback);
+            _ctx.glfw.SetCursorPosCallback(_ctx.mainWindow, MouseMotionCallback);
+            _ctx.glfw.SetScrollCallback(_ctx.mainWindow, ScrollCallback);
+        }
 
         _ctx.draw.Create(_ctx);
 
@@ -210,15 +240,30 @@ public class SampleApp
         s_selection = s_settings.sampleIndex;
 
         // todo put this in s_settings
-        CreateUI(_ctx.mainWindow, glslVersion);
+        CreateUI(glslVersion);
 
         _ctx.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     }
 
-    private unsafe void OnWindowUpdate(double dt)
+    private void OnWindowUpdateSafe(double dt)
     {
-        if (_ctx.glfw.WindowShouldClose(_ctx.mainWindow))
-            return;
+        try
+        {
+            OnWindowUpdate(dt);
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e, "");
+        }
+    }
+    
+    private void OnWindowUpdate(double dt)
+    {
+        unsafe
+        {
+            if (_ctx.glfw.WindowShouldClose(_ctx.mainWindow))
+                return;
+        }
 
         double time1 = _ctx.glfw.GetTime();
 
@@ -233,11 +278,18 @@ public class SampleApp
             _ctx.camera.m_zoom = b2MaxFloat(0.995f * _ctx.camera.m_zoom, 0.5f);
         }
 
-        _ctx.glfw.GetFramebufferSize(_ctx.mainWindow, out var bufferWidth, out var bufferHeight);
+        int bufferWidth = 0;
+        int bufferHeight = 0;
+        double cursorPosX = 0.0d;
+        double cursorPosY = 0.0d;
+        unsafe
+        {
+            _ctx.glfw.GetFramebufferSize(_ctx.mainWindow, out bufferWidth, out bufferHeight);
 
-        //_ctx.draw.DrawBackground();
+            //_ctx.draw.DrawBackground();
 
-        _ctx.glfw.GetCursorPos(_ctx.mainWindow, out var cursorPosX, out var cursorPosY);
+            _ctx.glfw.GetCursorPos(_ctx.mainWindow, out cursorPosX, out cursorPosY);
+        }
 
         // For the Tracy profiler
         //FrameMark;
@@ -292,7 +344,19 @@ public class SampleApp
         }
     }
 
-    private unsafe void OnWindowRender(double dt)
+    private void OnWindowRenderSafe(double dt)
+    {
+        try
+        {
+            OnWindowRender(dt);
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e, "");
+        }
+    }
+    
+    private void OnWindowRender(double dt)
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -333,7 +397,10 @@ public class SampleApp
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());
-        _ctx.glfw.SwapBuffers(_ctx.mainWindow);
+        unsafe
+        {
+            _ctx.glfw.SwapBuffers(_ctx.mainWindow);
+        }
     }
 
 
@@ -390,7 +457,7 @@ public class SampleApp
         s_settings.restart = false;
     }
 
-    private unsafe void CreateUI(WindowHandle* window, string glslVersion)
+    private void CreateUI(string glslVersion)
     {
         //IMGUI_CHECKVERSION();
         //ImGui.CreateContext();
@@ -657,7 +724,7 @@ public class SampleApp
         }
     }
 
-    private unsafe void UpdateUI()
+    private void UpdateUI()
     {
         int maxWorkers = (int)(Environment.ProcessorCount * 1.5f);
 
@@ -735,7 +802,10 @@ public class SampleApp
 
                     if (ImGui.Button("Quit", button_sz))
                     {
-                        _ctx.glfw.SetWindowShouldClose(_ctx.mainWindow, true);
+                        unsafe
+                        {
+                            _ctx.glfw.SetWindowShouldClose(_ctx.mainWindow, true);
+                        }
                     }
 
                     ImGui.EndTabItem();
