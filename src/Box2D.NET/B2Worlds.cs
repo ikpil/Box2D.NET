@@ -108,7 +108,7 @@ namespace Box2D.NET
         {
             // check
             B2RuntimeValidator.Shared.ThrowIfSafeRuntimePlatform();
-            
+
             Debug.Assert(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
             B2_CHECK_DEF(ref def);
 
@@ -945,14 +945,12 @@ namespace Box2D.NET
             {
                 B2AABB aabb = shape.fatAABB;
 
-                Span<B2Vec2> vs = stackalloc B2Vec2[4]
-                {
-                    new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y),
-                    new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y),
-                    new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y),
-                    new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y),
-                };
-
+                var array4 = new B2FixedArray4<B2Vec2>();
+                Span<B2Vec2> vs = array4.AsSpan();
+                vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
+                vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
+                vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
+                vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
 
                 draw.DrawPolygon(vs, 4, B2HexColor.b2_colorGold, draw.context);
             }
@@ -1271,7 +1269,8 @@ namespace Box2D.NET
                 B2HexColor color = B2HexColor.b2_colorGold;
 
                 int setCount = world.solverSets.count;
-                Span<B2Vec2> vs = stackalloc B2Vec2[4];
+                var array4 = new B2FixedArray4<B2Vec2>();
+                Span<B2Vec2> vs = array4.AsSpan();
                 for (int setIndex = 0; setIndex < setCount; ++setIndex)
                 {
                     B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
