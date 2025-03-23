@@ -19,6 +19,13 @@ namespace Box2D.NET
 {
     public static class B2BoardPhases
     {
+        // Warning: writing to these globals significantly slows multithreading performance
+#if B2_SNOOP_PAIR_COUNTERS
+        private static B2TreeStats b2_dynamicStats = new B2TreeStats();
+        private static B2TreeStats b2_kinematicStats = new B2TreeStats();
+        private static B2TreeStats b2_staticStats = new B2TreeStats();
+#endif
+
         // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
         public static B2BodyType B2_PROXY_TYPE(int KEY)
         {
@@ -312,12 +319,6 @@ namespace Box2D.NET
             return true;
         }
 
-// Warning: writing to these globals significantly slows multithreading performance
-#if B2_SNOOP_PAIR_COUNTERS
-        b2TreeStats b2_dynamicStats;
-        b2TreeStats b2_kinematicStats;
-        b2TreeStats b2_staticStats;
-#endif
 
         public static void b2FindPairsTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
@@ -521,10 +522,10 @@ namespace Box2D.NET
         public static void b2ValidateNoEnlarged(B2BroadPhase bp)
         {
 #if B2_VALIDATE
-            for ( int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j )
+            for (int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j)
             {
                 B2DynamicTree tree = bp.trees[j];
-                b2DynamicTree_ValidateNoEnlarged( tree );
+                b2DynamicTree_ValidateNoEnlarged(tree);
             }
 #else
             B2_UNUSED(bp);
