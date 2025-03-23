@@ -7,6 +7,9 @@ using NUnit.Framework;
 using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Timers;
+#if B2_SNOOP_TABLE_COUNTERS
+using static Box2D.NET.B2Atomics;
+#endif
 
 namespace Box2D.NET.Test;
 
@@ -67,9 +70,10 @@ public class B2TableTest
 
             Assert.That(set.count, Is.EqualTo((itemCount - removeCount)));
 
+            // Snoop counters. These should be disabled in optimized builds because they are expensive.
 #if B2_SNOOP_TABLE_COUNTERS
-		extern b2AtomicInt b2_probeCount;
-		b2AtomicStoreInt(ref  &b2_probeCount, 0 );
+            B2AtomicInt b2_probeCount = new B2AtomicInt();
+            b2AtomicStoreInt(ref b2_probeCount, 0);
 #endif
 
             // Test key search
@@ -94,9 +98,9 @@ public class B2TableTest
             Console.Write("set: count = %d, b2ContainsKey = %.5f ms, ave = %.5f us\n", itemCount, ms, 1000.0f * ms / itemCount);
 
 #if B2_SNOOP_TABLE_COUNTERS
-		int probeCount = b2AtomicLoadInt(ref  &b2_probeCount );
-		float aveProbeCount = (float)probeCount / (float)itemCount;
-		Console.Write( "item count = %d, probe count = %d, ave probe count %.2f\n", itemCount, probeCount, aveProbeCount );
+            int probeCount = b2AtomicLoadInt(ref b2_probeCount);
+            float aveProbeCount = (float)probeCount / (float)itemCount;
+            Console.Write("item count = %d, probe count = %d, ave probe count %.2f\n", itemCount, probeCount, aveProbeCount);
 #endif
 
             // Remove all keys from set

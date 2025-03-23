@@ -407,8 +407,8 @@ namespace Box2D.NET
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
 
 #if B2_SNOOP_TABLE_COUNTERS
-	extern b2AtomicInt b2_probeCount;
-	b2AtomicStoreInt(ref &b2_probeCount, 0);
+            B2AtomicInt b2_probeCount = new B2AtomicInt();
+            b2AtomicStoreInt(ref b2_probeCount, 0);
 #endif
 
             int minRange = 64;

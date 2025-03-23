@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;B2_VALIDATE;ENABLED</DefineConstants>
+    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;B2_VALIDATE;ENABLED;B2_SNOOP_TABLE_COUNTERS</DefineConstants>
   </PropertyGroup>
 
 </Project>

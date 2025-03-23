@@ -5,14 +5,17 @@
 using System.Diagnostics;
 using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Cores;
+#if B2_SNOOP_TABLE_COUNTERS
+using static Box2D.NET.B2Atomics;
+#endif
 
 namespace Box2D.NET
 {
     public static class B2Tables
     {
 #if B2_SNOOP_TABLE_COUNTERS
-        b2AtomicInt b2_findCount;
-        b2AtomicInt b2_probeCount;
+        private static B2AtomicInt b2_findCount;
+        private static B2AtomicInt b2_probeCount;
 #endif
         //#define B2_SHAPE_PAIR_KEY( K1, K2 ) K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1
         public static ulong B2_SHAPE_PAIR_KEY(long K1, long K2)
@@ -88,7 +91,7 @@ namespace Box2D.NET
         public static int b2FindSlot(ref B2HashSet set, ulong key, uint hash)
         {
 #if B2_SNOOP_TABLE_COUNTERS
-		b2AtomicFetchAddInt(ref  &b2_findCount, 1 );
+            b2AtomicFetchAddInt(ref b2_findCount, 1);
 #endif
 
             int capacity = set.capacity;
@@ -97,7 +100,7 @@ namespace Box2D.NET
             while (items[index].hash != 0 && items[index].key != key)
             {
 #if B2_SNOOP_TABLE_COUNTERS
-		b2AtomicFetchAddInt(ref  &b2_probeCount, 1 );
+                b2AtomicFetchAddInt(ref b2_probeCount, 1);
 #endif
                 index = (index + 1) & (capacity - 1);
             }
