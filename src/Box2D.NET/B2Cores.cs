@@ -16,30 +16,6 @@ namespace Box2D.NET
         private static b2FreeFcn b2_freeFcn;
         private static B2AtomicInt b2_byteCount;
 
-        // TODO: @ikpil. check SIMD
-        // Define SIMD
-        public static bool BOX2D_ENABLE_SIMD = true;
-
-// 	#if defined( B2_CPU_X86_X64 )
-// 		#if defined( BOX2D_AVX2 )
-// 			#define B2_SIMD_AVX2
-// 			#define B2_SIMD_WIDTH 8
-// 		#else
-// 			#define B2_SIMD_SSE2
-// 			#define B2_SIMD_WIDTH 4
-// 		#endif
-// 	#elif defined( B2_CPU_ARM )
-// 		#define B2_SIMD_NEON
-// 		#define B2_SIMD_WIDTH 4
-// 	#elif defined( B2_CPU_WASM )
-// 		#define B2_CPU_WASM
-// 		#define B2_SIMD_SSE2
-// 		#define B2_SIMD_WIDTH 4
-// 	#else
-// 		#define B2_SIMD_NONE
-// 		#define B2_SIMD_WIDTH 4
-// 	#endif
-// #else
         // note: I tried width of 1 and got no performance change
         public const int B2_SIMD_WIDTH = 4;
 

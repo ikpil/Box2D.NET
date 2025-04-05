@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
@@ -505,304 +506,90 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.store_impulses);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2AddW(Vector<float> a, Vector<float> b)
+        {
+            return a + b;
+        }
 
-#if B2_SIMD_AVX2
-static b2FloatW b2ZeroW()
-{
-	return _mm256_setzero_ps();
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2SubW(Vector<float> a, Vector<float> b)
+        {
+            return a - b;
+        }
 
-static b2FloatW b2SplatW( float scalar )
-{
-	return _mm256_set1_ps( scalar );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2MulW(Vector<float> a, Vector<float> b)
+        {
+            return a * b;
+        }
 
-static b2FloatW b2AddW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_add_ps( a, b );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2MulAddW(Vector<float> a, Vector<float> b, Vector<float> c)
+        {
+            return (b * c) + a;
+        }
 
-static b2FloatW b2SubW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_sub_ps( a, b );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2MulSubW(Vector<float> a, Vector<float> b, Vector<float> c)
+        {
+            return a - (b * c);
+        }
 
-static b2FloatW b2MulW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_mul_ps( a, b );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2MinW(Vector<float> a, Vector<float> b)
+        {
+            return Vector.Min(a, b);
+        }
 
-static b2FloatW b2MulAddW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	// FMA can be emulated: https://github.com/lattera/glibc/blob/master/sysdeps/ieee754/dbl-64/s_fmaf.c#L34
-	// return _mm256_fmadd_ps( b, c, a );
-	return _mm256_add_ps( _mm256_mul_ps( b, c ), a );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2MaxW(Vector<float> a, Vector<float> b)
+        {
+            return Vector.Max(a, b);
+        }
 
-static b2FloatW b2MulSubW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	// return _mm256_fnmadd_ps(b, c, a);
-	return _mm256_sub_ps( a, _mm256_mul_ps( b, c ) );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2ClampSymW(Vector<float> a, Vector<float> b)
+        {
+            // a = clamp(a, -b, b)
+            Vector<float> min = Vector.Min(a, b);
+            return Vector.Max(-b, min);
+        }
 
-static b2FloatW b2MinW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_min_ps( a, b );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2OrW(Vector<float> a, Vector<float> b)
+        {
+            Vector<int> aZeroMask = Vector.Equals(a, Vector<float>.Zero);
+            Vector<int> bZeroMask = Vector.Equals(b, Vector<float>.Zero);
 
-static b2FloatW b2MaxW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_max_ps( a, b );
-}
+            // a 또는 b의 해당 요소가 0이 아니면 참인 마스크 생성
+            Vector<int> zeroMask = aZeroMask | bZeroMask;
 
-// a = clamp(a, -b, b)
-static b2FloatW b2ClampSymW( b2FloatW a, b2FloatW b )
-{
-	b2FloatW nb = _mm256_sub_ps( _mm256_setzero_ps(), b );
-	return _mm256_max_ps(nb, _mm256_min_ps( a, b ));
-}
+            // 마스크가 참이면 1.0f, 거짓이면 0.0f 선택
+            return Vector.ConditionalSelect(zeroMask, Vector<float>.Zero, Vector<float>.One);
+        }
 
-static b2FloatW b2OrW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_or_ps( a, b );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2GreaterThanW(Vector<float> a, Vector<float> b)
+        {
+            var mask = Vector.GreaterThan(a, b);
+            return Vector.ConditionalSelect(mask, Vector<float>.One, Vector<float>.Zero);
+        }
 
-static b2FloatW b2GreaterThanW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_cmp_ps( a, b, _CMP_GT_OQ );
-}
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2EqualsW(Vector<float> a, Vector<float> b)
+        {
+            var mask = Vector.Equals(a, b);
+            return Vector.ConditionalSelect(mask, Vector<float>.One, Vector<float>.Zero);
+        }
 
-static b2FloatW b2EqualsW( b2FloatW a, b2FloatW b )
-{
-	return _mm256_cmp_ps( a, b, _CMP_EQ_OQ );
-}
-
-// component-wise returns mask ? b : a
-static b2FloatW b2BlendW( b2FloatW a, b2FloatW b, b2FloatW mask )
-{
-	return _mm256_blendv_ps( a, b, mask );
-}
-
-#elif B2_SIMD_NEON
-static b2FloatW b2ZeroW()
-{
-	return vdupq_n_f32( 0.0f );
-}
-
-static b2FloatW b2SplatW( float scalar )
-{
-	return vdupq_n_f32( scalar );
-}
-
-static b2FloatW b2SetW( float a, float b, float c, float d )
-{
-	float32_t array[4] = { a, b, c, d };
-	return vld1q_f32( array );
-}
-
-static b2FloatW b2AddW( b2FloatW a, b2FloatW b )
-{
-	return vaddq_f32( a, b );
-}
-
-static b2FloatW b2SubW( b2FloatW a, b2FloatW b )
-{
-	return vsubq_f32( a, b );
-}
-
-static b2FloatW b2MulW( b2FloatW a, b2FloatW b )
-{
-	return vmulq_f32( a, b );
-}
-
-static b2FloatW b2MulAddW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	return vmlaq_f32( a, b, c );
-}
-
-static b2FloatW b2MulSubW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	return vmlsq_f32( a, b, c );
-}
-
-static b2FloatW b2MinW( b2FloatW a, b2FloatW b )
-{
-	return vminq_f32( a, b );
-}
-
-static b2FloatW b2MaxW( b2FloatW a, b2FloatW b )
-{
-	return vmaxq_f32( a, b );
-}
-
-// a = clamp(a, -b, b)
-static b2FloatW b2ClampSymW( b2FloatW a, b2FloatW b )
-{
-	b2FloatW nb = vnegq_f32( b );
-	return vmaxq_f32( nb, vminq_f32( a, b ) );
-}
-
-static b2FloatW b2OrW( b2FloatW a, b2FloatW b )
-{
-	return vreinterpretq_f32_u32( vorrq_u32( vreinterpretq_u32_f32( a ), vreinterpretq_u32_f32( b ) ) );
-}
-
-static b2FloatW b2GreaterThanW( b2FloatW a, b2FloatW b )
-{
-	return vreinterpretq_f32_u32( vcgtq_f32( a, b ) );
-}
-
-static b2FloatW b2EqualsW( b2FloatW a, b2FloatW b )
-{
-	return vreinterpretq_f32_u32( vceqq_f32( a, b ) );
-}
-
-// component-wise returns mask ? b : a
-static b2FloatW b2BlendW( b2FloatW a, b2FloatW b, b2FloatW mask )
-{
-	uint32x4_t mask32 = vreinterpretq_u32_f32( mask );
-	return vbslq_f32( mask32, b, a );
-}
-
-static b2FloatW b2LoadW( const float32_t* data )
-{
-	return vld1q_f32( data );
-}
-
-static void b2StoreW( float32_t* data, b2FloatW a )
-{
-	return vst1q_f32( data, a );
-}
-
-static b2FloatW b2UnpackLoW( b2FloatW a, b2FloatW b )
-{
-#if __aarch64__
-	return vzip1q_f32( a, b );
-#else
-	float32x2_t a1 = vget_low_f32( a );
-	float32x2_t b1 = vget_low_f32( b );
-	float32x2x2_t result = vzip_f32( a1, b1 );
-	return vcombine_f32( result.val[0], result.val[1] );
-#endif
-}
-
-static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
-{
-#if __aarch64__
-	return vzip2q_f32( a, b );
-#else
-	float32x2_t a1 = vget_high_f32( a );
-	float32x2_t b1 = vget_high_f32( b );
-	float32x2x2_t result = vzip_f32( a1, b1 );
-	return vcombine_f32( result.val[0], result.val[1] );
-#endif
-}
-
-#elif B2_SIMD_SSE2
-static b2FloatW b2ZeroW()
-{
-	return _mm_setzero_ps();
-}
-
-static b2FloatW b2SplatW( float scalar )
-{
-	return _mm_set1_ps( scalar );
-}
-
-static b2FloatW b2SetW( float a, float b, float c, float d )
-{
-	return _mm_setr_ps( a, b, c, d );
-}
-
-static b2FloatW b2AddW( b2FloatW a, b2FloatW b )
-{
-	return _mm_add_ps( a, b );
-}
-
-static b2FloatW b2SubW( b2FloatW a, b2FloatW b )
-{
-	return _mm_sub_ps( a, b );
-}
-
-static b2FloatW b2MulW( b2FloatW a, b2FloatW b )
-{
-	return _mm_mul_ps( a, b );
-}
-
-static b2FloatW b2MulAddW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	return _mm_add_ps( a, _mm_mul_ps( b, c ) );
-}
-
-static b2FloatW b2MulSubW( b2FloatW a, b2FloatW b, b2FloatW c )
-{
-	return _mm_sub_ps( a, _mm_mul_ps( b, c ) );
-}
-
-static b2FloatW b2MinW( b2FloatW a, b2FloatW b )
-{
-	return _mm_min_ps( a, b );
-}
-
-static b2FloatW b2MaxW( b2FloatW a, b2FloatW b )
-{
-	return _mm_max_ps( a, b );
-}
-
-// a = clamp(a, -b, b)
-static b2FloatW b2ClampSymW( b2FloatW a, b2FloatW b )
-{
-	// Create a mask with the sign bit set for each element
-	__m128 mask = _mm_set1_ps( -0.0f );
-
-	// XOR the input with the mask to negate each element
-	__m128 nb = _mm_xor_ps( b, mask );
-
-	return _mm_max_ps( nb, _mm_min_ps( a, b ) );
-}
-
-static b2FloatW b2OrW( b2FloatW a, b2FloatW b )
-{
-	return _mm_or_ps( a, b );
-}
-
-static b2FloatW b2GreaterThanW( b2FloatW a, b2FloatW b )
-{
-	return _mm_cmpgt_ps( a, b );
-}
-
-static b2FloatW b2EqualsW( b2FloatW a, b2FloatW b )
-{
-	return _mm_cmpeq_ps( a, b );
-}
-
-// component-wise returns mask ? b : a
-static b2FloatW b2BlendW( b2FloatW a, b2FloatW b, b2FloatW mask )
-{
-	return _mm_or_ps( _mm_and_ps( mask, b ), _mm_andnot_ps( mask, a ) );
-}
-
-static b2FloatW b2LoadW( const float* data )
-{
-	return _mm_load_ps( data );
-}
-
-static void b2StoreW( float* data, b2FloatW a )
-{
-	_mm_store_ps( data, a );
-}
-
-static b2FloatW b2UnpackLoW( b2FloatW a, b2FloatW b )
-{
-	return _mm_unpacklo_ps( a, b );
-}
-
-static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
-{
-	return _mm_unpackhi_ps( a, b );
-}
-
-#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector<float> b2BlendW(Vector<float> a, Vector<float> b, Vector<float> mask)
+        {
+            // component-wise returns mask ? b : a
+            var mask2 = Vector.Equals(mask, Vector<float>.Zero);
+            return Vector.ConditionalSelect(mask2, a, b);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2ZeroW()
@@ -903,7 +690,7 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static B2FloatW b2EqualsW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2EqualsW(B2FloatW a, B2FloatW b)
         {
             // TODO: @ikpil check float equal
             return new B2FloatW(
@@ -926,8 +713,6 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
                 W = mask.W != 0.0f ? b.W : a.W,
             };
         }
-
-#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2DotW(B2Vec2W a, B2Vec2W b)
