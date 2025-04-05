@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Constants;
@@ -803,41 +804,49 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
 
 #else
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2ZeroW()
         {
             return new B2FloatW(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SplatW(float scalar)
         {
             return new B2FloatW(scalar, scalar, scalar, scalar);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2AddW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SubW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulAddW(B2FloatW a, B2FloatW b, B2FloatW c)
         {
             return new B2FloatW(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulSubW(B2FloatW a, B2FloatW b, B2FloatW c)
         {
             return new B2FloatW(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MinW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
@@ -848,6 +857,7 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MaxW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
@@ -858,9 +868,10 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
-// a = clamp(a, -b, b)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2ClampSymW(B2FloatW a, B2FloatW b)
         {
+            // a = clamp(a, -b, b)
             return new B2FloatW(
                 b2ClampFloat(a.X, -b.X, b.X),
                 b2ClampFloat(a.Y, -b.Y, b.Y),
@@ -869,6 +880,7 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2OrW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
@@ -879,6 +891,7 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2GreaterThanW(B2FloatW a, B2FloatW b)
         {
             return new B2FloatW(
@@ -889,6 +902,7 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static B2FloatW b2EqualsW(B2FloatW a, B2FloatW b)
         {
             // TODO: @ikpil check float equal
@@ -900,9 +914,10 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
             );
         }
 
-// component-wise returns mask ? b : a
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2BlendW(B2FloatW a, B2FloatW b, B2FloatW mask)
         {
+            // component-wise returns mask ? b : a
             return new B2FloatW()
             {
                 X = mask.X != 0.0f ? b.X : a.X,
@@ -914,17 +929,20 @@ static b2FloatW b2UnpackHiW( b2FloatW a, b2FloatW b )
 
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2DotW(B2Vec2W a, B2Vec2W b)
         {
             return b2AddW(b2MulW(a.X, b.X), b2MulW(a.Y, b.Y));
         }
 
-        static B2FloatW b2CrossW(B2Vec2W a, B2Vec2W b)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2CrossW(B2Vec2W a, B2Vec2W b)
         {
             return b2SubW(b2MulW(a.X, b.Y), b2MulW(a.Y, b.X));
         }
 
-        static B2Vec2W b2RotateVectorW(B2RotW q, B2Vec2W v)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2W b2RotateVectorW(B2RotW q, B2Vec2W v)
         {
             return new B2Vec2W(b2SubW(b2MulW(q.C, v.X), b2MulW(q.S, v.Y)), b2AddW(b2MulW(q.S, v.X), b2MulW(q.C, v.Y)));
         }
