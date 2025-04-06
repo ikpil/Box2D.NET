@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using System.IO;
 using System.Runtime.CompilerServices;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
