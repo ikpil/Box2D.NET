@@ -47,7 +47,7 @@ public class GLBackground
         _gl.BufferData<B2Vec2>(GLEnum.ArrayBuffer, vertices, GLEnum.StaticDraw);
         _gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);

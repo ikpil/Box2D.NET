@@ -23,9 +23,9 @@ public class Restitution : Sample
         e_boxShape
     };
 
-    public const int e_count = 40;
+    public const int m_count = 40;
 
-    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
+    private B2BodyId[] m_bodyIds = new B2BodyId[m_count];
     private ShapeType m_shapeType;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
@@ -45,15 +45,10 @@ public class Restitution : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-            float h = 1.0f * e_count;
+            float h = 1.0f * m_count;
             B2Segment segment = new B2Segment(new B2Vec2(-h, 0.0f), new B2Vec2(h, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
-        }
-
-        for (int i = 0; i < e_count; ++i)
-        {
-            m_bodyIds[i] = b2_nullBodyId;
         }
 
         m_shapeType = ShapeType.e_circleShape;
@@ -63,7 +58,7 @@ public class Restitution : Sample
 
     void CreateBodies()
     {
-        for (int i = 0; i < e_count; ++i)
+        for (int i = 0; i < m_count; ++i)
         {
             if (B2_IS_NON_NULL(m_bodyIds[i]))
             {
@@ -79,16 +74,16 @@ public class Restitution : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.restitution = 0.0f;
+        shapeDef.material.restitution = 0.0f;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
 
-        float dr = 1.0f / (e_count > 1 ? e_count - 1 : 1);
-        float x = -1.0f * (e_count - 1);
+        float dr = 1.0f / (m_count > 1 ? m_count - 1 : 1);
+        float x = -1.0f * (m_count - 1);
         float dx = 2.0f;
 
-        for (int i = 0; i < e_count; ++i)
+        for (int i = 0; i < m_count; ++i)
         {
             bodyDef.position = new B2Vec2(x, 40.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
@@ -104,14 +99,14 @@ public class Restitution : Sample
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }
 
-            shapeDef.restitution += dr;
+            shapeDef.material.restitution += dr;
             x += dx;
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

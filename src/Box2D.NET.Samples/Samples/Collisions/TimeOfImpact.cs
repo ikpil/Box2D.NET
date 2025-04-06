@@ -128,7 +128,7 @@ public class TimeOfImpact : Sample
             distanceInput.transformB = b2GetSweepTransform(ref _sweepB, _output.fraction);
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
+            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
             m_context.draw.DrawString(5, m_textLine, $"distance = {distanceOutput.distance}:g");
             m_textLine += m_textIncrement;
         }

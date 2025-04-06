@@ -33,7 +33,7 @@ public class CardHouse : Sample
         B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.friction = 0.7f;
+        shapeDef.material.friction = 0.7f;
 
         B2Polygon groundBox = b2MakeBox(40.0f, 2.0f);
         b2CreatePolygonShape(groundId, ref shapeDef, ref groundBox);

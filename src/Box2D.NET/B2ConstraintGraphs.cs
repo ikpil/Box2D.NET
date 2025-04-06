@@ -279,7 +279,7 @@ namespace Box2D.NET
                 }
             }
 #else
-	B2_UNUSED( graph, bodyIdA, bodyIdB );
+            B2_UNUSED(graph, bodyIdA, bodyIdB, staticA, staticB);
 #endif
 
             return B2_OVERFLOW_INDEX;

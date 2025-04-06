@@ -86,7 +86,7 @@ public class GLSolidCapsules
         _gl.VertexAttribDivisor(lengthInstance, 1);
         _gl.VertexAttribDivisor(colorInstance, 1);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -165,7 +165,7 @@ public class GLSolidCapsules
             _gl.BufferSubData<CapsuleData>(GLEnum.ArrayBuffer, 0, capsules.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
-            _gl.CheckErrorGL();
+            _gl.CheckOpenGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

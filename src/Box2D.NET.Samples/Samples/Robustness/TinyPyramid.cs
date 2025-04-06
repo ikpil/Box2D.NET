@@ -1,0 +1,69 @@
+﻿using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Shapes;
+
+namespace Box2D.NET.Samples.Samples.Robustness;
+
+public class TinyPyramid : Sample
+{
+    private static readonly int SampleTinyPyramid = SampleFactory.Shared.RegisterSample("Robustness", "Tiny Pyramid", Create);
+
+    private float m_extent;
+
+    private static Sample Create(SampleAppContext ctx, Settings settings)
+    {
+        return new TinyPyramid(ctx, settings);
+    }
+
+    public TinyPyramid(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    {
+        if (settings.restart == false)
+        {
+            m_context.camera.m_center = new B2Vec2(0.0f, 0.8f);
+            m_context.camera.m_zoom = 1.0f;
+        }
+
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            B2Polygon box = b2MakeOffsetBox(5.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+        }
+
+        {
+            m_extent = 0.025f;
+            int baseCount = 30;
+
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+            B2Polygon box = b2MakeSquare(m_extent);
+
+            for (int i = 0; i < baseCount; ++i)
+            {
+                float y = (2.0f * i + 1.0f) * m_extent;
+
+                for (int j = i; j < baseCount; ++j)
+                {
+                    float x = (i + 1.0f) * m_extent + 2.0f * (j - i) * m_extent - baseCount * m_extent;
+                    bodyDef.position = new B2Vec2(x, y);
+
+                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                }
+            }
+        }
+    }
+
+    public override void Draw(Settings settings)
+    {
+        base.Draw(settings);
+
+        DrawTextLine($"{200.0f * m_extent:F1}cm squares");
+    }
+}

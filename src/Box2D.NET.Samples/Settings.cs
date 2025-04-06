@@ -17,20 +17,24 @@ public class Settings
     public int sampleIndex = 0;
     public int windowWidth = 1920;
     public int windowHeight = 1080;
+
     public float hertz = 60.0f;
     public int subStepCount = 4;
     public int workerCount = 1;
+
     public bool useCameraBounds = false;
     public bool drawShapes = true;
     public bool drawJoints = true;
     public bool drawJointExtras = false;
-    public bool drawAABBs = false;
+    public bool drawBounds = false;
+    public bool drawMass = false;
+    public bool drawBodyNames = false;
     public bool drawContactPoints = false;
     public bool drawContactNormals = false;
     public bool drawContactImpulses = false;
+    public bool drawContactFeatures = false;
     public bool drawFrictionImpulses = false;
-    public bool drawMass = false;
-    public bool drawBodyNames = false;
+    public bool drawIslands = false;
     public bool drawGraphColors = false;
     public bool drawCounters = false;
     public bool drawProfile = false;
@@ -40,7 +44,6 @@ public class Settings
     public bool pause = false;
     public bool singleStep = false;
     public bool restart = false;
-
 
     public void Save()
     {
@@ -63,20 +66,24 @@ public class Settings
         sampleIndex = other.sampleIndex;
         windowWidth = other.windowWidth;
         windowHeight = other.windowHeight;
+
         hertz = other.hertz;
         subStepCount = other.subStepCount;
         workerCount = other.workerCount;
+
         useCameraBounds = other.useCameraBounds;
         drawShapes = other.drawShapes;
         drawJoints = other.drawJoints;
         drawJointExtras = other.drawJointExtras;
-        drawAABBs = other.drawAABBs;
+        drawBounds = other.drawBounds;
+        drawMass = other.drawMass;
+        drawBodyNames = other.drawBodyNames;
         drawContactPoints = other.drawContactPoints;
         drawContactNormals = other.drawContactNormals;
         drawContactImpulses = other.drawContactImpulses;
+        drawContactFeatures = other.drawContactFeatures;
         drawFrictionImpulses = other.drawFrictionImpulses;
-        drawMass = other.drawMass;
-        drawBodyNames = other.drawBodyNames;
+        drawIslands = other.drawIslands;
         drawGraphColors = other.drawGraphColors;
         drawCounters = other.drawCounters;
         drawProfile = other.drawProfile;

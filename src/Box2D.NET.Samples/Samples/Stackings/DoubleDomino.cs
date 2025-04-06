@@ -40,7 +40,7 @@ public class DoubleDomino : Sample
             B2Polygon box = b2MakeBox(0.125f, 0.5f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
+            shapeDef.material.friction = 0.6f;
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
 

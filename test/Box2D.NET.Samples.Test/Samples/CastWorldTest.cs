@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Box2D.NET.Samples.Test.Samples;
 
-public class RayCastWorldTest
+public class CastWorldTest
 {
     [Test]
     public void TestRayCastWorld()
@@ -11,7 +11,7 @@ public class RayCastWorldTest
         var ctx = SampleAppContext.CreateWithoutGLFW();
         var settings = Helpers.CreateSettings();
 
-        using var testObject = new RayCastWorld(ctx, settings);
+        using var testObject = new CastWorld(ctx, settings);
 
         for (int i = 0; i < 37; ++i)
         {

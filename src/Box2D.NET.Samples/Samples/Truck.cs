@@ -60,8 +60,8 @@ public class Truck
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = density;
-        shapeDef.friction = 0.2f;
-        shapeDef.customColor = (uint)B2HexColor.b2_colorHotPink;
+        shapeDef.material.friction = 0.2f;
+        shapeDef.material.customColor = (uint)B2HexColor.b2_colorHotPink;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -78,8 +78,8 @@ public class Truck
         b2CreatePolygonShape(m_chassisId, ref shapeDef, ref box);
 
         shapeDef.density = 2.0f * density;
-        shapeDef.friction = 2.5f;
-        shapeDef.customColor = (uint)B2HexColor.b2_colorSilver;
+        shapeDef.material.friction = 2.5f;
+        shapeDef.material.customColor = (uint)B2HexColor.b2_colorSilver;
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
         bodyDef.position = b2Add(new B2Vec2(-2.75f * scale, 0.3f * scale), position);

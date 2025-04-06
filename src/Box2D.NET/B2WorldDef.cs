@@ -29,7 +29,7 @@ namespace Box2D.NET
         /// This parameter controls how fast overlap is resolved and usually has units of meters per second. This only
         /// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
         /// decreasing the damping ratio.
-        public float contactPushMaxSpeed;
+        public float maxContactPushSpeed;
 
         /// Joint stiffness. Cycles per second.
         public float jointHertz;

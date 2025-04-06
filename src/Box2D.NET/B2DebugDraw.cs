@@ -11,16 +11,16 @@ namespace Box2D.NET
     /// @ingroup world
     public class B2DebugDraw
     {
-        public DrawPolygonDelegate DrawPolygon;
-        public DrawSolidPolygonDelegate DrawSolidPolygon;
-        public DrawCircleDelegate DrawCircle;
-        public DrawSolidCircleDelegate DrawSolidCircle;
-        public DrawSolidCapsuleDelegate DrawSolidCapsule;
-        public DrawSegmentDelegate DrawSegment;
-        public DrawTransformDelegate DrawTransform;
-        public DrawPointDelegate DrawPoint;
-        public DrawStringDelegate DrawString;
-
+        public DrawPolygonFcn DrawPolygonFcn;
+        public DrawSolidPolygonFcn DrawSolidPolygonFcn;
+        public DrawCircleFcn DrawCircleFcn;
+        public DrawSolidCircleFcn DrawSolidCircleFcn;
+        public DrawSolidCapsuleFcn DrawSolidCapsuleFcn;
+        public DrawSegmentFcn DrawSegmentFcn;
+        public DrawTransformFcn DrawTransformFcn;
+        public DrawPointFcn DrawPointFcn;
+        public DrawStringFcn DrawStringFcn;
+        
         /// Bounds to use if restricting drawing to a rectangular region
         public B2AABB drawingBounds;
 
@@ -37,7 +37,7 @@ namespace Box2D.NET
         public bool drawJointExtras;
 
         /// Option to draw the bounding boxes for shapes
-        public bool drawAABBs;
+        public bool drawBounds;
 
         /// Option to draw the mass and center of mass of dynamic bodies
         public bool drawMass;
@@ -57,8 +57,14 @@ namespace Box2D.NET
         /// Option to draw contact normal impulses
         public bool drawContactImpulses;
 
+        /// Option to draw contact feature ids
+        public bool drawContactFeatures;
+
         /// Option to draw contact friction impulses
         public bool drawFrictionImpulses;
+
+        /// Option to draw islands as bounding boxes
+        public bool drawIslands;
 
         /// User context that is passed as an argument to drawing callback functions
         public object context;

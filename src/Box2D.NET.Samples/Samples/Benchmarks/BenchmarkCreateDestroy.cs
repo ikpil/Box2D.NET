@@ -89,7 +89,7 @@ public class BenchmarkCreateDestroy : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = 0.5f;
+        shapeDef.material.friction = 0.5f;
 
         float h = 0.5f;
         B2Polygon box = b2MakeRoundedBox(h, h, 0.0f);

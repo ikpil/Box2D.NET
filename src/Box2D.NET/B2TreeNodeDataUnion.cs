@@ -10,9 +10,12 @@ namespace Box2D.NET
     public struct B2TreeNodeDataUnion
     {
         [FieldOffset(0)]
-        public int child2; // Child 2 index (internal node)
+        public int child1; // Children (internal node)
+        
+        [FieldOffset(4)]
+        public int child2; // Children (internal node)
 
         [FieldOffset(0)]
-        public int userData; // User data (leaf node)
+        public ulong userData; // User data (leaf node)
     }
 }

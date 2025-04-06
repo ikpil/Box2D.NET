@@ -121,7 +121,7 @@ public class ContactEvent : Sample
         m_debrisIds[index] = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.restitution = 0.8f;
+        shapeDef.material.restitution = 0.8f;
 
         // No events when debris hits debris
         shapeDef.enableContactEvents = false;
@@ -143,9 +143,9 @@ public class ContactEvent : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 60.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -232,7 +232,7 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            m_context.draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
                             m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
@@ -262,7 +262,7 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.draw.DrawSegment(point.point, point.point + point.maxNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            m_context.draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
                             m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }

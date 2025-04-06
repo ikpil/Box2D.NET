@@ -18,8 +18,8 @@ namespace Box2D.NET
         /// Validate ray cast input data (NaN, etc)
         public static bool b2IsValidRay(ref B2RayCastInput input)
         {
-            bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) && b2IsValidFloat(input.maxFraction) &&
-                           0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
+            bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) &&
+                           b2IsValidFloat(input.maxFraction) && 0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
             return isValid;
         }
 
@@ -535,7 +535,7 @@ namespace Box2D.NET
             input.useRadii = false;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
+            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
             return output.distance <= shape.radius;
         }
@@ -812,7 +812,7 @@ namespace Box2D.NET
             }
 
             output.fraction = t;
-            output.point = b2MulAdd(p1, t, d);
+            output.point = p;
             output.normal = normal;
             output.hit = true;
 
@@ -903,6 +903,7 @@ namespace Box2D.NET
             castInput.transformB = b2Transform_identity;
             castInput.translationB = input.translation;
             castInput.maxFraction = input.maxFraction;
+            castInput.canEncroach = false;
             return b2ShapeCast(ref castInput);
         }
 
@@ -911,11 +912,12 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
+            pairInput.proxyB = input.proxy;
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
+            pairInput.canEncroach = input.canEncroach;
 
             B2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
@@ -926,11 +928,12 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
+            pairInput.proxyB = input.proxy;
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
+            pairInput.canEncroach = input.canEncroach;
 
             B2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
@@ -941,11 +944,12 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
-            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
+            pairInput.proxyB = input.proxy;
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
+            pairInput.canEncroach = input.canEncroach;
 
             B2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
@@ -956,14 +960,107 @@ namespace Box2D.NET
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
-            pairInput.proxyB = b2MakeProxy(input.points.AsSpan(), input.count, input.radius);
+            pairInput.proxyB = input.proxy;
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
+            pairInput.canEncroach = input.canEncroach;
 
             B2CastOutput output = b2ShapeCast(ref pairInput);
             return output;
+        }
+
+        public static B2PlaneResult b2CollideMoverAndCircle(ref B2Circle shape, ref B2Capsule mover)
+        {
+            B2DistanceInput distanceInput = new B2DistanceInput();
+            distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.transformA = b2Transform_identity;
+            distanceInput.transformB = b2Transform_identity;
+            distanceInput.useRadii = false;
+
+            float totalRadius = mover.radius + shape.radius;
+
+            B2SimplexCache cache = new B2SimplexCache();
+            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+            if (distanceOutput.distance <= totalRadius)
+            {
+                B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
+            }
+
+            return new B2PlaneResult();
+        }
+
+        public static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule shape, ref B2Capsule mover)
+        {
+            B2DistanceInput distanceInput = new B2DistanceInput();
+            distanceInput.proxyA = b2MakeProxy(shape.center1, 2, 0.0f);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.transformA = b2Transform_identity;
+            distanceInput.transformB = b2Transform_identity;
+            distanceInput.useRadii = false;
+
+            float totalRadius = mover.radius + shape.radius;
+
+            B2SimplexCache cache = new B2SimplexCache();
+            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+            if (distanceOutput.distance <= totalRadius)
+            {
+                B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
+            }
+
+            return new B2PlaneResult();
+        }
+
+        public static B2PlaneResult b2CollideMoverAndPolygon(ref B2Polygon shape, ref B2Capsule mover)
+        {
+            B2DistanceInput distanceInput = new B2DistanceInput();
+            distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.transformA = b2Transform_identity;
+            distanceInput.transformB = b2Transform_identity;
+            distanceInput.useRadii = false;
+
+            float totalRadius = mover.radius + shape.radius;
+
+            B2SimplexCache cache = new B2SimplexCache();
+            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+            if (distanceOutput.distance <= totalRadius)
+            {
+                B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
+            }
+
+            return new B2PlaneResult();
+        }
+
+        public static B2PlaneResult b2CollideMoverAndSegment(ref B2Segment shape, ref B2Capsule mover)
+        {
+            B2DistanceInput distanceInput = new B2DistanceInput();
+            distanceInput.proxyA = b2MakeProxy(shape.point1, 2, 0.0f);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.transformA = b2Transform_identity;
+            distanceInput.transformB = b2Transform_identity;
+            distanceInput.useRadii = false;
+
+            float totalRadius = mover.radius;
+
+            B2SimplexCache cache = new B2SimplexCache();
+            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+            if (distanceOutput.distance <= totalRadius)
+            {
+                B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
+            }
+
+            return new B2PlaneResult();
         }
     }
 }

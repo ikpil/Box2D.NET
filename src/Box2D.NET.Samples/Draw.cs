@@ -21,7 +21,6 @@ public class Draw
     private GLBackground m_background;
     private GLPoints m_points;
     private GLLines m_lines;
-    private GLTriangles m_triangles;
     private GLCircles m_circles;
     private GLSolidCircles m_solidCircles;
     private GLSolidCapsules m_solidCapsules;
@@ -41,7 +40,6 @@ public class Draw
         m_background = new GLBackground();
         m_points = new GLPoints();
         m_lines = new GLLines();
-        m_triangles = new GLTriangles();
         m_circles = new GLCircles();
         m_solidCircles = new GLSolidCircles();
         m_solidCapsules = new GLSolidCapsules();
@@ -51,28 +49,30 @@ public class Draw
         B2AABB bounds = new B2AABB(new B2Vec2(-float.MaxValue, -float.MaxValue), new B2Vec2(float.MaxValue, float.MaxValue));
 
         m_debugDraw = new B2DebugDraw();
-        m_debugDraw.DrawPolygon = DrawPolygonFcn;
-        m_debugDraw.DrawSolidPolygon = DrawSolidPolygonFcn;
-        m_debugDraw.DrawCircle = DrawCircleFcn;
-        m_debugDraw.DrawSolidCircle = DrawSolidCircleFcn;
-        m_debugDraw.DrawSolidCapsule = DrawSolidCapsuleFcn;
-        m_debugDraw.DrawSegment = DrawSegmentFcn;
-        m_debugDraw.DrawTransform = DrawTransformFcn;
-        m_debugDraw.DrawPoint = DrawPointFcn;
-        m_debugDraw.DrawString = DrawStringFcn;
+        m_debugDraw.DrawPolygonFcn = DrawPolygonFcn;
+        m_debugDraw.DrawSolidPolygonFcn = DrawSolidPolygonFcn;
+        m_debugDraw.DrawCircleFcn = DrawCircleFcn;
+        m_debugDraw.DrawSolidCircleFcn = DrawSolidCircleFcn;
+        m_debugDraw.DrawSolidCapsuleFcn = DrawSolidCapsuleFcn;
+        m_debugDraw.DrawSegmentFcn = DrawSegmentFcn;
+        m_debugDraw.DrawTransformFcn = DrawTransformFcn;
+        m_debugDraw.DrawPointFcn = DrawPointFcn;
+        m_debugDraw.DrawStringFcn = DrawStringFcn;
         m_debugDraw.drawingBounds = bounds;
 
         m_debugDraw.useDrawingBounds = false;
         m_debugDraw.drawShapes = true;
         m_debugDraw.drawJoints = true;
         m_debugDraw.drawJointExtras = false;
-        m_debugDraw.drawAABBs = false;
+        m_debugDraw.drawBounds = false;
         m_debugDraw.drawMass = false;
         m_debugDraw.drawContacts = false;
         m_debugDraw.drawGraphColors = false;
         m_debugDraw.drawContactNormals = false;
         m_debugDraw.drawContactImpulses = false;
+        m_debugDraw.drawContactFeatures = false;
         m_debugDraw.drawFrictionImpulses = false;
+        m_debugDraw.drawIslands = false;
 
         m_debugDraw.context = this;
 
@@ -91,7 +91,6 @@ public class Draw
         m_background.Create(context);
         m_points.Create(context);
         m_lines.Create(context);
-        m_triangles.Create(context);
         m_circles.Create(context);
         m_solidCircles.Create(context);
         m_solidCapsules.Create(context);
@@ -108,9 +107,6 @@ public class Draw
 
         m_lines.Destroy();
         m_lines = null;
-
-        m_triangles.Destroy();
-        m_triangles = null;
 
         m_circles.Destroy();
         m_circles = null;
@@ -228,11 +224,10 @@ public class Draw
         m_solidCircles.Flush();
         m_solidCapsules.Flush();
         m_solidPolygons.Flush();
-        m_triangles.Flush();
         m_circles.Flush();
         m_lines.Flush();
         m_points.Flush();
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
     }
 
     public void DrawBackground()

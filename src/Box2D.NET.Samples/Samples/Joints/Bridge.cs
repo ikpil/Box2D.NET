@@ -21,10 +21,10 @@ public class Bridge : Sample
 {
     private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
     
-    public const int e_count = 160;
+    public const int m_count = 160;
 
-    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    private B2JointId[] m_jointIds = new B2JointId[e_count + 1];
+    private B2BodyId[] m_bodyIds = new B2BodyId[m_count];
+    private B2JointId[] m_jointIds = new B2JointId[m_count + 1];
     private float m_frictionTorque;
     private float m_gravityScale;
 
@@ -61,7 +61,7 @@ public class Bridge : Sample
             float xbase = -80.0f;
 
             B2BodyId prevBodyId = groundId;
-            for (int i = 0; i < e_count; ++i)
+            for (int i = 0; i < m_count; ++i)
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -84,7 +84,7 @@ public class Bridge : Sample
             }
 
             {
-                B2Vec2 pivot = new B2Vec2(xbase + 1.0f * e_count, 20.0f);
+                B2Vec2 pivot = new B2Vec2(xbase + 1.0f * m_count, 20.0f);
                 jointDef.bodyIdA = prevBodyId;
                 jointDef.bodyIdB = groundId;
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -93,7 +93,7 @@ public class Bridge : Sample
                 jointDef.maxMotorTorque = m_frictionTorque;
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
-                Debug.Assert(jointIndex == e_count + 1);
+                Debug.Assert(jointIndex == m_count + 1);
             }
         }
 
@@ -129,9 +129,9 @@ public class Bridge : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 80.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -144,7 +144,7 @@ public class Bridge : Sample
         bool updateFriction = ImGui.SliderFloat("Joint Friction", ref m_frictionTorque, 0.0f, 1000.0f, "%2.f");
         if (updateFriction)
         {
-            for (int i = 0; i <= e_count; ++i)
+            for (int i = 0; i <= m_count; ++i)
             {
                 b2RevoluteJoint_SetMaxMotorTorque(m_jointIds[i], m_frictionTorque);
             }
@@ -152,7 +152,7 @@ public class Bridge : Sample
 
         if (ImGui.SliderFloat("Gravity scale", ref m_gravityScale, -1.0f, 1.0f, "%.1f"))
         {
-            for (int i = 0; i < e_count; ++i)
+            for (int i = 0; i < m_count; ++i)
             {
                 b2Body_SetGravityScale(m_bodyIds[i], m_gravityScale);
             }

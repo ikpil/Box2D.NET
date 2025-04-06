@@ -24,6 +24,7 @@ public class MotorJoint : Sample
 {
     private static readonly int SampleMotorJoint = SampleFactory.Shared.RegisterSample("Joints", "Motor Joint", Create);
 
+    private B2BodyId m_bodyId;
     private B2JointId m_jointId;
     private float m_time;
     private float m_maxForce;
@@ -61,12 +62,12 @@ public class MotorJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(0.0f, 8.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
 
             m_maxForce = 500.0f;
             m_maxTorque = 500.0f;
@@ -74,7 +75,7 @@ public class MotorJoint : Sample
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = bodyId;
+            jointDef.bodyIdB = m_bodyId;
             jointDef.maxForce = m_maxForce;
             jointDef.maxTorque = m_maxTorque;
             jointDef.correctionFactor = m_correctionFactor;
@@ -86,17 +87,12 @@ public class MotorJoint : Sample
         m_time = 0.0f;
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
-        B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
-        float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        m_context.draw.DrawString(5, m_textLine, $"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
-        m_textLine += 15;
-
-        float height = 140.0f;
+        float height = 180.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
@@ -119,6 +115,11 @@ public class MotorJoint : Sample
         if (ImGui.SliderFloat("Correction", ref m_correctionFactor, 0.0f, 1.0f, "%.1f"))
         {
             b2MotorJoint_SetCorrectionFactor(m_jointId, m_correctionFactor);
+        }
+
+        if (ImGui.Button("Apply Impulse"))
+        {
+            b2Body_ApplyLinearImpulseToCenter(m_bodyId, new B2Vec2(100.0f, 0.0f), true);
         }
 
         ImGui.End();
@@ -150,6 +151,11 @@ public class MotorJoint : Sample
     {
         base.Draw(settings);
 
+        B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
+        float torque = b2Joint_GetConstraintTorque(m_jointId);
+
+        m_context.draw.DrawString(5, m_textLine, $"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
+        m_textLine += 15;
         m_context.draw.DrawTransform(_transform);
     }
 }

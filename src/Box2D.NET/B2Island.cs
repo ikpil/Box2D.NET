@@ -33,6 +33,7 @@ namespace Box2D.NET
         public int jointCount;
 
         // Union find
+        // todo this could go away if islands are merged immediately with b2LinkJoint and b2LinkContact
         public int parentIsland;
 
         // Keeps track of how many contacts have been removed from this island.

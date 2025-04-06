@@ -148,7 +148,7 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             b2CreateCircleShape(m_circleCharacterId, ref shapeDef, ref circle);
         }
 
@@ -166,7 +166,7 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             b2CreateCapsuleShape(m_capsuleCharacterId, ref shapeDef, ref capsule);
         }
 
@@ -184,7 +184,7 @@ public class Character : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             b2CreatePolygonShape(m_boxCharacterId, ref shapeDef, ref box);
         }
     }

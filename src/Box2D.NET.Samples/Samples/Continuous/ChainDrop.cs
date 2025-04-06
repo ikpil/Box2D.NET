@@ -85,9 +85,9 @@ public class ChainDrop : Sample
         //m_shapeId = b2CreatePolygonShape( m_bodyId, &shapeDef, &box );
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

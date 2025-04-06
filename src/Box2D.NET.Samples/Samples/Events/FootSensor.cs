@@ -64,6 +64,7 @@ public class FootSensor : Sample
             chainDef.filter.categoryBits = GROUND;
             chainDef.filter.maskBits = FOOT | PLAYER;
             chainDef.isLoop = false;
+            chainDef.enableSensorEvents = true;
 
             b2CreateChain(groundId, ref chainDef);
         }
@@ -77,7 +78,7 @@ public class FootSensor : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = PLAYER;
             shapeDef.filter.maskBits = GROUND;
-            shapeDef.friction = 0.3f;
+            shapeDef.material.friction = 0.3f;
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.5f);
             b2CreateCapsuleShape(m_playerId, ref shapeDef, ref capsule);
 
@@ -85,6 +86,7 @@ public class FootSensor : Sample
             shapeDef.filter.categoryBits = FOOT;
             shapeDef.filter.maskBits = GROUND;
             shapeDef.isSensor = true;
+            shapeDef.enableSensorEvents = true;
             m_sensorId = b2CreatePolygonShape(m_playerId, ref shapeDef, ref box);
         }
 
@@ -147,7 +149,7 @@ public class FootSensor : Sample
             B2Vec2 point = b2AABB_Center(aabb);
             m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
         }
-        
+
         m_context.draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
         m_textLine += m_textIncrement;
     }

@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Box2D.NET\Box2D.NET.csproj" />
+    <ProjectReference Include="..\..\src\Box2D.NET.Shared\Box2D.NET.Shared.csproj" />
   </ItemGroup>
 
 </Project>

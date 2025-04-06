@@ -3,19 +3,13 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
-using Box2D.NET.Samples.Graphics;
+using Box2D.NET.Shared;
 using Serilog;
-using static Box2D.NET.B2Joints;
-using static Box2D.NET.B2Ids;
-using static Box2D.NET.B2Geometries;
-using static Box2D.NET.B2Types;
-using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
-using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Constants;
+using static Box2D.NET.Shared.Determinism;
 
 namespace Box2D.NET.Samples.Samples.Determinisms;
 
@@ -33,12 +27,8 @@ public class FallingHinges : Sample
 
     private static readonly int SampleFallingHinges = SampleFactory.Shared.RegisterSample("Determinism", "Falling Hinges", Create);
 
-    public const int e_columns = 4;
-    public const int e_rows = 30;
-
-    private B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
-    private uint m_hash;
-    private int m_sleepStep;
+    private FallingHingeData m_data;
+    private bool m_done;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -53,139 +43,18 @@ public class FallingHinges : Sample
             m_context.camera.m_center = new B2Vec2(0.0f, 7.5f);
             m_context.camera.m_zoom = 10.0f;
         }
-
-        {
-            B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
-
-            B2Polygon box = b2MakeBox(20.0f, 1.0f);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
-        }
-
-        for (int i = 0; i < e_rows * e_columns; ++i)
-        {
-            m_bodies[i] = b2_nullBodyId;
-        }
-
-        {
-            float h = 0.25f;
-            float r = 0.1f * h;
-            B2Polygon box = b2MakeRoundedBox(h - r, h - r, r);
-
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.3f;
-
-            float offset = 0.4f * h;
-            float dx = 10.0f * h;
-            float xroot = -0.5f * dx * (e_columns - 1.0f);
-
-            B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.enableLimit = true;
-            jointDef.lowerAngle = -0.1f * B2_PI;
-            jointDef.upperAngle = 0.2f * B2_PI;
-            jointDef.enableSpring = true;
-            jointDef.hertz = 0.5f;
-            jointDef.dampingRatio = 0.5f;
-            jointDef.localAnchorA = new B2Vec2(h, h);
-            jointDef.localAnchorB = new B2Vec2(offset, -h);
-            jointDef.drawSize = 0.1f;
-
-            int bodyIndex = 0;
-            int bodyCount = e_rows * e_columns;
-
-            for (int j = 0; j < e_columns; ++j)
-            {
-                float x = xroot + j * dx;
-
-                B2BodyId prevBodyId = b2_nullBodyId;
-
-                for (int i = 0; i < e_rows; ++i)
-                {
-                    B2BodyDef bodyDef = b2DefaultBodyDef();
-                    bodyDef.type = B2BodyType.b2_dynamicBody;
-
-                    bodyDef.position.X = x + offset * i;
-                    bodyDef.position.Y = h + 2.0f * h * i;
-
-                    // this tests the deterministic cosine and sine functions
-                    bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
-
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-
-                    if ((i & 1) == 0)
-                    {
-                        prevBodyId = bodyId;
-                    }
-                    else
-                    {
-                        jointDef.bodyIdA = prevBodyId;
-                        jointDef.bodyIdB = bodyId;
-                        b2CreateRevoluteJoint(m_worldId, ref jointDef);
-                        prevBodyId = b2_nullBodyId;
-                    }
-
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
-
-                    Debug.Assert(bodyIndex < bodyCount);
-                    m_bodies[bodyIndex] = bodyId;
-
-                    bodyIndex += 1;
-                }
-            }
-        }
-
-        m_hash = 0;
-        m_sleepStep = -1;
-
-        //PrintTransforms();
+        m_data = CreateFallingHinges( m_worldId );
+        m_done = false;
     }
 
-    void PrintTransforms()
-    {
-        uint hash = B2_HASH_INIT;
-        int bodyCount = e_rows * e_columns;
-        Span<byte> bxf = stackalloc byte[sizeof(float) * 4];
-        for (int i = 0; i < bodyCount; ++i)
-        {
-            B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-            //Logger.Information("%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s);
-            Logger.Information($"{i} {xf.p.X:F9} {xf.p.Y:F9} {xf.q.c:F9} {xf.q.s:F9}");
-            xf.TryWriteBytes(bxf);
-            hash = b2Hash(hash, bxf, bxf.Length);
-        }
-
-        //Logger.Information("hash = 0x%08x\n", hash);
-        Logger.Information($"hash = 0x{hash:X8}");
-    }
 
     public override void Step(Settings settings)
     {
         base.Step(settings);
 
-        if (m_hash == 0)
+        if (m_done == false)
         {
-            B2BodyEvents bodyEvents = b2World_GetBodyEvents(m_worldId);
-
-            if (bodyEvents.moveCount == 0)
-            {
-                Span<byte> bxf = stackalloc byte[sizeof(float) * 4];
-                uint hash = B2_HASH_INIT;
-                int bodyCount = e_rows * e_columns;
-                for (int i = 0; i < bodyCount; ++i)
-                {
-                    B2Transform xf = b2Body_GetTransform(m_bodies[i]);
-                    //Logger.Information( "%d %.9f %.9f %.9f %.9f\n", i, xf.p.x, xf.p.y, xf.q.c, xf.q.s );
-                    xf.TryWriteBytes(bxf);
-                    hash = b2Hash(hash, bxf, bxf.Length);
-                }
-
-                m_sleepStep = m_stepCount - 1;
-                m_hash = hash;
-                //Logger.Information("sleep step = %d, hash = 0x%08x\n", m_sleepStep, m_hash);
-                Logger.Information($"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
-            }
+            m_done = UpdateFallingHinges( m_worldId, ref m_data );
         }
     }
 
@@ -193,7 +62,10 @@ public class FallingHinges : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, $"sleep step = {m_sleepStep}, hash = 0x{m_hash:X8}");
-        m_textLine += m_textIncrement;
+        if (m_done)
+        {
+            m_context.draw.DrawString(5, m_textLine, $"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
+            m_textLine += m_textIncrement;
+        }
     }
 }

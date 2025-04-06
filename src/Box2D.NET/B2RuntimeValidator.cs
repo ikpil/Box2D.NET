@@ -182,11 +182,12 @@ namespace Box2D.NET
             // B2TreeNodeDataUnion
             {
                 var unionSize = Marshal.SizeOf<B2TreeNodeDataUnion>();
+                int child1Size = Marshal.SizeOf<int>();
                 int child2Size = Marshal.SizeOf<int>();
-                int userDataSize = Marshal.SizeOf<int>();
+                int userDataSize = Marshal.SizeOf<ulong>();
 
                 int maxSize = 0;
-                maxSize = Math.Max(maxSize, child2Size);
+                maxSize = Math.Max(maxSize, child1Size + child2Size);
                 maxSize = Math.Max(maxSize, userDataSize);
 
                 ThrowIf(unionSize == maxSize, "B2TreeNodeDataUnion size is equal to the maximum data size, indicating potential memory misalignment.");

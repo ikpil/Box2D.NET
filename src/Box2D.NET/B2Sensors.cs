@@ -27,7 +27,7 @@ namespace Box2D.NET
         // - maintain an active list of overlaps for query
 
         // Assumption
-        // - sensors don't detect other sensors
+        // - sensors don't detect shapes on the same body
 
         // Algorithm
         // Query all sensors for overlaps
@@ -37,9 +37,11 @@ namespace Box2D.NET
         // Each sensor has an double buffered array of overlaps
         // These overlaps use a shape reference with index and generation
 
-        public static bool b2SensorQueryCallback(int proxyId, int shapeId, ref B2SensorQueryContext context)
+        public static bool b2SensorQueryCallback(int proxyId, ulong userData, ref B2SensorQueryContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2SensorQueryContext queryContext = ref context;
             B2Shape sensorShape = queryContext.sensorShape;
@@ -53,8 +55,14 @@ namespace Box2D.NET
             B2World world = queryContext.world;
             B2Shape otherShape = b2Array_Get(ref world.shapes, shapeId);
 
-            // Sensors don't overlap with other sensors
-            if (otherShape.sensorIndex != B2_NULL_INDEX)
+            // Are sensor events enabled on the other shape?
+            if (otherShape.enableSensorEvents == false)
+            {
+                return true;
+            }
+
+            // Skip shapes on the same body
+            if (otherShape.bodyId == sensorShape.bodyId)
             {
                 return true;
             }
@@ -74,7 +82,7 @@ namespace Box2D.NET
             input.transformB = otherTransform;
             input.useRadii = true;
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
+            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
             bool overlaps = output.distance < 10.0f * FLT_EPSILON;
             if (overlaps == false)
@@ -139,7 +147,18 @@ namespace Box2D.NET
                 sensor.overlaps2 = temp;
                 b2Array_Clear(ref sensor.overlaps2);
 
-                B2Transform transform = b2GetBodyTransform(world, sensorShape.bodyId);
+                B2Body body = b2Array_Get(ref world.bodies, sensorShape.bodyId);
+                if (body.setIndex == (int)B2SetType.b2_disabledSet || sensorShape.enableSensorEvents == false)
+                {
+                    if (sensor.overlaps1.count != 0)
+                    {
+                        b2SetBit(ref taskContext.eventBits, sensorIndex);
+                    }
+
+                    continue;
+                }
+
+                B2Transform transform = b2GetBodyTransformQuick(world, body);
 
                 B2SensorQueryContext queryContext = new B2SensorQueryContext()
                 {

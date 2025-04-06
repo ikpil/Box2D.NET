@@ -62,7 +62,7 @@ public class Arch : Sample
         }
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.friction = 0.6f;
+        shapeDef.material.friction = 0.6f;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();

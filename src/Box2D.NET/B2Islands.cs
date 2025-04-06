@@ -68,6 +68,11 @@ namespace Box2D.NET
 
         public static void b2DestroyIsland(B2World world, int islandId)
         {
+            if (world.splitIslandId == islandId)
+            {
+                world.splitIslandId = B2_NULL_INDEX;
+            }
+
             // assume island is empty
             B2Island island = b2Array_Get(ref world.islands, islandId);
             B2SolverSet set = b2Array_Get(ref world.solverSets, island.setIndex);
@@ -116,10 +121,10 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-// Link contacts into the island graph when it starts having contact points
-// Link a contact into an island.
-// This performs union-find and path compression to join islands.
-// https://en.wikipedia.org/wiki/Disjoint-set_data_structure
+        // Link contacts into the island graph when it starts having contact points
+        // Link a contact into an island.
+        // This performs union-find and path compression to join islands.
+        // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
         public static void b2LinkContact(B2World world, B2Contact contact)
         {
             Debug.Assert((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0);
@@ -220,10 +225,12 @@ namespace Box2D.NET
             {
                 b2AddContactToIsland(world, islandIdB, contact);
             }
+            
+            // todo why not merge the islands right here?
         }
 
-// Unlink contact from the island graph when it stops having contact points
-// This is called when a contact no longer has contact points or when a contact is destroyed.
+        // Unlink contact from the island graph when it stops having contact points
+        // This is called when a contact no longer has contact points or when a contact is destroyed.
         public static void b2UnlinkContact(B2World world, B2Contact contact)
         {
             Debug.Assert(contact.islandId != B2_NULL_INDEX);
@@ -628,7 +635,7 @@ namespace Box2D.NET
             int bodyCount = baseIsland.bodyCount;
 
             B2Body[] bodies = world.bodies.data;
-            B2ArenaAllocator alloc = world.stackAllocator;
+            B2ArenaAllocator alloc = world.arena;
 
             // No lock is needed because I ensure the allocator is not used while this task is active.
             ArraySegment<int> stack = b2AllocateArenaItem<int>(alloc, bodyCount * sizeof(int), "island stack");

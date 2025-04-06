@@ -326,7 +326,7 @@ namespace Box2D.NET.Shared
                 groundId = b2CreateBody(worldId, ref bodyDef);
 
                 B2Vec2[] points = new B2Vec2[SPINNER_POINT_COUNT];
-                
+
                 B2Rot q = b2MakeRot(-2.0f * B2_PI / SPINNER_POINT_COUNT);
                 B2Vec2 p = new B2Vec2(40.0f, 0.0f);
                 for (int i = 0; i < SPINNER_POINT_COUNT; ++i)
@@ -334,17 +334,17 @@ namespace Box2D.NET.Shared
                     points[i] = new B2Vec2(p.X, p.Y + 32.0f);
                     p = b2RotateVector(q, p);
                 }
-                
+
                 B2SurfaceMaterial material = new B2SurfaceMaterial();
                 material.friction = 0.1f;
-                
+
                 B2ChainDef chainDef = b2DefaultChainDef();
                 chainDef.points = points;
                 chainDef.count = SPINNER_POINT_COUNT;
                 chainDef.isLoop = true;
                 chainDef.materials = new[] { material };
                 chainDef.materialCount = 1;
-                
+
                 b2CreateChain(groundId, ref chainDef);
             }
 
@@ -358,7 +358,7 @@ namespace Box2D.NET.Shared
 
                 B2Polygon box = b2MakeRoundedBox(0.4f, 20.0f, 0.2f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                shapeDef.friction = 0.0f;
+                shapeDef.material.friction = 0.0f;
                 b2CreatePolygonShape(spinnerId, ref shapeDef, ref box);
 
                 float motorSpeed = 5.0f;
@@ -382,8 +382,8 @@ namespace Box2D.NET.Shared
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                shapeDef.friction = 0.1f;
-                shapeDef.restitution = 0.1f;
+                shapeDef.material.friction = 0.1f;
+                shapeDef.material.restitution = 0.1f;
                 shapeDef.density = 0.25f;
 
                 int bodyCount = BENCHMARK_DEBUG ? 499 : 3038;

@@ -55,7 +55,8 @@ public class RoundedShapes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-
+            shapeDef.material.rollingResistance = 0.3f;
+            
             float y = 2.0f;
             int xcount = 10, ycount = 10;
 

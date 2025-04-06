@@ -57,13 +57,6 @@ namespace Box2D.NET
         {
             Debug.Assert(pool.nextIndex > 0);
             Debug.Assert(0 <= id && id < pool.nextIndex);
-
-            if (id == pool.nextIndex)
-            {
-                pool.nextIndex -= 1;
-                return;
-            }
-
             b2Array_Push(ref pool.freeArray, id);
         }
 
@@ -82,13 +75,30 @@ namespace Box2D.NET
             Debug.Assert(false);
         }
 
+        public static void b2ValidateUsedId(B2IdPool pool, int id)
+        {
+            int freeCount = pool.freeArray.count;
+            for (int i = 0; i < freeCount; ++i)
+            {
+                if (pool.freeArray.data[i] == id)
+                {
+                    Debug.Assert(false);
+                }
+            }
+        }
+
 #else
         public static void b2ValidateFreeId(B2IdPool pool, int id)
         {
-            B2Cores.B2_UNUSED(pool);
-            B2Cores.B2_UNUSED(id);
+            B2_UNUSED(pool);
+            B2_UNUSED(id);
         }
 
+        public static void b2ValidateUsedId(B2IdPool pool, int id)
+        {
+            B2_UNUSED(pool);
+            B2_UNUSED(id);
+        }
 #endif
     }
 }

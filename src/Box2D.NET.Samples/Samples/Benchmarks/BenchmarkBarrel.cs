@@ -172,7 +172,7 @@ public class BenchmarkBarrel : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = 0.5f;
+        shapeDef.material.friction = 0.5f;
 
         B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.25f), new B2Vec2(0.0f, 0.25f), rad);
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), rad);
@@ -234,7 +234,7 @@ public class BenchmarkBarrel : Sample
                 {
                     m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
                     circle.radius = RandomFloatRange(0.25f, 0.75f);
-                    shapeDef.rollingResistance = 0.2f;
+                    shapeDef.material.rollingResistance = 0.2f;
                     b2CreateCircleShape(m_bodies[index], ref shapeDef, ref circle);
                 }
                 else if (m_shapeType == ShapeType.e_capsuleShape)
@@ -244,7 +244,7 @@ public class BenchmarkBarrel : Sample
                     float length = RandomFloatRange(0.25f, 1.0f);
                     capsule.center1 = new B2Vec2(0.0f, -0.5f * length);
                     capsule.center2 = new B2Vec2(0.0f, 0.5f * length);
-                    shapeDef.rollingResistance = 0.2f;
+                    shapeDef.material.rollingResistance = 0.2f;
                     b2CreateCapsuleShape(m_bodies[index], ref shapeDef, ref capsule);
                 }
                 else if (m_shapeType == ShapeType.e_mixShape)
@@ -306,9 +306,9 @@ public class BenchmarkBarrel : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

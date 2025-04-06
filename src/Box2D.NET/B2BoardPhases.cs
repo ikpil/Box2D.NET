@@ -128,7 +128,7 @@ namespace Box2D.NET
         public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
         {
             Debug.Assert(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
-            int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, shapeIndex);
+            int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex);
             int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
             if (proxyType != B2BodyType.b2_staticBody || forcePairCreation)
             {
@@ -175,8 +175,10 @@ namespace Box2D.NET
 
 
         // This is called from b2DynamicTree::Query when we are gathering pairs.
-        public static bool b2PairQueryCallback(int proxyId, int shapeId, ref B2QueryPairContext context)
+        public static bool b2PairQueryCallback(int proxyId, ulong userData, ref B2QueryPairContext context)
         {
+            int shapeId = (int)userData;
+
             ref B2QueryPairContext queryContext = ref context;
             B2BroadPhase broadPhase = queryContext.world.broadPhase;
 
@@ -355,7 +357,7 @@ namespace Box2D.NET
                 // We have to query the tree with the fat AABB so that
                 // we don't fail to create a contact that may touch later.
                 B2AABB fatAABB = b2DynamicTree_GetAABB(baseTree, proxyId);
-                queryContext.queryShapeIndex = b2DynamicTree_GetUserData(baseTree, proxyId);
+                queryContext.queryShapeIndex = (int)b2DynamicTree_GetUserData(baseTree, proxyId);
 
                 // Query trees. Only dynamic proxies collide with kinematic and static proxies.
                 // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
@@ -399,7 +401,7 @@ namespace Box2D.NET
 
             b2TracyCZoneNC(B2TracyCZone.update_pairs, "Find Pairs", B2HexColor.b2_colorMediumSlateBlue, true);
 
-            B2ArenaAllocator alloc = world.stackAllocator;
+            B2ArenaAllocator alloc = world.arena;
 
             // todo these could be in the step context
             bp.moveResults = b2AllocateArenaItem<B2MoveResult>(alloc, moveCount, "move results");
@@ -508,7 +510,7 @@ namespace Box2D.NET
             int typeIndex = (int)B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            return b2DynamicTree_GetUserData(bp.trees[typeIndex], proxyId);
+            return (int)b2DynamicTree_GetUserData(bp.trees[typeIndex], proxyId);
         }
 
         public static void b2ValidateBroadphase(B2BroadPhase bp)

@@ -24,7 +24,7 @@ namespace Box2D.NET.Shared
         {
             Debug.Assert(human.isSpawned == false);
 
-            for (int i = 0; i < (int)BoneId.boneId_count; ++i)
+            for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
                 human.bones[i].bodyId = b2_nullBodyId;
                 human.bones[i].jointId = b2_nullJointId;
@@ -40,13 +40,13 @@ namespace Box2D.NET.Shared
             bodyDef.userData = userData;
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             shapeDef.filter.groupIndex = -groupIndex;
             shapeDef.filter.categoryBits = 2;
             shapeDef.filter.maskBits = (1 | 2);
 
             B2ShapeDef footShapeDef = shapeDef;
-            footShapeDef.friction = 0.05f;
+            footShapeDef.material.friction = 0.05f;
 
             // feet don't collide with ragdolls
             footShapeDef.filter.categoryBits = 2;
@@ -54,7 +54,7 @@ namespace Box2D.NET.Shared
 
             if (colorize)
             {
-                footShapeDef.customColor = (uint)B2HexColor.b2_colorSaddleBrown;
+                footShapeDef.material.customColor = (uint)B2HexColor.b2_colorSaddleBrown;
             }
 
             float s = scale;
@@ -75,7 +75,7 @@ namespace Box2D.NET.Shared
 
             // hip
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_hip];
+                ref Bone bone = ref human.bones[(int)BoneId.bone_hip];
                 bone.parentIndex = -1;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.95f * s), position);
@@ -84,7 +84,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)pantColor;
+                    shapeDef.material.customColor = (uint)pantColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.02f * s), new B2Vec2(0.0f, 0.02f * s), 0.095f * s);
@@ -93,8 +93,8 @@ namespace Box2D.NET.Shared
 
             // torso
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_torso];
-                bone.parentIndex = (int)BoneId.boneId_hip;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_torso];
+                bone.parentIndex = (int)BoneId.bone_hip;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.2f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -105,7 +105,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)shirtColor;
+                    shapeDef.material.customColor = (uint)shirtColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.135f * s), new B2Vec2(0.0f, 0.135f * s), 0.09f * s);
@@ -132,8 +132,8 @@ namespace Box2D.NET.Shared
 
             // head
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_head];
-                bone.parentIndex = (int)BoneId.boneId_torso;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_head];
+                bone.parentIndex = (int)BoneId.bone_torso;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f * s, 1.475f * s), position);
                 bodyDef.linearDamping = 0.1f;
@@ -143,7 +143,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)skinColor;
+                    shapeDef.material.customColor = (uint)skinColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.038f * s), new B2Vec2(0.0f, 0.039f * s), 0.075f * s);
@@ -174,8 +174,8 @@ namespace Box2D.NET.Shared
 
             // upper left leg
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_upperLeftLeg];
-                bone.parentIndex = (int)BoneId.boneId_hip;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_upperLeftLeg];
+                bone.parentIndex = (int)BoneId.bone_hip;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -184,7 +184,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)pantColor;
+                    shapeDef.material.customColor = (uint)pantColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
@@ -220,8 +220,8 @@ namespace Box2D.NET.Shared
 
             // lower left leg
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_lowerLeftLeg];
-                bone.parentIndex = (int)BoneId.boneId_upperLeftLeg;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_lowerLeftLeg];
+                bone.parentIndex = (int)BoneId.bone_upperLeftLeg;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -230,7 +230,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)pantColor;
+                    shapeDef.material.customColor = (uint)pantColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.155f * s), new B2Vec2(0.0f, 0.125f * s), 0.045f * s);
@@ -265,8 +265,8 @@ namespace Box2D.NET.Shared
 
             // upper right leg
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_upperRightLeg];
-                bone.parentIndex = (int)BoneId.boneId_hip;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_upperRightLeg];
+                bone.parentIndex = (int)BoneId.bone_hip;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -275,7 +275,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)pantColor;
+                    shapeDef.material.customColor = (uint)pantColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
@@ -302,8 +302,8 @@ namespace Box2D.NET.Shared
 
             // lower right leg
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_lowerRightLeg];
-                bone.parentIndex = (int)BoneId.boneId_upperRightLeg;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_lowerRightLeg];
+                bone.parentIndex = (int)BoneId.bone_upperRightLeg;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -312,7 +312,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)pantColor;
+                    shapeDef.material.customColor = (uint)pantColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.155f * s), new B2Vec2(0.0f, 0.125f * s), 0.045f * s);
@@ -347,8 +347,8 @@ namespace Box2D.NET.Shared
 
             // upper left arm
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_upperLeftArm];
-                bone.parentIndex = (int)BoneId.boneId_torso;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_upperLeftArm];
+                bone.parentIndex = (int)BoneId.bone_torso;
                 bone.frictionScale = 0.5f;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
@@ -357,7 +357,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)shirtColor;
+                    shapeDef.material.customColor = (uint)shirtColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
@@ -384,8 +384,8 @@ namespace Box2D.NET.Shared
 
             // lower left arm
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_lowerLeftArm];
-                bone.parentIndex = (int)BoneId.boneId_upperLeftArm;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_lowerLeftArm];
+                bone.parentIndex = (int)BoneId.bone_upperLeftArm;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
@@ -394,7 +394,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)skinColor;
+                    shapeDef.material.customColor = (uint)skinColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
@@ -422,8 +422,8 @@ namespace Box2D.NET.Shared
 
             // upper right arm
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_upperRightArm];
-                bone.parentIndex = (int)BoneId.boneId_torso;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_upperRightArm];
+                bone.parentIndex = (int)BoneId.bone_torso;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
@@ -432,7 +432,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)shirtColor;
+                    shapeDef.material.customColor = (uint)shirtColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
@@ -459,8 +459,8 @@ namespace Box2D.NET.Shared
 
             // lower right arm
             {
-                ref Bone bone = ref human.bones[(int)BoneId.boneId_lowerRightArm];
-                bone.parentIndex = (int)BoneId.boneId_upperRightArm;
+                ref Bone bone = ref human.bones[(int)BoneId.bone_lowerRightArm];
+                bone.parentIndex = (int)BoneId.bone_upperRightArm;
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
@@ -469,7 +469,7 @@ namespace Box2D.NET.Shared
 
                 if (colorize)
                 {
-                    shapeDef.customColor = (uint)skinColor;
+                    shapeDef.material.customColor = (uint)skinColor;
                 }
 
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
@@ -502,7 +502,7 @@ namespace Box2D.NET.Shared
         {
             Debug.Assert(human.isSpawned == true);
 
-            for (int i = 0; i < (int)BoneId.boneId_count; ++i)
+            for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
                 if (B2_IS_NULL(human.bones[i].jointId))
                 {
@@ -513,7 +513,7 @@ namespace Box2D.NET.Shared
                 human.bones[i].jointId = b2_nullJointId;
             }
 
-            for (int i = 0; i < (int)BoneId.boneId_count; ++i)
+            for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
                 if (B2_IS_NULL(human.bones[i].bodyId))
                 {
@@ -529,7 +529,7 @@ namespace Box2D.NET.Shared
 
         public static void Human_SetVelocity(ref Human human, B2Vec2 velocity)
         {
-            for (int i = 0; i < (int)BoneId.boneId_count; ++i)
+            for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
                 B2BodyId bodyId = human.bones[i].bodyId;
 
@@ -546,7 +546,7 @@ namespace Box2D.NET.Shared
         {
             Debug.Assert(human.isSpawned == true);
             float impulse = RandomFloatRange(-magnitude, magnitude);
-            b2Body_ApplyAngularImpulse(human.bones[(int)BoneId.boneId_torso].bodyId, impulse, true);
+            b2Body_ApplyAngularImpulse(human.bones[(int)BoneId.bone_torso].bodyId, impulse, true);
         }
 
         public static void Human_SetJointFrictionTorque(ref Human human, float torque)
@@ -554,14 +554,14 @@ namespace Box2D.NET.Shared
             Debug.Assert(human.isSpawned == true);
             if (torque == 0.0f)
             {
-                for (int i = 1; i < (int)BoneId.boneId_count; ++i)
+                for (int i = 1; i < (int)BoneId.bone_count; ++i)
                 {
                     b2RevoluteJoint_EnableMotor(human.bones[i].jointId, false);
                 }
             }
             else
             {
-                for (int i = 1; i < (int)BoneId.boneId_count; ++i)
+                for (int i = 1; i < (int)BoneId.bone_count; ++i)
                 {
                     b2RevoluteJoint_EnableMotor(human.bones[i].jointId, true);
                     float scale = human.scale * human.bones[i].frictionScale;
@@ -575,14 +575,14 @@ namespace Box2D.NET.Shared
             Debug.Assert(human.isSpawned == true);
             if (hertz == 0.0f)
             {
-                for (int i = 1; i < (int)BoneId.boneId_count; ++i)
+                for (int i = 1; i < (int)BoneId.bone_count; ++i)
                 {
                     b2RevoluteJoint_EnableSpring(human.bones[i].jointId, false);
                 }
             }
             else
             {
-                for (int i = 1; i < (int)BoneId.boneId_count; ++i)
+                for (int i = 1; i < (int)BoneId.bone_count; ++i)
                 {
                     b2RevoluteJoint_EnableSpring(human.bones[i].jointId, true);
                     b2RevoluteJoint_SetSpringHertz(human.bones[i].jointId, hertz);
@@ -593,9 +593,23 @@ namespace Box2D.NET.Shared
         public static void Human_SetJointDampingRatio(ref Human human, float dampingRatio)
         {
             Debug.Assert(human.isSpawned == true);
-            for (int i = 1; i < (int)BoneId.boneId_count; ++i)
+            for (int i = 1; i < (int)BoneId.bone_count; ++i)
             {
                 b2RevoluteJoint_SetSpringDampingRatio(human.bones[i].jointId, dampingRatio);
+            }
+        }
+
+        public static void Human_EnableSensorEvents(ref Human human, bool enable)
+        {
+            Debug.Assert(human.isSpawned == true);
+            B2BodyId bodyId = human.bones[(int)BoneId.bone_torso].bodyId;
+
+            B2FixedArray1<B2ShapeId> shapeIdBuffer = new B2FixedArray1<B2ShapeId>();
+            Span<B2ShapeId> shapeId = shapeIdBuffer.AsSpan();
+            int count = b2Body_GetShapes(bodyId, shapeId, 1);
+            if (count == 1)
+            {
+                b2Shape_EnableSensorEvents(shapeId[0], enable);
             }
         }
     }

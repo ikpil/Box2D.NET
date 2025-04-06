@@ -18,6 +18,14 @@ namespace Box2D.NET
     public static class B2ContactSolvers
     {
         // Overflow contacts don't fit into the constraint graph coloring
+        // contact separation for sub-stepping
+        // s = s0 + dot(cB + rB - cA - rA, normal)
+        // normal is held constant
+        // body positions c can translation and anchors r can rotate
+        // s(t) = s0 + dot(cB(t) + rB(t) - cA(t) - rA(t), normal)
+        // s(t) = s0 + dot(cB0 + dpB + rot(dqB, rB0) - cA0 - dpA - rot(dqA, rA0), normal)
+        // s(t) = s0 + dot(cB0 - cA0, normal) + dot(dpB - dpA + rot(dqB, rB0) - rot(dqA, rA0), normal)
+        // s_base = s0 + dot(cB0 - cA0, normal)
         public static void b2PrepareOverflowContacts(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_overflow_contact, "Prepare Overflow Contact", B2HexColor.b2_colorYellow, true);
@@ -126,7 +134,7 @@ namespace Box2D.NET
 
                     cp.normalImpulse = warmStartScale * mp.normalImpulse;
                     cp.tangentImpulse = warmStartScale * mp.tangentImpulse;
-                    cp.maxNormalImpulse = 0.0f;
+                    cp.totalNormalImpulse = 0.0f;
 
                     B2Vec2 rA = mp.anchorA;
                     B2Vec2 rB = mp.anchorB;
@@ -235,7 +243,7 @@ namespace Box2D.NET
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             float inv_h = context.inv_h;
-            float pushout = context.world.contactMaxPushSpeed;
+            float pushout = context.world.maxContactPushSpeed;
 
             // This is a dummy body to represent a static body since static bodies don't have a solver body.
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
@@ -273,10 +281,14 @@ namespace Box2D.NET
                 {
                     ref B2ContactConstraintPoint cp = ref constraint.points[j];
 
+                    // fixed anchor points
+                    B2Vec2 rA = cp.anchorA;
+                    B2Vec2 rB = cp.anchorB;
+
                     // compute current separation
                     // this is subject to round-off error if the anchor is far from the body center of mass
-                    B2Vec2 ds = b2Add(dp, b2Sub(b2RotateVector(dqB, cp.anchorB), b2RotateVector(dqA, cp.anchorA)));
-                    float s = b2Dot(ds, normal) + cp.baseSeparation;
+                    B2Vec2 ds = b2Add(dp, b2Sub(b2RotateVector(dqB, rB), b2RotateVector(dqA, rA)));
+                    float s = cp.baseSeparation + b2Dot(ds, normal);
 
                     float velocityBias = 0.0f;
                     float massScale = 1.0f;
@@ -293,10 +305,6 @@ namespace Box2D.NET
                         impulseScale = softness.impulseScale;
                     }
 
-                    // fixed anchor points
-                    B2Vec2 rA = cp.anchorA;
-                    B2Vec2 rB = cp.anchorB;
-
                     // relative normal velocity at contact
                     B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
                     B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
@@ -309,7 +317,7 @@ namespace Box2D.NET
                     float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
                     impulse = newImpulse - cp.normalImpulse;
                     cp.normalImpulse = newImpulse;
-                    cp.maxNormalImpulse = b2MaxFloat(cp.maxNormalImpulse, impulse);
+                    cp.totalNormalImpulse += newImpulse;
                     totalNormalImpulse += newImpulse;
 
                     // apply normal impulse
@@ -431,7 +439,7 @@ namespace Box2D.NET
                         // if the normal impulse is zero then there was no collision
                         // this skips speculative contact points that didn't generate an impulse
                         // The max normal impulse is used in case there was a collision that moved away within the sub-step process
-                        if (cp.relativeVelocity > -threshold || cp.maxNormalImpulse == 0.0f)
+                        if (cp.relativeVelocity > -threshold || cp.totalNormalImpulse == 0.0f)
                         {
                             continue;
                         }
@@ -453,7 +461,9 @@ namespace Box2D.NET
                         float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
                         impulse = newImpulse - cp.normalImpulse;
                         cp.normalImpulse = newImpulse;
-                        cp.maxNormalImpulse = b2MaxFloat(cp.maxNormalImpulse, impulse);
+
+                        // Add the incremental impulse rather than the full impulse because this is not a sub-step
+                        cp.totalNormalImpulse += impulse;
 
                         // apply contact impulse
                         B2Vec2 P = b2MulSV(impulse, normal);
@@ -483,8 +493,6 @@ namespace Box2D.NET
             B2ContactSim[] contacts = color.contactSims.data;
             int contactCount = color.contactSims.count;
 
-            // float hitEventThreshold = context.world.hitEventThreshold;
-
             for (int i = 0; i < contactCount; ++i)
             {
                 ref B2ContactConstraint constraint = ref constraints[i];
@@ -496,7 +504,7 @@ namespace Box2D.NET
                 {
                     manifold.points[j].normalImpulse = constraint.points[j].normalImpulse;
                     manifold.points[j].tangentImpulse = constraint.points[j].tangentImpulse;
-                    manifold.points[j].maxNormalImpulse = constraint.points[j].maxNormalImpulse;
+                    manifold.points[j].totalNormalImpulse = constraint.points[j].totalNormalImpulse;
                     manifold.points[j].normalVelocity = constraint.points[j].relativeVelocity;
                 }
 
@@ -549,7 +557,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector<float> b2ClampSymW(Vector<float> a, Vector<float> b)
+        public static Vector<float> b2SymClampW(Vector<float> a, Vector<float> b)
         {
             // a = clamp(a, -b, b)
             Vector<float> min = Vector.Min(a, b);
@@ -590,6 +598,13 @@ namespace Box2D.NET
             var mask2 = Vector.Equals(mask, Vector<float>.Zero);
             return Vector.ConditionalSelect(mask2, a, b);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2AllZeroW(Vector<float> a)
+        {
+            return Vector.EqualsAll(a, Vector<float>.Zero);
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2ZeroW()
@@ -656,7 +671,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2ClampSymW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2SymClampW(B2FloatW a, B2FloatW b)
         {
             // a = clamp(a, -b, b)
             return new B2FloatW(
@@ -699,6 +714,12 @@ namespace Box2D.NET
                 a.Z == b.Z ? 1.0f : 0.0f,
                 a.W == b.W ? 1.0f : 0.0f
             );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2AllZeroW(B2FloatW a)
+        {
+            return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1057,6 +1078,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         // This writes only the velocities back to the solver bodies
         public static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
+            // todo somehow skip writing to kinematic bodies
+
             if (indices[0] != B2_NULL_INDEX)
             {
                 B2BodyState state = states[indices[0]];
@@ -1203,7 +1226,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                             constraint.normalImpulse1[j] = warmStartScale * mp.normalImpulse;
                             constraint.tangentImpulse1[j] = warmStartScale * mp.tangentImpulse;
-                            constraint.maxNormalImpulse1[j] = 0.0f;
+                            constraint.totalNormalImpulse1[j] = 0.0f;
 
                             float rnA = b2Cross(rA, normal);
                             float rnB = b2Cross(rB, normal);
@@ -1240,7 +1263,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                             constraint.normalImpulse2[j] = warmStartScale * mp.normalImpulse;
                             constraint.tangentImpulse2[j] = warmStartScale * mp.tangentImpulse;
-                            constraint.maxNormalImpulse2[j] = 0.0f;
+                            constraint.totalNormalImpulse2[j] = 0.0f;
 
                             float rnA = b2Cross(rA, normal);
                             float rnB = b2Cross(rB, normal);
@@ -1263,7 +1286,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             constraint.baseSeparation2[j] = 0.0f;
                             constraint.normalImpulse2[j] = 0.0f;
                             constraint.tangentImpulse2[j] = 0.0f;
-                            constraint.maxNormalImpulse2[j] = 0.0f;
+                            constraint.totalNormalImpulse2[j] = 0.0f;
                             constraint.anchorA2.X[j] = 0.0f;
                             constraint.anchorA2.Y[j] = 0.0f;
                             constraint.anchorB2.X[j] = 0.0f;
@@ -1302,7 +1325,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         constraint.baseSeparation1[j] = 0.0f;
                         constraint.normalImpulse1[j] = 0.0f;
                         constraint.tangentImpulse1[j] = 0.0f;
-                        constraint.maxNormalImpulse1[j] = 0.0f;
+                        constraint.totalNormalImpulse1[j] = 0.0f;
                         constraint.normalMass1[j] = 0.0f;
                         constraint.tangentMass1[j] = 0.0f;
 
@@ -1313,7 +1336,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         constraint.baseSeparation2[j] = 0.0f;
                         constraint.normalImpulse2[j] = 0.0f;
                         constraint.tangentImpulse2[j] = 0.0f;
-                        constraint.maxNormalImpulse2[j] = 0.0f;
+                        constraint.totalNormalImpulse2[j] = 0.0f;
                         constraint.normalMass2[j] = 0.0f;
                         constraint.tangentMass2[j] = 0.0f;
 
@@ -1392,7 +1415,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState[] states = context.states;
             Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW minBiasVel = b2SplatW(-context.world.contactMaxPushSpeed);
+            B2FloatW minBiasVel = b2SplatW(-context.world.maxContactPushSpeed);
+            B2FloatW oneW = b2SplatW(1.0f);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -1411,7 +1435,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 else
                 {
                     biasRate = b2ZeroW();
-                    massScale = b2SplatW(1.0f);
+                    massScale = oneW;
                     impulseScale = b2ZeroW();
                 }
 
@@ -1421,9 +1445,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                 // point1 non-penetration constraint
                 {
-                    // moving anchors for current separation
-                    B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA1);
-                    B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB1);
+                    // fixed anchors for Jacobians
+                    B2Vec2W rA = c.anchorA1;
+                    B2Vec2W rB = c.anchorB1;
+
+                    // Moving anchors for current separation
+                    B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
+                    B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
 
                     // compute current separation
                     // this is subject to round-off error if the anchor is far from the body center of mass
@@ -1435,11 +1463,12 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW mask = b2GreaterThanW(s, b2ZeroW());
                     B2FloatW specBias = b2MulW(s, inv_h);
                     B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), minBiasVel);
+
+                    // todo try b2MaxW(softBias, specBias);
                     B2FloatW bias = b2BlendW(softBias, specBias, mask);
 
-                    // fixed anchors for Jacobians
-                    B2Vec2W rA = c.anchorA1;
-                    B2Vec2W rB = c.anchorB1;
+                    B2FloatW pointMassScale = b2BlendW(massScale, oneW, mask);
+                    B2FloatW pointImpulseScale = b2BlendW(impulseScale, b2ZeroW(), mask);
 
                     // Relative velocity at contact
                     B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
@@ -1447,14 +1476,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass1, b2MulW(massScale, b2AddW(vn, bias))),
-                        b2MulW(impulseScale, c.normalImpulse1));
+                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass1, b2MulW(pointMassScale, b2AddW(vn, bias))), b2MulW(pointImpulseScale, c.normalImpulse1));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), b2ZeroW());
                     B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse1);
                     c.normalImpulse1 = newImpulse;
-                    c.maxNormalImpulse1 = b2MaxW(c.maxNormalImpulse1, newImpulse);
+                    c.totalNormalImpulse1 = b2MaxW(c.totalNormalImpulse1, newImpulse);
 
                     totalNormalImpulse = b2AddW(totalNormalImpulse, newImpulse);
 
@@ -1486,6 +1514,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), minBiasVel);
                     B2FloatW bias = b2BlendW(softBias, specBias, mask);
 
+                    B2FloatW pointMassScale = b2BlendW(massScale, oneW, mask);
+                    B2FloatW pointImpulseScale = b2BlendW(impulseScale, b2ZeroW(), mask);
+
                     // fixed anchors for Jacobians
                     B2Vec2W rA = c.anchorA2;
                     B2Vec2W rB = c.anchorB2;
@@ -1496,14 +1527,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass2, b2MulW(massScale, b2AddW(vn, bias))),
-                        b2MulW(impulseScale, c.normalImpulse2));
+                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass2, b2MulW(pointMassScale, b2AddW(vn, bias))), b2MulW(pointImpulseScale, c.normalImpulse2));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), b2ZeroW());
                     B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse2);
                     c.normalImpulse2 = newImpulse;
-                    c.maxNormalImpulse2 = b2MaxW(c.maxNormalImpulse2, newImpulse);
+                    c.totalNormalImpulse2 = b2MaxW(c.totalNormalImpulse2, newImpulse);
 
                     totalNormalImpulse = b2AddW(totalNormalImpulse, newImpulse);
 
@@ -1602,7 +1632,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW deltaLambda = b2MulW(c.rollingMass, b2SubW(bA.w, bB.w));
                     B2FloatW lambda = c.rollingImpulse;
                     B2FloatW maxLambda = b2MulW(c.rollingResistance, totalNormalImpulse);
-                    c.rollingImpulse = b2ClampSymW(b2AddW(lambda, deltaLambda), maxLambda);
+                    c.rollingImpulse = b2SymClampW(b2AddW(lambda, deltaLambda), maxLambda);
                     deltaLambda = b2SubW(c.rollingImpulse, lambda);
 
                     bA.w = b2MulSubW(bA.w, c.invIA, deltaLambda);
@@ -1629,6 +1659,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             {
                 ref B2ContactConstraintSIMD c = ref constraints[i];
 
+                if (b2AllZeroW(c.restitution))
+                {
+                    // No lanes have restitution. Common case.
+                    continue;
+                }
+
+                // Create a mask based on restitution so that lanes with no restitution are not affected
+                // by the calculations below.
+                B2FloatW restitutionMask = b2EqualsW(c.restitution, zero);
+
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
@@ -1636,8 +1676,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 {
                     // Set effective mass to zero if restitution should not be applied
                     B2FloatW mask1 = b2GreaterThanW(b2AddW(c.relativeVelocity1, threshold), zero);
-                    B2FloatW mask2 = b2EqualsW(c.maxNormalImpulse1, zero);
-                    B2FloatW mask = b2OrW(mask1, mask2);
+                    B2FloatW mask2 = b2EqualsW(c.totalNormalImpulse1, zero);
+                    B2FloatW mask = b2OrW(b2OrW(mask1, mask2), restitutionMask);
                     B2FloatW mass = b2BlendW(c.normalMass1, zero, mask);
 
                     // fixed anchors for Jacobians
@@ -1674,8 +1714,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 {
                     // Set effective mass to zero if restitution should not be applied
                     B2FloatW mask1 = b2GreaterThanW(b2AddW(c.relativeVelocity2, threshold), zero);
-                    B2FloatW mask2 = b2EqualsW(c.maxNormalImpulse2, zero);
-                    B2FloatW mask = b2OrW(mask1, mask2);
+                    B2FloatW mask2 = b2EqualsW(c.totalNormalImpulse2, zero);
+                    B2FloatW mask = b2OrW(b2OrW(mask1, mask2), restitutionMask);
                     B2FloatW mass = b2BlendW(c.normalMass2, zero, mask);
 
                     // fixed anchors for Jacobians
@@ -1732,8 +1772,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 ref B2FloatW normalImpulse2 = ref c.normalImpulse2;
                 ref B2FloatW tangentImpulse1 = ref c.tangentImpulse1;
                 ref B2FloatW tangentImpulse2 = ref c.tangentImpulse2;
-                ref B2FloatW maxNormalImpulse1 = ref c.maxNormalImpulse1;
-                ref B2FloatW maxNormalImpulse2 = ref c.maxNormalImpulse2;
+                ref B2FloatW totalNormalImpulse1 = ref c.totalNormalImpulse1;
+                ref B2FloatW totalNormalImpulse2 = ref c.totalNormalImpulse2;
                 ref B2FloatW normalVelocity1 = ref c.relativeVelocity1;
                 ref B2FloatW normalVelocity2 = ref c.relativeVelocity2;
 
@@ -1746,12 +1786,12 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                     m.points[0].normalImpulse = normalImpulse1[laneIndex];
                     m.points[0].tangentImpulse = tangentImpulse1[laneIndex];
-                    m.points[0].maxNormalImpulse = maxNormalImpulse1[laneIndex];
+                    m.points[0].totalNormalImpulse = totalNormalImpulse1[laneIndex];
                     m.points[0].normalVelocity = normalVelocity1[laneIndex];
 
                     m.points[1].normalImpulse = normalImpulse2[laneIndex];
                     m.points[1].tangentImpulse = tangentImpulse2[laneIndex];
-                    m.points[1].maxNormalImpulse = maxNormalImpulse2[laneIndex];
+                    m.points[1].totalNormalImpulse = totalNormalImpulse2[laneIndex];
                     m.points[1].normalVelocity = normalVelocity2[laneIndex];
                 }
             }

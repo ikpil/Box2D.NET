@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Timers;
@@ -84,14 +85,14 @@ namespace Box2D.NET
                 // Non-degenerate segments
                 float d12 = b2Dot(d1, d2);
 
-                float denom = dd1 * dd2 - d12 * d12;
+                float denominator = dd1 * dd2 - d12 * d12;
 
                 // Fraction on segment 1
                 float f1 = 0.0f;
-                if (denom != 0.0f)
+                if (denominator != 0.0f)
                 {
                     // not parallel
-                    f1 = b2ClampFloat((d12 * rd2 - rd1 * dd2) / denom, 0.0f, 1.0f);
+                    f1 = b2ClampFloat((d12 * rd2 - rd1 * dd2) / denominator, 0.0f, 1.0f);
                 }
 
                 // Compute point on segment 2 closest to p1 + f1 * d1
@@ -157,23 +158,29 @@ namespace Box2D.NET
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2Weight2(float a1, B2Vec2 w1, float a2, B2Vec2 w2)
         {
             return new B2Vec2(a1 * w1.X + a2 * w2.X, a1 * w1.Y + a2 * w2.Y);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2Weight3(float a1, B2Vec2 w1, float a2, B2Vec2 w2, float a3, B2Vec2 w3)
         {
             return new B2Vec2(a1 * w1.X + a2 * w2.X + a3 * w3.X, a1 * w1.Y + a2 * w2.Y + a3 * w3.Y);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2FindSupport(ref B2ShapeProxy proxy, B2Vec2 direction)
         {
+            Span<B2Vec2> points = proxy.points.AsSpan();
+            int count = proxy.count;
+
             int bestIndex = 0;
-            float bestValue = b2Dot(proxy.points[0], direction);
-            for (int i = 1; i < proxy.count; ++i)
+            float bestValue = b2Dot(points[0], direction);
+            for (int i = 1; i < count; ++i)
             {
-                float value = b2Dot(proxy.points[i], direction);
+                float value = b2Dot(points[i], direction);
                 if (value > bestValue)
                 {
                     bestIndex = i;
@@ -184,7 +191,7 @@ namespace Box2D.NET
             return bestIndex;
         }
 
-        public static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, B2Transform transformA, ref B2ShapeProxy proxyB, B2Transform transformB)
+        public static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2ShapeProxy proxyB)
         {
             Debug.Assert(cache.count <= 3);
             B2Simplex s = new B2Simplex();
@@ -198,11 +205,9 @@ namespace Box2D.NET
                 ref B2SimplexVertex v = ref vertices[i];
                 v.indexA = cache.indexA[i];
                 v.indexB = cache.indexB[i];
-                B2Vec2 wALocal = proxyA.points[v.indexA];
-                B2Vec2 wBLocal = proxyB.points[v.indexB];
-                v.wA = b2TransformPoint(ref transformA, wALocal);
-                v.wB = b2TransformPoint(ref transformB, wBLocal);
-                v.w = b2Sub(v.wB, v.wA);
+                v.wA = proxyA.points[v.indexA];
+                v.wB = proxyB.points[v.indexB];
+                v.w = b2Sub(v.wA, v.wB);
 
                 // invalid
                 v.a = -1.0f;
@@ -214,11 +219,9 @@ namespace Box2D.NET
                 ref B2SimplexVertex v = ref vertices[0];
                 v.indexA = 0;
                 v.indexB = 0;
-                B2Vec2 wALocal = proxyA.points[0];
-                B2Vec2 wBLocal = proxyB.points[0];
-                v.wA = b2TransformPoint(ref transformA, wALocal);
-                v.wB = b2TransformPoint(ref transformB, wBLocal);
-                v.w = b2Sub(v.wB, v.wA);
+                v.wA = proxyA.points[0];
+                v.wB = proxyB.points[0];
+                v.w = b2Sub(v.wA, v.wB);
                 v.a = 1.0f;
                 s.count = 1;
             }
@@ -237,63 +240,20 @@ namespace Box2D.NET
             }
         }
 
-        // Compute the search direction from the current simplex.
-        // This is the vector pointing from the closest point on the simplex
-        // to the origin.
-        // A more accurate search direction can be computed by using the normal
-        // vector of the simplex. For example, the normal vector of a line segment
-        // can be computed more accurately because it does not involve barycentric
-        // coordinates.
-        public static B2Vec2 b2ComputeSimplexSearchDirection(ref B2Simplex simplex)
-        {
-            switch (simplex.count)
-            {
-                case 1:
-                    return b2Neg(simplex.v1.w);
-
-                case 2:
-                {
-                    B2Vec2 e12 = b2Sub(simplex.v2.w, simplex.v1.w);
-                    float sgn = b2Cross(e12, b2Neg(simplex.v1.w));
-                    if (sgn > 0.0f)
-                    {
-                        // Origin is left of e12.
-                        return b2LeftPerp(e12);
-                    }
-                    else
-                    {
-                        // Origin is right of e12.
-                        return b2RightPerp(e12);
-                    }
-                }
-
-                default:
-                    Debug.Assert(false);
-                    return b2Vec2_zero;
-            }
-        }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2ComputeSimplexClosestPoint(ref B2Simplex s)
         {
-            switch (s.count)
+            if (s.count == 1)
             {
-                case 0:
-                    Debug.Assert(false);
-                    return b2Vec2_zero;
-
-                case 1:
-                    return s.v1.w;
-
-                case 2:
-                    return b2Weight2(s.v1.a, s.v1.w, s.v2.a, s.v2.w);
-
-                case 3:
-                    return b2Vec2_zero;
-
-                default:
-                    Debug.Assert(false);
-                    return b2Vec2_zero;
+                return s.v1.w;
             }
+
+            if (s.count == 2)
+            {
+                return b2Weight2(s.v1.a, s.v1.w, s.v2.a, s.v2.w);
+            }
+
+            return b2Vec2_zero;
         }
 
         public static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
@@ -316,7 +276,7 @@ namespace Box2D.NET
 
                 case 3:
                     a = b2Weight3(s.v1.a, s.v1.wA, s.v2.a, s.v2.wA, s.v3.a, s.v3.wA);
-                    // TODO_ERIN why are these not equal?
+                    // todo why are these not equal?
                     //*b = b2Weight3(s.v1.a, s.v1.wB, s.v2.a, s.v2.wB, s.v3.a, s.v3.wB);
                     b = a;
                     break;
@@ -350,7 +310,9 @@ namespace Box2D.NET
         // Solution
         // a1 = d12_1 / d12
         // a2 = d12_2 / d12
-        public static void b2SolveSimplex2(ref B2Simplex s)
+        //
+        // returns a vector that points towards the origin
+        public static B2Vec2 b2SolveSimplex2(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -363,7 +325,7 @@ namespace Box2D.NET
                 // a2 <= 0, so we clamp it to 0
                 s.v1.a = 1.0f;
                 s.count = 1;
-                return;
+                return b2Neg(w1);
             }
 
             // w2 region
@@ -374,7 +336,7 @@ namespace Box2D.NET
                 s.v2.a = 1.0f;
                 s.count = 1;
                 s.v1 = s.v2;
-                return;
+                return b2Neg(w2);
             }
 
             // Must be in e12 region.
@@ -382,9 +344,10 @@ namespace Box2D.NET
             s.v1.a = d12_1 * inv_d12;
             s.v2.a = d12_2 * inv_d12;
             s.count = 2;
+            return b2CrossSV(b2Cross(b2Add(w1, w2), e12), e12);
         }
 
-        public static void b2SolveSimplex3(ref B2Simplex s)
+        public static B2Vec2 b2SolveSimplex3(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -432,7 +395,7 @@ namespace Box2D.NET
             {
                 s.v1.a = 1.0f;
                 s.count = 1;
-                return;
+                return b2Neg(w1);
             }
 
             // e12
@@ -442,7 +405,7 @@ namespace Box2D.NET
                 s.v1.a = d12_1 * inv_d12;
                 s.v2.a = d12_2 * inv_d12;
                 s.count = 2;
-                return;
+                return b2CrossSV(b2Cross(b2Add(w1, w2), e12), e12);
             }
 
             // e13
@@ -453,7 +416,7 @@ namespace Box2D.NET
                 s.v3.a = d13_2 * inv_d13;
                 s.count = 2;
                 s.v2 = s.v3;
-                return;
+                return b2CrossSV(b2Cross(b2Add(w1, w3), e13), e13);
             }
 
             // w2 region
@@ -462,7 +425,7 @@ namespace Box2D.NET
                 s.v2.a = 1.0f;
                 s.count = 1;
                 s.v1 = s.v2;
-                return;
+                return b2Neg(w2);
             }
 
             // w3 region
@@ -471,7 +434,7 @@ namespace Box2D.NET
                 s.v3.a = 1.0f;
                 s.count = 1;
                 s.v1 = s.v3;
-                return;
+                return b2Neg(w3);
             }
 
             // e23
@@ -482,7 +445,7 @@ namespace Box2D.NET
                 s.v3.a = d23_2 * inv_d23;
                 s.count = 2;
                 s.v1 = s.v3;
-                return;
+                return b2CrossSV(b2Cross(b2Add(w2, w3), e23), e23);
             }
 
             // Must be in triangle123
@@ -491,23 +454,38 @@ namespace Box2D.NET
             s.v2.a = d123_2 * inv_d123;
             s.v3.a = d123_3 * inv_d123;
             s.count = 3;
+
+            // No search direction
+            return b2Vec2_zero;
         }
 
         /// Compute the closest points between two shapes represented as point clouds.
         /// b2SimplexCache cache is input/output. On the first call set b2SimplexCache.count to zero.
         /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
-        public static B2DistanceOutput b2ShapeDistance(ref B2SimplexCache cache, ref B2DistanceInput input, B2Simplex[] simplexes, int simplexCapacity)
+        // Uses GJK for computing the distance between convex shapes.
+        // https://box2d.org/files/ErinCatto_GJK_GDC2010.pdf
+        // I spent time optimizing this and could find no further significant gains 3/30/2025
+        public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, B2Simplex[] simplexes, int simplexCapacity)
         {
             B2DistanceOutput output = new B2DistanceOutput();
 
             ref B2ShapeProxy proxyA = ref input.proxyA;
-            ref B2ShapeProxy proxyB = ref input.proxyB;
 
-            B2Transform transformA = input.transformA;
-            B2Transform transformB = input.transformB;
+            // Get proxyB in frame A to avoid further transforms in the main loop.
+            // This is still a performance gain at 8 points.
+            B2ShapeProxy localProxyB = new B2ShapeProxy();
+            {
+                B2Transform transform = b2InvMulTransforms(input.transformA, input.transformB);
+                localProxyB.count = input.proxyB.count;
+                localProxyB.radius = input.proxyB.radius;
+                for (int i = 0; i < localProxyB.count; ++i)
+                {
+                    localProxyB.points[i] = b2TransformPoint(ref transform, input.proxyB.points[i]);
+                }
+            }
 
             // Initialize the simplex.
-            B2Simplex simplex = b2MakeSimplexFromCache(ref cache, ref proxyA, transformA, ref proxyB, transformB);
+            B2Simplex simplex = b2MakeSimplexFromCache(ref cache, ref proxyA, ref localProxyB);
 
             int simplexIndex = 0;
             if (simplexes != null && simplexIndex < simplexCapacity)
@@ -518,14 +496,17 @@ namespace Box2D.NET
 
             // Get simplex vertices as an array.
             Span<B2SimplexVertex> vertices = simplex.AsSpan();
-            const int k_maxIters = 20;
+
+            B2Vec2 nonUnitNormal = b2Vec2_zero;
 
             // These store the vertices of the last simplex so that we can check for duplicates and prevent cycling.
-            Span<int> saveA = stackalloc int[3], saveB = stackalloc int[3];
+            Span<int> saveA = stackalloc int[3];
+            Span<int> saveB = stackalloc int[3];
 
-            // Main iteration loop.
-            int iter = 0;
-            while (iter < k_maxIters)
+            // Main iteration loop. All computations are done in frame A.
+            const int maxIterations = 20;
+            int iteration = 0;
+            while (iteration < maxIterations)
             {
                 // Copy simplex so we can identify duplicates.
                 int saveCount = simplex.count;
@@ -535,17 +516,19 @@ namespace Box2D.NET
                     saveB[i] = vertices[i].indexB;
                 }
 
+                B2Vec2 d = new B2Vec2();
                 switch (simplex.count)
                 {
                     case 1:
+                        d = b2Neg(simplex.v1.w);
                         break;
 
                     case 2:
-                        b2SolveSimplex2(ref simplex);
+                        d = b2SolveSimplex2(ref simplex);
                         break;
 
                     case 3:
-                        b2SolveSimplex3(ref simplex);
+                        d = b2SolveSimplex3(ref simplex);
                         break;
 
                     default:
@@ -559,18 +542,23 @@ namespace Box2D.NET
                     break;
                 }
 
+#if DEBUG
                 if (simplexes != null && simplexIndex < simplexCapacity)
                 {
                     simplexes[simplexIndex] = simplex;
                     simplexIndex += 1;
                 }
+#endif
 
-                // Get search direction.
-                B2Vec2 d = b2ComputeSimplexSearchDirection(ref simplex);
+                // Save the normal
+                nonUnitNormal = d;
 
                 // Ensure the search direction is numerically fit.
                 if (b2Dot(d, d) < FLT_EPSILON * FLT_EPSILON)
                 {
+                    // This is unlikely but could lead to bad cycling.
+                    // The branch predictor seems to make this check have low cost.
+
                     // The origin is probably contained by a line segment
                     // or triangle. Thus the shapes are overlapped.
 
@@ -581,16 +569,16 @@ namespace Box2D.NET
                 }
 
                 // Compute a tentative new simplex vertex using support points.
-                // support = support(b, d) - support(a, -d)
+                // support = support(a, d) - support(b, -d)
                 ref B2SimplexVertex vertex = ref vertices[simplex.count];
-                vertex.indexA = b2FindSupport(ref proxyA, b2InvRotateVector(transformA.q, b2Neg(d)));
-                vertex.wA = b2TransformPoint(ref transformA, proxyA.points[vertex.indexA]);
-                vertex.indexB = b2FindSupport(ref proxyB, b2InvRotateVector(transformB.q, d));
-                vertex.wB = b2TransformPoint(ref transformB, proxyB.points[vertex.indexB]);
-                vertex.w = b2Sub(vertex.wB, vertex.wA);
+                vertex.indexA = b2FindSupport(ref proxyA, d);
+                vertex.wA = proxyA.points[vertex.indexA];
+                vertex.indexB = b2FindSupport(ref localProxyB, b2Neg(d));
+                vertex.wB = localProxyB.points[vertex.indexB];
+                vertex.w = b2Sub(vertex.wA, vertex.wB);
 
                 // Iteration count is equated to the number of support point calls.
-                ++iter;
+                ++iteration;
 
                 // Check for duplicate support points. This is the main termination criteria.
                 bool duplicate = false;
@@ -609,138 +597,258 @@ namespace Box2D.NET
                     break;
                 }
 
-                // New vertex is ok and needed.
-                ++simplex.count;
+                // New vertex is valid and needed.
+                simplex.count += 1;
             }
 
+#if DEBUG
             if (simplexes != null && simplexIndex < simplexCapacity)
             {
                 simplexes[simplexIndex] = simplex;
                 simplexIndex += 1;
             }
+#endif
 
             // Prepare output
-            b2ComputeSimplexWitnessPoints(ref output.pointA, ref output.pointB, ref simplex);
-            output.distance = b2Distance(output.pointA, output.pointB);
-            output.iterations = iter;
+            B2Vec2 normal = b2Normalize(nonUnitNormal);
+            normal = b2RotateVector(input.transformA.q, normal);
+
+            B2Vec2 localPointA = new B2Vec2();
+            B2Vec2 localPointB = new B2Vec2();
+            b2ComputeSimplexWitnessPoints(ref localPointA, ref localPointB, ref simplex);
+            output.normal = normal;
+            output.distance = b2Distance(localPointA, localPointB);
+            output.pointA = b2TransformPoint(ref input.transformA, localPointA);
+            output.pointB = b2TransformPoint(ref input.transformA, localPointB);
+            output.iterations = iteration;
             output.simplexCount = simplexIndex;
 
             // Cache the simplex
             b2MakeSimplexCache(ref cache, ref simplex);
 
             // Apply radii if requested
-            if (input.useRadii)
+            if (input.useRadii && output.distance > 0.1f * B2_LINEAR_SLOP)
             {
-                if (output.distance < FLT_EPSILON)
-                {
-                    // Shapes are too close to safely compute normal
-                    B2Vec2 p = new B2Vec2(0.5f * (output.pointA.X + output.pointB.X), 0.5f * (output.pointA.Y + output.pointB.Y));
-                    output.pointA = p;
-                    output.pointB = p;
-                    output.distance = 0.0f;
-                }
-                else
-                {
-                    // Keep closest points on perimeter even if overlapped, this way
-                    // the points move smoothly.
-                    float rA = proxyA.radius;
-                    float rB = proxyB.radius;
-                    output.distance = b2MaxFloat(0.0f, output.distance - rA - rB);
-                    B2Vec2 normal = b2Normalize(b2Sub(output.pointB, output.pointA));
-                    B2Vec2 offsetA = new B2Vec2(rA * normal.X, rA * normal.Y);
-                    B2Vec2 offsetB = new B2Vec2(rB * normal.X, rB * normal.Y);
-                    output.pointA = b2Add(output.pointA, offsetA);
-                    output.pointB = b2Sub(output.pointB, offsetB);
-                }
+                float radiusA = input.proxyA.radius;
+                float radiusB = input.proxyB.radius;
+                output.distance = b2MaxFloat(0.0f, output.distance - radiusA - radiusB);
+
+                // Keep closest points on perimeter even if overlapped, this way the points move smoothly.
+                output.pointA = b2MulAdd(output.pointA, radiusA, normal);
+                output.pointB = b2MulSub(output.pointB, radiusB, normal);
             }
 
             return output;
         }
 
-        /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
+        // Shape cast using conservative advancement
+        public static B2CastOutput b2ShapeCast(ref B2ShapeCastPairInput input)
+        {
+            // Compute tolerance
+            float linearSlop = B2_LINEAR_SLOP;
+            float totalRadius = input.proxyA.radius + input.proxyB.radius;
+            float target = b2MaxFloat(linearSlop, totalRadius - linearSlop);
+            float tolerance = 0.25f * linearSlop;
+
+            Debug.Assert(target > tolerance);
+
+            // Prepare input for distance query
+            B2SimplexCache cache = new B2SimplexCache();
+
+            float alpha = 0.0f;
+
+            B2DistanceInput distanceInput = new B2DistanceInput();
+            distanceInput.proxyA = input.proxyA;
+            distanceInput.proxyB = input.proxyB;
+            distanceInput.transformA = input.transformA;
+            distanceInput.transformB = input.transformB;
+            distanceInput.useRadii = false;
+
+            B2Vec2 delta2 = input.translationB;
+            B2CastOutput output = new B2CastOutput();
+
+            int iteration = 0;
+            int maxIterations = 20;
+            for (; iteration < maxIterations; ++iteration)
+            {
+                output.iterations += 1;
+
+                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+                if (distanceOutput.distance < target + tolerance)
+                {
+                    if (iteration == 0)
+                    {
+                        if (input.canEncroach && distanceOutput.distance > 2.0f * linearSlop)
+                        {
+                            target = distanceOutput.distance - linearSlop;
+                        }
+                        else
+                        {
+                            if (distanceOutput.distance == 0.0f)
+                            {
+                                // Normal may be invalid
+                                return output;
+                            }
+
+                            // Initial overlap but distance is non-zero due to radius
+                            Debug.Assert(b2IsNormalized(distanceOutput.normal));
+                            output.fraction = alpha;
+                            output.point = b2MulAdd(distanceOutput.pointA, input.proxyA.radius, distanceOutput.normal);
+                            output.normal = distanceOutput.normal;
+                            output.hit = true;
+                            return output;
+                        }
+                    }
+                    else
+                    {
+                        // Regular hit
+                        Debug.Assert(distanceOutput.distance > 0.0f && b2IsNormalized(distanceOutput.normal));
+                        output.fraction = alpha;
+                        output.point = b2MulAdd(distanceOutput.pointA, input.proxyA.radius, distanceOutput.normal);
+                        output.normal = distanceOutput.normal;
+                        output.hit = true;
+                        return output;
+                    }
+                }
+
+                Debug.Assert(distanceOutput.distance > 0.0f);
+                Debug.Assert(b2IsNormalized(distanceOutput.normal));
+
+                // Check if shapes are approaching each other
+                float denominator = b2Dot(delta2, distanceOutput.normal);
+                if (denominator >= 0.0f)
+                {
+                    // Miss
+                    output.fraction = 1.0f;
+                    return output;
+                }
+
+                // Advance sweep
+                alpha += (target - distanceOutput.distance) / denominator;
+                if (alpha >= input.maxFraction)
+                {
+                    // Miss
+                    output.fraction = 1.0f;
+                    return output;
+                }
+
+                distanceInput.transformB.p = b2MulAdd(input.transformB.p, alpha, delta2);
+            }
+
+            // Failure!
+            return output;
+        }
+
+
+#if FALSE
+        public struct b2ShapeCastData
+        {
+            b2Simplex simplex;
+            b2Vec2 closestA, closestB;
+            b2Vec2 normal;
+            b2Vec2 p0;
+            float fraction;
+        } b2ShapeCastData;
+
         // GJK-raycast
         // Algorithm by Gino van den Bergen.
         // "Smooth Mesh Contacts with GJK" in Game Physics Pearls. 2010
-        // todo this is failing when used to raycast a box
-        // todo this converges slowly with a radius
-        public static B2CastOutput b2ShapeCast(ref B2ShapeCastPairInput input)
+        // This needs the simplex of A - B because the translation is for B and this
+        // is how the relative motion works out when both shapes are translating.
+        // This is similar to ray vs polygon and involves plane clipping. See b2RayCastPolygon.
+        // In this case the polygon is just points and there are no planes. This uses a modified
+        // version of GJK to generate planes for clipping.
+        // The algorithm works by incrementally building clipping planes using GJK. Once a valid
+        // clip plane is found the simplex origin is moved to the current fraction on the ray.
+        // This resets the simplex after every clip. Later I should compare performance.
+        // However, adapting this to work with encroachment is tricky and confusing because encroachment
+        // needs distance.
+        // Note: this algorithm is difficult to debug and not worth the effort in my opinion 4/1/2025
+        b2CastOutput b2ShapeCastMerged( const b2ShapeCastPairInput* input, b2ShapeCastData* debugData, int debugCapacity )
         {
-            B2CastOutput output = new B2CastOutput();
-            output.fraction = input.maxFraction;
+            B2_UNUSED( debugData, debugCapacity );
 
-            B2ShapeProxy proxyA = input.proxyA;
+            b2CastOutput output = { 0 };
+            output.fraction = input->maxFraction;
 
-            B2Transform xfA = input.transformA;
-            B2Transform xfB = input.transformB;
-            B2Transform xf = b2InvMulTransforms(xfA, xfB);
+            b2ShapeProxy proxyA = input->proxyA;
+
+            b2Transform xf = b2InvMulTransforms( input->transformA, input->transformB );
 
             // Put proxyB in proxyA's frame to reduce round-off error
-            B2ShapeProxy proxyB = new B2ShapeProxy();
-            proxyB.count = input.proxyB.count;
-            proxyB.radius = input.proxyB.radius;
-            Debug.Assert(proxyB.count <= B2_MAX_POLYGON_VERTICES);
+            b2ShapeProxy proxyB;
+            proxyB.count = input->proxyB.count;
+            proxyB.radius = input->proxyB.radius;
+            B2_ASSERT( proxyB.count <= B2_MAX_POLYGON_VERTICES );
 
-            for (int i = 0; i < proxyB.count; ++i)
+            for ( int i = 0; i < proxyB.count; ++i )
             {
-                proxyB.points[i] = b2TransformPoint(ref xf, input.proxyB.points[i]);
+                proxyB.points[i] = b2TransformPoint( xf, input->proxyB.points[i] );
             }
 
             float radius = proxyA.radius + proxyB.radius;
 
-            B2Vec2 r = b2RotateVector(xf.q, input.translationB);
+            b2Vec2 r = b2RotateVector( xf.q, input->translationB );
             float lambda = 0.0f;
-            float maxFraction = input.maxFraction;
+            float maxFraction = input->maxFraction;
 
             // Initial simplex
-            B2Simplex simplex = new B2Simplex();
+            b2Simplex simplex;
             simplex.count = 0;
 
             // Get simplex vertices as an array.
-            Span<B2SimplexVertex> vertices = simplex.AsSpan();
+            b2SimplexVertex* vertices[] = { &simplex.v1, &simplex.v2, &simplex.v3 };
 
             // Get an initial point in A - B
-            int indexA = b2FindSupport(ref proxyA, b2Neg(r));
-            B2Vec2 wA = proxyA.points[indexA];
-            int indexB = b2FindSupport(ref proxyB, r);
-            B2Vec2 wB = proxyB.points[indexB];
-            B2Vec2 v = b2Sub(wA, wB);
+            b2Vec2 wA = proxyA.points[0];
+            b2Vec2 wB = proxyB.points[0];
+            b2Vec2 v = b2Sub( wA, wB );
+            b2Vec2 d = b2Neg( v );
 
             // Sigma is the target distance between proxies
-            float linearSlop = B2_LINEAR_SLOP;
-            float sigma = b2MaxFloat(linearSlop, radius - linearSlop);
+            const float linearSlop = B2_LINEAR_SLOP;
+            const float sigma = b2MaxFloat( linearSlop, radius - linearSlop );
+            float tolerance = 0.5f * linearSlop;
+            float stolSquared = ( sigma + tolerance ) * ( sigma + tolerance );
 
             // Main iteration loop.
-            const int k_maxIters = 20;
-            int iter = 0;
-            while (iter < k_maxIters && b2Length(v) > sigma + 0.5f * linearSlop)
+            const int maxIterations = 20;
+            int iteration = 0;
+            while ( iteration < maxIterations && b2LengthSquared( v ) > stolSquared )
             {
-                Debug.Assert(simplex.count < 3);
+                B2_ASSERT( simplex.count < 3 );
 
-                output.iterations += 1;
-
-                // Support in direction -v (A - B)
-                indexA = b2FindSupport(ref proxyA, b2Neg(v));
+                // Support in direction d (A - B)
+                int indexA = b2FindSupport( &proxyA, d );
                 wA = proxyA.points[indexA];
-                indexB = b2FindSupport(ref proxyB, v);
+                int indexB = b2FindSupport( &proxyB, b2Neg( d ) );
                 wB = proxyB.points[indexB];
-                B2Vec2 p = b2Sub(wA, wB);
+                b2Vec2 p0 = b2Sub( wA, wB );
 
-                // -v is a normal at p, normalize to work with sigma
-                v = b2Normalize(v);
+                // d is a normal at p, normalize to work with sigma
+                b2Vec2 normal = b2Normalize( d );
 
                 // Intersect ray with plane
-                float vp = b2Dot(v, p);
-                float vr = b2Dot(v, r);
-                if (vp - sigma > lambda * vr)
+                // p = origin + t * r
+                // dot(n, p - p0) = sigma
+                // dot(n, origin - p0) + t * dot(n, r) = sigma
+                // t = ( dot(n, p0) + sigma) / dot(n, r)
+                // if t < (dot(n, p0) + sigma) / dot(n, r) then t can be increased
+                // or (flipping sign because dot(n,r) < 0)
+                // dot(n, p0) + sigma < t * dot(n, r) && dot(n, r) < 0
+                float np0 = b2Dot( normal, p0 );
+                float nr = b2Dot( normal, r );
+                if ( np0 + sigma < lambda * nr )
                 {
-                    if (vr <= 0.0f)
+                    if ( nr >= 0.0f )
                     {
                         // miss
                         return output;
                     }
 
-                    lambda = (vp - sigma) / vr;
-                    if (lambda > maxFraction)
+                    lambda = ( np0 + sigma ) / nr;
+                    if ( lambda > maxFraction )
                     {
                         // too far
                         return output;
@@ -750,73 +858,87 @@ namespace Box2D.NET
                     simplex.count = 0;
                 }
 
-                // Reverse simplex since it works with B - A.
                 // Shift by lambda * r because we want the closest point to the current clip point.
                 // Note that the support point p is not shifted because we want the plane equation
-                // to be formed in unshifted space.
-                ref B2SimplexVertex vertex = ref vertices[simplex.count];
-                vertex.indexA = indexB;
-                vertex.wA = new B2Vec2(wB.X + lambda * r.X, wB.Y + lambda * r.Y);
-                vertex.indexB = indexA;
-                vertex.wB = wA;
-                vertex.w = b2Sub(vertex.wB, vertex.wA);
-                vertex.a = 1.0f;
+                // to be formed in un-shifted space.
+                b2SimplexVertex* vertex = vertices[simplex.count];
+                vertex->indexA = indexB;
+                vertex->wA = wA;
+                vertex->indexB = indexA;
+                vertex->wB = (b2Vec2){ wB.x + lambda * r.x, wB.y + lambda * r.y };
+                vertex->w = b2Sub( vertex->wA, vertex->wB );
+                vertex->a = 1.0f;
                 simplex.count += 1;
 
-                switch (simplex.count)
+                switch ( simplex.count )
                 {
                     case 1:
+                        d = b2Neg( simplex.v1.w );
                         break;
 
                     case 2:
-                        b2SolveSimplex2(ref simplex);
+                        d = b2SolveSimplex2( &simplex );
                         break;
 
                     case 3:
-                        b2SolveSimplex3(ref simplex);
+                        d = b2SolveSimplex3( &simplex );
                         break;
 
                     default:
-                        Debug.Assert(false);
-                        break;
+                        B2_ASSERT( false );
                 }
 
+        #if DEBUG 
+                if ( debugData != NULL && output.iterations < debugCapacity )
+                {
+                    debugData[output.iterations].simplex = simplex;
+                    debugData[output.iterations].normal = normal;
+                    debugData[output.iterations].p0 = p0;
+                    b2Vec2 cA, cB;
+                    b2ComputeSimplexWitnessPoints( &cA, &cB, &simplex );
+                    debugData[output.iterations].closestA = cA;
+                    debugData[output.iterations].closestB = cB;
+                    debugData[output.iterations].fraction = lambda;
+                }
+        #endif
+
+                output.iterations += 1;
+
                 // If we have 3 points, then the origin is in the corresponding triangle.
-                if (simplex.count == 3)
+                if ( simplex.count == 3 )
                 {
                     // Overlap
                     return output;
                 }
 
-                // Get search direction.
-                // todo use more accurate segment perpendicular
-                v = b2ComputeSimplexClosestPoint(ref simplex);
+                // Get distance vector
+                v = b2ComputeSimplexClosestPoint( &simplex );
 
                 // Iteration count is equated to the number of support point calls.
-                ++iter;
+                ++iteration;
             }
 
-            if (iter == 0 || lambda == 0.0f)
+            if ( iteration == 0 || lambda == 0.0f )
             {
                 // Initial overlap
                 return output;
             }
 
             // Prepare output.
-            B2Vec2 pointA = new B2Vec2(), pointB = new B2Vec2();
-            b2ComputeSimplexWitnessPoints(ref pointB, ref pointA, ref simplex);
+            b2Vec2 pointA, pointB;
+            b2ComputeSimplexWitnessPoints( &pointB, &pointA, &simplex );
 
-            B2Vec2 n = b2Normalize(b2Neg(v));
-            B2Vec2 point = new B2Vec2(pointA.X + proxyA.radius * n.X, pointA.Y + proxyA.radius * n.Y);
+            b2Vec2 n = b2Normalize( b2Neg( v ) );
+            b2Vec2 point = { pointA.x + proxyA.radius * n.x, pointA.y + proxyA.radius * n.y };
 
-            output.point = b2TransformPoint(ref xfA, point);
-            output.normal = b2RotateVector(xfA.q, n);
+            output.point = b2TransformPoint( input->transformA, point );
+            output.normal = b2RotateVector( input->transformA.q, n );
             output.fraction = lambda;
-            output.iterations = iter;
+            output.iterations = iteration;
             output.hit = true;
             return output;
         }
-
+#endif
 
         public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2Sweep sweepA, ref B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
         {
@@ -1034,8 +1156,8 @@ namespace Box2D.NET
 
             B2Sweep sweepA = input.sweepA;
             B2Sweep sweepB = input.sweepB;
-            Debug.Assert(b2IsNormalized(sweepA.q1) && b2IsNormalized(sweepA.q2));
-            Debug.Assert(b2IsNormalized(sweepB.q1) && b2IsNormalized(sweepB.q2));
+            Debug.Assert(b2IsNormalizedRot(sweepA.q1) && b2IsNormalizedRot(sweepA.q2));
+            Debug.Assert(b2IsNormalizedRot(sweepB.q1) && b2IsNormalizedRot(sweepB.q2));
 
             // todo_erin
             // c1 can be at the origin yet the points are far away
@@ -1075,8 +1197,23 @@ namespace Box2D.NET
                 // to get a separating axis.
                 distanceInput.transformA = xfA;
                 distanceInput.transformB = xfB;
-                B2DistanceOutput distanceOutput = b2ShapeDistance(ref cache, ref distanceInput, null, 0);
+                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0 );
 
+                // Progressive time of impact. This handles slender geometry well but introduces
+                // significant time loss.
+                // if (distanceIterations == 0)
+                //{
+                //	if ( distanceOutput.distance > totalRadius + B2_SPECULATIVE_DISTANCE )
+                //	{
+                //		target = totalRadius + B2_SPECULATIVE_DISTANCE - tolerance;
+                //	}
+                //	else
+                //	{
+                //		target = distanceOutput.distance - 1.5f * tolerance;
+                //		target = b2MaxFloat( target, 2.0f * tolerance );
+                //	}
+                //}
+                
                 distanceIterations += 1;
 #if B2_SNOOP_TOI_COUNTERS
                 b2_toiDistanceIterations += 1;

@@ -13,5 +13,6 @@ namespace Box2D.NET
         public B2Transform transformB; // The world transform for shape B
         public B2Vec2 translationB; // The translation of shape B
         public float maxFraction; // The fraction of the translation to consider, typically 1
+        public bool canEncroach; // Allows shapes with a radius to move slightly closer if already touching
     }
 }

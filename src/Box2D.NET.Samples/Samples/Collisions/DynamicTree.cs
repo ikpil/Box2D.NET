@@ -49,7 +49,7 @@ public class DynamicTree : Sample
     private float _ms;
     private float _boxCount;
 
-    static bool QueryCallback(int proxyId, int userData, ref DynamicTreeContext context)
+    static bool QueryCallback(int proxyId, ulong userData, ref DynamicTreeContext context)
     {
         ref DynamicTreeContext sample = ref context;
         Proxy proxy = sample.tree.m_proxies[userData];
@@ -58,7 +58,7 @@ public class DynamicTree : Sample
         return true;
     }
 
-    static float RayCallback(ref B2RayCastInput input, int proxyId, int userData, ref DynamicTreeContext context)
+    static float RayCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref DynamicTreeContext context)
     {
         DynamicTree sample = context.tree;
         Proxy proxy = sample.m_proxies[userData];
@@ -174,7 +174,7 @@ public class DynamicTree : Sample
                     p.fatBox.lowerBound = b2Sub(p.box.lowerBound, aabbMargin);
                     p.fatBox.upperBound = b2Add(p.box.upperBound, aabbMargin);
 
-                    p.proxyId = b2DynamicTree_CreateProxy(m_tree, p.fatBox, B2_DEFAULT_CATEGORY_BITS, m_proxyCount);
+                    p.proxyId = b2DynamicTree_CreateProxy(m_tree, p.fatBox, B2_DEFAULT_CATEGORY_BITS, (ulong)m_proxyCount);
                     p.rayStamp = -1;
                     p.queryStamp = -1;
                     p.moved = false;
@@ -188,9 +188,9 @@ public class DynamicTree : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 320.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

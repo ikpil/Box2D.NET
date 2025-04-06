@@ -57,30 +57,32 @@ public class CircleStack : Sample
         b2World_SetGravity(m_worldId, new B2Vec2(0.0f, -20.0f));
         b2World_SetContactTuning(m_worldId, 0.25f * 360.0f, 10.0f, 3.0f);
 
-        B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
-        circle.radius = 0.25f;
-
         {
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.enableHitEvents = true;
-            shapeDef.rollingResistance = 0.2f;
-
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
-            float y = 0.5f;
+            B2Circle circle = new B2Circle();
+            circle.radius = 0.5f;
 
-            for (int i = 0; i < 1; ++i)
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.enableHitEvents = true;
+            //shapeDef.rollingResistance = 0.2f;
+            shapeDef.material.friction = 0.0f;
+
+            float y = 0.75f;
+
+            for ( int i = 0; i < 10; ++i )
             {
                 bodyDef.position.Y = y;
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody( m_worldId, ref bodyDef );
 
                 shapeDef.userData = shapeIndex;
+                shapeDef.density = 1.0f + 4.0f * i;
                 shapeIndex += 1;
-                b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+                b2CreateCircleShape( bodyId, ref shapeDef, ref circle );
 
-                y += 2.0f;
+                y += 1.25f;
             }
         }
     }

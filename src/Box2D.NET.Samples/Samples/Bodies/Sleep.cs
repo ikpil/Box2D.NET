@@ -45,6 +45,7 @@ public class Sleep : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.enableSensorEvents = true;
             m_groundShapeId = b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
@@ -63,6 +64,7 @@ public class Sleep : Sample
             b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
             shapeDef.isSensor = true;
+            shapeDef.enableSensorEvents = true;
             capsule.radius = 1.0f;
             m_sensorIds[i] = b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
             m_sensorTouching[i] = false;
@@ -133,9 +135,9 @@ public class Sleep : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));

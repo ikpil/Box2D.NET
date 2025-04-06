@@ -33,7 +33,7 @@ public static class Shader
         Logger.Information("-------------------------------------------------------------");
     }
 
-    public static void CheckErrorGL(this GL gl)
+    public static void CheckOpenGL(this GL gl)
     {
         GLEnum errCode = gl.GetError();
         if (errCode != GLEnum.NoError)

@@ -49,7 +49,7 @@ public struct Car
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f / scale;
-        shapeDef.friction = 0.2f;
+        shapeDef.material.friction = 0.2f;
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
 
@@ -60,8 +60,8 @@ public struct Car
         b2CreatePolygonShape(m_chassisId, ref shapeDef, ref chassis);
 
         shapeDef.density = 2.0f / scale;
-        shapeDef.friction = 1.5f;
-        shapeDef.rollingResistance = 0.1f;
+        shapeDef.material.friction = 1.5f;
+        shapeDef.material.rollingResistance = 0.1f;
 
         bodyDef.position = b2Add(new B2Vec2(-1.0f * scale, 0.35f * scale), position);
         bodyDef.allowFastRotation = true;

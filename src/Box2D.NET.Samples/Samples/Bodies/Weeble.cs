@@ -60,7 +60,6 @@ public class Weeble : Sample
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 1.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.density = 1.0f;
             b2CreateCapsuleShape(m_weebleId, ref shapeDef, ref capsule);
 
             float mass = b2Body_GetMass(m_weebleId);
@@ -91,9 +90,9 @@ public class Weeble : Sample
     }
 
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 120.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

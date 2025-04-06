@@ -425,12 +425,12 @@ namespace Box2D.NET
                 float impulseScale = joint.springSoftness.impulseScale;
 
                 float Cdot = b2Dot(axisA, b2Sub(vB, vA)) + a2 * wB - a1 * wA;
-                float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
-                joint.springImpulse += impulse;
+                float deltaImpulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
+                joint.springImpulse += deltaImpulse;
 
-                B2Vec2 P = b2MulSV(impulse, axisA);
-                float LA = impulse * a1;
-                float LB = impulse * a2;
+                B2Vec2 P = b2MulSV(deltaImpulse, axisA);
+                float LA = deltaImpulse * a1;
+                float LB = deltaImpulse * a2;
 
                 vA = b2MulSub(vA, mA, P);
                 wA -= iA * LA;
@@ -598,26 +598,26 @@ namespace Box2D.NET
         }
 
 #if FALSE
-void b2PrismaticJoint::Dump()
-{
-	int32 indexA = joint.bodyA.joint.islandIndex;
-	int32 indexB = joint.bodyB.joint.islandIndex;
+        public static void b2PrismaticJoint::Dump()
+        {
+            int32 indexA = joint.bodyA.joint.islandIndex;
+            int32 indexB = joint.bodyB.joint.islandIndex;
 
-	b2Dump("  b2PrismaticJointDef jd;\n");
-	b2Dump("  jd.bodyA = sims[%d];\n", indexA);
-	b2Dump("  jd.bodyB = sims[%d];\n", indexB);
-	b2Dump("  jd.collideConnected = bool(%d);\n", joint.collideConnected);
-	b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", joint.localAnchorA.x, joint.localAnchorA.y);
-	b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", joint.localAnchorB.x, joint.localAnchorB.y);
-	b2Dump("  jd.referenceAngle = %.9g;\n", joint.referenceAngle);
-	b2Dump("  jd.enableLimit = bool(%d);\n", joint.enableLimit);
-	b2Dump("  jd.lowerAngle = %.9g;\n", joint.lowerAngle);
-	b2Dump("  jd.upperAngle = %.9g;\n", joint.upperAngle);
-	b2Dump("  jd.enableMotor = bool(%d);\n", joint.enableMotor);
-	b2Dump("  jd.motorSpeed = %.9g;\n", joint.motorSpeed);
-	b2Dump("  jd.maxMotorTorque = %.9g;\n", joint.maxMotorTorque);
-	b2Dump("  joints[%d] = joint.world.CreateJoint(&jd);\n", joint.index);
-}
+            b2Dump("  b2PrismaticJointDef jd;\n");
+            b2Dump("  jd.bodyA = sims[%d];\n", indexA);
+            b2Dump("  jd.bodyB = sims[%d];\n", indexB);
+            b2Dump("  jd.collideConnected = bool(%d);\n", joint.collideConnected);
+            b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", joint.localAnchorA.x, joint.localAnchorA.y);
+            b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", joint.localAnchorB.x, joint.localAnchorB.y);
+            b2Dump("  jd.referenceAngle = %.9g;\n", joint.referenceAngle);
+            b2Dump("  jd.enableLimit = bool(%d);\n", joint.enableLimit);
+            b2Dump("  jd.lowerAngle = %.9g;\n", joint.lowerAngle);
+            b2Dump("  jd.upperAngle = %.9g;\n", joint.upperAngle);
+            b2Dump("  jd.enableMotor = bool(%d);\n", joint.enableMotor);
+            b2Dump("  jd.motorSpeed = %.9g;\n", joint.motorSpeed);
+            b2Dump("  jd.maxMotorTorque = %.9g;\n", joint.maxMotorTorque);
+            b2Dump("  joints[%d] = joint.world.CreateJoint(&jd);\n", joint.index);
+        }
 #endif
 
         public static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
@@ -637,24 +637,24 @@ void b2PrismaticJoint::Dump()
             B2HexColor c4 = B2HexColor.b2_colorBlue;
             B2HexColor c5 = B2HexColor.b2_colorDimGray;
 
-            draw.DrawSegment(pA, pB, c5, draw.context);
+            draw.DrawSegmentFcn(pA, pB, c5, draw.context);
 
             if (joint.enableLimit)
             {
                 B2Vec2 lower = b2MulAdd(pA, joint.lowerTranslation, axis);
                 B2Vec2 upper = b2MulAdd(pA, joint.upperTranslation, axis);
                 B2Vec2 perp = b2LeftPerp(axis);
-                draw.DrawSegment(lower, upper, c1, draw.context);
-                draw.DrawSegment(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
-                draw.DrawSegment(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
+                draw.DrawSegmentFcn(lower, upper, c1, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
             }
             else
             {
-                draw.DrawSegment(b2MulSub(pA, 1.0f, axis), b2MulAdd(pA, 1.0f, axis), c1, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(pA, 1.0f, axis), b2MulAdd(pA, 1.0f, axis), c1, draw.context);
             }
 
-            draw.DrawPoint(pA, 5.0f, c1, draw.context);
-            draw.DrawPoint(pB, 5.0f, c4, draw.context);
+            draw.DrawPointFcn(pA, 5.0f, c1, draw.context);
+            draw.DrawPointFcn(pB, 5.0f, c4, draw.context);
         }
     }
 }

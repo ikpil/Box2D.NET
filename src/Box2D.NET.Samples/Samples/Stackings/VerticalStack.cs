@@ -56,12 +56,15 @@ public class VerticalStack : Sample
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-            B2Polygon box = b2MakeBox(100.0f, 1.0f);
+            //B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            //b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 1.0f), new B2Vec2(10.0f, 21.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            
+            segment = new B2Segment( new B2Vec2(-30.0f, 0.0f ), new B2Vec2( 30.0f, 0.0f ) );
+            b2CreateSegmentShape( groundId, ref shapeDef, ref segment );
         }
 
         for (int i = 0; i < e_maxRows * e_maxColumns; ++i)
@@ -75,8 +78,8 @@ public class VerticalStack : Sample
         }
 
         m_shapeType = ShapeType.e_boxShape;
-        m_rowCount = e_maxRows;
-        m_columnCount = 5;
+        m_rowCount = 2;
+        m_columnCount = 1;
         m_bulletCount = 1;
         m_bulletType = ShapeType.e_circleShape;
 
@@ -97,12 +100,12 @@ public class VerticalStack : Sample
         B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
         circle.radius = 0.5f;
 
-        B2Polygon box = b2MakeBox(0.5f, 0.5f);
+        B2Polygon box = b2MakeSquare(0.5f);
         // b2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = 0.3f;
+        shapeDef.material.friction = 0.3f;
 
         float offset;
 
@@ -213,9 +216,9 @@ public class VerticalStack : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 230.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
