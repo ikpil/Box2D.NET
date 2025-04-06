@@ -975,7 +975,7 @@ namespace Box2D.NET
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
-            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
             distanceInput.transformA = b2Transform_identity;
             distanceInput.transformB = b2Transform_identity;
             distanceInput.useRadii = false;
@@ -997,8 +997,8 @@ namespace Box2D.NET
         public static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule shape, ref B2Capsule mover)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
-            distanceInput.proxyA = b2MakeProxy(shape.center1, 2, 0.0f);
-            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, 0.0f);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
             distanceInput.transformA = b2Transform_identity;
             distanceInput.transformB = b2Transform_identity;
             distanceInput.useRadii = false;
@@ -1021,7 +1021,7 @@ namespace Box2D.NET
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
-            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
             distanceInput.transformA = b2Transform_identity;
             distanceInput.transformB = b2Transform_identity;
             distanceInput.useRadii = false;
@@ -1043,8 +1043,8 @@ namespace Box2D.NET
         public static B2PlaneResult b2CollideMoverAndSegment(ref B2Segment shape, ref B2Capsule mover)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
-            distanceInput.proxyA = b2MakeProxy(shape.point1, 2, 0.0f);
-            distanceInput.proxyB = b2MakeProxy(mover.center1, 2, mover.radius);
+            distanceInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
+            distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
             distanceInput.transformA = b2Transform_identity;
             distanceInput.transformB = b2Transform_identity;
             distanceInput.useRadii = false;
