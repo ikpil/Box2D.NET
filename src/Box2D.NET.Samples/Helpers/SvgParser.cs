@@ -132,7 +132,7 @@ public static class SvgParser
             }
 
             // Skip contiguous spaces
-            while (char.IsWhiteSpace(svgPath[ptr]))
+            while (ptr < svgPath.Length && char.IsWhiteSpace(svgPath[ptr]))
             {
                 ptr++;
             }
@@ -158,7 +158,7 @@ public static class SvgParser
         x = 0;
         y = 0;
         int startIdx = ptrIndex;
-        while (ptrIndex < svgPath.Length && (char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '.' || svgPath[ptrIndex] == '-' || svgPath[ptrIndex] == ','))
+        while (ptrIndex < svgPath.Length && (char.IsDigit(svgPath[ptrIndex]) || svgPath[ptrIndex] == '.' || svgPath[ptrIndex] == '-' || svgPath[ptrIndex] == ',' || svgPath[ptrIndex] == 'e' || svgPath[ptrIndex] == 'E'))
         {
             ptrIndex++;
         }
