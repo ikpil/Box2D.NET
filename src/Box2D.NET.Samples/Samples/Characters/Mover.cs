@@ -273,16 +273,17 @@ public class Mover : Sample
 
         m_velocity = b2ClipVector(m_velocity, m_planes, m_planeCount);
     }
-
+    
+#if FALSE
     public override void UpdateGui()
     {
         ImGui.SetNextWindowPos(new Vector2(10.0f, 600.0f));
         ImGui.SetNextWindowSize(new Vector2(240.0f, 80.0f));
         ImGui.Begin("Mover", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-
         ImGui.End();
     }
+#endif
 
     static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
     {
