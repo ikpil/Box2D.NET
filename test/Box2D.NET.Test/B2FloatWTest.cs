@@ -122,8 +122,8 @@ public class B2FloatWTest
 
         // clamp
         {
-            B2FloatW b = b2ClampSymW(b1, b2);
-            Vector<float> v = b2ClampSymW(v1, v2);
+            B2FloatW b = b2SymClampW(b1, b2);
+            Vector<float> v = b2SymClampW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
             Assert.That(b.Y, Is.EqualTo(v[1]));

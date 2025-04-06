@@ -8,20 +8,24 @@ public static class Helpers
         settings.sampleIndex = 0;
         settings.windowWidth = 1920;
         settings.windowHeight = 1080;
+
         settings.hertz = 60.0f;
         settings.subStepCount = 4;
         settings.workerCount = 1;
+
         settings.useCameraBounds = false;
         settings.drawShapes = true;
         settings.drawJoints = true;
         settings.drawJointExtras = false;
-        settings.drawAABBs = false;
+        settings.drawBounds = false;
+        settings.drawMass = false;
+        settings.drawBodyNames = false;
         settings.drawContactPoints = false;
         settings.drawContactNormals = false;
         settings.drawContactImpulses = false;
+        settings.drawContactFeatures = false;
         settings.drawFrictionImpulses = false;
-        settings.drawMass = false;
-        settings.drawBodyNames = false;
+        settings.drawIslands = false;
         settings.drawGraphColors = false;
         settings.drawCounters = false;
         settings.drawProfile = false;
@@ -34,5 +38,4 @@ public static class Helpers
 
         return settings;
     }
- 
 }

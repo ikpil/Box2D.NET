@@ -18,8 +18,8 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 public class ShapeDistance : Sample
 {
     private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
-
-    public const int SIMPLEX_CAPACITY = 20;
+    
+    public const int m_simplexCapacity = 20;
 
     B2Polygon m_box;
     B2Polygon m_triangle;
@@ -34,9 +34,10 @@ public class ShapeDistance : Sample
     B2ShapeProxy m_proxyB;
 
     B2SimplexCache m_cache;
-    B2Simplex[] m_simplexes = new B2Simplex[SIMPLEX_CAPACITY];
+    B2Simplex[] m_simplexes = new B2Simplex[m_simplexCapacity];
     int m_simplexCount;
     int m_simplexIndex;
+
 
     B2Transform m_transform;
     float m_angle;
@@ -55,6 +56,7 @@ public class ShapeDistance : Sample
     // 
     public B2Vec2 _outputPointA;
     public B2Vec2 _outputPointB;
+    public B2Vec2 _outputNormal;
 
     public float _outputDistance;
     public int _outputIterations;
@@ -89,11 +91,14 @@ public class ShapeDistance : Sample
             B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.0f) };
             B2Hull hull = b2ComputeHull(points, 3);
             m_triangle = b2MakePolygon(ref hull, 0.0f);
+            
+            // m_triangle = b2MakeSquare( 0.4f );
         }
 
-        m_box = b2MakeBox(0.5f, 0.5f);
+        m_box = b2MakeSquare(0.5f);
 
-        m_transform = new B2Transform(new B2Vec2(1.5f, -1.5f), b2Rot_identity);
+        // m_transform = new B2Transform(new B2Vec2(1.5f, -1.5f), b2Rot_identity);
+        m_transform = new B2Transform(new B2Vec2(0.0f, 0.0f), b2Rot_identity);
         m_angle = 0.0f;
 
         m_cache = b2_emptySimplexCache;
@@ -136,10 +141,11 @@ public class ShapeDistance : Sample
                 break;
 
             case ShapeType.e_triangle:
-                proxy.points[0] = m_triangle.vertices[0];
-                proxy.points[1] = m_triangle.vertices[1];
-                proxy.points[2] = m_triangle.vertices[2];
-                proxy.count = 3;
+                for ( int i = 0; i < m_triangle.count; ++i )
+                {
+                    proxy.points[i] = m_triangle.vertices[i];
+                }
+                proxy.count = m_triangle.count;
                 break;
 
             case ShapeType.e_box:
@@ -193,11 +199,11 @@ public class ShapeDistance : Sample
                 break;
 
             case ShapeType.e_triangle:
-                m_context.draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), 3, radius, color);
+                m_context.draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
                 break;
 
             case ShapeType.e_box:
-                m_context.draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), 4, radius, color);
+                m_context.draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
                 break;
 
             default:
@@ -206,9 +212,9 @@ public class ShapeDistance : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 310.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
@@ -304,8 +310,7 @@ public class ShapeDistance : Sample
     {
         if (m_dragging)
         {
-            m_transform.p.X = m_basePosition.X + 0.5f * (p.X - m_startPoint.X);
-            m_transform.p.Y = m_basePosition.Y + 0.5f * (p.Y - m_startPoint.Y);
+            m_transform.p = m_basePosition + 0.5f * ( p - m_startPoint );
         }
         else if (m_rotating)
         {
@@ -361,18 +366,19 @@ public class ShapeDistance : Sample
         input.proxyB = m_proxyB;
         input.transformA = b2Transform_identity;
         input.transformB = m_transform;
-        input.useRadii = m_radiusA > 0.0f || m_radiusB > 0.0f;
+        input.useRadii = true || m_radiusA > 0.0f || m_radiusB > 0.0f;
 
         if (m_useCache == false)
         {
             m_cache.count = 0;
         }
 
-        B2DistanceOutput output = b2ShapeDistance(ref m_cache, ref input, m_simplexes, SIMPLEX_CAPACITY);
+        B2DistanceOutput output = b2ShapeDistance(ref input, ref m_cache, m_simplexes, m_simplexCapacity);
 
         m_simplexCount = output.simplexCount;
         _outputPointA = output.pointA;
         _outputPointB = output.pointB;
+        _outputNormal = output.normal;
         _outputDistance = output.distance;
         _outputIterations = output.iterations;
     }
@@ -398,8 +404,8 @@ public class ShapeDistance : Sample
                 ComputeSimplexWitnessPoints(ref pointA, ref pointB, ref simplex);
 
                 m_context.draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
-                m_context.draw.DrawPoint(pointA, 5.0f, B2HexColor.b2_colorWhite);
-                m_context.draw.DrawPoint(pointB, 5.0f, B2HexColor.b2_colorWhite);
+                m_context.draw.DrawPoint(pointA, 10.0f, B2HexColor.b2_colorWhite);
+                m_context.draw.DrawPoint(pointB, 10.0f, B2HexColor.b2_colorWhite);
             }
 
             B2HexColor[] colors = new B2HexColor[3] { B2HexColor.b2_colorRed, B2HexColor.b2_colorGreen, B2HexColor.b2_colorBlue };
@@ -407,15 +413,17 @@ public class ShapeDistance : Sample
             for (int i = 0; i < simplex.count; ++i)
             {
                 ref B2SimplexVertex vertex = ref vertices[i];
-                m_context.draw.DrawPoint(vertex.wA, 5.0f, colors[i]);
-                m_context.draw.DrawPoint(vertex.wB, 5.0f, colors[i]);
+                m_context.draw.DrawPoint(vertex.wA, 10.0f, colors[i]);
+                m_context.draw.DrawPoint(vertex.wB, 10.0f, colors[i]);
             }
         }
         else
         {
-            m_context.draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(_outputPointA, 5.0f, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(_outputPointB, 5.0f, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
+            m_context.draw.DrawPoint(_outputPointA, 10.0f, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawPoint(_outputPointB, 10.0f, B2HexColor.b2_colorWhite);
+            
+            m_context.draw.DrawSegment( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
         }
 
         if (m_showIndices)

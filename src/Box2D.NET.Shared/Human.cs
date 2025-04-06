@@ -14,7 +14,7 @@ namespace Box2D.NET.Shared
 
         public void Clear()
         {
-            Debug.Assert((int)BoneId.boneId_count == B2FixedArray11<Bone>.Size);
+            Debug.Assert((int)BoneId.bone_count == B2FixedArray11<Bone>.Size);
 
             for (int i = 0; i < bones.Length; ++i)
             {

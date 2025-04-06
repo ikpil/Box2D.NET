@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples;
 
 public struct Donut
 {
-    public const int e_sides = 7;
+    public const int m_sides = 7;
 
     private B2FixedArray7<B2BodyId> m_bodyIds;
     private B2FixedArray7<B2JointId> m_jointIds;
@@ -23,23 +23,23 @@ public struct Donut
 
     public Donut()
     {
-        Debug.Assert(e_sides == B2FixedArray7<B2BodyId>.Size);
-        Debug.Assert(e_sides == B2FixedArray7<B2JointId>.Size);
+        Debug.Assert(m_sides == B2FixedArray7<B2BodyId>.Size);
+        Debug.Assert(m_sides == B2FixedArray7<B2JointId>.Size);
     }
 
-    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, object userData)
+    public void Create(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, bool enableSensorEvents, object userData)
     {
         Debug.Assert(m_isSpawned == false);
 
-        for (int i = 0; i < e_sides; ++i)
+        for (int i = 0; i < m_sides; ++i)
         {
             Debug.Assert(B2_IS_NULL(m_bodyIds[i]));
             Debug.Assert(B2_IS_NULL(m_jointIds[i]));
         }
 
         float radius = 1.0f * scale;
-        float deltaAngle = 2.0f * B2_PI / e_sides;
-        float length = 2.0f * B2_PI * radius / e_sides;
+        float deltaAngle = 2.0f * B2_PI / m_sides;
+        float length = 2.0f * B2_PI * radius / m_sides;
 
         B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f * length), new B2Vec2(0.0f, 0.5f * length), 0.25f * scale);
 
@@ -50,13 +50,13 @@ public struct Donut
         bodyDef.userData = userData;
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 1.0f;
+        shapeDef.enableSensorEvents = enableSensorEvents;
         shapeDef.filter.groupIndex = -groupIndex;
-        shapeDef.friction = 0.3f;
+        shapeDef.material.friction = 0.3f;
 
         // Create bodies
         float angle = 0.0f;
-        for (int i = 0; i < e_sides; ++i)
+        for (int i = 0; i < m_sides; ++i)
         {
             bodyDef.position = new B2Vec2(radius * MathF.Cos(angle) + center.X, radius * MathF.Sin(angle) + center.Y);
             bodyDef.rotation = b2MakeRot(angle);
@@ -74,8 +74,8 @@ public struct Donut
         weldDef.localAnchorA = new B2Vec2(0.0f, 0.5f * length);
         weldDef.localAnchorB = new B2Vec2(0.0f, -0.5f * length);
 
-        B2BodyId prevBodyId = m_bodyIds[e_sides - 1];
-        for (int i = 0; i < e_sides; ++i)
+        B2BodyId prevBodyId = m_bodyIds[m_sides - 1];
+        for (int i = 0; i < m_sides; ++i)
         {
             weldDef.bodyIdA = prevBodyId;
             weldDef.bodyIdB = m_bodyIds[i];
@@ -89,11 +89,11 @@ public struct Donut
         m_isSpawned = true;
     }
 
-    public void Despawn()
+    public void Destroy()
     {
         Debug.Assert(m_isSpawned == true);
 
-        for (int i = 0; i < e_sides; ++i)
+        for (int i = 0; i < m_sides; ++i)
         {
             b2DestroyBody(m_bodyIds[i]);
             m_bodyIds[i] = b2_nullBodyId;

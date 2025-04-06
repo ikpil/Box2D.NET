@@ -144,7 +144,7 @@ public class Pinball : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.restitution = 1.5f;
+            shapeDef.material.restitution = 1.5f;
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
             b2CreateCircleShape(bodyId, ref shapeDef, ref circle);

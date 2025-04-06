@@ -20,7 +20,7 @@ using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
-public class RayCastWorld : Sample
+public class CastWorld : Sample
 {
     private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
 
@@ -70,11 +70,11 @@ public class RayCastWorld : Sample
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new RayCastWorld(ctx, settings);
+        return new CastWorld(ctx, settings);
     }
 
 
-    public RayCastWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public CastWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -283,11 +283,11 @@ public class RayCastWorld : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
-        float height = 300.0f;
+        float height = 320.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
@@ -400,17 +400,17 @@ public class RayCastWorld : Sample
             b2CastResultFcn[] fcns = [RayCastAnyCallback, RayCastClosestCallback, RayCastMultipleCallback, RayCastSortedCallback];
             b2CastResultFcn modeFcn = fcns[m_mode];
 
-            RayCastContext context = new RayCastContext();
+            CastContext context = new CastContext();
 
             // Must initialize fractions for sorting
             context.fractions[0] = float.MaxValue;
             context.fractions[1] = float.MaxValue;
             context.fractions[2] = float.MaxValue;
 
-            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), m_castRadius);
-            B2Capsule capsule = new B2Capsule(new B2Vec2(-0.25f, 0.0f), new B2Vec2(0.25f, 0.0f), m_castRadius);
-            B2Polygon box = b2MakeRoundedBox(0.25f, 0.5f, m_castRadius);
             B2Transform transform = new B2Transform(m_rayStart, b2MakeRot(m_angle));
+            B2Circle circle = new B2Circle(m_rayStart, m_castRadius);
+            B2Capsule capsule = new B2Capsule(b2TransformPoint(ref transform, new B2Vec2(-0.25f, 0.0f)), b2TransformPoint(ref transform, new B2Vec2(0.25f, 0.0f)), m_castRadius);
+            B2Polygon box = b2MakeOffsetRoundedBox( 0.25f, 0.5f, transform.p, transform.q, m_castRadius );
 
             switch (m_castType)
             {
@@ -419,15 +419,15 @@ public class RayCastWorld : Sample
                     break;
 
                 case CastType.e_circleCast:
-                    b2World_CastCircle(m_worldId, ref circle, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastCircle(m_worldId, ref circle, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
 
                 case CastType.e_capsuleCast:
-                    b2World_CastCapsule(m_worldId, ref capsule, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastCapsule(m_worldId, ref capsule, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
 
                 case CastType.e_polygonCast:
-                    b2World_CastPolygon(m_worldId, ref box, transform, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                    b2World_CastPolygon(m_worldId, ref box, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
                     break;
             }
 
@@ -446,16 +446,16 @@ public class RayCastWorld : Sample
                     m_context.draw.DrawSegment(p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
-                    B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, t), transform.q);
+                    B2Transform shiftedTransform = new B2Transform(t, b2Rot_identity);
 
                     if (m_castType == CastType.e_circleCast)
                     {
-                        m_context.draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorYellow);
+                        m_context.draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_capsuleCast)
                     {
-                        B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), t);
-                        B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), t);
+                        B2Vec2 p1 = capsule.center1 + t;
+                        B2Vec2 p2 = capsule.center2 + t;
                         m_context.draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_polygonCast)
@@ -524,6 +524,10 @@ public class RayCastWorld : Sample
                 case Mode.e_sorted:
                     m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
                     break;
+
+                default:
+                    Debug.Assert(false);
+                    break;
             }
 
             m_textLine += m_textIncrement;
@@ -541,7 +545,7 @@ public class RayCastWorld : Sample
     // This callback finds the closest hit. This is the most common callback used in games.
     static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
-        RayCastContext rayContext = (RayCastContext)context;
+        CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)
@@ -567,7 +571,7 @@ public class RayCastWorld : Sample
     // NOTE: shape hits are not ordered, so this may not return the closest hit
     static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
-        RayCastContext rayContext = (RayCastContext)context;
+        CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)
@@ -595,7 +599,7 @@ public class RayCastWorld : Sample
     // behavior in the sample.
     static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
-        RayCastContext rayContext = (RayCastContext)context;
+        CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)
@@ -627,7 +631,7 @@ public class RayCastWorld : Sample
 // This ray cast collects multiple hits along the ray and sorts them.
     static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
-        RayCastContext rayContext = (RayCastContext)context;
+        CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)

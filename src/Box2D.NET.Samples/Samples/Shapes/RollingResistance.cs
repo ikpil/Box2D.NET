@@ -55,7 +55,7 @@ public class RollingResistance : Sample
             bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            shapeDef.rollingResistance = m_resistScale * i;
+            shapeDef.material.rollingResistance = m_resistScale * i;
             b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }
     }

@@ -48,7 +48,7 @@ public class Wedge : Sample
             B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
             circle.radius = 0.3f;
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }
     }

@@ -27,7 +27,8 @@ namespace Box2D.NET
             return (ticksNow - ticks) / (float)1000000;
         }
 
-        /// Get the milliseconds passed from an initial tick value.
+        /// Get the milliseconds passed from an initial tick value. Resets the passed in
+        /// value to the current tick value.
         public static float b2GetMillisecondsAndReset(ref ulong ticks)
         {
             ulong ticksNow = b2GetTicks();

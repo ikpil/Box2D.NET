@@ -56,12 +56,12 @@ namespace Box2D.NET
     /// Optional friction mixing callback. This intentionally provides no context objects because this is called
     /// from a worker thread.
     /// @warning This function should not attempt to modify Box2D state or user application state.
-    public delegate float b2FrictionCallback(float frictionA, int materialA, float frictionB, int materialB);
+    public delegate float b2FrictionCallback(float frictionA, int userMaterialIdA, float frictionB, int userMaterialIdB);
 
     /// Optional restitution mixing callback. This intentionally provides no context objects because this is called
     /// from a worker thread.
     /// @warning This function should not attempt to modify Box2D state or user application state.
-    public delegate float b2RestitutionCallback(float restitutionA, int materialA, float restitutionB, int materialB);
+    public delegate float b2RestitutionCallback(float restitutionA, int userMaterialIdA, float restitutionB, int userMaterialIdB);
 
     /// Prototype for a contact filter callback.
     /// This is called when a contact pair is considered for collision. This allows you to
@@ -116,6 +116,10 @@ namespace Box2D.NET
     /// @ingroup world
     public delegate float b2CastResultFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context);
 
+    // Used to collect collision planes for character movers.
+    // Return true to continue gathering planes.
+    public delegate bool b2PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult plane, object context);
+
     // Manifold functions should compute important results in local space to improve precision. However, this
     // interface function takes two world transforms instead of a relative transform for these reasons:
     //
@@ -125,30 +129,30 @@ namespace Box2D.NET
     // has world space vectors yet retains precision.
     //
     // Second:
-    // b3ManifoldPoint::point is very useful for debugging and it is in world space.
+    // b2ManifoldPoint::point is very useful for debugging and it is in world space.
     //
     // Third:
     // The user may call the manifold functions directly and they should be easy to use and have easy to use
     // results.
     public delegate B2Manifold b2ManifoldFcn(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache);
-    
+
     /// This function receives proxies found in the AABB query.
     /// @return true if the query should continue
-    public delegate bool b2TreeQueryCallbackFcn<T>(int proxyId, int userData, ref T context);
+    public delegate bool b2TreeQueryCallbackFcn<T>(int proxyId, ulong userData, ref T context);
 
     /// This function receives clipped ray cast input for a proxy. The function
     /// returns the new ray fraction.
     /// - return a value of 0 to terminate the ray cast
     /// - return a value less than input->maxFraction to clip the ray
     /// - return a value of input->maxFraction to continue the ray cast without clipping
-    public delegate float b2TreeRayCastCallbackFcn<T>(ref B2RayCastInput input, int proxyId, int userData, ref T context) where T : struct;
+    public delegate float b2TreeRayCastCallbackFcn<T>(ref B2RayCastInput input, int proxyId, ulong userData, ref T context) where T : struct;
 
     /// This function receives clipped ray cast input for a proxy. The function
     /// returns the new ray fraction.
     /// - return a value of 0 to terminate the ray cast
     /// - return a value less than input->maxFraction to clip the ray
     /// - return a value of input->maxFraction to continue the ray cast without clipping
-    public delegate float b2TreeShapeCastCallbackFcn<T>(ref B2ShapeCastInput input, int proxyId, int userData, ref T context) where T : struct;
+    public delegate float b2TreeShapeCastCallbackFcn<T>(ref B2ShapeCastInput input, int proxyId, ulong userData, ref T context) where T : struct;
 
     // -----------------------------------------------------------------------------------------------------------------
     // Draw
@@ -156,29 +160,29 @@ namespace Box2D.NET
 
     /// Draw a closed polygon provided in CCW order.
     //void ( *DrawPolygon )( const B2Vec2* vertices, int vertexCount, b2HexColor color, object context );
-    public delegate void DrawPolygonDelegate(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context);
+    public delegate void DrawPolygonFcn(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context);
 
     /// Draw a solid closed polygon provided in CCW order.
-    public delegate void DrawSolidPolygonDelegate(ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context);
-    
+    public delegate void DrawSolidPolygonFcn(ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context);
+
     /// Draw a circle.
-    public delegate void DrawCircleDelegate(B2Vec2 center, float radius, B2HexColor color, object context);
+    public delegate void DrawCircleFcn(B2Vec2 center, float radius, B2HexColor color, object context);
 
     /// Draw a solid circle.
-    public delegate void DrawSolidCircleDelegate(ref B2Transform transform, float radius, B2HexColor color, object context);
-    
+    public delegate void DrawSolidCircleFcn(ref B2Transform transform, float radius, B2HexColor color, object context);
+
     /// Draw a solid capsule.
-    public delegate void DrawSolidCapsuleDelegate(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context);
-    
+    public delegate void DrawSolidCapsuleFcn(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context);
+
     /// Draw a line segment.
-    public delegate void DrawSegmentDelegate(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context);
-    
+    public delegate void DrawSegmentFcn(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context);
+
     /// Draw a transform. Choose your own length scale.
-    public delegate void DrawTransformDelegate(B2Transform transform, object context);
-    
+    public delegate void DrawTransformFcn(B2Transform transform, object context);
+
     /// Draw a point.
-    public delegate void DrawPointDelegate(B2Vec2 p, float size, B2HexColor color, object context);
-    
+    public delegate void DrawPointFcn(B2Vec2 p, float size, B2HexColor color, object context);
+
     /// Draw a string in world space
-    public delegate void DrawStringDelegate(B2Vec2 p, string s, B2HexColor color, object context);
+    public delegate void DrawStringFcn(B2Vec2 p, string s, B2HexColor color, object context);
 }

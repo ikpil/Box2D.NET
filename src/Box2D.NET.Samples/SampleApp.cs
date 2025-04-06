@@ -85,7 +85,7 @@ public class SampleApp
         _ctx.glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 
         // MSAA
-        _ctx.glfw.WindowHint(WindowHintInt.Samples, 4);
+        //_ctx.glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
@@ -219,9 +219,18 @@ public class SampleApp
             return;
         }
 
+        Span<float> temp1 = stackalloc float[2];
+        _ctx.gl.GetFloat( GLEnum.AliasedLineWidthRange, temp1 );
+
+        Span<float> temp2 = stackalloc float[2];
+        _ctx.gl.GetFloat( GLEnum.SmoothLineWidthRange, temp2 );
+
         var glVersion = _ctx.gl.GetStringS(StringName.Version);
         Logger.Information($"GL {glVersion}");
         Logger.Information($"OpenGL {_ctx.gl.GetStringS(GLEnum.Version)}, GLSL {_ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion)}");
+        Logger.Information($"OpenGL aliased line width range : [{temp1[0]}, {temp1[1]}]");
+        Logger.Information($"OpenGL smooth line width range : [{temp2[0]}, {temp2[1]}]");
+
 
         unsafe
         {
@@ -286,7 +295,7 @@ public class SampleApp
         {
             _ctx.glfw.GetFramebufferSize(_ctx.mainWindow, out bufferWidth, out bufferHeight);
 
-            //_ctx.draw.DrawBackground();
+            // _ctx.draw.DrawBackground();
 
             _ctx.glfw.GetCursorPos(_ctx.mainWindow, out cursorPosX, out cursorPosY);
         }
@@ -760,19 +769,21 @@ public class SampleApp
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox("Shapes", ref s_settings.drawShapes);
-                    ImGui.Checkbox("Joints", ref s_settings.drawJoints);
-                    ImGui.Checkbox("Joint Extras", ref s_settings.drawJointExtras);
-                    ImGui.Checkbox("AABBs", ref s_settings.drawAABBs);
-                    ImGui.Checkbox("Contact Points", ref s_settings.drawContactPoints);
-                    ImGui.Checkbox("Contact Normals", ref s_settings.drawContactNormals);
-                    ImGui.Checkbox("Contact Impulses", ref s_settings.drawContactImpulses);
-                    ImGui.Checkbox("Friction Impulses", ref s_settings.drawFrictionImpulses);
-                    ImGui.Checkbox("Center of Masses", ref s_settings.drawMass);
-                    ImGui.Checkbox("Body Names", ref s_settings.drawBodyNames);
-                    ImGui.Checkbox("Graph Colors", ref s_settings.drawGraphColors);
-                    ImGui.Checkbox("Counters", ref s_settings.drawCounters);
-                    ImGui.Checkbox("Profile", ref s_settings.drawProfile);
+                    ImGui.Checkbox( "Shapes", ref s_settings.drawShapes );
+                    ImGui.Checkbox( "Joints", ref s_settings.drawJoints );
+                    ImGui.Checkbox( "Joint Extras", ref s_settings.drawJointExtras );
+                    ImGui.Checkbox( "Bounds", ref s_settings.drawBounds );
+                    ImGui.Checkbox( "Contact Points", ref s_settings.drawContactPoints );
+                    ImGui.Checkbox( "Contact Normals", ref s_settings.drawContactNormals );
+                    ImGui.Checkbox( "Contact Impulses", ref s_settings.drawContactImpulses );
+                    ImGui.Checkbox( "Contact Features", ref s_settings.drawContactFeatures );
+                    ImGui.Checkbox( "Friction Impulses", ref s_settings.drawFrictionImpulses );
+                    ImGui.Checkbox( "Mass", ref s_settings.drawMass );
+                    ImGui.Checkbox( "Body Names", ref s_settings.drawBodyNames );
+                    ImGui.Checkbox( "Graph Colors", ref s_settings.drawGraphColors );
+                    ImGui.Checkbox( "Islands", ref s_settings.drawIslands );
+                    ImGui.Checkbox( "Counters", ref s_settings.drawCounters );
+                    ImGui.Checkbox( "Profile", ref s_settings.drawProfile );
 
                     Vector2 button_sz = new Vector2(-1, 0);
                     if (ImGui.Button("Pause (P)", button_sz))
@@ -871,7 +882,7 @@ public class SampleApp
 
             ImGui.End();
 
-            s_sample.UpdateUI();
+            s_sample.UpdateGui();
         }
     }
 }

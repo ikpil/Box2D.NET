@@ -139,7 +139,7 @@ public class Sample : IDisposable
         c += c;
     }
 
-    public virtual void UpdateUI()
+    public virtual void UpdateGui()
     {
         if (m_settings.drawProfile)
         {
@@ -463,29 +463,26 @@ public class Sample : IDisposable
         m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
         m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
         m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
-        m_context.draw.m_debugDraw.drawAABBs = settings.drawAABBs;
+        m_context.draw.m_debugDraw.drawBounds = settings.drawBounds;
         m_context.draw.m_debugDraw.drawMass = settings.drawMass;
         m_context.draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
         m_context.draw.m_debugDraw.drawContacts = settings.drawContactPoints;
         m_context.draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
         m_context.draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
         m_context.draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
+        m_context.draw.m_debugDraw.drawContactFeatures = settings.drawContactFeatures;
         m_context.draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
-        
+        m_context.draw.m_debugDraw.drawIslands = settings.drawIslands;
+
         b2World_Draw(m_worldId, m_context.draw.m_debugDraw);
         
         if (settings.drawCounters)
         {
             B2Counters s = b2World_GetCounters(m_worldId);
 
-            m_context.draw.DrawString(5, m_textLine, $"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
-            m_textLine += m_textIncrement;
-
-            m_context.draw.DrawString(5, m_textLine, $"islands/tasks = {s.islandCount}/{s.taskCount}");
-            m_textLine += m_textIncrement;
-
-            m_context.draw.DrawString(5, m_textLine, $"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
+            DrawTextLine($"islands/tasks = {s.islandCount}/{s.taskCount}");
+            DrawTextLine($"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
 
             int totalCount = 0;
             var buffer = new StringBuilder();
@@ -493,21 +490,16 @@ public class Sample : IDisposable
 
             // todo fix this
             buffer.Append("colors: ");
-            for (int i = 0; i < 12; ++i)
+            for (int i = 0; i < s.colorCounts.Length; ++i)
             {
                 buffer.Append($"{s.colorCounts[i]}/");
                 totalCount += s.colorCounts[i];
             }
 
             buffer.Append($"[{totalCount}]");
-            m_context.draw.DrawString(5, m_textLine, buffer.ToString());
-            m_textLine += m_textIncrement;
-
-            m_context.draw.DrawString(5, m_textLine, $"stack allocator size = {s.stackUsed / 1024} K");
-            m_textLine += m_textIncrement;
-
-            m_context.draw.DrawString(5, m_textLine, $"total allocation = {s.byteCount / 1024} K");
-            m_textLine += m_textIncrement;
+            DrawTextLine(buffer.ToString());
+            DrawTextLine($"stack allocator size = {s.stackUsed / 1024} K");
+            DrawTextLine($"total allocation = {s.byteCount / 1024} K");
         }
     }
 

@@ -20,7 +20,7 @@ namespace Box2D.NET
             def.gravity.Y = -10.0f;
             def.hitEventThreshold = 1.0f * b2_lengthUnitsPerMeter;
             def.restitutionThreshold = 1.0f * b2_lengthUnitsPerMeter;
-            def.contactPushMaxSpeed = 3.0f * b2_lengthUnitsPerMeter;
+            def.maxContactPushSpeed = 3.0f * b2_lengthUnitsPerMeter;
             def.contactHertz = 30.0f;
             def.contactDampingRatio = 10.0f;
             def.jointHertz = 60.0f;
@@ -70,10 +70,11 @@ namespace Box2D.NET
         public static B2ShapeDef b2DefaultShapeDef()
         {
             B2ShapeDef def = new B2ShapeDef();
-            def.friction = 0.6f;
+            def.material.friction = 0.6f;
             def.density = 1.0f;
             def.filter = b2DefaultFilter();
             def.updateBodyMass = true;
+            def.invokeContactCreation = true;
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
@@ -155,15 +156,15 @@ namespace Box2D.NET
             B2DebugDraw draw = new B2DebugDraw();
 
             // These allow the user to skip some implementations and not hit null exceptions.
-            draw.DrawPolygon = b2EmptyDrawPolygon;
-            draw.DrawSolidPolygon = b2EmptyDrawSolidPolygon;
-            draw.DrawCircle = b2EmptyDrawCircle;
-            draw.DrawSolidCircle = b2EmptyDrawSolidCircle;
-            draw.DrawSolidCapsule = b2EmptyDrawSolidCapsule;
-            draw.DrawSegment = b2EmptyDrawSegment;
-            draw.DrawTransform = b2EmptyDrawTransform;
-            draw.DrawPoint = b2EmptyDrawPoint;
-            draw.DrawString = b2EmptyDrawString;
+            draw.DrawPolygonFcn = b2EmptyDrawPolygon;
+            draw.DrawSolidPolygonFcn = b2EmptyDrawSolidPolygon;
+            draw.DrawCircleFcn = b2EmptyDrawCircle;
+            draw.DrawSolidCircleFcn = b2EmptyDrawSolidCircle;
+            draw.DrawSolidCapsuleFcn = b2EmptyDrawSolidCapsule;
+            draw.DrawSegmentFcn = b2EmptyDrawSegment;
+            draw.DrawTransformFcn = b2EmptyDrawTransform;
+            draw.DrawPointFcn = b2EmptyDrawPoint;
+            draw.DrawStringFcn = b2EmptyDrawString;
             return draw;
         }
     }

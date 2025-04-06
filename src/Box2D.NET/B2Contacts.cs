@@ -293,8 +293,8 @@ namespace Box2D.NET
             contactSim.manifold = new B2Manifold();
 
             // These also get updated in the narrow phase
-            contactSim.friction = world.frictionCallback(shapeA.friction, shapeA.material, shapeB.friction, shapeB.material);
-            contactSim.restitution = world.restitutionCallback(shapeA.restitution, shapeA.material, shapeB.restitution, shapeB.material);
+            contactSim.friction = world.frictionCallback(shapeA.friction, shapeA.userMaterialId, shapeB.friction, shapeB.userMaterialId);
+            contactSim.restitution = world.restitutionCallback(shapeA.restitution, shapeA.userMaterialId, shapeB.restitution, shapeB.userMaterialId);
 
             contactSim.tangentSpeed = 0.0f;
             contactSim.simFlags = 0;
@@ -305,14 +305,13 @@ namespace Box2D.NET
             }
         }
 
-// A contact is destroyed when:
-// - broad-phase proxies stop overlapping
-// - a body is destroyed
-// - a body is disabled
-// - a body changes type from dynamic to kinematic or static
-// - a shape is destroyed
-// - contact filtering is modified
-// - a shape becomes a sensor (check this!!!)
+        // A contact is destroyed when:
+        // - broad-phase proxies stop overlapping
+        // - a body is destroyed
+        // - a body is disabled
+        // - a body changes type from dynamic to kinematic or static
+        // - a shape is destroyed
+        // - contact filtering is modified
         public static void b2DestroyContact(B2World world, B2Contact contact, bool wakeBodies)
         {
             // Remove pair from set
@@ -458,8 +457,8 @@ namespace Box2D.NET
             contactSim.manifold = fcn(shapeA, transformA, shapeB, transformB, ref contactSim.cache);
 
             // Keep these updated in case the values on the shapes are modified
-            contactSim.friction = world.frictionCallback(shapeA.friction, shapeA.material, shapeB.friction, shapeB.material);
-            contactSim.restitution = world.restitutionCallback(shapeA.restitution, shapeA.material, shapeB.restitution, shapeB.material);
+            contactSim.friction = world.frictionCallback(shapeA.friction, shapeA.userMaterialId, shapeB.friction, shapeB.userMaterialId);
+            contactSim.restitution = world.restitutionCallback(shapeA.restitution, shapeA.userMaterialId, shapeB.restitution, shapeB.userMaterialId);
 
             // todo branch improves perf?
             if (shapeA.rollingResistance > 0.0f || shapeB.rollingResistance > 0.0f)
@@ -537,7 +536,7 @@ namespace Box2D.NET
 
                 mp2.normalImpulse = 0.0f;
                 mp2.tangentImpulse = 0.0f;
-                mp2.maxNormalImpulse = 0.0f;
+                mp2.totalNormalImpulse = 0.0f;
                 mp2.normalVelocity = 0.0f;
                 mp2.persisted = false;
 

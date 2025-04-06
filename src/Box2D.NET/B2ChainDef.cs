@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// Used to create a chain of line segments. This is designed to eliminate ghost collisions with some limitations.
     /// - chains are one-sided
     /// - chains have no mass and should be used on static bodies
-    /// - chains have a counter-clockwise winding order
+    /// - chains have a counter-clockwise winding order (normal points right of segment direction)
     /// - chains are either a loop or open
     /// - a chain must have at least 4 points
     /// - the distance between any two points must be greater than B2_LINEAR_SLOP
@@ -18,7 +18,7 @@ namespace Box2D.NET
     /// https://en.wikipedia.org/wiki/Polygonal_chain
     /// Must be initialized using b2DefaultChainDef().
     /// @warning Do not use chain shapes unless you understand the limitations. This is an advanced feature.
-    /// @ingroup shape
+    /// @ingroup shape    
     public struct B2ChainDef
     {
         /// Use this to store application specific shape data.
@@ -42,6 +42,9 @@ namespace Box2D.NET
 
         /// Indicates a closed chain formed by connecting the first and last points
         public bool isLoop;
+        
+        /// Enable sensors to detect this chain. False by default.
+        public bool enableSensorEvents;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

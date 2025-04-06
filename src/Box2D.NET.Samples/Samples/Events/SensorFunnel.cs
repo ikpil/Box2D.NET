@@ -22,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 public class SensorFunnel : Sample
 {
     private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
-    
+
     private enum ea
     {
         e_donut = 1,
@@ -131,8 +131,8 @@ public class SensorFunnel : Sample
 
                 B2Polygon box = b2MakeBox(6.0f, 0.5f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                shapeDef.friction = 0.1f;
-                shapeDef.restitution = 1.0f;
+                shapeDef.material.friction = 0.1f;
+                shapeDef.material.restitution = 1.0f;
                 shapeDef.density = 1.0f;
 
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
@@ -156,6 +156,8 @@ public class SensorFunnel : Sample
                 B2Polygon box = b2MakeOffsetBox(4.0f, 1.0f, new B2Vec2(0.0f, -30.5f), b2Rot_identity);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.isSensor = true;
+                shapeDef.enableSensorEvents = true;
+
                 b2CreatePolygonShape(groundId, ref shapeDef, ref box);
             }
         }
@@ -201,7 +203,7 @@ public class SensorFunnel : Sample
         {
             ref Donut donut = ref m_donuts[index];
             // donut->Spawn(m_worldId, center, index + 1, donut);
-            donut.Spawn(m_worldId, center, 1.0f, 0, BodyUserData.Create(index));
+            donut.Create(m_worldId, center, 1.0f, 0, true, BodyUserData.Create(index));
         }
         else
         {
@@ -212,6 +214,7 @@ public class SensorFunnel : Sample
             float jointDamping = 0.5f;
             bool colorize = true;
             CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, BodyUserData.Create(index), colorize);
+            Human_EnableSensorEvents(ref human, true);
         }
 
         m_isSpawned[index] = true;
@@ -223,7 +226,7 @@ public class SensorFunnel : Sample
         if (m_type == (int)ea.e_donut)
         {
             ref Donut donut = ref m_donuts[index];
-            donut.Despawn();
+            donut.Destroy();
         }
         else
         {
@@ -242,7 +245,7 @@ public class SensorFunnel : Sample
             {
                 if (m_type == (int)ea.e_donut)
                 {
-                    m_donuts[i].Despawn();
+                    m_donuts[i].Destroy();
                 }
                 else
                 {
@@ -254,10 +257,10 @@ public class SensorFunnel : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
-        
+        base.UpdateGui();
+
         float height = 90.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
@@ -289,7 +292,7 @@ public class SensorFunnel : Sample
         base.Step(settings);
 
         // Discover rings that touch the bottom sensor
-        bool[] deferredDestructions = new bool[(int)ea.e_count];
+        bool[] deferredDestruction = new bool[(int)ea.e_count];
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
@@ -306,7 +309,7 @@ public class SensorFunnel : Sample
                     Debug.Assert(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
-                    deferredDestructions[index] = true;
+                    deferredDestruction[index] = true;
                 }
             }
             else
@@ -318,7 +321,7 @@ public class SensorFunnel : Sample
                     Debug.Assert(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
-                    deferredDestructions[index] = true;
+                    deferredDestruction[index] = true;
                 }
             }
         }
@@ -328,7 +331,7 @@ public class SensorFunnel : Sample
         // Safely destroy rings that hit the bottom sensor
         for (int i = 0; i < (int)ea.e_count; ++i)
         {
-            if (deferredDestructions[i])
+            if (deferredDestruction[i])
             {
                 DestroyElement(i);
             }

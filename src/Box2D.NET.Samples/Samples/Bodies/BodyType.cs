@@ -92,7 +92,6 @@ public class BodyType : Sample
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
             b2CreatePolygonShape(m_platformId, ref shapeDef, ref box);
 
@@ -144,7 +143,6 @@ public class BodyType : Sample
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
@@ -161,7 +159,6 @@ public class BodyType : Sample
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
             b2CreatePolygonShape(m_secondPayloadId, ref shapeDef, ref box);
@@ -178,7 +175,6 @@ public class BodyType : Sample
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.25f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
             b2CreateCapsuleShape(m_touchingBodyId, ref shapeDef, ref capsule);
@@ -196,16 +192,15 @@ public class BodyType : Sample
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.5f), 0.25f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.6f;
             shapeDef.density = 2.0f;
 
             b2CreateCircleShape(m_floatingBodyId, ref shapeDef, ref circle);
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
 
         float height = 140.0f;

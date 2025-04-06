@@ -75,7 +75,7 @@ public class GLPoints
         // save bandwidth by expanding color to floats in the shader
         _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PointData>.Size, IntPtr.Zero + 12);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -137,7 +137,7 @@ public class GLPoints
             _gl.BufferSubData<PointData>(GLEnum.ArrayBuffer, 0, points.Slice(@base, batchCount));
             _gl.DrawArrays(GLEnum.Points, 0, (uint)batchCount);
 
-            _gl.CheckErrorGL();
+            _gl.CheckOpenGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

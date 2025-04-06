@@ -45,7 +45,7 @@ public class SkinnyBox : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.9f;
+            shapeDef.material.friction = 0.9f;
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
             B2Polygon box = b2MakeOffsetBox(0.1f, 1.0f, new B2Vec2(0.0f, 1.0f), b2Rot_identity);
@@ -85,7 +85,7 @@ public class SkinnyBox : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = 0.9f;
+        shapeDef.material.friction = 0.9f;
 
         m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
@@ -111,9 +111,9 @@ public class SkinnyBox : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 110.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

@@ -17,10 +17,10 @@ namespace Box2D.NET.Samples.Samples.Joints;
 public class BallAndChain : Sample
 {
     private static readonly int SampleBallAndChainIndex = SampleFactory.Shared.RegisterSample("Joints", "Ball & Chain", Create);
-    
-    public const int e_count = 30;
 
-    private B2JointId[] m_jointIds = new B2JointId[e_count + 1];
+    public const int m_count = 30;
+
+    private B2JointId[] m_jointIds = new B2JointId[m_count + 1];
     private float m_frictionTorque;
 
 
@@ -57,15 +57,15 @@ public class BallAndChain : Sample
             int jointIndex = 0;
 
             B2BodyId prevBodyId = groundId;
-            for (int i = 0; i < e_count; ++i)
+            for (int i = 0; i < m_count; ++i)
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, e_count * hx);
+                bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, m_count * hx);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
-                B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, e_count * hx);
+                B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, m_count * hx);
                 jointDef.bodyIdA = prevBodyId;
                 jointDef.bodyIdB = bodyId;
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -82,12 +82,12 @@ public class BallAndChain : Sample
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2((1.0f + 2.0f * e_count) * hx + circle.radius - hx, e_count * hx);
+                bodyDef.position = new B2Vec2((1.0f + 2.0f * m_count) * hx + circle.radius - hx, m_count * hx);
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
                 b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
-                B2Vec2 pivot = new B2Vec2((2.0f * e_count) * hx, e_count * hx);
+                B2Vec2 pivot = new B2Vec2((2.0f * m_count) * hx, m_count * hx);
                 jointDef.bodyIdA = prevBodyId;
                 jointDef.bodyIdB = bodyId;
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
@@ -95,15 +95,15 @@ public class BallAndChain : Sample
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
-                Debug.Assert(jointIndex == e_count + 1);
+                Debug.Assert(jointIndex == m_count + 1);
             }
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
-        
+        base.UpdateGui();
+
         float height = 60.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -113,7 +113,7 @@ public class BallAndChain : Sample
         bool updateFriction = ImGui.SliderFloat("Joint Friction", ref m_frictionTorque, 0.0f, 1000.0f, "%2.f");
         if (updateFriction)
         {
-            for (int i = 0; i <= e_count; ++i)
+            for (int i = 0; i <= m_count; ++i)
             {
                 b2RevoluteJoint_SetMaxMotorTorque(m_jointIds[i], m_frictionTorque);
             }

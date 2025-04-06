@@ -78,10 +78,6 @@ namespace Box2D.NET
 
         public static B2Shape b2CreateShapeInternal<T>(B2World world, B2Body body, B2Transform transform, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType) where T : struct
         {
-            Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.friction) && def.friction >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.restitution) && def.restitution >= 0.0f);
-
             int shapeId = b2AllocId(world.shapeIdPool);
 
             if (shapeId == world.shapes.count)
@@ -94,7 +90,7 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-            
+
             switch (geometry)
             {
                 case B2Capsule capsule:
@@ -126,15 +122,16 @@ namespace Box2D.NET
             shape.bodyId = body.id;
             shape.type = shapeType;
             shape.density = def.density;
-            shape.friction = def.friction;
-            shape.restitution = def.restitution;
-            shape.rollingResistance = def.rollingResistance;
-            shape.tangentSpeed = def.tangentSpeed;
-            shape.material = def.material;
+            shape.friction = def.material.friction;
+            shape.restitution = def.material.restitution;
+            shape.rollingResistance = def.material.rollingResistance;
+            shape.tangentSpeed = def.material.tangentSpeed;
+            shape.userMaterialId = def.material.userMaterialId;
             shape.filter = def.filter;
             shape.userData = def.userData;
-            shape.customColor = def.customColor;
+            shape.customColor = def.material.customColor;
             shape.enlargedAABB = false;
+            shape.enableSensorEvents = def.enableSensorEvents;
             shape.enableContactEvents = def.enableContactEvents;
             shape.enableHitEvents = def.enableHitEvents;
             shape.enablePreSolveEvents = def.enablePreSolveEvents;
@@ -187,8 +184,10 @@ namespace Box2D.NET
         {
             B2_CHECK_DEF(ref def);
             Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.friction) && def.friction >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.restitution) && def.restitution >= 0.0f);
+            Debug.Assert(b2IsValidFloat(def.material.friction) && def.material.friction >= 0.0f);
+            Debug.Assert(b2IsValidFloat(def.material.restitution) && def.material.restitution >= 0.0f);
+            Debug.Assert(b2IsValidFloat(def.material.rollingResistance) && def.material.rollingResistance >= 0.0f);
+            Debug.Assert(b2IsValidFloat(def.material.tangentSpeed));
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -402,6 +401,7 @@ namespace Box2D.NET
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.userData = def.userData;
             shapeDef.filter = def.filter;
+            shapeDef.enableSensorEvents = def.enableSensorEvents;
             shapeDef.enableContactEvents = false;
             shapeDef.enableHitEvents = false;
 
@@ -426,13 +426,7 @@ namespace Box2D.NET
                     prevIndex = i;
 
                     int materialIndex = materialCount == 1 ? 0 : i;
-                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
-                    shapeDef.friction = material.friction;
-                    shapeDef.restitution = material.restitution;
-                    shapeDef.rollingResistance = material.rollingResistance;
-                    shapeDef.tangentSpeed = material.tangentSpeed;
-                    shapeDef.customColor = material.customColor;
-                    shapeDef.material = material.material;
+                    shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, ref chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[i] = shape.id;
@@ -446,13 +440,7 @@ namespace Box2D.NET
                     chainSegment.chainId = chainId;
 
                     int materialIndex = materialCount == 1 ? 0 : n - 2;
-                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
-                    shapeDef.friction = material.friction;
-                    shapeDef.restitution = material.restitution;
-                    shapeDef.rollingResistance = material.rollingResistance;
-                    shapeDef.tangentSpeed = material.tangentSpeed;
-                    shapeDef.customColor = material.customColor;
-                    shapeDef.material = material.material;
+                    shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, ref chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[n - 2] = shape.id;
@@ -466,13 +454,7 @@ namespace Box2D.NET
                     chainSegment.chainId = chainId;
 
                     int materialIndex = materialCount == 1 ? 0 : n - 1;
-                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
-                    shapeDef.friction = material.friction;
-                    shapeDef.restitution = material.restitution;
-                    shapeDef.rollingResistance = material.rollingResistance;
-                    shapeDef.tangentSpeed = material.tangentSpeed;
-                    shapeDef.customColor = material.customColor;
-                    shapeDef.material = material.material;
+                    shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, ref chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[n - 1] = shape.id;
@@ -495,13 +477,7 @@ namespace Box2D.NET
 
                     // Material is associated with leading point of solid segment
                     int materialIndex = materialCount == 1 ? 0 : i + 1;
-                    ref B2SurfaceMaterial material = ref def.materials[materialIndex];
-                    shapeDef.friction = material.friction;
-                    shapeDef.restitution = material.restitution;
-                    shapeDef.rollingResistance = material.rollingResistance;
-                    shapeDef.tangentSpeed = material.tangentSpeed;
-                    shapeDef.customColor = material.customColor;
-                    shapeDef.material = material.material;
+                    shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, ref shapeDef, ref chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[i] = shape.id;
@@ -864,9 +840,9 @@ namespace Box2D.NET
         {
             B2ShapeCastInput localInput = input;
 
-            for (int i = 0; i < localInput.count; ++i)
+            for (int i = 0; i < localInput.proxy.count; ++i)
             {
-                localInput.points[i] = b2InvTransformPoint(transform, input.points[i]);
+                localInput.proxy.points[i] = b2InvTransformPoint(transform, input.proxy.points[i]);
             }
 
             localInput.translation = b2InvRotateVector(transform.q, input.translation);
@@ -897,6 +873,46 @@ namespace Box2D.NET
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
         }
+
+        public static B2PlaneResult b2CollideMover(B2Shape shape, B2Transform transform, ref B2Capsule mover)
+        {
+            B2Capsule localMover = new B2Capsule();
+            localMover.center1 = b2InvTransformPoint(transform, mover.center1);
+            localMover.center2 = b2InvTransformPoint(transform, mover.center2);
+            localMover.radius = mover.radius;
+
+            B2PlaneResult result = new B2PlaneResult();
+            switch (shape.type)
+            {
+                case B2ShapeType.b2_capsuleShape:
+                    result = b2CollideMoverAndCapsule(ref shape.us.capsule, ref localMover);
+                    break;
+                case B2ShapeType.b2_circleShape:
+                    result = b2CollideMoverAndCircle(ref shape.us.circle, ref localMover);
+                    break;
+                case B2ShapeType.b2_polygonShape:
+                    result = b2CollideMoverAndPolygon(ref shape.us.polygon, ref localMover);
+                    break;
+                case B2ShapeType.b2_segmentShape:
+                    result = b2CollideMoverAndSegment(ref shape.us.segment, ref localMover);
+                    break;
+                case B2ShapeType.b2_chainSegmentShape:
+                    result = b2CollideMoverAndSegment(ref shape.us.chainSegment.segment, ref localMover);
+                    break;
+                default:
+                    return result;
+            }
+
+            if (result.hit == false)
+            {
+                return result;
+            }
+
+            result.plane.normal = b2RotateVector(transform.q, result.plane.normal);
+            result.point = b2TransformPoint(ref transform, result.point);
+            return result;
+        }
+
 
         public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, B2Transform transform, bool forcePairCreation)
         {
@@ -1139,14 +1155,15 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.material = material;
+            shape.userMaterialId = material;
         }
 
+        /// Get the shape material identifier
         public static int b2Shape_GetMaterial(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            return shape.material;
+            return shape.userMaterialId;
         }
 
         public static B2Filter b2Shape_GetFilter(B2ShapeId shapeId)
@@ -1206,6 +1223,10 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
+        /// Set the current filter. This is almost as expensive as recreating the shape. This may cause
+        /// contacts to be immediately destroyed. However contacts are not created until the next world step.
+        /// Sensor overlap state is also not updated until the next world step.
+        /// @see b2ShapeDef::filter
         public static void b2Shape_SetFilter(B2ShapeId shapeId, B2Filter filter)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
@@ -1232,6 +1253,28 @@ namespace Box2D.NET
 
             // note: this does not immediately update sensor overlaps. Instead sensor
             // overlaps are updated the next time step
+        }
+
+        /// Enable sensor events for this shape.
+        /// @see b2ShapeDef::enableSensorEvents
+        public static void b2Shape_EnableSensorEvents(B2ShapeId shapeId, bool flag)
+        {
+            B2World world = b2GetWorldLocked( shapeId.world0 );
+            if ( world == null)
+            {
+                return;
+            }
+
+            B2Shape shape = b2GetShape( world, shapeId );
+            shape.enableSensorEvents = flag;
+        }
+
+        /// Returns true if sensor events are enabled.
+        public static bool b2Shape_AreSensorEventsEnabled(B2ShapeId shapeId)
+        {
+            B2World world = b2GetWorld( shapeId.world0 );
+            B2Shape shape = b2GetShape( world, shapeId );
+            return shape.enableSensorEvents;
         }
 
         public static void b2Shape_EnableContactEvents(B2ShapeId shapeId, bool flag)
@@ -1510,7 +1553,7 @@ namespace Box2D.NET
             int materialCount = chainShape.materialCount;
             for (int i = 0; i < materialCount; ++i)
             {
-                chainShape.materials[i].material = material;
+                chainShape.materials[i].userMaterialId = material;
             }
 
             int count = chainShape.count;
@@ -1519,7 +1562,7 @@ namespace Box2D.NET
             {
                 int shapeId = chainShape.shapeIndices[i];
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                shape.material = material;
+                shape.userMaterialId = material;
             }
         }
 
@@ -1527,7 +1570,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(chainId.world0);
             B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            return chainShape.materials[0].material;
+            return chainShape.materials[0].userMaterialId;
         }
 
         public static int b2Shape_GetContactCapacity(B2ShapeId shapeId)
@@ -1685,7 +1728,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
+            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
             return output.pointA;
         }

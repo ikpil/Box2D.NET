@@ -51,8 +51,11 @@ public class SensorTypes : Sample
 
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
+            
+            // Enable sensor events, but filter them out as a test
             shapeDef.filter.categoryBits = GROUND;
-            shapeDef.filter.maskBits = SENSOR | DEFAULT;
+            shapeDef.filter.maskBits = DEFAULT;
+            shapeDef.enableSensorEvents = true;
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-6.0f, 0.0f), new B2Vec2(6.0f, 0.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
@@ -74,6 +77,7 @@ public class SensorTypes : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
+            shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
             m_staticSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
@@ -89,6 +93,7 @@ public class SensorTypes : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
+            shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
             m_kinematicSensorId = b2CreatePolygonShape(m_kinematicBodyId, ref shapeDef, ref box);
         }
@@ -103,12 +108,14 @@ public class SensorTypes : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
             shapeDef.isSensor = true;
+            shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
             m_dynamicSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             // Add some real collision so the dynamic body is valid
             shapeDef.filter.categoryBits = DEFAULT;
             shapeDef.isSensor = false;
+            shapeDef.enableSensorEvents = false;
             box = b2MakeSquare(0.8f);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
@@ -124,7 +131,8 @@ public class SensorTypes : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = DEFAULT;
             shapeDef.filter.maskBits = GROUND | DEFAULT | SENSOR;
-
+            shapeDef.enableSensorEvents = true;
+            
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }

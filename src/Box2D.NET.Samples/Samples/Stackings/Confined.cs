@@ -12,8 +12,8 @@ public class Confined : Sample
 {
     private static readonly int SampleConfined = SampleFactory.Shared.RegisterSample("Stacking", "Confined", Create);
     
-    public const int e_gridCount = 25;
-    public const int e_maxCount = e_gridCount * e_gridCount;
+    public const int m_gridCount = 25;
+    public const int m_maxCount = m_gridCount * m_gridCount;
 
     int m_row;
     int m_column;
@@ -62,13 +62,13 @@ public class Confined : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
 
-            while (m_count < e_maxCount)
+            while (m_count < m_maxCount)
             {
                 m_row = 0;
-                for (int i = 0; i < e_gridCount; ++i)
+                for (int i = 0; i < m_gridCount; ++i)
                 {
-                    float x = -8.75f + m_column * 18.0f / e_gridCount;
-                    float y = 1.5f + m_row * 18.0f / e_gridCount;
+                    float x = -8.75f + m_column * 18.0f / m_gridCount;
+                    float y = 1.5f + m_row * 18.0f / m_gridCount;
 
                     bodyDef.position = new B2Vec2(x, y);
                     B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);

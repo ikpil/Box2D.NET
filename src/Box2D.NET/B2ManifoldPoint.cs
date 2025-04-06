@@ -13,7 +13,7 @@ namespace Box2D.NET
     /// A manifold point is a contact point belonging to a contact manifold.
     /// It holds details related to the geometry and dynamics of the contact points.
     /// Box2D uses speculative collision so some contact points may be separated.
-    /// You may use the maxNormalImpulse to determine if there was an interaction during
+    /// You may use the totalNormalImpulse to determine if there was an interaction during
     /// the time step.
     public struct B2ManifoldPoint
     {
@@ -38,9 +38,9 @@ namespace Box2D.NET
         /// The friction impulse
         public float tangentImpulse;
 
-        /// The maximum normal impulse applied during sub-stepping. This is important
+        /// The total normal impulse applied across sub-stepping and restitution. This is important
         /// to identify speculative contact points that had an interaction in the time step.
-        public float maxNormalImpulse;
+        public float totalNormalImpulse;
 
         /// Relative normal velocity pre-solve. Used for hit events. If the normal impulse is
         /// zero then there was no hit. Negative means shapes are approaching.

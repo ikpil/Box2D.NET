@@ -16,7 +16,6 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Timers;
 
-
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkCast : Sample
@@ -133,15 +132,15 @@ public class BenchmarkCast : Sample
                     shapeDef.filter.categoryBits = (ulong)(1 << category);
                     if (category == 0)
                     {
-                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DBlue;
+                        shapeDef.material.customColor = (uint)B2HexColor.b2_colorBox2DBlue;
                     }
                     else if (category == 1)
                     {
-                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DYellow;
+                        shapeDef.material.customColor = (uint)B2HexColor.b2_colorBox2DYellow;
                     }
                     else
                     {
-                        shapeDef.customColor = (uint)B2HexColor.b2_colorBox2DGreen;
+                        shapeDef.material.customColor = (uint)B2HexColor.b2_colorBox2DGreen;
                     }
 
                     b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
@@ -239,16 +238,15 @@ public class BenchmarkCast : Sample
         {
             ulong ticks = b2GetTicks();
 
-            B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), m_radius);
             CastResult drawResult = new CastResult();
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                B2Transform origin = new B2Transform(m_origins[i], new B2Rot(1.0f, 0.0f));
+                B2Circle circle = new B2Circle(m_origins[i], m_radius);
                 B2Vec2 translation = m_translations[i];
 
                 CastResult result = new CastResult();
-                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, ref circle, origin, translation, filter, CastCallback, result);
+                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, ref circle, translation, filter, CastCallback, result);
 
                 if (i == m_drawIndex)
                 {
@@ -320,9 +318,9 @@ public class BenchmarkCast : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 240.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Extensions;
 using Box2D.NET.Samples.Primitives;
@@ -51,7 +52,7 @@ public class BodyMove : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.1f;
+            shapeDef.material.friction = 0.1f;
 
             B2Polygon box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(-10.0f, -0.1f), b2MakeRot(-0.15f * B2_PI));
             b2CreatePolygonShape(groundId, ref shapeDef, ref box);
@@ -59,7 +60,7 @@ public class BodyMove : Sample
             box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(10.0f, -0.1f), b2MakeRot(0.15f * B2_PI));
             b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
-            shapeDef.restitution = 0.8f;
+            shapeDef.material.restitution = 0.8f;
 
             box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(19.9f, 10.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, ref shapeDef, ref box);
@@ -93,6 +94,7 @@ public class BodyMove : Sample
         for (int i = 0; i < 10 && m_count < e_count; ++i)
         {
             bodyDef.position = new B2Vec2(x, y);
+            bodyDef.isBullet = (m_count % 12 == 0);
             bodyDef.userData = BodyUserData.Create(m_count);
             m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
             m_sleeping[m_count] = false;
@@ -139,6 +141,12 @@ public class BodyMove : Sample
             // draw the transform of every body that moved (not sleeping)
             ref B2BodyMoveEvent @event = ref events.moveEvents[i];
             m_context.draw.DrawTransform(@event.transform);
+            
+            B2Transform transform = b2Body_GetTransform( @event.bodyId );
+            Debug.Assert( transform.p.X == @event.transform.p.X );
+            Debug.Assert( transform.p.Y == @event.transform.p.Y );
+            Debug.Assert( transform.q.c == @event.transform.q.c );
+            Debug.Assert( transform.q.s == @event.transform.q.s );
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
@@ -160,13 +168,12 @@ public class BodyMove : Sample
                 }
             }
         }
-
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
-        
+        base.UpdateGui();
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -191,11 +198,10 @@ public class BodyMove : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         m_context.draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
         m_textLine += m_textIncrement;
-
     }
 }

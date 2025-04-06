@@ -175,8 +175,8 @@ public class Driving : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.25f;
-            shapeDef.restitution = 0.25f;
+            shapeDef.material.friction = 0.25f;
+            shapeDef.material.restitution = 0.25f;
             shapeDef.density = 0.25f;
 
             bodyDef.position = new B2Vec2(230.0f, 0.5f);
@@ -211,9 +211,9 @@ public class Driving : Sample
         m_car.Spawn(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f, m_hertz, m_dampingRatio, m_torque, null);
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

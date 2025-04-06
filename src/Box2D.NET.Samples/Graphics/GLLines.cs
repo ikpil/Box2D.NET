@@ -74,7 +74,7 @@ public class GLLines
         // save bandwidth by expanding color to floats in the shader
         _gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -115,6 +115,11 @@ public class GLLines
 
         Debug.Assert(count % 2 == 0);
 
+        _gl.Enable(GLEnum.LineSmooth);
+        _gl.Enable(GLEnum.Blend);
+        _gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
+        _gl.LineWidth(1.0f);
+
         _gl.UseProgram(m_programId);
 
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
@@ -137,7 +142,7 @@ public class GLLines
 
             _gl.DrawArrays(GLEnum.Lines, 0, (uint)batchCount);
 
-            _gl.CheckErrorGL();
+            _gl.CheckOpenGL();
 
             count -= e_batchSize;
             @base += e_batchSize;
@@ -146,6 +151,8 @@ public class GLLines
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
         _gl.BindVertexArray(0);
         _gl.UseProgram(0);
+
+        _gl.Disable(GLEnum.Blend);
 
         m_points.Clear();
     }

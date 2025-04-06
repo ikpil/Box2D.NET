@@ -39,6 +39,7 @@ namespace Box2D.NET
         private static B2World[] b2AllocWorlds(int maxWorld)
         {
             Debug.Assert(B2_MAX_WORLDS > 0, "must be 1 or more");
+            Debug.Assert(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
             var worlds = new B2World[maxWorld];
             for (int i = 0; i < maxWorld; ++i)
             {
@@ -139,7 +140,7 @@ namespace Box2D.NET
             world.generation = generation;
             world.inUse = true;
 
-            world.stackAllocator = b2CreateArenaAllocator(2048);
+            world.arena = b2CreateArenaAllocator(2048);
             b2CreateBroadPhase(ref world.broadPhase);
             b2CreateGraph(ref world.constraintGraph, 16);
 
@@ -205,7 +206,7 @@ namespace Box2D.NET
             world.hitEventThreshold = def.hitEventThreshold;
             world.restitutionThreshold = def.restitutionThreshold;
             world.maxLinearSpeed = def.maximumLinearSpeed;
-            world.contactMaxPushSpeed = def.contactPushMaxSpeed;
+            world.maxContactPushSpeed = def.maxContactPushSpeed;
             world.contactHertz = def.contactHertz;
             world.contactDampingRatio = def.contactDampingRatio;
             world.jointHertz = def.jointHertz;
@@ -273,6 +274,7 @@ namespace Box2D.NET
             world.debugBodySet = b2CreateBitSet(256);
             world.debugJointSet = b2CreateBitSet(256);
             world.debugContactSet = b2CreateBitSet(256);
+            world.debugIslandSet = b2CreateBitSet(256);
 
             // add one to worldId so that 0 represents a null b2WorldId
             return new B2WorldId((ushort)(worldId + 1), world.generation);
@@ -285,6 +287,7 @@ namespace Box2D.NET
             b2DestroyBitSet(ref world.debugBodySet);
             b2DestroyBitSet(ref world.debugJointSet);
             b2DestroyBitSet(ref world.debugContactSet);
+            b2DestroyBitSet(ref world.debugIslandSet);
 
             for (int i = 0; i < world.workerCount; ++i)
             {
@@ -362,7 +365,7 @@ namespace Box2D.NET
             b2DestroyIdPool(ref world.islandIdPool);
             b2DestroyIdPool(ref world.solverSetIdPool);
 
-            b2DestroyArenaAllocator(world.stackAllocator);
+            b2DestroyArenaAllocator(world.arena);
 
             // Wipe world but preserve generation
             ushort generation = world.generation;
@@ -385,9 +388,9 @@ namespace Box2D.NET
 
             Debug.Assert(startIndex < endIndex);
 
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int contactIndex = startIndex; contactIndex < endIndex; ++contactIndex)
             {
-                B2ContactSim contactSim = contactSims[i];
+                B2ContactSim contactSim = contactSims[contactIndex];
 
                 int contactId = contactSim.contactId;
 
@@ -442,6 +445,19 @@ namespace Box2D.NET
                         contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStoppedTouching;
                         b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
+
+                    // To make this work, the time of impact code needs to adjust the target
+                    // distance based on the number of TOI events for a body.
+                    // if (touching && bodySimB->isFast)
+                    //{
+                    //	b2Manifold* manifold = &contactSim->manifold;
+                    //	int pointCount = manifold->pointCount;
+                    //	for (int i = 0; i < pointCount; ++i)
+                    //	{
+                    //		// trick the solver into pushing the fast shapes apart
+                    //		manifold->points[i].separation -= 0.25f * B2_SPECULATIVE_DISTANCE;
+                    //	}
+                    //}
                 }
             }
 
@@ -489,7 +505,7 @@ namespace Box2D.NET
             }
         }
 
-// Narrow-phase collision
+        // Narrow-phase collision
         public static void b2Collide(B2StepContext context)
         {
             B2World world = context.world;
@@ -522,8 +538,7 @@ namespace Box2D.NET
                 return;
             }
 
-            ArraySegment<B2ContactSim> contactSims =
-                b2AllocateArenaItem<B2ContactSim>(world.stackAllocator, contactCount, "contacts");
+            ArraySegment<B2ContactSim> contactSims = b2AllocateArenaItem<B2ContactSim>(world.arena, contactCount, "contacts");
 
             int contactIndex = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
@@ -567,7 +582,7 @@ namespace Box2D.NET
                 world.finishTaskFcn(userCollideTask, world.userTaskContext);
             }
 
-            b2FreeArenaItem(world.stackAllocator, contactSims);
+            b2FreeArenaItem(world.arena, contactSims);
             context.contacts = null;
             contactSims = null;
 
@@ -702,6 +717,9 @@ namespace Box2D.NET
 
         public static void b2World_Step(B2WorldId worldId, float timeStep, int subStepCount)
         {
+            Debug.Assert(b2IsValidFloat(timeStep));
+            Debug.Assert(0 < subStepCount);
+
             B2World world = b2GetWorldFromId(worldId);
             Debug.Assert(world.locked == false);
             if (world.locked)
@@ -801,10 +819,10 @@ namespace Box2D.NET
 
             world.profile.step = b2GetMilliseconds(stepTicks);
 
-            Debug.Assert(b2GetArenaAllocation(world.stackAllocator) == 0);
+            Debug.Assert(b2GetArenaAllocation(world.arena) == 0);
 
             // Ensure stack is large enough
-            b2GrowArena(world.stackAllocator);
+            b2GrowArena(world.arena);
 
             // Make sure all tasks that were started were also finished
             Debug.Assert(world.activeTaskCount == 0);
@@ -827,7 +845,7 @@ namespace Box2D.NET
                     ref readonly B2Capsule capsule = ref shape.us.capsule;
                     B2Vec2 p1 = b2TransformPoint(ref xf, capsule.center1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, capsule.center2);
-                    draw.DrawSolidCapsule(p1, p2, capsule.radius, color, draw.context);
+                    draw.DrawSolidCapsuleFcn(p1, p2, capsule.radius, color, draw.context);
                 }
                     break;
 
@@ -835,14 +853,14 @@ namespace Box2D.NET
                 {
                     ref readonly B2Circle circle = ref shape.us.circle;
                     xf.p = b2TransformPoint(ref xf, circle.center);
-                    draw.DrawSolidCircle(ref xf, circle.radius, color, draw.context);
+                    draw.DrawSolidCircleFcn(ref xf, circle.radius, color, draw.context);
                 }
                     break;
 
                 case B2ShapeType.b2_polygonShape:
                 {
                     ref readonly B2Polygon poly = ref shape.us.polygon;
-                    draw.DrawSolidPolygon(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
+                    draw.DrawSolidPolygonFcn(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;
 
@@ -851,7 +869,7 @@ namespace Box2D.NET
                     ref readonly B2Segment segment = ref shape.us.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
-                    draw.DrawSegment(p1, p2, color, draw.context);
+                    draw.DrawSegmentFcn(p1, p2, color, draw.context);
                 }
                     break;
 
@@ -860,9 +878,9 @@ namespace Box2D.NET
                     ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
-                    draw.DrawSegment(p1, p2, color, draw.context);
-                    draw.DrawPoint(p2, 4.0f, color, draw.context);
-                    draw.DrawSegment(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
+                    draw.DrawSegmentFcn(p1, p2, color, draw.context);
+                    draw.DrawPointFcn(p2, 4.0f, color, draw.context);
+                    draw.DrawSegmentFcn(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
                 }
                     break;
 
@@ -872,9 +890,11 @@ namespace Box2D.NET
         }
 
 
-        public static bool DrawQueryCallback(int proxyId, int shapeId, ref B2DrawContext context)
+        public static bool DrawQueryCallback(int proxyId, ulong userData, ref B2DrawContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2DrawContext drawContext = ref context;
             B2World world = drawContext.world;
@@ -941,7 +961,7 @@ namespace Box2D.NET
                 b2DrawShape(draw, shape, bodySim.transform, color);
             }
 
-            if (draw.drawAABBs)
+            if (draw.drawBounds)
             {
                 B2AABB aabb = shape.fatAABB;
 
@@ -952,14 +972,14 @@ namespace Box2D.NET
                 vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
                 vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
 
-                draw.DrawPolygon(vs, 4, B2HexColor.b2_colorGold, draw.context);
+                draw.DrawPolygonFcn(vs, 4, B2HexColor.b2_colorGold, draw.context);
             }
 
             return true;
         }
 
-// todo this has varying order for moving shapes, causing flicker when overlapping shapes are moving
-// solution: display order by shape id modulus 3, keep 3 buckets in GLSolid* and flush in 3 passes.
+        // todo this has varying order for moving shapes, causing flicker when overlapping shapes are moving
+        // solution: display order by shape id modulus 3, keep 3 buckets in GLSolid* and flush in 3 passes.
         public static void b2DrawWithBounds(B2World world, B2DebugDraw draw)
         {
             Debug.Assert(b2IsValidAABB(draw.drawingBounds));
@@ -1016,11 +1036,11 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawTransform(transform, draw.context);
+                        draw.DrawTransformFcn(transform, draw.context);
 
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
 
-                        draw.DrawString(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
+                        draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
                     }
 
                     if (draw.drawMass && body.type == B2BodyType.b2_dynamicBody)
@@ -1029,12 +1049,12 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawTransform(transform, draw.context);
+                        draw.DrawTransformFcn(transform, draw.context);
 
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
 
                         string buffer = string.Format("{0:F2}", body.mass);
-                        draw.DrawString(p, buffer, B2HexColor.b2_colorWhite, draw.context);
+                        draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorWhite, draw.context);
                     }
 
                     if (draw.drawJoints)
@@ -1097,38 +1117,44 @@ namespace Box2D.NET
                                     {
                                         // graph color
                                         float pointSize = contact.colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
-                                        draw.DrawPoint(point.point, pointSize, graphColors[contact.colorIndex], draw.context);
+                                        draw.DrawPointFcn(point.point, pointSize, graphColors[contact.colorIndex], draw.context);
                                         // B2.g_draw.DrawString(point.position, "%d", point.color);
                                     }
                                     else if (point.separation > linearSlop)
                                     {
                                         // Speculative
-                                        draw.DrawPoint(point.point, 5.0f, speculativeColor, draw.context);
+                                        draw.DrawPointFcn(point.point, 5.0f, speculativeColor, draw.context);
                                     }
                                     else if (point.persisted == false)
                                     {
                                         // Add
-                                        draw.DrawPoint(point.point, 10.0f, addColor, draw.context);
+                                        draw.DrawPointFcn(point.point, 10.0f, addColor, draw.context);
                                     }
                                     else if (point.persisted == true)
                                     {
                                         // Persist
-                                        draw.DrawPoint(point.point, 5.0f, persistColor, draw.context);
+                                        draw.DrawPointFcn(point.point, 5.0f, persistColor, draw.context);
                                     }
 
                                     if (draw.drawContactNormals)
                                     {
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
-                                        draw.DrawSegment(p1, p2, normalColor, draw.context);
+                                        draw.DrawSegmentFcn(p1, p2, normalColor, draw.context);
                                     }
                                     else if (draw.drawContactImpulses)
                                     {
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.normalImpulse, normal);
-                                        draw.DrawSegment(p1, p2, impulseColor, draw.context);
+                                        draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
                                         buffer = $"{1000.0f * point.normalImpulse:F1}";
-                                        draw.DrawString(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                                        draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                                    }
+
+                                    if (draw.drawContactFeatures)
+                                    {
+                                        buffer = "" + point.id;
+                                        draw.DrawStringFcn(point.point, buffer, B2HexColor.b2_colorOrange, draw.context);
                                     }
 
                                     if (draw.drawFrictionImpulses)
@@ -1136,9 +1162,9 @@ namespace Box2D.NET
                                         B2Vec2 tangent = b2RightPerp(normal);
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.tangentImpulse, tangent);
-                                        draw.DrawSegment(p1, p2, frictionColor, draw.context);
+                                        draw.DrawSegmentFcn(p1, p2, frictionColor, draw.context);
                                         buffer = $"{1000.0f * point.tangentImpulse:F1}";
-                                        draw.DrawString(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                                        draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
                                 }
 
@@ -1264,7 +1290,7 @@ namespace Box2D.NET
                 }
             }
 
-            if (draw.drawAABBs)
+            if (draw.drawBounds)
             {
                 B2HexColor color = B2HexColor.b2_colorGold;
 
@@ -1280,7 +1306,7 @@ namespace Box2D.NET
                         B2BodySim bodySim = set.bodySims.data[bodyIndex];
 
                         string buffer = "" + bodySim.bodyId;
-                        draw.DrawString(bodySim.center, buffer, B2HexColor.b2_colorWhite, draw.context);
+                        draw.DrawStringFcn(bodySim.center, buffer, B2HexColor.b2_colorWhite, draw.context);
 
                         B2Body body = b2Array_Get(ref world.bodies, bodySim.bodyId);
                         Debug.Assert(body.setIndex == setIndex);
@@ -1296,7 +1322,7 @@ namespace Box2D.NET
                             vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
                             vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
 
-                            draw.DrawPolygon(vs, 4, color, draw.context);
+                            draw.DrawPolygonFcn(vs, 4, color, draw.context);
 
                             shapeId = shape.nextShapeId;
                         }
@@ -1324,7 +1350,7 @@ namespace Box2D.NET
                     B2Transform transform = b2GetBodyTransformQuick(world, body);
                     B2Vec2 p = b2TransformPoint(ref transform, offset);
 
-                    draw.DrawString(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
+                    draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
                 }
             }
 
@@ -1341,13 +1367,13 @@ namespace Box2D.NET
                         B2BodySim bodySim = set.bodySims.data[bodyIndex];
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawTransform(transform, draw.context);
+                        draw.DrawTransformFcn(transform, draw.context);
 
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
 
                         float mass = bodySim.invMass > 0.0f ? 1.0f / bodySim.invMass : 0.0f;
                         string buffer = $"{mass:F2}";
-                        draw.DrawString(p, buffer, B2HexColor.b2_colorWhite, draw.context);
+                        draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorWhite, draw.context);
                     }
                 }
             }
@@ -1391,38 +1417,44 @@ namespace Box2D.NET
                             {
                                 // graph color
                                 float pointSize = colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
-                                draw.DrawPoint(point.point, pointSize, colors[colorIndex], draw.context);
+                                draw.DrawPointFcn(point.point, pointSize, colors[colorIndex], draw.context);
                                 // B2.g_draw.DrawString(point.position, "%d", point.color);
                             }
                             else if (point.separation > linearSlop)
                             {
                                 // Speculative
-                                draw.DrawPoint(point.point, 5.0f, speculativeColor, draw.context);
+                                draw.DrawPointFcn(point.point, 5.0f, speculativeColor, draw.context);
                             }
                             else if (point.persisted == false)
                             {
                                 // Add
-                                draw.DrawPoint(point.point, 10.0f, addColor, draw.context);
+                                draw.DrawPointFcn(point.point, 10.0f, addColor, draw.context);
                             }
                             else if (point.persisted == true)
                             {
                                 // Persist
-                                draw.DrawPoint(point.point, 5.0f, persistColor, draw.context);
+                                draw.DrawPointFcn(point.point, 5.0f, persistColor, draw.context);
                             }
 
                             if (draw.drawContactNormals)
                             {
                                 B2Vec2 p1 = point.point;
                                 B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
-                                draw.DrawSegment(p1, p2, normalColor, draw.context);
+                                draw.DrawSegmentFcn(p1, p2, normalColor, draw.context);
                             }
                             else if (draw.drawContactImpulses)
                             {
                                 B2Vec2 p1 = point.point;
                                 B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.normalImpulse, normal);
-                                draw.DrawSegment(p1, p2, impulseColor, draw.context);
+                                draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
                                 var buffer = $"{1000.0f * point.normalImpulse:F2}";
-                                draw.DrawString(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                                draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                            }
+
+                            if (draw.drawContactFeatures)
+                            {
+                                string buffer = "" + point.id;
+                                draw.DrawStringFcn(point.point, buffer, B2HexColor.b2_colorOrange, draw.context);
                             }
 
                             if (draw.drawFrictionImpulses)
@@ -1430,11 +1462,58 @@ namespace Box2D.NET
                                 B2Vec2 tangent = b2RightPerp(normal);
                                 B2Vec2 p1 = point.point;
                                 B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.tangentImpulse, tangent);
-                                draw.DrawSegment(p1, p2, frictionColor, draw.context);
+                                draw.DrawSegmentFcn(p1, p2, frictionColor, draw.context);
                                 var buffer = $"{1000.0f * point.tangentImpulse:F2}";
-                                draw.DrawString(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
+                                draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                             }
                         }
+                    }
+                }
+            }
+
+            if (draw.drawIslands)
+            {
+                int count = world.islands.count;
+                for (int i = 0; i < count; ++i)
+                {
+                    B2Island island = world.islands.data[i];
+                    if (island.setIndex == B2_NULL_INDEX)
+                    {
+                        continue;
+                    }
+
+                    int shapeCount = 0;
+                    B2AABB aabb = new B2AABB(
+                        new B2Vec2(float.MaxValue, float.MaxValue),
+                        new B2Vec2(-float.MaxValue, -float.MaxValue)
+                    );
+
+                    int bodyId = island.headBody;
+                    while (bodyId != B2_NULL_INDEX)
+                    {
+                        B2Body body = b2Array_Get(ref world.bodies, bodyId);
+                        int shapeId = body.headShapeId;
+                        while (shapeId != B2_NULL_INDEX)
+                        {
+                            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                            aabb = b2AABB_Union(aabb, shape.fatAABB);
+                            shapeCount += 1;
+                            shapeId = shape.nextShapeId;
+                        }
+
+                        bodyId = body.islandNext;
+                    }
+
+                    if (shapeCount > 0)
+                    {
+                        B2FixedArray4<B2Vec2> vsBuffer = new B2FixedArray4<B2Vec2>();
+                        Span<B2Vec2> vs = vsBuffer.AsSpan();
+                        vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
+                        vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
+                        vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
+                        vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
+
+                        draw.DrawPolygonFcn(vs, 4, B2HexColor.b2_colorOrangeRed, draw.context);
                     }
                 }
             }
@@ -1697,6 +1776,8 @@ namespace Box2D.NET
             return world.enableSleep;
         }
 
+        /// Enable/disable constraint warm starting. Advanced feature for testing. Disabling
+        /// warm starting greatly reduces stability and provides no performance gain.
         public static void b2World_EnableWarmStarting(B2WorldId worldId, bool flag)
         {
             B2World world = b2GetWorldFromId(worldId);
@@ -1787,7 +1868,7 @@ namespace Box2D.NET
 
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
-            world.contactMaxPushSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
+            world.maxContactPushSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
         }
 
         public static void b2World_SetJointTuning(B2WorldId worldId, float hertz, float dampingRatio)
@@ -1846,7 +1927,7 @@ namespace Box2D.NET
             B2DynamicTree kinematicTree = world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody];
             s.treeHeight = b2MaxInt(b2DynamicTree_GetHeight(dynamicTree), b2DynamicTree_GetHeight(kinematicTree));
 
-            s.stackUsed = b2GetMaxArenaAllocation(world.stackAllocator);
+            s.stackUsed = b2GetMaxArenaAllocation(world.arena);
             s.byteCount = b2GetByteCount();
             s.taskCount = world.taskCount;
 
@@ -1995,16 +2076,18 @@ namespace Box2D.NET
             writer.Write("\n");
 
             // stack allocator
-            writer.Write("stack allocator: {0}\n\n", b2GetArenaCapacity(world.stackAllocator));
+            writer.Write("stack allocator: {0}\n\n", b2GetArenaCapacity(world.arena));
 
             // chain shapes
             // todo
         }
 
 
-        static bool TreeQueryCallback(int proxyId, int shapeId, ref B2WorldQueryContext context)
+        static bool TreeQueryCallback(int proxyId, ulong userData, ref B2WorldQueryContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2WorldQueryContext worldContext = ref context;
             B2World world = worldContext.world;
@@ -2052,9 +2135,11 @@ namespace Box2D.NET
         }
 
 
-        public static bool TreeOverlapCallback(int proxyId, int shapeId, ref B2WorldOverlapContext context)
+        public static bool TreeOverlapCallback(int proxyId, ulong userData, ref B2WorldOverlapContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2WorldOverlapContext worldContext = ref context;
             B2World world = worldContext.world;
@@ -2075,14 +2160,15 @@ namespace Box2D.NET
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = worldContext.proxy;
             input.proxyB = b2MakeShapeDistanceProxy(shape);
-            input.transformA = worldContext.transform;
-            input.transformB = transform;
+            input.transformA = b2Transform_identity;
+            input.transformB = b2InvMulTransforms(worldContext.transform, transform);
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
+            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
-            if (output.distance > 0.0f)
+            float tolerance = 0.1f * B2_LINEAR_SLOP;
+            if (output.distance > tolerance)
             {
                 return true;
             }
@@ -2195,9 +2281,11 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, int shapeId, ref B2WorldRayCastContext context)
+        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2WorldRayCastContext worldContext = ref context;
             B2World world = worldContext.world;
@@ -2232,6 +2320,17 @@ namespace Box2D.NET
             return input.maxFraction;
         }
 
+        /// Cast a ray into the world to collect shapes in the path of the ray.
+        /// Your callback function controls whether you get the closest point, any point, or n-points.
+        /// The ray-cast ignores shapes that contain the starting point.
+        /// @note The callback function may receive shapes in any order
+        /// @param worldId The world to cast the ray against
+        /// @param origin The start point of the ray
+        /// @param translation The translation of the ray from the start point to the end point
+        /// @param filter Contains bit flags to filter unwanted shapes from the results
+        /// @param fcn A user implemented callback function
+        /// @param context A user context that is passed along to the callback function
+        ///	@return traversal performance counters
         public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2280,6 +2379,8 @@ namespace Box2D.NET
             return fraction;
         }
 
+        /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+        /// This is less general than b2World_CastRay() and does not allow for custom filtering.
         public static B2RayResult b2World_CastRayClosest(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter)
         {
             B2RayResult result = new B2RayResult();
@@ -2315,9 +2416,11 @@ namespace Box2D.NET
             return result;
         }
 
-        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, int shapeId, ref B2WorldRayCastContext context)
+        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2WorldRayCastContext worldContext = ref context;
             B2World world = worldContext.world;
@@ -2347,8 +2450,10 @@ namespace Box2D.NET
             return input.maxFraction;
         }
 
-        public static B2TreeStats b2World_CastCircle(B2WorldId worldId, ref B2Circle circle, B2Transform originTransform, B2Vec2 translation,
-            B2QueryFilter filter, b2CastResultFcn fcn, object context)
+        /// Cast a circle through the world. Similar to a cast ray except that a circle is cast instead of a point.
+        ///	@see b2World_CastRay
+        public static B2TreeStats b2World_CastCircle(B2WorldId worldId, ref B2Circle circle, B2Vec2 translation, B2QueryFilter filter,
+            b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2359,14 +2464,12 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            Debug.Assert(b2IsValidVec2(originTransform.p));
-            Debug.Assert(b2IsValidRotation(originTransform.q));
             Debug.Assert(b2IsValidVec2(translation));
 
             B2ShapeCastInput input = new B2ShapeCastInput();
-            input.points[0] = b2TransformPoint(ref originTransform, circle.center);
-            input.count = 1;
-            input.radius = circle.radius;
+            input.proxy.points[0] = circle.center;
+            input.proxy.count = 1;
+            input.proxy.radius = circle.radius;
             input.translation = translation;
             input.maxFraction = 1.0f;
 
@@ -2390,8 +2493,10 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_CastCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Transform originTransform, B2Vec2 translation,
-            B2QueryFilter filter, b2CastResultFcn fcn, object context)
+        /// Cast a capsule through the world. Similar to a cast ray except that a capsule is cast instead of a point.
+        ///	@see b2World_CastRay
+        public static B2TreeStats b2World_CastCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Vec2 translation, B2QueryFilter filter,
+            b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2402,15 +2507,14 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            Debug.Assert(b2IsValidVec2(originTransform.p));
-            Debug.Assert(b2IsValidRotation(originTransform.q));
             Debug.Assert(b2IsValidVec2(translation));
 
             B2ShapeCastInput input = new B2ShapeCastInput();
-            input.points[0] = b2TransformPoint(ref originTransform, capsule.center1);
-            input.points[1] = b2TransformPoint(ref originTransform, capsule.center2);
-            input.count = 2;
-            input.radius = capsule.radius;
+            // Note: these world space points get transformed into local space in b2ShapeCastShape
+            input.proxy.points[0] = capsule.center1;
+            input.proxy.points[1] = capsule.center2;
+            input.proxy.count = 2;
+            input.proxy.radius = capsule.radius;
             input.translation = translation;
             input.maxFraction = 1.0f;
 
@@ -2434,8 +2538,10 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static B2TreeStats b2World_CastPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Transform originTransform, B2Vec2 translation,
-            B2QueryFilter filter, b2CastResultFcn fcn, object context)
+        /// Cast a polygon through the world. Similar to a cast ray except that a polygon is cast instead of a point.
+        ///	@see b2World_CastRay
+        public static B2TreeStats b2World_CastPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Vec2 translation, B2QueryFilter filter,
+            b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2446,18 +2552,17 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            Debug.Assert(b2IsValidVec2(originTransform.p));
-            Debug.Assert(b2IsValidRotation(originTransform.q));
             Debug.Assert(b2IsValidVec2(translation));
 
             B2ShapeCastInput input = new B2ShapeCastInput();
+            // Note: these world space points get transformed into local space in b2ShapeCastShape
             for (int i = 0; i < polygon.count; ++i)
             {
-                input.points[i] = b2TransformPoint(ref originTransform, polygon.vertices[i]);
+                input.proxy.points[i] = polygon.vertices[i];
             }
 
-            input.count = polygon.count;
-            input.radius = polygon.radius;
+            input.proxy.count = polygon.count;
+            input.proxy.radius = polygon.radius;
             input.translation = translation;
             input.maxFraction = 1.0f;
 
@@ -2479,32 +2584,145 @@ namespace Box2D.NET
             }
 
             return treeStats;
+        }
+
+        public static float MoverCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldMoverCastContext context)
+        {
+            B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
+            ref B2WorldMoverCastContext worldContext = ref context;
+            B2World world = worldContext.world;
+
+            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+            B2Filter shapeFilter = shape.filter;
+            B2QueryFilter queryFilter = worldContext.filter;
+
+            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            {
+                return worldContext.fraction;
+            }
+
+            B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
+            B2Transform transform = b2GetBodyTransformQuick(world, body);
+
+            B2CastOutput output = b2ShapeCastShape(ref input, shape, transform);
+            if (output.fraction == 0.0f)
+            {
+                // Ignore overlapping shapes
+                return worldContext.fraction;
+            }
+
+            worldContext.fraction = output.fraction;
+            return output.fraction;
+        }
+
+        /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing
+        /// clipping.
+        public static float b2World_CastMover(B2WorldId worldId, ref B2Capsule mover, B2Vec2 translation, B2QueryFilter filter)
+        {
+            Debug.Assert(b2IsValidVec2(translation));
+            Debug.Assert(mover.radius > 2.0f * B2_LINEAR_SLOP);
+
+            B2World world = b2GetWorldFromId(worldId);
+            Debug.Assert(world.locked == false);
+            if (world.locked)
+            {
+                return 1.0f;
+            }
+
+            B2ShapeCastInput input = new B2ShapeCastInput();
+            input.proxy.points[0] = mover.center1;
+            input.proxy.points[1] = mover.center2;
+            input.proxy.count = 2;
+            input.proxy.radius = mover.radius;
+            input.translation = translation;
+            input.maxFraction = 1.0f;
+            input.canEncroach = true;
+
+            B2WorldMoverCastContext worldContext = new B2WorldMoverCastContext(world, filter, 1.0f);
+
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, MoverCastCallback, ref worldContext);
+
+                if (worldContext.fraction == 0.0f)
+                {
+                    return 0.0f;
+                }
+
+                input.maxFraction = worldContext.fraction;
+            }
+
+            return worldContext.fraction;
+        }
+
+        public static bool TreeCollideCallback(int proxyId, ulong userData, ref B2WorldMoverContext context)
+        {
+            B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
+            ref B2WorldMoverContext worldContext = ref context;
+            B2World world = worldContext.world;
+
+            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+
+            B2Filter shapeFilter = shape.filter;
+            B2QueryFilter queryFilter = worldContext.filter;
+
+            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            {
+                return true;
+            }
+
+            B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
+            B2Transform transform = b2GetBodyTransformQuick(world, body);
+
+            B2PlaneResult result = b2CollideMover(shape, transform, ref worldContext.mover);
+
+            if (result.hit)
+            {
+                B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                return worldContext.fcn(id, ref result, worldContext.userContext);
+            }
+
+            return true;
+        }
+
+
+        /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for
+        /// kinematic character movement
+        // It is tempting to use a shape proxy for the mover, but this makes handling deep overlap difficult and the generality may
+        // not be worth it.
+        public static void b2World_CollideMover(B2WorldId worldId, ref B2Capsule mover, B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            Debug.Assert(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+
+            B2Vec2 r = new B2Vec2(mover.radius, mover.radius);
+
+            B2AABB aabb;
+            aabb.lowerBound = b2Sub(b2Min(mover.center1, mover.center2), r);
+            aabb.upperBound = b2Add(b2Max(mover.center1, mover.center2), r);
+
+            B2WorldMoverContext worldContext = new B2WorldMoverContext();
+            worldContext.world = world;
+            worldContext.fcn = fcn;
+            worldContext.filter = filter;
+            worldContext.mover = mover;
+            worldContext.userContext = context;
+
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeCollideCallback, ref worldContext);
+            }
         }
 
 #if FALSE
-void b2World_ShiftOrigin(b2WorldId worldId, B2Vec2 newOrigin)
-{
-	Debug.Assert(m_locked == false);
-	if (m_locked)
-	{
-		return;
-	}
-
-	for (b2Body* b = m_bodyList; b; b = b.m_next)
-	{
-		b.m_xf.p -= newOrigin;
-		b.m_sweep.c0 -= newOrigin;
-		b.m_sweep.c -= newOrigin;
-	}
-
-	for (b2Joint* j = m_jointList; j; j = j.m_next)
-	{
-		j.ShiftOrigin(newOrigin);
-	}
-
-	m_contactManager.m_broadPhase.ShiftOrigin(newOrigin);
-}
-
 void b2World_Dump()
 {
 	if (m_locked)
@@ -2596,9 +2814,11 @@ void b2World_Dump()
             return world.gravity;
         }
 
-        public static bool ExplosionCallback(int proxyId, int shapeId, ref B2ExplosionContext context)
+        public static bool ExplosionCallback(int proxyId, ulong userData, ref B2ExplosionContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2ExplosionContext explosionContext = ref context;
             B2World world = explosionContext.world;
@@ -2618,7 +2838,7 @@ void b2World_Dump()
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref cache, ref input, null, 0);
+            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
             float radius = explosionContext.radius;
             float falloff = explosionContext.falloff;
@@ -2760,6 +2980,8 @@ void b2World_Dump()
                     b2ValidateFreeId(world.bodyIdPool, bodyIndex);
                     continue;
                 }
+
+                b2ValidateUsedId(world.bodyIdPool, bodyIndex);
 
                 Debug.Assert(bodyIndex == body.id);
 

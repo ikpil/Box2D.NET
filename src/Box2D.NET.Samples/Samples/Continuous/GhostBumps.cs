@@ -118,7 +118,7 @@ public class GhostBumps : Sample
         else
         {
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = m_friction;
+            shapeDef.material.friction = m_friction;
 
             B2Hull hull = new B2Hull();
 
@@ -247,7 +247,7 @@ public class GhostBumps : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = m_friction;
+        shapeDef.material.friction = m_friction;
 
         if (m_shapeType == ShapeType.e_circleShape)
         {
@@ -267,9 +267,9 @@ public class GhostBumps : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

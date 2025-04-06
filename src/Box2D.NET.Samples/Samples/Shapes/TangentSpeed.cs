@@ -2,7 +2,10 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Collections.Generic;
+using System.Numerics;
 using Box2D.NET.Samples.Helpers;
+using ImGuiNET;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
@@ -12,9 +15,11 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 public class TangentSpeed : Sample
 {
     private static readonly int SampleTangentSpeed = SampleFactory.Shared.RegisterSample("Shapes", "Tangent Speed", Create);
-    
+
     public const int m_totalCount = 200;
-    private int m_count = 0;
+    private List<B2BodyId> m_bodyIds = new List<B2BodyId>();
+    private float m_friction;
+    private float m_rollingResistance;
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -33,7 +38,7 @@ public class TangentSpeed : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-            //string path = "M 613.8334,185.20833 H 500.06255 L 470.95838,182.5625 444.50004,174.625 418.04171,161.39583 "
+            // string path = "M 613.8334,185.20833 H 500.06255 L 470.95838,182.5625 444.50004,174.625 418.04171,161.39583 "
             //				   "394.2292,140.22917 h "
             //				   "-13.22916 v 44.97916 H 68.791712 V 0 h -21.16671 v 206.375 l 566.208398,-1e-5 z";
 
@@ -75,6 +80,9 @@ public class TangentSpeed : Sample
             chainDef.materials = materials;
             chainDef.materialCount = count;
 
+            m_friction = 0.6f;
+            m_rollingResistance = 0.3f;
+
             b2CreateChain(groundId, ref chainDef);
         }
     }
@@ -89,17 +97,51 @@ public class TangentSpeed : Sample
         B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.rollingResistance = 0.3f;
+        shapeDef.material.friction = m_friction;
+        shapeDef.material.rollingResistance = m_rollingResistance;
         b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         return bodyId;
     }
 
+    void Reset()
+    {
+        int count = m_bodyIds.Count;
+        for (int i = 0; i < count; ++i)
+        {
+            b2DestroyBody(m_bodyIds[i]);
+        }
+
+        m_bodyIds.Clear();
+    }
+
+    public override void UpdateGui()
+    {
+        float height = 80.0f;
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(260.0f, height));
+
+        ImGui.Begin("Ball Parameters", ImGuiWindowFlags.NoResize);
+        ImGui.PushItemWidth(140.0f);
+
+        if (ImGui.SliderFloat("Friction", ref m_friction, 0.0f, 2.0f, "%.2f"))
+        {
+            Reset();
+        }
+
+        if (ImGui.SliderFloat("Rolling Resistance", ref m_rollingResistance, 0.0f, 1.0f, "%.2f"))
+        {
+            Reset();
+        }
+
+        ImGui.End();
+    }
+
     public override void Step(Settings settings)
     {
-        if (m_stepCount % 25 == 0 && m_count < m_totalCount && settings.pause == false)
+        if (m_stepCount % 25 == 0 && m_bodyIds.Count < m_totalCount && settings.pause == false)
         {
-            DropBall();
-            m_count += 1;
+            B2BodyId id = DropBall();
+            m_bodyIds.Add(id);
         }
 
         base.Step(settings);

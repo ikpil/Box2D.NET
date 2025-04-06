@@ -77,7 +77,7 @@ public class GLCircles
         _gl.VertexAttribDivisor(radiusInstance, 1);
         _gl.VertexAttribDivisor(colorInstance, 1);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -141,7 +141,7 @@ public class GLCircles
             _gl.BufferSubData<CircleData>(GLEnum.ArrayBuffer, 0, circles.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
 
-            _gl.CheckErrorGL();
+            _gl.CheckOpenGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

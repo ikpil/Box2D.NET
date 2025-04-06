@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Box2D.NET.Shared;
 using NUnit.Framework;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2MathFunction;
@@ -20,6 +21,7 @@ using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.Shared.Determinism;
 
 namespace Box2D.NET.Test;
 
@@ -137,17 +139,13 @@ public class b2TaskTester : IDisposable
 
 public class B2DeterminismTest
 {
-    private const int e_columns = 10;
-    private const int e_rows = 10;
-    private const int e_count = e_columns * e_rows;
+    private const int EXPECTED_SLEEP_STEP = 304;
+    private const uint EXPECTED_HASH = 0xd6ddbc8d;
+
     private const int e_maxTasks = 128;
 
-    private B2Vec2[][] finalPositions = new B2Vec2[][] { new B2Vec2[e_count], new B2Vec2[e_count] };
-    private B2Rot[][] finalRotations = new B2Rot[][] { new B2Rot[e_count], new B2Rot[e_count] };
-
-
     // todo_erin move this to shared
-    public void TiltedStacks(int testIndex, int workerCount)
+    public static int SingleMultithreadingTest(int workerCount)
     {
         var tester = new b2TaskTester(workerCount, e_maxTasks);
 
@@ -155,93 +153,40 @@ public class B2DeterminismTest
         worldDef.enqueueTask = tester.EnqueueTask;
         worldDef.finishTask = tester.FinishTask;
         worldDef.workerCount = workerCount;
-        worldDef.enableSleep = false;
 
         B2WorldId worldId = b2CreateWorld(ref worldDef);
 
-        B2BodyId[] bodies = new B2BodyId[e_count];
-
-        {
-            B2BodyDef bd = b2DefaultBodyDef();
-            bd.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(worldId, ref bd);
-
-            B2Polygon box = b2MakeBox(1000.0f, 1.0f);
-            B2ShapeDef sd = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref sd, ref box);
-        }
-
-        {
-            B2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
-            B2ShapeDef sd = b2DefaultShapeDef();
-            sd.density = 1.0f;
-            sd.friction = 0.3f;
-
-            float offset = 0.2f;
-            float dx = 5.0f;
-            float xroot = -0.5f * dx * (e_columns - 1.0f);
-
-            for (int j = 0; j < e_columns; ++j)
-            {
-                float x = xroot + j * dx;
-
-                for (int i = 0; i < e_rows; ++i)
-                {
-                    B2BodyDef bd = b2DefaultBodyDef();
-                    bd.type = B2BodyType.b2_dynamicBody;
-
-                    int n = j * e_rows + i;
-
-                    bd.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
-                    B2BodyId bodyId = b2CreateBody(worldId, ref bd);
-                    bodies[n] = bodyId;
-
-                    b2CreatePolygonShape(bodyId, ref sd, ref box);
-                }
-            }
-        }
+        FallingHingeData data = CreateFallingHinges(worldId);
 
         float timeStep = 1.0f / 60.0f;
-        int subStepCount = 3;
-
-        for (int i = 0; i < 100; ++i)
+        bool done = false;
+        while (done == false)
         {
+            int subStepCount = 4;
             b2World_Step(worldId, timeStep, subStepCount);
-            tester.taskCount = 0;
             TracyCFrameMark();
-        }
 
-        for (int i = 0; i < e_count; ++i)
-        {
-            finalPositions[testIndex][i] = b2Body_GetPosition(bodies[i]);
-            finalRotations[testIndex][i] = b2Body_GetRotation(bodies[i]);
+            done = UpdateFallingHinges(worldId, ref data);
         }
 
         b2DestroyWorld(worldId);
+
+        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
+        Assert.That(data.hash == EXPECTED_HASH);
+
+        DestroyFallingHinges(ref data);
+
+        return 0;
     }
 
     // Test multithreaded determinism.
     [Test]
     public void MultithreadingTest()
     {
-        // Test 1 : 4 threads
-        TiltedStacks(0, 4);
-
-        // Test 2 : 1 thread
-        TiltedStacks(1, 1);
-
-        // Both runs should produce identical results
-        for (int i = 0; i < e_count; ++i)
+        for (int workerCount = 1; workerCount < 6; ++workerCount)
         {
-            B2Vec2 p1 = finalPositions[0][i];
-            B2Vec2 p2 = finalPositions[1][i];
-            B2Rot rot1 = finalRotations[0][i];
-            B2Rot rot2 = finalRotations[1][i];
-
-            Assert.That(p1.X, Is.EqualTo(p2.X));
-            Assert.That(p1.Y, Is.EqualTo(p2.Y));
-            Assert.That(rot1.c, Is.EqualTo(rot2.c));
-            Assert.That(rot1.s, Is.EqualTo(rot2.s));
+            int result = SingleMultithreadingTest(workerCount);
+            Assert.That(result == 0);
         }
     }
 
@@ -252,136 +197,25 @@ public class B2DeterminismTest
         B2WorldDef worldDef = b2DefaultWorldDef();
         B2WorldId worldId = b2CreateWorld(ref worldDef);
 
-        {
-            B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(worldId, ref bodyDef);
+        FallingHingeData data = CreateFallingHinges(worldId);
 
-            B2Polygon box = b2MakeBox(20.0f, 1.0f);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+        float timeStep = 1.0f / 60.0f;
+
+        bool done = false;
+        while (done == false)
+        {
+            int subStepCount = 4;
+            b2World_Step(worldId, timeStep, subStepCount);
+            TracyCFrameMark();
+
+            done = UpdateFallingHinges(worldId, ref data);
         }
 
-        {
-            int columnCount = 4;
-            int rowCount = 30;
-            int bodyCount = rowCount * columnCount;
+        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
+        Assert.That(data.hash == EXPECTED_HASH);
 
-            B2BodyId[] bodies = new B2BodyId[bodyCount];
+        DestroyFallingHinges(ref data);
 
-            float h = 0.25f;
-            float r = 0.1f * h;
-            B2Polygon box = b2MakeRoundedBox(h - r, h - r, r);
-
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.3f;
-
-            float offset = 0.4f * h;
-            float dx = 10.0f * h;
-            float xroot = -0.5f * dx * (columnCount - 1.0f);
-
-            B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.enableLimit = true;
-            jointDef.lowerAngle = -0.1f * B2_PI;
-            jointDef.upperAngle = 0.2f * B2_PI;
-            jointDef.enableSpring = true;
-            jointDef.hertz = 0.5f;
-            jointDef.dampingRatio = 0.5f;
-            jointDef.localAnchorA = new B2Vec2(h, h);
-            jointDef.localAnchorB = new B2Vec2(offset, -h);
-            jointDef.drawSize = 0.1f;
-
-            int bodyIndex = 0;
-
-            for (int j = 0; j < columnCount; ++j)
-            {
-                float x = xroot + j * dx;
-
-                B2BodyId prevBodyId = b2_nullBodyId;
-
-                for (int i = 0; i < rowCount; ++i)
-                {
-                    B2BodyDef bodyDef = b2DefaultBodyDef();
-                    bodyDef.type = B2BodyType.b2_dynamicBody;
-
-                    bodyDef.position.X = x + offset * i;
-                    bodyDef.position.Y = h + 2.0f * h * i;
-
-                    // this tests the deterministic cosine and sine functions
-                    bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
-
-                    B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
-
-                    if ((i & 1) == 0)
-                    {
-                        prevBodyId = bodyId;
-                    }
-                    else
-                    {
-                        jointDef.bodyIdA = prevBodyId;
-                        jointDef.bodyIdB = bodyId;
-                        b2CreateRevoluteJoint(worldId, ref jointDef);
-                        prevBodyId = b2_nullBodyId;
-                    }
-
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
-
-                    Debug.Assert(bodyIndex < bodyCount);
-                    bodies[bodyIndex] = bodyId;
-
-                    bodyIndex += 1;
-                }
-            }
-
-            Debug.Assert(bodyIndex == bodyCount);
-
-            uint hash = 0;
-            int sleepStep = -1;
-            float timeStep = 1.0f / 60.0f;
-
-            int stepCount = 0;
-            int maxSteps = 500;
-            while (stepCount < maxSteps)
-            {
-                int subStepCount = 4;
-                b2World_Step(worldId, timeStep, subStepCount);
-                TracyCFrameMark();
-
-                if (hash == 0)
-                {
-                    B2BodyEvents bodyEvents = b2World_GetBodyEvents(worldId);
-
-                    if (bodyEvents.moveCount == 0)
-                    {
-                        int awakeCount = b2World_GetAwakeBodyCount(worldId);
-                        Assert.That(awakeCount, Is.EqualTo(0));
-
-                        hash = B2_HASH_INIT;
-                        for (int i = 0; i < bodyCount; ++i)
-                        {
-                            B2Transform xf = b2Body_GetTransform(bodies[i]);
-                            byte[] bxf = new byte[sizeof(float) * 4];
-                            xf.TryWriteBytes(bxf);
-                            hash = b2Hash(hash, bxf, bxf.Length);
-                        }
-
-                        sleepStep = stepCount;
-                        Console.Write("step = %d, hash = 0x%08x\n", sleepStep, hash);
-
-                        break;
-                    }
-                }
-
-                stepCount += 1;
-            }
-
-            Assert.That(stepCount, Is.LessThan(maxSteps));
-            Assert.That(sleepStep, Is.EqualTo(263));
-            Assert.That(hash, Is.EqualTo(0x7de58fbe));
-
-            //free(bodies);
-
-            b2DestroyWorld(worldId);
-        }
+        b2DestroyWorld(worldId);
     }
 }

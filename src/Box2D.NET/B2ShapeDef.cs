@@ -14,51 +14,40 @@ namespace Box2D.NET
         /// Use this to store application specific shape data.
         public object userData;
 
-        /// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-        public float friction;
-
-        /// The coefficient of restitution (bounce) usually in the range [0,1].
-        /// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-        public float restitution;
-
-        /// The rolling resistance usually in the range [0,1].
-        public float rollingResistance;
-
-        /// The tangent speed for conveyor belts
-        public float tangentSpeed;
-
-        /// User material identifier. This is passed with query results and to friction and restitution
-        /// combining functions. It is not used internally.
-        public int material;
+        /// The surface material for this shape.
+        public B2SurfaceMaterial material;
 
         /// The density, usually in kg/m^2.
+        /// This is not part of the surface material because this is for the interior, which may have
+        /// other considerations, such as being hollow. For example a wood barrel may be hollow or full of water.
         public float density;
 
         /// Collision filtering data.
         public B2Filter filter;
 
-        /// Custom debug draw color.
-        public uint customColor;
-
         /// A sensor shape generates overlap events but never generates a collision response.
-        /// Sensors do not collide with other sensors and do not have continuous collision.
-        /// Instead, use a ray or shape cast for those scenarios.
+        /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.
+        /// Sensors still contribute to the body mass if they have non-zero density.
+        /// @note Sensor events are disabled by default.
+        /// @see enableSensorEvents
         public bool isSensor;
 
-        /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
+        /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
+        public bool enableSensorEvents;
+
+        /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
         public bool enableContactEvents;
 
-        /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors.
+        /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
         public bool enableHitEvents;
 
         /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
         /// and must be carefully handled due to threading. Ignored for sensors.
         public bool enablePreSolveEvents;
 
-        /// Normally shapes on static bodies don't invoke contact creation when they are added to the world. This overrides
-        /// that behavior and causes contact creation. This significantly slows down static body creation which can be important
-        /// when there are many static shapes.
-        /// This is implicitly always true for sensors, dynamic bodies, and kinematic bodies.
+        /// When shapes are created they will scan the environment for collision the next time step. This can significantly slow down
+        /// static body creation when there are many static shapes.
+        /// This is flag is ignored for dynamic and kinematic shapes which always invoke contact creation.
         public bool invokeContactCreation;
 
         /// Should the body update the mass properties when this shape is created. Default is true.

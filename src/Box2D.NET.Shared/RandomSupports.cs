@@ -6,6 +6,7 @@ using System;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2MathFunction;
 
 
 namespace Box2D.NET.Shared
@@ -64,11 +65,17 @@ namespace Box2D.NET.Shared
             return v;
         }
 
+        // Random rotation with angle in range [-pi, pi]
+        public static B2Rot RandomRot()
+        {
+            float angle = RandomFloatRange(-B2_PI, B2_PI);
+            return b2MakeRot(angle);
+        }
 
         public static B2Polygon RandomPolygon(float extent)
         {
             Span<B2Vec2> points = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
-            
+
             int count = 3 + RandomInt() % 6;
             for (int i = 0; i < count; ++i)
             {
@@ -83,6 +90,5 @@ namespace Box2D.NET.Shared
 
             return b2MakeSquare(extent);
         }
-
     }
 }

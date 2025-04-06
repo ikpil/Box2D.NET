@@ -69,7 +69,7 @@ public class B2WorldTest
         shapeDef.density = 1.0f;
 
         // Override the default friction.
-        shapeDef.friction = 0.3f;
+        shapeDef.material.friction = 0.3f;
 
         // Add the shape to the body.
         b2CreatePolygonShape(bodyId, ref shapeDef, ref dynamicBox);
@@ -344,6 +344,7 @@ public class B2WorldTest
         B2BodyId wallId = b2CreateBody(worldId, ref bodyDef);
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
+        shapeDef.enableSensorEvents = true;
         b2CreatePolygonShape(wallId, ref shapeDef, ref box);
 
         // Bullet fired towards the wall
@@ -356,6 +357,7 @@ public class B2WorldTest
         B2BodyId bulletId = b2CreateBody(worldId, ref bodyDef);
         shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
+        shapeDef.enableSensorEvents = true;
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.1f);
         b2CreateCircleShape(bulletId, ref shapeDef, ref circle);
 

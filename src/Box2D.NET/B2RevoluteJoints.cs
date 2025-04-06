@@ -168,35 +168,18 @@ namespace Box2D.NET
             return torque;
         }
 
-// Point-to-point constraint
-// C = p2 - p1
-// Cdot = v2 - v1
-//      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-// J = [-I -r1_skew I r2_skew ]
-// Identity used:
-// w k % (rx i + ry j) = w * (-ry i + rx j)
+        // Point-to-point constraint
+        // C = p2 - p1
+        // Cdot = v2 - v1
+        //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
+        // J = [-I -r1_skew I r2_skew ]
+        // Identity used:
+        // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-// Motor constraint
-// Cdot = w2 - w1
-// J = [0 0 -1 0 0 1]
-// K = invI1 + invI2
-
-// Body State
-// The solver operates on the body state. The body state array does not hold static bodies. Static bodies are shared
-// across worker threads. It would be okay to read their states, but writing to them would cause cache thrashing across
-// workers, even if the values don't change.
-// This causes some trouble when computing anchors. I rotate the anchors using the body rotation every sub-step. For static
-// bodies the anchor doesn't rotate. Body A or B could be static and this can lead to lots of branching. This branching
-// should be minimized.
-//
-// Solution 1:
-// Use delta rotations. This means anchors need to be prepared in world space. The delta rotation for static bodies will be
-// identity. Base separation and angles need to be computed. Manifolds will be behind a frame, but that is probably best if bodies
-// move fast.
-//
-// Solution 2:
-// Use full rotation. The anchors for static bodies will be in world space while the anchors for dynamic bodies will be in local
-// space. Potentially confusing and bug prone.
+        // Motor constraint
+        // Cdot = w2 - w1
+        // J = [0 0 -1 0 0 1]
+        // K = invI1 + invI2
 
         public static void b2PrepareRevoluteJoint(B2JointSim @base, B2StepContext context)
         {
@@ -365,9 +348,9 @@ namespace Box2D.NET
                     }
 
                     float Cdot = wB - wA;
-                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.lowerImpulse;
                     float oldImpulse = joint.lowerImpulse;
-                    joint.lowerImpulse = b2MaxFloat(joint.lowerImpulse + impulse, 0.0f);
+                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse;
+                    joint.lowerImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
                     impulse = joint.lowerImpulse - oldImpulse;
 
                     wA -= iA * impulse;
@@ -396,9 +379,9 @@ namespace Box2D.NET
 
                     // sign flipped on Cdot
                     float Cdot = wA - wB;
-                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.lowerImpulse;
                     float oldImpulse = joint.upperImpulse;
-                    joint.upperImpulse = b2MaxFloat(joint.upperImpulse + impulse, 0.0f);
+                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse;
+                    joint.upperImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
                     impulse = joint.upperImpulse - oldImpulse;
 
                     // sign flipped on applied impulse
@@ -498,20 +481,20 @@ namespace Box2D.NET
             float L = drawSize;
             // draw.drawPoint(pA, 3.0f, b2HexColor.b2_colorGray40, draw.context);
             // draw.drawPoint(pB, 3.0f, b2HexColor.b2_colorLightBlue, draw.context);
-            draw.DrawCircle(pB, L, c1, draw.context);
+            draw.DrawCircleFcn(pB, L, c1, draw.context);
 
             float angle = b2RelativeAngle(transformB.q, transformA.q);
 
             B2Rot rot = b2MakeRot(angle);
             B2Vec2 r = new B2Vec2(L * rot.c, L * rot.s);
             B2Vec2 pC = b2Add(pB, r);
-            draw.DrawSegment(pB, pC, c1, draw.context);
+            draw.DrawSegmentFcn(pB, pC, c1, draw.context);
 
             if (draw.drawJointExtras)
             {
                 float jointAngle = b2UnwindAngle(angle - joint.referenceAngle);
                 string buffer = $" {180.0f * jointAngle / B2_PI} deg";
-                draw.DrawString(pC, buffer, B2HexColor.b2_colorWhite, draw.context);
+                draw.DrawStringFcn(pC, buffer, B2HexColor.b2_colorWhite, draw.context);
             }
 
             float lowerAngle = joint.lowerAngle + joint.referenceAngle;
@@ -525,18 +508,18 @@ namespace Box2D.NET
                 B2Rot rotHi = b2MakeRot(upperAngle);
                 B2Vec2 rhi = new B2Vec2(L * rotHi.c, L * rotHi.s);
 
-                draw.DrawSegment(pB, b2Add(pB, rlo), c2, draw.context);
-                draw.DrawSegment(pB, b2Add(pB, rhi), c3, draw.context);
+                draw.DrawSegmentFcn(pB, b2Add(pB, rlo), c2, draw.context);
+                draw.DrawSegmentFcn(pB, b2Add(pB, rhi), c3, draw.context);
 
                 B2Rot rotRef = b2MakeRot(joint.referenceAngle);
                 B2Vec2 @ref = new B2Vec2(L * rotRef.c, L * rotRef.s);
-                draw.DrawSegment(pB, b2Add(pB, @ref), B2HexColor.b2_colorBlue, draw.context);
+                draw.DrawSegmentFcn(pB, b2Add(pB, @ref), B2HexColor.b2_colorBlue, draw.context);
             }
 
             B2HexColor color = B2HexColor.b2_colorGold;
-            draw.DrawSegment(transformA.p, pA, color, draw.context);
-            draw.DrawSegment(pA, pB, color, draw.context);
-            draw.DrawSegment(transformB.p, pB, color, draw.context);
+            draw.DrawSegmentFcn(transformA.p, pA, color, draw.context);
+            draw.DrawSegmentFcn(pA, pB, color, draw.context);
+            draw.DrawSegmentFcn(transformB.p, pB, color, draw.context);
 
             // char buffer[32];
             // sprintf(buffer, "%.1f", b2Length(joint.impulse));

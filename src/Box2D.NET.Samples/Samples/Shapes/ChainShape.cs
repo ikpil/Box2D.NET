@@ -125,7 +125,7 @@ public class ChainShape : Sample
         B2SurfaceMaterial material = new B2SurfaceMaterial();
         material.friction = 0.2f;
         material.customColor = (uint)B2HexColor.b2_colorSteelBlue;
-        material.material = 42;
+        material.userMaterialId = 42;
 
         B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
@@ -154,8 +154,8 @@ public class ChainShape : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.friction = m_friction;
-        shapeDef.restitution = m_restitution;
+        shapeDef.material.friction = m_friction;
+        shapeDef.material.restitution = m_restitution;
 
         if (m_shapeType == ShapeType.e_circleShape)
         {
@@ -182,9 +182,9 @@ public class ChainShape : Sample
         m_stepCount = 0;
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
         m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);

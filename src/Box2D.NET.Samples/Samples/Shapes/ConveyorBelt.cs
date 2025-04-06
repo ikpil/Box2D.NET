@@ -45,8 +45,8 @@ public class ConveyorBelt : Sample
             B2Polygon box = b2MakeRoundedBox(10.0f, 0.25f, 0.25f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.8f;
-            shapeDef.tangentSpeed = 2.0f;
+            shapeDef.material.friction = 0.8f;
+            shapeDef.material.tangentSpeed = 2.0f;
 
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }

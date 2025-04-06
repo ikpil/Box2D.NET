@@ -105,7 +105,7 @@ public class Platformer : Sample
             m_radius = 0.5f;
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 1.0f), m_radius);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.1f;
+            shapeDef.material.friction = 0.1f;
 
             m_playerShapeId = b2CreateCapsuleShape(m_playerId, ref shapeDef, ref capsule);
         }
@@ -168,9 +168,9 @@ public class Platformer : Sample
         return false;
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

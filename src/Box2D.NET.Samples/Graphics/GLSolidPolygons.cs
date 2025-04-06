@@ -99,7 +99,7 @@ public class GLSolidPolygons
         _gl.VertexAttribDivisor(instanceRadius, 1);
         _gl.VertexAttribDivisor(instanceColor, 1);
 
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         // Cleanup
         _gl.BindBuffer(GLEnum.ArrayBuffer, 0);
@@ -149,7 +149,7 @@ public class GLSolidPolygons
         }
 
         _gl.UseProgram(m_programId);
-        _gl.CheckErrorGL();
+        _gl.CheckOpenGL();
 
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
@@ -173,7 +173,7 @@ public class GLSolidPolygons
 
             _gl.BufferSubData<PolygonData>(GLEnum.ArrayBuffer, 0, polygons.Slice(@base, batchCount));
             _gl.DrawArraysInstanced(GLEnum.Triangles, 0, 6, (uint)batchCount);
-            _gl.CheckErrorGL();
+            _gl.CheckOpenGL();
 
             count -= e_batchSize;
             @base += e_batchSize;

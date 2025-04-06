@@ -18,7 +18,7 @@ namespace Box2D.NET
         public float restitution;
         public float rollingResistance;
         public float tangentSpeed;
-        public int material;
+        public int userMaterialId;
 
         public B2AABB aabb;
         public B2AABB fatAABB;
@@ -33,6 +33,7 @@ namespace Box2D.NET
         public B2ShapeUnion us;
 
         public ushort generation;
+        public bool enableSensorEvents;
         public bool enableContactEvents;
         public bool enableHitEvents;
         public bool enablePreSolveEvents;

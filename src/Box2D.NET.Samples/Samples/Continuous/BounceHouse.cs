@@ -101,8 +101,8 @@ public class BounceHouse : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
-        shapeDef.restitution = 1.2f;
-        shapeDef.friction = 0.3f;
+        shapeDef.material.restitution = 1.2f;
+        shapeDef.material.friction = 0.3f;
         shapeDef.enableHitEvents = m_enableHitEvents;
 
         if (m_shapeType == ShapeType.e_circleShape)
@@ -123,9 +123,9 @@ public class BounceHouse : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

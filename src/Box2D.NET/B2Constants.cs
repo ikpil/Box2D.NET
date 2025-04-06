@@ -56,7 +56,7 @@ namespace Box2D.NET
 
 
         // types
-        public const ulong B2_DEFAULT_CATEGORY_BITS = 0x0001UL;
+        public const ulong B2_DEFAULT_CATEGORY_BITS = 1;
         public const ulong B2_DEFAULT_MASK_BITS = ulong.MaxValue;
 
         // core

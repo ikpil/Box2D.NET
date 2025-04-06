@@ -14,10 +14,10 @@ public class TiltedStack : Sample
 {
     private static readonly int SampleTiltedStack = SampleFactory.Shared.RegisterSample("Stacking", "Tilted Stack", Create);
     
-    public const int e_columns = 10;
-    public const int e_rows = 10;
+    public const int m_columns = 10;
+    public const int m_rows = 10;
 
-    private B2BodyId[] m_bodies = new B2BodyId[e_rows * e_columns];
+    private B2BodyId[] m_bodies = new B2BodyId[m_rows * m_columns];
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -43,7 +43,7 @@ public class TiltedStack : Sample
             b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
-        for (int i = 0; i < e_rows * e_columns; ++i)
+        for (int i = 0; i < m_rows * m_columns; ++i)
         {
             m_bodies[i] = b2_nullBodyId;
         }
@@ -53,22 +53,22 @@ public class TiltedStack : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            shapeDef.friction = 0.3f;
+            shapeDef.material.friction = 0.3f;
 
             float offset = 0.2f;
             float dx = 5.0f;
-            float xroot = -0.5f * dx * (e_columns - 1.0f);
+            float xroot = -0.5f * dx * (m_columns - 1.0f);
 
-            for (int j = 0; j < e_columns; ++j)
+            for (int j = 0; j < m_columns; ++j)
             {
                 float x = xroot + j * dx;
 
-                for (int i = 0; i < e_rows; ++i)
+                for (int i = 0; i < m_rows; ++i)
                 {
                     B2BodyDef bodyDef = b2DefaultBodyDef();
                     bodyDef.type = B2BodyType.b2_dynamicBody;
 
-                    int n = j * e_rows + i;
+                    int n = j * m_rows + i;
 
                     bodyDef.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
                     B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);

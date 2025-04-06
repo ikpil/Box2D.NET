@@ -152,7 +152,7 @@ public class LargeWorld : Sample
                 for (int i = 0; i < 5; ++i)
                 {
                     Donut donut = new Donut();
-                    donut.Spawn(m_worldId, position, 0.75f, 0, null);
+                    donut.Create(m_worldId, position, 0.75f, 0, false, null);
                     position.X += 2.0f;
                 }
             }
@@ -167,9 +167,9 @@ public class LargeWorld : Sample
         m_followCar = false;
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
 
         float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

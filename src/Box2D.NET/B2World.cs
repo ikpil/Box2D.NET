@@ -11,7 +11,7 @@ namespace Box2D.NET
     // The world also contains efficient memory management facilities.
     public class B2World
     {
-        public B2ArenaAllocator stackAllocator;
+        public B2ArenaAllocator arena;
         public B2BroadPhase broadPhase;
         public B2ConstraintGraph constraintGraph;
 
@@ -82,6 +82,7 @@ namespace Box2D.NET
         public B2BitSet debugBodySet;
         public B2BitSet debugJointSet;
         public B2BitSet debugContactSet;
+        public B2BitSet debugIslandSet;
 
         // Id that is incremented every time step
         public ulong stepIndex;
@@ -99,7 +100,7 @@ namespace Box2D.NET
         public float hitEventThreshold;
         public float restitutionThreshold;
         public float maxLinearSpeed;
-        public float contactMaxPushSpeed;
+        public float maxContactPushSpeed;
         public float contactHertz;
         public float contactDampingRatio;
         public float jointHertz;
@@ -146,7 +147,7 @@ namespace Box2D.NET
 
         public void Clear()
         {
-            stackAllocator = null;
+            arena = null;
             broadPhase = null;
 
             bodyIdPool = null;
@@ -204,7 +205,7 @@ namespace Box2D.NET
             hitEventThreshold = 0.0f;
             restitutionThreshold = 0.0f;
             maxLinearSpeed = 0.0f;
-            contactMaxPushSpeed = 0.0f;
+            maxContactPushSpeed = 0.0f;
             contactHertz = 0.0f;
             contactDampingRatio = 0.0f;
             jointHertz = 0.0f;

@@ -251,11 +251,6 @@ namespace Box2D.NET
             bodySim.center = def.position;
             bodySim.rotation0 = bodySim.transform.q;
             bodySim.center0 = bodySim.center;
-            bodySim.localCenter = b2Vec2_zero;
-            bodySim.force = b2Vec2_zero;
-            bodySim.torque = 0.0f;
-            bodySim.invMass = 0.0f;
-            bodySim.invInertia = 0.0f;
             bodySim.minExtent = B2_HUGE;
             bodySim.maxExtent = 0.0f;
             bodySim.linearDamping = def.linearDamping;
@@ -264,9 +259,6 @@ namespace Box2D.NET
             bodySim.bodyId = bodyId;
             bodySim.isBullet = def.isBullet;
             bodySim.allowFastRotation = def.allowFastRotation;
-            bodySim.enlargeAABB = false;
-            bodySim.isFast = false;
-            bodySim.isSpeedCapped = false;
 
             if (setId == (int)B2SetType.b2_awakeSet)
             {
@@ -472,8 +464,6 @@ namespace Box2D.NET
             return body.contactCount;
         }
 
-        // todo what about sensors?
-        // todo sample needed
         public static int b2Body_GetContactData(B2BodyId bodyId, Span<B2ContactData> contactData, int capacity)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
@@ -623,6 +613,7 @@ namespace Box2D.NET
             B2Vec2 oldCenter = bodySim.center;
             bodySim.localCenter = localCenter;
             bodySim.center = b2TransformPoint(ref bodySim.transform, bodySim.localCenter);
+            bodySim.center0 = bodySim.center;
 
             // Update center of mass velocity
             B2BodyState state = b2GetBodyState(world, body);
@@ -806,6 +797,7 @@ namespace Box2D.NET
             state.linearVelocity = linearVelocity;
         }
 
+        /// Set the angular velocity of a body in radians per second
         public static void b2Body_SetAngularVelocity(B2BodyId bodyId, float angularVelocity)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -827,6 +819,56 @@ namespace Box2D.NET
                 return;
             }
 
+            state.angularVelocity = angularVelocity;
+        }
+
+        /// Set the velocity to reach the given transform after a given time step.
+        /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+        /// This will automatically wake the body if asleep.
+        public static void b2Body_SetVelocityForTargetTransform(B2BodyId bodyId, B2Transform target, float timeStep)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+
+            if (body.type == B2BodyType.b2_staticBody || timeStep <= 0.0f)
+            {
+                return;
+            }
+
+            B2BodySim sim = b2GetBodySim(world, body);
+
+            // Compute linear velocity
+            B2Vec2 center1 = sim.center;
+            B2Vec2 center2 = b2TransformPoint(ref target, sim.localCenter);
+            float invTimeStep = 1.0f / timeStep;
+            B2Vec2 linearVelocity = b2MulSV(invTimeStep, b2Sub(center2, center1));
+
+            // Compute angular velocity
+            float angularVelocity = 0.0f;
+            if (body.fixedRotation == false)
+            {
+                B2Rot q1 = sim.transform.q;
+                B2Rot q2 = target.q;
+                float deltaAngle = b2RelativeAngle(q2, q1);
+                angularVelocity = invTimeStep * deltaAngle;
+            }
+
+            // Return if velocity would be zero
+            if (b2LengthSquared(linearVelocity) == 0.0f || b2AbsFloat(angularVelocity) == 0.0f)
+            {
+                return;
+            }
+
+            // Must wake for state to exist
+            b2WakeBody(world, body);
+
+            B2BodyState state = b2GetBodyState(world, body);
+            if (state == null)
+            {
+                return;
+            }
+
+            state.linearVelocity = linearVelocity;
             state.angularVelocity = angularVelocity;
         }
 

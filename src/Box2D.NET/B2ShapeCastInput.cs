@@ -9,20 +9,16 @@ namespace Box2D.NET
     /// A capsule is two points with a non-zero radius. A box is four points with a zero radius.
     public struct B2ShapeCastInput
     {
-        /// A point cloud to cast
-        //public B2Vec2[] points = new B2Vec2[constants.B2_MAX_POLYGON_VERTICES];
-        public B2FixedArray8<B2Vec2> points;
-
-        /// The number of points
-        public int count;
-
-        /// The radius around the point cloud
-        public float radius;
+        /// A generic shape
+        public B2ShapeProxy proxy;
 
         /// The translation of the shape cast
         public B2Vec2 translation;
 
         /// The maximum fraction of the translation to consider, typically 1
         public float maxFraction;
+        
+        /// Allow shape cast to encroach when initially touching. This only works if the radius is greater than zero.
+        public bool canEncroach;
     }
 }

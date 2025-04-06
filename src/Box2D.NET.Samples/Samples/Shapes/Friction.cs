@@ -32,7 +32,7 @@ public class Friction : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
 
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -68,7 +68,7 @@ public class Friction : Sample
                 bodyDef.position = new B2Vec2(-15.0f + 4.0f * i, 28.0f);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
-                shapeDef.friction = friction[i];
+                shapeDef.material.friction = friction[i];
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }
         }

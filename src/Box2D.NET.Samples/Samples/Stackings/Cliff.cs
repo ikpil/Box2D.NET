@@ -85,7 +85,7 @@ public class Cliff : Sample
 
         {
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.01f;
+            shapeDef.material.friction = 0.01f;
             bodyDef.linearVelocity = new B2Vec2(2.0f * sign, 0.0f);
 
             float offset = m_flip ? -4.0f : 0.0f;
@@ -105,7 +105,7 @@ public class Cliff : Sample
 
         {
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.01f;
+            shapeDef.material.friction = 0.01f;
             bodyDef.linearVelocity = new B2Vec2(2.5f * sign, 0.0f);
 
             bodyDef.position = new B2Vec2(-11.0f, 4.5f);
@@ -123,7 +123,7 @@ public class Cliff : Sample
 
         {
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.friction = 0.2f;
+            shapeDef.material.friction = 0.2f;
             bodyDef.linearVelocity = new B2Vec2(1.5f * sign, 0.0f);
 
             float offset = m_flip ? 4.0f : 0.0f;
@@ -142,9 +142,9 @@ public class Cliff : Sample
         }
     }
 
-    public override void UpdateUI()
+    public override void UpdateGui()
     {
-        base.UpdateUI();
+        base.UpdateGui();
         
         float height = 60.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

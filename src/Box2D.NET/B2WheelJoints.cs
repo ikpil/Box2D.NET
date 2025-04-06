@@ -531,24 +531,24 @@ namespace Box2D.NET
             B2HexColor c4 = B2HexColor.b2_colorDimGray;
             B2HexColor c5 = B2HexColor.b2_colorBlue;
 
-            draw.DrawSegment(pA, pB, c5, draw.context);
+            draw.DrawSegmentFcn(pA, pB, c5, draw.context);
 
             if (joint.enableLimit)
             {
                 B2Vec2 lower = b2MulAdd(pA, joint.lowerTranslation, axis);
                 B2Vec2 upper = b2MulAdd(pA, joint.upperTranslation, axis);
                 B2Vec2 perp = b2LeftPerp(axis);
-                draw.DrawSegment(lower, upper, c1, draw.context);
-                draw.DrawSegment(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
-                draw.DrawSegment(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
+                draw.DrawSegmentFcn(lower, upper, c1, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
             }
             else
             {
-                draw.DrawSegment(b2MulSub(pA, 1.0f, axis), b2MulAdd(pA, 1.0f, axis), c1, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(pA, 1.0f, axis), b2MulAdd(pA, 1.0f, axis), c1, draw.context);
             }
 
-            draw.DrawPoint(pA, 5.0f, c1, draw.context);
-            draw.DrawPoint(pB, 5.0f, c4, draw.context);
+            draw.DrawPointFcn(pA, 5.0f, c1, draw.context);
+            draw.DrawPointFcn(pB, 5.0f, c4, draw.context);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace Box2D.NET
         public B2Vec2 localAnchorB;
 
         /// The bodyB angle minus bodyA angle in the reference state (radians)
+        /// todo maybe make this a b2Rot
         public float referenceAngle;
 
         /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.

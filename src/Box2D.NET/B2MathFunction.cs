@@ -227,6 +227,12 @@ namespace Box2D.NET
             return n;
         }
 
+        public static bool b2IsNormalized(B2Vec2 a)
+        {
+            float aa = b2Dot(a, a);
+            return b2AbsFloat(1.0f - aa) < 10.0f * FLT_EPSILON;
+        }
+
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector. Also
         /// outputs the length.
         public static B2Vec2 b2GetLengthAndNormalize(ref float length, B2Vec2 v)
@@ -289,7 +295,7 @@ namespace Box2D.NET
 
 
         /// Is this rotation normalized?
-        public static bool b2IsNormalized(B2Rot q)
+        public static bool b2IsNormalizedRot(B2Rot q)
         {
             // larger tolerance due to failure on mingw 32-bit
             float qq = q.s * q.s + q.c * q.c;
@@ -548,9 +554,14 @@ namespace Box2D.NET
         }
 
 
+        /// Signed separation of a point from a plane
+        public static float b2PlaneSeparation(B2Plane plane, B2Vec2 point)
+        {
+            return b2Dot(plane.normal, point) - plane.offset;
+        }
+
+
         /**@}*/
-
-
         //Debug.Assert( sizeof( int ) == sizeof( int ), "Box2D expects int and int to be the same" );
 
         /// Is this a valid number? Not NaN or infinity.
@@ -598,7 +609,12 @@ namespace Box2D.NET
                 return false;
             }
 
-            return b2IsNormalized(q);
+            return b2IsNormalizedRot(q);
+        }
+
+        public static bool b2IsValidPlane(B2Plane a)
+        {
+            return b2IsValidVec2(a.normal) && b2IsNormalized(a.normal) && b2IsValidFloat(a.offset);
         }
 
         /// Compute an approximate arctangent in the range [-pi, pi]

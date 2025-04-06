@@ -216,9 +216,11 @@ namespace Box2D.NET
 
 
         // This is called from b2DynamicTree_Query for continuous collision
-        public static bool b2ContinuousQueryCallback(int proxyId, int shapeId, ref B2ContinuousContext context)
+        public static bool b2ContinuousQueryCallback(int proxyId, ulong userData, ref B2ContinuousContext context)
         {
             B2_UNUSED(proxyId);
+
+            int shapeId = (int)userData;
 
             ref B2ContinuousContext continuousContext = ref context;
             B2Shape fastShape = continuousContext.fastShape;
@@ -301,6 +303,7 @@ namespace Box2D.NET
                     B2Vec2 c2 = continuousContext.centroid2;
                     float offset2 = b2Cross(b2Sub(c2, p1), e);
 
+                    // todo this should use the min extent of the fast shape, not the body
                     const float allowedFraction = 0.25f;
                     if (offset1 < 0.0f || offset1 - offset2 < allowedFraction * fastBodySim.minExtent)
                     {
@@ -357,7 +360,9 @@ namespace Box2D.NET
             {
                 // fallback to TOI of a small circle around the fast shape centroid
                 B2Vec2 centroid = b2GetShapeCentroid(fastShape);
-                input.proxyB = b2MakeProxy(centroid, 1, B2_SPECULATIVE_DISTANCE);
+                B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
+                float radius = 0.25f * extent.minExtent;
+                input.proxyB = b2MakeProxy(centroid, 1, radius);
                 output = b2TimeOfImpact(ref input);
                 if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                 {
@@ -468,6 +473,10 @@ namespace Box2D.NET
                 fastBodySim.center = c;
                 fastBodySim.rotation0 = q;
                 fastBodySim.center0 = c;
+
+                // Update body move event
+                ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
+                @event.transform = transform;
 
                 // Prepare AABBs for broad-phase.
                 // Even though a body is fast, it may not move much. So the
@@ -1218,7 +1227,7 @@ public enum b2SolverBlockType
             {
                 // Prepare buffers for bullets
                 b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
-                stepContext.bulletBodies = b2AllocateArenaItem<int>(world.stackAllocator, awakeBodyCount, "bullet bodies");
+                stepContext.bulletBodies = b2AllocateArenaItem<int>(world.arena, awakeBodyCount, "bullet bodies");
 
                 b2TracyCZoneNC(B2TracyCZone.prepare_stages, "Prepare Stages", B2HexColor.b2_colorDarkOrange, true);
                 ulong prepareTicks = b2GetTicks();
@@ -1274,11 +1283,11 @@ public enum b2SolverBlockType
                 // The blocks are a mix of SIMD contact blocks and joint blocks
                 Debug.Assert(B2FixedArray12<int>.Size == B2_GRAPH_COLOR_COUNT);
                 B2FixedArray12<int> arrayActiveColorIndices = new B2FixedArray12<int>();
-                
+
                 B2FixedArray12<int> arrayColorContactCounts = new B2FixedArray12<int>();
                 B2FixedArray12<int> arrayColorContactBlockSizes = new B2FixedArray12<int>();
                 B2FixedArray12<int> arrayColorContactBlockCounts = new B2FixedArray12<int>();
-                
+
                 B2FixedArray12<int> arrayColorJointCounts = new B2FixedArray12<int>();
                 B2FixedArray12<int> arrayColorJointBlockSizes = new B2FixedArray12<int>();
                 B2FixedArray12<int> arrayColorJointBlockCounts = new B2FixedArray12<int>();
@@ -1363,20 +1372,20 @@ public enum b2SolverBlockType
 
                 // Gather contact pointers for easy parallel-for traversal. Some may be NULL due to SIMD remainders.
                 ArraySegment<B2ContactSim> contacts = b2AllocateArenaItem<B2ContactSim>(
-                    world.stackAllocator, B2_SIMD_WIDTH * simdContactCount, "contact pointers");
+                    world.arena, B2_SIMD_WIDTH * simdContactCount, "contact pointers");
 
                 // Gather joint pointers for easy parallel-for traversal.
                 ArraySegment<B2JointSim> joints =
-                    b2AllocateArenaItem<B2JointSim>(world.stackAllocator, awakeJointCount, "joint pointers");
+                    b2AllocateArenaItem<B2JointSim>(world.arena, awakeJointCount, "joint pointers");
 
                 Debug.Assert(B2FixedArray4<B2ContactConstraintSIMD>.Size == B2_SIMD_WIDTH);
                 int simdConstraintSize = b2GetContactConstraintSIMDByteCount();
                 ArraySegment<B2ContactConstraintSIMD> simdContactConstraints =
-                    b2AllocateArenaItem<B2ContactConstraintSIMD>(world.stackAllocator, simdContactCount /** simdConstraintSize */, "contact constraint");
+                    b2AllocateArenaItem<B2ContactConstraintSIMD>(world.arena, simdContactCount /** simdConstraintSize */, "contact constraint");
 
                 int overflowContactCount = colors[B2_OVERFLOW_INDEX].contactSims.count;
                 ArraySegment<B2ContactConstraint> overflowContactConstraints = b2AllocateArenaItem<B2ContactConstraint>(
-                    world.stackAllocator, overflowContactCount, "overflow contact constraint");
+                    world.arena, overflowContactCount, "overflow contact constraint");
 
                 graph.colors[B2_OVERFLOW_INDEX].overflowConstraints = overflowContactConstraints;
 
@@ -1469,11 +1478,11 @@ public enum b2SolverBlockType
                 // b2_stageStoreImpulses
                 stageCount += 1;
 
-                ArraySegment<B2SolverStage> stages = b2AllocateArenaItem<B2SolverStage>(world.stackAllocator, stageCount, "stages");
-                ArraySegment<B2SolverBlock> bodyBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, bodyBlockCount, "body blocks");
-                ArraySegment<B2SolverBlock> contactBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, contactBlockCount, "contact blocks");
-                ArraySegment<B2SolverBlock> jointBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, jointBlockCount, "joint blocks");
-                ArraySegment<B2SolverBlock> graphBlocks = b2AllocateArenaItem<B2SolverBlock>(world.stackAllocator, graphBlockCount, "graph blocks");
+                ArraySegment<B2SolverStage> stages = b2AllocateArenaItem<B2SolverStage>(world.arena, stageCount, "stages");
+                ArraySegment<B2SolverBlock> bodyBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, bodyBlockCount, "body blocks");
+                ArraySegment<B2SolverBlock> contactBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, contactBlockCount, "contact blocks");
+                ArraySegment<B2SolverBlock> jointBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, jointBlockCount, "joint blocks");
+                ArraySegment<B2SolverBlock> graphBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, graphBlockCount, "graph blocks");
 
                 // Split an awake island. This modifies:
                 // - stack allocator
@@ -1751,15 +1760,15 @@ public enum b2SolverBlockType
                     world.finishTaskFcn(finalizeBodiesTask, world.userTaskContext);
                 }
 
-                b2FreeArenaItem(world.stackAllocator, graphBlocks);
-                b2FreeArenaItem(world.stackAllocator, jointBlocks);
-                b2FreeArenaItem(world.stackAllocator, contactBlocks);
-                b2FreeArenaItem(world.stackAllocator, bodyBlocks);
-                b2FreeArenaItem(world.stackAllocator, stages);
-                b2FreeArenaItem(world.stackAllocator, overflowContactConstraints);
-                b2FreeArenaItem(world.stackAllocator, simdContactConstraints);
-                b2FreeArenaItem(world.stackAllocator, joints);
-                b2FreeArenaItem(world.stackAllocator, contacts);
+                b2FreeArenaItem(world.arena, graphBlocks);
+                b2FreeArenaItem(world.arena, jointBlocks);
+                b2FreeArenaItem(world.arena, contactBlocks);
+                b2FreeArenaItem(world.arena, bodyBlocks);
+                b2FreeArenaItem(world.arena, stages);
+                b2FreeArenaItem(world.arena, overflowContactConstraints);
+                b2FreeArenaItem(world.arena, simdContactConstraints);
+                b2FreeArenaItem(world.arena, joints);
+                b2FreeArenaItem(world.arena, contacts);
 
                 world.profile.transforms = b2GetMilliseconds(transformTicks);
                 b2TracyCZoneEnd(B2TracyCZone.update_transforms);
@@ -1799,8 +1808,8 @@ public enum b2SolverBlockType
                             ref B2ManifoldPoint mp = ref contactSim.manifold.points[k];
                             float approachSpeed = -mp.normalVelocity;
 
-                            // Need to check max impulse because the point may be speculative and not colliding
-                            if (approachSpeed > @event.approachSpeed && mp.maxNormalImpulse > 0.0f)
+                            // Need to check total impulse because the point may be speculative and not colliding
+                            if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
                             {
                                 @event.approachSpeed = approachSpeed;
                                 @event.point = mp.point;
@@ -1823,7 +1832,7 @@ public enum b2SolverBlockType
                     }
                 }
 
-                world.profile.hitEvents = b2GetMillisecondsAndReset(ref hitTicks);
+                world.profile.hitEvents = b2GetMilliseconds(hitTicks);
                 b2TracyCZoneEnd(B2TracyCZone.hit_events);
             }
 
@@ -1998,7 +2007,7 @@ public enum b2SolverBlockType
             }
 
             // Need to free this even if no bullets got processed.
-            b2FreeArenaItem(world.stackAllocator, stepContext.bulletBodies);
+            b2FreeArenaItem(world.arena, stepContext.bulletBodies);
             stepContext.bulletBodies = null;
             b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
 
