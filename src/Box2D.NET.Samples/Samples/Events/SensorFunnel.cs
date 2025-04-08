@@ -4,7 +4,6 @@
 
 using System.Diagnostics;
 using System.Numerics;
-using Box2D.NET.Samples.Extensions;
 using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Shared;
 using ImGuiNET;

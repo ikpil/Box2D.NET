@@ -4,10 +4,10 @@
 
 namespace Box2D.NET
 {
-    /// A null joint is used to disable collision between two specific bodies.
+    /// A filter joint is used to disable collision between two specific bodies.
     ///
-    /// @ingroup null_joint
-    public struct B2NullJointDef
+    /// @ingroup filter_joint
+    public struct b2FilterJointDef
     {
         /// The first attached body.
         public B2BodyId bodyIdA;

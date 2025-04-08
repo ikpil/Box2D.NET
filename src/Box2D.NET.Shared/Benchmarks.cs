@@ -112,7 +112,7 @@ namespace Box2D.NET.Shared
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.enableSleep = false;
+                //bodyDef.enableSleep = false;
 
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.density = 1.0f;

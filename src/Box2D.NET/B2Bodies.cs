@@ -825,7 +825,7 @@ namespace Box2D.NET
         /// Set the velocity to reach the given transform after a given time step.
         /// The result will be close but maybe not exact. This is meant for kinematic bodies.
         /// This will automatically wake the body if asleep.
-        public static void b2Body_SetVelocityForTargetTransform(B2BodyId bodyId, B2Transform target, float timeStep)
+        public static void b2Body_SetKinematicTarget(B2BodyId bodyId, B2Transform target, float timeStep)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);

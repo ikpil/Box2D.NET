@@ -15,6 +15,11 @@ using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
+// This sample shows some aspects of Box2D continuous collision:
+// - bullet dynamic bodies which support continuous collision with non-bullet dynamic bodies
+// - prevention of chain reaction tunneling
+// Try disabling continuous collision and firing a bullet. You might see a bullet push a
+// a through the static wall.
 public class VerticalStack : Sample
 {
     private static readonly int SampleVerticalStack = SampleFactory.Shared.RegisterSample("Stacking", "Vertical Stack", Create);
@@ -53,14 +58,14 @@ public class VerticalStack : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            bodyDef.position = new B2Vec2(0.0f, 0.0f);
             B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             //B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             //b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
-            B2Segment segment = new B2Segment(new B2Vec2(10.0f, 1.0f), new B2Vec2(10.0f, 21.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 20.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
             
             segment = new B2Segment( new B2Vec2(-30.0f, 0.0f ), new B2Vec2( 30.0f, 0.0f ) );
@@ -78,7 +83,7 @@ public class VerticalStack : Sample
         }
 
         m_shapeType = ShapeType.e_boxShape;
-        m_rowCount = 2;
+        m_rowCount = 12;
         m_columnCount = 1;
         m_bulletCount = 1;
         m_bulletType = ShapeType.e_circleShape;
@@ -100,8 +105,7 @@ public class VerticalStack : Sample
         B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
         circle.radius = 0.5f;
 
-        B2Polygon box = b2MakeSquare(0.5f);
-        // b2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
+        B2Polygon box = b2MakeRoundedBox(0.45f, 0.45f, 0.05f);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
@@ -195,7 +199,7 @@ public class VerticalStack : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-25.0f - i, 6.0f);
+            bodyDef.position = new B2Vec2(-26.7f - i, 6.0f);
             float speed = RandomFloatRange(200.0f, 300.0f);
             bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
             bodyDef.isBullet = true;

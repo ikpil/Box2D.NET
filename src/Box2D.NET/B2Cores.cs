@@ -171,7 +171,7 @@ namespace Box2D.NET
             Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
         }
 
-        public static void B2_CHECK_DEF(ref B2NullJointDef def)
+        public static void B2_CHECK_DEF(ref b2FilterJointDef def)
         {
             Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
         }
