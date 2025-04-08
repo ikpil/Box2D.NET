@@ -33,7 +33,7 @@ namespace Box2D.NET.Shared
         }
 
         // Random integer in range [lo, hi]
-        public static float RandomIntRange(int lo, int hi)
+        public static int RandomIntRange(int lo, int hi)
         {
             return lo + RandomInt() % (hi - lo + 1);
         }

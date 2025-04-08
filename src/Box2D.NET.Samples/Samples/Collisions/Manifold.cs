@@ -18,7 +18,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 public class Manifold : Sample
 {
     private static readonly int SampleManifoldIndex = SampleFactory.Shared.RegisterSample("Collision", "Manifold", Create);
-    
+
     private B2SimplexCache m_smgroxCache1;
     private B2SimplexCache m_smgroxCache2;
     private B2SimplexCache m_smgcapCache1;
@@ -36,6 +36,7 @@ public class Manifold : Sample
 
     private bool m_dragging;
     private bool m_rotating;
+    private bool m_showCount;
     private bool m_showIds;
     private bool m_showAnchors;
     private bool m_showSeparation;
@@ -62,8 +63,8 @@ public class Manifold : Sample
         m_smgcapCache2 = b2_emptySimplexCache;
 
         m_transform = b2Transform_identity;
-        m_transform.p.X = 1.0f;
-        m_transform.p.Y = 0.0f;
+        m_transform.p.X = 0.17f;
+        m_transform.p.Y = 1.12f;
         // m_transform.q = b2MakeRot( 0.5f * b2_pi );
         m_angle = 0.0f;
         m_round = 0.1f;
@@ -74,6 +75,7 @@ public class Manifold : Sample
 
         m_dragging = false;
         m_rotating = false;
+        m_showCount = false;
         m_showIds = false;
         m_showSeparation = false;
         m_showAnchors = false;
@@ -86,12 +88,14 @@ public class Manifold : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
-        float height = 300.0f;
+
+        float height = 320.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        ImGui.SetNextWindowSize(new Vector2(340.0f, height));
 
         ImGui.Begin("Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+
+        ImGui.PushItemWidth(280.0f);
 
         ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
         ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
@@ -102,6 +106,13 @@ public class Manifold : Sample
         }
 
         ImGui.SliderFloat("round", ref m_round, 0.0f, 0.4f, "%.1f");
+
+        ImGui.PopItemWidth();
+
+        ImGui.Separator();
+
+        ImGui.Checkbox("show count", ref m_showCount);
+
         ImGui.Checkbox("show ids", ref m_showIds);
         ImGui.Checkbox("show separation", ref m_showSeparation);
         ImGui.Checkbox("show anchors", ref m_showAnchors);
@@ -166,13 +177,19 @@ public class Manifold : Sample
 
     void DrawManifold(ref B2Manifold manifold, B2Vec2 origin1, B2Vec2 origin2)
     {
+        if (m_showCount)
+        {
+            B2Vec2 p = 0.5f * (origin1 + origin2);
+            m_context.draw.DrawString(p, $"{manifold.pointCount}");
+        }
+
         for (int i = 0; i < manifold.pointCount; ++i)
         {
             ref B2ManifoldPoint mp = ref manifold.points[i];
 
             B2Vec2 p1 = mp.point;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
-            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorViolet);
 
             if (m_showAnchors)
             {
@@ -216,6 +233,7 @@ public class Manifold : Sample
             m_smgcapCache2 = b2_emptySimplexCache;
         }
 
+#if ENABLED
         // circle-circle
         {
             B2Circle circle1 = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
@@ -363,7 +381,9 @@ public class Manifold : Sample
         }
 
         offset = new B2Vec2(-10.0f, 0.0f);
+#endif
 
+#if ENABLED
         // square-square
         {
             B2Polygon box1 = b2MakeSquare(0.5f);
@@ -462,6 +482,7 @@ public class Manifold : Sample
 
             offset = b2Add(offset, increment);
         }
+#endif
 
         // wox-wox
         {
@@ -483,6 +504,7 @@ public class Manifold : Sample
             offset = b2Add(offset, increment);
         }
 
+#if ENABLED
         // wox-wox
         {
             B2Vec2[] p1s = new B2Vec2[3] { new B2Vec2(0.175740838f, 0.224936664f), new B2Vec2(-0.301293969f, 0.194021404f), new B2Vec2(-0.105151534f, -0.432157338f) };
@@ -680,5 +702,6 @@ public class Manifold : Sample
 
             offset.X += 2.0f * increment.X;
         }
+#endif
     }
 }

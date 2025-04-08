@@ -22,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 
 public class CastWorld : Sample
 {
-    private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Ray Cast World", Create);
+    private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Cast World", Create);
 
     enum Mode
     {

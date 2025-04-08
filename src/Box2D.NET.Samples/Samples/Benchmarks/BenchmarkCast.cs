@@ -128,7 +128,7 @@ public class BenchmarkCast : Sample
                         box = b2MakeBox(halfWidth, ratio * halfWidth);
                     }
 
-                    int category = (int)RandomIntRange(0, 2);
+                    int category = RandomIntRange(0, 2);
                     shapeDef.filter.categoryBits = (ulong)(1 << category);
                     if (category == 0)
                     {

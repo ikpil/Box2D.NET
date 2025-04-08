@@ -601,14 +601,11 @@ namespace Box2D.NET
             float upper2 = b2Dot(b2Sub(v21, v11), tangent);
             float lower2 = b2Dot(b2Sub(v22, v11), tangent);
 
-            // This check can fail slightly due to mismatch with GJK code.
-            // Perhaps fall back to a single point here? Otherwise we get two coincident points.
-            // if (upper2 < lower1 || upper1 < lower2)
-            //{
-            //	// numeric failure
-            //	Debug.Assert(false);
-            //	return manifold;
-            //}
+            // Are the segments disjoint?
+            if (upper2 < lower1 || upper1 < lower2)
+            {
+                return manifold;
+            }
 
             B2Vec2 vLower;
             if (lower2 < lower1 && upper2 - lower2 > FLT_EPSILON)
@@ -748,6 +745,8 @@ namespace Box2D.NET
         public static B2Manifold b2CollidePolygons(ref B2Polygon polygonA, B2Transform xfA, ref B2Polygon polygonB, B2Transform xfB)
         {
             B2Vec2 origin = polygonA.vertices[0];
+            float linearSlop = B2_LINEAR_SLOP;
+            float speculativeDistance = B2_SPECULATIVE_DISTANCE;
 
             // Shift polyA to origin
             // pw = q * pb + p
@@ -785,7 +784,7 @@ namespace Box2D.NET
 
             float radius = localPolyA.radius + localPolyB.radius;
 
-            if (separationA > B2_SPECULATIVE_DISTANCE + radius || separationB > B2_SPECULATIVE_DISTANCE + radius)
+            if (separationA > speculativeDistance + radius || separationB > speculativeDistance + radius)
             {
                 return new B2Manifold();
             }
@@ -839,8 +838,114 @@ namespace Box2D.NET
 
             // Using slop here to ensure vertex-vertex normal vectors can be safely normalized
             // todo this means edge clipping needs to handle slightly non-overlapping edges.
-            if (separationA > 0.1f * B2_LINEAR_SLOP || separationB > 0.1f * B2_LINEAR_SLOP)
+            if (separationA > 0.1f * linearSlop || separationB > 0.1f * linearSlop)
             {
+#if ENABLED
+                // Edges are disjoint. Find closest points between reference edge and incident edge
+                // Reference edge on polygon A
+                int i11 = edgeA;
+                int i12 = edgeA + 1 < localPolyA.count ? edgeA + 1 : 0;
+                int i21 = edgeB;
+                int i22 = edgeB + 1 < localPolyB.count ? edgeB + 1 : 0;
+
+                B2Vec2 v11 = localPolyA.vertices[i11];
+                B2Vec2 v12 = localPolyA.vertices[i12];
+                B2Vec2 v21 = localPolyB.vertices[i21];
+                B2Vec2 v22 = localPolyB.vertices[i22];
+
+                B2SegmentDistanceResult result = b2SegmentDistance(v11, v12, v21, v22);
+                Debug.Assert(result.distanceSquared > 0.0f);
+                float distance = MathF.Sqrt(result.distanceSquared);
+                float separation = distance - radius;
+
+                if (distance - radius > speculativeDistance)
+                {
+                    // This can happen in the vertex-vertex case
+                    return manifold;
+                }
+
+                // Attempt to clip edges
+                manifold = b2ClipPolygons(ref localPolyA, ref localPolyB, edgeA, edgeB, flip);
+
+                float minSeparation = float.MaxValue;
+                for (int i = 0; i < manifold.pointCount; ++i)
+                {
+                    minSeparation = b2MinFloat(minSeparation, manifold.points[i].separation);
+                }
+
+                // Does vertex-vertex have substantially larger separation?
+                if (separation + 0.1f * linearSlop < minSeparation)
+                {
+                    if (result.fraction1 == 0.0f && result.fraction2 == 0.0f)
+                    {
+                        // v11 - v21
+                        B2Vec2 normal = b2Sub(v21, v11);
+                        float invDistance = 1.0f / distance;
+                        normal.X *= invDistance;
+                        normal.Y *= invDistance;
+
+                        B2Vec2 c1 = b2MulAdd(v11, localPolyA.radius, normal);
+                        B2Vec2 c2 = b2MulAdd(v21, -localPolyB.radius, normal);
+
+                        manifold.normal = normal;
+                        manifold.points[0].anchorA = b2Lerp(c1, c2, 0.5f);
+                        manifold.points[0].separation = distance - radius;
+                        manifold.points[0].id = B2_MAKE_ID(i11, i21);
+                        manifold.pointCount = 1;
+                    }
+                    else if (result.fraction1 == 0.0f && result.fraction2 == 1.0f)
+                    {
+                        // v11 - v22
+                        B2Vec2 normal = b2Sub(v22, v11);
+                        float invDistance = 1.0f / distance;
+                        normal.X *= invDistance;
+                        normal.Y *= invDistance;
+
+                        B2Vec2 c1 = b2MulAdd(v11, localPolyA.radius, normal);
+                        B2Vec2 c2 = b2MulAdd(v22, -localPolyB.radius, normal);
+
+                        manifold.normal = normal;
+                        manifold.points[0].anchorA = b2Lerp(c1, c2, 0.5f);
+                        manifold.points[0].separation = distance - radius;
+                        manifold.points[0].id = B2_MAKE_ID(i11, i22);
+                        manifold.pointCount = 1;
+                    }
+                    else if (result.fraction1 == 1.0f && result.fraction2 == 0.0f)
+                    {
+                        // v12 - v21
+                        B2Vec2 normal = b2Sub(v21, v12);
+                        float invDistance = 1.0f / distance;
+                        normal.X *= invDistance;
+                        normal.Y *= invDistance;
+
+                        B2Vec2 c1 = b2MulAdd(v12, localPolyA.radius, normal);
+                        B2Vec2 c2 = b2MulAdd(v21, -localPolyB.radius, normal);
+
+                        manifold.normal = normal;
+                        manifold.points[0].anchorA = b2Lerp(c1, c2, 0.5f);
+                        manifold.points[0].separation = distance - radius;
+                        manifold.points[0].id = B2_MAKE_ID(i12, i21);
+                        manifold.pointCount = 1;
+                    }
+                    else if (result.fraction1 == 1.0f && result.fraction2 == 1.0f)
+                    {
+                        // v12 - v22
+                        B2Vec2 normal = b2Sub(v22, v12);
+                        float invDistance = 1.0f / distance;
+                        normal.X *= invDistance;
+                        normal.Y *= invDistance;
+
+                        B2Vec2 c1 = b2MulAdd(v12, localPolyA.radius, normal);
+                        B2Vec2 c2 = b2MulAdd(v22, -localPolyB.radius, normal);
+
+                        manifold.normal = normal;
+                        manifold.points[0].anchorA = b2Lerp(c1, c2, 0.5f);
+                        manifold.points[0].separation = distance - radius;
+                        manifold.points[0].id = B2_MAKE_ID(i12, i22);
+                        manifold.pointCount = 1;
+                    }
+                }
+#else
                 // Polygons are disjoint. Find closest points between reference edge and incident edge
                 // Reference edge on polygon A
                 int i11 = edgeA;
@@ -956,6 +1061,7 @@ namespace Box2D.NET
                     // Edge region
                     manifold = b2ClipPolygons(ref localPolyA, ref localPolyB, edgeA, edgeB, flip);
                 }
+#endif
             }
             else
             {

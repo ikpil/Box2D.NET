@@ -10,18 +10,18 @@ using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-// This sample shows how to use a null joint to prevent collision between two bodies.
-// This is more specific than filters. It also shows that sleeping is coupled by the null joint.
-public class NullJoint : Sample
+// This sample shows how to use a filter joint to prevent collision between two bodies.
+// This is more specific than shape filters. It also shows that sleeping is coupled by the filter joint.
+public class FilterJoint : Sample
 {
-    private static readonly int SampleNullJoint = SampleFactory.Shared.RegisterSample("Joints", "Null Joint", Create);
+    private static readonly int SampleFilterJoint = SampleFactory.Shared.RegisterSample("Joints", "Filter Joint", Create);
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
-        return new NullJoint(ctx, settings);
+        return new FilterJoint(ctx, settings);
     }
 
-    public NullJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public FilterJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
     {
         if (settings.restart == false)
         {
@@ -52,11 +52,11 @@ public class NullJoint : Sample
             B2BodyId bodyId2 = b2CreateBody(m_worldId, ref bodyDef);
             b2CreatePolygonShape(bodyId2, ref shapeDef, ref box);
 
-            B2NullJointDef jointDef = b2DefaultNullJointDef();
+            b2FilterJointDef jointDef = b2DefaultFilterJointDef();
             jointDef.bodyIdA = bodyId1;
             jointDef.bodyIdB = bodyId2;
 
-            b2CreateNullJoint(m_worldId, ref jointDef);
+            b2CreateFilterJoint(m_worldId, ref jointDef);
         }
     }
 }

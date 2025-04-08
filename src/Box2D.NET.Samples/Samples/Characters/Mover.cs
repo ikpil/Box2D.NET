@@ -13,6 +13,8 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Movers;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Joints;
 
 namespace Box2D.NET.Samples.Samples.Characters;
 
@@ -26,26 +28,40 @@ public class Mover : Sample
         public bool clipVelocity;
     }
 
-    public class CastResult
-    {
-        public B2Vec2 point;
-        public float fraction;
-        public bool hit;
-    }
-
     private const ulong StaticBit = 0x0001;
     private const ulong MoverBit = 0x0002;
     private const ulong DynamicBit = 0x0004;
     private const ulong AllBits = ~0u;
 
+    public enum PogoShape
+    {
+        PogoPoint,
+        PogoCircle,
+        PogoBox
+    }
+
+    public class CastResult
+    {
+        public B2Vec2 point;
+        public B2BodyId bodyId;
+        public float fraction;
+        public bool hit;
+    }
+
     private const int m_planeCapacity = 8;
-    private const float m_jumpSpeed = 10.0f;
-    private const float m_maxSpeed = 4.0f;
-    private const float m_minSpeed = 0.01f;
-    private const float m_stopSpeed = 1.0f;
-    private const float m_accelerate = 20.0f;
-    private const float m_friction = 2.0f;
-    private const float m_gravity = 15.0f;
+
+    private float m_jumpSpeed = 10.0f;
+    private float m_maxSpeed = 6.0f;
+    private float m_minSpeed = 0.1f;
+    private float m_stopSpeed = 3.0f;
+    private float m_accelerate = 20.0f;
+    private float m_airSteer = 0.2f;
+    private float m_friction = 8.0f;
+    private float m_gravity = 30.0f;
+    private float m_pogoHertz = 5.0f;
+    private float m_pogoDampingRatio = 0.8f;
+
+    private int m_pogoShape = (int)PogoShape.PogoBox;
 
     private B2Transform m_transform;
     private B2Vec2 m_velocity;
@@ -56,6 +72,7 @@ public class Mover : Sample
     private int m_totalIterations;
     private float m_pogoVelocity;
     private bool m_onGround;
+    private bool m_lockCamera;
 
     private int m_deltaX;
     private int m_deltaY;
@@ -69,6 +86,7 @@ public class Mover : Sample
     {
         CastResult result = (CastResult)context;
         result.point = point;
+        result.bodyId = b2Shape_GetBody(shapeId);
         result.fraction = fraction;
         result.hit = true;
         return fraction;
@@ -82,22 +100,24 @@ public class Mover : Sample
             m_context.camera.m_zoom = 10.0f;
         }
 
+        settings.drawJoints = false;
         m_transform = new B2Transform(new B2Vec2(2.0f, 8.0f), b2Rot_identity);
-
         m_velocity = new B2Vec2(0.0f, 0.0f);
         m_capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.3f);
 
+        B2BodyId groundId1;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId1 = b2CreateBody(m_worldId, ref bodyDef);
 
             const string path =
-                "M 2.6458333,201.08333 H 293.68751 l -10e-6,-55.5625 h -2.64584 l 2e-5,52.91667 h -23.8125 l -39.68751,-13.22917 "
-                + "h -26.45833 l -23.8125,10.58333 H 142.875 v -5.29167 h -5.29166 v 5.29167 H 119.0625 v -2.64583 h -2.64583 v "
-                + "-2.64584 h -2.64584 v -2.64583 H 111.125 v -2.64583 H 84.666668 v -2.64583 h -5.291666 v -2.64584 h -5.291667 v "
-                + "-2.64583 H 68.791668 V 174.625 h -5.291666 v -2.64584 H 52.916669 L 39.6875,177.27083 H 34.395833 L "
-                + "23.8125,185.20833 H 15.875 L 5.2916669,187.85416 V 153.45833 H 2.6458333 v 47.625";
+                "M 2.6458333,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 "
+                + "-31.73269,7.9375 -21.16667,2.64583 -23.8125,10.58333 H 142.875 v -5.29167 h -5.29166 v 5.29167 H 119.0625 v "
+                + "-2.64583 h -2.64583 v -2.64584 h -2.64584 v -2.64583 H 111.125 v -2.64583 H 84.666668 v -2.64583 h -5.291666 v "
+                + "-2.64584 h -5.291667 v -2.64583 H 68.791668 V 174.625 h -5.291666 v -2.64584 H 52.916669 L 39.6875,177.27083 H "
+                + "34.395833 L 23.8125,185.20833 H 15.875 L 5.2916669,187.85416 V 153.45833 H 2.6458333 v 47.625";
+
 
             B2Vec2[] points = new B2Vec2[64];
 
@@ -111,7 +131,82 @@ public class Mover : Sample
             chainDef.count = count;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId1, ref chainDef);
+        }
+
+        B2BodyId groundId2;
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(98.0f, 0.0f);
+            groundId2 = b2CreateBody(m_worldId, ref bodyDef);
+
+            const string path =
+                "M 2.6458333,201.08333 H 293.68751 l 0,-23.8125 h -23.8125 l 21.16667,21.16667 h -23.8125 l -39.68751,-13.22917 "
+                + "-26.45833,7.9375 -23.8125,2.64583 h -13.22917 l -0.0575,2.64584 h -5.29166 v -2.64583 l -7.86855,-1e-5 "
+                + "-0.0114,-2.64583 h -2.64583 l -2.64583,2.64584 h -7.9375 l -2.64584,2.64583 -2.58891,-2.64584 h -13.28609 v "
+                + "-2.64583 h -2.64583 v -2.64584 l -5.29167,1e-5 v -2.64583 h -2.64583 v -2.64583 l -5.29167,-1e-5 v -2.64583 h "
+                + "-2.64583 v -2.64584 h -5.291667 v -2.64583 H 92.60417 V 174.625 h -5.291667 v -2.64584 l -34.395835,1e-5 "
+                + "-7.9375,-2.64584 -7.9375,-2.64583 -5.291667,-5.29167 H 21.166667 L 13.229167,158.75 5.2916668,153.45833 H "
+                + "2.6458334 l -10e-8,47.625";
+
+            B2Vec2[] points = new B2Vec2[64];
+
+            B2Vec2 offset = new B2Vec2(0.0f, -200.0f);
+            float scale = 0.2f;
+
+            int count = SvgParser.ParsePath(path, offset, points, 64, scale, false);
+
+            B2ChainDef chainDef = b2DefaultChainDef();
+            chainDef.points = points;
+            chainDef.count = count;
+            chainDef.isLoop = true;
+
+            b2CreateChain(groundId2, ref chainDef);
+        }
+
+        {
+            B2Polygon box = b2MakeBox(0.5f, 0.125f);
+
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+            B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
+            jointDef.maxMotorTorque = 10.0f;
+            jointDef.enableMotor = true;
+            jointDef.hertz = 3.0f;
+            jointDef.dampingRatio = 0.8f;
+            jointDef.enableSpring = true;
+
+            float xBase = 48.7f;
+            float yBase = 9.2f;
+            int count = 50;
+            B2BodyId prevBodyId = groundId1;
+            for (int i = 0; i < count; ++i)
+            {
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_dynamicBody;
+                bodyDef.position = new B2Vec2(xBase + 0.5f + 1.0f * i, yBase);
+                bodyDef.angularDamping = 0.2f;
+                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+
+                B2Vec2 pivot = new B2Vec2(xBase + 1.0f * i, yBase);
+                jointDef.bodyIdA = prevBodyId;
+                jointDef.bodyIdB = bodyId;
+                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
+                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+
+                prevBodyId = bodyId;
+            }
+
+            {
+                B2Vec2 pivot = new B2Vec2(xBase + 1.0f * count, yBase);
+                jointDef.bodyIdA = prevBodyId;
+                jointDef.bodyIdB = groundId2;
+                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
+                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            }
         }
 
         {
@@ -119,7 +214,7 @@ public class Mover : Sample
             bodyDef.position = new B2Vec2(32.0f, 4.0f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            m_friendlyShape.maxPush = 0.05f;
+            m_friendlyShape.maxPush = 0.025f;
             m_friendlyShape.clipVelocity = false;
 
             shapeDef.filter = new B2Filter(MoverBit, AllBits, 0);
@@ -143,9 +238,7 @@ public class Mover : Sample
         m_totalIterations = 0;
         m_pogoVelocity = 0.0f;
         m_onGround = false;
-
-        m_deltaX = 0;
-        m_deltaY = 0;
+        m_lockCamera = true;
         m_planeCount = 0;
     }
 
@@ -159,7 +252,7 @@ public class Mover : Sample
             m_velocity.X = 0.0f;
             m_velocity.Y = 0.0f;
         }
-        else
+        else if (m_onGround)
         {
             // Linear damping above stopSpeed and fixed reduction below stopSpeed
             float control = speed < m_stopSpeed ? m_stopSpeed : speed;
@@ -189,7 +282,8 @@ public class Mover : Sample
         float addSpeed = desiredSpeed - currentSpeed;
         if (addSpeed > 0.0f)
         {
-            float accelSpeed = m_accelerate * m_maxSpeed * timeStep;
+            float steer = m_onGround ? 1.0f : m_airSteer;
+            float accelSpeed = steer * m_accelerate * m_maxSpeed * timeStep;
             if (accelSpeed > addSpeed)
             {
                 accelSpeed = addSpeed;
@@ -202,27 +296,60 @@ public class Mover : Sample
 
         float pogoRestLength = 3.0f * m_capsule.radius;
         float rayLength = pogoRestLength + m_capsule.radius;
-        B2Circle circle = new B2Circle(b2TransformPoint(ref m_transform, m_capsule.center1), 0.5f * m_capsule.radius);
-        B2Vec2 translation = new B2Vec2(0.0f, -rayLength + circle.radius);
+        B2Vec2 origin = b2TransformPoint(ref m_transform, m_capsule.center1);
+        B2Circle circle = new B2Circle(origin, 0.5f * m_capsule.radius);
+        float boxHalfWidth = 0.75f * m_capsule.radius;
+        float boxHalfHeight = 0.05f * m_capsule.radius;
+        B2Polygon box = b2MakeOffsetBox(boxHalfWidth, boxHalfHeight, origin, b2Rot_identity);
+        B2Vec2 translation;
         B2QueryFilter skipTeamFilter = new B2QueryFilter(1, ~2u);
         CastResult result = new CastResult();
-        b2World_CastCircle(m_worldId, ref circle, translation, skipTeamFilter, CastCallback, result);
+
+        if (m_pogoShape == (int)PogoShape.PogoPoint)
+        {
+            translation = new B2Vec2(0.0f, -rayLength);
+            b2World_CastRay(m_worldId, origin, translation, skipTeamFilter, CastCallback, result);
+        }
+        else if (m_pogoShape == (int)PogoShape.PogoCircle)
+        {
+            translation = new B2Vec2(0.0f, -rayLength + circle.radius);
+            b2World_CastCircle(m_worldId, ref circle, translation, skipTeamFilter, CastCallback, result);
+        }
+        else
+        {
+            translation = new B2Vec2(0.0f, -rayLength + boxHalfHeight);
+            b2World_CastPolygon(m_worldId, ref box, translation, skipTeamFilter, CastCallback, result);
+        }
 
         if (result.hit == false)
         {
             m_onGround = false;
             m_pogoVelocity = 0.0f;
 
-            m_context.draw.DrawSegment(circle.center, circle.center + translation, B2HexColor.b2_colorGray);
-            m_context.draw.DrawCircle(circle.center + translation, circle.radius, B2HexColor.b2_colorGray);
+            B2Vec2 delta = translation;
+            m_context.draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+
+            if (m_pogoShape == (int)PogoShape.PogoPoint)
+            {
+                m_context.draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorGray);
+            }
+            else if (m_pogoShape == (int)PogoShape.PogoCircle)
+            {
+                m_context.draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorGray);
+            }
+            else
+            {
+                B2Transform xf = new B2Transform(delta, b2Rot_identity);
+                m_context.draw.DrawSolidPolygon(ref xf, box.vertices.AsSpan(), box.count, 0.0f, B2HexColor.b2_colorGray);
+            }
         }
         else
         {
             m_onGround = true;
             float pogoCurrentLength = result.fraction * rayLength;
 
-            float zeta = 0.7f;
-            float hertz = 6.0f;
+            float zeta = m_pogoDampingRatio;
+            float hertz = m_pogoHertz;
             float omega = 2.0f * B2_PI * hertz;
             float omegaH = omega * timeStep;
 
@@ -230,8 +357,23 @@ public class Mover : Sample
                              (1.0f + 2.0f * zeta * omegaH + omegaH * omegaH);
 
             B2Vec2 delta = result.fraction * translation;
-            m_context.draw.DrawSegment(circle.center, circle.center + delta, B2HexColor.b2_colorPlum);
-            m_context.draw.DrawCircle(circle.center + delta, circle.radius, B2HexColor.b2_colorPlum);
+            m_context.draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+
+            if (m_pogoShape == (int)PogoShape.PogoPoint)
+            {
+                m_context.draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorPlum);
+            }
+            else if (m_pogoShape == (int)PogoShape.PogoCircle)
+            {
+                m_context.draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorPlum);
+            }
+            else
+            {
+                B2Transform xf = new B2Transform(delta, b2Rot_identity);
+                m_context.draw.DrawSolidPolygon(ref xf, box.vertices.AsSpan(), box.count, 0.0f, B2HexColor.b2_colorPlum);
+            }
+
+            b2Body_ApplyForce(result.bodyId, new B2Vec2(0.0f, -50.0f), result.point, true);
         }
 
         B2Vec2 target = m_transform.p + timeStep * m_velocity + timeStep * m_pogoVelocity * new B2Vec2(0.0f, 1.0f);
@@ -274,17 +416,43 @@ public class Mover : Sample
 
         m_velocity = b2ClipVector(m_velocity, m_planes, m_planeCount);
     }
-    
-#if FALSE
+
     public override void UpdateGui()
     {
-        ImGui.SetNextWindowPos(new Vector2(10.0f, 600.0f));
-        ImGui.SetNextWindowSize(new Vector2(240.0f, 80.0f));
-        ImGui.Begin("Mover", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        float height = 350.0f;
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 25.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(340.0f, height));
+
+        ImGui.Begin("Mover", 0);
+
+        ImGui.PushItemWidth(240.0f);
+
+        ImGui.SliderFloat("Jump Speed", ref m_jumpSpeed, 0.0f, 40.0f, "%.0f");
+        ImGui.SliderFloat("Min Speed", ref m_minSpeed, 0.0f, 1.0f, "%.2f");
+        ImGui.SliderFloat("Max Speed", ref m_maxSpeed, 0.0f, 20.0f, "%.0f");
+        ImGui.SliderFloat("Stop Speed", ref m_stopSpeed, 0.0f, 10.0f, "%.1f");
+        ImGui.SliderFloat("Accelerate", ref m_accelerate, 0.0f, 100.0f, "%.0f");
+        ImGui.SliderFloat("Friction", ref m_friction, 0.0f, 10.0f, "%.1f");
+        ImGui.SliderFloat("Gravity", ref m_gravity, 0.0f, 100.0f, "%.1f");
+        ImGui.SliderFloat("Air Steer", ref m_airSteer, 0.0f, 1.0f, "%.2f");
+        ImGui.SliderFloat("Pogo Hertz", ref m_pogoHertz, 0.0f, 30.0f, "%.0f");
+        ImGui.SliderFloat("Pogo Damping", ref m_pogoDampingRatio, 0.0f, 4.0f, "%.1f");
+
+        ImGui.PopItemWidth();
+
+        ImGui.Separator();
+
+        ImGui.Text("Pogo Shape");
+        ImGui.RadioButton("Point", ref m_pogoShape, (int)PogoShape.PogoPoint);
+        ImGui.SameLine();
+        ImGui.RadioButton("Circle", ref m_pogoShape, (int)PogoShape.PogoCircle);
+        ImGui.SameLine();
+        ImGui.RadioButton("Box", ref m_pogoShape, (int)PogoShape.PogoBox);
+
+        ImGui.Checkbox("Lock Camera", ref m_lockCamera);
 
         ImGui.End();
     }
-#endif
 
     static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
     {
@@ -334,8 +502,6 @@ public class Mover : Sample
 
         float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
 
-        // throttle = { 0.0f, 0.0f, -1.0f };
-
         SolveMove(timeStep, throttle);
     }
 
@@ -364,8 +530,10 @@ public class Mover : Sample
         DrawTextLine($"position {p.X:F2} {p.Y:F2}");
         DrawTextLine($"velocity {m_velocity.X:F2}, {m_velocity.Y:F2}");
         DrawTextLine($"iterations {m_totalIterations}");
-        DrawTextLine($"deltaX = {m_deltaX}, deltaY = {m_deltaY}");
 
-        m_context.camera.m_center.X = m_transform.p.X;
+        if (m_lockCamera)
+        {
+            m_context.camera.m_center.X = m_transform.p.X;
+        }
     }
 }

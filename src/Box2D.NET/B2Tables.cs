@@ -75,17 +75,15 @@ namespace Box2D.NET
         // todo try: https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
         public static uint b2KeyHash(ulong key)
         {
+            // Murmur hash
             ulong h = key;
             h ^= h >> 33;
-            h *= 0xff51afd7ed558ccdL;
+            h *= 0xff51afd7ed558ccduL;
             h ^= h >> 33;
-            h *= 0xc4ceb9fe1a85ec53L;
+            h *= 0xc4ceb9fe1a85ec53uL;
             h ^= h >> 33;
 
             return (uint)h;
-
-            // todo_erin 
-            // return 11400714819323198485ull * key;
         }
 
         public static int b2FindSlot(ref B2HashSet set, ulong key, uint hash)

@@ -60,9 +60,11 @@ namespace Box2D.NET
             return def;
         }
 
-        public static B2NullJointDef b2DefaultNullJointDef()
+        /// Use this to initialize your joint definition
+        /// @ingroup filter_joint
+        public static b2FilterJointDef b2DefaultFilterJointDef()
         {
-            B2NullJointDef def = new B2NullJointDef();
+            b2FilterJointDef def = new b2FilterJointDef();
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
@@ -478,7 +480,17 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateNullJoint(B2WorldId worldId, ref B2NullJointDef def)
+        /**
+         * @defgroup filter_joint Filter Joint
+         * @brief Functions for the filter joint.
+         *
+         * The filter joint is used to disable collision between two bodies. As a side effect of being a joint, it also
+         * keeps the two bodies in the same simulation island.
+         * @{
+         */
+        /// Create a filter joint.
+        /// @see b2FilterJointDef for details
+        public static B2JointId b2CreateFilterJoint(B2WorldId worldId, ref b2FilterJointDef def)
         {
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
@@ -494,10 +506,10 @@ namespace Box2D.NET
             B2Body bodyB = b2GetBodyFullId(world, def.bodyIdB);
 
             bool collideConnected = false;
-            B2JointPair pair = b2CreateJoint(world, bodyA, bodyB, def.userData, 1.0f, B2JointType.b2_nullJoint, collideConnected);
+            B2JointPair pair = b2CreateJoint(world, bodyA, bodyB, def.userData, 1.0f, B2JointType.b2_filterJoint, collideConnected);
 
             B2JointSim joint = pair.jointSim;
-            joint.type = B2JointType.b2_nullJoint;
+            joint.type = B2JointType.b2_filterJoint;
             joint.localOriginAnchorA = b2Vec2_zero;
             joint.localOriginAnchorB = b2Vec2_zero;
 
@@ -968,7 +980,7 @@ namespace Box2D.NET
                 case B2JointType.b2_mouseJoint:
                     return b2GetMouseJointForce(world, @base);
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                     return b2Vec2_zero;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1006,7 +1018,7 @@ namespace Box2D.NET
                 case B2JointType.b2_mouseJoint:
                     return b2GetMouseJointTorque(world, @base);
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                     return 0.0f;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1043,7 +1055,7 @@ namespace Box2D.NET
                     b2PrepareMouseJoint(joint, context);
                     break;
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1084,7 +1096,7 @@ namespace Box2D.NET
                     b2WarmStartMouseJoint(joint, context);
                     break;
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1125,7 +1137,7 @@ namespace Box2D.NET
                     b2SolveMouseJoint(joint, context);
                     break;
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1238,7 +1250,7 @@ namespace Box2D.NET
                 }
                     break;
 
-                case B2JointType.b2_nullJoint:
+                case B2JointType.b2_filterJoint:
                 {
                     draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
                 }
