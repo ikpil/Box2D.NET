@@ -10,16 +10,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Box2D.NET.Shared;
 using NUnit.Framework;
-using static Box2D.NET.B2Geometries;
-using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2Bodies;
-using static Box2D.NET.B2Shapes;
-using static Box2D.NET.B2Ids;
-using static Box2D.NET.B2Constants;
-using static Box2D.NET.B2Joints;
-using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.Shared.Determinism;
 

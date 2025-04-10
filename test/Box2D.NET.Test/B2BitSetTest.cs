@@ -3,10 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 using NUnit.Framework;
+using static Box2D.NET.B2BitSets;
 
 namespace Box2D.NET.Test;
-
-using static NET.B2BitSets;
 
 public class B2BitSetTest
 {

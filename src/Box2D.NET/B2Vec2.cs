@@ -16,8 +16,8 @@ namespace Box2D.NET
 
         public B2Vec2(float x, float y)
         {
-            this.X = x;
-            this.Y = y;
+            X = x;
+            Y = y;
         }
 
         /*
@@ -27,27 +27,6 @@ namespace Box2D.NET
          * See math_functions.h for details.
          */
 
-        // /// Unary add one vector to another
-        // public static void operator+=( B2Vec2& a, B2Vec2 b )
-        // {
-        //     a.x += b.x;
-        //     a.y += b.y;
-        // }
-        //
-        // /// Unary subtract one vector from another
-        // public static void operator-=( B2Vec2& a, B2Vec2 b )
-        // {
-        //     a.x -= b.x;
-        //     a.y -= b.y;
-        // }
-        //
-        // /// Unary multiply a vector by a scalar
-        // public static void operator*=( B2Vec2& a, float b )
-        // {
-        //     a.x *= b;
-        //     a.y *= b;
-        // }
-        
         /// Unary negate a vector
         public static B2Vec2 operator-( B2Vec2 a )
         {
