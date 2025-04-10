@@ -37,7 +37,6 @@ Box2D.NET is divided into multiple modules, each contained in its own folder:
   - [Box2D.NET.Shared](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Shared) : Shared code and utilities for Box2D.NET, for use in sample projects and by library users.
   - [Box2D.NET.Samples](https://github.com/ikpil/Box2D.NET/tree/main/src/Box2D.NET.Samples) : Sample projects to showcase the features of Box2D.NET
   - [Box2D.NET.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Test) : Unit tests for Box2D.NET.
-  - [Box2D.NET.Samples.Test](https://github.com/ikpil/Box2D.NET/tree/main/test/Box2D.NET.Samples.Test) : Unit tests for Box2D.NET.Samples
 
 ## 🚀 Getting Started
 
