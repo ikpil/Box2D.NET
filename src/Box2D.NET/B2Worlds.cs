@@ -140,7 +140,7 @@ namespace Box2D.NET
             world.generation = generation;
             world.inUse = true;
 
-            world.arena = b2CreateArenaAllocator(2048);
+            world.arena = b2CreateArenaAllocator(256);
             b2CreateBroadPhase(ref world.broadPhase);
             b2CreateGraph(ref world.constraintGraph, 16);
 

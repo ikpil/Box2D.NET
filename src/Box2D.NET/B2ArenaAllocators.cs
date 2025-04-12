@@ -35,7 +35,7 @@ namespace Box2D.NET
             allocatorImpl.allocation = 0;
             allocatorImpl.maxAllocation = 0;
             allocatorImpl.index = 0;
-            allocatorImpl.entries = b2Array_Create<B2ArenaEntry<T>>(32);
+            allocatorImpl.entries = b2Array_Create<B2ArenaEntry<T>>(capacity);
             return allocatorImpl;
         }
 
