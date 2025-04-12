@@ -27,7 +27,6 @@ namespace Box2D.NET
 
         public B2ArenaAllocatorTyped<T> GetOrCreateFor<T>() where T : new()
         {
-            // 1 2 가 동시에 들어 왔을 경우, 어떻게 밑에까지 맞출것인가?
             var index = B2ArenaAllocatorIndexer.Index<T>();
             if (_lookup.Length <= index || null == _lookup[index])
             {
