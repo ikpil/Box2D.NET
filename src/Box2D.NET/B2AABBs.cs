@@ -107,9 +107,7 @@ namespace Box2D.NET
 
                 if (t1 > t2)
                 {
-                    float tmp = t1;
-                    t1 = t2;
-                    t2 = tmp;
+                    (t1, t2) = (t2, t1);
                     s = 1.0f;
                 }
 
@@ -150,9 +148,7 @@ namespace Box2D.NET
 
                 if (t1 > t2)
                 {
-                    float tmp = t1;
-                    t1 = t2;
-                    t2 = tmp;
+                    (t1, t2) = (t2, t1);
                     s = 1.0f;
                 }
 
