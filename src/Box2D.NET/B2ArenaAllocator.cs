@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Collections.Generic;
 
 namespace Box2D.NET
 {
@@ -11,53 +12,69 @@ namespace Box2D.NET
         private readonly object _lock;
 
         private int _capacity;
+        private IB2ArenaAllocatable[] _lookup;
         private IB2ArenaAllocatable[] _allocators;
-        private int _allocatorCount;
 
-        public int Count => _allocatorCount;
+        public int Count => _allocators.Length;
 
         public B2ArenaAllocator(int capacity)
         {
             _lock = new object();
             _capacity = capacity;
+            _lookup = Array.Empty<IB2ArenaAllocatable>();
             _allocators = Array.Empty<IB2ArenaAllocatable>();
-            _allocatorCount = 0;
         }
 
         public B2ArenaAllocatorTyped<T> GetOrCreateFor<T>() where T : new()
         {
+            // 1 2 가 동시에 들어 왔을 경우, 어떻게 밑에까지 맞출것인가?
             var index = B2ArenaAllocatorIndexer.Index<T>();
-            if (_allocators.Length <= index || null == _allocators[index])
+            if (_lookup.Length <= index || null == _lookup[index])
             {
                 lock (_lock)
                 {
                     // grow
-                    if (_allocators.Length <= index)
+                    if (_lookup.Length <= index)
                     {
-                        IB2ArenaAllocatable[] temp = new IB2ArenaAllocatable[index + 16];
-                        if (0 < _allocators.Length)
-                        {
-                            Array.Copy(_allocators, temp, _allocators.Length);
-                        }
-
-                        _allocators = temp;
+                        _lookup = Resize(_lookup, index + 16);
                     }
-                    
+
                     // new 
-                    if (null == _allocators[index])
+                    if (null == _lookup[index])
                     {
-                        _allocators[index] = B2ArenaAllocators.b2CreateArenaAllocator<T>(_capacity);
-                        _allocatorCount++;
+                        var newAllocator = B2ArenaAllocators.b2CreateArenaAllocator<T>(_capacity);
+                        _lookup[index] = newAllocator;
+
+                        //
+                        var tempAllocators = Resize(_allocators, _allocators.Length + 1);
+                        tempAllocators[_allocators.Length] = newAllocator;
+                        _allocators = tempAllocators;
                     }
                 }
             }
 
-            return _allocators[index] as B2ArenaAllocatorTyped<T>;
+            return _lookup[index] as B2ArenaAllocatorTyped<T>;
+        }
+
+        private static IB2ArenaAllocatable[] Resize(IB2ArenaAllocatable[] source, int count)
+        {
+            IB2ArenaAllocatable[] temp = source;
+            if (source.Length < count)
+            {
+                temp = new IB2ArenaAllocatable[count];
+            }
+
+            if (0 < source.Length)
+            {
+                Array.Copy(source, temp, source.Length);
+            }
+
+            return temp;
         }
 
         public Span<IB2ArenaAllocatable> AsSpan()
         {
-            return new Span<IB2ArenaAllocatable>(_allocators, 0, _allocatorCount);
+            return new Span<IB2ArenaAllocatable>(_allocators);
         }
     }
 }
