@@ -14,7 +14,7 @@ namespace Box2D.NET
     // if you try to interleave multiple allocate/free pairs.
     // This allocator uses the heap if space is insufficient.
     // I could remove the need to free entries individually.
-    public class B2ArenaAllocatorImpl<T> : IB2ArenaAllocatable where T : new()
+    public class B2ArenaAllocatorTyped<T> : IB2ArenaAllocatable where T : new()
     {
         public ArraySegment<T> data;
         public int capacity { get; set; }

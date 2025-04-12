@@ -26,10 +26,10 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ArenaAllocatorImpl<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
+        public static B2ArenaAllocatorTyped<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
         {
             Debug.Assert(capacity >= 0);
-            B2ArenaAllocatorImpl<T> allocatorImpl = new B2ArenaAllocatorImpl<T>();
+            B2ArenaAllocatorTyped<T> allocatorImpl = new B2ArenaAllocatorTyped<T>();
             allocatorImpl.capacity = capacity;
             allocatorImpl.data = b2Alloc<T>(capacity);
             allocatorImpl.allocation = 0;
@@ -41,7 +41,7 @@ namespace Box2D.NET
 
         public static ArraySegment<T> b2AllocateArenaItem<T>(B2ArenaAllocator allocator, int size, string name) where T : new()
         {
-            var alloc = allocator.GetOrCreateImpl<T>();
+            var alloc = allocator.GetOrCreateFor<T>();
             // ensure allocation is 32 byte aligned to support 256-bit SIMD
             int size32 = ((size - 1) | 0x1F) + 1;
 
@@ -77,7 +77,7 @@ namespace Box2D.NET
 
         public static void b2FreeArenaItem<T>(B2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
         {
-            var alloc = allocator.GetOrCreateImpl<T>();
+            var alloc = allocator.GetOrCreateFor<T>();
             int entryCount = alloc.entries.count;
             Debug.Assert(entryCount > 0);
             ref B2ArenaEntry<T> entry = ref alloc.entries.data[entryCount - 1];

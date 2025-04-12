@@ -14,6 +14,8 @@ namespace Box2D.NET
         private IB2ArenaAllocatable[] _allocators;
         private int _allocatorCount;
 
+        public int Count => _allocatorCount;
+
         public B2ArenaAllocator(int capacity)
         {
             _lock = new object();
@@ -22,10 +24,10 @@ namespace Box2D.NET
             _allocatorCount = 0;
         }
 
-        public B2ArenaAllocatorImpl<T> GetOrCreateImpl<T>() where T : new()
+        public B2ArenaAllocatorTyped<T> GetOrCreateFor<T>() where T : new()
         {
             var index = B2ArenaAllocatorIndexer.Index<T>();
-            if (_allocators.Length <= index || null == _allocators[index])
+            if (_allocators.Length <= index)
             {
                 lock (_lock)
                 {
@@ -40,7 +42,13 @@ namespace Box2D.NET
 
                         _allocators = temp;
                     }
+                }
+            }
 
+            if (null == _allocators[index])
+            {
+                lock (_lock)
+                {
                     // new 
                     if (null == _allocators[index])
                     {
@@ -50,7 +58,7 @@ namespace Box2D.NET
                 }
             }
 
-            return _allocators[index] as B2ArenaAllocatorImpl<T>;
+            return _allocators[index] as B2ArenaAllocatorTyped<T>;
         }
 
         public Span<IB2ArenaAllocatable> AsSpan()
