@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET
@@ -9,6 +10,7 @@ namespace Box2D.NET
     public static class B2AABBs
     {
         // Get surface area of an AABB (the perimeter length)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float b2Perimeter(B2AABB a)
         {
             float wx = a.upperBound.X - a.lowerBound.X;
@@ -49,14 +51,18 @@ namespace Box2D.NET
         }
 
         /// Do a and b overlap
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2AABB_Overlaps(B2AABB a, B2AABB b)
         {
-            return !(b.lowerBound.X > a.upperBound.X || b.lowerBound.Y > a.upperBound.Y || a.lowerBound.X > b.upperBound.X ||
+            return !(b.lowerBound.X > a.upperBound.X ||
+                     b.lowerBound.Y > a.upperBound.Y ||
+                     a.lowerBound.X > b.upperBound.X ||
                      a.lowerBound.Y > b.upperBound.Y);
         }
 
 
         /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsValidAABB(B2AABB a)
         {
             B2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
