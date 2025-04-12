@@ -27,7 +27,7 @@ namespace Box2D.NET
         public B2ArenaAllocatorTyped<T> GetOrCreateFor<T>() where T : new()
         {
             var index = B2ArenaAllocatorIndexer.Index<T>();
-            if (_allocators.Length <= index)
+            if (_allocators.Length <= index || null == _allocators[index])
             {
                 lock (_lock)
                 {
@@ -42,13 +42,7 @@ namespace Box2D.NET
 
                         _allocators = temp;
                     }
-                }
-            }
-
-            if (null == _allocators[index])
-            {
-                lock (_lock)
-                {
+                    
                     // new 
                     if (null == _allocators[index])
                     {
