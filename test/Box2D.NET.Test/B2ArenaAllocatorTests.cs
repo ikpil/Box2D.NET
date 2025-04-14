@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using static Box2D.NET.B2ArenaAllocators;
 
 namespace Box2D.NET.Test;
 
@@ -114,5 +115,22 @@ public class B2ArenaAllocatorTests
         }
 
         Assert.That(arena.Count, Is.EqualTo(10));
+    }
+
+
+    [Test]
+    public void b2AllocateArenaItem_WhenEnoughCapacity()
+    {
+        var arena = new B2ArenaAllocator(10);
+        var result = b2AllocateArenaItem<int>(arena, 16, "test");
+        var alloc = arena.GetOrCreateFor<int>();
+        
+        Assert.That(result.Count, Is.EqualTo(32));
+        Assert.That(result.Offset, Is.EqualTo(0));
+        
+        Assert.That(alloc.index, Is.EqualTo(0));
+        Assert.That(alloc.allocation, Is.EqualTo(32));
+        Assert.That(alloc.entries.count, Is.EqualTo(1));
+        Assert.That(alloc.entries.data[0].usedMalloc, Is.True);
     }
 }
