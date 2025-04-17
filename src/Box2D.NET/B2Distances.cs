@@ -5,6 +5,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Timers;
@@ -120,22 +121,41 @@ namespace Box2D.NET
             return result;
         }
 
+        /// Make a proxy for use in overlap, shape cast, and related functions. This is a deep copy of the points.
         /// Make a proxy for use in GJK and related functions.
         // GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
         // todo try not copying
-        public static B2ShapeProxy b2MakeProxy(ReadOnlySpan<B2Vec2> vertices, int count, float radius)
+        public static B2ShapeProxy b2MakeProxy(ReadOnlySpan<B2Vec2> points, int count, float radius)
         {
             count = b2MinInt(count, B2_MAX_POLYGON_VERTICES);
             B2ShapeProxy proxy = new B2ShapeProxy();
             for (int i = 0; i < count; ++i)
             {
-                proxy.points[i] = vertices[i];
+                proxy.points[i] = points[i];
             }
 
             proxy.count = count;
             proxy.radius = radius;
             return proxy;
         }
+
+        /// Make a proxy with a transform. This is a deep copy of the points.
+        public static B2ShapeProxy b2MakeOffsetProxy(ReadOnlySpan<B2Vec2> points, int count, float radius, B2Vec2 position, B2Rot rotation)
+        {
+            count = b2MinInt(count, B2_MAX_POLYGON_VERTICES);
+            B2Transform transform = new B2Transform(position, rotation);
+
+            B2ShapeProxy proxy = new B2ShapeProxy();
+            for (int i = 0; i < count; ++i)
+            {
+                proxy.points[i] = b2TransformPoint(ref transform, points[i]);
+            }
+
+            proxy.count = count;
+            proxy.radius = radius;
+            return proxy;
+        }
+
 
         // for single
         public static B2ShapeProxy b2MakeProxy(B2Vec2 v1, int count, float radius)
@@ -238,22 +258,6 @@ namespace Box2D.NET
                 cache.indexA[i] = (byte)vertices[i].indexA;
                 cache.indexB[i] = (byte)vertices[i].indexB;
             }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2ComputeSimplexClosestPoint(ref B2Simplex s)
-        {
-            if (s.count == 1)
-            {
-                return s.v1.w;
-            }
-
-            if (s.count == 2)
-            {
-                return b2Weight2(s.v1.a, s.v1.w, s.v2.a, s.v2.w);
-            }
-
-            return b2Vec2_zero;
         }
 
         public static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
@@ -467,6 +471,11 @@ namespace Box2D.NET
         // I spent time optimizing this and could find no further significant gains 3/30/2025
         public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, B2Simplex[] simplexes, int simplexCapacity)
         {
+            B2_UNUSED( simplexes, simplexCapacity );
+            Debug.Assert( input.proxyA.count > 0 && input.proxyB.count > 0 );
+            Debug.Assert( input.proxyA.radius >= 0.0f );
+            Debug.Assert( input.proxyB.radius >= 0.0f );
+            
             B2DistanceOutput output = new B2DistanceOutput();
 
             ref B2ShapeProxy proxyA = ref input.proxyA;
@@ -742,6 +751,21 @@ namespace Box2D.NET
 
 
 #if FALSE
+        static inline b2Vec2 b2ComputeSimplexClosestPoint( const b2Simplex* s )
+        {
+            if ( s->count == 1 )
+            {
+                return s->v1.w;
+            }
+
+            if ( s->count == 2 )
+            {
+                return b2Weight2( s->v1.a, s->v1.w, s->v2.a, s->v2.w );
+            }
+
+            return b2Vec2_zero;
+        }
+
         public struct b2ShapeCastData
         {
             b2Simplex simplex;
@@ -1197,7 +1221,7 @@ namespace Box2D.NET
                 // to get a separating axis.
                 distanceInput.transformA = xfA;
                 distanceInput.transformB = xfB;
-                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0 );
+                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
 
                 // Progressive time of impact. This handles slender geometry well but introduces
                 // significant time loss.
@@ -1213,7 +1237,7 @@ namespace Box2D.NET
                 //		target = b2MaxFloat( target, 2.0f * tolerance );
                 //	}
                 //}
-                
+
                 distanceIterations += 1;
 #if B2_SNOOP_TOI_COUNTERS
                 b2_toiDistanceIterations += 1;

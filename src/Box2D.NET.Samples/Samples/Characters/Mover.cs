@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Helpers;
@@ -15,6 +16,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Movers;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Distances;
 
 namespace Box2D.NET.Samples.Samples.Characters;
 
@@ -31,13 +33,14 @@ public class Mover : Sample
     private const ulong StaticBit = 0x0001;
     private const ulong MoverBit = 0x0002;
     private const ulong DynamicBit = 0x0004;
+    private const ulong DebrisBit = 0x0008;
     private const ulong AllBits = ~0u;
 
     public enum PogoShape
     {
         PogoPoint,
         PogoCircle,
-        PogoBox
+        PogoSegment
     }
 
     public class CastResult
@@ -49,6 +52,8 @@ public class Mover : Sample
     }
 
     private const int m_planeCapacity = 8;
+    private readonly B2Vec2 m_elevatorBase = new B2Vec2(112.0f, 10.0f);
+    private const float m_elevatorAmplitude = 4.0f;
 
     private float m_jumpSpeed = 10.0f;
     private float m_maxSpeed = 6.0f;
@@ -61,17 +66,21 @@ public class Mover : Sample
     private float m_pogoHertz = 5.0f;
     private float m_pogoDampingRatio = 0.8f;
 
-    private int m_pogoShape = (int)PogoShape.PogoBox;
-
+    private int m_pogoShape = (int)PogoShape.PogoSegment;
     private B2Transform m_transform;
     private B2Vec2 m_velocity;
     private B2Capsule m_capsule;
+    private B2BodyId m_elevatorId;
+    private B2ShapeId m_ballId;
     private ShapeUserData m_friendlyShape = new ShapeUserData();
+    private ShapeUserData m_elevatorShape = new ShapeUserData();
     private B2CollisionPlane[] m_planes = new B2CollisionPlane[m_planeCapacity];
     private int m_planeCount;
     private int m_totalIterations;
     private float m_pogoVelocity;
+    private float m_time;
     private bool m_onGround;
+    private bool m_jumpReleased;
     private bool m_lockCamera;
 
     private int m_deltaX;
@@ -211,7 +220,7 @@ public class Mover : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(32.0f, 4.0f);
+            bodyDef.position = new B2Vec2(32.0f, 4.5f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             m_friendlyShape.maxPush = 0.025f;
@@ -219,27 +228,51 @@ public class Mover : Sample
 
             shapeDef.filter = new B2Filter(MoverBit, AllBits, 0);
             shapeDef.userData = m_friendlyShape;
-            B2BodyId body = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCapsuleShape(body, ref shapeDef, ref m_capsule);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreateCapsuleShape(bodyId, ref shapeDef, ref m_capsule);
         }
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(7.0f, 7.0f);
-            B2BodyId body = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.filter = new B2Filter(DebrisBit, AllBits, 0);
+            shapeDef.material.restitution = 0.7f;
+            shapeDef.material.rollingResistance = 0.2f;
+
+            B2Circle circle = new B2Circle(b2Vec2_zero, 0.3f);
+            m_ballId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+        }
+
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_kinematicBody;
+            bodyDef.position = new B2Vec2(m_elevatorBase.X, m_elevatorBase.Y - m_elevatorAmplitude);
+            m_elevatorId = b2CreateBody(m_worldId, ref bodyDef);
+
+            m_elevatorShape = new ShapeUserData
+            {
+                maxPush = 0.1f,
+                clipVelocity = true,
+            };
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter = new B2Filter(DynamicBit, AllBits, 0);
-            B2Circle circle = new B2Circle(b2Vec2_zero, 0.5f);
-            b2CreateCircleShape(body, ref shapeDef, ref circle);
+            shapeDef.userData = m_elevatorShape;
+
+            B2Polygon box = b2MakeBox(2.0f, 0.1f);
+            b2CreatePolygonShape(m_elevatorId, ref shapeDef, ref box);
         }
 
         m_totalIterations = 0;
         m_pogoVelocity = 0.0f;
         m_onGround = false;
+        m_jumpReleased = true;
         m_lockCamera = true;
         m_planeCount = 0;
+        m_time = 0.0f;
     }
 
     // https://github.com/id-Software/Quake/blob/master/QW/client/pmove.c#L390
@@ -298,32 +331,44 @@ public class Mover : Sample
         float rayLength = pogoRestLength + m_capsule.radius;
         B2Vec2 origin = b2TransformPoint(ref m_transform, m_capsule.center1);
         B2Circle circle = new B2Circle(origin, 0.5f * m_capsule.radius);
-        float boxHalfWidth = 0.75f * m_capsule.radius;
-        float boxHalfHeight = 0.05f * m_capsule.radius;
-        B2Polygon box = b2MakeOffsetBox(boxHalfWidth, boxHalfHeight, origin, b2Rot_identity);
+        B2Vec2 segmentOffset = new B2Vec2(0.75f * m_capsule.radius, 0.0f);
+        B2Segment segment = new B2Segment(origin - segmentOffset, origin + segmentOffset);
+
+        B2ShapeProxy proxy = new B2ShapeProxy();
         B2Vec2 translation;
-        B2QueryFilter skipTeamFilter = new B2QueryFilter(1, ~2u);
-        CastResult result = new CastResult();
+        B2QueryFilter pogoFilter = new B2QueryFilter(MoverBit, StaticBit | DynamicBit);
+        CastResult castResult = new CastResult();
 
         if (m_pogoShape == (int)PogoShape.PogoPoint)
         {
+            proxy = b2MakeProxy(origin, 1, 0.0f);
             translation = new B2Vec2(0.0f, -rayLength);
-            b2World_CastRay(m_worldId, origin, translation, skipTeamFilter, CastCallback, result);
         }
         else if (m_pogoShape == (int)PogoShape.PogoCircle)
         {
+            proxy = b2MakeProxy(origin, 1, circle.radius);
             translation = new B2Vec2(0.0f, -rayLength + circle.radius);
-            b2World_CastCircle(m_worldId, ref circle, translation, skipTeamFilter, CastCallback, result);
         }
         else
         {
-            translation = new B2Vec2(0.0f, -rayLength + boxHalfHeight);
-            b2World_CastPolygon(m_worldId, ref box, translation, skipTeamFilter, CastCallback, result);
+            proxy = b2MakeProxy(segment.point1, segment.point2, 2, 0.0f);
+            translation = new B2Vec2(0.0f, -rayLength);
         }
 
-        if (result.hit == false)
+        b2World_CastShape(m_worldId, ref proxy, translation, pogoFilter, CastCallback, castResult);
+
+        // Avoid snapping to ground if still going up
+        if (m_onGround == false)
         {
-            m_onGround = false;
+            m_onGround = castResult.hit && m_velocity.Y <= 0.01f;
+        }
+        else
+        {
+            m_onGround = castResult.hit;
+        }
+
+        if (castResult.hit == false)
+        {
             m_pogoVelocity = 0.0f;
 
             B2Vec2 delta = translation;
@@ -339,14 +384,12 @@ public class Mover : Sample
             }
             else
             {
-                B2Transform xf = new B2Transform(delta, b2Rot_identity);
-                m_context.draw.DrawSolidPolygon(ref xf, box.vertices.AsSpan(), box.count, 0.0f, B2HexColor.b2_colorGray);
+                m_context.draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
             }
         }
         else
         {
-            m_onGround = true;
-            float pogoCurrentLength = result.fraction * rayLength;
+            float pogoCurrentLength = castResult.fraction * rayLength;
 
             float zeta = m_pogoDampingRatio;
             float hertz = m_pogoHertz;
@@ -356,7 +399,7 @@ public class Mover : Sample
             m_pogoVelocity = (m_pogoVelocity - omega * omegaH * (pogoCurrentLength - pogoRestLength)) /
                              (1.0f + 2.0f * zeta * omegaH + omegaH * omegaH);
 
-            B2Vec2 delta = result.fraction * translation;
+            B2Vec2 delta = castResult.fraction * translation;
             m_context.draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
@@ -369,17 +412,16 @@ public class Mover : Sample
             }
             else
             {
-                B2Transform xf = new B2Transform(delta, b2Rot_identity);
-                m_context.draw.DrawSolidPolygon(ref xf, box.vertices.AsSpan(), box.count, 0.0f, B2HexColor.b2_colorPlum);
+                m_context.draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
             }
 
-            b2Body_ApplyForce(result.bodyId, new B2Vec2(0.0f, -50.0f), result.point, true);
+            b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), castResult.point, true);
         }
 
         B2Vec2 target = m_transform.p + timeStep * m_velocity + timeStep * m_pogoVelocity * new B2Vec2(0.0f, 1.0f);
 
-        // Movers collide with every thing
-        B2QueryFilter collideFilter = new B2QueryFilter(MoverBit, AllBits);
+        // Mover overlap filter
+        B2QueryFilter collideFilter = new B2QueryFilter(MoverBit, StaticBit | DynamicBit | MoverBit);
 
         // Movers don't sweep against other movers, allows for soft collision
         B2QueryFilter castFilter = new B2QueryFilter(MoverBit, StaticBit | DynamicBit);
@@ -447,7 +489,7 @@ public class Mover : Sample
         ImGui.SameLine();
         ImGui.RadioButton("Circle", ref m_pogoShape, (int)PogoShape.PogoCircle);
         ImGui.SameLine();
-        ImGui.RadioButton("Box", ref m_pogoShape, (int)PogoShape.PogoBox);
+        ImGui.RadioButton("Segment", ref m_pogoShape, (int)PogoShape.PogoSegment);
 
         ImGui.Checkbox("Lock Camera", ref m_lockCamera);
 
@@ -478,31 +520,97 @@ public class Mover : Sample
         return true;
     }
 
+    static bool Kick(B2ShapeId shapeId, object context)
+    {
+        Mover self = (Mover)context;
+        B2BodyId bodyId = b2Shape_GetBody(shapeId);
+        B2BodyType type = b2Body_GetType(bodyId);
+
+        if (type != B2BodyType.b2_dynamicBody)
+        {
+            return true;
+        }
+
+        B2Vec2 center = b2Body_GetWorldCenterOfMass(bodyId);
+        B2Vec2 direction = b2Normalize(center - self.m_transform.p);
+        B2Vec2 impulse = new B2Vec2(2.0f * direction.X, 2.0f);
+        b2Body_ApplyLinearImpulseToCenter(bodyId, impulse, true);
+
+        return true;
+    }
+
+    public override void Keyboard(Keys key)
+    {
+        if (key == Keys.K)
+        {
+            B2Vec2 point = b2TransformPoint(ref m_transform, new B2Vec2(0.0f, m_capsule.center1.Y - 3.0f * m_capsule.radius));
+            B2Circle circle = new B2Circle(point, 0.5f);
+            B2ShapeProxy proxy = b2MakeProxy(circle.center, 1, circle.radius);
+            B2QueryFilter filter = new B2QueryFilter(MoverBit, DebrisBit);
+            b2World_OverlapShape(m_worldId, ref proxy, filter, Kick, this);
+            m_context.draw.DrawCircle(circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
+        }
+
+        base.Keyboard(key);
+    }
+
     public override void Step(Settings settings)
     {
         base.Step(settings);
-
-        float throttle = 0.0f;
-
-        if (InputAction.Press == GetKey(Keys.A))
+        
+        bool pause = false;
+        if ( settings.pause )
         {
-            throttle -= 1.0f;
-        }
-
-        if (InputAction.Press == GetKey(Keys.D))
-        {
-            throttle += 1.0f;
-        }
-
-        if (InputAction.Press == GetKey(Keys.Space) && m_onGround == true)
-        {
-            m_velocity.Y = m_jumpSpeed;
-            m_onGround = false;
+            pause = settings.singleStep != true;
         }
 
         float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
+        if ( pause )
+        {
+            timeStep = 0.0f;
+        }
 
-        SolveMove(timeStep, throttle);
+        if ( timeStep > 0.0f )
+        {
+            B2Vec2 point;
+            point.X = m_elevatorBase.X;
+            point.Y = m_elevatorAmplitude * MathF.Cos(1.0f * m_time + B2_PI) + m_elevatorBase.Y;
+
+            b2Body_SetTargetTransform( m_elevatorId, new B2Transform( point, b2Rot_identity ), timeStep );
+        }
+
+        m_time += timeStep;
+
+        if (pause == false)
+        {
+            float throttle = 0.0f;
+
+            if (InputAction.Press == GetKey(Keys.A))
+            {
+                throttle -= 1.0f;
+            }
+
+            if (InputAction.Press == GetKey(Keys.D))
+            {
+                throttle += 1.0f;
+            }
+
+            if (InputAction.Press == GetKey(Keys.Space) )
+            {
+                if (m_onGround && m_jumpReleased)
+                {
+                    m_velocity.Y = m_jumpSpeed;
+                    m_onGround = false;
+                    m_jumpReleased = false;
+                }
+            }
+            else
+            {
+                m_jumpReleased = true;
+            }
+
+            SolveMove(timeStep, throttle);
+        }
     }
 
     public override void Draw(Settings settings)
@@ -522,7 +630,9 @@ public class Mover : Sample
         {
             B2Vec2 p1 = b2TransformPoint(ref m_transform, m_capsule.center1);
             B2Vec2 p2 = b2TransformPoint(ref m_transform, m_capsule.center2);
-            m_context.draw.DrawSolidCapsule(p1, p2, m_capsule.radius, B2HexColor.b2_colorOrange);
+            
+            B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
+            m_context.draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
             m_context.draw.DrawSegment(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
         }
 

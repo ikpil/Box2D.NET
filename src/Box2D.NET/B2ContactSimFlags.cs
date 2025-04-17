@@ -7,7 +7,7 @@ namespace Box2D.NET
     // Shifted to be distinct from b2ContactFlags
     public enum B2ContactSimFlags
     {
-        // Set when the shapes are touching, including sensors
+        // Set when the shapes are touching
         b2_simTouchingFlag = 0x00010000,
 
         // This contact no longer has overlapping AABBs

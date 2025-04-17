@@ -1607,7 +1607,7 @@ namespace Box2D.NET
 
         public static bool b2Body_IsValid(B2BodyId id)
         {
-            if (id.world0 < 0 || B2_MAX_WORLDS <= id.world0)
+            if (B2_MAX_WORLDS <= id.world0)
             {
                 // invalid world
                 return false;
@@ -1678,7 +1678,7 @@ namespace Box2D.NET
 
         public static bool b2Chain_IsValid(B2ChainId id)
         {
-            if (id.world0 < 0 || B2_MAX_WORLDS <= id.world0)
+            if (B2_MAX_WORLDS <= id.world0)
             {
                 return false;
             }
@@ -1710,7 +1710,7 @@ namespace Box2D.NET
 
         public static bool b2Joint_IsValid(B2JointId id)
         {
-            if (id.world0 < 0 || B2_MAX_WORLDS <= id.world0)
+            if (B2_MAX_WORLDS <= id.world0)
             {
                 return false;
             }
@@ -2161,7 +2161,7 @@ namespace Box2D.NET
             input.proxyA = worldContext.proxy;
             input.proxyB = b2MakeShapeDistanceProxy(shape);
             input.transformA = b2Transform_identity;
-            input.transformB = b2InvMulTransforms(worldContext.transform, transform);
+            input.transformB = transform;
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
@@ -2178,101 +2178,27 @@ namespace Box2D.NET
             return result;
         }
 
-        public static B2TreeStats b2World_OverlapPoint(B2WorldId worldId, B2Vec2 point, B2Transform transform, B2QueryFilter filter,
-            b2OverlapResultFcn fcn, object context)
-        {
-            B2Circle circle = new B2Circle(point, 0.0f);
-            return b2World_OverlapCircle(worldId, ref circle, transform, filter, fcn, context);
-        }
-
-        public static B2TreeStats b2World_OverlapCircle(B2WorldId worldId, ref B2Circle circle, B2Transform transform, B2QueryFilter filter,
-            b2OverlapResultFcn fcn, object context)
+        /// Overlap test for all shapes that overlap the provided shape proxy.
+        public static B2TreeStats b2World_OverlapShape( B2WorldId worldId, ref B2ShapeProxy proxy, B2QueryFilter filter, b2OverlapResultFcn fcn, object context )
         {
             B2TreeStats treeStats = new B2TreeStats();
 
-            B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
-            if (world.locked)
+            B2World world = b2GetWorldFromId( worldId );
+            Debug.Assert( world.locked == false );
+            if ( world.locked )
             {
                 return treeStats;
             }
 
-            Debug.Assert(b2IsValidVec2(transform.p));
-            Debug.Assert(b2IsValidRotation(transform.q));
-
-            B2AABB aabb = b2ComputeCircleAABB(ref circle, transform);
+            B2AABB aabb = b2MakeAABB( proxy.points.AsSpan(), proxy.count, proxy.radius );
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy(circle.center, 1, circle.radius), transform, context
+                world, fcn, filter, proxy, context
             );
 
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            for ( int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i )
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
-
-                treeStats.nodeVisits += treeResult.nodeVisits;
-                treeStats.leafVisits += treeResult.leafVisits;
-            }
-
-            return treeStats;
-        }
-
-        public static B2TreeStats b2World_OverlapCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Transform transform, B2QueryFilter filter,
-            b2OverlapResultFcn fcn, object context)
-        {
-            B2TreeStats treeStats = new B2TreeStats();
-
-            B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
-            if (world.locked)
-            {
-                return treeStats;
-            }
-
-            Debug.Assert(b2IsValidVec2(transform.p));
-            Debug.Assert(b2IsValidRotation(transform.q));
-
-            B2AABB aabb = b2ComputeCapsuleAABB(ref capsule, transform);
-            B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius), transform, context
-            );
-
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
-
-                treeStats.nodeVisits += treeResult.nodeVisits;
-                treeStats.leafVisits += treeResult.leafVisits;
-            }
-
-            return treeStats;
-        }
-
-        public static B2TreeStats b2World_OverlapPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Transform transform, B2QueryFilter filter,
-            b2OverlapResultFcn fcn, object context)
-        {
-            B2TreeStats treeStats = new B2TreeStats();
-
-            B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
-            if (world.locked)
-            {
-                return treeStats;
-            }
-
-            Debug.Assert(b2IsValidVec2(transform.p));
-            Debug.Assert(b2IsValidRotation(transform.q));
-
-            B2AABB aabb = b2ComputePolygonAABB(ref polygon, transform);
-            B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
-                world, fcn, filter, b2MakeProxy(polygon.vertices.AsSpan(), polygon.count, polygon.radius), transform, context
-            );
-
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
+                    b2DynamicTree_Query( world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext );
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2443,22 +2369,22 @@ namespace Box2D.NET
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
                 float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, worldContext.userContext);
-                
+
                 // The user may return -1 to skip this shape
-                if ( 0.0f <= fraction && fraction <= 1.0f )
+                if (0.0f <= fraction && fraction <= 1.0f)
                 {
                     worldContext.fraction = fraction;
                 }
-                
+
                 return fraction;
             }
 
             return input.maxFraction;
         }
 
-        /// Cast a circle through the world. Similar to a cast ray except that a circle is cast instead of a point.
+        /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
         ///	@see b2World_CastRay
-        public static B2TreeStats b2World_CastCircle(B2WorldId worldId, ref B2Circle circle, B2Vec2 translation, B2QueryFilter filter,
+        public static B2TreeStats b2World_CastShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter,
             b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2473,102 +2399,7 @@ namespace Box2D.NET
             Debug.Assert(b2IsValidVec2(translation));
 
             B2ShapeCastInput input = new B2ShapeCastInput();
-            input.proxy.points[0] = circle.center;
-            input.proxy.count = 1;
-            input.proxy.radius = circle.radius;
-            input.translation = translation;
-            input.maxFraction = 1.0f;
-
-            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
-
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
-                treeStats.nodeVisits += treeResult.nodeVisits;
-                treeStats.leafVisits += treeResult.leafVisits;
-
-                if (worldContext.fraction == 0.0f)
-                {
-                    return treeStats;
-                }
-
-                input.maxFraction = worldContext.fraction;
-            }
-
-            return treeStats;
-        }
-
-        /// Cast a capsule through the world. Similar to a cast ray except that a capsule is cast instead of a point.
-        ///	@see b2World_CastRay
-        public static B2TreeStats b2World_CastCapsule(B2WorldId worldId, ref B2Capsule capsule, B2Vec2 translation, B2QueryFilter filter,
-            b2CastResultFcn fcn, object context)
-        {
-            B2TreeStats treeStats = new B2TreeStats();
-
-            B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
-            if (world.locked)
-            {
-                return treeStats;
-            }
-
-            Debug.Assert(b2IsValidVec2(translation));
-
-            B2ShapeCastInput input = new B2ShapeCastInput();
-            // Note: these world space points get transformed into local space in b2ShapeCastShape
-            input.proxy.points[0] = capsule.center1;
-            input.proxy.points[1] = capsule.center2;
-            input.proxy.count = 2;
-            input.proxy.radius = capsule.radius;
-            input.translation = translation;
-            input.maxFraction = 1.0f;
-
-            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
-
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
-                treeStats.nodeVisits += treeResult.nodeVisits;
-                treeStats.leafVisits += treeResult.leafVisits;
-
-                if (worldContext.fraction == 0.0f)
-                {
-                    return treeStats;
-                }
-
-                input.maxFraction = worldContext.fraction;
-            }
-
-            return treeStats;
-        }
-
-        /// Cast a polygon through the world. Similar to a cast ray except that a polygon is cast instead of a point.
-        ///	@see b2World_CastRay
-        public static B2TreeStats b2World_CastPolygon(B2WorldId worldId, ref B2Polygon polygon, B2Vec2 translation, B2QueryFilter filter,
-            b2CastResultFcn fcn, object context)
-        {
-            B2TreeStats treeStats = new B2TreeStats();
-
-            B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
-            if (world.locked)
-            {
-                return treeStats;
-            }
-
-            Debug.Assert(b2IsValidVec2(translation));
-
-            B2ShapeCastInput input = new B2ShapeCastInput();
-            // Note: these world space points get transformed into local space in b2ShapeCastShape
-            for (int i = 0; i < polygon.count; ++i)
-            {
-                input.proxy.points[i] = polygon.vertices[i];
-            }
-
-            input.proxy.count = polygon.count;
-            input.proxy.radius = polygon.radius;
+            input.proxy = proxy;
             input.translation = translation;
             input.maxFraction = 1.0f;
 

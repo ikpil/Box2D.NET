@@ -51,16 +51,9 @@ public class Kinematic : Sample
     public override void Step(Settings settings)
     {
         m_timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
-        if (settings.pause)
+        if (settings.pause && settings.singleStep == false)
         {
-            if (settings.singleStep)
-            {
-                settings.singleStep = false;
-            }
-            else
-            {
-                m_timeStep = 0.0f;
-            }
+            m_timeStep = 0.0f;
         }
 
 
@@ -84,7 +77,7 @@ public class Kinematic : Sample
             m_context.draw.DrawSegment(point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
             m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorPlum);
 
-            b2Body_SetKinematicTarget(m_bodyId, new B2Transform(point, rotation), m_timeStep);
+            b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep);
         }
     }
 }

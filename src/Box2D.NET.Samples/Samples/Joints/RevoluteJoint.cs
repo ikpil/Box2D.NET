@@ -128,7 +128,7 @@ public class RevoluteJoint : Sample
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
             jointDef.lowerAngle = -0.25f * B2_PI;
-            jointDef.upperAngle = 0.0f * B2_PI;
+            jointDef.upperAngle = 0.5f * B2_PI;
             jointDef.enableLimit = true;
             jointDef.enableMotor = true;
             jointDef.motorSpeed = 0.0f;

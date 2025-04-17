@@ -16,8 +16,8 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
-using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -42,10 +42,6 @@ public class OverlapWorld : Sample
 
     private B2ShapeId[] m_doomIds = new B2ShapeId[e_maxDoomed];
     private int m_doomCount;
-
-    private B2Circle m_queryCircle;
-    private B2Capsule m_queryCapsule;
-    private B2Polygon m_queryBox;
 
     private int m_shapeType;
     private B2Transform m_transform;
@@ -151,10 +147,6 @@ public class OverlapWorld : Sample
         m_ignoreIndex = 7;
 
         m_shapeType = e_circleShape;
-
-        m_queryCircle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
-        m_queryCapsule = new B2Capsule(new B2Vec2(-1.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.5f);
-        m_queryBox = b2MakeBox(2.0f, 0.5f);
 
         m_position = new B2Vec2(.0f, 10.0f);
         m_angle = 0.0f;
@@ -346,30 +338,35 @@ public class OverlapWorld : Sample
         m_doomCount = 0;
 
         B2Transform transform = new B2Transform(m_position, b2MakeRot(m_angle));
+        B2ShapeProxy proxy = new B2ShapeProxy();
 
         if (m_shapeType == e_circleShape)
         {
-            b2World_OverlapCircle(m_worldId, ref m_queryCircle, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            m_context.draw.DrawSolidCircle(ref transform, b2Vec2_zero, m_queryCircle.radius, B2HexColor.b2_colorWhite);
+            B2Circle circle;
+            circle.center = transform.p;
+            circle.radius = 1.0f;
+            proxy = b2MakeProxy(circle.center, 1, circle.radius);
+            B2Transform identity = b2Transform_identity;
+            m_context.draw.DrawSolidCircle(ref identity, circle.center, circle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)
         {
-            b2World_OverlapCapsule(m_worldId, ref m_queryCapsule, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            B2Vec2 p1 = b2TransformPoint(ref transform, m_queryCapsule.center1);
-            B2Vec2 p2 = b2TransformPoint(ref transform, m_queryCapsule.center2);
-            m_context.draw.DrawSolidCapsule(p1, p2, m_queryCapsule.radius, B2HexColor.b2_colorWhite);
+            B2Capsule capsule;
+            capsule.center1 = b2TransformPoint(ref transform, new B2Vec2(-1.0f, 0.0f));
+            capsule.center2 = b2TransformPoint(ref transform, new B2Vec2(1.0f, 0.0f));
+            capsule.radius = 0.5f;
+            proxy = b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius);
+            m_context.draw.DrawSolidCapsule(capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_boxShape)
         {
-            b2World_OverlapPolygon(m_worldId, ref m_queryBox, transform, b2DefaultQueryFilter(), OverlapResultFcn, this);
-            B2Vec2[] points = new B2Vec2[B2_MAX_POLYGON_VERTICES];
-            for (int i = 0; i < m_queryBox.count; ++i)
-            {
-                points[i] = b2TransformPoint(ref transform, m_queryBox.vertices[i]);
-            }
-
-            m_context.draw.DrawPolygon(points, m_queryBox.count, B2HexColor.b2_colorWhite);
+            B2Polygon box = b2MakeOffsetBox(2.0f, 0.5f, transform.p, transform.q);
+            proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
+            m_context.draw.DrawPolygon(box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
         }
+
+        b2World_OverlapShape(m_worldId, ref proxy, b2DefaultQueryFilter(), OverlapResultFcn, this);
+
 
         for (int i = 0; i < m_doomCount; ++i)
         {
@@ -392,7 +389,7 @@ public class OverlapWorld : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
         m_textLine += m_textIncrement;
         m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");

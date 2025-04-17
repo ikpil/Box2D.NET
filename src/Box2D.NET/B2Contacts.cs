@@ -327,9 +327,10 @@ namespace Box2D.NET
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
 
             uint flags = contact.flags;
+            bool touching = (flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0;
 
             // End touch event
-            if ((flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0 && (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents) != 0)
+            if (touching && (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents) != 0)
             {
                 ushort worldId = world.worldId;
                 B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
@@ -422,7 +423,7 @@ namespace Box2D.NET
 
             b2FreeId(world.contactIdPool, contactId);
 
-            if (wakeBodies)
+            if (wakeBodies && touching)
             {
                 b2WakeBody(world, bodyA);
                 b2WakeBody(world, bodyB);

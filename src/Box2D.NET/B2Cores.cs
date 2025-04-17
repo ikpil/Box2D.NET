@@ -108,20 +108,20 @@ namespace Box2D.NET
 
 
 #if BOX2D_PROFILE
-    /// Tracy profiler instrumentation
-    /// https://github.com/wolfpld/tracy
-    public static void b2TracyCZoneC( object ctx, object color, object active )
-    {
-        TracyCZoneC(ctx, color, active);
-    }
-    public static void b2TracyCZoneNC(object object ctx, object name, object color, object active )
-    {
-        TracyCZoneNC(ctx, name, color, active);
-    }
-    public static void b2TracyCZoneEnd(object ctx)
-    {
-        TracyCZoneEnd(ctx);
-    }
+        /// Tracy profiler instrumentation
+        /// https://github.com/wolfpld/tracy
+        public static void b2TracyCZoneC( object ctx, object color, object active )
+        {
+            TracyCZoneC(ctx, color, active);
+        }
+        public static void b2TracyCZoneNC(object object ctx, object name, object color, object active )
+        {
+            TracyCZoneNC(ctx, name, color, active);
+        }
+        public static void b2TracyCZoneEnd(object ctx)
+        {
+            TracyCZoneEnd(ctx);
+        }
 #else
         [Conditional("DEBUG")]
         public static void b2TracyCZoneC(B2TracyCZone ctx, B2HexColor color, bool active)

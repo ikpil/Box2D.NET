@@ -338,7 +338,6 @@ namespace Box2D.NET
 
             // need to wake bodies because this might be a static body
             bool wakeBodies = true;
-
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             b2DestroyShapeInternal(world, shape, body, wakeBodies);
 
@@ -506,7 +505,6 @@ namespace Box2D.NET
             }
 
             B2ChainShape chain = b2GetChainShape(world, chainId);
-            bool wakeBodies = true;
 
             B2Body body = b2Array_Get(ref world.bodies, chain.bodyId);
 
@@ -538,6 +536,7 @@ namespace Box2D.NET
             {
                 int shapeId = chain.shapeIndices[i];
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                bool wakeBodies = true;
                 b2DestroyShapeInternal(world, shape, body, wakeBodies);
             }
 
@@ -909,7 +908,6 @@ namespace Box2D.NET
             }
 
             result.plane.normal = b2RotateVector(transform.q, result.plane.normal);
-            result.point = b2TransformPoint(ref transform, result.point);
             return result;
         }
 
@@ -985,6 +983,9 @@ namespace Box2D.NET
             return shape.userData;
         }
 
+        /// Returns true if the shape is a sensor. It is not possible to change a shape
+        /// from sensor to solid dynamically because this breaks the contract for
+        /// sensor events.
         public static bool b2Shape_IsSensor(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);

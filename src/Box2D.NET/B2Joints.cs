@@ -520,6 +520,10 @@ namespace Box2D.NET
         public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, ref B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(ref def);
+            Debug.Assert(def.lowerAngle <= def.upperAngle);
+            Debug.Assert(def.lowerAngle >= -0.95f * B2_PI);
+            Debug.Assert(def.upperAngle <= 0.95f * B2_PI);
+
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
@@ -552,10 +556,8 @@ namespace Box2D.NET
             joint.uj.revoluteJoint.upperImpulse = 0.0f;
             joint.uj.revoluteJoint.hertz = def.hertz;
             joint.uj.revoluteJoint.dampingRatio = def.dampingRatio;
-            joint.uj.revoluteJoint.lowerAngle = b2MinFloat(def.lowerAngle, def.upperAngle);
-            joint.uj.revoluteJoint.upperAngle = b2MaxFloat(def.lowerAngle, def.upperAngle);
-            joint.uj.revoluteJoint.lowerAngle = b2ClampFloat(joint.uj.revoluteJoint.lowerAngle, -B2_PI, B2_PI);
-            joint.uj.revoluteJoint.upperAngle = b2ClampFloat(joint.uj.revoluteJoint.upperAngle, -B2_PI, B2_PI);
+            joint.uj.revoluteJoint.lowerAngle = def.lowerAngle;
+            joint.uj.revoluteJoint.upperAngle = def.upperAngle;
             joint.uj.revoluteJoint.maxMotorTorque = def.maxMotorTorque;
             joint.uj.revoluteJoint.motorSpeed = def.motorSpeed;
             joint.uj.revoluteJoint.enableSpring = def.enableSpring;

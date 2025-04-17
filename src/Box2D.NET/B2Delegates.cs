@@ -56,11 +56,13 @@ namespace Box2D.NET
     /// Optional friction mixing callback. This intentionally provides no context objects because this is called
     /// from a worker thread.
     /// @warning This function should not attempt to modify Box2D state or user application state.
+    /// @ingroup world
     public delegate float b2FrictionCallback(float frictionA, int userMaterialIdA, float frictionB, int userMaterialIdB);
 
     /// Optional restitution mixing callback. This intentionally provides no context objects because this is called
     /// from a worker thread.
     /// @warning This function should not attempt to modify Box2D state or user application state.
+    /// @ingroup world
     public delegate float b2RestitutionCallback(float restitutionA, int userMaterialIdA, float restitutionB, int userMaterialIdB);
 
     /// Prototype for a contact filter callback.

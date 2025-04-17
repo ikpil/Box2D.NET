@@ -20,10 +20,10 @@ public class Sleep : Sample
     private static readonly int SampleSleep = SampleFactory.Shared.RegisterSample("Bodies", "Sleep", Create);
 
     private B2BodyId m_pendulumId;
+    private B2BodyId m_staticBodyId;
     private B2ShapeId m_groundShapeId;
     private B2ShapeId[] m_sensorIds = new B2ShapeId[2];
     private bool[] m_sensorTouching = new bool[2];
-
 
     private static Sample Create(SampleAppContext ctx, Settings settings)
     {
@@ -43,7 +43,7 @@ public class Sleep : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             groundId = b2CreateBody(m_worldId, ref bodyDef);
 
-            B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
+            B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.enableSensorEvents = true;
             m_groundShapeId = b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -133,12 +133,48 @@ public class Sleep : Sample
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
             b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
+
+        // A sleeping body to test waking on contact destroyed
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(-10.0f, 1.0f);
+            bodyDef.isAwake = false;
+            bodyDef.enableSleep = true;
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+
+            B2Polygon box = b2MakeSquare(1.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+        }
+
+        m_staticBodyId = b2_nullBodyId;
+    }
+
+    void ToggleInvoker()
+    {
+        if (B2_IS_NULL(m_staticBodyId))
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.position = new B2Vec2(-10.5f, 3.0f);
+            m_staticBodyId = b2CreateBody(m_worldId, ref bodyDef);
+
+            B2Polygon box = b2MakeOffsetBox(2.0f, 0.1f, new B2Vec2(0.0f, 0.0f), b2MakeRot(0.25f * B2_PI));
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.invokeContactCreation = true;
+            b2CreatePolygonShape(m_staticBodyId, ref shapeDef, ref box);
+        }
+        else
+        {
+            b2DestroyBody(m_staticBodyId);
+            m_staticBodyId = b2_nullBodyId;
+        }
     }
 
     public override void UpdateGui()
     {
         base.UpdateGui();
-        float height = 100.0f;
+        float height = 160.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
         ImGui.Begin("Sleep", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -161,6 +197,23 @@ public class Sleep : Sample
         }
 
         ImGui.PopItemWidth();
+
+        ImGui.Separator();
+
+        if (B2_IS_NULL(m_staticBodyId))
+        {
+            if (ImGui.Button("Create"))
+            {
+                ToggleInvoker();
+            }
+        }
+        else
+        {
+            if (ImGui.Button("Destroy"))
+            {
+                ToggleInvoker();
+            }
+        }
 
         ImGui.End();
     }
@@ -208,7 +261,7 @@ public class Sleep : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         for (int i = 0; i < 2; ++i)
         {
             m_context.draw.DrawString(5, m_textLine, $"sensor touch {i} = {m_sensorTouching[i]}");
