@@ -16,6 +16,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
@@ -397,8 +398,14 @@ public class CastWorld : Sample
         }
         else
         {
-            b2CastResultFcn[] fcns = [RayCastAnyCallback, RayCastClosestCallback, RayCastMultipleCallback, RayCastSortedCallback];
-            b2CastResultFcn modeFcn = fcns[m_mode];
+            b2CastResultFcn[] functions =
+            [
+                RayCastAnyCallback,
+                RayCastClosestCallback,
+                RayCastMultipleCallback,
+                RayCastSortedCallback
+            ];
+            b2CastResultFcn modeFcn = functions[m_mode];
 
             CastContext context = new CastContext();
 
@@ -410,25 +417,29 @@ public class CastWorld : Sample
             B2Transform transform = new B2Transform(m_rayStart, b2MakeRot(m_angle));
             B2Circle circle = new B2Circle(m_rayStart, m_castRadius);
             B2Capsule capsule = new B2Capsule(b2TransformPoint(ref transform, new B2Vec2(-0.25f, 0.0f)), b2TransformPoint(ref transform, new B2Vec2(0.25f, 0.0f)), m_castRadius);
-            B2Polygon box = b2MakeOffsetRoundedBox( 0.25f, 0.5f, transform.p, transform.q, m_castRadius );
+            B2Polygon box = b2MakeOffsetRoundedBox(0.25f, 0.5f, transform.p, transform.q, m_castRadius);
 
-            switch (m_castType)
+            B2ShapeProxy proxy = new B2ShapeProxy();
+            if (m_castType == CastType.e_rayCast)
             {
-                case CastType.e_rayCast:
-                    b2World_CastRay(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
-                    break;
+                b2World_CastRay(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+            }
+            else
+            {
+                if (m_castType == CastType.e_circleCast)
+                {
+                    proxy = b2MakeProxy(circle.center, 1, circle.radius);
+                }
+                else if (m_castType == CastType.e_capsuleCast)
+                {
+                    proxy = b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius);
+                }
+                else
+                {
+                    proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
+                }
 
-                case CastType.e_circleCast:
-                    b2World_CastCircle(m_worldId, ref circle, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
-                    break;
-
-                case CastType.e_capsuleCast:
-                    b2World_CastCapsule(m_worldId, ref capsule, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
-                    break;
-
-                case CastType.e_polygonCast:
-                    b2World_CastPolygon(m_worldId, ref box, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
-                    break;
+                b2World_CastShape(m_worldId, ref proxy, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
             }
 
             if (context.count > 0)

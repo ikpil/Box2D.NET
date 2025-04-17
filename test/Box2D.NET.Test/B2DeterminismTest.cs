@@ -182,7 +182,7 @@ public class B2DeterminismTest
         }
     }
 
-    // Test cross platform determinism based on the FallingHinges sample.
+    // Test cross-platform determinism.
     [Test]
     public void CrossPlatformTest()
     {

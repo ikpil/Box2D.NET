@@ -921,6 +921,7 @@ namespace Box2D.NET
             return empty;
         }
 
+#if B2_VALIDATE
         // Compute the height of a sub-tree.
         public static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
         {
@@ -937,7 +938,6 @@ namespace Box2D.NET
             return 1 + b2MaxInt(height1, height2);
         }
 
-#if B2_VALIDATE
         public static void b2ValidateStructure(B2DynamicTree tree, int index)
         {
             if (index == B2_NULL_INDEX)

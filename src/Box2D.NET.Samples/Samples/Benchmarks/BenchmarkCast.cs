@@ -15,6 +15,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Timers;
+using static Box2D.NET.B2Distances;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -242,11 +243,12 @@ public class BenchmarkCast : Sample
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                B2Circle circle = new B2Circle(m_origins[i], m_radius);
+                B2ShapeProxy proxy = b2MakeProxy( m_origins[i], 1, m_radius );
+
                 B2Vec2 translation = m_translations[i];
 
                 CastResult result = new CastResult();
-                B2TreeStats traversalResult = b2World_CastCircle(m_worldId, ref circle, translation, filter, CastCallback, result);
+                B2TreeStats traversalResult = b2World_CastShape(m_worldId, ref proxy, translation, filter, CastCallback, result);
 
                 if (i == m_drawIndex)
                 {

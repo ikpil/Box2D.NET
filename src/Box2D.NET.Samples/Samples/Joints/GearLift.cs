@@ -323,14 +323,14 @@ public class GearLift : Sample
     {
         if (InputAction.Release == GetKey(Keys.A))
         {
-            m_motorSpeed = b2MaxFloat(-0.3f, m_motorSpeed - 0.001f);
+            m_motorSpeed = b2MaxFloat(-0.3f, m_motorSpeed - 0.01f);
             b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }
 
         if (InputAction.Release == GetKey(Keys.D))
         {
-            m_motorSpeed = b2MinFloat(0.3f, m_motorSpeed + 0.001f);
+            m_motorSpeed = b2MinFloat(0.3f, m_motorSpeed + 0.01f);
             b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }

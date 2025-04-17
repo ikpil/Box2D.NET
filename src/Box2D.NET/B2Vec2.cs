@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D.NET
@@ -28,43 +29,50 @@ namespace Box2D.NET
          */
 
         /// Unary negate a vector
-        public static B2Vec2 operator-( B2Vec2 a )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 operator -(B2Vec2 a)
         {
             return new B2Vec2(-a.X, -a.Y);
         }
-        
+
         /// Binary vector addition
-        public static B2Vec2 operator+( B2Vec2 a, B2Vec2 b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 operator +(B2Vec2 a, B2Vec2 b)
         {
             return new B2Vec2(a.X + b.X, a.Y + b.Y);
         }
-        
+
         /// Binary vector subtraction
-        public static B2Vec2 operator-( B2Vec2 a, B2Vec2 b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 operator -(B2Vec2 a, B2Vec2 b)
         {
             return new B2Vec2(a.X - b.X, a.Y - b.Y);
         }
-        
+
         /// Binary scalar and vector multiplication
-        public static B2Vec2 operator*( float a, B2Vec2 b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 operator *(float a, B2Vec2 b)
         {
             return new B2Vec2(a * b.X, a * b.Y);
         }
-        
+
         /// Binary scalar and vector multiplication
-        public static B2Vec2 operator*( B2Vec2 a, float b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 operator *(B2Vec2 a, float b)
         {
             return new B2Vec2(a.X * b, a.Y * b);
         }
-        
+
         /// Binary vector equality
-        public static bool operator==( B2Vec2 a, B2Vec2 b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator ==(B2Vec2 a, B2Vec2 b)
         {
             return a.X == b.X && a.Y == b.Y;
         }
-        
+
         /// Binary vector inequality
-        public static bool operator!=( B2Vec2 a, B2Vec2 b )
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool operator !=(B2Vec2 a, B2Vec2 b)
         {
             return a.X != b.X || a.Y != b.Y;
         }

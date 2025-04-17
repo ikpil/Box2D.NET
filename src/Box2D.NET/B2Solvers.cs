@@ -562,7 +562,7 @@ namespace Box2D.NET
 
             ushort worldId = world.worldId;
 
-            // The body move event array has should already have the correct size
+            // The body move event array should already have the correct size
             Debug.Assert(endIndex <= world.bodyMoveEvents.count);
             B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 

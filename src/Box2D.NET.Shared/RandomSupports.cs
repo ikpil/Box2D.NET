@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Hulls;
@@ -18,7 +19,7 @@ namespace Box2D.NET.Shared
         public const int RAND_LIMIT = 32767;
         public const int RAND_SEED = 12345;
 
-        // Simple random number generator. Using this instead of rand() for cross platform determinism.
+        // Simple random number generator. Using this instead of rand() for cross-platform determinism.
         public static int RandomInt()
         {
             // XorShift32 algorithm
@@ -33,12 +34,14 @@ namespace Box2D.NET.Shared
         }
 
         // Random integer in range [lo, hi]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int RandomIntRange(int lo, int hi)
         {
             return lo + RandomInt() % (hi - lo + 1);
         }
 
         // Random number in range [-1,1]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float RandomFloat()
         {
             float r = (float)(RandomInt() & (RAND_LIMIT));
@@ -48,6 +51,7 @@ namespace Box2D.NET.Shared
         }
 
         // Random floating point number in range [lo, hi]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float RandomFloatRange(float lo, float hi)
         {
             float r = (float)(RandomInt() & (RAND_LIMIT));
@@ -57,6 +61,7 @@ namespace Box2D.NET.Shared
         }
 
         // Random vector with coordinates in range [lo, hi]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 RandomVec2(float lo, float hi)
         {
             B2Vec2 v;
@@ -66,12 +71,14 @@ namespace Box2D.NET.Shared
         }
 
         // Random rotation with angle in range [-pi, pi]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Rot RandomRot()
         {
             float angle = RandomFloatRange(-B2_PI, B2_PI);
             return b2MakeRot(angle);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Polygon RandomPolygon(float extent)
         {
             Span<B2Vec2> points = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];

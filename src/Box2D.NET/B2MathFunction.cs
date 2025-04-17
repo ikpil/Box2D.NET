@@ -243,13 +243,14 @@ namespace Box2D.NET
         }
 
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector.
+        /// todo MSVC is not inlining this function in several places per warning 4710
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2Normalize(B2Vec2 v)
         {
             float length = MathF.Sqrt(v.X * v.X + v.Y * v.Y);
             if (length < FLT_EPSILON)
             {
-                return b2Vec2_zero;
+                return new B2Vec2(0.0f, 0.0f);
             }
 
             float invLength = 1.0f / length;
@@ -257,6 +258,7 @@ namespace Box2D.NET
             return n;
         }
 
+        /// Determines if the provided vector is normalized (norm(a) == 1).
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsNormalized(B2Vec2 a)
         {
@@ -269,10 +271,10 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2GetLengthAndNormalize(ref float length, B2Vec2 v)
         {
-            length = b2Length(v);
+            length = MathF.Sqrt(v.X * v.X + v.Y * v.Y);
             if (length < FLT_EPSILON)
             {
-                return b2Vec2_zero;
+                return new B2Vec2(0.0f, 0.0f);
             }
 
             float invLength = 1.0f / length;
@@ -353,7 +355,10 @@ namespace Box2D.NET
                 s = omt * q1.s + t * q2.s,
             };
 
-            return b2NormalizeRot(q);
+            float mag = MathF.Sqrt(q.s * q.s + q.c * q.c);
+            float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
+            B2Rot qn = new B2Rot(q.c * invMag, q.s * invMag);
+            return qn;
         }
 
         /// Compute the angular velocity necessary to rotate between two rotations over a give time
@@ -614,6 +619,24 @@ namespace Box2D.NET
             return c;
         }
 
+        /// Compute the bounding box of an array of circles
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2AABB b2MakeAABB(ReadOnlySpan<B2Vec2> points, int count, float radius)
+        {
+            Debug.Assert(count > 0);
+            B2AABB a = new B2AABB(points[0], points[0]);
+            for (int i = 1; i < count; ++i)
+            {
+                a.lowerBound = b2Min(a.lowerBound, points[i]);
+                a.upperBound = b2Max(a.upperBound, points[i]);
+            }
+
+            B2Vec2 r = new B2Vec2(radius, radius);
+            a.lowerBound = b2Sub(a.lowerBound, r);
+            a.upperBound = b2Add(a.upperBound, r);
+
+            return a;
+        }
 
         /// Signed separation of a point from a plane
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

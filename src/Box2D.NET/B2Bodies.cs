@@ -329,12 +329,6 @@ namespace Box2D.NET
             return id;
         }
 
-        public static bool b2IsBodyAwake(B2World world, B2Body body)
-        {
-            B2_UNUSED(world);
-            return body.setIndex == (int)B2SetType.b2_awakeSet;
-        }
-
         // careful calling this because it can invalidate body, state, joint, and contact pointers
         public static bool b2WakeBody(B2World world, B2Body body)
         {
@@ -431,8 +425,8 @@ namespace Box2D.NET
             if (body.setIndex == (int)B2SetType.b2_awakeSet)
             {
                 int result = b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
-                B2_UNUSED(result);
                 Debug.Assert(result == movedIndex);
+                B2_UNUSED(result);
             }
             else if (set.setIndex >= (int)B2SetType.b2_firstSleepingSet && set.bodySims.count == 0)
             {
@@ -825,7 +819,7 @@ namespace Box2D.NET
         /// Set the velocity to reach the given transform after a given time step.
         /// The result will be close but maybe not exact. This is meant for kinematic bodies.
         /// This will automatically wake the body if asleep.
-        public static void b2Body_SetKinematicTarget(B2BodyId bodyId, B2Transform target, float timeStep)
+        public static void b2Body_SetTargetTransform(B2BodyId bodyId, B2Transform target, float timeStep)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -854,7 +848,7 @@ namespace Box2D.NET
             }
 
             // Return if velocity would be zero
-            if (b2LengthSquared(linearVelocity) == 0.0f || b2AbsFloat(angularVelocity) == 0.0f)
+            if (b2LengthSquared(linearVelocity) == 0.0f && b2AbsFloat(angularVelocity) == 0.0f)
             {
                 return;
             }
@@ -1392,6 +1386,12 @@ namespace Box2D.NET
             return massData;
         }
 
+        /// This update the mass properties to the sum of the mass properties of the shapes.
+        /// This normally does not need to be called unless you called SetMassData to override
+        /// the mass and you later want to reset the mass.
+        /// You may also use this when automatic mass computation has been disabled.
+        /// You should call this regardless of body type.
+        /// Note that sensor shapes may have mass.
         public static void b2Body_ApplyMassFromShapes(B2BodyId bodyId)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
