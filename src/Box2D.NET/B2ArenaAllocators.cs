@@ -97,11 +97,11 @@ namespace Box2D.NET
 
         public static void b2GrowArena(B2ArenaAllocator allocator)
         {
-            var allocs = allocator.AsSpan();
+            var allocSpan = allocator.AsSpan();
 
-            for (int i = 0; i < allocs.Length; ++i)
+            for (int i = 0; i < allocSpan.Length; ++i)
             {
-                var alloc = allocs[i];
+                var alloc = allocSpan[i];
                 alloc.Grow();
             }
         }
@@ -110,10 +110,10 @@ namespace Box2D.NET
         public static int b2GetArenaCapacity(B2ArenaAllocator allocator)
         {
             int capacity = 0;
-            var allocs = allocator.AsSpan();
-            for (int i = 0; i < allocs.Length; ++i)
+            var allocSpan = allocator.AsSpan();
+            for (int i = 0; i < allocSpan.Length; ++i)
             {
-                capacity += allocs[i].maxAllocation;
+                capacity += allocSpan[i].maxAllocation;
             }
 
             return capacity;
@@ -122,10 +122,10 @@ namespace Box2D.NET
         public static int b2GetArenaAllocation(B2ArenaAllocator allocator)
         {
             int allocation = 0;
-            var allocs = allocator.AsSpan();
-            for (int i = 0; i < allocs.Length; ++i)
+            var allocSpan = allocator.AsSpan();
+            for (int i = 0; i < allocSpan.Length; ++i)
             {
-                allocation += allocs[i].allocation;
+                allocation += allocSpan[i].allocation;
             }
 
             return allocation;
@@ -134,10 +134,10 @@ namespace Box2D.NET
         public static int b2GetMaxArenaAllocation(B2ArenaAllocator allocator)
         {
             int maxAllocation = 0;
-            var allocs = allocator.AsSpan();
-            for (int i = 0; i < allocs.Length; ++i)
+            var allocSpan = allocator.AsSpan();
+            for (int i = 0; i < allocSpan.Length; ++i)
             {
-                maxAllocation += allocs[i].maxAllocation;
+                maxAllocation += allocSpan[i].maxAllocation;
             }
 
             return maxAllocation;
