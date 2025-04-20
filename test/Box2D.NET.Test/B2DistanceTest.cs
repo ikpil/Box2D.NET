@@ -47,8 +47,8 @@ public class B2DistanceTest
         ];
 
         B2DistanceInput input = new B2DistanceInput();
-        input.proxyA = b2MakeProxy(vas, B2_ARRAY_COUNT(vas), 0.0f);
-        input.proxyB = b2MakeProxy(vbs, B2_ARRAY_COUNT(vbs), 0.0f);
+        input.proxyA = b2MakeProxy(vas, vas.Length, 0.0f);
+        input.proxyB = b2MakeProxy(vbs, vbs.Length, 0.0f);
         input.transformA = b2Transform_identity;
         input.transformB = b2Transform_identity;
         input.useRadii = false;
@@ -77,8 +77,8 @@ public class B2DistanceTest
         ];
 
         B2ShapeCastPairInput input = new B2ShapeCastPairInput();
-        input.proxyA = b2MakeProxy(vas, B2_ARRAY_COUNT(vas), 0.0f);
-        input.proxyB = b2MakeProxy(vbs, B2_ARRAY_COUNT(vbs), 0.0f);
+        input.proxyA = b2MakeProxy(vas, vas.Length, 0.0f);
+        input.proxyB = b2MakeProxy(vbs, vbs.Length, 0.0f);
         input.transformA = b2Transform_identity;
         input.transformB = b2Transform_identity;
         input.translationB = new B2Vec2(-2.0f, 0.0f);
@@ -108,8 +108,8 @@ public class B2DistanceTest
         ];
 
         B2TOIInput input = new B2TOIInput();
-        input.proxyA = b2MakeProxy(vas, B2_ARRAY_COUNT(vas), 0.0f);
-        input.proxyB = b2MakeProxy(vbs, B2_ARRAY_COUNT(vbs), 0.0f);
+        input.proxyA = b2MakeProxy(vas, vas.Length, 0.0f);
+        input.proxyB = b2MakeProxy(vbs, vbs.Length, 0.0f);
         input.sweepA = new B2Sweep(b2Vec2_zero, b2Vec2_zero, b2Vec2_zero, b2Rot_identity, b2Rot_identity);
         input.sweepB = new B2Sweep(b2Vec2_zero, b2Vec2_zero, new B2Vec2(-2.0f, 0.0f), b2Rot_identity, b2Rot_identity);
         input.maxFraction = 1.0f;

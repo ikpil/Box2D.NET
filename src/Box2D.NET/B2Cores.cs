@@ -144,12 +144,6 @@ namespace Box2D.NET
         }
 #endif
 
-        // Returns the number of elements of an array
-        public static int B2_ARRAY_COUNT<T>(T[] a)
-        {
-            return a.Length;
-        }
-
         public static void B2_CHECK_DEF(ref B2WheelJointDef def)
         {
             Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
