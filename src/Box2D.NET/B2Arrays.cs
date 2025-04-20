@@ -2,7 +2,9 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
 
@@ -35,7 +37,11 @@ namespace Box2D.NET
         /* Get */
         public static ref T b2Array_Get<T>(ref B2Array<T> a, int index)
         {
-            Debug.Assert(0 <= index && index < a.count);
+            if (0 > index || index >= a.count)
+            {
+                throw new IndexOutOfRangeException($"Index is out of range - count({a.count}) index({index})");
+            }
+            
             return ref a.data[index];
         }
 
@@ -68,20 +74,24 @@ namespace Box2D.NET
         /* Set */
         public static void b2Array_Set<T>(ref B2Array<T> a, int index, T value)
         {
-            Debug.Assert(0 <= index && index < a.count);
-            a.data[index] = value;
+            ref T v = ref b2Array_Get(ref a, index);
+            v = value;
         }
 
         /* RemoveSwap */
         public static int b2Array_RemoveSwap<T>(ref B2Array<T> a, int index) where T : new()
         {
-            Debug.Assert(0 <= index && index < a.count);
+            if (0 > index || index >= a.count)
+            {
+                throw new IndexOutOfRangeException($"Index is out of range - count({a.count}) index({index})");
+            }
+            
             int movedIndex = B2_NULL_INDEX;
             if (index != a.count - 1)
             {
                 movedIndex = a.count - 1;
                 a.data[index] = a.data[movedIndex];
-                
+
                 // fixed, ikpil
                 if (!typeof(T).IsValueType)
                 {
@@ -96,14 +106,19 @@ namespace Box2D.NET
         /* Pop */
         public static T b2Array_Pop<T>(ref B2Array<T> a) where T : new()
         {
-            Debug.Assert(a.count > 0);
+            if (0 >= a.count)
+            {
+                throw new IndexOutOfRangeException($"Index is out of range - count({a.count})");
+            }
+
             T value = a.data[a.count - 1];
-            
+
             // fixed, ikpil
             if (!typeof(T).IsValueType)
             {
                 a.data[a.count - 1] = new T();
             }
+
             a.count -= 1;
             return value;
         }
@@ -117,8 +132,11 @@ namespace Box2D.NET
         /* ByteCount */
         public static int b2Array_ByteCount<T>(ref B2Array<T> a)
         {
-            // TODO: @ikpil, check
-            //return (int)( a.capacity * sizeof( T ) );                                                                               
+            if (typeof(T).IsValueType)
+            {
+                return a.capacity * Marshal.SizeOf<T>();
+            }
+
             return -1;
         }
 
