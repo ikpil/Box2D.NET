@@ -4,12 +4,14 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
     public static class B2BitSets
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2SetBit(ref B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
@@ -28,6 +30,7 @@ namespace Box2D.NET
             bitSet.bits[blockIndex] |= ((ulong)1 << (int)(bitIndex % 64));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2ClearBit(ref B2BitSet bitSet, uint bitIndex)
         {
             uint blockIndex = bitIndex / 64;
@@ -39,6 +42,7 @@ namespace Box2D.NET
             bitSet.bits[blockIndex] &= ~((ulong)1 << (int)(bitIndex % 64));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2GetBit(ref B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
@@ -50,9 +54,10 @@ namespace Box2D.NET
             return (bitSet.bits[blockIndex] & ((ulong)1 << (int)(bitIndex % 64))) != 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2GetBitSetBytes(ref B2BitSet bitSet)
         {
-            return (int)(bitSet.blockCapacity * sizeof(ulong));
+            return bitSet.blockCapacity * sizeof(ulong);
         }
 
         public static B2BitSet b2CreateBitSet(int bitCapacity)
@@ -61,7 +66,7 @@ namespace Box2D.NET
             b2CreateBitSet(ref bitSet, bitCapacity);
             return bitSet;
         }
-        
+
         // fix
         public static void b2CreateBitSet(ref B2BitSet bitSet, int bitCapacity)
         {
@@ -74,7 +79,7 @@ namespace Box2D.NET
 
         public static void b2DestroyBitSet(ref B2BitSet bitSet)
         {
-            b2Free(bitSet.bits, bitSet.blockCapacity * sizeof(ulong));
+            b2Free(bitSet.bits, bitSet.blockCapacity);
             bitSet.blockCapacity = 0;
             bitSet.blockCount = 0;
             bitSet.bits = null;
@@ -98,7 +103,11 @@ namespace Box2D.NET
 
         public static void b2GrowBitSet(ref B2BitSet bitSet, int blockCount)
         {
-            Debug.Assert(blockCount > bitSet.blockCount);
+            if (blockCount <= bitSet.blockCount)
+            {
+                throw new InvalidOperationException($"blockCount must be greater than the current blockCount - request({blockCount}) blockCount({bitSet.blockCount})");
+            }
+
             if (blockCount > bitSet.blockCapacity)
             {
                 int oldCapacity = bitSet.blockCapacity;
@@ -118,7 +127,11 @@ namespace Box2D.NET
 
         public static void b2InPlaceUnion(ref B2BitSet setA, ref B2BitSet setB)
         {
-            Debug.Assert(setA.blockCount == setB.blockCount);
+            if (setA.blockCount != setB.blockCount)
+            {
+                throw new InvalidOperationException($"cannot perform union: setA.blockCount ({setA.blockCount}) != setB.blockCount ({setB.blockCount})");
+            }
+
             int blockCount = setA.blockCount;
             for (uint i = 0; i < blockCount; ++i)
             {
