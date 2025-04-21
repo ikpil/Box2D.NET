@@ -87,6 +87,8 @@ namespace Box2D.NET
 
         public static void b2PrismaticJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            Debug.Assert(lower <= upper);
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             // TODO: @ikpil, check epsilon
             if (lower != joint.uj.prismaticJoint.lowerTranslation || upper != joint.uj.prismaticJoint.upperTranslation)

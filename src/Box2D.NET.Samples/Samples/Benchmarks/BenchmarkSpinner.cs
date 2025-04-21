@@ -24,10 +24,8 @@ public class BenchmarkSpinner : Sample
             m_context.camera.m_zoom = 42.0f;
         }
 
-#if DEBUG
-        b2_toiCalls = 0;
-        b2_toiHitCount = 0;
-#endif
+        // b2_toiCalls = 0;
+        // b2_toiHitCount = 0;
 
         CreateSpinner(m_worldId);
     }
@@ -49,8 +47,6 @@ public class BenchmarkSpinner : Sample
     {
         base.Draw(settings);
         
-#if DEBUG
-        DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
-#endif
+        //DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }
 }

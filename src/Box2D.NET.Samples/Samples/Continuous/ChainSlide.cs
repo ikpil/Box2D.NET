@@ -26,9 +26,7 @@ public class ChainSlide : Sample
             m_context.camera.m_zoom = 15.0f;
         }
 
-#if DEBUG
-        b2_toiHitCount = 0;
-#endif
+        // b2_toiHitCount = 0;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -90,9 +88,6 @@ public class ChainSlide : Sample
     {
         base.Draw(settings);
 
-#if DEBUG
-        m_context.draw.DrawString(5, m_textLine, $"toi hits = {b2_toiHitCount}");
-        m_textLine += m_textIncrement;
-#endif
+        // m_context.draw.DrawString(5, m_textLine, $"toi hits = {b2_toiHitCount}");
     }
 }

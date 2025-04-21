@@ -174,10 +174,8 @@ public class ChainShape : Sample
             m_shapeId = b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
         }
 
-#if DEBUG
-        b2_toiCalls = 0;
-        b2_toiHitCount = 0;
-#endif
+        // b2_toiCalls = 0;
+        // b2_toiHitCount = 0;
 
         m_stepCount = 0;
     }
@@ -189,9 +187,7 @@ public class ChainShape : Sample
         m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
         m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
-#if DEBUG
-        DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
-#endif
+        // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
 
         float height = 155.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);

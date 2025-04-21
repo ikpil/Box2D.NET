@@ -26,9 +26,7 @@ public class SegmentSlide : Sample
             m_context.camera.m_zoom = 15.0f;
         }
 
-#if DEBUG
-        b2_toiHitCount = 0;
-#endif
+        // b2_toiHitCount = 0;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -50,7 +48,7 @@ public class SegmentSlide : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            //shapeDef.friction = 0.0f;
+            // shapeDef.friction = 0.0f;
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
         }
@@ -60,9 +58,6 @@ public class SegmentSlide : Sample
     {
         base.Draw(settings);
 
-#if DEBUG
-        m_context.draw.DrawString(5, m_textLine, $"toi hits = {b2_toiHitCount}");
-        m_textLine += m_textIncrement;
-#endif
+        // DrawTextLine($"toi hits = {b2_toiHitCount}");
     }
 }

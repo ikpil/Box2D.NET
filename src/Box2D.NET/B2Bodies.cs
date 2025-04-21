@@ -288,7 +288,7 @@ namespace Box2D.NET
             }
             else
             {
-                body.name = "";
+                body.name = string.Empty;
             }
 
             body.userData = def.userData;

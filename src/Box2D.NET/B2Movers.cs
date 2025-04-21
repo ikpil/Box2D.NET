@@ -60,8 +60,8 @@ namespace Box2D.NET
             return new B2PlaneSolverResult(b2Add(delta, position), iteration);
         }
 
-        /// Clips the velocity against the given collision planes. Planes with clipVelocity set to
-        /// true are skipped.
+        /// Clips the velocity against the given collision planes. Planes with zero push or clipVelocity
+        /// set to false are skipped.
         public static B2Vec2 b2ClipVector(B2Vec2 vector, Span<B2CollisionPlane> planes, int count)
         {
             B2Vec2 v = vector;

@@ -577,6 +577,8 @@ namespace Box2D.NET
         public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, B2PrismaticJointDef def)
         {
             B2_CHECK_DEF(ref def);
+            Debug.Assert(def.lowerTranslation <= def.upperTranslation);
+
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
@@ -672,6 +674,8 @@ namespace Box2D.NET
         public static B2JointId b2CreateWheelJoint(B2WorldId worldId, ref B2WheelJointDef def)
         {
             B2_CHECK_DEF(ref def);
+            Debug.Assert(def.lowerTranslation <= def.upperTranslation);
+
             B2World world = b2GetWorldFromId(worldId);
 
             Debug.Assert(world.locked == false);
