@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Atomics;
@@ -27,16 +28,19 @@ namespace Box2D.NET
 #endif
 
         // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyType B2_PROXY_TYPE(int KEY)
         {
             return ((B2BodyType)((KEY) & 3));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int B2_PROXY_ID(int KEY)
         {
             return ((KEY) >> 2);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int B2_PROXY_KEY(int ID, B2BodyType TYPE)
         {
             return (ID << 2) | (int)TYPE;
