@@ -80,6 +80,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.95f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "hip";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
 
                 if (colorize)
@@ -98,6 +100,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.2f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "torso";
+                
                 // bodyDef.type = b2_staticBody;
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
@@ -137,6 +141,7 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f * s, 1.475f * s), position);
                 bodyDef.linearDamping = 0.1f;
+                bodyDef.name = "head";
 
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.25f;
@@ -179,6 +184,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "upper_left_leg";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 1.0f;
 
@@ -225,6 +232,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "lower_left_leg";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -270,6 +279,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "upper_right_leg";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 1.0f;
 
@@ -307,6 +318,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "lower_right_leg";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -353,6 +366,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "lower_left_leg";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
 
                 if (colorize)
@@ -389,6 +404,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
+                bodyDef.name = "lower_left_arm";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.1f;
 
@@ -427,6 +444,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
+                bodyDef.name = "upper_right_arm";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -464,6 +483,8 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
+                bodyDef.name = "lower_right_arm";
+                
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.1f;
 

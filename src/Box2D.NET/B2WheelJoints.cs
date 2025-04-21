@@ -88,6 +88,8 @@ namespace Box2D.NET
 
         public static void b2WheelJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            Debug.Assert(lower <= upper);
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             if (lower != joint.uj.wheelJoint.lowerTranslation || upper != joint.uj.wheelJoint.upperTranslation)
             {

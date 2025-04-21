@@ -220,17 +220,17 @@ public class SampleApp
         }
 
         {
-            Span<float> temp1 = stackalloc float[2];
-            _ctx.gl.GetFloat(GLEnum.AliasedLineWidthRange, temp1);
-
-            Span<float> temp2 = stackalloc float[2];
-            _ctx.gl.GetFloat(GLEnum.SmoothLineWidthRange, temp2);
+            // Span<float> temp1 = stackalloc float[2];
+            // _ctx.gl.GetFloat(GLEnum.AliasedLineWidthRange, temp1);
+            //
+            // Span<float> temp2 = stackalloc float[2];
+            // _ctx.gl.GetFloat(GLEnum.SmoothLineWidthRange, temp2);
 
             string glVersionString = _ctx.gl.GetStringS(GLEnum.Version);
             string glslVersionString = _ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion);
             Logger.Information($"OpenGL {glVersionString}, GLSL {glslVersionString}");
-            Logger.Information($"OpenGL aliased line width range : [{temp1[0]}, {temp1[1]}]");
-            Logger.Information($"OpenGL smooth line width range : [{temp2[0]}, {temp2[1]}]");
+            // Logger.Information($"OpenGL aliased line width range : [{temp1[0]}, {temp1[1]}]");
+            // Logger.Information($"OpenGL smooth line width range : [{temp2[0]}, {temp2[1]}]");
         }
 
         unsafe

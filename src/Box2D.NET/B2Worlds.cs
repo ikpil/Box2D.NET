@@ -1036,10 +1036,7 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawTransformFcn(transform, draw.context);
-
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
-
                         draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
                     }
 
@@ -1332,7 +1329,7 @@ namespace Box2D.NET
 
             if (draw.drawBodyNames)
             {
-                B2Vec2 offset = new B2Vec2(0.1f, 0.2f);
+                B2Vec2 offset = new B2Vec2(0.05f, 0.05f);
                 int count = world.bodies.count;
                 for (int i = 0; i < count; ++i)
                 {
@@ -1347,9 +1344,10 @@ namespace Box2D.NET
                         continue;
                     }
 
-                    B2Transform transform = b2GetBodyTransformQuick(world, body);
+                    B2BodySim bodySim = b2GetBodySim(world, body);
+                    
+                    B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
                     B2Vec2 p = b2TransformPoint(ref transform, offset);
-
                     draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
                 }
             }
@@ -2179,26 +2177,26 @@ namespace Box2D.NET
         }
 
         /// Overlap test for all shapes that overlap the provided shape proxy.
-        public static B2TreeStats b2World_OverlapShape( B2WorldId worldId, ref B2ShapeProxy proxy, B2QueryFilter filter, b2OverlapResultFcn fcn, object context )
+        public static B2TreeStats b2World_OverlapShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
-            B2World world = b2GetWorldFromId( worldId );
-            Debug.Assert( world.locked == false );
-            if ( world.locked )
+            B2World world = b2GetWorldFromId(worldId);
+            Debug.Assert(world.locked == false);
+            if (world.locked)
             {
                 return treeStats;
             }
 
-            B2AABB aabb = b2MakeAABB( proxy.points.AsSpan(), proxy.count, proxy.radius );
+            B2AABB aabb = b2MakeAABB(proxy.points.AsSpan(), proxy.count, proxy.radius);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, proxy, context
             );
 
-            for ( int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i )
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query( world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext );
+                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
