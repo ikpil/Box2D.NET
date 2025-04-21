@@ -264,10 +264,6 @@ namespace Box2D.NET
         {
             switch (s.count)
             {
-                case 0:
-                    Debug.Assert(false);
-                    break;
-
                 case 1:
                     a = s.v1.wA;
                     b = s.v1.wB;
@@ -286,6 +282,8 @@ namespace Box2D.NET
                     break;
 
                 default:
+                    a = b2Vec2_zero;
+                    b = b2Vec2_zero;
                     Debug.Assert(false);
                     break;
             }
