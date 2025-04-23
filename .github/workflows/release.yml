@@ -1,0 +1,65 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
+
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
+
+      - name: restore dependencies
+        run: dotnet restore
+
+      - name: build
+        run: dotnet build -c Release --no-restore
+
+      - name: publish
+        run: dotnet publish src/Box2D.NET.Samples -c Release --framework net9.0 --no-restore --no-self-contained --output working-temp
+
+      - name: version
+        id: version
+        run: |
+          tag=${GITHUB_REF/refs\/tags\//}
+          version=${tag}
+          major=${version%%.*}
+          echo "tag=${tag}" >> $GITHUB_OUTPUT
+          echo "version=${version}" >> $GITHUB_OUTPUT
+          echo "major=${major}" >> $GITHUB_OUTPUT
+
+      - name: Zip
+        working-directory: ${{ env.working-directory }}
+        run: |
+          cp -rfv resources working-temp
+          cd working-temp
+          echo "dotnet Box2D.NET.Samples.dll" > run.bat
+          zip -r ../Box2D.NET.Samples-${{ steps.version.outputs.version}}.zip ./
+        if: success()
+
+      - uses: release-drafter/release-drafter@master
+        with:
+          version: ${{ steps.version.outputs.version }}
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: zip Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            Box2D.NET.Samples-${{ steps.version.outputs.version}}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+        
