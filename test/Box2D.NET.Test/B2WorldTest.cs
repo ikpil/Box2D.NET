@@ -211,7 +211,7 @@ public class B2WorldTest
     [Test]
     public void TestWorldRecycle()
     {
-        Debug.Assert(WORLD_COUNT > 0, "world count");
+        B2_ASSERT(WORLD_COUNT > 0, "world count");
 
         int count = 100;
 

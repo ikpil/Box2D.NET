@@ -91,7 +91,7 @@ public class B2BoardPhasesTests
     {
         B2BroadPhase bp = null;
         b2CreateBroadPhase(ref bp);
-        
+
         int proxyKeyA = 42;
         int proxyKeyB = 99;
         int proxyKeyC = 88;
@@ -135,7 +135,84 @@ public class B2BoardPhasesTests
         Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.False);
         Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.False);
         Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
-        
+
         Assert.That(bp.moveArray.count, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2BroadPhase_CreateProxy()
+    {
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        var aabb = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+        ulong categoryBits = 0x0001;
+        int shapeIndex = 123;
+
+        // case 1: static body, forcePairCreation = false
+        int proxyKeyA = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb, categoryBits, shapeIndex, false);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(0), "Should not add to moveSet if static body and forcePairCreation == false");
+        Assert.That(bp.moveArray.count, Is.EqualTo(0), "Should not add to moveArray if static body and forcePairCreation == false");
+
+        // case 2: static body, forcePairCreation = true
+        int proxyKeyB = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb, categoryBits, shapeIndex + 1, true);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(1), "Should add to moveSet if static body but forcePairCreation == true");
+        Assert.That(bp.moveArray.count, Is.EqualTo(1), "Should add to moveArray if static body but forcePairCreation == true");
+        Assert.That(bp.moveArray.data, Does.Contain(proxyKeyB), "moveArray should contain proxyKeyB");
+
+        // case 3: dynamic body, forcePairCreation irrelevant
+        int proxyKeyC = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex + 2, false);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(2), "Should add to moveSet if body is dynamic");
+        Assert.That(bp.moveArray.count, Is.EqualTo(2), "Should add to moveArray if body is dynamic");
+        Assert.That(bp.moveArray.data, Does.Contain(proxyKeyC), "moveArray should contain proxyKeyC");
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2BroadPhase_DestroyProxy()
+    {
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        var aabb = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+        ulong categoryBits = 0x0001;
+        int shapeIndex = 123;
+
+        // Create and buffer proxies
+        int proxyKeyA = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex, false);
+        int proxyKeyB = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex + 1, false);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(2), "moveSet should have 2 items before destroying proxies");
+        Assert.That(bp.moveArray.count, Is.EqualTo(2), "moveArray should have 2 items before destroying proxies");
+        Assert.That(bp.proxyCount, Is.EqualTo(0));
+
+        // Destroy proxy A
+        b2BroadPhase_DestroyProxy(bp, proxyKeyA);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(1), "moveSet should have 1 item after destroying proxy A");
+        Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should have 1 item after destroying proxy A");
+        Assert.That(bp.proxyCount, Is.EqualTo(-1), "proxyCount should decrease after destroying a proxy");
+
+        // Destroy proxy B
+        b2BroadPhase_DestroyProxy(bp, proxyKeyB);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(0), "moveSet should have 0 items after destroying proxy B");
+        Assert.That(bp.moveArray.count, Is.EqualTo(0), "moveArray should have 0 items after destroying proxy B");
+        Assert.That(bp.proxyCount, Is.EqualTo(-2), "proxyCount should decrease to 0 after destroying all proxies");
+
+#if DEBUG
+        // Case 3: Destroy a non-existent proxy
+        Assert.Throws<InvalidOperationException>(() => b2BroadPhase_DestroyProxy(bp, proxyKeyB), "Destroying a non-existent proxy should throw an exception");
+#endif
     }
 }
