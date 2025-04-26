@@ -38,7 +38,7 @@ public class b2TaskTester : IDisposable
         _semaphore.Dispose();
         _semaphore = null;
 
-        Debug.Assert(0 >= _runningTasks.Count);
+        B2_ASSERT(0 >= _runningTasks.Count);
     }
 
     private IEnumerable<int> Next(int itemCount, int minRange)
