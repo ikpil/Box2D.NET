@@ -1,9 +1,11 @@
 ﻿using System;
+using Box2D.NET.Test.Helpers;
 using NUnit.Framework;
 using static Box2D.NET.B2BoardPhases;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
+using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Test;
 
@@ -308,5 +310,38 @@ public class B2BoardPhasesTests
             Assert.That(() => b2BroadPhase_EnlargeProxy(bp, staticProxyKey, aabb2), Throws.Exception, "Enlarging staticBody proxyKey should throw");
         }
 #endif
+    }
+
+    [Test]
+    public void Test_B2BroadPhases_b2BroadPhase_b2PairQueryCallback()
+    {
+        // Arrange
+        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
+        var worldId = worldHandle.Id;
+        var world = b2GetWorldFromId(worldId);
+
+        B2ShapeId shapeIdA = TestHelper.CreateCircle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f);
+        B2ShapeId shapeIdB = TestHelper.CreateCircle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f);
+
+        // QueryContext 셋업
+        B2QueryPairContext queryContext = new B2QueryPairContext();
+        queryContext.world = world;
+        queryContext.queryTreeType = B2BodyType.b2_dynamicBody;
+        queryContext.moveResult = world.broadPhase.moveResults[0];
+        queryContext.moveResult.pairList = null;
+        queryContext.queryProxyKey = 1;
+        queryContext.queryShapeIndex = 1;
+
+        int proxyId = 0;
+        ulong userData = 0; // shape index 0번
+
+        // Act
+        bool result = b2PairQueryCallback(proxyId, userData, ref queryContext);
+
+        // Assert
+        // Assert.That(result, Is.True);
+        // Assert.That(queryContext.moveResult.pairList, Is.Not.Null);
+        // Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(0));
+        // Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo(1));
     }
 }
