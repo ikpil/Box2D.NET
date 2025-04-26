@@ -16,6 +16,8 @@
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ikpil/Box2D.NET?style=for-the-badge&logo=github)](https://github.com/ikpil/Box2D.NET/commits)
 [![GitHub issues](https://img.shields.io/github/issues-raw/ikpil/Box2D.NET?style=for-the-badge&logo=github&color=44cc11)](https://github.com/ikpil/Box2D.NET/issues)
 [![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/ikpil/Box2D.NET?style=for-the-badge&logo=github&color=a371f7)](https://github.com/ikpil/Box2D.NET/issues)
+[![NuGet Version](https://img.shields.io/nuget/vpre/Box2D.NET?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/Box2D.NET)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Box2D.NET?style=for-the-badge&logo=nuget)](https://www.nuget.org/packages/Box2D.NET)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/ikpil?style=for-the-badge&logo=GitHub-Sponsors&link=https%3A%2F%2Fgithub.com%2Fsponsors%2Fikpil)](https://github.com/sponsors/ikpil)
 
 ---
