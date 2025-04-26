@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using NUnit.Framework;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Types;
@@ -14,7 +13,6 @@ using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Cores;
-
 
 namespace Box2D.NET.Test;
 
