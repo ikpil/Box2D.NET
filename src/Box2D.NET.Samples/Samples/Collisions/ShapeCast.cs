@@ -2,15 +2,14 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2MathFunction;
-using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -142,7 +141,7 @@ public class ShapeCast : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
 
@@ -192,7 +191,7 @@ public class ShapeCast : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
     }

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -18,6 +17,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -378,8 +378,8 @@ public class OverlapWorld : Sample
             }
 
             int index = userData.index;
-            Debug.Assert(0 <= index && index < e_maxCount);
-            Debug.Assert(B2_IS_NON_NULL(m_bodyIds[index]));
+            B2_ASSERT(0 <= index && index < e_maxCount);
+            B2_ASSERT(B2_IS_NON_NULL(m_bodyIds[index]));
 
             b2DestroyBody(m_bodyIds[index]);
             m_bodyIds[index] = b2_nullBodyId;

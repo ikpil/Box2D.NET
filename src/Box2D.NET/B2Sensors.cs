@@ -130,10 +130,10 @@ namespace Box2D.NET
             b2TracyCZoneNC(B2TracyCZone.sensor_task, "Overlap", B2HexColor.b2_colorBrown, true);
 
             B2World world = context as B2World;
-            Debug.Assert((int)threadIndex < world.workerCount);
+            B2_ASSERT((int)threadIndex < world.workerCount);
             B2SensorTaskContext taskContext = world.sensorTaskContexts.data[threadIndex];
 
-            Debug.Assert(startIndex < endIndex);
+            B2_ASSERT(startIndex < endIndex);
 
             B2DynamicTree[] trees = world.broadPhase.trees;
             for (int sensorIndex = startIndex; sensorIndex < endIndex; ++sensorIndex)
@@ -169,7 +169,7 @@ namespace Box2D.NET
                     transform = transform,
                 };
 
-                Debug.Assert(sensorShape.sensorIndex == sensorIndex);
+                B2_ASSERT(sensorShape.sensorIndex == sensorIndex);
                 B2AABB queryBounds = sensorShape.aabb;
 
                 // Query all trees
@@ -215,7 +215,7 @@ namespace Box2D.NET
                 return;
             }
 
-            Debug.Assert(world.workerCount > 0);
+            B2_ASSERT(world.workerCount > 0);
 
             b2TracyCZoneNC(B2TracyCZone.overlap_sensors, "Sensors", B2HexColor.b2_colorMediumPurple, true);
 

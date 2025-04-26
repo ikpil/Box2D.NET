@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Cores;
 #if B2_SNOOP_TABLE_COUNTERS
@@ -18,6 +20,7 @@ namespace Box2D.NET
         private static B2AtomicInt b2_probeCount;
 #endif
         //#define B2_SHAPE_PAIR_KEY( K1, K2 ) K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong B2_SHAPE_PAIR_KEY(long K1, long K2)
         {
             return K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1;
@@ -49,6 +52,7 @@ namespace Box2D.NET
             return set;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2DestroySet(ref B2HashSet set)
         {
             b2Free(set.items, set.capacity);
@@ -57,6 +61,7 @@ namespace Box2D.NET
             set.capacity = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2ClearSet(ref B2HashSet set)
         {
             set.count = 0;
@@ -73,6 +78,7 @@ namespace Box2D.NET
         // https://preshing.com/20130107/this-hash-set-is-faster-than-a-judy-array/
         // todo try: https://www.jandrewrogers.com/2019/02/12/fast-perfect-hashing/
         // todo try: https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2KeyHash(ulong key)
         {
             // Murmur hash
@@ -110,7 +116,7 @@ namespace Box2D.NET
         {
             int index = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
-            Debug.Assert(items[index].hash == 0);
+            B2_ASSERT(items[index].hash == 0);
 
             items[index].key = key;
             items[index].hash = hash;
@@ -148,41 +154,35 @@ namespace Box2D.NET
                 b2AddKeyHaveCapacity(ref set, item.key, item.hash);
             }
 
-            Debug.Assert(set.count == oldCount);
+            B2_ASSERT(set.count == oldCount);
 
             b2Free(oldItems, oldCapacity);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2ContainsKey(ref B2HashSet set, ulong key)
         {
             // key of zero is a sentinel
-            Debug.Assert(key != 0);
+            B2_ASSERT(key != 0);
             uint hash = b2KeyHash(key);
             int index = b2FindSlot(ref set, key, hash);
             return set.items[index].key == key;
-        }
-
-        public static int b2GetHashSetBytes(ref B2HashSet set)
-        {
-            // TODO: @ikpil, size check
-            //return set.capacity * sizeof(b2SetItem);
-            return set.capacity * 12;
         }
 
         // Returns true if key was already in set
         public static bool b2AddKey(ref B2HashSet set, ulong key)
         {
             // key of zero is a sentinel
-            Debug.Assert(key != 0);
+            B2_ASSERT(key != 0);
 
             uint hash = b2KeyHash(key);
-            Debug.Assert(hash != 0);
+            B2_ASSERT(hash != 0);
 
             int index = b2FindSlot(ref set, key, hash);
             if (set.items[index].hash != 0)
             {
                 // Already in set
-                Debug.Assert(set.items[index].hash == hash && set.items[index].key == key);
+                B2_ASSERT(set.items[index].hash == hash && set.items[index].key == key);
                 return true;
             }
 
@@ -193,6 +193,12 @@ namespace Box2D.NET
 
             b2AddKeyHaveCapacity(ref set, key, hash);
             return false;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetHashSetBytes(ref B2HashSet set)
+        {
+            return set.capacity * Marshal.SizeOf<B2SetItem>();
         }
 
         // Returns true if the key was found
@@ -212,7 +218,7 @@ namespace Box2D.NET
             items[i].key = 0;
             items[i].hash = 0;
 
-            Debug.Assert(set.count > 0);
+            B2_ASSERT(set.count > 0);
             set.count -= 1;
 
             // Attempt to fill item i

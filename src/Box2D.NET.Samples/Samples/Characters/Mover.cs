@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Helpers;
 using ImGuiNET;
@@ -17,6 +16,7 @@ using static Box2D.NET.B2Movers;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Distances;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Characters;
 
@@ -498,7 +498,7 @@ public class Mover : Sample
 
     static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
     {
-        Debug.Assert(planeResult.hit == true);
+        B2_ASSERT(planeResult.hit == true);
 
         Mover self = (Mover)context;
         float maxPush = float.MaxValue;
@@ -512,7 +512,7 @@ public class Mover : Sample
 
         if (self.m_planeCount < m_planeCapacity)
         {
-            Debug.Assert(b2IsValidPlane(planeResult.plane));
+            B2_ASSERT(b2IsValidPlane(planeResult.plane));
             self.m_planes[self.m_planeCount] = new B2CollisionPlane(planeResult.plane, maxPush, 0.0f, clipVelocity);
             self.m_planeCount += 1;
         }
@@ -557,26 +557,26 @@ public class Mover : Sample
     public override void Step(Settings settings)
     {
         base.Step(settings);
-        
+
         bool pause = false;
-        if ( settings.pause )
+        if (settings.pause)
         {
             pause = settings.singleStep != true;
         }
 
         float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
-        if ( pause )
+        if (pause)
         {
             timeStep = 0.0f;
         }
 
-        if ( timeStep > 0.0f )
+        if (timeStep > 0.0f)
         {
             B2Vec2 point;
             point.X = m_elevatorBase.X;
             point.Y = m_elevatorAmplitude * MathF.Cos(1.0f * m_time + B2_PI) + m_elevatorBase.Y;
 
-            b2Body_SetTargetTransform( m_elevatorId, new B2Transform( point, b2Rot_identity ), timeStep );
+            b2Body_SetTargetTransform(m_elevatorId, new B2Transform(point, b2Rot_identity), timeStep);
         }
 
         m_time += timeStep;
@@ -595,7 +595,7 @@ public class Mover : Sample
                 throttle += 1.0f;
             }
 
-            if (InputAction.Press == GetKey(Keys.Space) )
+            if (InputAction.Press == GetKey(Keys.Space))
             {
                 if (m_onGround && m_jumpReleased)
                 {
@@ -630,7 +630,7 @@ public class Mover : Sample
         {
             B2Vec2 p1 = b2TransformPoint(ref m_transform, m_capsule.center1);
             B2Vec2 p2 = b2TransformPoint(ref m_transform, m_capsule.center2);
-            
+
             B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
             m_context.draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
             m_context.draw.DrawSegment(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);

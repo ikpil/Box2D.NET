@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -77,7 +77,7 @@ namespace Box2D.NET
                 hull.points[hull.count++] = hull2.points[i];
             }
 
-            Debug.Assert(hull.count < B2_MAX_POLYGON_VERTICES);
+            B2_ASSERT(hull.count < B2_MAX_POLYGON_VERTICES);
 
             return hull;
         }
@@ -232,7 +232,7 @@ namespace Box2D.NET
                 hull.points[hull.count++] = hull2.points[i];
             }
 
-            Debug.Assert(hull.count <= B2_MAX_POLYGON_VERTICES);
+            B2_ASSERT(hull.count <= B2_MAX_POLYGON_VERTICES);
 
             // merge collinear
             bool searching = true;

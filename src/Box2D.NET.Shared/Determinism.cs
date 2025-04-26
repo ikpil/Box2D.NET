@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -14,6 +13,7 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Shared
 {
@@ -95,14 +95,14 @@ namespace Box2D.NET.Shared
 
                         b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
-                        Debug.Assert(bodyIndex < bodyCount);
+                        B2_ASSERT(bodyIndex < bodyCount);
                         bodyIds[bodyIndex] = bodyId;
 
                         bodyIndex += 1;
                     }
                 }
 
-                Debug.Assert(bodyIndex == bodyCount);
+                B2_ASSERT(bodyIndex == bodyCount);
             }
 
             FallingHingeData data = new FallingHingeData();
@@ -123,7 +123,7 @@ namespace Box2D.NET.Shared
                 if (bodyEvents.moveCount == 0)
                 {
                     int awakeCount = b2World_GetAwakeBodyCount(worldId);
-                    Debug.Assert(awakeCount == 0);
+                    B2_ASSERT(awakeCount == 0);
 
                     data.hash = B2_HASH_INIT;
                     Span<byte> bxf = stackalloc byte[sizeof(float) * 4];

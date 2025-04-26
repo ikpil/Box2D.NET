@@ -2,14 +2,13 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
-
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -23,14 +22,14 @@ namespace Box2D.NET
 
         public static void b2WeldJoint_SetReferenceAngle(B2JointId jointId, float angleInRadians)
         {
-            Debug.Assert(b2IsValidFloat(angleInRadians));
+            B2_ASSERT(b2IsValidFloat(angleInRadians));
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
         }
 
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
-            Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearHertz = hertz;
         }
@@ -43,7 +42,7 @@ namespace Box2D.NET
 
         public static void b2WeldJoint_SetLinearDampingRatio(B2JointId jointId, float dampingRatio)
         {
-            Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearDampingRatio = dampingRatio;
         }
@@ -56,7 +55,7 @@ namespace Box2D.NET
 
         public static void b2WeldJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
-            Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularHertz = hertz;
         }
@@ -69,7 +68,7 @@ namespace Box2D.NET
 
         public static void b2WeldJoint_SetAngularDampingRatio(B2JointId jointId, float dampingRatio)
         {
-            Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularDampingRatio = dampingRatio;
         }
@@ -107,7 +106,7 @@ namespace Box2D.NET
 
         public static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_weldJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
@@ -118,7 +117,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
@@ -206,7 +205,7 @@ namespace Box2D.NET
 
         public static void b2SolveWeldJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == B2JointType.b2_weldJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;

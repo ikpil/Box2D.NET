@@ -249,7 +249,7 @@ namespace Box2D.NET.Shared
 
         public static void CreateGroup(RainData rainData, B2WorldId worldId, int rowIndex, int columnIndex)
         {
-            Debug.Assert(rowIndex < (int)RainConstants.RAIN_ROW_COUNT && columnIndex < (int)RainConstants.RAIN_COLUMN_COUNT);
+            B2_ASSERT(rowIndex < (int)RainConstants.RAIN_ROW_COUNT && columnIndex < (int)RainConstants.RAIN_COLUMN_COUNT);
 
             int groupIndex = rowIndex * (int)RainConstants.RAIN_COLUMN_COUNT + columnIndex;
 
@@ -275,7 +275,7 @@ namespace Box2D.NET.Shared
 
         public static void DestroyGroup(RainData rainData, int rowIndex, int columnIndex)
         {
-            Debug.Assert(rowIndex < (int)RainConstants.RAIN_ROW_COUNT && columnIndex < (int)RainConstants.RAIN_COLUMN_COUNT);
+            B2_ASSERT(rowIndex < (int)RainConstants.RAIN_ROW_COUNT && columnIndex < (int)RainConstants.RAIN_COLUMN_COUNT);
 
             int groupIndex = rowIndex * (int)RainConstants.RAIN_COLUMN_COUNT + columnIndex;
 

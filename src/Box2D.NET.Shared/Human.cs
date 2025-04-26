@@ -2,7 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Shared
 {
@@ -14,7 +14,7 @@ namespace Box2D.NET.Shared
 
         public void Clear()
         {
-            Debug.Assert((int)BoneId.bone_count == B2FixedArray11<Bone>.Size);
+            B2_ASSERT((int)BoneId.bone_count == B2FixedArray11<Bone>.Size);
 
             for (int i = 0; i < bones.Length; ++i)
             {

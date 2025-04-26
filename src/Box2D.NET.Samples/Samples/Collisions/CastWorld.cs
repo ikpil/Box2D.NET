@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -18,6 +17,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -444,7 +444,7 @@ public class CastWorld : Sample
 
             if (context.count > 0)
             {
-                Debug.Assert(context.count <= 3);
+                B2_ASSERT(context.count <= 3);
                 B2HexColor[] colors = new B2HexColor[3] { B2HexColor.b2_colorRed, B2HexColor.b2_colorGreen, B2HexColor.b2_colorBlue };
                 for (int i = 0; i < context.count; ++i)
                 {
@@ -537,7 +537,7 @@ public class CastWorld : Sample
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
 
@@ -621,7 +621,7 @@ public class CastWorld : Sample
         }
 
         int count = rayContext.count;
-        Debug.Assert(count < 3);
+        B2_ASSERT(count < 3);
 
         rayContext.points[count] = point;
         rayContext.normals[count] = normal;
@@ -653,7 +653,7 @@ public class CastWorld : Sample
         }
 
         int count = rayContext.count;
-        Debug.Assert(count <= 3);
+        B2_ASSERT(count <= 3);
 
         int index = 3;
         while (fraction < rayContext.fractions[index - 1])
@@ -670,8 +670,8 @@ public class CastWorld : Sample
         {
             // not closer, continue but tell the caller not to consider fractions further than the largest fraction acquired
             // this only happens once the buffer is full
-            Debug.Assert(rayContext.count == 3);
-            Debug.Assert(rayContext.fractions[2] <= 1.0f);
+            B2_ASSERT(rayContext.count == 3);
+            B2_ASSERT(rayContext.fractions[2] <= 1.0f);
             return rayContext.fractions[2];
         }
 

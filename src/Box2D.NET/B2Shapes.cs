@@ -41,7 +41,7 @@ namespace Box2D.NET
         {
             int id = shapeId.index1 - 1;
             B2Shape shape = b2Array_Get(ref world.shapes, id);
-            Debug.Assert(shape.id == id && shape.generation == shapeId.generation);
+            B2_ASSERT(shape.id == id && shape.generation == shapeId.generation);
             return shape;
         }
 
@@ -49,7 +49,7 @@ namespace Box2D.NET
         {
             int id = chainId.index1 - 1;
             B2ChainShape chain = b2Array_Get(ref world.chainShapes, id);
-            Debug.Assert(chain.id == id && chain.generation == chainId.generation);
+            B2_ASSERT(chain.id == id && chain.generation == chainId.generation);
             return chain;
         }
 
@@ -86,7 +86,7 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(world.shapes.data[shapeId].id == B2_NULL_INDEX);
+                B2_ASSERT(world.shapes.data[shapeId].id == B2_NULL_INDEX);
             }
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -114,7 +114,7 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
 
@@ -183,11 +183,11 @@ namespace Box2D.NET
         public static B2ShapeId b2CreateShape<T>(B2BodyId bodyId, ref B2ShapeDef def, ref T geometry, B2ShapeType shapeType) where T : struct
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(b2IsValidFloat(def.density) && def.density >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.material.friction) && def.material.friction >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.material.restitution) && def.material.restitution >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.material.rollingResistance) && def.material.rollingResistance >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.material.tangentSpeed));
+            B2_ASSERT(b2IsValidFloat(def.density) && def.density >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.material.friction) && def.material.friction >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.material.restitution) && def.material.restitution >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.material.rollingResistance) && def.material.rollingResistance >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.material.tangentSpeed));
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -230,7 +230,7 @@ namespace Box2D.NET
 
         public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, ref B2ShapeDef def, ref B2Polygon polygon)
         {
-            Debug.Assert(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
             return b2CreateShape(bodyId, ref def, ref polygon, B2ShapeType.b2_polygonShape);
         }
 
@@ -239,7 +239,7 @@ namespace Box2D.NET
             float lengthSqr = b2DistanceSquared(segment.point1, segment.point2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 return b2_nullShapeId;
             }
 
@@ -350,8 +350,8 @@ namespace Box2D.NET
         public static B2ChainId b2CreateChain(B2BodyId bodyId, ref B2ChainDef def)
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(def.count >= 4);
-            Debug.Assert(def.materialCount == 1 || def.materialCount == def.count);
+            B2_ASSERT(def.count >= 4);
+            B2_ASSERT(def.materialCount == 1 || def.materialCount == def.count);
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -370,7 +370,7 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(world.chainShapes.data[chainId].id == B2_NULL_INDEX);
+                B2_ASSERT(world.chainShapes.data[chainId].id == B2_NULL_INDEX);
             }
 
             B2ChainShape chainShape = b2Array_Get(ref world.chainShapes, chainId);
@@ -387,10 +387,10 @@ namespace Box2D.NET
             for (int i = 0; i < materialCount; ++i)
             {
                 ref B2SurfaceMaterial material = ref def.materials[i];
-                Debug.Assert(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
-                Debug.Assert(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
-                Debug.Assert(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
-                Debug.Assert(b2IsValidFloat(material.tangentSpeed));
+                B2_ASSERT(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
+                B2_ASSERT(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
+                B2_ASSERT(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
+                B2_ASSERT(b2IsValidFloat(material.tangentSpeed));
 
                 chainShape.materials[i] = material;
             }
@@ -525,7 +525,7 @@ namespace Box2D.NET
                 chainIdPtr = world.chainShapes.data[chainIdPtr].nextChainId;
             }
 
-            Debug.Assert(found == true);
+            B2_ASSERT(found == true);
             if (found == false)
             {
                 return;
@@ -604,7 +604,7 @@ namespace Box2D.NET
                     return b2ComputeSegmentAABB(ref shape.us.chainSegment.segment, xf);
                 default:
                 {
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     B2AABB empty = new B2AABB(xf.p, xf.p);
                     return empty;
                 }
@@ -645,7 +645,7 @@ namespace Box2D.NET
                     ReadOnlySpan<B2Vec2> points = shape.us.polygon.vertices.AsSpan();
                     int count = shape.us.polygon.count;
                     float perimeter = 2.0f * B2_PI * shape.us.polygon.radius;
-                    Debug.Assert(count > 0);
+                    B2_ASSERT(count > 0);
                     B2Vec2 prev = points[count - 1];
                     for (int i = 0; i < count; ++i)
                     {
@@ -684,7 +684,7 @@ namespace Box2D.NET
                 {
                     ReadOnlySpan<B2Vec2> points = shape.us.polygon.vertices.AsSpan();
                     int count = shape.us.polygon.count;
-                    Debug.Assert(count > 0);
+                    B2_ASSERT(count > 0);
                     float value = b2Dot(points[0], line);
                     float lower = value;
                     float upper = value;
@@ -914,14 +914,14 @@ namespace Box2D.NET
 
         public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, B2Transform transform, bool forcePairCreation)
         {
-            Debug.Assert(shape.proxyKey == B2_NULL_INDEX);
+            B2_ASSERT(shape.proxyKey == B2_NULL_INDEX);
 
             b2UpdateShapeAABBs(shape, transform, type);
 
             // Create proxies in the broad-phase.
             shape.proxyKey =
                 b2BroadPhase_CreateProxy(bp, type, shape.fatAABB, shape.filter.categoryBits, shape.id, forcePairCreation);
-            Debug.Assert(B2_PROXY_TYPE(shape.proxyKey) < B2BodyType.b2_bodyTypeCount);
+            B2_ASSERT(B2_PROXY_TYPE(shape.proxyKey) < B2BodyType.b2_bodyTypeCount);
         }
 
         public static void b2DestroyShapeProxy(B2Shape shape, B2BroadPhase bp)
@@ -949,7 +949,7 @@ namespace Box2D.NET
                     return b2MakeProxy(shape.us.chainSegment.segment.point1, shape.us.chainSegment.segment.point2, 2, 0.0f);
                 default:
                 {
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     B2ShapeProxy empty = new B2ShapeProxy();
                     return empty;
                 }
@@ -1055,7 +1055,7 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     return output;
             }
 
@@ -1071,7 +1071,7 @@ namespace Box2D.NET
 
         public static void b2Shape_SetDensity(B2ShapeId shapeId, float density, bool updateBodyMass)
         {
-            Debug.Assert(b2IsValidFloat(density) && density >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(density) && density >= 0.0f);
 
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1104,10 +1104,10 @@ namespace Box2D.NET
 
         public static void b2Shape_SetFriction(B2ShapeId shapeId, float friction)
         {
-            Debug.Assert(b2IsValidFloat(friction) && friction >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(friction) && friction >= 0.0f);
 
             B2World world = b2GetWorld(shapeId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
             if (world.locked)
             {
                 return;
@@ -1126,10 +1126,10 @@ namespace Box2D.NET
 
         public static void b2Shape_SetRestitution(B2ShapeId shapeId, float restitution)
         {
-            Debug.Assert(b2IsValidFloat(restitution) && restitution >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(restitution) && restitution >= 0.0f);
 
             B2World world = b2GetWorld(shapeId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
             if (world.locked)
             {
                 return;
@@ -1149,7 +1149,7 @@ namespace Box2D.NET
         public static void b2Shape_SetMaterial(B2ShapeId shapeId, int material)
         {
             B2World world = b2GetWorld(shapeId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
             if (world.locked)
             {
                 return;
@@ -1346,7 +1346,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            Debug.Assert(shape.type == B2ShapeType.b2_circleShape);
+            B2_ASSERT(shape.type == B2ShapeType.b2_circleShape);
             return shape.us.circle;
         }
 
@@ -1354,7 +1354,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            Debug.Assert(shape.type == B2ShapeType.b2_segmentShape);
+            B2_ASSERT(shape.type == B2ShapeType.b2_segmentShape);
             return shape.us.segment;
         }
 
@@ -1362,7 +1362,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            Debug.Assert(shape.type == B2ShapeType.b2_chainSegmentShape);
+            B2_ASSERT(shape.type == B2ShapeType.b2_chainSegmentShape);
             return shape.us.chainSegment;
         }
 
@@ -1370,7 +1370,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            Debug.Assert(shape.type == B2ShapeType.b2_capsuleShape);
+            B2_ASSERT(shape.type == B2ShapeType.b2_capsuleShape);
             return shape.us.capsule;
         }
 
@@ -1378,7 +1378,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            Debug.Assert(shape.type == B2ShapeType.b2_polygonShape);
+            B2_ASSERT(shape.type == B2ShapeType.b2_polygonShape);
             return shape.us.polygon;
         }
 
@@ -1474,7 +1474,7 @@ namespace Box2D.NET
 
         public static void b2Chain_SetFriction(B2ChainId chainId, float friction)
         {
-            Debug.Assert(b2IsValidFloat(friction) && friction >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(friction) && friction >= 0.0f);
 
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -1509,7 +1509,7 @@ namespace Box2D.NET
 
         public static void b2Chain_SetRestitution(B2ChainId chainId, float restitution)
         {
-            Debug.Assert(b2IsValidFloat(restitution));
+            B2_ASSERT(b2IsValidFloat(restitution));
 
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -1636,7 +1636,7 @@ namespace Box2D.NET
                 contactKey = contact.edges[edgeIndex].nextKey;
             }
 
-            Debug.Assert(index <= capacity);
+            B2_ASSERT(index <= capacity);
 
             return index;
         }

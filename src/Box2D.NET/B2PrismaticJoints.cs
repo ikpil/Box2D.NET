@@ -10,7 +10,7 @@ using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
-
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -87,7 +87,7 @@ namespace Box2D.NET
 
         public static void b2PrismaticJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
-            Debug.Assert(lower <= upper);
+            B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             // TODO: @ikpil, check epsilon
@@ -167,9 +167,9 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
-            Debug.Assert(joint.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(joint.type == B2JointType.b2_prismaticJoint);
             B2JointSim jointSim = b2GetJointSim(world, joint);
-            Debug.Assert(jointSim.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(jointSim.type == B2JointType.b2_prismaticJoint);
 
             B2Body bodyA = b2Array_Get(ref world.bodies, jointSim.bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, jointSim.bodyIdB);
@@ -270,7 +270,7 @@ namespace Box2D.NET
 
         public static void b2PreparePrismaticJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
@@ -281,7 +281,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
@@ -340,7 +340,7 @@ namespace Box2D.NET
 
         public static void b2WarmStartPrismaticJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -385,7 +385,7 @@ namespace Box2D.NET
 
         public static void b2SolvePrismaticJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -624,7 +624,7 @@ namespace Box2D.NET
 
         public static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
         {
-            Debug.Assert(@base.type == B2JointType.b2_prismaticJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
             ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 

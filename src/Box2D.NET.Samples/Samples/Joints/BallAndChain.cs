@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
@@ -11,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2RevoluteJoints;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -95,7 +95,7 @@ public class BallAndChain : Sample
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
-                Debug.Assert(jointIndex == m_count + 1);
+                B2_ASSERT(jointIndex == m_count + 1);
             }
         }
     }

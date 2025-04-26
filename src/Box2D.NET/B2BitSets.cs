@@ -15,7 +15,7 @@ namespace Box2D.NET
         public static void b2SetBit(ref B2BitSet bitSet, int bitIndex)
         {
             int blockIndex = bitIndex / 64;
-            Debug.Assert(blockIndex < bitSet.blockCount);
+            B2_ASSERT(blockIndex < bitSet.blockCount);
             bitSet.bits[blockIndex] |= ((ulong)1 << (bitIndex % 64));
         }
 
@@ -115,7 +115,7 @@ namespace Box2D.NET
                 ulong[] newBits = b2Alloc<ulong>(bitSet.blockCapacity);
                 //memset( newBits, 0, bitSet->blockCapacity * sizeof( ulong ) );
                 Array.Fill(newBits, 0UL, 0, bitSet.blockCapacity);
-                Debug.Assert(bitSet.bits != null);
+                B2_ASSERT(bitSet.bits != null);
                 //memcpy( newBits, bitSet->bits, oldCapacity * sizeof( ulong ) );
                 Array.Copy(bitSet.bits, newBits, oldCapacity);
                 b2Free(bitSet.bits, oldCapacity);

@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -14,6 +13,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -127,8 +127,8 @@ public class Platformer : Sample
     // does not try to access any values in the world that may be changing, such as contact data.
     private bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold)
     {
-        Debug.Assert(b2Shape_IsValid(shapeIdA));
-        Debug.Assert(b2Shape_IsValid(shapeIdB));
+        B2_ASSERT(b2Shape_IsValid(shapeIdA));
+        B2_ASSERT(b2Shape_IsValid(shapeIdB));
 
         float sign = 0.0f;
         if (B2_ID_EQUALS(shapeIdA, m_playerShapeId))

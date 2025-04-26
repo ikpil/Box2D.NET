@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Ids;
@@ -11,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -182,7 +182,7 @@ public class BenchmarkManyTumblers : Sample
 
             for (int i = 0; i < m_tumblerCount; ++i)
             {
-                Debug.Assert(m_bodyIndex < m_bodyCount);
+                B2_ASSERT(m_bodyIndex < m_bodyCount);
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;

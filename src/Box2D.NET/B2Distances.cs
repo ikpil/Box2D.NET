@@ -160,7 +160,7 @@ namespace Box2D.NET
         // for single
         public static B2ShapeProxy b2MakeProxy(B2Vec2 v1, int count, float radius)
         {
-            Debug.Assert(count == 1);
+            B2_ASSERT(count == 1);
 
             Span<B2Vec2> vertices = stackalloc B2Vec2[1];
             vertices[0] = v1;
@@ -169,7 +169,7 @@ namespace Box2D.NET
 
         public static B2ShapeProxy b2MakeProxy(B2Vec2 v1, B2Vec2 v2, int count, float radius)
         {
-            Debug.Assert(count == 2);
+            B2_ASSERT(count == 2);
 
             Span<B2Vec2> vertices = stackalloc B2Vec2[2];
             vertices[0] = v1;
@@ -213,7 +213,7 @@ namespace Box2D.NET
 
         public static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2ShapeProxy proxyB)
         {
-            Debug.Assert(cache.count <= 3);
+            B2_ASSERT(cache.count <= 3);
             B2Simplex s = new B2Simplex();
 
             // Copy data from cache.
@@ -284,7 +284,7 @@ namespace Box2D.NET
                 default:
                     a = b2Vec2_zero;
                     b = b2Vec2_zero;
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
         }
@@ -470,9 +470,9 @@ namespace Box2D.NET
         public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, B2Simplex[] simplexes, int simplexCapacity)
         {
             B2_UNUSED( simplexes, simplexCapacity );
-            Debug.Assert( input.proxyA.count > 0 && input.proxyB.count > 0 );
-            Debug.Assert( input.proxyA.radius >= 0.0f );
-            Debug.Assert( input.proxyB.radius >= 0.0f );
+            B2_ASSERT( input.proxyA.count > 0 && input.proxyB.count > 0 );
+            B2_ASSERT( input.proxyA.radius >= 0.0f );
+            B2_ASSERT( input.proxyB.radius >= 0.0f );
             
             B2DistanceOutput output = new B2DistanceOutput();
 
@@ -539,7 +539,7 @@ namespace Box2D.NET
                         break;
 
                     default:
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                         break;
                 }
 
@@ -657,7 +657,7 @@ namespace Box2D.NET
             float target = b2MaxFloat(linearSlop, totalRadius - linearSlop);
             float tolerance = 0.25f * linearSlop;
 
-            Debug.Assert(target > tolerance);
+            B2_ASSERT(target > tolerance);
 
             // Prepare input for distance query
             B2SimplexCache cache = new B2SimplexCache();
@@ -699,7 +699,7 @@ namespace Box2D.NET
                             }
 
                             // Initial overlap but distance is non-zero due to radius
-                            Debug.Assert(b2IsNormalized(distanceOutput.normal));
+                            B2_ASSERT(b2IsNormalized(distanceOutput.normal));
                             output.fraction = alpha;
                             output.point = b2MulAdd(distanceOutput.pointA, input.proxyA.radius, distanceOutput.normal);
                             output.normal = distanceOutput.normal;
@@ -710,7 +710,7 @@ namespace Box2D.NET
                     else
                     {
                         // Regular hit
-                        Debug.Assert(distanceOutput.distance > 0.0f && b2IsNormalized(distanceOutput.normal));
+                        B2_ASSERT(distanceOutput.distance > 0.0f && b2IsNormalized(distanceOutput.normal));
                         output.fraction = alpha;
                         output.point = b2MulAdd(distanceOutput.pointA, input.proxyA.radius, distanceOutput.normal);
                         output.normal = distanceOutput.normal;
@@ -719,8 +719,8 @@ namespace Box2D.NET
                     }
                 }
 
-                Debug.Assert(distanceOutput.distance > 0.0f);
-                Debug.Assert(b2IsNormalized(distanceOutput.normal));
+                B2_ASSERT(distanceOutput.distance > 0.0f);
+                B2_ASSERT(b2IsNormalized(distanceOutput.normal));
 
                 // Check if shapes are approaching each other
                 float denominator = b2Dot(delta2, distanceOutput.normal);
@@ -970,7 +970,7 @@ namespace Box2D.NET
             f.proxyA = proxyA;
             f.proxyB = proxyB;
             int count = cache.count;
-            Debug.Assert(0 < count && count < 3);
+            B2_ASSERT(0 < count && count < 3);
 
             f.sweepA = sweepA;
             f.sweepB = sweepB;
@@ -1102,7 +1102,7 @@ namespace Box2D.NET
                 }
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     indexA = -1;
                     indexB = -1;
                     return 0.0f;
@@ -1154,7 +1154,7 @@ namespace Box2D.NET
                 }
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     return 0.0f;
             }
         }
@@ -1178,8 +1178,8 @@ namespace Box2D.NET
 
             B2Sweep sweepA = input.sweepA;
             B2Sweep sweepB = input.sweepB;
-            Debug.Assert(b2IsNormalizedRot(sweepA.q1) && b2IsNormalizedRot(sweepA.q2));
-            Debug.Assert(b2IsNormalizedRot(sweepB.q1) && b2IsNormalizedRot(sweepB.q2));
+            B2_ASSERT(b2IsNormalizedRot(sweepA.q1) && b2IsNormalizedRot(sweepA.q2));
+            B2_ASSERT(b2IsNormalizedRot(sweepB.q1) && b2IsNormalizedRot(sweepB.q2));
 
             // todo_erin
             // c1 can be at the origin yet the points are far away
@@ -1195,7 +1195,7 @@ namespace Box2D.NET
             // float target = b2MaxFloat( B2_LINEAR_SLOP, totalRadius );
             float target = b2MaxFloat(B2_LINEAR_SLOP, totalRadius - B2_LINEAR_SLOP);
             float tolerance = 0.25f * B2_LINEAR_SLOP;
-            Debug.Assert(target > tolerance);
+            B2_ASSERT(target > tolerance);
 
             float t1 = 0.0f;
             const int k_maxIterations = 20;

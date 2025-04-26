@@ -423,16 +423,16 @@ public class SampleApp
     {
         // Allocation must be a multiple of alignment or risk a seg fault
         // https://en.cppreference.com/w/c/memory/aligned_alloc
-        Debug.Assert(IsPowerOfTwo(alignment));
+        B2_ASSERT(IsPowerOfTwo(alignment));
         long sizeAligned = ((size - 1) | (uint)(alignment - 1)) + 1;
-        Debug.Assert((sizeAligned & (alignment - 1)) == 0);
+        B2_ASSERT((sizeAligned & (alignment - 1)) == 0);
 
 // #if defined( _WIN64 ) || defined( _WIN32 )
 //         void* ptr = _aligned_malloc( sizeAligned, alignment );
 // #else
 //         void* ptr = aligned_alloc(alignment, sizeAligned);
 // #endif
-//         Debug.Assert(ptr != nullptr);
+//         B2_ASSERT(ptr != nullptr);
 //         return ptr;
         return null;
     }
@@ -476,14 +476,14 @@ public class SampleApp
         // if (success == false)
         // {
         //     Logger.Information("ImGui_ImplGlfw_InitForOpenGL failed\n");
-        //     Debug.Assert(false);
+        //     B2_ASSERT(false);
         // }
         //
         // success = ImGui_ImplOpenGL3_Init(glslVersion);
         // if (success == false)
         // {
         //     Logger.Information("ImGui_ImplOpenGL3_Init failed\n");
-        //     Debug.Assert(false);
+        //     B2_ASSERT(false);
         // }
         //
 

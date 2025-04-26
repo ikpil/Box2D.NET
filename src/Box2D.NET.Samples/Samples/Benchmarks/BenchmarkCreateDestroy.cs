@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -10,6 +9,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -105,7 +105,7 @@ public class BenchmarkCreateDestroy : Sample
                 float x = 0.5f * i * shift + (j - i) * shift - centerx;
                 bodyDef.position = new B2Vec2(x, y);
 
-                Debug.Assert(index < e_maxBodyCount);
+                B2_ASSERT(index < e_maxBodyCount);
                 m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
                 b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
 

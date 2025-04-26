@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -12,6 +11,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -215,7 +215,7 @@ public class VerticalStack : Sample
                 b2CreateCircleShape(bullet, ref shapeDef, ref circle);
             }
 
-            Debug.Assert(B2_IS_NULL(m_bullets[i]));
+            B2_ASSERT(B2_IS_NULL(m_bullets[i]));
             m_bullets[i] = bullet;
         }
     }

@@ -8,7 +8,7 @@ using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Joints;
-
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -16,7 +16,7 @@ namespace Box2D.NET
     {
         public static void b2MouseJoint_SetTarget(B2JointId jointId, B2Vec2 target)
         {
-            Debug.Assert(b2IsValidVec2(target));
+            B2_ASSERT(b2IsValidVec2(target));
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
             @base.uj.mouseJoint.targetA = target;
         }
@@ -29,7 +29,7 @@ namespace Box2D.NET
 
         public static void b2MouseJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
-            Debug.Assert(b2IsValidFloat(hertz) && hertz >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
             @base.uj.mouseJoint.hertz = hertz;
         }
@@ -42,7 +42,7 @@ namespace Box2D.NET
 
         public static void b2MouseJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
-            Debug.Assert(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
             @base.uj.mouseJoint.dampingRatio = dampingRatio;
         }
@@ -55,7 +55,7 @@ namespace Box2D.NET
 
         public static void b2MouseJoint_SetMaxForce(B2JointId jointId, float maxForce)
         {
-            Debug.Assert(b2IsValidFloat(maxForce) && maxForce >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(maxForce) && maxForce >= 0.0f);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_mouseJoint);
             @base.uj.mouseJoint.maxForce = maxForce;
         }
@@ -79,7 +79,7 @@ namespace Box2D.NET
 
         public static void b2PrepareMouseJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_mouseJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_mouseJoint);
 
             // chase body id to the solver set where the body lives
             int idB = @base.bodyIdB;
@@ -88,7 +88,7 @@ namespace Box2D.NET
 
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyB.setIndex == (int)B2SetType.b2_awakeSet);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
             int localIndexB = bodyB.localIndex;
@@ -132,7 +132,7 @@ namespace Box2D.NET
 
         public static void b2WarmStartMouseJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_mouseJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_mouseJoint);
 
             float mB = @base.invMassB;
             float iB = @base.invIB;

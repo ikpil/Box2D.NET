@@ -27,7 +27,7 @@ namespace Box2D.NET
         public int Grow()
         {
             // Stack must not be in use
-            Debug.Assert(allocation == 0);
+            B2_ASSERT(allocation == 0);
 
             if (maxAllocation > capacity)
             {

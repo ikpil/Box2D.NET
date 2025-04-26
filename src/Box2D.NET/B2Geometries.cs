@@ -3,17 +3,17 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Distances;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
     public static class B2Geometries
     {
-        // Debug.Assert( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
+        // B2_ASSERT( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
 
         /// Validate ray cast input data (NaN, etc)
         public static bool b2IsValidRay(ref B2RayCastInput input)
@@ -46,7 +46,7 @@ namespace Box2D.NET
                 area += a;
             }
 
-            Debug.Assert(area > FLT_EPSILON);
+            B2_ASSERT(area > FLT_EPSILON);
             float invArea = 1.0f / area;
             center.X *= invArea;
             center.Y *= invArea;
@@ -61,7 +61,7 @@ namespace Box2D.NET
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
         public static B2Polygon b2MakePolygon(ref B2Hull hull, float radius)
         {
-            Debug.Assert(b2ValidateHull(ref hull));
+            B2_ASSERT(b2ValidateHull(ref hull));
 
             if (hull.count < 3)
             {
@@ -85,7 +85,7 @@ namespace Box2D.NET
                 int i1 = i;
                 int i2 = i + 1 < shape.count ? i + 1 : 0;
                 B2Vec2 edge = b2Sub(shape.vertices[i2], shape.vertices[i1]);
-                Debug.Assert(b2Dot(edge, edge) > FLT_EPSILON * FLT_EPSILON);
+                B2_ASSERT(b2Dot(edge, edge) > FLT_EPSILON * FLT_EPSILON);
                 shape.normals[i] = b2Normalize(b2CrossVS(edge, 1.0f));
             }
 
@@ -105,7 +105,7 @@ namespace Box2D.NET
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
         public static B2Polygon b2MakeOffsetRoundedPolygon(ref B2Hull hull, B2Vec2 position, B2Rot rotation, float radius)
         {
-            Debug.Assert(b2ValidateHull(ref hull));
+            B2_ASSERT(b2ValidateHull(ref hull));
 
             if (hull.count < 3)
             {
@@ -131,7 +131,7 @@ namespace Box2D.NET
                 int i1 = i;
                 int i2 = i + 1 < shape.count ? i + 1 : 0;
                 B2Vec2 edge = b2Sub(shape.vertices[i2], shape.vertices[i1]);
-                Debug.Assert(b2Dot(edge, edge) > FLT_EPSILON * FLT_EPSILON);
+                B2_ASSERT(b2Dot(edge, edge) > FLT_EPSILON * FLT_EPSILON);
                 shape.normals[i] = b2Normalize(b2CrossVS(edge, 1.0f));
             }
 
@@ -152,8 +152,8 @@ namespace Box2D.NET
         /// @param halfHeight the half-height (y-axis)
         public static B2Polygon b2MakeBox(float halfWidth, float halfHeight)
         {
-            Debug.Assert(b2IsValidFloat(halfWidth) && halfWidth > 0.0f);
-            Debug.Assert(b2IsValidFloat(halfHeight) && halfHeight > 0.0f);
+            B2_ASSERT(b2IsValidFloat(halfWidth) && halfWidth > 0.0f);
+            B2_ASSERT(b2IsValidFloat(halfHeight) && halfHeight > 0.0f);
 
             B2Polygon shape = new B2Polygon();
             shape.count = 4;
@@ -176,7 +176,7 @@ namespace Box2D.NET
         /// @param radius the radius of the rounded extension
         public static B2Polygon b2MakeRoundedBox(float halfWidth, float halfHeight, float radius)
         {
-            Debug.Assert(b2IsValidFloat(radius) && radius >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(radius) && radius >= 0.0f);
             B2Polygon shape = b2MakeBox(halfWidth, halfHeight);
             shape.radius = radius;
             return shape;
@@ -214,7 +214,7 @@ namespace Box2D.NET
         /// @param radius the radius of the rounded extension
         public static B2Polygon b2MakeOffsetRoundedBox(float halfWidth, float halfHeight, B2Vec2 center, B2Rot rotation, float radius)
         {
-            Debug.Assert(b2IsValidFloat(radius) && radius >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(radius) && radius >= 0.0f);
             B2Transform xf = new B2Transform(center, rotation);
 
             B2Polygon shape = new B2Polygon();
@@ -333,7 +333,7 @@ namespace Box2D.NET
             //
             // The rest of the derivation is handled by computer algebra.
 
-            Debug.Assert(shape.count > 0);
+            B2_ASSERT(shape.count > 0);
 
             if (shape.count == 1)
             {
@@ -415,7 +415,7 @@ namespace Box2D.NET
             massData.mass = density * area;
 
             // Center of mass, shift back from origin at r
-            Debug.Assert(area > FLT_EPSILON);
+            B2_ASSERT(area > FLT_EPSILON);
             float invArea = 1.0f / area;
             center.X *= invArea;
             center.Y *= invArea;
@@ -457,7 +457,7 @@ namespace Box2D.NET
         /// Compute the bounding box of a transformed polygon
         public static B2AABB b2ComputePolygonAABB(ref B2Polygon shape, B2Transform xf)
         {
-            Debug.Assert(shape.count > 0);
+            B2_ASSERT(shape.count > 0);
             B2Vec2 lower = b2TransformPoint(ref xf, shape.vertices[0]);
             B2Vec2 upper = lower;
 
@@ -545,7 +545,7 @@ namespace Box2D.NET
         // http://www.codercorner.com/blog/?p=321
         public static B2CastOutput b2RayCastCircle(ref B2RayCastInput input, ref B2Circle shape)
         {
-            Debug.Assert(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(ref input));
 
             B2Vec2 p = shape.center;
 
@@ -604,7 +604,7 @@ namespace Box2D.NET
         /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
         public static B2CastOutput b2RayCastCapsule(ref B2RayCastInput input, ref B2Capsule shape)
         {
-            Debug.Assert(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(ref input));
 
             B2CastOutput output = new B2CastOutput();
 
@@ -822,7 +822,7 @@ namespace Box2D.NET
         /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
         public static B2CastOutput b2RayCastPolygon(ref B2RayCastInput input, ref B2Polygon shape)
         {
-            Debug.Assert(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(ref input));
 
             if (shape.radius == 0.0f)
             {
@@ -882,7 +882,7 @@ namespace Box2D.NET
                     }
                 }
 
-                Debug.Assert(0.0f <= lower && lower <= input.maxFraction);
+                B2_ASSERT(0.0f <= lower && lower <= input.maxFraction);
 
                 if (index >= 0)
                 {

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
@@ -11,6 +10,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -80,7 +80,7 @@ public class FixedRotation : Sample
 
         // distance joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
@@ -104,7 +104,7 @@ public class FixedRotation : Sample
 
         // motor joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
@@ -125,7 +125,7 @@ public class FixedRotation : Sample
 
         // prismatic joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
@@ -147,7 +147,7 @@ public class FixedRotation : Sample
 
         // revolute joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
@@ -168,7 +168,7 @@ public class FixedRotation : Sample
 
         // weld joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
@@ -193,7 +193,7 @@ public class FixedRotation : Sample
 
         // wheel joint
         {
-            Debug.Assert(index < e_count);
+            B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);

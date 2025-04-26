@@ -2,12 +2,12 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -31,7 +31,7 @@ public class Doohickey
 
     public void Spawn(B2WorldId worldId, B2Vec2 position, float scale)
     {
-        Debug.Assert(m_isSpawned == false);
+        B2_ASSERT(m_isSpawned == false);
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -93,7 +93,7 @@ public class Doohickey
 
     public void Despawn()
     {
-        Debug.Assert(m_isSpawned == true);
+        B2_ASSERT(m_isSpawned == true);
 
         b2DestroyJoint(m_axleId1);
         b2DestroyJoint(m_axleId2);

@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Box2D.NET.Samples;
 using Serilog;
 using Silk.NET.OpenGL;
+using static Box2D.NET.B2Cores;
+
 
 public static class Shader
 {
@@ -39,7 +39,7 @@ public static class Shader
         if (errCode != GLEnum.NoError)
         {
             Logger.Information($"OpenGL error = {errCode}");
-            Debug.Assert(false);
+            B2_ASSERT(false);
         }
     }
 

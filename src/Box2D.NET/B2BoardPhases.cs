@@ -64,7 +64,7 @@ namespace Box2D.NET
         // static FILE* s_file = NULL;
         public static void b2CreateBroadPhase(ref B2BroadPhase bp)
         {
-            Debug.Assert((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");
+            B2_ASSERT((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");
 
             // if (s_file == NULL)
             //{
@@ -131,7 +131,7 @@ namespace Box2D.NET
 
         public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
         {
-            Debug.Assert(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
+            B2_ASSERT(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
             int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex);
             int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
             if (proxyType != B2BodyType.b2_staticBody || forcePairCreation)
@@ -144,7 +144,7 @@ namespace Box2D.NET
 
         public static void b2BroadPhase_DestroyProxy(B2BroadPhase bp, int proxyKey)
         {
-            Debug.Assert(bp.moveArray.count == (int)bp.moveSet.count);
+            B2_ASSERT(bp.moveArray.count == (int)bp.moveSet.count);
             b2UnBufferMove(bp, proxyKey);
 
             --bp.proxyCount;
@@ -152,7 +152,7 @@ namespace Box2D.NET
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            Debug.Assert(0 <= proxyType && proxyType <= B2BodyType.b2_bodyTypeCount);
+            B2_ASSERT(0 <= proxyType && proxyType <= B2BodyType.b2_bodyTypeCount);
             b2DynamicTree_DestroyProxy(bp.trees[(int)proxyType], proxyId);
         }
 
@@ -167,11 +167,11 @@ namespace Box2D.NET
 
         public static void b2BroadPhase_EnlargeProxy(B2BroadPhase bp, int proxyKey, B2AABB aabb)
         {
-            Debug.Assert(proxyKey != B2_NULL_INDEX);
+            B2_ASSERT(proxyKey != B2_NULL_INDEX);
             B2BodyType typeIndex = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            Debug.Assert(typeIndex != B2BodyType.b2_staticBody);
+            B2_ASSERT(typeIndex != B2BodyType.b2_staticBody);
 
             b2DynamicTree_EnlargeProxy(bp.trees[(int)typeIndex], proxyId, aabb);
             b2BufferMove(bp, proxyKey);
@@ -225,7 +225,7 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(treeType == B2BodyType.b2_dynamicBody);
+                B2_ASSERT(treeType == B2BodyType.b2_dynamicBody);
                 bool moved = b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1));
                 if (moved)
                 {
@@ -396,7 +396,7 @@ namespace Box2D.NET
             B2BroadPhase bp = world.broadPhase;
 
             int moveCount = bp.moveArray.count;
-            Debug.Assert(moveCount == (int)bp.moveSet.count);
+            B2_ASSERT(moveCount == (int)bp.moveSet.count);
 
             if (moveCount == 0)
             {

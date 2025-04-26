@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Hulls;
@@ -12,6 +11,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2WheelJoints;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -30,11 +30,11 @@ public class Truck
 
     public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, float density, object userData)
     {
-        Debug.Assert(m_isSpawned == false);
+        B2_ASSERT(m_isSpawned == false);
 
-        Debug.Assert(B2_IS_NULL(m_chassisId));
-        Debug.Assert(B2_IS_NULL(m_frontWheelId));
-        Debug.Assert(B2_IS_NULL(m_rearWheelId));
+        B2_ASSERT(B2_IS_NULL(m_chassisId));
+        B2_ASSERT(B2_IS_NULL(m_frontWheelId));
+        B2_ASSERT(B2_IS_NULL(m_rearWheelId));
 
         // B2Vec2 vertices[6] = {
         //	{ -1.5f, -0.5f }, { 1.5f, -0.5f }, { 1.5f, 0.0f }, { 0.0f, 0.9f }, { -1.15f, 0.9f }, { -1.5f, 0.2f },
@@ -135,7 +135,7 @@ public class Truck
 
     public void Despawn()
     {
-        Debug.Assert(m_isSpawned == true);
+        B2_ASSERT(m_isSpawned == true);
 
         b2DestroyJoint(m_rearAxleId);
         b2DestroyJoint(m_frontAxleId);

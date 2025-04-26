@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Geometries;
@@ -10,6 +9,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -101,7 +101,7 @@ public class ModifyGeometry : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
 
