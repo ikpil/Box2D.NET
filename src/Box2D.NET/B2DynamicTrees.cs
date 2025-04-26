@@ -97,14 +97,14 @@ namespace Box2D.NET
             // Expand the node pool as needed.
             if (tree.freeList == B2_NULL_INDEX)
             {
-                Debug.Assert(tree.nodeCount == tree.nodeCapacity);
+                B2_ASSERT(tree.nodeCount == tree.nodeCapacity);
 
                 // The free list is empty. Rebuild a bigger pool.
                 B2TreeNode[] oldNodes = tree.nodes;
                 int oldCapacity = tree.nodeCapacity;
                 tree.nodeCapacity += oldCapacity >> 1;
                 tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
-                Debug.Assert(oldNodes != null);
+                B2_ASSERT(oldNodes != null);
                 //memcpy( tree->nodes, oldNodes, tree->nodeCount * sizeof( b2TreeNode ) );
                 Array.Copy(oldNodes, 0, tree.nodes, 0, oldCapacity);
 
@@ -135,8 +135,8 @@ namespace Box2D.NET
         // Return a node to the pool.
         public static void b2FreeNode(B2DynamicTree tree, int nodeId)
         {
-            Debug.Assert(0 <= nodeId && nodeId < tree.nodeCapacity);
-            Debug.Assert(0 < tree.nodeCount);
+            B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
+            B2_ASSERT(0 < tree.nodeCount);
             tree.nodes[nodeId].pn.next = tree.freeList;
             tree.nodes[nodeId].flags = 0;
             tree.freeList = nodeId;
@@ -269,8 +269,8 @@ namespace Box2D.NET
 
                 if (lowerCost1 == lowerCost2 && leaf1 == false)
                 {
-                    Debug.Assert(lowerCost1 < float.MaxValue);
-                    Debug.Assert(lowerCost2 < float.MaxValue);
+                    B2_ASSERT(lowerCost1 < float.MaxValue);
+                    B2_ASSERT(lowerCost2 < float.MaxValue);
 
                     // No clear choice based on lower bound surface area. This can happen when both
                     // children fully contain D. Fall back to node distance.
@@ -294,7 +294,7 @@ namespace Box2D.NET
                     directCost = directCost2;
                 }
 
-                Debug.Assert(nodes[index].height > 0);
+                B2_ASSERT(nodes[index].height > 0);
             }
 
             return bestSibling;
@@ -305,7 +305,7 @@ namespace Box2D.NET
         // Returns the new root index.
         public static void b2RotateNodes(B2DynamicTree tree, int iA)
         {
-            Debug.Assert(iA != B2_NULL_INDEX);
+            B2_ASSERT(iA != B2_NULL_INDEX);
 
             B2TreeNode[] nodes = tree.nodes;
 
@@ -317,8 +317,8 @@ namespace Box2D.NET
 
             int iB = A.children.child1;
             int iC = A.children.child2;
-            Debug.Assert(0 <= iB && iB < tree.nodeCapacity);
-            Debug.Assert(0 <= iC && iC < tree.nodeCapacity);
+            B2_ASSERT(0 <= iB && iB < tree.nodeCapacity);
+            B2_ASSERT(0 <= iC && iC < tree.nodeCapacity);
 
             ref B2TreeNode B = ref nodes[iB];
             ref B2TreeNode C = ref nodes[iC];
@@ -326,14 +326,14 @@ namespace Box2D.NET
             if (B.height == 0)
             {
                 // B is a leaf and C is internal
-                Debug.Assert(C.height > 0);
+                B2_ASSERT(C.height > 0);
 
                 int iF = C.children.child1;
                 int iG = C.children.child2;
                 ref B2TreeNode F = ref nodes[iF];
                 ref B2TreeNode G = ref nodes[iG];
-                Debug.Assert(0 <= iF && iF < tree.nodeCapacity);
-                Debug.Assert(0 <= iG && iG < tree.nodeCapacity);
+                B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
+                B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
 
                 // Base cost
                 float costBase = b2Perimeter(C.aabb);
@@ -392,14 +392,14 @@ namespace Box2D.NET
             else if (C.height == 0)
             {
                 // C is a leaf and B is internal
-                Debug.Assert(B.height > 0);
+                B2_ASSERT(B.height > 0);
 
                 int iD = B.children.child1;
                 int iE = B.children.child2;
                 ref B2TreeNode D = ref nodes[iD];
                 ref B2TreeNode E = ref nodes[iE];
-                Debug.Assert(0 <= iD && iD < tree.nodeCapacity);
-                Debug.Assert(0 <= iE && iE < tree.nodeCapacity);
+                B2_ASSERT(0 <= iD && iD < tree.nodeCapacity);
+                B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
 
                 // Base cost
                 float costBase = b2Perimeter(B.aabb);
@@ -466,10 +466,10 @@ namespace Box2D.NET
                 ref B2TreeNode F = ref nodes[iF];
                 ref B2TreeNode G = ref nodes[iG];
 
-                Debug.Assert(0 <= iD && iD < tree.nodeCapacity);
-                Debug.Assert(0 <= iE && iE < tree.nodeCapacity);
-                Debug.Assert(0 <= iF && iF < tree.nodeCapacity);
-                Debug.Assert(0 <= iG && iG < tree.nodeCapacity);
+                B2_ASSERT(0 <= iD && iD < tree.nodeCapacity);
+                B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
+                B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
+                B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
 
                 // Base cost
                 float areaB = b2Perimeter(B.aabb);
@@ -584,7 +584,7 @@ namespace Box2D.NET
                         break;
 
                     default:
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                         break;
                 }
             }
@@ -649,8 +649,8 @@ namespace Box2D.NET
                 int child1 = nodes[index].children.child1;
                 int child2 = nodes[index].children.child2;
 
-                Debug.Assert(child1 != B2_NULL_INDEX);
-                Debug.Assert(child2 != B2_NULL_INDEX);
+                B2_ASSERT(child1 != B2_NULL_INDEX);
+                B2_ASSERT(child2 != B2_NULL_INDEX);
 
                 nodes[index].aabb = b2AABB_Union(nodes[child1].aabb, nodes[child2].aabb);
                 nodes[index].categoryBits = nodes[child1].categoryBits | nodes[child2].categoryBits;
@@ -739,10 +739,10 @@ namespace Box2D.NET
         // the node pool.
         public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, B2AABB aabb, ulong categoryBits, ulong userData)
         {
-            Debug.Assert(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.lowerBound.Y && aabb.lowerBound.Y < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.upperBound.X && aabb.upperBound.X < B2_HUGE);
-            Debug.Assert(-B2_HUGE < aabb.upperBound.Y && aabb.upperBound.Y < B2_HUGE);
+            B2_ASSERT(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
+            B2_ASSERT(-B2_HUGE < aabb.lowerBound.Y && aabb.lowerBound.Y < B2_HUGE);
+            B2_ASSERT(-B2_HUGE < aabb.upperBound.X && aabb.upperBound.X < B2_HUGE);
+            B2_ASSERT(-B2_HUGE < aabb.upperBound.Y && aabb.upperBound.Y < B2_HUGE);
 
             int proxyId = b2AllocateNode(tree);
             ref B2TreeNode node = ref tree.nodes[proxyId];
@@ -764,13 +764,13 @@ namespace Box2D.NET
         /// Destroy a proxy. This asserts if the id is invalid.
         public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
             b2FreeNode(tree, proxyId);
 
-            Debug.Assert(tree.proxyCount > 0);
+            B2_ASSERT(tree.proxyCount > 0);
             tree.proxyCount -= 1;
         }
 
@@ -783,11 +783,11 @@ namespace Box2D.NET
         /// Move a proxy to a new AABB by removing and reinserting into the tree.
         public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, B2AABB aabb)
         {
-            Debug.Assert(b2IsValidAABB(aabb));
-            Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
-            Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(b2IsValidAABB(aabb));
+            B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
 
@@ -802,14 +802,14 @@ namespace Box2D.NET
         {
             B2TreeNode[] nodes = tree.nodes;
 
-            Debug.Assert(b2IsValidAABB(aabb));
-            Debug.Assert(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
-            Debug.Assert(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
-            Debug.Assert(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(b2IsValidAABB(aabb));
+            B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
 
             // Caller must ensure this
-            Debug.Assert(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
+            B2_ASSERT(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
 
             nodes[proxyId].aabb = aabb;
 
@@ -844,9 +844,9 @@ namespace Box2D.NET
         {
             B2TreeNode[] nodes = tree.nodes;
 
-            Debug.Assert(nodes[proxyId].children.child1 == B2_NULL_INDEX);
-            Debug.Assert(nodes[proxyId].children.child2 == B2_NULL_INDEX);
-            Debug.Assert((nodes[proxyId].flags & (ushort)B2TreeNodeFlags.b2_leafNode) == (ushort)B2TreeNodeFlags.b2_leafNode);
+            B2_ASSERT(nodes[proxyId].children.child1 == B2_NULL_INDEX);
+            B2_ASSERT(nodes[proxyId].children.child2 == B2_NULL_INDEX);
+            B2_ASSERT((nodes[proxyId].flags & (ushort)B2TreeNodeFlags.b2_leafNode) == (ushort)B2TreeNodeFlags.b2_leafNode);
 
             nodes[proxyId].categoryBits = categoryBits;
 
@@ -856,9 +856,9 @@ namespace Box2D.NET
             {
                 ref B2TreeNode node = ref nodes[nodeIndex];
                 int child1 = node.children.child1;
-                Debug.Assert(child1 != B2_NULL_INDEX);
+                B2_ASSERT(child1 != B2_NULL_INDEX);
                 int child2 = node.children.child2;
-                Debug.Assert(child2 != B2_NULL_INDEX);
+                B2_ASSERT(child2 != B2_NULL_INDEX);
                 node.categoryBits = nodes[child1].categoryBits | nodes[child2].categoryBits;
 
                 nodeIndex = node.pn.parent;
@@ -868,7 +868,7 @@ namespace Box2D.NET
         /// Get the category bits on a proxy.
         public static ulong b2DynamicTree_GetCategoryBits(B2DynamicTree tree, int proxyId)
         {
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             return tree.nodes[proxyId].categoryBits;
         }
 
@@ -925,7 +925,7 @@ namespace Box2D.NET
         // Compute the height of a sub-tree.
         public static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
         {
-            Debug.Assert(0 <= nodeId && nodeId < tree.nodeCapacity);
+            B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
             ref B2TreeNode node = ref tree.nodes[nodeId];
 
             if (b2IsLeaf(ref node))
@@ -947,31 +947,31 @@ namespace Box2D.NET
 
             if (index == tree.root)
             {
-                Debug.Assert(tree.nodes[index].pn.parent == B2_NULL_INDEX);
+                B2_ASSERT(tree.nodes[index].pn.parent == B2_NULL_INDEX);
             }
 
             ref B2TreeNode node = ref tree.nodes[index];
 
-            Debug.Assert(node.flags == 0 || (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0);
+            B2_ASSERT(node.flags == 0 || (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0);
 
             if (b2IsLeaf(ref node))
             {
-                Debug.Assert(node.height == 0);
+                B2_ASSERT(node.height == 0);
                 return;
             }
 
             int child1 = node.children.child1;
             int child2 = node.children.child2;
 
-            Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
-            Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
+            B2_ASSERT(0 <= child1 && child1 < tree.nodeCapacity);
+            B2_ASSERT(0 <= child2 && child2 < tree.nodeCapacity);
 
-            Debug.Assert(tree.nodes[child1].pn.parent == index);
-            Debug.Assert(tree.nodes[child2].pn.parent == index);
+            B2_ASSERT(tree.nodes[child1].pn.parent == index);
+            B2_ASSERT(tree.nodes[child2].pn.parent == index);
 
             if (0 != ((tree.nodes[child1].flags | tree.nodes[child2].flags) & (ushort)B2TreeNodeFlags.b2_enlargedNode))
             {
-                Debug.Assert(0 != (node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode));
+                B2_ASSERT(0 != (node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode));
             }
 
             b2ValidateStructure(tree, child1);
@@ -989,33 +989,33 @@ namespace Box2D.NET
 
             if (b2IsLeaf(ref node))
             {
-                Debug.Assert(node.height == 0);
+                B2_ASSERT(node.height == 0);
                 return;
             }
 
             int child1 = node.children.child1;
             int child2 = node.children.child2;
 
-            Debug.Assert(0 <= child1 && child1 < tree.nodeCapacity);
-            Debug.Assert(0 <= child2 && child2 < tree.nodeCapacity);
+            B2_ASSERT(0 <= child1 && child1 < tree.nodeCapacity);
+            B2_ASSERT(0 <= child2 && child2 < tree.nodeCapacity);
 
             int height1 = tree.nodes[child1].height;
             int height2 = tree.nodes[child2].height;
             int height = 1 + b2MaxInt(height1, height2);
-            Debug.Assert(node.height == height);
+            B2_ASSERT(node.height == height);
 
             // b2AABB aabb = b2AABB_Union(tree.nodes[child1].aabb, tree.nodes[child2].aabb);
 
-            Debug.Assert(b2AABB_Contains(node.aabb, tree.nodes[child1].aabb));
-            Debug.Assert(b2AABB_Contains(node.aabb, tree.nodes[child2].aabb));
+            B2_ASSERT(b2AABB_Contains(node.aabb, tree.nodes[child1].aabb));
+            B2_ASSERT(b2AABB_Contains(node.aabb, tree.nodes[child2].aabb));
 
-            // Debug.Assert(aabb.lowerBound.x == node.aabb.lowerBound.x);
-            // Debug.Assert(aabb.lowerBound.y == node.aabb.lowerBound.y);
-            // Debug.Assert(aabb.upperBound.x == node.aabb.upperBound.x);
-            // Debug.Assert(aabb.upperBound.y == node.aabb.upperBound.y);
+            // B2_ASSERT(aabb.lowerBound.x == node.aabb.lowerBound.x);
+            // B2_ASSERT(aabb.lowerBound.y == node.aabb.lowerBound.y);
+            // B2_ASSERT(aabb.upperBound.x == node.aabb.upperBound.x);
+            // B2_ASSERT(aabb.upperBound.y == node.aabb.upperBound.y);
 
             ulong categoryBits = tree.nodes[child1].categoryBits | tree.nodes[child2].categoryBits;
-            Debug.Assert(node.categoryBits == categoryBits);
+            B2_ASSERT(node.categoryBits == categoryBits);
 
             b2ValidateMetrics(tree, child1);
             b2ValidateMetrics(tree, child2);
@@ -1038,16 +1038,16 @@ namespace Box2D.NET
             int freeIndex = tree.freeList;
             while (freeIndex != B2_NULL_INDEX)
             {
-                Debug.Assert(0 <= freeIndex && freeIndex < tree.nodeCapacity);
+                B2_ASSERT(0 <= freeIndex && freeIndex < tree.nodeCapacity);
                 freeIndex = tree.nodes[freeIndex].pn.next;
                 ++freeCount;
             }
 
             int height = b2DynamicTree_GetHeight(tree);
             int computedHeight = b2ComputeHeight(tree, tree.root);
-            Debug.Assert(height == computedHeight);
+            B2_ASSERT(height == computedHeight);
 
-            Debug.Assert(tree.nodeCount + freeCount == tree.nodeCapacity);
+            B2_ASSERT(tree.nodeCount + freeCount == tree.nodeCapacity);
 #else
             B2_UNUSED(tree);
 #endif
@@ -1069,7 +1069,7 @@ namespace Box2D.NET
                         int a = 3;
                     }
 
-                    Debug.Assert((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
+                    B2_ASSERT((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }
 #else
@@ -1090,14 +1090,14 @@ namespace Box2D.NET
         /// Get proxy user data
         public static ulong b2DynamicTree_GetUserData(B2DynamicTree tree, int proxyId)
         {
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             return tree.nodes[proxyId].children.userData;
         }
 
         /// Get the AABB of a proxy
         public static B2AABB b2DynamicTree_GetAABB(B2DynamicTree tree, int proxyId)
         {
-            Debug.Assert(0 <= proxyId && proxyId < tree.nodeCapacity);
+            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             return tree.nodes[proxyId].aabb;
         }
 
@@ -1113,7 +1113,7 @@ namespace Box2D.NET
             }
 
             //int[] stack = stackalloc int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             var dummy = new B2FixedArray1024<int>();
             var stack = dummy.AsSpan();
             int stackCount = 0;
@@ -1125,7 +1125,7 @@ namespace Box2D.NET
                 if (nodeId == B2_NULL_INDEX)
                 {
                     // todo huh?
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     continue;
                 }
 
@@ -1154,7 +1154,7 @@ namespace Box2D.NET
                         }
                         else
                         {
-                            Debug.Assert(stackCount < B2_TREE_STACK_SIZE - 1);
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
                         }
                     }
                 }
@@ -1206,7 +1206,7 @@ namespace Box2D.NET
             B2AABB segmentAABB = new B2AABB(b2Min(p1, p2), b2Max(p1, p2));
 
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
@@ -1221,7 +1221,7 @@ namespace Box2D.NET
                 if (nodeId == B2_NULL_INDEX)
                 {
                     // todo is this possible?
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     continue;
                 }
 
@@ -1290,7 +1290,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        Debug.Assert(stackCount < B2_TREE_STACK_SIZE - 1);
+                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
                     }
                 }
             }
@@ -1357,7 +1357,7 @@ namespace Box2D.NET
             B2TreeNode[] nodes = tree.nodes;
 
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
             stack[stackCount++] = tree.root;
@@ -1368,7 +1368,7 @@ namespace Box2D.NET
                 if (nodeId == B2_NULL_INDEX)
                 {
                     // todo is this possible?
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     continue;
                 }
 
@@ -1433,7 +1433,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        Debug.Assert(stackCount < B2_TREE_STACK_SIZE - 1);
+                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
                     }
                 }
             }
@@ -1554,7 +1554,7 @@ namespace Box2D.NET
                 }
             }
 
-            Debug.Assert(i1 == i2);
+            B2_ASSERT(i1 == i2);
 
             if (i1 > 0 && i1 < count)
             {
@@ -1573,7 +1573,7 @@ namespace Box2D.NET
         // Returns the left child count
         public static int b2PartitionSAH(int[] indices, int[] binIndices, B2AABB[] boxes, int count)
         {
-            Debug.Assert(count > 0);
+            B2_ASSERT(count > 0);
 
             Span<B2TreeBin> bins = stackalloc B2TreeBin[B2_BIN_COUNT];
             Span<B2TreePlane> planes = stackalloc B2TreePlane[B2_BIN_COUNT - 1];
@@ -1712,7 +1712,7 @@ namespace Box2D.NET
                 }
             }
 
-            Debug.Assert(i1 == i2);
+            B2_ASSERT(i1 == i2);
 
             if (i1 > 0 && i1 < count)
             {
@@ -1746,7 +1746,7 @@ namespace Box2D.NET
 
             // todo large stack item
             //B2RebuildItem[] stack = new B2RebuildItem[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Size);
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Size);
             B2FixedArray1024<B2RebuildItem> stack = new B2FixedArray1024<B2RebuildItem>();
             int top = 0;
 
@@ -1781,23 +1781,23 @@ namespace Box2D.NET
 
                     if (parentItem.childCount == 0)
                     {
-                        Debug.Assert(parentNode.children.child1 == B2_NULL_INDEX);
+                        B2_ASSERT(parentNode.children.child1 == B2_NULL_INDEX);
                         parentNode.children.child1 = item.nodeIndex;
                     }
                     else
                     {
-                        Debug.Assert(parentItem.childCount == 1);
-                        Debug.Assert(parentNode.children.child2 == B2_NULL_INDEX);
+                        B2_ASSERT(parentItem.childCount == 1);
+                        B2_ASSERT(parentNode.children.child2 == B2_NULL_INDEX);
                         parentNode.children.child2 = item.nodeIndex;
                     }
 
                     ref B2TreeNode node = ref nodes[item.nodeIndex];
 
-                    Debug.Assert(node.pn.parent == B2_NULL_INDEX);
+                    B2_ASSERT(node.pn.parent == B2_NULL_INDEX);
                     node.pn.parent = parentItem.nodeIndex;
 
-                    Debug.Assert(node.children.child1 != B2_NULL_INDEX);
-                    Debug.Assert(node.children.child2 != B2_NULL_INDEX);
+                    B2_ASSERT(node.children.child1 != B2_NULL_INDEX);
+                    B2_ASSERT(node.children.child2 != B2_NULL_INDEX);
                     ref B2TreeNode c1 = ref nodes[node.children.child1];
                     ref B2TreeNode c2 = ref nodes[node.children.child2];
 
@@ -1818,7 +1818,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        Debug.Assert(item.childCount == 1);
+                        B2_ASSERT(item.childCount == 1);
                         startIndex = item.splitIndex;
                         endIndex = item.endIndex;
                     }
@@ -1832,24 +1832,24 @@ namespace Box2D.NET
 
                         if (item.childCount == 0)
                         {
-                            Debug.Assert(node.children.child1 == B2_NULL_INDEX);
+                            B2_ASSERT(node.children.child1 == B2_NULL_INDEX);
                             node.children.child1 = childIndex;
                         }
                         else
                         {
-                            Debug.Assert(item.childCount == 1);
-                            Debug.Assert(node.children.child2 == B2_NULL_INDEX);
+                            B2_ASSERT(item.childCount == 1);
+                            B2_ASSERT(node.children.child2 == B2_NULL_INDEX);
                             node.children.child2 = childIndex;
                         }
 
                         ref B2TreeNode childNode = ref nodes[childIndex];
-                        Debug.Assert(childNode.pn.parent == B2_NULL_INDEX);
+                        B2_ASSERT(childNode.pn.parent == B2_NULL_INDEX);
                         childNode.pn.parent = item.nodeIndex;
                     }
                     else
                     {
-                        Debug.Assert(count > 0);
-                        Debug.Assert(top < B2_TREE_STACK_SIZE);
+                        B2_ASSERT(count > 0);
+                        B2_ASSERT(top < B2_TREE_STACK_SIZE);
 
                         top += 1;
                         ref B2RebuildItem newItem = ref stack[top];
@@ -1869,9 +1869,9 @@ namespace Box2D.NET
             }
 
             ref B2TreeNode rootNode = ref nodes[stack[0].nodeIndex];
-            Debug.Assert(rootNode.pn.parent == B2_NULL_INDEX);
-            Debug.Assert(rootNode.children.child1 != B2_NULL_INDEX);
-            Debug.Assert(rootNode.children.child2 != B2_NULL_INDEX);
+            B2_ASSERT(rootNode.pn.parent == B2_NULL_INDEX);
+            B2_ASSERT(rootNode.children.child1 != B2_NULL_INDEX);
+            B2_ASSERT(rootNode.children.child2 != B2_NULL_INDEX);
 
             ref B2TreeNode child1 = ref nodes[rootNode.children.child1];
             ref B2TreeNode child2 = ref nodes[rootNode.children.child2];
@@ -1915,7 +1915,7 @@ namespace Box2D.NET
 
             int leafCount = 0;
             //int[] stack = new int[B2_TREE_STACK_SIZE];
-            Debug.Assert(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
             B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
             int stackCount = 0;
 
@@ -1966,7 +1966,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        Debug.Assert(stackCount < B2_TREE_STACK_SIZE);
+                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
                     }
 
                     node = ref nodes[nodeIndex];
@@ -1992,12 +1992,12 @@ namespace Box2D.NET
             {
                 if (0 != (nodes[i].flags & (ushort)B2TreeNodeFlags.b2_allocatedNode))
                 {
-                    Debug.Assert((nodes[i].flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
+                    B2_ASSERT((nodes[i].flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }
 #endif
 
-            Debug.Assert(leafCount <= proxyCount);
+            B2_ASSERT(leafCount <= proxyCount);
 
             tree.root = b2BuildTree(tree, leafCount);
 

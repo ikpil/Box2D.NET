@@ -28,7 +28,7 @@ namespace Box2D.NET
 
         public static B2ArenaAllocatorTyped<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
         {
-            Debug.Assert(capacity >= 0);
+            B2_ASSERT(capacity >= 0);
             B2ArenaAllocatorTyped<T> allocatorImpl = new B2ArenaAllocatorTyped<T>();
             allocatorImpl.capacity = capacity;
             allocatorImpl.data = b2Alloc<T>(capacity);
@@ -54,7 +54,7 @@ namespace Box2D.NET
                 entry.data = b2Alloc<T>(size32);
                 entry.usedMalloc = true;
 
-                //Debug.Assert(((uintptr_t)entry.data & 0x1F) == 0);
+                //B2_ASSERT(((uintptr_t)entry.data & 0x1F) == 0);
             }
             else
             {
@@ -62,7 +62,7 @@ namespace Box2D.NET
                 entry.usedMalloc = false;
                 alloc.index += size32;
 
-                //Debug.Assert(((uintptr_t)entry.data & 0x1F) == 0);
+                //B2_ASSERT(((uintptr_t)entry.data & 0x1F) == 0);
             }
 
             alloc.allocation += size32;
@@ -79,9 +79,9 @@ namespace Box2D.NET
         {
             var alloc = allocator.GetOrCreateFor<T>();
             int entryCount = alloc.entries.count;
-            Debug.Assert(entryCount > 0);
+            B2_ASSERT(entryCount > 0);
             ref B2ArenaEntry<T> entry = ref alloc.entries.data[entryCount - 1];
-            Debug.Assert(mem == entry.data);
+            B2_ASSERT(mem == entry.data);
             if (entry.usedMalloc)
             {
                 b2Free(mem.Array, entry.size);

@@ -4,7 +4,6 @@
 
 namespace Box2D.NET
 {
-    // @ikpil, must be strcut
     public struct B2SetItem
     {
         public ulong key;

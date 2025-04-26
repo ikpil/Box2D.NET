@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -23,18 +23,18 @@ public struct Donut
 
     public Donut()
     {
-        Debug.Assert(m_sides == B2FixedArray7<B2BodyId>.Size);
-        Debug.Assert(m_sides == B2FixedArray7<B2JointId>.Size);
+        B2_ASSERT(m_sides == B2FixedArray7<B2BodyId>.Size);
+        B2_ASSERT(m_sides == B2FixedArray7<B2JointId>.Size);
     }
 
     public void Create(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, bool enableSensorEvents, object userData)
     {
-        Debug.Assert(m_isSpawned == false);
+        B2_ASSERT(m_isSpawned == false);
 
         for (int i = 0; i < m_sides; ++i)
         {
-            Debug.Assert(B2_IS_NULL(m_bodyIds[i]));
-            Debug.Assert(B2_IS_NULL(m_jointIds[i]));
+            B2_ASSERT(B2_IS_NULL(m_bodyIds[i]));
+            B2_ASSERT(B2_IS_NULL(m_jointIds[i]));
         }
 
         float radius = 1.0f * scale;
@@ -91,7 +91,7 @@ public struct Donut
 
     public void Destroy()
     {
-        Debug.Assert(m_isSpawned == true);
+        B2_ASSERT(m_isSpawned == true);
 
         for (int i = 0; i < m_sides; ++i)
         {

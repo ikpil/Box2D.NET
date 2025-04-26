@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -623,7 +623,7 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2MakeAABB(ReadOnlySpan<B2Vec2> points, int count, float radius)
         {
-            Debug.Assert(count > 0);
+            B2_ASSERT(count > 0);
             B2AABB a = new B2AABB(points[0], points[0]);
             for (int i = 1; i < count; ++i)
             {
@@ -647,7 +647,7 @@ namespace Box2D.NET
 
 
         /**@}*/
-        //Debug.Assert( sizeof( int ) == sizeof( int ), "Box2D expects int and int to be the same" );
+        //B2_ASSERT( sizeof( int ) == sizeof( int ), "Box2D expects int and int to be the same" );
 
         /// Is this a valid number? Not NaN or infinity.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -807,8 +807,8 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Rot b2ComputeRotationBetweenUnitVectors(B2Vec2 v1, B2Vec2 v2)
         {
-            Debug.Assert(b2AbsFloat(1.0f - b2Length(v1)) < 100.0f * FLT_EPSILON);
-            Debug.Assert(b2AbsFloat(1.0f - b2Length(v2)) < 100.0f * FLT_EPSILON);
+            B2_ASSERT(b2AbsFloat(1.0f - b2Length(v1)) < 100.0f * FLT_EPSILON);
+            B2_ASSERT(b2AbsFloat(1.0f - b2Length(v2)) < 100.0f * FLT_EPSILON);
 
             B2Rot rot;
             rot.c = b2Dot(v1, v2);

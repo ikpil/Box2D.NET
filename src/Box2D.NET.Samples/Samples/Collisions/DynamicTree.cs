@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -13,7 +12,7 @@ using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Constants;
-
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -44,7 +43,7 @@ public class DynamicTree : Sample
     private bool m_rayDrag;
     private bool m_queryDrag;
     private bool m_validate;
-    
+
     //
     private float _ms;
     private float _boxCount;
@@ -53,7 +52,7 @@ public class DynamicTree : Sample
     {
         ref DynamicTreeContext sample = ref context;
         Proxy proxy = sample.tree.m_proxies[userData];
-        Debug.Assert(proxy.proxyId == proxyId);
+        B2_ASSERT(proxy.proxyId == proxyId);
         proxy.queryStamp = sample.tree.m_timeStamp;
         return true;
     }
@@ -62,7 +61,7 @@ public class DynamicTree : Sample
     {
         DynamicTree sample = context.tree;
         Proxy proxy = sample.m_proxies[userData];
-        Debug.Assert(proxy.proxyId == proxyId);
+        B2_ASSERT(proxy.proxyId == proxyId);
         proxy.rayStamp = sample.m_timeStamp;
         return input.maxFraction;
     }
@@ -152,7 +151,7 @@ public class DynamicTree : Sample
                 float fillTest = RandomFloatRange(0.0f, 1.0f);
                 if (fillTest <= m_fill)
                 {
-                    Debug.Assert(m_proxyCount <= m_proxyCapacity);
+                    B2_ASSERT(m_proxyCount <= m_proxyCapacity);
                     Proxy p = m_proxies[m_proxyCount];
                     p.position = new B2Vec2(x, y);
 
@@ -415,7 +414,7 @@ public class DynamicTree : Sample
 
         m_timeStamp += 1;
     }
-    
+
 
     public override void Draw(Settings settings)
     {
@@ -425,9 +424,9 @@ public class DynamicTree : Sample
         {
             var dynamicTreeContext = new DynamicTreeContext();
             dynamicTreeContext.tree = this;
-                
+
             B2AABB box = new B2AABB(b2Min(m_startPoint, m_endPoint), b2Max(m_startPoint, m_endPoint));
-            
+
             b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
             m_context.draw.DrawAABB(box, B2HexColor.b2_colorWhite);
@@ -440,7 +439,7 @@ public class DynamicTree : Sample
         {
             var dynamicTreeContext = new DynamicTreeContext();
             dynamicTreeContext.tree = this;
-            
+
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
             B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
 

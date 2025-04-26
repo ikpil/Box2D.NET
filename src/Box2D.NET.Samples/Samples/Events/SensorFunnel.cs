@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using Box2D.NET.Samples.Primitives;
 using Box2D.NET.Shared;
@@ -14,6 +13,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Cores;
 using static Box2D.NET.Shared.Humans;
 
 namespace Box2D.NET.Samples.Samples.Events;
@@ -305,7 +305,7 @@ public class SensorFunnel : Sample
                 if (donut != null)
                 {
                     int index = donut.Value;
-                    Debug.Assert(0 <= index && index < (int)ea.e_count);
+                    B2_ASSERT(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                     deferredDestruction[index] = true;
@@ -317,7 +317,7 @@ public class SensorFunnel : Sample
                 if (human != null)
                 {
                     int index = human.Value;
-                    Debug.Assert(0 <= index && index < (int)ea.e_count);
+                    B2_ASSERT(0 <= index && index < (int)ea.e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                     deferredDestruction[index] = true;

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
@@ -10,6 +9,7 @@ using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -100,9 +100,9 @@ namespace Box2D.NET
         /// and that -0.95 * B2_PI <= lower && upper <= -0.95 * B2_PI.
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
-            Debug.Assert(lower <= upper);
-            Debug.Assert(lower >= -0.95f * B2_PI);
-            Debug.Assert(upper <= 0.95f * B2_PI);
+            B2_ASSERT(lower <= upper);
+            B2_ASSERT(lower >= -0.95f * B2_PI);
+            B2_ASSERT(upper <= 0.95f * B2_PI);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             if (lower != joint.uj.revoluteJoint.lowerAngle || upper != joint.uj.revoluteJoint.upperAngle)
@@ -189,7 +189,7 @@ namespace Box2D.NET
 
         public static void b2PrepareRevoluteJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
@@ -200,7 +200,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
@@ -249,7 +249,7 @@ namespace Box2D.NET
 
         public static void b2WarmStartRevoluteJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -277,7 +277,7 @@ namespace Box2D.NET
 
         public static void b2SolveRevoluteJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -473,7 +473,7 @@ namespace Box2D.NET
 
         public static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawSize)
         {
-            Debug.Assert(@base.type == B2JointType.b2_revoluteJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 

@@ -126,8 +126,8 @@ namespace Box2D.NET
 
         public static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
         {
-            Debug.Assert(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
-            Debug.Assert(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
+            B2_ASSERT(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
+            B2_ASSERT(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
 
             s_registers[(int)type1, (int)type2].fcn = fcn;
             s_registers[(int)type1, (int)type2].primary = true;
@@ -164,8 +164,8 @@ namespace Box2D.NET
             B2ShapeType type1 = shapeA.type;
             B2ShapeType type2 = shapeB.type;
 
-            Debug.Assert(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
-            Debug.Assert(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
+            B2_ASSERT(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
+            B2_ASSERT(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
 
             if (s_registers[(int)type1, (int)type2].fcn == null)
             {
@@ -183,8 +183,8 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, shapeA.bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, shapeB.bodyId);
 
-            Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_disabledSet && bodyB.setIndex != (int)B2SetType.b2_disabledSet);
-            Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_disabledSet && bodyB.setIndex != (int)B2SetType.b2_disabledSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
 
             int setIndex;
             if (bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet)
@@ -224,7 +224,7 @@ namespace Box2D.NET
             contact.isMarked = false;
             contact.flags = 0;
 
-            Debug.Assert(shapeA.sensorIndex == B2_NULL_INDEX && shapeB.sensorIndex == B2_NULL_INDEX);
+            B2_ASSERT(shapeA.sensorIndex == B2_NULL_INDEX && shapeB.sensorIndex == B2_NULL_INDEX);
 
             if (shapeA.enableContactEvents || shapeB.enableContactEvents)
             {
@@ -399,13 +399,13 @@ namespace Box2D.NET
             if (contact.colorIndex != B2_NULL_INDEX)
             {
                 // contact is an active constraint
-                Debug.Assert(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
                 b2RemoveContactFromGraph(world, bodyIdA, bodyIdB, contact.colorIndex, contact.localIndex);
             }
             else
             {
                 // contact is non-touching or is sleeping or is a sensor
-                Debug.Assert(contact.setIndex != (int)B2SetType.b2_awakeSet || (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0);
+                B2_ASSERT(contact.setIndex != (int)B2SetType.b2_awakeSet || (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0);
                 B2SolverSet set = b2Array_Get(ref world.solverSets, contact.setIndex);
                 int movedIndex = b2Array_RemoveSwap(ref set.contactSims, contact.localIndex);
                 if (movedIndex != B2_NULL_INDEX)
@@ -435,7 +435,7 @@ namespace Box2D.NET
             if (contact.setIndex == (int)B2SetType.b2_awakeSet && contact.colorIndex != B2_NULL_INDEX)
             {
                 // contact lives in constraint graph
-                Debug.Assert(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
+                B2_ASSERT(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
                 ref B2GraphColor color = ref world.constraintGraph.colors[contact.colorIndex];
                 return b2Array_Get(ref color.contactSims, contact.localIndex);
             }

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -12,6 +11,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -73,7 +73,7 @@ public class Driving : Sample
             points[count--] = new B2Vec2(x + 40.0f, 0.0f);
             points[count--] = new B2Vec2(x + 40.0f, -20.0f);
 
-            Debug.Assert(count == -1);
+            B2_ASSERT(count == -1);
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;

@@ -164,8 +164,8 @@ namespace Box2D.NET
 
             ref B2GraphColor color = ref context.graph.colors[colorIndex];
             B2JointSim[] joints = color.jointSims.data;
-            Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
-            Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
+            B2_ASSERT(0 <= startIndex && startIndex < color.jointSims.count);
+            B2_ASSERT(startIndex <= endIndex && endIndex <= color.jointSims.count);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -182,8 +182,8 @@ namespace Box2D.NET
 
             ref B2GraphColor color = ref context.graph.colors[colorIndex];
             B2JointSim[] joints = color.jointSims.data;
-            Debug.Assert(0 <= startIndex && startIndex < color.jointSims.count);
-            Debug.Assert(startIndex <= endIndex && endIndex <= color.jointSims.count);
+            B2_ASSERT(0 <= startIndex && startIndex < color.jointSims.count);
+            B2_ASSERT(startIndex <= endIndex && endIndex <= color.jointSims.count);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -202,7 +202,7 @@ namespace Box2D.NET
             B2BodyState[] states = context.states;
             float h = context.h;
 
-            Debug.Assert(startIndex <= endIndex);
+            B2_ASSERT(startIndex <= endIndex);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -258,7 +258,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
 
             B2BodySim bodySim = b2GetBodySim(world, body);
-            Debug.Assert(body.type == B2BodyType.b2_staticBody || fastBodySim.isBullet);
+            B2_ASSERT(body.type == B2BodyType.b2_staticBody || fastBodySim.isBullet);
 
             // Skip bullets
             if (bodySim.isBullet)
@@ -400,7 +400,7 @@ namespace Box2D.NET
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
-            Debug.Assert(fastBodySim.isFast);
+            B2_ASSERT(fastBodySim.isFast);
 
             B2Sweep sweep = b2MakeSweep(fastBodySim);
 
@@ -563,7 +563,7 @@ namespace Box2D.NET
             ushort worldId = world.worldId;
 
             // The body move event array should already have the correct size
-            Debug.Assert(endIndex <= world.bodyMoveEvents.count);
+            B2_ASSERT(endIndex <= world.bodyMoveEvents.count);
             B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 
             ref B2BitSet enlargedSimBitSet = ref world.taskContexts.data[threadIndex].enlargedSimBitSet;
@@ -575,7 +575,7 @@ namespace Box2D.NET
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
             float aabbMargin = B2_AABB_MARGIN;
 
-            Debug.Assert(startIndex <= endIndex);
+            B2_ASSERT(startIndex <= endIndex);
 
             for (int simIndex = startIndex; simIndex < endIndex; ++simIndex)
             {
@@ -585,8 +585,8 @@ namespace Box2D.NET
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
 
-                Debug.Assert(b2IsValidVec2(v));
-                Debug.Assert(b2IsValidFloat(w));
+                B2_ASSERT(b2IsValidVec2(v));
+                B2_ASSERT(b2IsValidFloat(w));
 
                 sim.center = b2Add(sim.center, state.deltaPosition);
                 sim.transform.q = b2NormalizeRot(b2MulRot(state.deltaRotation, sim.transform.q));
@@ -707,7 +707,7 @@ namespace Box2D.NET
                         aabb.upperBound.Y += speculativeDistance;
                         shape.aabb = aabb;
 
-                        Debug.Assert(shape.enlargedAABB == false);
+                        B2_ASSERT(shape.enlargedAABB == false);
 
                         if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                         {
@@ -860,15 +860,15 @@ public enum b2SolverBlockType
                 return;
             }
 
-            Debug.Assert(0 <= startIndex && startIndex < blockCount);
+            B2_ASSERT(0 <= startIndex && startIndex < blockCount);
 
             int blockIndex = startIndex;
 
             while (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, expectedSyncIndex, syncIndex) == true)
             {
-                Debug.Assert(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
+                B2_ASSERT(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
 
-                Debug.Assert(completedCount < blockCount);
+                B2_ASSERT(completedCount < blockCount);
 
                 b2ExecuteBlock(stage, context, blocks[blockIndex]);
 
@@ -924,7 +924,7 @@ public enum b2SolverBlockType
                 b2AtomicStoreU32(ref context.atomicSyncBits, syncBits);
 
                 int syncIndex = (int)((syncBits >> 16) & 0xFFFF);
-                Debug.Assert(syncIndex > 0);
+                B2_ASSERT(syncIndex > 0);
                 int previousSyncIndex = syncIndex - 1;
 
                 b2ExecuteStage(stage, context, previousSyncIndex, syncIndex, 0);
@@ -981,7 +981,7 @@ public enum b2SolverBlockType
                 // This stage loops over all awake joints
                 uint jointSyncIndex = 1;
                 uint syncBits = (jointSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareJoints);
+                B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareJoints);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
                 stageIndex += 1;
                 jointSyncIndex += 1;
@@ -989,7 +989,7 @@ public enum b2SolverBlockType
                 // This stage loops over all contact constraints
                 uint contactSyncIndex = 1;
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareContacts);
+                B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareContacts);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
                 stageIndex += 1;
                 contactSyncIndex += 1;
@@ -1011,7 +1011,7 @@ public enum b2SolverBlockType
 
                     // integrate velocities
                     syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
-                    Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
+                    B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
                     b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                     iterStageIndex += 1;
                     bodySyncIndex += 1;
@@ -1025,7 +1025,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageWarmStart);
+                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageWarmStart);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1042,7 +1042,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
+                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1052,7 +1052,7 @@ public enum b2SolverBlockType
                     profile.solveImpulses += b2GetMillisecondsAndReset(ref ticks);
 
                     // integrate positions
-                    Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
+                    B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
                     syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
                     b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                     iterStageIndex += 1;
@@ -1068,7 +1068,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
+                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1090,7 +1090,7 @@ public enum b2SolverBlockType
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
                         syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        Debug.Assert(stages[iterStageIndex].type == B2SolverStageType.b2_stageRestitution);
+                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRestitution);
                         b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
                         iterStageIndex += 1;
                     }
@@ -1104,7 +1104,7 @@ public enum b2SolverBlockType
                 b2StoreOverflowImpulses(context);
 
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
-                Debug.Assert(stages[stageIndex].type == B2SolverStageType.b2_stageStoreImpulses);
+                B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stageStoreImpulses);
                 b2ExecuteMainStage(stages[stageIndex], context, syncBits);
 
                 profile.storeImpulses += b2GetMillisecondsAndReset(ref ticks);
@@ -1112,7 +1112,7 @@ public enum b2SolverBlockType
                 // Signal workers to finish
                 b2AtomicStoreU32(ref context.atomicSyncBits, uint.MaxValue);
 
-                Debug.Assert(stageIndex + 1 == context.stageCount);
+                B2_ASSERT(stageIndex + 1 == context.stageCount);
                 return;
             }
 
@@ -1156,10 +1156,10 @@ public enum b2SolverBlockType
                 }
 
                 int stageIndex = (int)(syncBits & 0xFFFF);
-                Debug.Assert(stageIndex < context.stageCount);
+                B2_ASSERT(stageIndex < context.stageCount);
 
                 int syncIndex = (int)((syncBits >> 16) & 0xFFFF);
-                Debug.Assert(syncIndex > 0);
+                B2_ASSERT(syncIndex > 0);
 
                 int previousSyncIndex = syncIndex - 1;
 
@@ -1178,7 +1178,7 @@ public enum b2SolverBlockType
 
             B2StepContext stepContext = taskContext as B2StepContext;
 
-            Debug.Assert(startIndex <= endIndex);
+            B2_ASSERT(startIndex <= endIndex);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
@@ -1281,7 +1281,7 @@ public enum b2SolverBlockType
 
                 // Configure blocks for tasks parallel-for each active graph color
                 // The blocks are a mix of SIMD contact blocks and joint blocks
-                Debug.Assert(B2FixedArray12<int>.Size == B2_GRAPH_COLOR_COUNT);
+                B2_ASSERT(B2FixedArray12<int>.Size == B2_GRAPH_COLOR_COUNT);
                 B2FixedArray12<int> arrayActiveColorIndices = new B2FixedArray12<int>();
 
                 B2FixedArray12<int> arrayColorContactCounts = new B2FixedArray12<int>();
@@ -1378,7 +1378,7 @@ public enum b2SolverBlockType
                 ArraySegment<B2JointSim> joints =
                     b2AllocateArenaItem<B2JointSim>(world.arena, awakeJointCount, "joint pointers");
 
-                Debug.Assert(B2FixedArray4<B2ContactConstraintSIMD>.Size == B2_SIMD_WIDTH);
+                B2_ASSERT(B2FixedArray4<B2ContactConstraintSIMD>.Size == B2_SIMD_WIDTH);
                 int simdConstraintSize = b2GetContactConstraintSIMDByteCount();
                 ArraySegment<B2ContactConstraintSIMD> simdContactConstraints =
                     b2AllocateArenaItem<B2ContactConstraintSIMD>(world.arena, simdContactCount /** simdConstraintSize */, "contact constraint");
@@ -1433,8 +1433,8 @@ public enum b2SolverBlockType
                         jointBase += colorJointCount;
                     }
 
-                    Debug.Assert(contactBase == simdContactCount);
-                    Debug.Assert(jointBase == awakeJointCount);
+                    B2_ASSERT(contactBase == simdContactCount);
+                    B2_ASSERT(jointBase == awakeJointCount);
                 }
 
                 // Define work blocks for preparing contacts and storing contact impulses
@@ -1587,7 +1587,7 @@ public enum b2SolverBlockType
                 }
 
                 // TODO: @ikpil check!
-                Debug.Assert((baseGraphBlock.Offset - graphBlocks.Offset) == graphBlockCount);
+                B2_ASSERT((baseGraphBlock.Offset - graphBlocks.Offset) == graphBlockCount);
 
                 int stageIdx = 0;
                 B2SolverStage stage = stages[stageIdx];
@@ -1677,11 +1677,11 @@ public enum b2SolverBlockType
                 b2AtomicStoreInt(ref stage.completionCount, 0);
                 stage = stages[++stageIdx];
 
-                //Debug.Assert( (int)( stage - stages ) == stageCount );
-                Debug.Assert((int)(stageIdx) == stageCount);
+                //B2_ASSERT( (int)( stage - stages ) == stageCount );
+                B2_ASSERT((int)(stageIdx) == stageCount);
 
-                Debug.Assert(workerCount <= B2_MAX_WORKERS);
-                Debug.Assert(world.tempWorkerContext.Length <= B2_MAX_WORKERS);
+                B2_ASSERT(workerCount <= B2_MAX_WORKERS);
+                B2_ASSERT(world.tempWorkerContext.Length <= B2_MAX_WORKERS);
                 //b2WorkerContext[] workerContext = new b2WorkerContext[B2_MAX_WORKERS];
                 Span<B2WorkerContext> workerContext = world.tempWorkerContext;
                 for (int i = 0; i < workerContext.Length; ++i)
@@ -1781,7 +1781,7 @@ public enum b2SolverBlockType
                 b2TracyCZoneNC(B2TracyCZone.hit_events, "Hit Events", B2HexColor.b2_colorRosyBrown, true);
                 ulong hitTicks = b2GetTicks();
 
-                Debug.Assert(world.contactHitEvents.count == 0);
+                B2_ASSERT(world.contactHitEvents.count == 0);
 
                 float threshold = world.hitEventThreshold;
                 B2GraphColor[] colors = world.constraintGraph.colors;
@@ -1973,7 +1973,7 @@ public enum b2SolverBlockType
                     bulletBodySim.enlargeAABB = false;
 
                     int bodyId = bulletBodySim.bodyId;
-                    Debug.Assert(0 <= bodyId && bodyId < world.bodies.count);
+                    B2_ASSERT(0 <= bodyId && bodyId < world.bodies.count);
                     B2Body bulletBody = bodyArray[bodyId];
 
                     int shapeId = bulletBody.headShapeId;
@@ -1991,10 +1991,10 @@ public enum b2SolverBlockType
 
                         int proxyKey = shape.proxyKey;
                         int proxyId = B2_PROXY_ID(proxyKey);
-                        Debug.Assert(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
+                        B2_ASSERT(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
                         // all fast bullet shapes should already be in the move buffer
-                        Debug.Assert(b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1)));
+                        B2_ASSERT(b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1)));
 
                         b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
 
@@ -2020,14 +2020,14 @@ public enum b2SolverBlockType
                 ulong sleepTicks = b2GetTicks();
 
                 // Collect split island candidate for the next time step. No need to split if sleeping is disabled.
-                Debug.Assert(world.splitIslandId == B2_NULL_INDEX);
+                B2_ASSERT(world.splitIslandId == B2_NULL_INDEX);
                 float splitSleepTimer = 0.0f;
                 for (int i = 0; i < world.workerCount; ++i)
                 {
                     B2TaskContext taskContext = world.taskContexts.data[i];
                     if (taskContext.splitIslandId != B2_NULL_INDEX && taskContext.splitSleepTime >= splitSleepTimer)
                     {
-                        Debug.Assert(taskContext.splitSleepTime > 0.0f);
+                        B2_ASSERT(taskContext.splitSleepTime > 0.0f);
 
                         // Tie breaking for determinism. Largest island id wins. Needed due to work stealing.
                         if (taskContext.splitSleepTime == splitSleepTimer && taskContext.splitIslandId < world.splitIslandId)

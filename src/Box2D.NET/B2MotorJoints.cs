@@ -102,7 +102,7 @@ namespace Box2D.NET
 
         public static void b2PrepareMotorJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_motorJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_motorJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
@@ -113,7 +113,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
 
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
@@ -191,7 +191,7 @@ namespace Box2D.NET
         public static void b2SolveMotorJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_UNUSED(useBias);
-            Debug.Assert(@base.type == B2JointType.b2_motorJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_motorJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;

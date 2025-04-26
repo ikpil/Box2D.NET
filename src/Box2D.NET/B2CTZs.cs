@@ -2,11 +2,14 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
+
 namespace Box2D.NET
 {
     public static class B2CTZs
     {
         // uint에 대해 trailing zero count (CTZ)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2CTZ32(uint block)
         {
             if (block == 0) return 32;
@@ -20,6 +23,7 @@ namespace Box2D.NET
         }
 
         // uint에 대해 leading zero count (CLZ)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2CLZ32(uint value)
         {
             if (value == 0) return 32;
@@ -34,6 +38,7 @@ namespace Box2D.NET
         }
 
         // ulong에 대해 trailing zero count (CTZ)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2CTZ64(ulong block)
         {
             if (block == 0) return 64;
@@ -46,11 +51,13 @@ namespace Box2D.NET
             return count;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsPowerOf2(int x)
         {
             return (x & (x - 1)) == 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2BoundingPowerOf2(int x)
         {
             if (x <= 1)
@@ -61,6 +68,7 @@ namespace Box2D.NET
             return 32 - (int)b2CLZ32((uint)x - 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2RoundUpPowerOf2(int x)
         {
             if (x <= 1)

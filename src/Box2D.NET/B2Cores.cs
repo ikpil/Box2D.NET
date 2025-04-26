@@ -4,6 +4,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
@@ -21,7 +22,7 @@ namespace Box2D.NET
 
         public static T[] b2GrowAlloc<T>(T[] oldMem, int oldSize, int newSize) where T : new()
         {
-            Debug.Assert(newSize > oldSize);
+            B2_ASSERT(newSize > oldSize);
             T[] newMem = new T[newSize];
             if (oldSize > 0)
             {
@@ -92,6 +93,15 @@ namespace Box2D.NET
         {
             // ...
         }
+        
+        [Conditional("DEBUG")]
+        public static void B2_ASSERT(bool condition, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
+        {
+            if (condition)
+                return;
+
+            throw new InvalidOperationException($"{memberName}() {fileName}:{lineNumber}");
+        }
 
         /// @return the total bytes allocated by Box2D
         public static int b2GetByteCount()
@@ -146,63 +156,63 @@ namespace Box2D.NET
 
         public static void B2_CHECK_DEF(ref B2WheelJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
 
         public static void B2_CHECK_DEF(ref B2WeldJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2PrismaticJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2RevoluteJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref b2FilterJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2MouseJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2MotorJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2DistanceJointDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2ChainDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2BodyDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2WorldDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         public static void B2_CHECK_DEF(ref B2ShapeDef def)
         {
-            Debug.Assert(def.internalValue == B2_SECRET_COOKIE);
+            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
 
@@ -251,7 +261,7 @@ namespace Box2D.NET
         /// @warning This must be modified before any calls to Box2D
         public static void b2SetLengthUnitsPerMeter(float lengthUnits)
         {
-            Debug.Assert(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f);
+            B2_ASSERT(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f);
             b2_lengthUnitsPerMeter = lengthUnits;
         }
 
@@ -275,7 +285,7 @@ namespace Box2D.NET
         /// @param assertFcn a non-null assert callback
         public static void b2SetAssertFcn(b2AssertFcn assertFcn)
         {
-            Debug.Assert(assertFcn != null);
+            B2_ASSERT(assertFcn != null);
             b2AssertHandler = assertFcn;
         }
 

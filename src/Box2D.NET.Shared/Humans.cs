@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Ids;
@@ -14,6 +13,7 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Shared
 {
@@ -22,7 +22,7 @@ namespace Box2D.NET.Shared
         public static void CreateHuman(ref Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
             int groupIndex, object userData, bool colorize)
         {
-            Debug.Assert(human.isSpawned == false);
+            B2_ASSERT(human.isSpawned == false);
 
             for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
@@ -521,7 +521,7 @@ namespace Box2D.NET.Shared
 
         public static void DestroyHuman(ref Human human)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
 
             for (int i = 0; i < (int)BoneId.bone_count; ++i)
             {
@@ -565,14 +565,14 @@ namespace Box2D.NET.Shared
 
         public static void Human_ApplyRandomAngularImpulse(ref Human human, float magnitude)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
             float impulse = RandomFloatRange(-magnitude, magnitude);
             b2Body_ApplyAngularImpulse(human.bones[(int)BoneId.bone_torso].bodyId, impulse, true);
         }
 
         public static void Human_SetJointFrictionTorque(ref Human human, float torque)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
             if (torque == 0.0f)
             {
                 for (int i = 1; i < (int)BoneId.bone_count; ++i)
@@ -593,7 +593,7 @@ namespace Box2D.NET.Shared
 
         public static void Human_SetJointSpringHertz(ref Human human, float hertz)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
             if (hertz == 0.0f)
             {
                 for (int i = 1; i < (int)BoneId.bone_count; ++i)
@@ -613,7 +613,7 @@ namespace Box2D.NET.Shared
 
         public static void Human_SetJointDampingRatio(ref Human human, float dampingRatio)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
             for (int i = 1; i < (int)BoneId.bone_count; ++i)
             {
                 b2RevoluteJoint_SetSpringDampingRatio(human.bones[i].jointId, dampingRatio);
@@ -622,7 +622,7 @@ namespace Box2D.NET.Shared
 
         public static void Human_EnableSensorEvents(ref Human human, bool enable)
         {
-            Debug.Assert(human.isSpawned == true);
+            B2_ASSERT(human.isSpawned == true);
             B2BodyId bodyId = human.bones[(int)BoneId.bone_torso].bodyId;
 
             B2FixedArray1<B2ShapeId> shapeIdBuffer = new B2FixedArray1<B2ShapeId>();

@@ -47,7 +47,7 @@ namespace Box2D.NET
         // Get a validated body from a world using an id.
         public static B2Body b2GetBodyFullId(B2World world, B2BodyId bodyId)
         {
-            Debug.Assert(b2Body_IsValid(bodyId));
+            B2_ASSERT(b2Body_IsValid(bodyId));
 
             // id index starts at one so that zero can represent null
             return b2Array_Get(ref world.bodies, bodyId.index1 - 1);
@@ -93,10 +93,10 @@ namespace Box2D.NET
 
         public static void b2CreateIslandForBody(B2World world, int setIndex, B2Body body)
         {
-            Debug.Assert(body.islandId == B2_NULL_INDEX);
-            Debug.Assert(body.islandPrev == B2_NULL_INDEX);
-            Debug.Assert(body.islandNext == B2_NULL_INDEX);
-            Debug.Assert(setIndex != (int)B2SetType.b2_disabledSet);
+            B2_ASSERT(body.islandId == B2_NULL_INDEX);
+            B2_ASSERT(body.islandPrev == B2_NULL_INDEX);
+            B2_ASSERT(body.islandNext == B2_NULL_INDEX);
+            B2_ASSERT(setIndex != (int)B2SetType.b2_disabledSet);
 
             B2Island island = b2CreateIsland(world, setIndex);
 
@@ -110,8 +110,8 @@ namespace Box2D.NET
         {
             if (body.islandId == B2_NULL_INDEX)
             {
-                Debug.Assert(body.islandPrev == B2_NULL_INDEX);
-                Debug.Assert(body.islandNext == B2_NULL_INDEX);
+                B2_ASSERT(body.islandPrev == B2_NULL_INDEX);
+                B2_ASSERT(body.islandNext == B2_NULL_INDEX);
                 return;
             }
 
@@ -131,7 +131,7 @@ namespace Box2D.NET
                 nextBody.islandPrev = body.islandPrev;
             }
 
-            Debug.Assert(island.bodyCount > 0);
+            B2_ASSERT(island.bodyCount > 0);
             island.bodyCount -= 1;
             bool islandDestroyed = false;
 
@@ -142,10 +142,10 @@ namespace Box2D.NET
                 if (island.headBody == B2_NULL_INDEX)
                 {
                     // Destroy empty island
-                    Debug.Assert(island.tailBody == body.id);
-                    Debug.Assert(island.bodyCount == 0);
-                    Debug.Assert(island.contactCount == 0);
-                    Debug.Assert(island.jointCount == 0);
+                    B2_ASSERT(island.tailBody == body.id);
+                    B2_ASSERT(island.bodyCount == 0);
+                    B2_ASSERT(island.contactCount == 0);
+                    B2_ASSERT(island.jointCount == 0);
 
                     // Free the island
                     b2DestroyIsland(world, island.islandId);
@@ -187,17 +187,17 @@ namespace Box2D.NET
         public static B2BodyId b2CreateBody(B2WorldId worldId, ref B2BodyDef def)
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(b2IsValidVec2(def.position));
-            Debug.Assert(b2IsValidRotation(def.rotation));
-            Debug.Assert(b2IsValidVec2(def.linearVelocity));
-            Debug.Assert(b2IsValidFloat(def.angularVelocity));
-            Debug.Assert(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.angularDamping) && def.angularDamping >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.sleepThreshold) && def.sleepThreshold >= 0.0f);
-            Debug.Assert(b2IsValidFloat(def.gravityScale));
+            B2_ASSERT(b2IsValidVec2(def.position));
+            B2_ASSERT(b2IsValidRotation(def.rotation));
+            B2_ASSERT(b2IsValidVec2(def.linearVelocity));
+            B2_ASSERT(b2IsValidFloat(def.angularVelocity));
+            B2_ASSERT(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.angularDamping) && def.angularDamping >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.sleepThreshold) && def.sleepThreshold >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.gravityScale));
 
             B2World world = b2GetWorldFromId(worldId);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -232,13 +232,13 @@ namespace Box2D.NET
                 }
                 else
                 {
-                    Debug.Assert(world.solverSets.data[setId].setIndex == B2_NULL_INDEX);
+                    B2_ASSERT(world.solverSets.data[setId].setIndex == B2_NULL_INDEX);
                 }
 
                 world.solverSets.data[setId].setIndex = setId;
             }
 
-            Debug.Assert(0 <= setId && setId < world.solverSets.count);
+            B2_ASSERT(0 <= setId && setId < world.solverSets.count);
 
             int bodyId = b2AllocId(world.bodyIdPool);
 
@@ -263,7 +263,7 @@ namespace Box2D.NET
             if (setId == (int)B2SetType.b2_awakeSet)
             {
                 ref B2BodyState bodyState = ref b2Array_Add(ref set.bodyStates);
-                //Debug.Assert( ( (uintptr_t)bodyState & 0x1F ) == 0 );
+                //B2_ASSERT( ( (uintptr_t)bodyState & 0x1F ) == 0 );
                 //*bodyState = ( b2BodyState ){ 0 }; 
                 bodyState.Clear();
                 bodyState.linearVelocity = def.linearVelocity;
@@ -277,7 +277,7 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(world.bodies.data[bodyId].id == B2_NULL_INDEX);
+                B2_ASSERT(world.bodies.data[bodyId].id == B2_NULL_INDEX);
             }
 
             B2Body body = b2Array_Get(ref world.bodies, bodyId);
@@ -417,7 +417,7 @@ namespace Box2D.NET
                 B2BodySim movedSim = set.bodySims.data[body.localIndex];
                 int movedId = movedSim.bodyId;
                 B2Body movedBody = b2Array_Get(ref world.bodies, movedId);
-                Debug.Assert(movedBody.localIndex == movedIndex);
+                B2_ASSERT(movedBody.localIndex == movedIndex);
                 movedBody.localIndex = body.localIndex;
             }
 
@@ -425,7 +425,7 @@ namespace Box2D.NET
             if (body.setIndex == (int)B2SetType.b2_awakeSet)
             {
                 int result = b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
-                Debug.Assert(result == movedIndex);
+                B2_ASSERT(result == movedIndex);
                 B2_UNUSED(result);
             }
             else if (set.setIndex >= (int)B2SetType.b2_firstSleepingSet && set.bodySims.count == 0)
@@ -495,7 +495,7 @@ namespace Box2D.NET
                 contactKey = contact.edges[edgeIndex].nextKey;
             }
 
-            Debug.Assert(index <= capacity);
+            B2_ASSERT(index <= capacity);
 
             return index;
         }
@@ -594,7 +594,7 @@ namespace Box2D.NET
             {
                 // Center the inertia about the center of mass.
                 body.inertia -= body.mass * b2Dot(localCenter, localCenter);
-                Debug.Assert(body.inertia > 0.0f);
+                B2_ASSERT(body.inertia > 0.0f);
                 bodySim.invInertia = 1.0f / body.inertia;
             }
             else
@@ -688,11 +688,11 @@ namespace Box2D.NET
 
         public static void b2Body_SetTransform(B2BodyId bodyId, B2Vec2 position, B2Rot rotation)
         {
-            Debug.Assert(b2IsValidVec2(position));
-            Debug.Assert(b2IsValidRotation(rotation));
-            Debug.Assert(b2Body_IsValid(bodyId));
+            B2_ASSERT(b2IsValidVec2(position));
+            B2_ASSERT(b2IsValidRotation(rotation));
+            B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
@@ -997,12 +997,12 @@ namespace Box2D.NET
 
         public static void b2Body_ApplyAngularImpulse(B2BodyId bodyId, float impulse, bool wake)
         {
-            Debug.Assert(b2Body_IsValid(bodyId));
+            B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
 
             int id = bodyId.index1 - 1;
             B2Body body = b2Array_Get(ref world.bodies, id);
-            Debug.Assert(body.generation == bodyId.generation);
+            B2_ASSERT(body.generation == bodyId.generation);
 
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
@@ -1093,7 +1093,7 @@ namespace Box2D.NET
             if (originalType == B2BodyType.b2_staticBody)
             {
                 // Body is going from static to dynamic or kinematic. It only makes sense to move it to the awake set.
-                Debug.Assert(body.setIndex == (int)B2SetType.b2_staticSet);
+                B2_ASSERT(body.setIndex == (int)B2SetType.b2_staticSet);
 
                 B2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
                 B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -1132,7 +1132,7 @@ namespace Box2D.NET
                     else
                     {
                         // Otherwise the joint must be disabled.
-                        Debug.Assert(joint.setIndex == (int)B2SetType.b2_disabledSet);
+                        B2_ASSERT(joint.setIndex == (int)B2SetType.b2_disabledSet);
                     }
 
                     jointKey = joint.edges[edgeIndex].nextKey;
@@ -1154,7 +1154,7 @@ namespace Box2D.NET
             else if (type == B2BodyType.b2_staticBody)
             {
                 // The body is going from dynamic/kinematic to static. It should be awake.
-                Debug.Assert(body.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
 
                 B2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
                 B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -1185,12 +1185,12 @@ namespace Box2D.NET
                     if (joint.setIndex == (int)B2SetType.b2_disabledSet)
                     {
                         // Joint is disable, should be connected to a disabled body
-                        Debug.Assert(otherBody.setIndex == (int)B2SetType.b2_disabledSet);
+                        B2_ASSERT(otherBody.setIndex == (int)B2SetType.b2_disabledSet);
                         continue;
                     }
 
                     // Since the body was not static, the joint must be awake.
-                    Debug.Assert(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
 
                     // Only transfer joint to static set if both bodies are static.
                     if (otherBody.setIndex == (int)B2SetType.b2_staticSet)
@@ -1200,10 +1200,10 @@ namespace Box2D.NET
                     else
                     {
                         // The other body must be awake.
-                        Debug.Assert(otherBody.setIndex == (int)B2SetType.b2_awakeSet);
+                        B2_ASSERT(otherBody.setIndex == (int)B2SetType.b2_awakeSet);
 
                         // The joint must live in a graph color.
-                        Debug.Assert(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
+                        B2_ASSERT(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
 
                         // In this case the joint must be re-inserted into the constraint graph to ensure the correct
                         // graph color.
@@ -1230,8 +1230,8 @@ namespace Box2D.NET
             }
             else
             {
-                Debug.Assert(originalType == B2BodyType.b2_dynamicBody || originalType == B2BodyType.b2_kinematicBody);
-                Debug.Assert(type == B2BodyType.b2_dynamicBody || type == B2BodyType.b2_kinematicBody);
+                B2_ASSERT(originalType == B2BodyType.b2_dynamicBody || originalType == B2BodyType.b2_kinematicBody);
+                B2_ASSERT(type == B2BodyType.b2_dynamicBody || type == B2BodyType.b2_kinematicBody);
 
                 // Recreate shape proxies in static tree.
                 B2Transform transform = b2GetBodyTransformQuick(world, body);
@@ -1352,9 +1352,9 @@ namespace Box2D.NET
 
         public static void b2Body_SetMassData(B2BodyId bodyId, B2MassData massData)
         {
-            Debug.Assert(b2IsValidFloat(massData.mass) && massData.mass >= 0.0f);
-            Debug.Assert(b2IsValidFloat(massData.rotationalInertia) && massData.rotationalInertia >= 0.0f);
-            Debug.Assert(b2IsValidVec2(massData.center));
+            B2_ASSERT(b2IsValidFloat(massData.mass) && massData.mass >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(massData.rotationalInertia) && massData.rotationalInertia >= 0.0f);
+            B2_ASSERT(b2IsValidVec2(massData.center));
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1406,7 +1406,7 @@ namespace Box2D.NET
 
         public static void b2Body_SetLinearDamping(B2BodyId bodyId, float linearDamping)
         {
-            Debug.Assert(b2IsValidFloat(linearDamping) && linearDamping >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(linearDamping) && linearDamping >= 0.0f);
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1429,7 +1429,7 @@ namespace Box2D.NET
 
         public static void b2Body_SetAngularDamping(B2BodyId bodyId, float angularDamping)
         {
-            Debug.Assert(b2IsValidFloat(angularDamping) && angularDamping >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(angularDamping) && angularDamping >= 0.0f);
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1452,8 +1452,8 @@ namespace Box2D.NET
 
         public static void b2Body_SetGravityScale(B2BodyId bodyId, float gravityScale)
         {
-            Debug.Assert(b2Body_IsValid(bodyId));
-            Debug.Assert(b2IsValidFloat(gravityScale));
+            B2_ASSERT(b2Body_IsValid(bodyId));
+            B2_ASSERT(b2IsValidFloat(gravityScale));
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1468,7 +1468,7 @@ namespace Box2D.NET
 
         public static float b2Body_GetGravityScale(B2BodyId bodyId)
         {
-            Debug.Assert(b2Body_IsValid(bodyId));
+            B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
@@ -1610,7 +1610,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                Debug.Assert(joint.setIndex == set.setIndex || set.setIndex == (int)B2SetType.b2_staticSet);
+                B2_ASSERT(joint.setIndex == set.setIndex || set.setIndex == (int)B2SetType.b2_staticSet);
 
                 // Remove joint from island
                 if (joint.islandId != B2_NULL_INDEX)
@@ -1676,8 +1676,8 @@ namespace Box2D.NET
                 int edgeIndex = jointKey & 1;
 
                 B2Joint joint = b2Array_Get(ref world.joints, jointId);
-                Debug.Assert(joint.setIndex == (int)B2SetType.b2_disabledSet);
-                Debug.Assert(joint.islandId == B2_NULL_INDEX);
+                B2_ASSERT(joint.setIndex == (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.islandId == B2_NULL_INDEX);
 
                 jointKey = joint.edges[edgeIndex].nextKey;
 

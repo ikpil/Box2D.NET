@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Helpers;
 
@@ -39,7 +39,7 @@ public static class SvgParser
                 }
             }
 
-            Debug.Assert(char.IsDigit(svgPath[ptr]) || svgPath[ptr] == '-');
+            B2_ASSERT(char.IsDigit(svgPath[ptr]) || svgPath[ptr] == '-');
 
 
             float x = 0.0f;
@@ -55,7 +55,7 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
@@ -66,7 +66,7 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
@@ -77,7 +77,7 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
@@ -90,7 +90,7 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
@@ -101,7 +101,7 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
@@ -112,13 +112,13 @@ public static class SvgParser
                     }
                     else
                     {
-                        Debug.Assert(false);
+                        B2_ASSERT(false);
                     }
 
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
 

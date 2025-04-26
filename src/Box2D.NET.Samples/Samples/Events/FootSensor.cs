@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Box2D.NET.Samples.Extensions;
 using Silk.NET.GLFW;
@@ -14,6 +13,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -112,7 +112,7 @@ public class FootSensor : Sample
         {
             ref B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
 
-            Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
+            B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
 
             if (B2_ID_EQUALS(@event.sensorShapeId, m_sensorId))
             {
@@ -124,7 +124,7 @@ public class FootSensor : Sample
         {
             ref B2SensorEndTouchEvent @event = ref sensorEvents.endEvents[i];
 
-            Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
+            B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorId) == false);
 
             if (B2_ID_EQUALS(@event.sensorShapeId, m_sensorId))
             {

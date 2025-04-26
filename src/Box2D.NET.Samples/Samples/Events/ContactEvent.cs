@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using Box2D.NET.Samples.Extensions;
@@ -18,6 +17,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -215,7 +215,7 @@ public class ContactEvent : Sample
 
                 // The count may be less than the capacity
                 int countA = b2Shape_GetContactData(@event.shapeIdA, CollectionsMarshal.AsSpan(contactData), capacityA);
-                Debug.Assert(countA >= 1);
+                B2_ASSERT(countA >= 1);
 
                 for (int j = 0; j < countA; ++j)
                 {
@@ -223,11 +223,11 @@ public class ContactEvent : Sample
                     B2ShapeId idB = contactData[j].shapeIdB;
                     if (B2_ID_EQUALS(idA, @event.shapeIdB) || B2_ID_EQUALS(idB, @event.shapeIdB))
                     {
-                        Debug.Assert(B2_ID_EQUALS(idA, @event.shapeIdA) || B2_ID_EQUALS(idB, @event.shapeIdA));
+                        B2_ASSERT(B2_ID_EQUALS(idA, @event.shapeIdA) || B2_ID_EQUALS(idB, @event.shapeIdA));
 
                         B2Manifold manifold = contactData[j].manifold;
                         B2Vec2 normal = manifold.normal;
-                        Debug.Assert(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
+                        B2_ASSERT(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
 
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
@@ -244,7 +244,7 @@ public class ContactEvent : Sample
 
                 // The count may be less than the capacity
                 int countB = b2Shape_GetContactData(@event.shapeIdB, CollectionsMarshal.AsSpan(contactData), capacityB);
-                Debug.Assert(countB >= 1);
+                B2_ASSERT(countB >= 1);
 
                 for (int j = 0; j < countB; ++j)
                 {
@@ -253,11 +253,11 @@ public class ContactEvent : Sample
 
                     if (B2_ID_EQUALS(idA, @event.shapeIdA) || B2_ID_EQUALS(idB, @event.shapeIdA))
                     {
-                        Debug.Assert(B2_ID_EQUALS(idA, @event.shapeIdB) || B2_ID_EQUALS(idB, @event.shapeIdB));
+                        B2_ASSERT(B2_ID_EQUALS(idA, @event.shapeIdB) || B2_ID_EQUALS(idB, @event.shapeIdB));
 
                         B2Manifold manifold = contactData[j].manifold;
                         B2Vec2 normal = manifold.normal;
-                        Debug.Assert(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
+                        B2_ASSERT(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
 
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
@@ -305,7 +305,7 @@ public class ContactEvent : Sample
             else
             {
                 // Only expect events for the player
-                Debug.Assert(B2_ID_EQUALS(bodyIdB, m_playerId));
+                B2_ASSERT(B2_ID_EQUALS(bodyIdB, m_playerId));
                 BodyUserData<int> userDataA = b2Body_GetUserData(bodyIdA) as BodyUserData<int>;
                 if (userDataA == null)
                 {
@@ -398,7 +398,7 @@ public class ContactEvent : Sample
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
 
@@ -432,7 +432,7 @@ public class ContactEvent : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         m_context.draw.DrawString(5, m_textLine, "move using WASD");
         m_textLine += m_textIncrement;
     }

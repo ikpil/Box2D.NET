@@ -7,6 +7,7 @@ using System.Diagnostics;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Distances;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -25,7 +26,7 @@ namespace Box2D.NET
             shape.centroid = b2Lerp(p1, p2, 0.5f);
 
             B2Vec2 d = b2Sub(p2, p1);
-            Debug.Assert(b2LengthSquared(d) > FLT_EPSILON);
+            B2_ASSERT(b2LengthSquared(d) > FLT_EPSILON);
             B2Vec2 axis = b2Normalize(d);
             B2Vec2 normal = b2RightPerp(axis);
 
@@ -290,7 +291,7 @@ namespace Box2D.NET
             float dd2 = b2Dot(d2, d2);
 
             const float epsSqr = FLT_EPSILON * FLT_EPSILON;
-            Debug.Assert(dd1 > epsSqr && dd2 > epsSqr);
+            B2_ASSERT(dd1 > epsSqr && dd2 > epsSqr);
 
             B2Vec2 r = b2Sub(p1, p2);
             float rd1 = b2Dot(r, d1);
@@ -854,7 +855,7 @@ namespace Box2D.NET
                 B2Vec2 v22 = localPolyB.vertices[i22];
 
                 B2SegmentDistanceResult result = b2SegmentDistance(v11, v12, v21, v22);
-                Debug.Assert(result.distanceSquared > 0.0f);
+                B2_ASSERT(result.distanceSquared > 0.0f);
                 float distance = MathF.Sqrt(result.distanceSquared);
                 float separation = distance - radius;
 
@@ -964,7 +965,7 @@ namespace Box2D.NET
                 {
                     // v11 - v21
                     B2Vec2 normal = b2Sub(v21, v11);
-                    Debug.Assert(result.distanceSquared > 0.0f);
+                    B2_ASSERT(result.distanceSquared > 0.0f);
                     float distance = MathF.Sqrt(result.distanceSquared);
                     if (distance > B2_SPECULATIVE_DISTANCE + radius)
                     {
@@ -988,7 +989,7 @@ namespace Box2D.NET
                 {
                     // v11 - v22
                     B2Vec2 normal = b2Sub(v22, v11);
-                    Debug.Assert(result.distanceSquared > 0.0f);
+                    B2_ASSERT(result.distanceSquared > 0.0f);
                     float distance = MathF.Sqrt(result.distanceSquared);
                     if (distance > B2_SPECULATIVE_DISTANCE + radius)
                     {
@@ -1012,7 +1013,7 @@ namespace Box2D.NET
                 {
                     // v12 - v21
                     B2Vec2 normal = b2Sub(v21, v12);
-                    Debug.Assert(result.distanceSquared > 0.0f);
+                    B2_ASSERT(result.distanceSquared > 0.0f);
                     float distance = MathF.Sqrt(result.distanceSquared);
                     if (distance > B2_SPECULATIVE_DISTANCE + radius)
                     {
@@ -1036,7 +1037,7 @@ namespace Box2D.NET
                 {
                     // v12 - v22
                     B2Vec2 normal = b2Sub(v22, v12);
-                    Debug.Assert(result.distanceSquared > 0.0f);
+                    B2_ASSERT(result.distanceSquared > 0.0f);
                     float distance = MathF.Sqrt(result.distanceSquared);
                     if (distance > B2_SPECULATIVE_DISTANCE + radius)
                     {
@@ -1430,7 +1431,7 @@ namespace Box2D.NET
                 else
                 {
                     // vertex-edge collision
-                    Debug.Assert(cache.count == 2);
+                    B2_ASSERT(cache.count == 2);
 
                     int idxA1 = cache.indexA[0];
                     int idxA2 = cache.indexA[1];
@@ -1440,7 +1441,7 @@ namespace Box2D.NET
                     if (idxA1 == idxA2)
                     {
                         // 1 point on A, expect 2 points on B
-                        Debug.Assert(idxB1 != idxB2);
+                        B2_ASSERT(idxB1 != idxB2);
 
                         // Find polygon normal most aligned with vector between closest points.
                         // This effectively sorts ib1 and ib2
@@ -1491,7 +1492,7 @@ namespace Box2D.NET
                             manifold =
                                 b2ClipSegments(vb1, vb2, p1, p2, normalB, radiusB, 0.0f, B2_MAKE_ID(idxB1, 1), B2_MAKE_ID(idxB2, 0));
 
-                            Debug.Assert(manifold.pointCount == 0 || manifold.pointCount == 2);
+                            B2_ASSERT(manifold.pointCount == 0 || manifold.pointCount == 2);
                             if (manifold.pointCount == 2)
                             {
                                 manifold.normal = b2RotateVector(xfA.q, b2Neg(normalB));
@@ -1640,7 +1641,7 @@ namespace Box2D.NET
                     }
 
                     manifold = b2ClipSegments(a1, a2, p1, p2, normals[ia1], radiusB, 0.0f, B2_MAKE_ID(ia1, 1), B2_MAKE_ID(ia2, 0));
-                    Debug.Assert(manifold.pointCount == 0 || manifold.pointCount == 2);
+                    B2_ASSERT(manifold.pointCount == 0 || manifold.pointCount == 2);
                     if (manifold.pointCount == 2)
                     {
                         manifold.normal = b2RotateVector(xfA.q, b2Neg(normals[ia1]));
@@ -1665,7 +1666,7 @@ namespace Box2D.NET
                 // fall through segment normal axis
             }
 
-            Debug.Assert(incidentNormal != -1 || incidentIndex != -1);
+            B2_ASSERT(incidentNormal != -1 || incidentIndex != -1);
 
             // Segment normal
 
@@ -1703,7 +1704,7 @@ namespace Box2D.NET
             }
 
             manifold = b2ClipSegments(p1, p2, b1, b2, normal1, 0.0f, radiusB, B2_MAKE_ID(0, ib2), B2_MAKE_ID(1, ib1));
-            Debug.Assert(manifold.pointCount == 0 || manifold.pointCount == 2);
+            B2_ASSERT(manifold.pointCount == 0 || manifold.pointCount == 2);
             if (manifold.pointCount == 2)
             {
                 manifold.normal = b2RotateVector(xfA.q, manifold.normal);

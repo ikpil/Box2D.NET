@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 using Box2D.NET.Samples.Helpers;
@@ -19,6 +18,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2MouseJoints;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -215,7 +215,7 @@ public class Sample : IDisposable
         else
         {
             // This is not fatal but the maxTasks should be increased
-            Debug.Assert(false);
+            B2_ASSERT(false);
             task(0, itemCount, 0, taskContext);
             return null;
         }
@@ -450,7 +450,7 @@ public class Sample : IDisposable
                 m_textLine += m_textIncrement;
             }
         }
-        
+
         m_context.draw.m_debugDraw.drawingBounds = m_context.camera.GetViewBounds();
         m_context.draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
@@ -475,7 +475,7 @@ public class Sample : IDisposable
         m_context.draw.m_debugDraw.drawIslands = settings.drawIslands;
 
         b2World_Draw(m_worldId, m_context.draw.m_debugDraw);
-        
+
         if (settings.drawCounters)
         {
             B2Counters s = b2World_GetCounters(m_worldId);
@@ -486,7 +486,7 @@ public class Sample : IDisposable
 
             int totalCount = 0;
             var buffer = new StringBuilder();
-            Debug.Assert(s.colorCounts.Length == 12);
+            B2_ASSERT(s.colorCounts.Length == 12);
 
             // todo fix this
             buffer.Append("colors: ");

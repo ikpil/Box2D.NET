@@ -81,7 +81,7 @@ namespace Box2D.NET
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
 
             B2World world = b2GetWorld(jointId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
             if (world.locked)
             {
                 return 0.0f;
@@ -214,7 +214,7 @@ namespace Box2D.NET
 
         public static void b2PrepareDistanceJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_distanceJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
             // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
@@ -224,7 +224,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            Debug.Assert(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
 
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
@@ -279,7 +279,7 @@ namespace Box2D.NET
 
         public static void b2WarmStartDistanceJoint(B2JointSim @base, B2StepContext context)
         {
-            Debug.Assert(@base.type == B2JointType.b2_distanceJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -311,7 +311,7 @@ namespace Box2D.NET
 
         public static void b2SolveDistanceJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
-            Debug.Assert(@base.type == B2JointType.b2_distanceJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -511,7 +511,7 @@ namespace Box2D.NET
 
         public static void b2DrawDistanceJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
         {
-            Debug.Assert(@base.type == B2JointType.b2_distanceJoint);
+            B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 

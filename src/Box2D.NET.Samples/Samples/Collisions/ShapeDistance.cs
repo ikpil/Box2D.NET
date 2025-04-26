@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using Silk.NET.GLFW;
@@ -12,6 +11,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Collisions;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -157,7 +157,7 @@ public class ShapeDistance : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
 
@@ -207,7 +207,7 @@ public class ShapeDistance : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
     }
@@ -335,7 +335,7 @@ public class ShapeDistance : Sample
         switch (s.count)
         {
             case 0:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
 
             case 1:
@@ -354,7 +354,7 @@ public class ShapeDistance : Sample
                 break;
 
             default:
-                Debug.Assert(false);
+                B2_ASSERT(false);
                 break;
         }
     }

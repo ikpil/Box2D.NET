@@ -114,7 +114,7 @@ namespace Box2D.NET
         {
             int id = jointId.index1 - 1;
             B2Joint joint = b2Array_Get(ref world.joints, id);
-            Debug.Assert(joint.jointId == id && joint.generation == jointId.generation);
+            B2_ASSERT(joint.jointId == id && joint.generation == jointId.generation);
             return joint;
         }
 
@@ -122,7 +122,7 @@ namespace Box2D.NET
         {
             if (joint.setIndex == (int)B2SetType.b2_awakeSet)
             {
-                Debug.Assert(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
+                B2_ASSERT(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
                 ref B2GraphColor color = ref world.constraintGraph.colors[joint.colorIndex];
                 return b2Array_Get(ref color.jointSims, joint.localIndex);
             }
@@ -136,16 +136,16 @@ namespace Box2D.NET
             B2_UNUSED(type);
 
             B2World world = b2GetWorld(jointId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
             if (world.locked)
             {
                 return null;
             }
 
             B2Joint joint = b2GetJointFullId(world, jointId);
-            Debug.Assert(joint.type == type);
+            B2_ASSERT(joint.type == type);
             B2JointSim jointSim = b2GetJointSim(world, joint);
-            Debug.Assert(jointSim.type == type);
+            B2_ASSERT(jointSim.type == type);
             return jointSim;
         }
 
@@ -260,8 +260,8 @@ namespace Box2D.NET
             else
             {
                 // joint connected between sleeping and/or static bodies
-                Debug.Assert(bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet || bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet);
-                Debug.Assert(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
+                B2_ASSERT(bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet || bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet);
+                B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
 
                 // joint should go into the sleeping set (not static set)
                 int setIndex = maxSetIndex;
@@ -283,7 +283,7 @@ namespace Box2D.NET
                 {
                     // merge sleeping sets
                     b2MergeSolverSets(world, bodyA.setIndex, bodyB.setIndex);
-                    Debug.Assert(bodyA.setIndex == bodyB.setIndex);
+                    B2_ASSERT(bodyA.setIndex == bodyB.setIndex);
 
                     // fix potentially invalid set index
                     setIndex = bodyA.setIndex;
@@ -294,12 +294,12 @@ namespace Box2D.NET
                     jointSim = b2Array_Get(ref mergedSet.jointSims, joint.localIndex);
                 }
 
-                Debug.Assert(joint.setIndex == setIndex);
+                B2_ASSERT(joint.setIndex == setIndex);
             }
 
-            Debug.Assert(jointSim.jointId == jointId);
-            Debug.Assert(jointSim.bodyIdA == bodyIdA);
-            Debug.Assert(jointSim.bodyIdB == bodyIdB);
+            B2_ASSERT(jointSim.jointId == jointId);
+            B2_ASSERT(jointSim.bodyIdA == bodyIdA);
+            B2_ASSERT(jointSim.bodyIdB == bodyIdB);
 
             if (joint.setIndex > (int)B2SetType.b2_disabledSet)
             {
@@ -358,16 +358,16 @@ namespace Box2D.NET
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
                 return new B2JointId();
             }
 
-            Debug.Assert(b2Body_IsValid(def.bodyIdA));
-            Debug.Assert(b2Body_IsValid(def.bodyIdB));
-            Debug.Assert(b2IsValidFloat(def.length) && def.length > 0.0f);
+            B2_ASSERT(b2Body_IsValid(def.bodyIdA));
+            B2_ASSERT(b2Body_IsValid(def.bodyIdB));
+            B2_ASSERT(b2IsValidFloat(def.length) && def.length > 0.0f);
 
             B2Body bodyA = b2GetBodyFullId(world, def.bodyIdA);
             B2Body bodyB = b2GetBodyFullId(world, def.bodyIdB);
@@ -411,7 +411,7 @@ namespace Box2D.NET
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -449,7 +449,7 @@ namespace Box2D.NET
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -495,7 +495,7 @@ namespace Box2D.NET
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -520,13 +520,13 @@ namespace Box2D.NET
         public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, ref B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(def.lowerAngle <= def.upperAngle);
-            Debug.Assert(def.lowerAngle >= -0.95f * B2_PI);
-            Debug.Assert(def.upperAngle <= 0.95f * B2_PI);
+            B2_ASSERT(def.lowerAngle <= def.upperAngle);
+            B2_ASSERT(def.lowerAngle >= -0.95f * B2_PI);
+            B2_ASSERT(def.upperAngle <= 0.95f * B2_PI);
 
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -577,11 +577,11 @@ namespace Box2D.NET
         public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, B2PrismaticJointDef def)
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(def.lowerTranslation <= def.upperTranslation);
+            B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -634,7 +634,7 @@ namespace Box2D.NET
             B2_CHECK_DEF(ref def);
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -674,11 +674,11 @@ namespace Box2D.NET
         public static B2JointId b2CreateWheelJoint(B2WorldId worldId, ref B2WheelJointDef def)
         {
             B2_CHECK_DEF(ref def);
-            Debug.Assert(def.lowerTranslation <= def.upperTranslation);
+            B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
 
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -782,12 +782,12 @@ namespace Box2D.NET
 
             if (joint.islandId != B2_NULL_INDEX)
             {
-                Debug.Assert(joint.setIndex > (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.setIndex > (int)B2SetType.b2_disabledSet);
                 b2UnlinkJoint(world, joint);
             }
             else
             {
-                Debug.Assert(joint.setIndex <= (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.setIndex <= (int)B2SetType.b2_disabledSet);
             }
 
             // Remove joint from solver set that owns it
@@ -808,7 +808,7 @@ namespace Box2D.NET
                     B2JointSim movedJointSim = set.jointSims.data[localIndex];
                     int movedId = movedJointSim.jointId;
                     B2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
-                    Debug.Assert(movedJoint.localIndex == movedIndex);
+                    B2_ASSERT(movedJoint.localIndex == movedIndex);
                     movedJoint.localIndex = localIndex;
                 }
             }
@@ -832,7 +832,7 @@ namespace Box2D.NET
         public static void b2DestroyJoint(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
-            Debug.Assert(world.locked == false);
+            B2_ASSERT(world.locked == false);
 
             if (world.locked)
             {
@@ -1002,7 +1002,7 @@ namespace Box2D.NET
                     return b2GetWheelJointForce(world, @base);
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     return b2Vec2_zero;
             }
         }
@@ -1040,7 +1040,7 @@ namespace Box2D.NET
                     return b2GetWheelJointTorque(world, @base);
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     return 0.0f;
             }
         }
@@ -1081,7 +1081,7 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
         }
@@ -1122,7 +1122,7 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
         }
@@ -1163,7 +1163,7 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    Debug.Assert(false);
+                    B2_ASSERT(false);
                     break;
             }
         }

@@ -4,12 +4,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Silk.NET.OpenGL;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -113,7 +113,7 @@ public class GLLines
             return;
         }
 
-        Debug.Assert(count % 2 == 0);
+        B2_ASSERT(count % 2 == 0);
 
         _gl.Enable(GLEnum.LineSmooth);
         _gl.Enable(GLEnum.Blend);

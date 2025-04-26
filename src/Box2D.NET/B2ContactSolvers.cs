@@ -56,7 +56,7 @@ namespace Box2D.NET
                 ref B2Manifold manifold = ref contactSim.manifold;
                 int pointCount = manifold.pointCount;
 
-                Debug.Assert(0 < pointCount && pointCount <= 2);
+                B2_ASSERT(0 < pointCount && pointCount <= 2);
 
                 int indexA = contactSim.bodySimIndexA;
                 int indexB = contactSim.bodySimIndexB;
@@ -64,11 +64,11 @@ namespace Box2D.NET
 #if B2_VALIDATE
                 B2Body bodyA = bodies[contactSim.bodyIdA];
                 int validIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
-                Debug.Assert(indexA == validIndexA);
+                B2_ASSERT(indexA == validIndexA);
 
                 B2Body bodyB = bodies[contactSim.bodyIdB];
                 int validIndexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
-                Debug.Assert(indexB == validIndexB);
+                B2_ASSERT(indexB == validIndexB);
 #endif
 
                 ref B2ContactConstraint constraint = ref constraints[i];
@@ -766,8 +766,8 @@ namespace Box2D.NET
 // This is a load and 8x8 transpose
 static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 	// b2BodyState b2_identityBodyState = {{0.0f, 0.0f}, 0.0f, 0, {0.0f, 0.0f}, {1.0f, 0.0f}};
 	b2FloatW identity = _mm256_setr_ps( 0.0f, 0.0f, 0.0f, 0, 0.0f, 0.0f, 1.0f, 0.0f );
 	b2FloatW b0 = indices[0] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[0] ) );
@@ -811,8 +811,8 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 // This writes everything back to the solver bodies but only the velocities change
 static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStateW* simdBody )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 	b2FloatW t0 = _mm256_unpacklo_ps( simdBody.v.X, simdBody.v.Y );
 	b2FloatW t1 = _mm256_unpackhi_ps( simdBody.v.X, simdBody.v.Y );
 	b2FloatW t2 = _mm256_unpacklo_ps( simdBody.w, simdBody.flags );
@@ -854,8 +854,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 // This is a load and transpose
 static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 
 	// [vx vy w flags]
 	b2FloatW identityA = b2ZeroW();
@@ -908,8 +908,8 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 // https://developer.arm.com/documentation/102107a/0100/Floating-point-4x4-matrix-transposition
 static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStateW* simdBody )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 
 	//	b2FloatW x = b2SetW(0.0f, 1.0f, 2.0f, 3.0f);
 	//	b2FloatW y = b2SetW(4.0f, 5.0f, 6.0f, 7.0f);
@@ -959,8 +959,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 // This is a load and transpose
 static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 
 	// [vx vy w flags]
 	b2FloatW identityA = b2ZeroW();
@@ -1011,8 +1011,8 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 // This writes only the velocities back to the solver bodies
 static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStateW* simdBody )
 {
-	Debug.Assert( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
-	Debug.Assert( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
+	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
 
 	// [vx1 vy1 vx2 vy2]
 	b2FloatW t1 = b2UnpackLoW( simdBody.v.X, simdBody.v.Y );
@@ -1154,8 +1154,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         B2Body bodyB = bodies[contactSim.bodyIdB];
                         int validIndexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
 
-                        Debug.Assert(indexA == validIndexA);
-                        Debug.Assert(indexB == validIndexB);
+                        B2_ASSERT(indexA == validIndexA);
+                        B2_ASSERT(indexB == validIndexB);
 #endif
                         constraint.indexA[j] = indexA;
                         constraint.indexB[j] = indexB;
@@ -1245,7 +1245,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         }
 
                         int pointCount = manifold.pointCount;
-                        Debug.Assert(0 < pointCount && pointCount <= 2);
+                        B2_ASSERT(0 < pointCount && pointCount <= 2);
 
                         if (pointCount == 2)
                         {

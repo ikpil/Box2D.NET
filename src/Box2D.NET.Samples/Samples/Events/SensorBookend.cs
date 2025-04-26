@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Ids;
@@ -11,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -262,33 +262,33 @@ public class SensorBookend : Sample
             {
                 if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId))
                 {
-                    Debug.Assert(m_isVisiting1 == false);
+                    B2_ASSERT(m_isVisiting1 == false);
                     m_isVisiting1 = true;
                 }
                 else
                 {
-                    Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId2));
+                    B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId2));
                     m_sensorsOverlapCount += 1;
                 }
             }
             else
             {
-                Debug.Assert(B2_ID_EQUALS(@event.sensorShapeId, m_sensorShapeId2));
+                B2_ASSERT(B2_ID_EQUALS(@event.sensorShapeId, m_sensorShapeId2));
 
                 if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId))
                 {
-                    Debug.Assert(m_isVisiting2 == false);
+                    B2_ASSERT(m_isVisiting2 == false);
                     m_isVisiting2 = true;
                 }
                 else
                 {
-                    Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId1));
+                    B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId1));
                     m_sensorsOverlapCount += 1;
                 }
             }
         }
 
-        Debug.Assert(m_sensorsOverlapCount == 0 || m_sensorsOverlapCount == 2);
+        B2_ASSERT(m_sensorsOverlapCount == 0 || m_sensorsOverlapCount == 2);
 
         for (int i = 0; i < sensorEvents.endCount; ++i)
         {
@@ -298,33 +298,33 @@ public class SensorBookend : Sample
             {
                 if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId))
                 {
-                    Debug.Assert(m_isVisiting1 == true);
+                    B2_ASSERT(m_isVisiting1 == true);
                     m_isVisiting1 = false;
                 }
                 else
                 {
-                    Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId2));
+                    B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId2));
                     m_sensorsOverlapCount -= 1;
                 }
             }
             else
             {
-                Debug.Assert(B2_ID_EQUALS(@event.sensorShapeId, m_sensorShapeId2));
+                B2_ASSERT(B2_ID_EQUALS(@event.sensorShapeId, m_sensorShapeId2));
 
                 if (B2_ID_EQUALS(@event.visitorShapeId, m_visitorShapeId))
                 {
-                    Debug.Assert(m_isVisiting2 == true);
+                    B2_ASSERT(m_isVisiting2 == true);
                     m_isVisiting2 = false;
                 }
                 else
                 {
-                    Debug.Assert(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId1));
+                    B2_ASSERT(B2_ID_EQUALS(@event.visitorShapeId, m_sensorShapeId1));
                     m_sensorsOverlapCount -= 1;
                 }
             }
         }
 
-        Debug.Assert(m_sensorsOverlapCount == 0 || m_sensorsOverlapCount == 2);
+        B2_ASSERT(m_sensorsOverlapCount == 0 || m_sensorsOverlapCount == 2);
 
         // Nullify invalid shape ids after end events are processed.
         if (b2Shape_IsValid(m_visitorShapeId) == false)

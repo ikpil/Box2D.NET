@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Geometries;
@@ -10,6 +9,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Robustness;
 
@@ -102,7 +102,7 @@ public class OverlapRecovery : Sample
             y += 2.0f * fraction * m_extent;
         }
 
-        Debug.Assert(bodyIndex == m_bodyCount);
+        B2_ASSERT(bodyIndex == m_bodyCount);
     }
 
     public override void UpdateGui()

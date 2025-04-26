@@ -74,7 +74,7 @@ public class ConvexHull : Sample
 		bool valid = b2ValidateHull( &hull );
 		if ( valid == false )
 		{
-			Debug.Assert( valid );
+			B2_ASSERT( valid );
 		}
 
 		m_count = e_count;

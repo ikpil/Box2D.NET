@@ -2,11 +2,9 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Numerics;
-using Box2D.NET.Samples.Extensions;
-using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
+using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
@@ -15,6 +13,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -141,12 +140,12 @@ public class BodyMove : Sample
             // draw the transform of every body that moved (not sleeping)
             ref B2BodyMoveEvent @event = ref events.moveEvents[i];
             m_context.draw.DrawTransform(@event.transform);
-            
-            B2Transform transform = b2Body_GetTransform( @event.bodyId );
-            Debug.Assert( transform.p.X == @event.transform.p.X );
-            Debug.Assert( transform.p.Y == @event.transform.p.Y );
-            Debug.Assert( transform.q.c == @event.transform.q.c );
-            Debug.Assert( transform.q.s == @event.transform.q.s );
+
+            B2Transform transform = b2Body_GetTransform(@event.bodyId);
+            B2_ASSERT(transform.p.X == @event.transform.p.X);
+            B2_ASSERT(transform.p.Y == @event.transform.p.Y);
+            B2_ASSERT(transform.q.c == @event.transform.q.c);
+            B2_ASSERT(transform.q.s == @event.transform.q.s);
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
