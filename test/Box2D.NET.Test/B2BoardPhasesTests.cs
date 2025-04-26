@@ -3,6 +3,7 @@ using NUnit.Framework;
 using static Box2D.NET.B2BoardPhases;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
+using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Test;
 
@@ -213,6 +214,99 @@ public class B2BoardPhasesTests
 #if DEBUG
         // Case 3: Destroy a non-existent proxy
         Assert.Throws<InvalidOperationException>(() => b2BroadPhase_DestroyProxy(bp, proxyKeyB), "Destroying a non-existent proxy should throw an exception");
+#endif
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2BroadPhase_MoveProxy()
+    {
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        var aabb1 = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+
+        var aabb2 = new B2AABB
+        {
+            lowerBound = new B2Vec2(10, 10),
+            upperBound = new B2Vec2(11, 11)
+        };
+
+        ulong categoryBits = 0x0001;
+        int shapeIndex = 1;
+
+        int proxyKey = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb1, categoryBits, shapeIndex, false);
+        B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+        int proxyId = B2_PROXY_ID(proxyKey);
+
+        {
+            // move valid proxy
+            b2BroadPhase_MoveProxy(bp, proxyKey, aabb2);
+            Assert.That(bp.trees[(int)proxyType].nodes[proxyId].aabb, Is.EqualTo(aabb2));
+
+            Assert.That(bp.moveSet.count, Is.EqualTo(1));
+            Assert.That(bp.moveArray.count, Is.EqualTo(1));
+            Assert.That(bp.moveArray.data, Does.Contain(proxyKey));
+        }
+
+#if DEBUG
+        {
+            // move invalid (nonexistent) proxy
+            int invalidProxyKey = B2_PROXY_KEY(9999, B2BodyType.b2_dynamicBody);
+            Assert.Throws<InvalidOperationException>(() => b2BroadPhase_MoveProxy(bp, invalidProxyKey, aabb2));
+        }
+#endif
+    }
+
+    [Test]
+    public void Test_B2BroadPhases_b2BroadPhase_EnlargeProxy()
+    {
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        B2AABB aabb1 = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+
+        B2AABB aabb2 = new B2AABB
+        {
+            lowerBound = new B2Vec2(-1, -1),
+            upperBound = new B2Vec2(2, 2)
+        };
+
+        // Create proxy
+        int proxyKey = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb1, 0x0001, 123, false);
+
+        {
+            // enlarge valid proxy
+            b2BroadPhase_EnlargeProxy(bp, proxyKey, aabb2);
+
+            var node = bp.trees[(int)B2_PROXY_TYPE(proxyKey)].nodes[B2_PROXY_ID(proxyKey)];
+
+            Assert.That(node.aabb.lowerBound.X, Is.EqualTo(aabb2.lowerBound.X), "LowerBound.X should match enlarged AABB");
+            Assert.That(node.aabb.lowerBound.Y, Is.EqualTo(aabb2.lowerBound.Y), "LowerBound.Y should match enlarged AABB");
+            Assert.That(node.aabb.upperBound.X, Is.EqualTo(aabb2.upperBound.X), "UpperBound.X should match enlarged AABB");
+            Assert.That(node.aabb.upperBound.Y, Is.EqualTo(aabb2.upperBound.Y), "UpperBound.Y should match enlarged AABB");
+
+            Assert.That(bp.moveSet.count, Is.EqualTo(1), "moveSet should contain one key after enlarge");
+            Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should contain one key after enlarge");
+            Assert.That(bp.moveArray.data, Does.Contain(proxyKey), "moveArray should contain the enlarged proxyKey");
+        }
+
+#if DEBUG
+        {
+            // enlarge invalid proxy (null index)
+            Assert.That(() => b2BroadPhase_EnlargeProxy(bp, B2_NULL_INDEX, aabb2), Throws.Exception, "Enlarging with null proxyKey should throw");
+
+            // enlarge static body
+            int staticProxyKey = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb1, 0x0001, 124, true);
+            Assert.That(() => b2BroadPhase_EnlargeProxy(bp, staticProxyKey, aabb2), Throws.Exception, "Enlarging staticBody proxyKey should throw");
+        }
 #endif
     }
 }
