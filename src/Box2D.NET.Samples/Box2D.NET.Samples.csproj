@@ -8,6 +8,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);ENABLED</DefineConstants>
   </PropertyGroup>

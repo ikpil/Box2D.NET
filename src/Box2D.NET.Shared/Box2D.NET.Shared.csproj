@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Box2D.NET\Box2D.NET.csproj"/>
   </ItemGroup>
 
