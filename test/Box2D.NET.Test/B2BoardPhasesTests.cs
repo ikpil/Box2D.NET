@@ -71,10 +71,10 @@ public class B2BoardPhasesTests
     {
         B2BroadPhase bp = null;
         b2CreateBroadPhase(ref bp);
-        
+
         // test!
         b2DestroyBroadPhase(bp);
-        
+
         Assert.That(bp.trees, Is.Null);
         Assert.That(bp.proxyCount, Is.EqualTo(0));
         Assert.That(bp.moveSet.capacity, Is.EqualTo(0));
@@ -84,5 +84,58 @@ public class B2BoardPhasesTests
         Assert.That(bp.movePairCapacity, Is.EqualTo(0));
         Assert.That(bp.movePairIndex.value, Is.EqualTo(0));
         Assert.That(bp.pairSet.capacity, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2UnBufferMove()
+    {
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+        
+        int proxyKeyA = 42;
+        int proxyKeyB = 99;
+        int proxyKeyC = 88;
+
+        b2BufferMove(bp, proxyKeyA);
+        b2BufferMove(bp, proxyKeyB);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(2));
+        Assert.That(bp.moveArray.count, Is.EqualTo(2));
+
+        // not found key C
+        b2UnBufferMove(bp, proxyKeyC);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(2));
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.True);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.True);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+
+        Assert.That(bp.moveArray.count, Is.EqualTo(2));
+        Assert.That(bp.moveArray.data, Does.Contain(proxyKeyA));
+        Assert.That(bp.moveArray.data, Does.Contain(proxyKeyB));
+        Assert.That(bp.moveArray.data, Does.Not.Contain(proxyKeyC));
+
+        // delete A
+        b2UnBufferMove(bp, proxyKeyA);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(1));
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.False);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.True);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+
+        Assert.That(bp.moveArray.count, Is.EqualTo(1));
+        Assert.That(bp.moveArray.data, Does.Not.Contain(proxyKeyA));
+        Assert.That(bp.moveArray.data, Does.Contain(proxyKeyB));
+        Assert.That(bp.moveArray.data, Does.Not.Contain(proxyKeyC));
+
+        // delete B
+        b2UnBufferMove(bp, proxyKeyB);
+
+        Assert.That(bp.moveSet.count, Is.EqualTo(0));
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.False);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.False);
+        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+        
+        Assert.That(bp.moveArray.count, Is.EqualTo(0));
     }
 }
