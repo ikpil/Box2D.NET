@@ -41,7 +41,7 @@ jobs:
       - name: Zip
         working-directory: ${{ env.working-directory }}
         run: |
-          cp -rfv resources working-temp
+          cp -rfv data working-temp
           cd working-temp
           echo "dotnet Box2D.NET.Samples.dll" > run.bat
           zip -r ../Box2D.NET.Samples-${{ steps.version.outputs.version}}.zip ./
