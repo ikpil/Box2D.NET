@@ -36,6 +36,7 @@ public static class TestHelper
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = position;
         bodyDef.gravityScale = 0.0f;
+        bodyDef.enableSleep = true;
         var bodyIdA = b2CreateBody(worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();

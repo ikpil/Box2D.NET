@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
+
 namespace Box2D.NET
 {
     /**
@@ -41,32 +43,44 @@ namespace Box2D.NET
         public static readonly B2JointId b2_nullJointId = new B2JointId(0, 0, 0);
 
         /// Macro to determine if any id is null.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2WorldId id) => id.index1 == 0;
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2BodyId id) => id.index1 == 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2ShapeId id) => id.index1 == 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2ChainId id) => id.index1 == 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2JointId id) => id.index1 == 0;
-
+        
         /// Macro to determine if any id is non-null.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2WorldId id) => id.index1 != 0;
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2BodyId id) => id.index1 != 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2ShapeId id) => id.index1 != 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2ChainId id) => id.index1 != 0;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2JointId id) => id.index1 != 0;
 
         /// Compare two ids for equality. Doesn't work for b2WorldId.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2BodyId id1, B2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         /// Store a body id into a ulong.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreBodyId(B2BodyId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a body id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyId b2LoadBodyId(ulong x)
         {
             B2BodyId id = new B2BodyId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
@@ -74,12 +88,14 @@ namespace Box2D.NET
         }
 
         /// Store a shape id into a ulong.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreShapeId(B2ShapeId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a shape id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2ShapeId b2LoadShapeId(ulong x)
         {
             B2ShapeId id = new B2ShapeId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
@@ -87,12 +103,14 @@ namespace Box2D.NET
         }
 
         /// Store a chain id into a ulong.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreChainId(B2ChainId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a chain id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2ChainId b2LoadChainId(ulong x)
         {
             B2ChainId id = new B2ChainId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
@@ -100,12 +118,14 @@ namespace Box2D.NET
         }
 
         /// Store a joint id into a ulong.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreJointId(B2JointId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
         /// Load a ulong into a joint id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2JointId b2LoadJointId(ulong x)
         {
             B2JointId id = new B2JointId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));

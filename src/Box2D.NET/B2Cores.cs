@@ -95,12 +95,12 @@ namespace Box2D.NET
         }
         
         [Conditional("DEBUG")]
-        public static void B2_ASSERT(bool condition, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
+        public static void B2_ASSERT(bool condition, string message = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
         {
             if (condition)
                 return;
 
-            throw new InvalidOperationException($"{memberName}() {fileName}:{lineNumber}");
+            throw new InvalidOperationException($"{message} {memberName}() {fileName}:{lineNumber}");
         }
 
         /// @return the total bytes allocated by Box2D

@@ -6,6 +6,7 @@ using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2DynamicTrees;
 
 namespace Box2D.NET.Test;
 
@@ -322,26 +323,57 @@ public class B2BoardPhasesTests
 
         B2ShapeId shapeIdA = TestHelper.CreateCircle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f);
         B2ShapeId shapeIdB = TestHelper.CreateCircle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f);
+        B2ShapeId shapeIdC = TestHelper.CreateCircle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f);
 
-        // QueryContext 셋업
+        var proxyKeyA = world.broadPhase.moveArray.data[0];
+        var proxyKeyB = world.broadPhase.moveArray.data[1];
+        var proxyKeyC = world.broadPhase.moveArray.data[2];
+
+        B2BodyType proxyTypeA = B2_PROXY_TYPE(proxyKeyA);
+        B2BodyType proxyTypeB = B2_PROXY_TYPE(proxyKeyB);
+        B2BodyType proxyTypeC = B2_PROXY_TYPE(proxyKeyC);
+        
+        var proxyIdA = B2_PROXY_ID(proxyKeyA);
+        var proxyIdB = B2_PROXY_ID(proxyKeyB);
+        var proxyIdC = B2_PROXY_ID(proxyKeyC);
+
+        // QueryContext setting
         B2QueryPairContext queryContext = new B2QueryPairContext();
         queryContext.world = world;
-        queryContext.queryTreeType = B2BodyType.b2_dynamicBody;
-        queryContext.moveResult = world.broadPhase.moveResults[0];
-        queryContext.moveResult.pairList = null;
-        queryContext.queryProxyKey = 1;
-        queryContext.queryShapeIndex = 1;
+        queryContext.queryTreeType = proxyTypeA;
+        queryContext.queryProxyKey = proxyKeyA;
+        queryContext.queryShapeIndex = shapeIdA.index1 - 1;
+        
 
-        int proxyId = 0;
-        ulong userData = 0; // shape index 0번
+        // a <-> a
+        {
+            queryContext.moveResult = new B2MoveResult();
+            bool result = b2PairQueryCallback(proxyIdA, (ulong)shapeIdA.index1 - 1, ref queryContext);
+            Assert.That(result, Is.True);
+            Assert.That(queryContext.moveResult.pairList, Is.Null);
+        }
 
-        // Act
-        bool result = b2PairQueryCallback(proxyId, userData, ref queryContext);
+        // a <-> b
+        {
+            queryContext.moveResult = new B2MoveResult();
+            bool result = b2PairQueryCallback(proxyIdB, (ulong)shapeIdB.index1 - 1, ref queryContext);
 
-        // Assert
-        // Assert.That(result, Is.True);
-        // Assert.That(queryContext.moveResult.pairList, Is.Not.Null);
-        // Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(0));
-        // Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo(1));
+            Assert.That(result, Is.True);
+            Assert.That(queryContext.moveResult.pairList, Is.Not.Null);
+            Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(queryContext.queryShapeIndex));
+            Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo((ulong)shapeIdB.index1 - 1));
+        }
+        
+        // a <-> c
+        {
+            queryContext.moveResult = new B2MoveResult();
+            bool result = b2PairQueryCallback(proxyIdC, (ulong)shapeIdC.index1 - 1, ref queryContext);
+
+            Assert.That(result, Is.True);
+            Assert.That(queryContext.moveResult.pairList, Is.Not.Null);
+            Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(queryContext.queryShapeIndex));
+            Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo((ulong)shapeIdC.index1 - 1));
+        }
+
     }
 }
