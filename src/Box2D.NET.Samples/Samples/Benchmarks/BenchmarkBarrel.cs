@@ -31,8 +31,8 @@ public class BenchmarkBarrel : Sample
         e_humanShape,
     }
 
-    private const int e_maxColumns = 26;
-    private const int e_maxRows = 150;
+    private const int e_maxColumns = 30;
+    private const int e_maxRows = 300;
 
 
     private B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
@@ -109,9 +109,9 @@ public class BenchmarkBarrel : Sample
         }
 
         m_shapeType = ShapeType.e_compoundShape;
-        
-        m_columnCount = m_context.sampleDebug ? 10 : e_maxColumns;
-        m_rowCount = m_context.sampleDebug ? 40 : e_maxRows;
+
+        m_columnCount = e_maxColumns / (m_context.sampleDebug ? 3 : 2);
+        m_rowCount = e_maxRows / (m_context.sampleDebug ? 3 : 2);
 
         CreateScene();
     }
@@ -135,25 +135,25 @@ public class BenchmarkBarrel : Sample
         }
 
 
-        if (m_shapeType == ShapeType.e_compoundShape)
-        {
-            if (m_context.sampleDebug == false)
-            {
-                m_columnCount = 20;
-            }
-        }
-        else if (m_shapeType == ShapeType.e_humanShape)
-        {
-            if (m_context.sampleDebug)
-            {
-                m_rowCount = 5;
-                m_columnCount = 10;
-            }
-            else
-            {
-                m_rowCount = 30;
-            }
-        }
+        // if (m_shapeType == ShapeType.e_compoundShape)
+        // {
+        //     if (m_context.sampleDebug == false)
+        //     {
+        //         m_columnCount = e_maxColumns;
+        //     }
+        // }
+        // else if (m_shapeType == ShapeType.e_humanShape)
+        // {
+        //     if (m_context.sampleDebug)
+        //     {
+        //         m_rowCount = 5;
+        //         m_columnCount = 10;
+        //     }
+        //     else
+        //     {
+        //         m_rowCount = 30;
+        //     }
+        // }
 
         float rad = 0.5f;
 
