@@ -31,7 +31,7 @@
     <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0"/>
     <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
     <PackageReference Include="Silk.NET" Version="2.22.0"/>
     <PackageReference Include="Silk.NET.GLFW" Version="2.22.0" />
     <PackageReference Include="Silk.NET.Windowing.Glfw" Version="2.22.0" />
