@@ -71,7 +71,7 @@ public class BenchmarkShapeDistance : Sample
             m_polygonB = b2MakePolygon(ref hull, 0.1f);
         }
 
-        m_count = m_context.sampleDebug ? 100 : 10000;
+        m_count = m_isDebug ? 100 : 10000;
 
         // todo arena
         m_transformAs = new B2Transform[m_count];

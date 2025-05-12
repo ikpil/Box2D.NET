@@ -115,10 +115,8 @@ public class GLLines
 
         B2_ASSERT(count % 2 == 0);
 
-        _gl.Enable(GLEnum.LineSmooth);
         _gl.Enable(GLEnum.Blend);
         _gl.BlendFunc(GLEnum.SrcAlpha, GLEnum.OneMinusSrcAlpha);
-        _gl.LineWidth(1.0f);
 
         _gl.UseProgram(m_programId);
 

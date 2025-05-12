@@ -34,8 +34,8 @@ public class BenchmarkSmash : Sample
             m_context.camera.m_zoom = 25.0f * 1.6f;
         }
 
-        m_rowCount = m_context.sampleDebug ? 10 : 80;
-        m_columnCount = m_context.sampleDebug ? 20 : 120;
+        m_rowCount = m_isDebug ? 10 : 80;
+        m_columnCount = m_isDebug ? 20 : 120;
 
         _bodyIds = new List<B2BodyId>();
 

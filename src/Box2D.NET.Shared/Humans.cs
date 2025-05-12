@@ -366,7 +366,7 @@ namespace Box2D.NET.Shared
 
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
-                bodyDef.name = "lower_left_leg";
+                bodyDef.name = "upper_left_arm";
                 
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
 

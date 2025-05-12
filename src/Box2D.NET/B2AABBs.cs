@@ -50,17 +50,6 @@ namespace Box2D.NET
             return changed;
         }
 
-        /// Do a and b overlap
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2AABB_Overlaps(B2AABB a, B2AABB b)
-        {
-            return !(b.lowerBound.X > a.upperBound.X ||
-                     b.lowerBound.Y > a.upperBound.Y ||
-                     a.lowerBound.X > b.upperBound.X ||
-                     a.lowerBound.Y > b.upperBound.Y);
-        }
-
-
         /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsValidAABB(B2AABB a)

@@ -988,7 +988,7 @@ namespace Box2D.NET
             if (distanceOutput.distance <= totalRadius)
             {
                 B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
-                return new B2PlaneResult(plane, true);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
             }
 
             return new B2PlaneResult();
@@ -1011,7 +1011,7 @@ namespace Box2D.NET
             if (distanceOutput.distance <= totalRadius)
             {
                 B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
-                return new B2PlaneResult(plane, true);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
             }
 
             return new B2PlaneResult();
@@ -1034,7 +1034,7 @@ namespace Box2D.NET
             if (distanceOutput.distance <= totalRadius)
             {
                 B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
-                return new B2PlaneResult(plane, true);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
             }
 
             return new B2PlaneResult();
@@ -1057,7 +1057,7 @@ namespace Box2D.NET
             if (distanceOutput.distance <= totalRadius)
             {
                 B2Plane plane = new B2Plane(distanceOutput.normal, totalRadius - distanceOutput.distance);
-                return new B2PlaneResult(plane, true);
+                return new B2PlaneResult(plane, distanceOutput.pointA, true);
             }
 
             return new B2PlaneResult();

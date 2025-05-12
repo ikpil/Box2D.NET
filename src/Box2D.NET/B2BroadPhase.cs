@@ -13,7 +13,6 @@ namespace Box2D.NET
     public class B2BroadPhase
     {
         public B2DynamicTree[] trees;
-        public int proxyCount;
 
         // The move set and array are used to track shapes that have moved significantly
         // and need a pair query for new contacts. The array has a deterministic order.
@@ -38,7 +37,6 @@ namespace Box2D.NET
         public void Clear()
         {
             trees = null;
-            proxyCount = 0;
             moveSet = new B2HashSet();
             b2Array_Clear(ref moveArray);
             moveResults = null;

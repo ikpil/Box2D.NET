@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
@@ -14,7 +13,7 @@ using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2ArenaAllocators;
-using static Box2D.NET.B2AABBs;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET
 {
@@ -73,7 +72,6 @@ namespace Box2D.NET
             // }
             bp = new B2BroadPhase();
             bp.trees = new B2DynamicTree[(int)B2BodyType.b2_bodyTypeCount];
-            bp.proxyCount = 0;
             bp.moveSet = b2CreateSet(16);
             bp.moveArray = b2Array_Create<int>(16);
             bp.moveResults = null;
@@ -146,8 +144,6 @@ namespace Box2D.NET
         {
             B2_ASSERT(bp.moveArray.count == (int)bp.moveSet.count);
             b2UnBufferMove(bp, proxyKey);
-
-            --bp.proxyCount;
 
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);

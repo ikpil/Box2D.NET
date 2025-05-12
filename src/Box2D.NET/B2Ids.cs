@@ -45,30 +45,39 @@ namespace Box2D.NET
         /// Macro to determine if any id is null.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2WorldId id) => id.index1 == 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2BodyId id) => id.index1 == 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2ShapeId id) => id.index1 == 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2ChainId id) => id.index1 == 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2JointId id) => id.index1 == 0;
-        
+
         /// Macro to determine if any id is non-null.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2WorldId id) => id.index1 != 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2BodyId id) => id.index1 != 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2ShapeId id) => id.index1 != 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2ChainId id) => id.index1 != 0;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2JointId id) => id.index1 != 0;
 
         /// Compare two ids for equality. Doesn't work for b2WorldId.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2BodyId id1, B2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
@@ -131,6 +140,7 @@ namespace Box2D.NET
             B2JointId id = new B2JointId((int)(x >> 32), (ushort)(x >> 16), (ushort)(x));
             return id;
         }
+
 
         /**@}*/
     }

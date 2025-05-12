@@ -1566,7 +1566,7 @@ namespace Box2D.NET
 
         //#else
 
-        public const int B2_BIN_COUNT = 64;
+        public const int B2_BIN_COUNT = 8;
 
 
         // "On Fast Construction of SAH-based Bounding Volume Hierarchies" by Ingo Wald
