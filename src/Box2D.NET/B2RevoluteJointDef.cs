@@ -46,10 +46,10 @@ namespace Box2D.NET
         /// A flag to enable joint limits
         public bool enableLimit;
 
-        /// The lower angle for the joint limit in radians. Minimum of -0.95*pi radians.
+        /// The lower angle for the joint limit in radians. Minimum of -0.99*pi radians.
         public float lowerAngle;
 
-        /// The upper angle for the joint limit in radians. Maximum of 0.95*pi radians.
+        /// The upper angle for the joint limit in radians. Maximum of 0.99*pi radians.
         public float upperAngle;
 
         /// A flag to enable the joint motor

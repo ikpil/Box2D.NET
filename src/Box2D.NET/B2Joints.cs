@@ -521,8 +521,8 @@ namespace Box2D.NET
         {
             B2_CHECK_DEF(ref def);
             B2_ASSERT(def.lowerAngle <= def.upperAngle);
-            B2_ASSERT(def.lowerAngle >= -0.95f * B2_PI);
-            B2_ASSERT(def.upperAngle <= 0.95f * B2_PI);
+            B2_ASSERT(def.lowerAngle >= -0.99f * B2_PI);
+            B2_ASSERT(def.upperAngle <= 0.99f * B2_PI);
 
             B2World world = b2GetWorldFromId(worldId);
 

@@ -80,7 +80,6 @@ public class B2BoardPhasesTests
         b2DestroyBroadPhase(bp);
 
         Assert.That(bp.trees, Is.Null);
-        Assert.That(bp.proxyCount, Is.EqualTo(0));
         Assert.That(bp.moveSet.capacity, Is.EqualTo(0));
         Assert.That(bp.moveArray.count, Is.EqualTo(0));
         Assert.That(bp.moveResults.Array, Is.Null);
@@ -198,21 +197,18 @@ public class B2BoardPhasesTests
 
         Assert.That(bp.moveSet.count, Is.EqualTo(2), "moveSet should have 2 items before destroying proxies");
         Assert.That(bp.moveArray.count, Is.EqualTo(2), "moveArray should have 2 items before destroying proxies");
-        Assert.That(bp.proxyCount, Is.EqualTo(0));
 
         // Destroy proxy A
         b2BroadPhase_DestroyProxy(bp, proxyKeyA);
 
         Assert.That(bp.moveSet.count, Is.EqualTo(1), "moveSet should have 1 item after destroying proxy A");
         Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should have 1 item after destroying proxy A");
-        Assert.That(bp.proxyCount, Is.EqualTo(-1), "proxyCount should decrease after destroying a proxy");
 
         // Destroy proxy B
         b2BroadPhase_DestroyProxy(bp, proxyKeyB);
 
         Assert.That(bp.moveSet.count, Is.EqualTo(0), "moveSet should have 0 items after destroying proxy B");
         Assert.That(bp.moveArray.count, Is.EqualTo(0), "moveArray should have 0 items after destroying proxy B");
-        Assert.That(bp.proxyCount, Is.EqualTo(-2), "proxyCount should decrease to 0 after destroying all proxies");
 
 #if DEBUG
         // Case 3: Destroy a non-existent proxy

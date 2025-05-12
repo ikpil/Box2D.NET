@@ -110,8 +110,8 @@ public class BenchmarkBarrel : Sample
 
         m_shapeType = ShapeType.e_compoundShape;
 
-        m_columnCount = e_maxColumns / (m_context.sampleDebug ? 3 : 2);
-        m_rowCount = e_maxRows / (m_context.sampleDebug ? 3 : 2);
+        m_columnCount = e_maxColumns / (m_isDebug ? 3 : 2);
+        m_rowCount = e_maxRows / (m_isDebug ? 3 : 2);
 
         CreateScene();
     }

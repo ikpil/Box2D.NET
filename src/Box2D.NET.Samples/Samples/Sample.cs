@@ -27,6 +27,12 @@ public class Sample : IDisposable
     public const int k_maxContactPoints = 12 * 2048;
     public const int m_maxTasks = 64;
     public const int m_maxThreads = 64;
+    
+#if DEBUG
+    public const bool m_isDebug = true;
+#else
+    public const bool m_isDebug = false;
+#endif
 
     protected SampleAppContext m_context;
     protected Settings m_settings;

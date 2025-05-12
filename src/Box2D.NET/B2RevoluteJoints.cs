@@ -96,13 +96,13 @@ namespace Box2D.NET
             return joint.uj.revoluteJoint.upperAngle;
         }
 
-        /// Set the revolute joint limits in radians. It is expected that lower <= upper
-        /// and that -0.95 * B2_PI <= lower && upper <= -0.95 * B2_PI.
+        // Set the revolute joint limits in radians. It is expected that lower <= upper
+        // and that -0.99 * B2_PI <= lower && upper <= -0.99 * B2_PI.
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2_ASSERT(lower <= upper);
-            B2_ASSERT(lower >= -0.95f * B2_PI);
-            B2_ASSERT(upper <= 0.95f * B2_PI);
+            B2_ASSERT(lower >= -0.99f * B2_PI);
+            B2_ASSERT(upper <= 0.99f * B2_PI);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             if (lower != joint.uj.revoluteJoint.lowerAngle || upper != joint.uj.revoluteJoint.upperAngle)

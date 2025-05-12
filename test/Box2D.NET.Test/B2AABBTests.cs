@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using static Box2D.NET.B2AABBs;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Test;
 

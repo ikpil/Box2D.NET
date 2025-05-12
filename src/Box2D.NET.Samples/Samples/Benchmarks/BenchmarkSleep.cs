@@ -58,8 +58,8 @@ public class BenchmarkSleep : Sample
             m_bodies[i] = b2_nullBodyId;
         }
 
-        m_baseCount = m_context.sampleDebug ? 40 : 100;
-        m_iterations = m_context.sampleDebug ? 1 : 41;
+        m_baseCount = m_isDebug ? 40 : 100;
+        m_iterations = m_isDebug ? 1 : 41;
         m_bodyCount = 0;
         m_awake = false;
 

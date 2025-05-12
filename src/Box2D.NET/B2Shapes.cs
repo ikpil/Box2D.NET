@@ -1167,6 +1167,35 @@ namespace Box2D.NET
             return shape.userMaterialId;
         }
 
+        /// Get the shape surface material
+        public static B2SurfaceMaterial b2Shape_GetSurfaceMaterial(B2ShapeId shapeId)
+        {
+            B2World world = b2GetWorld(shapeId.world0);
+            B2Shape shape = b2GetShape(world, shapeId);
+            return new B2SurfaceMaterial()
+            {
+                friction = shape.friction,
+                restitution = shape.restitution,
+                rollingResistance = shape.rollingResistance,
+                tangentSpeed = shape.tangentSpeed,
+                userMaterialId = shape.userMaterialId,
+                customColor = shape.customColor,
+            };
+        }
+
+        /// Set the shape surface material
+        public static void b2Shape_SetSurfaceMaterial(B2ShapeId shapeId, B2SurfaceMaterial surfaceMaterial)
+        {
+            B2World world = b2GetWorld(shapeId.world0);
+            B2Shape shape = b2GetShape(world, shapeId);
+            shape.friction = surfaceMaterial.friction;
+            shape.restitution = surfaceMaterial.restitution;
+            shape.rollingResistance = surfaceMaterial.rollingResistance;
+            shape.tangentSpeed = surfaceMaterial.tangentSpeed;
+            shape.userMaterialId = surfaceMaterial.userMaterialId;
+            shape.customColor = surfaceMaterial.customColor;
+        }
+
         public static B2Filter b2Shape_GetFilter(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
@@ -1260,21 +1289,21 @@ namespace Box2D.NET
         /// @see b2ShapeDef::enableSensorEvents
         public static void b2Shape_EnableSensorEvents(B2ShapeId shapeId, bool flag)
         {
-            B2World world = b2GetWorldLocked( shapeId.world0 );
-            if ( world == null)
+            B2World world = b2GetWorldLocked(shapeId.world0);
+            if (world == null)
             {
                 return;
             }
 
-            B2Shape shape = b2GetShape( world, shapeId );
+            B2Shape shape = b2GetShape(world, shapeId);
             shape.enableSensorEvents = flag;
         }
 
         /// Returns true if sensor events are enabled.
         public static bool b2Shape_AreSensorEventsEnabled(B2ShapeId shapeId)
         {
-            B2World world = b2GetWorld( shapeId.world0 );
-            B2Shape shape = b2GetShape( world, shapeId );
+            B2World world = b2GetWorld(shapeId.world0);
+            B2Shape shape = b2GetShape(world, shapeId);
             return shape.enableSensorEvents;
         }
 

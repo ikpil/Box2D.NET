@@ -85,7 +85,7 @@ public class SampleApp
         _ctx.glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
 
         // MSAA
-        //_ctx.glfw.WindowHint(WindowHintInt.Samples, 4);
+        _ctx.glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
@@ -220,17 +220,9 @@ public class SampleApp
         }
 
         {
-            // Span<float> temp1 = stackalloc float[2];
-            // _ctx.gl.GetFloat(GLEnum.AliasedLineWidthRange, temp1);
-            //
-            // Span<float> temp2 = stackalloc float[2];
-            // _ctx.gl.GetFloat(GLEnum.SmoothLineWidthRange, temp2);
-
             string glVersionString = _ctx.gl.GetStringS(GLEnum.Version);
             string glslVersionString = _ctx.gl.GetStringS(GLEnum.ShadingLanguageVersion);
             Logger.Information($"OpenGL {glVersionString}, GLSL {glslVersionString}");
-            // Logger.Information($"OpenGL aliased line width range : [{temp1[0]}, {temp1[1]}]");
-            // Logger.Information($"OpenGL smooth line width range : [{temp2[0]}, {temp2[1]}]");
         }
 
         unsafe
@@ -266,7 +258,7 @@ public class SampleApp
             Logger.Error(e, "");
         }
     }
-    
+
     private void OnWindowUpdate(double dt)
     {
         unsafe
@@ -365,7 +357,7 @@ public class SampleApp
             Logger.Error(e, "");
         }
     }
-    
+
     private void OnWindowRender(double dt)
     {
         _ctx.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -770,21 +762,21 @@ public class SampleApp
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox( "Shapes", ref s_settings.drawShapes );
-                    ImGui.Checkbox( "Joints", ref s_settings.drawJoints );
-                    ImGui.Checkbox( "Joint Extras", ref s_settings.drawJointExtras );
-                    ImGui.Checkbox( "Bounds", ref s_settings.drawBounds );
-                    ImGui.Checkbox( "Contact Points", ref s_settings.drawContactPoints );
-                    ImGui.Checkbox( "Contact Normals", ref s_settings.drawContactNormals );
-                    ImGui.Checkbox( "Contact Impulses", ref s_settings.drawContactImpulses );
-                    ImGui.Checkbox( "Contact Features", ref s_settings.drawContactFeatures );
-                    ImGui.Checkbox( "Friction Impulses", ref s_settings.drawFrictionImpulses );
-                    ImGui.Checkbox( "Mass", ref s_settings.drawMass );
-                    ImGui.Checkbox( "Body Names", ref s_settings.drawBodyNames );
-                    ImGui.Checkbox( "Graph Colors", ref s_settings.drawGraphColors );
-                    ImGui.Checkbox( "Islands", ref s_settings.drawIslands );
-                    ImGui.Checkbox( "Counters", ref s_settings.drawCounters );
-                    ImGui.Checkbox( "Profile", ref s_settings.drawProfile );
+                    ImGui.Checkbox("Shapes", ref s_settings.drawShapes);
+                    ImGui.Checkbox("Joints", ref s_settings.drawJoints);
+                    ImGui.Checkbox("Joint Extras", ref s_settings.drawJointExtras);
+                    ImGui.Checkbox("Bounds", ref s_settings.drawBounds);
+                    ImGui.Checkbox("Contact Points", ref s_settings.drawContactPoints);
+                    ImGui.Checkbox("Contact Normals", ref s_settings.drawContactNormals);
+                    ImGui.Checkbox("Contact Impulses", ref s_settings.drawContactImpulses);
+                    ImGui.Checkbox("Contact Features", ref s_settings.drawContactFeatures);
+                    ImGui.Checkbox("Friction Impulses", ref s_settings.drawFrictionImpulses);
+                    ImGui.Checkbox("Mass", ref s_settings.drawMass);
+                    ImGui.Checkbox("Body Names", ref s_settings.drawBodyNames);
+                    ImGui.Checkbox("Graph Colors", ref s_settings.drawGraphColors);
+                    ImGui.Checkbox("Islands", ref s_settings.drawIslands);
+                    ImGui.Checkbox("Counters", ref s_settings.drawCounters);
+                    ImGui.Checkbox("Profile", ref s_settings.drawProfile);
 
                     Vector2 button_sz = new Vector2(-1, 0);
                     if (ImGui.Button("Pause (P)", button_sz))

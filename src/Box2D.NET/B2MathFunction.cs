@@ -263,7 +263,7 @@ namespace Box2D.NET
         public static bool b2IsNormalized(B2Vec2 a)
         {
             float aa = b2Dot(a, a);
-            return b2AbsFloat(1.0f - aa) < 10.0f * FLT_EPSILON;
+            return b2AbsFloat(1.0f - aa) < 100.0f * FLT_EPSILON;
         }
 
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector. Also
@@ -617,6 +617,14 @@ namespace Box2D.NET
             c.upperBound.X = b2MaxFloat(a.upperBound.X, b.upperBound.X);
             c.upperBound.Y = b2MaxFloat(a.upperBound.Y, b.upperBound.Y);
             return c;
+        }
+
+        /// Do a and b overlap
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2AABB_Overlaps(B2AABB a, B2AABB b)
+        {
+            return !(b.lowerBound.X > a.upperBound.X || b.lowerBound.Y > a.upperBound.Y || a.lowerBound.X > b.upperBound.X ||
+                     a.lowerBound.Y > b.upperBound.Y);
         }
 
         /// Compute the bounding box of an array of circles

@@ -45,7 +45,7 @@ public class LargeWorld : Sample
     {
         m_period = 40.0f;
         float omega = 2.0f * B2_PI / m_period;
-        m_cycleCount = m_context.sampleDebug ? 10 : 600;
+        m_cycleCount = m_isDebug ? 10 : 600;
         m_gridSize = 1.0f;
         m_gridCount = (int)(m_cycleCount * m_period / m_gridSize);
 

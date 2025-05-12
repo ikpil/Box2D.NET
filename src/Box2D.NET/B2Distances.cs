@@ -469,11 +469,11 @@ namespace Box2D.NET
         // I spent time optimizing this and could find no further significant gains 3/30/2025
         public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, B2Simplex[] simplexes, int simplexCapacity)
         {
-            B2_UNUSED( simplexes, simplexCapacity );
-            B2_ASSERT( input.proxyA.count > 0 && input.proxyB.count > 0 );
-            B2_ASSERT( input.proxyA.radius >= 0.0f );
-            B2_ASSERT( input.proxyB.radius >= 0.0f );
-            
+            B2_UNUSED(simplexes, simplexCapacity);
+            B2_ASSERT(input.proxyA.count > 0 && input.proxyB.count > 0);
+            B2_ASSERT(input.proxyA.radius >= 0.0f);
+            B2_ASSERT(input.proxyB.radius >= 0.0f);
+
             B2DistanceOutput output = new B2DistanceOutput();
 
             ref B2ShapeProxy proxyA = ref input.proxyA;
@@ -557,8 +557,6 @@ namespace Box2D.NET
                 }
 #endif
 
-                // Save the normal
-                nonUnitNormal = d;
 
                 // Ensure the search direction is numerically fit.
                 if (b2Dot(d, d) < FLT_EPSILON * FLT_EPSILON)
@@ -569,11 +567,12 @@ namespace Box2D.NET
                     // The origin is probably contained by a line segment
                     // or triangle. Thus the shapes are overlapped.
 
-                    // We can't return zero here even though there may be overlap.
-                    // In case the simplex is a point, segment, or triangle it is difficult
-                    // to determine if the origin is contained in the CSO or very close to it.
-                    break;
+                    // Must return overlap due to invalid normal.
+                    return output;
                 }
+
+                // Save the normal
+                nonUnitNormal = d;
 
                 // Compute a tentative new simplex vertex using support points.
                 // support = support(a, d) - support(b, -d)
@@ -618,6 +617,7 @@ namespace Box2D.NET
 
             // Prepare output
             B2Vec2 normal = b2Normalize(nonUnitNormal);
+            B2_ASSERT(b2IsNormalized(normal));
             normal = b2RotateVector(input.transformA.q, normal);
 
             B2Vec2 localPointA = new B2Vec2();
@@ -648,6 +648,8 @@ namespace Box2D.NET
             return output;
         }
 
+        /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
+        /// Initially touching shapes are treated as a miss.
         // Shape cast using conservative advancement
         public static B2CastOutput b2ShapeCast(ref B2ShapeCastPairInput input)
         {
@@ -692,13 +694,14 @@ namespace Box2D.NET
                         }
                         else
                         {
-                            if (distanceOutput.distance == 0.0f)
+                            if (distanceOutput.distance < float.Epsilon)
                             {
                                 // Normal may be invalid
                                 return output;
                             }
 
-                            // Initial overlap but distance is non-zero due to radius
+                            // Initial overlap but distance is non-zero due to radius.
+                            // Note: this can result in initial hits for shapes with a radius
                             B2_ASSERT(b2IsNormalized(distanceOutput.normal));
                             output.fraction = alpha;
                             output.point = b2MulAdd(distanceOutput.pointA, input.proxyA.radius, distanceOutput.normal);
