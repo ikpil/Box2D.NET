@@ -21,14 +21,14 @@ public class BenchmarkSmash : Sample
     private const int MaxRowCount = 160;
     private const int MaxColumnCount = 1200;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkSmash(ctx, settings);
+        return new BenchmarkSmash(context);
     }
 
-    public BenchmarkSmash(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkSmash(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(60.0f, 6.0f);
             m_context.camera.m_zoom = 25.0f * 1.6f;

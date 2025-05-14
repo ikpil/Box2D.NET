@@ -33,14 +33,14 @@ public class BodyMove : Sample
     private float m_explosionMagnitude;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BodyMove(ctx, settings);
+        return new BodyMove(context);
     }
 
-    public BodyMove(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BodyMove(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(2.0f, 8.0f);
             m_context.camera.m_zoom = 25.0f * 0.55f;
@@ -124,14 +124,14 @@ public class BodyMove : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (settings.pause == false && (m_stepCount & 15) == 15 && m_count < e_count)
+        if (m_context.settings.pause == false && (m_stepCount & 15) == 15 && m_count < e_count)
         {
             CreateBodies();
         }
 
-        base.Step(settings);
+        base.Step();
 
         // Process body events
         B2BodyEvents events = b2World_GetBodyEvents(m_worldId);
@@ -200,7 +200,7 @@ public class BodyMove : Sample
 
         m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
-        m_context.draw.DrawString(5, m_textLine, $"sleep count: {m_sleepCount}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"sleep count: {m_sleepCount}");
+        
     }
 }

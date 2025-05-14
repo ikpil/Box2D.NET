@@ -82,11 +82,10 @@ public class Draw
         m_regularFont = default;
     }
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
         _camera = context.camera;
         _gl = context.gl;
-
 
         m_background.Create(context);
         m_points.Create(context);
@@ -181,7 +180,7 @@ public class Draw
         //{
         //	return;
         // }
-        
+
 
         ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
@@ -197,7 +196,7 @@ public class Draw
     {
         B2Vec2 ps = _camera.ConvertWorldToScreen(p);
 
-        
+
         ImGui.Begin("Overlay",
             ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
             ImGuiWindowFlags.NoScrollbar);
@@ -221,18 +220,18 @@ public class Draw
 
     public void Flush()
     {
-        m_solidCircles.Flush();
-        m_solidCapsules.Flush();
-        m_solidPolygons.Flush();
-        m_circles.Flush();
-        m_lines.Flush();
-        m_points.Flush();
+        m_solidCircles.Flush(_camera);
+        m_solidCapsules.Flush(_camera);
+        m_solidPolygons.Flush(_camera);
+        m_circles.Flush(_camera);
+        m_lines.Flush(_camera);
+        m_points.Flush(_camera);
         _gl.CheckOpenGL();
     }
 
     public void DrawBackground()
     {
-        m_background.Draw();
+        m_background.Draw(_camera);
     }
 
     public static void DrawPolygonFcn(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context)

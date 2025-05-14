@@ -404,9 +404,10 @@ namespace Box2D.NET
             }
             else
             {
-                // contact is non-touching or is sleeping or is a sensor
+                // contact is non-touching or is sleeping
                 B2_ASSERT(contact.setIndex != (int)B2SetType.b2_awakeSet || (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0);
                 B2SolverSet set = b2Array_Get(ref world.solverSets, contact.setIndex);
+
                 int movedIndex = b2Array_RemoveSwap(ref set.contactSims, contact.localIndex);
                 if (movedIndex != B2_NULL_INDEX)
                 {
@@ -445,7 +446,7 @@ namespace Box2D.NET
         }
 
 
-        // Update the contact manifold and touching status. Also updates sensor overlap.
+        // Update the contact manifold and touching status.
         // Note: do not assume the shape AABBs are overlapping or are valid.
         public static bool b2UpdateContact(B2World world, B2ContactSim contactSim, B2Shape shapeA, B2Transform transformA, B2Vec2 centerOffsetA,
             B2Shape shapeB, B2Transform transformB, B2Vec2 centerOffsetB)

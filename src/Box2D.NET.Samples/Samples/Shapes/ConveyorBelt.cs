@@ -13,14 +13,14 @@ public class ConveyorBelt : Sample
 {
     private static readonly int SampleConveyorBelt = SampleFactory.Shared.RegisterSample("Shapes", "Conveyor Belt", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ConveyorBelt(ctx, settings);
+        return new ConveyorBelt(context);
     }
 
-    public ConveyorBelt(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ConveyorBelt(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(2.0f, 7.5f);
             m_context.camera.m_zoom = 12.0f;

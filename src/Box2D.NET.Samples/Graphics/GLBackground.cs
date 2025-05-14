@@ -10,10 +10,9 @@ namespace Box2D.NET.Samples.Graphics;
 
 public class GLBackground
 {
-    private Camera _camera;
     private Glfw _glfw;
     private GL _gl;
-    
+
     private uint[] m_vaoId = new uint[1];
     private uint[] m_vboId = new uint[1];
     private uint m_programId;
@@ -21,12 +20,11 @@ public class GLBackground
     private int m_resolutionUniform;
     private int m_baseColorUniform;
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
         _glfw = context.glfw;
         _gl = context.gl;
-        _camera = context.camera;
-        
+
         m_programId = _gl.CreateProgramFromFiles("data/background.vs", "data/background.fs");
         m_timeUniform = _gl.GetUniformLocation(m_programId, "time");
         m_resolutionUniform = _gl.GetUniformLocation(m_programId, "resolution");
@@ -71,7 +69,7 @@ public class GLBackground
         }
     }
 
-    public void Draw()
+    public void Draw(Camera camera)
     {
         _gl.UseProgram(m_programId);
 
@@ -82,7 +80,7 @@ public class GLBackground
         // time = fmodf(time, 100.0f);
 
         _gl.Uniform1(m_timeUniform, time);
-        _gl.Uniform2(m_resolutionUniform, _camera.m_width, _camera.m_height);
+        _gl.Uniform2(m_resolutionUniform, camera.m_width, camera.m_height);
 
         // struct RGBA8 c8 = RGBA8.MakeRGBA8( b2_colorGray2, 1.0f );
         // B2GL.Shared.Gl.Uniform3(m_baseColorUniform, c8.r/255.0f, c8.g/255.0f, c8.b/255.0f);

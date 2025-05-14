@@ -27,19 +27,19 @@ public class Drop : Sample
     private bool m_continuous;
     private bool m_speculative;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Drop(ctx, settings);
+        return new Drop(context);
     }
 
-    public Drop(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Drop(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 1.5f);
             m_context.camera.m_zoom = 3.0f;
-            settings.enableSleep = false;
-            settings.drawJoints = false;
+            m_context.settings.enableSleep = false;
+            m_context.settings.drawJoints = false;
         }
 
 #if FALSE
@@ -305,7 +305,7 @@ public class Drop : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
 #if FALSE
     ImGui.SetNextWindowPos( new Vector2( 0.0f, 0.0f ) );
@@ -331,22 +331,22 @@ public class Drop : Sample
 
         //if (m_frameCount == 165)
         //{
-        //	settings.pause = true;
+        //	m_context.settings.pause = true;
         //	m_frameSkip = 30;
         //}
 
-        settings.enableContinuous = m_continuous;
+        m_context.settings.enableContinuous = m_continuous;
 
-        if ((m_frameSkip == 0 || m_frameCount % m_frameSkip == 0) && settings.pause == false)
+        if ((m_frameSkip == 0 || m_frameCount % m_frameSkip == 0) && m_context.settings.pause == false)
         {
-            base.Step(settings);
+            base.Step();
         }
         else
         {
-            bool pause = settings.pause;
-            settings.pause = true;
-            base.Step(settings);
-            settings.pause = pause;
+            bool pause = m_context.settings.pause;
+            m_context.settings.pause = true;
+            base.Step();
+            m_context.settings.pause = pause;
         }
 
         m_frameCount += 1;

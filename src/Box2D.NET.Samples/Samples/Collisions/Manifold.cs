@@ -43,14 +43,14 @@ public class Manifold : Sample
     private bool m_enableCaching;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Manifold(ctx, settings);
+        return new Manifold(context);
     }
 
-    public Manifold(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Manifold(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             // m_context.g_camera.m_center = {1.8f, 15.0f};
             m_context.camera.m_center = new B2Vec2(1.8f, 0.0f);
@@ -217,7 +217,7 @@ public class Manifold : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         B2Vec2 offset = new B2Vec2(-10.0f, -5.0f);
         B2Vec2 increment = new B2Vec2(4.0f, 0.0f);

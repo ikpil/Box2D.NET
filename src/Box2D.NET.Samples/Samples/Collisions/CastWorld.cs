@@ -69,15 +69,15 @@ public class CastWorld : Sample
     private bool m_dragging;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new CastWorld(ctx, settings);
+        return new CastWorld(context);
     }
 
 
-    public CastWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public CastWorld(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(2.0f, 14.0f);
             m_context.camera.m_zoom = 25.0f * 0.75f;
@@ -368,9 +368,9 @@ public class CastWorld : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         B2HexColor color1 = B2HexColor.b2_colorGreen;
         B2HexColor color2 = B2HexColor.b2_colorLightGray;
@@ -504,36 +504,36 @@ public class CastWorld : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "Click left mouse button and drag to modify ray cast");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "Shape 7 is intentionally ignored by the ray");
-        m_textLine += m_textIncrement;
+        DrawTextLine("Click left mouse button and drag to modify ray cast");
+        
+        DrawTextLine("Shape 7 is intentionally ignored by the ray");
+        
 
-        m_textLine += m_textIncrement;
+        
 
         if (m_simple)
         {
-            m_context.draw.DrawString(5, m_textLine, "Simple closest point ray cast");
-            m_textLine += m_textIncrement;
+            DrawTextLine("Simple closest point ray cast");
+            
         }
         else
         {
             switch ((Mode)m_mode)
             {
                 case Mode.e_any:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: any - check for obstruction - unsorted");
+                    DrawTextLine("Cast mode: any - check for obstruction - unsorted");
                     break;
 
                 case Mode.e_closest:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: closest - find closest shape along the cast");
+                    DrawTextLine("Cast mode: closest - find closest shape along the cast");
                     break;
 
                 case Mode.e_multiple:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: multiple - gather up to 3 shapes - unsorted");
+                    DrawTextLine("Cast mode: multiple - gather up to 3 shapes - unsorted");
                     break;
 
                 case Mode.e_sorted:
-                    m_context.draw.DrawString(5, m_textLine, "Cast mode: sorted - gather up to 3 shapes sorted by closeness");
+                    DrawTextLine("Cast mode: sorted - gather up to 3 shapes sorted by closeness");
                     break;
 
                 default:
@@ -541,7 +541,7 @@ public class CastWorld : Sample
                     break;
             }
 
-            m_textLine += m_textIncrement;
+            
         }
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))

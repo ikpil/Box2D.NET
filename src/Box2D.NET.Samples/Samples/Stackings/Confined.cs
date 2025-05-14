@@ -20,15 +20,15 @@ public class Confined : Sample
     int m_count;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Confined(ctx, settings);
+        return new Confined(context);
     }
 
 
-    public Confined(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Confined(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 10.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;

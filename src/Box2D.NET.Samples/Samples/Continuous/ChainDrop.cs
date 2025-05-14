@@ -21,14 +21,14 @@ public class ChainDrop : Sample
     private float m_yOffset;
     private float m_speed;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ChainDrop(ctx, settings);
+        return new ChainDrop(context);
     }
 
-    public ChainDrop(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ChainDrop(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 25.0f * 0.35f;

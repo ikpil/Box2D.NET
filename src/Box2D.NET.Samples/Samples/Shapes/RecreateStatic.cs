@@ -17,14 +17,14 @@ public class RecreateStatic : Sample
     
     private B2BodyId m_groundId;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new RecreateStatic(ctx, settings);
+        return new RecreateStatic(context);
     }
 
-    public RecreateStatic(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public RecreateStatic(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 2.5f);
             m_context.camera.m_zoom = 3.5f;
@@ -42,7 +42,7 @@ public class RecreateStatic : Sample
         m_groundId = new B2BodyId();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (B2_IS_NON_NULL(m_groundId))
         {
@@ -62,6 +62,6 @@ public class RecreateStatic : Sample
         B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
         b2CreateSegmentShape(m_groundId, ref shapeDef, ref segment);
 
-        base.Step(settings);
+        base.Step();
     }
 }

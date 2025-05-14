@@ -17,7 +17,6 @@ public class GLPoints
     public const int e_batchSize = 2048;
 
     private GL _gl;
-    private Camera _camera;
     private List<PointData> m_points = new List<PointData>();
 
     private uint[] m_vaoId = new uint[1];
@@ -25,9 +24,8 @@ public class GLPoints
     private uint m_programId;
     private int m_projectionUniform;
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
-        _camera = context.camera;
         _gl = context.gl;
 
         string vs = "#version 330\n" +
@@ -108,7 +106,7 @@ public class GLPoints
         m_points.Add(new PointData(v, size, rgba));
     }
 
-    public void Flush()
+    public void Flush(Camera camera)
     {
         int count = m_points.Count;
         if (count == 0)
@@ -120,8 +118,8 @@ public class GLPoints
 
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
-        
-        _camera.BuildProjectionMatrix(proj, 0.0f);
+
+        camera.BuildProjectionMatrix(proj, 0.0f);
 
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
         _gl.BindVertexArray(m_vaoId[0]);

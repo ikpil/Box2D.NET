@@ -16,14 +16,14 @@ public class BadBody : Sample
 
     private static readonly int SampleBadBody = SampleFactory.Shared.RegisterSample("Bodies", "Bad", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BadBody(ctx, settings);
+        return new BadBody(context);
     }
 
-    public BadBody(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BadBody(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(2.3f, 10.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;
@@ -73,9 +73,9 @@ public class BadBody : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
 
         // For science
@@ -85,11 +85,10 @@ public class BadBody : Sample
     public override void Draw(Settings setting)
     {
         base.Draw(setting);
-        
-        m_context.draw.DrawString(5, m_textLine, "A bad body is a dynamic body with no mass and behaves like a kinematic body.");
-        m_textLine += m_textIncrement;
 
-        m_context.draw.DrawString(5, m_textLine, "Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
-        m_textLine += m_textIncrement;
+        DrawTextLine("A bad body is a dynamic body with no mass and behaves like a kinematic body.");
+
+
+        DrawTextLine("Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
     }
 }

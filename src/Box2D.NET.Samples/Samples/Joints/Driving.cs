@@ -29,18 +29,18 @@ public class Driving : Sample
     private float m_speed;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Driving(ctx, settings);
+        return new Driving(context);
     }
 
-    public Driving(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Driving(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center.Y = 5.0f;
             m_context.camera.m_zoom = 25.0f * 0.4f;
-            settings.drawJoints = false;
+            m_context.settings.drawJoints = false;
         }
 
         B2BodyId groundId;
@@ -214,7 +214,7 @@ public class Driving : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
@@ -247,7 +247,7 @@ public class Driving : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (GetKey(Keys.A) == InputAction.Press)
         {
@@ -267,20 +267,20 @@ public class Driving : Sample
             m_car.SetSpeed(-m_speed);
         }
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
+
+        DrawTextLine("Keys: left = a, brake = s, right = d");
         
-        m_context.draw.DrawString(5, m_textLine, "Keys: left = a, brake = s, right = d");
-        m_textLine += m_textIncrement;
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.X * 3.6f;
-        m_context.draw.DrawString(5, m_textLine, $"speed in kph: {kph:G2}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"speed in kph: {kph:G2}");
+        
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
         m_context.camera.m_center.X = carPosition.X;

@@ -36,21 +36,21 @@ public class SensorFunnel : Sample
     private float m_wait;
     private float m_side;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new SensorFunnel(ctx, settings);
+        return new SensorFunnel(context);
     }
 
 
-    public SensorFunnel(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SensorFunnel(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 25.0f * 1.333f;
         }
 
-        settings.drawJoints = false;
+        m_context.settings.drawJoints = false;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -281,14 +281,14 @@ public class SensorFunnel : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (m_stepCount == 832)
         {
             m_stepCount += 0;
         }
 
-        base.Step(settings);
+        base.Step();
 
         // Discover rings that touch the bottom sensor
         bool[] deferredDestruction = new bool[(int)ea.e_count];
@@ -336,9 +336,9 @@ public class SensorFunnel : Sample
             }
         }
 
-        if (settings.hertz > 0.0f && settings.pause == false)
+        if (m_context.settings.hertz > 0.0f && m_context.settings.pause == false)
         {
-            m_wait -= 1.0f / settings.hertz;
+            m_wait -= 1.0f / m_context.settings.hertz;
             if (m_wait < 0.0f)
             {
                 CreateElement();

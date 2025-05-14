@@ -30,14 +30,14 @@ public class RevoluteJoint : Sample
     private bool m_enableMotor;
     private bool m_enableLimit;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new RevoluteJoint(ctx, settings);
+        return new RevoluteJoint(context);
     }
 
-    public RevoluteJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public RevoluteJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 15.5f);
             m_context.camera.m_zoom = 25.0f * 0.7f;
@@ -128,7 +128,7 @@ public class RevoluteJoint : Sample
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
             jointDef.lowerAngle = -0.25f * B2_PI;
-            jointDef.upperAngle = 0.5f * B2_PI;
+            jointDef.upperAngle = 0.1f * B2_PI;
             jointDef.enableLimit = true;
             jointDef.enableMotor = true;
             jointDef.motorSpeed = 0.0f;
@@ -204,15 +204,15 @@ public class RevoluteJoint : Sample
         base.Draw(settings);
         
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
-        m_context.draw.DrawString(5, m_textLine, $"Angle (Deg) 1 = {angle1:F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Angle (Deg) 1 = {angle1:F1}");
+        
 
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 1 = {torque1:F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Motor Torque 1 = {torque1:F1}");
+        
 
         float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Torque 2 = {torque2:F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Motor Torque 2 = {torque2:F1}");
+        
     }
 }

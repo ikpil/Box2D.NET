@@ -546,7 +546,8 @@ namespace Box2D.NET
                 // If we have 3 points, then the origin is in the corresponding triangle.
                 if (simplex.count == 3)
                 {
-                    break;
+                    // Overlap
+                    return output;
                 }
 
 #if DEBUG

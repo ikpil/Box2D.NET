@@ -11,14 +11,14 @@ public class BenchmarkSpinner : Sample
 {
     private static readonly int SampleBenchmarkSpinner = SampleFactory.Shared.RegisterSample("Benchmark", "Spinner", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkSpinner(ctx, settings);
+        return new BenchmarkSpinner(context);
     }
 
-    public BenchmarkSpinner(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkSpinner(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 32.0f);
             m_context.camera.m_zoom = 42.0f;
@@ -30,16 +30,16 @@ public class BenchmarkSpinner : Sample
         CreateSpinner(m_worldId);
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         if (m_stepCount == 1000 && false)
         {
             // 0.1 : 46544, 25752
             // 0.25 : 5745, 1947
             // 0.5 : 2197, 660
-            settings.pause = true;
+            m_context.settings.pause = true;
         }
     }
 

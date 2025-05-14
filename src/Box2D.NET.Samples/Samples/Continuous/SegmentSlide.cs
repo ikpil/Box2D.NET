@@ -13,14 +13,14 @@ public class SegmentSlide : Sample
 {
     private static readonly int SampleSegmentSlide = SampleFactory.Shared.RegisterSample("Continuous", "Segment Slide", Create);
 
-    public static Sample Create(SampleAppContext ctx, Settings settings)
+    public static Sample Create(SampleContext context)
     {
-        return new SegmentSlide(ctx, settings);
+        return new SegmentSlide(context);
     }
 
-    public SegmentSlide(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SegmentSlide(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 10.0f);
             m_context.camera.m_zoom = 15.0f;

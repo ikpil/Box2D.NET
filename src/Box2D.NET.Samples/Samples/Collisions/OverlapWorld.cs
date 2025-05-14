@@ -57,9 +57,9 @@ public class OverlapWorld : Sample
     private bool m_rotating;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new OverlapWorld(ctx, settings);
+        return new OverlapWorld(context);
     }
 
 
@@ -85,9 +85,9 @@ public class OverlapWorld : Sample
         return true;
     }
 
-    public OverlapWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public OverlapWorld(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 10.0f);
             m_context.camera.m_zoom = 25.0f * 0.7f;
@@ -331,9 +331,9 @@ public class OverlapWorld : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         m_doomCount = 0;
 
@@ -390,10 +390,10 @@ public class OverlapWorld : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "left mouse button: drag query shape");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "left mouse button + shift: rotate query shape");
-        m_textLine += m_textIncrement;
+        DrawTextLine("left mouse button: drag query shape");
+        
+        DrawTextLine("left mouse button + shift: rotate query shape");
+        
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {

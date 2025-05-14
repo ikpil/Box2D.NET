@@ -10,18 +10,18 @@ public class BenchmarkManyPyramids : Sample
 {
     private static readonly int SampleBenchmarkManyPyramids = SampleFactory.Shared.RegisterSample("Benchmark", "Many Pyramids", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkManyPyramids(ctx, settings);
+        return new BenchmarkManyPyramids(context);
     }
 
-    public BenchmarkManyPyramids(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkManyPyramids(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(16.0f, 110.0f);
             m_context.camera.m_zoom = 25.0f * 5.0f;
-            settings.enableSleep = false;
+            m_context.settings.enableSleep = false;
         }
 
         CreateManyPyramids(m_worldId);

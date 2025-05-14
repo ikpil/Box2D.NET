@@ -36,12 +36,12 @@ public class LargeWorld : Sample
     private bool m_followCar;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new LargeWorld(ctx, settings);
+        return new LargeWorld(context);
     }
 
-    public LargeWorld(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public LargeWorld(SampleContext context) : base(context)
     {
         m_period = 40.0f;
         float omega = 2.0f * B2_PI / m_period;
@@ -53,12 +53,12 @@ public class LargeWorld : Sample
 
         m_viewPosition = new B2Vec2(xStart, 15.0f);
 
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = m_viewPosition;
             m_context.camera.m_zoom = 25.0f * 1.0f;
-            settings.drawJoints = false;
-            settings.useCameraBounds = true;
+            m_context.settings.drawJoints = false;
+            m_context.settings.useCameraBounds = true;
         }
 
         {
@@ -190,12 +190,12 @@ public class LargeWorld : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         float span = 0.5f * (m_period * m_cycleCount);
-        float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
+        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
 
-        if (settings.pause)
+        if (m_context.settings.pause)
         {
             timeStep = 0.0f;
         }
@@ -248,6 +248,6 @@ public class LargeWorld : Sample
             m_car.SetSpeed(-5.0f);
         }
 
-        base.Step(settings);
+        base.Step();
     }
 }

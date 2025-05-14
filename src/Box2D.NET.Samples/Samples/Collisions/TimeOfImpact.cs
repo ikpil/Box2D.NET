@@ -26,14 +26,14 @@ public class TimeOfImpact : Sample
     private B2TOIInput _input;
     private B2TOIOutput _output;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new TimeOfImpact(ctx, settings);
+        return new TimeOfImpact(context);
     }
 
-    public TimeOfImpact(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public TimeOfImpact(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.6f, 2.0f);
             m_context.camera.m_center = new B2Vec2(-16, 45);
@@ -45,9 +45,9 @@ public class TimeOfImpact : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         _sweepA = new B2Sweep(b2Vec2_zero, new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f), b2Rot_identity, b2Rot_identity);
         _sweepB = new B2Sweep(
@@ -72,12 +72,10 @@ public class TimeOfImpact : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, $"toi = {_output.fraction:g}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"toi = {_output.fraction:g}");
+        
 
-        // m_context.g_draw.DrawString(5, m_textLine, "max toi iters = %d, max root iters = %d", b2_toiMaxIters,
-        //                        b2_toiMaxRootIters);
-        m_textLine += m_textIncrement;
+        // DrawTextLine("max toi iters = %d, max root iters = %d", b2_toiMaxIters, b2_toiMaxRootIters);
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
 
@@ -129,8 +127,8 @@ public class TimeOfImpact : Sample
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
-            m_context.draw.DrawString(5, m_textLine, $"distance = {distanceOutput.distance}:g");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"distance = {distanceOutput.distance}:g");
+            
         }
 
 #if FALSE

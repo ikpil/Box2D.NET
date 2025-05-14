@@ -30,17 +30,17 @@ public class BenchmarkSensor : Sample
     private ShapeUserData m_activeSensor = new ShapeUserData();
     private int m_lastStepCount;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkSensor(ctx, settings);
+        return new BenchmarkSensor(context);
     }
 
-    public BenchmarkSensor(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkSensor(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 110.0f);
-            m_context.camera.m_zoom = 115.0f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 105.0f);
+            m_context.camera.m_zoom = 125.0f;
         }
 
         m_passiveSensor.shouldDestroyVisitors = false;
@@ -67,7 +67,7 @@ public class BenchmarkSensor : Sample
             }
         }
 
-        g_seed = 42;
+        g_randomSeed = 42;
 
         {
             float shift = 5.0f;
@@ -121,9 +121,9 @@ public class BenchmarkSensor : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         if (m_stepCount == m_lastStepCount)
         {

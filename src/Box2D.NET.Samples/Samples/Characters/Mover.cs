@@ -95,9 +95,9 @@ public class Mover : Sample
     private int m_deltaX;
     private int m_deltaY;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Mover(ctx, settings);
+        return new Mover(context);
     }
 
     private static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
@@ -111,15 +111,15 @@ public class Mover : Sample
         return fraction;
     }
 
-    public Mover(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Mover(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(20.0f, 9.0f);
             m_context.camera.m_zoom = 10.0f;
         }
 
-        settings.drawJoints = false;
+        m_context.settings.drawJoints = false;
         m_transform = new B2Transform(new B2Vec2(2.0f, 8.0f), b2Rot_identity);
         m_velocity = new B2Vec2(0.0f, 0.0f);
         m_capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f * m_capsuleInteriorLength), new B2Vec2(0.0f, 0.5f * m_capsuleInteriorLength), m_capsuleInteriorLength);
@@ -620,17 +620,17 @@ public class Mover : Sample
         base.Keyboard(key);
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         bool pause = false;
-        if (settings.pause)
+        if (m_context.settings.pause)
         {
-            pause = settings.singleStep != true;
+            pause = m_context.settings.singleStep != true;
         }
 
-        float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
+        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
         if (pause)
         {
             timeStep = 0.0f;

@@ -32,14 +32,14 @@ public class SensorTypes : Sample
     private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new SensorTypes(ctx, settings);
+        return new SensorTypes(context);
     }
 
-    public SensorTypes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SensorTypes(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 3.0f);
             m_context.camera.m_zoom = 4.5f;
@@ -172,7 +172,7 @@ public class SensorTypes : Sample
         DrawTextLine(builder.ToString());
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         B2Vec2 position = b2Body_GetPosition(m_kinematicBodyId);
         if (position.Y < 0.0f)
@@ -185,7 +185,7 @@ public class SensorTypes : Sample
             b2Body_SetLinearVelocity(m_kinematicBodyId, new B2Vec2(0.0f, -1.0f));
         }
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)

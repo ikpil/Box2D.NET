@@ -21,14 +21,14 @@ public class TangentSpeed : Sample
     private float m_friction;
     private float m_rollingResistance;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new TangentSpeed(ctx, settings);
+        return new TangentSpeed(context);
     }
 
-    public TangentSpeed(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public TangentSpeed(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(60.0f, -15.0f);
             m_context.camera.m_zoom = 38.0f;
@@ -136,14 +136,14 @@ public class TangentSpeed : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (m_stepCount % 25 == 0 && m_bodyIds.Count < m_totalCount && settings.pause == false)
+        if (m_stepCount % 25 == 0 && m_bodyIds.Count < m_totalCount && m_context.settings.pause == false)
         {
             B2BodyId id = DropBall();
             m_bodyIds.Add(id);
         }
 
-        base.Step(settings);
+        base.Step();
     }
 }

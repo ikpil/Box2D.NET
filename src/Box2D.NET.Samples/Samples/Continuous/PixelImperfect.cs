@@ -17,14 +17,14 @@ public class PixelImperfect : Sample
 
     private B2BodyId m_ballId;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new PixelImperfect(ctx, settings);
+        return new PixelImperfect(context);
     }
 
-    public PixelImperfect(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public PixelImperfect(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(7.0f, 5.0f);
             m_context.camera.m_zoom = 6.0f;
@@ -62,12 +62,12 @@ public class PixelImperfect : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         Span<B2ContactData> data = stackalloc B2ContactData[1];
         b2Body_GetContactData(m_ballId, data, data.Length);
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
@@ -76,7 +76,7 @@ public class PixelImperfect : Sample
         
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        m_context.draw.DrawString(5, m_textLine, $"p.x = {p.X:F9}, v.y = {v.Y:F9}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
+        
     }
 }

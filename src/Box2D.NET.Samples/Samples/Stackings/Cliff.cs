@@ -20,15 +20,15 @@ public class Cliff : Sample
     private B2BodyId[] m_bodyIds = new B2BodyId[9];
     private bool m_flip;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Cliff(ctx, settings);
+        return new Cliff(context);
     }
 
 
-    public Cliff(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Cliff(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_zoom = 25.0f * 0.5f;
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);

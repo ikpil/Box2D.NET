@@ -17,11 +17,10 @@ namespace Box2D.NET.Samples.Graphics;
 public class GLSolidCapsules
 {
     private static readonly ILogger Logger = Log.ForContext<GLSolidCapsules>();
-    
+
     public const int e_batchSize = 2048;
 
     private GL _gl;
-    private Camera _camera;
     private List<CapsuleData> m_capsules = new List<CapsuleData>();
 
     private uint[] m_vaoId = new uint[1];
@@ -30,9 +29,8 @@ public class GLSolidCapsules
     private int m_projectionUniform;
     private int m_pixelScaleUniform;
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
-        _camera = context.camera;
         _gl = context.gl;
 
         m_programId = _gl.CreateProgramFromFiles("data/solid_capsule.vs", "data/solid_capsule.fs");
@@ -132,7 +130,7 @@ public class GLSolidCapsules
         m_capsules.Add(new CapsuleData(transform, radius, length, rgba));
     }
 
-    public void Flush()
+    public void Flush(Camera camera)
     {
         int count = m_capsules.Count;
         if (count == 0)
@@ -144,11 +142,11 @@ public class GLSolidCapsules
 
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
-        
-        _camera.BuildProjectionMatrix(proj, 0.2f);
-        
+
+        camera.BuildProjectionMatrix(proj, 0.2f);
+
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
-        _gl.Uniform1(m_pixelScaleUniform, _camera.m_height / _camera.m_zoom);
+        _gl.Uniform1(m_pixelScaleUniform, camera.m_height / camera.m_zoom);
 
         _gl.BindVertexArray(m_vaoId[0]);
 

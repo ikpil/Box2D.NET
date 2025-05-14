@@ -35,14 +35,14 @@ public class Platformer : Sample
     //
     private bool m_canJump;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Platformer(ctx, settings);
+        return new Platformer(context);
     }
 
-    public Platformer(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Platformer(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.5f, 7.5f);
             m_context.camera.m_zoom = 25.0f * 0.4f;
@@ -184,7 +184,7 @@ public class Platformer : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         m_canJump = false;
         B2Vec2 velocity = b2Body_GetLinearVelocity(m_playerId);
@@ -253,12 +253,12 @@ public class Platformer : Sample
             m_jumping = false;
         }
 
-        base.Step(settings);
+        base.Step();
 
 
-        if (settings.hertz > 0.0f)
+        if (m_context.settings.hertz > 0.0f)
         {
-            m_jumpDelay = b2MaxFloat(0.0f, m_jumpDelay - 1.0f / settings.hertz);
+            m_jumpDelay = b2MaxFloat(0.0f, m_jumpDelay - 1.0f / m_context.settings.hertz);
         }
     }
     
@@ -269,15 +269,15 @@ public class Platformer : Sample
         {
             Span<B2ContactData> contactData = stackalloc B2ContactData[1];
             int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            m_context.draw.DrawString(5, m_textLine, $"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+            DrawTextLine($"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
-        m_textLine += m_textIncrement;
+        
 
-        m_context.draw.DrawString(5, m_textLine, "Movement: A/D/Space");
-        m_textLine += m_textIncrement;
+        DrawTextLine("Movement: A/D/Space");
+        
 
-        m_context.draw.DrawString(5, m_textLine, $"Can jump = {m_canJump}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Can jump = {m_canJump}");
+        
     }
 
 }

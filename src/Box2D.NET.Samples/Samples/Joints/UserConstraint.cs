@@ -18,14 +18,14 @@ public class UserConstraint : Sample
     private B2BodyId m_bodyId;
     private float[] m_impulses = new float[2];
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new UserConstraint(ctx, settings);
+        return new UserConstraint(context);
     }
 
-    public UserConstraint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public UserConstraint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(3.0f, -1.0f);
             m_context.camera.m_zoom = 25.0f * 0.15f;
@@ -48,19 +48,19 @@ public class UserConstraint : Sample
         m_impulses[1] = 0.0f;
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         B2Transform axes = b2Transform_identity;
         m_context.draw.DrawTransform(axes);
 
-        if (settings.pause)
+        if (m_context.settings.pause)
         {
             return;
         }
 
-        float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
+        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
         if (timeStep == 0.0f)
         {
             return;
@@ -134,7 +134,7 @@ public class UserConstraint : Sample
         base.Draw(settings);
 
         float invTimeStep = settings.hertz;
-        m_context.draw.DrawString(5, m_textLine, $"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
+        
     }
 }

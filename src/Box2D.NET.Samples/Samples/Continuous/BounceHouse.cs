@@ -31,14 +31,14 @@ public class BounceHouse : Sample
     private ShapeType m_shapeType;
     private bool m_enableHitEvents;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BounceHouse(ctx, settings);
+        return new BounceHouse(context);
     }
 
-    public BounceHouse(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BounceHouse(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 25.0f * 0.45f;
@@ -149,9 +149,9 @@ public class BounceHouse : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)

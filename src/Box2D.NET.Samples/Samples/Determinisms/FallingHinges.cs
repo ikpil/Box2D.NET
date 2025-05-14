@@ -30,15 +30,15 @@ public class FallingHinges : Sample
     private FallingHingeData m_data;
     private bool m_done;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new FallingHinges(ctx, settings);
+        return new FallingHinges(context);
     }
 
 
-    public FallingHinges(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public FallingHinges(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 7.5f);
             m_context.camera.m_zoom = 10.0f;
@@ -48,9 +48,9 @@ public class FallingHinges : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         if (m_done == false)
         {
@@ -64,8 +64,8 @@ public class FallingHinges : Sample
 
         if (m_done)
         {
-            m_context.draw.DrawString(5, m_textLine, $"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
+            
         }
     }
 }

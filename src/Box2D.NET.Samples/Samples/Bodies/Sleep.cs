@@ -25,14 +25,14 @@ public class Sleep : Sample
     private B2ShapeId[] m_sensorIds = new B2ShapeId[2];
     private bool[] m_sensorTouching = new bool[2];
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Sleep(ctx, settings);
+        return new Sleep(context);
     }
 
-    public Sleep(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Sleep(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(3.0f, 50.0f);
             m_context.camera.m_zoom = 25.0f * 2.2f;
@@ -218,9 +218,9 @@ public class Sleep : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         // Detect sensors touching the ground
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
@@ -264,8 +264,8 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            m_context.draw.DrawString(5, m_textLine, $"sensor touch {i} = {m_sensorTouching[i]}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"sensor touch {i} = {m_sensorTouching[i]}");
+            
         }
     }
 }

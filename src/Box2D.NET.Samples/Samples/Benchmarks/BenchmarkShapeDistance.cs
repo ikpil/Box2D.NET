@@ -30,14 +30,14 @@ public class BenchmarkShapeDistance : Sample
     // for draw
     private int totalIterations = 0;
 
-    public static Sample Create(SampleAppContext ctx, Settings settings)
+    public static Sample Create(SampleContext context)
     {
-        return new BenchmarkShapeDistance(ctx, settings);
+        return new BenchmarkShapeDistance(context);
     }
 
-    public BenchmarkShapeDistance(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkShapeDistance(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 3.0f;
@@ -78,7 +78,7 @@ public class BenchmarkShapeDistance : Sample
         m_transformBs = new B2Transform[m_count];
         m_outputs = new B2DistanceOutput[m_count];
 
-        g_seed = 42;
+        g_randomSeed = 42;
         for (int i = 0; i < m_count; ++i)
         {
             m_transformAs[i] = new B2Transform(RandomVec2(-0.1f, 0.1f), RandomRot());
@@ -110,9 +110,9 @@ public class BenchmarkShapeDistance : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (settings.pause == false || settings.singleStep == true)
+        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
         {
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeProxy(m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius);
@@ -139,14 +139,14 @@ public class BenchmarkShapeDistance : Sample
         }
 
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
 
-        if (settings.pause == false || settings.singleStep == true)
+        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
         {
             DrawTextLine($"count = {m_count}");
             DrawTextLine($"min cycles = {m_minCycles}");

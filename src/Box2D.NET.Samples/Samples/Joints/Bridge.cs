@@ -28,15 +28,15 @@ public class Bridge : Sample
     private float m_frictionTorque;
     private float m_gravityScale;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Bridge(ctx, settings);
+        return new Bridge(context);
     }
 
 
-    public Bridge(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Bridge(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_zoom = 25.0f * 2.5f;
         }

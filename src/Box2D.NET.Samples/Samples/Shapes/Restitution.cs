@@ -28,14 +28,14 @@ public class Restitution : Sample
     private B2BodyId[] m_bodyIds = new B2BodyId[m_count];
     private ShapeType m_shapeType;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Restitution(ctx, settings);
+        return new Restitution(context);
     }
 
-    public Restitution(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Restitution(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(4.0f, 17.0f);
             m_context.camera.m_zoom = 27.5f;

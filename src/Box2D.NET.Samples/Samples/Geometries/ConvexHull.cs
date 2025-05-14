@@ -27,15 +27,15 @@ public class ConvexHull : Sample
     private float m_milliseconds = 0.0f;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ConvexHull(ctx, settings);
+        return new ConvexHull(context);
     }
 
 
-    public ConvexHull(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ConvexHull(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.5f, 0.0f);
             m_context.camera.m_zoom = 25.0f * 0.3f;
@@ -125,9 +125,9 @@ public class ConvexHull : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         m_hull = new B2Hull();
         m_valid = false;
@@ -190,27 +190,27 @@ public class ConvexHull : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "Options: generate(g), auto(a), bulk(b)");
-        m_textLine += m_textIncrement;
+        DrawTextLine("Options: generate(g), auto(a), bulk(b)");
+        
 
         if (m_valid == false)
         {
-            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, FAILED");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"generation = {m_generation}, FAILED");
+            
         }
         else
         {
-            m_context.draw.DrawString(5, m_textLine, $"generation = {m_generation}, count = {m_hull.count}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"generation = {m_generation}, count = {m_hull.count}");
+            
         }
 
         if (m_milliseconds > 0.0f)
         {
-            m_context.draw.DrawString(5, m_textLine, $"milliseconds = {m_milliseconds:G}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"milliseconds = {m_milliseconds:G}");
+            
         }
 
-        m_textLine += m_textIncrement;
+        
 
         if (0 < m_hull.count)
         {

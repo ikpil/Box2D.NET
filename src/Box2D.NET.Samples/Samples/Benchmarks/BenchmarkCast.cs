@@ -45,18 +45,18 @@ public class BenchmarkCast : Sample
     private int leafVisits = 0;
     private float ms = 0.0f;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkCast(ctx, settings);
+        return new BenchmarkCast(context);
     }
 
-    public BenchmarkCast(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkCast(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
             m_context.camera.m_zoom = 25.0f * 21.0f;
-            // settings.drawShapes = m_context.g_sampleDebug;
+            // m_context.settings.drawShapes = m_context.g_sampleDebug;
         }
 
         m_queryType = QueryType.e_circleCast;
@@ -71,7 +71,7 @@ public class BenchmarkCast : Sample
         m_buildTime = 0.0f;
         m_radius = 0.1f;
 
-        g_seed = 1234;
+        g_randomSeed = 1234;
         sampleCount = m_isDebug ? 100 : 10000;
         m_origins.Resize(sampleCount);
         m_translations.Resize(sampleCount);
@@ -92,7 +92,7 @@ public class BenchmarkCast : Sample
 
     void BuildScene()
     {
-        g_seed = 1234;
+        g_randomSeed = 1234;
         b2DestroyWorld(m_worldId);
         B2WorldDef worldDef = b2DefaultWorldDef();
         m_worldId = b2CreateWorld(ref worldDef);
@@ -186,9 +186,9 @@ public class BenchmarkCast : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         B2QueryFilter filter = b2DefaultQueryFilter();
         filter.maskBits = 1;
@@ -399,20 +399,20 @@ public class BenchmarkCast : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, $"build time ms = {m_buildTime:g}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"build time ms = {m_buildTime:g}");
+        
 
-        m_context.draw.DrawString(5, m_textLine, $"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
+        
 
-        m_context.draw.DrawString(5, m_textLine, $"total ms = {ms:F3}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"total ms = {ms:F3}");
+        
 
-        m_context.draw.DrawString(5, m_textLine, $"min total ms = {m_minTime:F3}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"min total ms = {m_minTime:F3}");
+        
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
-        m_context.draw.DrawString(5, m_textLine, $"average us = {aveRayCost:F2}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"average us = {aveRayCost:F2}");
+        
     }
 }

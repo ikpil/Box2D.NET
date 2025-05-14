@@ -26,7 +26,7 @@ public class SampleFactory
         _sampleEntries = new List<SampleEntry>();
     }
 
-    public int RegisterSample(string category, string name, Func<SampleAppContext, Settings, Sample> fcn)
+    public int RegisterSample(string category, string name, Func<SampleContext, Sample> fcn)
     {
         int index = _sampleEntries.Count;
         var entry = new SampleEntry(category, name, fcn);
@@ -34,10 +34,10 @@ public class SampleFactory
         return index;
     }
 
-    public Sample Create(int index, SampleAppContext ctx, Settings setting)
+    public Sample Create(int index, SampleContext context)
     {
         var entry = GetInternal(index);
-        var sample = entry.CreateFcn.Invoke(ctx, setting);
+        var sample = entry.CreateFcn.Invoke(context);
         return sample;
     }
 

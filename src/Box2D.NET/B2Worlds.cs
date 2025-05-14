@@ -430,11 +430,11 @@ namespace Box2D.NET
                     B2Vec2 centerOffsetA = b2RotateVector(transformA.q, bodySimA.localCenter);
                     B2Vec2 centerOffsetB = b2RotateVector(transformB.q, bodySimB.localCenter);
 
-                    // This updates solid contacts and sensors
+                    // This updates solid contacts
                     bool touching =
                         b2UpdateContact(world, contactSim, shapeA, transformA, centerOffsetA, shapeB, transformB, centerOffsetB);
 
-                    // State changes that affect island connectivity. Also affects contact and sensor events.
+                    // State changes that affect island connectivity. Also affects contact events.
                     if (touching == true && wasTouching == false)
                     {
                         contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStartedTouching;
@@ -649,7 +649,7 @@ namespace Box2D.NET
                     else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching))
                     {
                         B2_ASSERT(contact.islandId == B2_NULL_INDEX);
-                        // Contact is solid
+                        
                         if (0 != (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
                             B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, ref contactSim.manifold);
@@ -681,8 +681,6 @@ namespace Box2D.NET
                     else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStoppedTouching))
                     {
                         contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simStoppedTouching;
-
-                        // Contact is solid
                         contact.flags &= ~(uint)B2ContactFlags.b2_contactTouchingFlag;
 
                         if (0 != (contact.flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
@@ -3230,7 +3228,6 @@ void b2World_Dump()
 
                 if (setId == (int)B2SetType.b2_awakeSet)
                 {
-                    // If touching and not a sensor
                     if (touching)
                     {
                         B2_ASSERT(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
@@ -3247,7 +3244,7 @@ void b2World_Dump()
                 }
                 else
                 {
-                    // Sleeping and non-touching contacts or sensor contacts belong in the disabled set
+                    // Sleeping and non-touching contacts belong in the disabled set
                     B2_ASSERT(touching == false && setId == (int)B2SetType.b2_disabledSet);
                 }
 
@@ -3256,7 +3253,6 @@ void b2World_Dump()
                 B2_ASSERT(contactSim.bodyIdA == contact.edges[0].bodyId);
                 B2_ASSERT(contactSim.bodyIdB == contact.edges[1].bodyId);
 
-                // Sim touching is true for solid and sensor contacts
                 bool simTouching = (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag) != 0;
                 B2_ASSERT(touching == simTouching);
 

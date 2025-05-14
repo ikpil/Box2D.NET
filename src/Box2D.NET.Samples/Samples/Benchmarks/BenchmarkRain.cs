@@ -13,33 +13,33 @@ public class BenchmarkRain : Sample
 
     private RainData m_rainData;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkRain(ctx, settings);
+        return new BenchmarkRain(context);
     }
 
-    public BenchmarkRain(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkRain(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 110.0f);
             m_context.camera.m_zoom = 125.0f;
-            settings.enableSleep = true;
+            m_context.settings.enableSleep = true;
         }
 
-        settings.drawJoints = false;
+        m_context.settings.drawJoints = false;
 
         m_rainData = CreateRain(m_worldId);
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (settings.pause == false || settings.singleStep == true)
+        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
         {
             StepRain(m_rainData, m_worldId, m_stepCount);
         }
 
-        base.Step(settings);
+        base.Step();
 
         if (m_stepCount % 1000 == 0)
         {

@@ -34,18 +34,18 @@ public class BenchmarkManyTumblers : Sample
 
     private float m_angularSpeed;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkManyTumblers(ctx, settings);
+        return new BenchmarkManyTumblers(context);
     }
 
-    public BenchmarkManyTumblers(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkManyTumblers(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(1.0f, -5.5f);
             m_context.camera.m_zoom = 25.0f * 3.4f;
-            settings.drawJoints = false;
+            m_context.settings.drawJoints = false;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -170,9 +170,9 @@ public class BenchmarkManyTumblers : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         if (m_bodyIndex < m_bodyCount && (m_stepCount & 0x7) == 0)
         {

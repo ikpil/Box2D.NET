@@ -14,14 +14,14 @@ public class Friction : Sample
 {
     private static readonly int SampleFriction = SampleFactory.Shared.RegisterSample("Shapes", "Friction", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Friction(ctx, settings);
+        return new Friction(context);
     }
 
-    public Friction(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Friction(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 14.0f);
             m_context.camera.m_zoom = 25.0f * 0.6f;
