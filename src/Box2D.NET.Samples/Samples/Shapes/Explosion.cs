@@ -27,15 +27,14 @@ public class Explosion : Sample
     private float m_impulse;
     private float m_referenceAngle;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Explosion(ctx, settings);
+        return new Explosion(context);
     }
 
-    public Explosion(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public Explosion(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 14.0f;
@@ -107,11 +106,11 @@ public class Explosion : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (settings.pause == false || settings.singleStep == true)
+        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
         {
-            m_referenceAngle += settings.hertz > 0.0f ? 60.0f * B2_PI / 180.0f / settings.hertz : 0.0f;
+            m_referenceAngle += m_context.settings.hertz > 0.0f ? 60.0f * B2_PI / 180.0f / m_context.settings.hertz : 0.0f;
             m_referenceAngle = b2UnwindAngle(m_referenceAngle);
 
             int count = m_jointIds.Count;
@@ -121,15 +120,15 @@ public class Explosion : Sample
             }
         }
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
         
-        m_context.draw.DrawString(5, m_textLine, $"reference angle = {m_referenceAngle:g}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"reference angle = {m_referenceAngle:g}");
+        
 
         m_context.draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
         m_context.draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);

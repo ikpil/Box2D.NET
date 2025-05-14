@@ -27,14 +27,14 @@ public class PrismaticJoint : Sample
     private bool m_enableMotor;
     private bool m_enableLimit;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new PrismaticJoint(ctx, settings);
+        return new PrismaticJoint(context);
     }
 
-    public PrismaticJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public PrismaticJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;
@@ -153,15 +153,15 @@ public class PrismaticJoint : Sample
         base.Draw(settings);
         
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Force = {force:4,F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Motor Force = {force:4,F1}");
+        
 
         float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Translation = {translation:4,F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Translation = {translation:4,F1}");
+        
 
         float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Speed = {speed:4,F8}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Speed = {speed:4,F8}");
+        
     }
 }

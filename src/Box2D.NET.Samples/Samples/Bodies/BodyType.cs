@@ -28,14 +28,14 @@ public class BodyType : Sample
     private float m_speed;
     private bool m_isEnabled;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BodyType(ctx, settings);
+        return new BodyType(context);
     }
 
-    public BodyType(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BodyType(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.8f, 6.4f);
             m_context.camera.m_zoom = 25.0f * 0.4f;
@@ -269,7 +269,7 @@ public class BodyType : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         // Drive the kinematic body.
         if (m_type == B2BodyType.b2_kinematicBody)
@@ -284,6 +284,6 @@ public class BodyType : Sample
             }
         }
 
-        base.Step(settings);
+        base.Step();
     }
 }

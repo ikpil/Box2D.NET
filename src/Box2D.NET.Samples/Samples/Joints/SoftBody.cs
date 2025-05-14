@@ -14,14 +14,14 @@ public class SoftBody : Sample
 
     private Donut m_donut;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new SoftBody(ctx, settings);
+        return new SoftBody(context);
     }
 
-    public SoftBody(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SoftBody(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
             m_context.camera.m_zoom = 25.0f * 0.25f;

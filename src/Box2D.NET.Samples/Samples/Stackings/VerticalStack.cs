@@ -42,15 +42,15 @@ public class VerticalStack : Sample
     private ShapeType m_shapeType;
     private ShapeType m_bulletType;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new VerticalStack(ctx, settings);
+        return new VerticalStack(context);
     }
 
 
-    public VerticalStack(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public VerticalStack(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(-7.0f, 9.0f);
             m_context.camera.m_zoom = 14.0f;

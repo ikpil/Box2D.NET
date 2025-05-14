@@ -32,14 +32,14 @@ public class DistanceJoint : Sample
     private bool m_enableSpring;
     private bool m_enableLimit;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new DistanceJoint(ctx, settings);
+        return new DistanceJoint(context);
     }
 
-    public DistanceJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public DistanceJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 12.0f);
             m_context.camera.m_zoom = 25.0f * 0.35f;

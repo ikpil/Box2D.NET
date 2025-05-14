@@ -34,8 +34,7 @@ public class Sample : IDisposable
     public const bool m_isDebug = false;
 #endif
 
-    protected SampleAppContext m_context;
-    protected Settings m_settings;
+    protected SampleContext m_context;
     protected TaskScheduler m_scheduler;
     protected SampleTask[] m_tasks;
     protected int m_taskCount;
@@ -43,21 +42,20 @@ public class Sample : IDisposable
 
     protected B2BodyId m_groundBodyId;
 
-    // DestructionListener m_destructionListener;
-    protected int m_textLine;
     public B2WorldId m_worldId;
-    protected B2JointId m_mouseJointId;
     public int m_stepCount;
-    protected int m_textIncrement;
+    protected B2JointId m_mouseJointId;
     protected B2Profile m_maxProfile;
     protected B2Profile m_totalProfile;
+    
+    private int m_textLine;
+    private int m_textIncrement;
 
-
-    public Sample(SampleAppContext ctx, Settings settings)
+    public Sample(SampleContext context)
     {
-        m_context = ctx;
+        m_context = context;
         m_scheduler = new TaskScheduler();
-        m_scheduler.Initialize(settings.workerCount);
+        m_scheduler.Initialize(m_context.settings.workerCount);
 
         m_tasks = new SampleTask[m_maxTasks];
         for (int i = 0; i < m_maxTasks; ++i)
@@ -67,7 +65,7 @@ public class Sample : IDisposable
 
         m_taskCount = 0;
 
-        m_threadCount = 1 + settings.workerCount;
+        m_threadCount = 1 + m_context.settings.workerCount;
 
         m_worldId = b2_nullWorldId;
 
@@ -82,9 +80,7 @@ public class Sample : IDisposable
         m_maxProfile = new B2Profile();
         m_totalProfile = new B2Profile();
 
-        g_seed = RAND_SEED;
-
-        m_settings = settings;
+        g_randomSeed = RAND_SEED;
 
         CreateWorld();
         TestMathCpp();
@@ -108,11 +104,11 @@ public class Sample : IDisposable
         }
 
         B2WorldDef worldDef = b2DefaultWorldDef();
-        worldDef.workerCount = m_settings.workerCount;
+        worldDef.workerCount = m_context.settings.workerCount;
         worldDef.enqueueTask = EnqueueTask;
         worldDef.finishTask = FinishTask;
         worldDef.userTaskContext = this;
-        worldDef.enableSleep = m_settings.enableSleep;
+        worldDef.enableSleep = m_context.settings.enableSleep;
 
         m_worldId = b2CreateWorld(ref worldDef);
     }
@@ -147,7 +143,7 @@ public class Sample : IDisposable
 
     public virtual void UpdateGui()
     {
-        if (m_settings.drawProfile)
+        if (m_context.settings.drawProfile)
         {
             B2Profile p = b2World_GetProfile(m_worldId);
 
@@ -353,7 +349,7 @@ public class Sample : IDisposable
         ImGui.TextColored(new Vector4(230, 153, 153, 255), text);
         ImGui.PopFont();
         ImGui.End();
-
+        
         m_textLine += m_textIncrement;
     }
 
@@ -364,15 +360,15 @@ public class Sample : IDisposable
         m_stepCount = 0;
     }
 
-    public virtual void Step(Settings settings)
+    public virtual void Step()
     {
-        float timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
+        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
 
-        if (settings.pause)
+        if (m_context.settings.pause)
         {
-            if (settings.singleStep)
+            if (m_context.settings.singleStep)
             {
-                settings.singleStep = false;
+                m_context.settings.singleStep = false;
             }
             else
             {
@@ -380,13 +376,13 @@ public class Sample : IDisposable
             }
         }
 
-        b2World_EnableSleeping(m_worldId, settings.enableSleep);
-        b2World_EnableWarmStarting(m_worldId, settings.enableWarmStarting);
-        b2World_EnableContinuous(m_worldId, settings.enableContinuous);
+        b2World_EnableSleeping(m_worldId, m_context.settings.enableSleep);
+        b2World_EnableWarmStarting(m_worldId, m_context.settings.enableWarmStarting);
+        b2World_EnableContinuous(m_worldId, m_context.settings.enableContinuous);
 
         for (int i = 0; i < 1; ++i)
         {
-            b2World_Step(m_worldId, timeStep, settings.subStepCount);
+            b2World_Step(m_worldId, timeStep, m_context.settings.subStepCount);
             m_taskCount = 0;
         }
 
@@ -452,8 +448,8 @@ public class Sample : IDisposable
         {
             if (m_context.draw.m_showUI)
             {
-                m_context.draw.DrawString(5, m_textLine, "****PAUSED****");
-                m_textLine += m_textIncrement;
+                DrawTextLine("****PAUSED****");
+                
             }
         }
 

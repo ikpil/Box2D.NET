@@ -26,13 +26,13 @@ public class BounceHumans : Sample
     private B2CosSin _cs1;
     private B2CosSin _cs2;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BounceHumans(ctx, settings);
+        return new BounceHumans(context);
     }
 
 
-    public BounceHumans(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BounceHumans(SampleContext context) : base(context)
     {
         m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
         m_context.camera.m_zoom = 12.0f;
@@ -75,7 +75,7 @@ public class BounceHumans : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (m_humanCount < 5 && m_countDown <= 0.0f)
         {
@@ -100,7 +100,7 @@ public class BounceHumans : Sample
         m_countDown -= timeStep;
         b2World_SetGravity(m_worldId, gravityVec);
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)

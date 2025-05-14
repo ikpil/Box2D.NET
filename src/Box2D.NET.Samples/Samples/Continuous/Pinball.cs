@@ -23,20 +23,20 @@ public class Pinball : Sample
     private B2JointId m_rightJointId;
     private B2BodyId m_ballId;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Pinball(ctx, settings);
+        return new Pinball(context);
     }
 
-    public Pinball(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Pinball(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 9.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;
         }
 
-        settings.drawJoints = false;
+        m_context.settings.drawJoints = false;
 
         // Ground body
         B2BodyId groundId = new B2BodyId();
@@ -169,9 +169,9 @@ public class Pinball : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
 
         if (GetKey(Keys.Space) == InputAction.Press)
         {

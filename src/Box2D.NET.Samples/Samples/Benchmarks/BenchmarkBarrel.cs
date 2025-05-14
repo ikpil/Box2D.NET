@@ -42,20 +42,20 @@ public class BenchmarkBarrel : Sample
 
     private ShapeType m_shapeType;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkBarrel(ctx, settings);
+        return new BenchmarkBarrel(context);
     }
 
-    public BenchmarkBarrel(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkBarrel(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(8.0f, 53.0f);
             m_context.camera.m_zoom = 25.0f * 2.35f;
         }
 
-        settings.drawJoints = false;
+        m_context.settings.drawJoints = false;
 
         {
             float gridSize = 1.0f;
@@ -118,7 +118,7 @@ public class BenchmarkBarrel : Sample
 
     void CreateScene()
     {
-        g_seed = 42;
+        g_randomSeed = 42;
 
         for (int i = 0; i < e_maxRows * e_maxColumns; ++i)
         {

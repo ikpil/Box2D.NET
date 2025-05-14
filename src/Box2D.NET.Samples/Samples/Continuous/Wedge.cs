@@ -14,14 +14,14 @@ public class Wedge : Sample
 {
     private static readonly int SampleWedge = SampleFactory.Shared.RegisterSample("Continuous", "Wedge", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Wedge(ctx, settings);
+        return new Wedge(context);
     }
 
-    public Wedge(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Wedge(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 5.5f);
             m_context.camera.m_zoom = 6.0f;

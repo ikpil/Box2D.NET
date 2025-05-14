@@ -38,14 +38,14 @@ public class RayCast : Sample
     private bool m_showFraction;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new RayCast(ctx, settings);
+        return new RayCast(context);
     }
 
-    public RayCast(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public RayCast(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 20.0f);
             m_context.camera.m_zoom = 17.5f;
@@ -216,7 +216,7 @@ public class RayCast : Sample
         }
     }
 
-    public override void Step(Settings _)
+    public override void Step()
     {
         B2Vec2 offset = new B2Vec2(-20.0f, 20.0f);
         B2Vec2 increment = new B2Vec2(10.0f, 0.0f);

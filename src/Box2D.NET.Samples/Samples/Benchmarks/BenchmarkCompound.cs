@@ -14,14 +14,14 @@ public class BenchmarkCompound : Sample
 {
     private static readonly int SampleCompound = SampleFactory.Shared.RegisterSample("Benchmark", "Compound", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkCompound(ctx, settings);
+        return new BenchmarkCompound(context);
     }
 
-    public BenchmarkCompound(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkCompound(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(18.0f, 115.0f);
             m_context.camera.m_zoom = 25.0f * 5.5f;

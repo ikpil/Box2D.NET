@@ -20,7 +20,6 @@ public class GLSolidCircles
     public const int e_batchSize = 2048;
 
     private GL _gl;
-    private Camera _camera;
     private List<SolidCircleData> m_circles = new List<SolidCircleData>();
 
     private uint[] m_vaoId = new uint[1];
@@ -30,9 +29,8 @@ public class GLSolidCircles
     private int m_pixelScaleUniform;
 
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
-        _camera = context.camera;
         _gl = context.gl;
 
         m_programId = _gl.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
@@ -113,7 +111,7 @@ public class GLSolidCircles
         m_circles.Add(new SolidCircleData(transform, radius, rgba));
     }
 
-    public void Flush()
+    public void Flush(Camera camera)
     {
         int count = (int)m_circles.Count;
         if (count == 0)
@@ -126,10 +124,10 @@ public class GLSolidCircles
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
         
-        _camera.BuildProjectionMatrix(proj, 0.2f);
+        camera.BuildProjectionMatrix(proj, 0.2f);
         
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
-        _gl.Uniform1(m_pixelScaleUniform, _camera.m_height / _camera.m_zoom);
+        _gl.Uniform1(m_pixelScaleUniform, camera.m_height / camera.m_zoom);
 
         _gl.BindVertexArray(m_vaoId[0]);
 

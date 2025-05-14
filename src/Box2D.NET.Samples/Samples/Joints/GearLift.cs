@@ -27,14 +27,14 @@ public class GearLift : Sample
     private float m_motorSpeed;
     private bool m_enableMotor;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new GearLift(ctx, settings);
+        return new GearLift(context);
     }
 
-    public GearLift(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public GearLift(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 6.0f);
             m_context.camera.m_zoom = 7.0f;
@@ -319,7 +319,7 @@ public class GearLift : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (InputAction.Release == GetKey(Keys.A))
         {
@@ -335,6 +335,6 @@ public class GearLift : Sample
             b2Joint_WakeBodies(m_driverId);
         }
 
-        base.Step(settings);
+        base.Step();
     }
 }

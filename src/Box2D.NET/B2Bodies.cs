@@ -818,6 +818,7 @@ namespace Box2D.NET
 
         /// Set the velocity to reach the given transform after a given time step.
         /// The result will be close but maybe not exact. This is meant for kinematic bodies.
+        /// The target is not applied if the velocity would be below the sleep threshold.
         /// This will automatically wake the body if asleep.
         public static void b2Body_SetTargetTransform(B2BodyId bodyId, B2Transform target, float timeStep)
         {
@@ -847,8 +848,10 @@ namespace Box2D.NET
                 angularVelocity = invTimeStep * deltaAngle;
             }
 
-            // Return if velocity would be zero
-            if (b2LengthSquared(linearVelocity) == 0.0f && b2AbsFloat(angularVelocity) == 0.0f)
+            float maxVelocity = b2Length(linearVelocity) + b2AbsFloat(angularVelocity) * sim.maxExtent;
+
+            // Return if velocity would be sleepy
+            if (maxVelocity < body.sleepThreshold)
             {
                 return;
             }

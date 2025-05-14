@@ -26,14 +26,14 @@ public class WheelJoint : Sample
     private bool m_enableMotor;
     private bool m_enableLimit;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new WheelJoint(ctx, settings);
+        return new WheelJoint(context);
     }
 
-    public WheelJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public WheelJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 10.0f);
             m_context.camera.m_zoom = 25.0f * 0.15f;
@@ -144,7 +144,7 @@ public class WheelJoint : Sample
         base.Draw(settings);
         
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
-        m_context.draw.DrawString(5, m_textLine, $"Motor Torque = {torque,4:F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"Motor Torque = {torque,4:F1}");
+        
     }
 }

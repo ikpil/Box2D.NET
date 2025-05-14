@@ -12,9 +12,9 @@ public class SampleEntry
     public readonly string Category;
     public readonly string Name;
     public readonly string Title;
-    public readonly Func<SampleAppContext, Settings, Sample> CreateFcn;
+    public readonly Func<SampleContext, Sample> CreateFcn;
 
-    public SampleEntry(string category, string name, Func<SampleAppContext, Settings, Sample> createFcn)
+    public SampleEntry(string category, string name, Func<SampleContext, Sample> createFcn)
     {
         Category = category;
         Name = name;

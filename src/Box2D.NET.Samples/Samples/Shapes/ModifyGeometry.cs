@@ -26,19 +26,18 @@ public class ModifyGeometry : Sample
 
     private B2ShapeUnion m_us;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ModifyGeometry(ctx, settings);
+        return new ModifyGeometry(context);
     }
 
     private void SetCircle(B2Circle circle)
     {
     }
 
-    public ModifyGeometry(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ModifyGeometry(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_zoom = 25.0f * 0.25f;
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);

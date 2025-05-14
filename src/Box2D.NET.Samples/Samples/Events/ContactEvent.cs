@@ -35,15 +35,15 @@ public class ContactEvent : Sample
     private float m_force;
     private float m_wait;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ContactEvent(ctx, settings);
+        return new ContactEvent(context);
     }
 
 
-    public ContactEvent(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ContactEvent(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 25.0f * 1.75f;
@@ -158,7 +158,7 @@ public class ContactEvent : Sample
         ImGui.End();
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         B2Vec2 position = b2Body_GetPosition(m_playerId);
 
@@ -182,7 +182,7 @@ public class ContactEvent : Sample
             b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, -m_force), position, true);
         }
 
-        base.Step(settings);
+        base.Step();
 
         // Discover rings that touch the bottom sensor
         int[] debrisToAttach = new int[e_count];
@@ -418,9 +418,9 @@ public class ContactEvent : Sample
             b2Body_ApplyMassFromShapes(m_playerId);
         }
 
-        if (settings.hertz > 0.0f && settings.pause == false)
+        if (m_context.settings.hertz > 0.0f && m_context.settings.pause == false)
         {
-            m_wait -= 1.0f / settings.hertz;
+            m_wait -= 1.0f / m_context.settings.hertz;
             if (m_wait < 0.0f)
             {
                 SpawnDebris();
@@ -433,7 +433,7 @@ public class ContactEvent : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "move using WASD");
-        m_textLine += m_textIncrement;
+        DrawTextLine("move using WASD");
+        
     }
 }

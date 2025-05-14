@@ -10,18 +10,18 @@ public class BenchmarkLargePyramid : Sample
 {
     private static readonly int SampleBenchmarkLargePyramid = SampleFactory.Shared.RegisterSample("Benchmark", "Large Pyramid", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkLargePyramid(ctx, settings);
+        return new BenchmarkLargePyramid(context);
     }
 
-    public BenchmarkLargePyramid(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkLargePyramid(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 50.0f);
             m_context.camera.m_zoom = 25.0f * 2.2f;
-            settings.enableSleep = false;
+            m_context.settings.enableSleep = false;
         }
 
         CreateLargePyramid(m_worldId);

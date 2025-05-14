@@ -17,14 +17,14 @@ public class RollingResistance : Sample
     private float m_resistScale;
     private float m_lift;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new RollingResistance(ctx, settings);
+        return new RollingResistance(context);
     }
 
-    public RollingResistance(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public RollingResistance(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(5.0f, 20.0f);
             m_context.camera.m_zoom = 27.5f;

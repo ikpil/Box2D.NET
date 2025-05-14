@@ -14,14 +14,14 @@ public class SpeculativeSliver : Sample
 {
     private static readonly int sampleSpeculativeSliver = SampleFactory.Shared.RegisterSample("Continuous", "Speculative Sliver", Create);
 
-    public static Sample Create(SampleAppContext ctx, Settings settings)
+    public static Sample Create(SampleContext context)
     {
-        return new SpeculativeSliver(ctx, settings);
+        return new SpeculativeSliver(context);
     }
 
-    public SpeculativeSliver(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SpeculativeSliver(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 1.75f);
             m_context.camera.m_zoom = 2.5f;

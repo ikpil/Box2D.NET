@@ -23,21 +23,21 @@ public class ScissorLift : Sample
     private float m_motorSpeed;
     private bool m_enableMotor;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ScissorLift(ctx, settings);
+        return new ScissorLift(context);
     }
 
-    public ScissorLift(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ScissorLift(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 9.0f);
             m_context.camera.m_zoom = 25.0f * 0.4f;
         }
 
         // Need 8 sub-steps for smoother operation
-        settings.subStepCount = 8;
+        m_context.settings.subStepCount = 8;
 
         B2BodyId groundId;
         {

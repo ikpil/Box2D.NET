@@ -32,15 +32,15 @@ public class FootSensor : Sample
     private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
     private int m_overlapCount;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new FootSensor(ctx, settings);
+        return new FootSensor(context);
     }
 
 
-    public FootSensor(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public FootSensor(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 6.0f);
             m_context.camera.m_zoom = 7.5f;
@@ -93,7 +93,7 @@ public class FootSensor : Sample
         m_overlapCount = 0;
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         if (GetKey(Keys.A) == InputAction.Press)
         {
@@ -105,7 +105,7 @@ public class FootSensor : Sample
             b2Body_ApplyForceToCenter(m_playerId, new B2Vec2(50.0f, 0.0f), true);
         }
 
-        base.Step(settings);
+        base.Step();
 
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
@@ -150,7 +150,7 @@ public class FootSensor : Sample
             m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
         }
 
-        m_context.draw.DrawString(5, m_textLine, $"count == {m_overlapCount}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"count == {m_overlapCount}");
+        
     }
 }

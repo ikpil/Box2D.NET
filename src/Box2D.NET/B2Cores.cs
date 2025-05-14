@@ -130,7 +130,7 @@ namespace Box2D.NET
         }
         public static void b2TracyCZoneEnd(object ctx)
         {
-            TracyCZoneEnd(ctx);
+            TracyCZoneEnd(context);
         }
 #else
         [Conditional("DEBUG")]

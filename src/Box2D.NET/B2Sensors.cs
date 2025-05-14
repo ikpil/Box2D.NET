@@ -164,8 +164,8 @@ namespace Box2D.NET
                 {
                     world = world,
                     taskContext = taskContext,
-                    sensorShape = sensorShape,
                     sensor = sensor,
+                    sensorShape = sensorShape,
                     transform = transform,
                 };
 

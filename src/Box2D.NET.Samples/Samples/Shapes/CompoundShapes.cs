@@ -26,14 +26,14 @@ public class CompoundShapes : Sample
     private B2BodyId m_ship2Id;
     private bool m_drawBodyAABBs;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new CompoundShapes(ctx, settings);
+        return new CompoundShapes(context);
     }
 
-    public CompoundShapes(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public CompoundShapes(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 6.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;

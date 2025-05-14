@@ -26,14 +26,14 @@ public class BreakableJoint : Sample
     private B2JointId[] m_jointIds = new B2JointId[e_count];
     private float m_breakForce;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BreakableJoint(ctx, settings);
+        return new BreakableJoint(context);
     }
 
-    public BreakableJoint(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BreakableJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
             m_context.camera.m_zoom = 25.0f * 0.7f;
@@ -227,7 +227,7 @@ public class BreakableJoint : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         for (int i = 0; i < e_count; ++i)
         {
@@ -244,7 +244,7 @@ public class BreakableJoint : Sample
             }
         }
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)

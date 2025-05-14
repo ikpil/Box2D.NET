@@ -19,14 +19,14 @@ public class Pivot : Sample
     private B2BodyId m_bodyId;
     private float m_lever;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Pivot(ctx, settings);
+        return new Pivot(context);
     }
 
-    public Pivot(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Pivot(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.8f, 6.4f);
             m_context.camera.m_zoom = 25.0f * 0.4f;
@@ -76,7 +76,7 @@ public class Pivot : Sample
         B2Vec2 r = b2Body_GetWorldVector(m_bodyId, new B2Vec2(0.0f, -m_lever));
 
         B2Vec2 vp = v + b2CrossSV(omega, r);
-        m_context.draw.DrawString(5, m_textLine, $"pivot velocity = ({vp.X:g}, {vp.Y:g})");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"pivot velocity = ({vp.X:g}, {vp.Y:g})");
+        
     }
 }

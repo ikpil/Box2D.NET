@@ -20,14 +20,14 @@ public class CustomFilter : Sample
     private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     private B2ShapeId[] m_shapeIds = new B2ShapeId[e_count];
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new CustomFilter(ctx, settings);
+        return new CustomFilter(context);
     }
 
-    public CustomFilter(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public CustomFilter(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
             m_context.camera.m_zoom = 10.0f;
@@ -65,9 +65,9 @@ public class CustomFilter : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
     }
 
     bool ShouldCollide(B2ShapeId shapeIdA, B2ShapeId shapeIdB)
@@ -97,8 +97,8 @@ public class CustomFilter : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "Custom filter disables collision between odd and even shapes");
-        m_textLine += m_textIncrement;
+        DrawTextLine("Custom filter disables collision between odd and even shapes");
+        
 
         for (int i = 0; i < e_count; ++i)
         {

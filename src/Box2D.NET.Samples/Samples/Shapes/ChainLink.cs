@@ -14,14 +14,14 @@ public class ChainLink : Sample
 {
     private static readonly int SampleChainLink = SampleFactory.Shared.RegisterSample("Shapes", "Chain Link", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ChainLink(ctx, settings);
+        return new ChainLink(context);
     }
 
-    public ChainLink(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public ChainLink(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
             m_context.camera.m_zoom = 25.0f * 0.5f;
@@ -86,16 +86,16 @@ public class ChainLink : Sample
         }
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
 
-        m_context.draw.DrawString(5, m_textLine, "This shows how to link together two chain shapes");
-        m_textLine += m_textIncrement;
+        DrawTextLine("This shows how to link together two chain shapes");
+        
     }
 }

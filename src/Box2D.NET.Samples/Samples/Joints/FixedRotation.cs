@@ -26,14 +26,14 @@ public class FixedRotation : Sample
     private B2JointId[] m_jointIds = new B2JointId[e_count];
     private bool m_fixedRotation;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new FixedRotation(ctx, settings);
+        return new FixedRotation(context);
     }
 
-    public FixedRotation(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public FixedRotation(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
             m_context.camera.m_zoom = 25.0f * 0.7f;

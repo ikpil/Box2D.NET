@@ -62,9 +62,9 @@ public class ShapeDistance : Sample
     public int _outputIterations;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new ShapeDistance(ctx, settings);
+        return new ShapeDistance(context);
     }
 
     enum ShapeType
@@ -75,10 +75,9 @@ public class ShapeDistance : Sample
         e_box
     };
 
-    public ShapeDistance(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public ShapeDistance(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 3.0f;
@@ -359,7 +358,7 @@ public class ShapeDistance : Sample
         }
     }
 
-    public override void Step(Settings _)
+    public override void Step()
     {
         B2DistanceInput input = new B2DistanceInput();
         input.proxyA = m_proxyA;
@@ -441,26 +440,26 @@ public class ShapeDistance : Sample
             }
         }
 
-        m_context.draw.DrawString(5, m_textLine, "mouse button 1: drag");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, "mouse button 1 + shift: rotate");
-        m_textLine += m_textIncrement;
-        m_context.draw.DrawString(5, m_textLine, $"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
-        m_textLine += m_textIncrement;
+        DrawTextLine("mouse button 1: drag");
+        
+        DrawTextLine("mouse button 1 + shift: rotate");
+        
+        DrawTextLine($"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
+        
 
         if (m_cache.count == 1)
         {
-            m_context.draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
+            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
         }
         else if (m_cache.count == 2)
         {
-            m_context.draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
+            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
         }
         else if (m_cache.count == 3)
         {
-            m_context.draw.DrawString(5, m_textLine, $"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
+            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
         }
 
-        m_textLine += m_textIncrement;
+        
     }
 }

@@ -15,14 +15,14 @@ public class HighMassRatio2 : Sample
 {
     private static readonly int SampleIndex2 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio2", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new HighMassRatio2(ctx, settings);
+        return new HighMassRatio2(context);
     }
 
-    public HighMassRatio2(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public HighMassRatio2(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 16.5f);
             m_context.camera.m_zoom = 25.0f;

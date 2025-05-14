@@ -15,14 +15,14 @@ public class EllipseShape : Sample
 {
     private static readonly int SampleEllipseShape = SampleFactory.Shared.RegisterSample("Shapes", "Ellipse", Create);
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new EllipseShape(ctx, settings);
+        return new EllipseShape(context);
     }
 
-    public EllipseShape(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public EllipseShape(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_zoom = 25.0f * 0.55f;
             m_context.camera.m_center = new B2Vec2(2.0f, 8.0f);

@@ -15,14 +15,14 @@ public class SingleBox : Sample
 
     B2BodyId m_bodyId;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new SingleBox(ctx, settings);
+        return new SingleBox(context);
     }
 
-    public SingleBox(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SingleBox(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 2.5f);
             m_context.camera.m_zoom = 3.5f;

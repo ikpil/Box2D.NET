@@ -34,15 +34,14 @@ public class MotorJoint : Sample
 
     private B2Transform _transform;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new MotorJoint(ctx, settings);
+        return new MotorJoint(context);
     }
 
-    public MotorJoint(SampleAppContext ctx, Settings settings)
-        : base(ctx, settings)
+    public MotorJoint(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 7.0f);
             m_context.camera.m_zoom = 25.0f * 0.4f;
@@ -126,11 +125,11 @@ public class MotorJoint : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        if (m_go && settings.hertz > 0.0f)
+        if (m_go && m_context.settings.hertz > 0.0f)
         {
-            m_time += 1.0f / settings.hertz;
+            m_time += 1.0f / m_context.settings.hertz;
         }
 
         B2Vec2 linearOffset;
@@ -144,7 +143,7 @@ public class MotorJoint : Sample
 
         _transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
@@ -154,8 +153,7 @@ public class MotorJoint : Sample
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        m_context.draw.DrawString(5, m_textLine, $"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
-        m_textLine += 15;
+        DrawTextLine($"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
         m_context.draw.DrawTransform(_transform);
     }
 }

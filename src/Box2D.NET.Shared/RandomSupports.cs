@@ -15,7 +15,7 @@ namespace Box2D.NET.Shared
     public static class RandomSupports
     {
         // Global seed for simple random number generator.
-        public static uint g_seed = RAND_SEED;
+        public static uint g_randomSeed = RAND_SEED;
         public const int RAND_LIMIT = 32767;
         public const int RAND_SEED = 12345;
 
@@ -23,11 +23,11 @@ namespace Box2D.NET.Shared
         public static int RandomInt()
         {
             // XorShift32 algorithm
-            uint x = g_seed;
+            uint x = g_randomSeed;
             x ^= x << 13;
             x ^= x >> 17;
             x ^= x << 5;
-            g_seed = x;
+            g_randomSeed = x;
 
             // Map the 32-bit value to the range 0 to RAND_LIMIT
             return (int)(x % (RAND_LIMIT + 1));

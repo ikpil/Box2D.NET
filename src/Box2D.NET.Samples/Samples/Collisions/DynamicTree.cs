@@ -67,15 +67,15 @@ public class DynamicTree : Sample
     }
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new DynamicTree(ctx, settings);
+        return new DynamicTree(context);
     }
 
 
-    public DynamicTree(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public DynamicTree(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
             m_context.camera.m_zoom = 25.0f * 21.0f;
@@ -299,7 +299,7 @@ public class DynamicTree : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         // m_startPoint = {-1.0f, 0.5f};
         // m_endPoint = {7.0f, 0.5f};
@@ -447,30 +447,30 @@ public class DynamicTree : Sample
             m_context.draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
             m_context.draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
-            m_context.draw.DrawString(5, m_textLine, $"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
+            
         }
 
         switch ((UpdateType)m_updateType)
         {
             case UpdateType.Update_Incremental:
             {
-                m_context.draw.DrawString(5, m_textLine, $"incremental : {_ms:F3} ms");
-                m_textLine += m_textIncrement;
+                DrawTextLine($"incremental : {_ms:F3} ms");
+                
             }
                 break;
 
             case UpdateType.Update_FullRebuild:
             {
-                m_context.draw.DrawString(5, m_textLine, $"full build {_boxCount} : {_ms:F3} ms");
-                m_textLine += m_textIncrement;
+                DrawTextLine($"full build {_boxCount} : {_ms:F3} ms");
+                
             }
                 break;
 
             case UpdateType.Update_PartialRebuild:
             {
-                m_context.draw.DrawString(5, m_textLine, $"partial rebuild {_boxCount} : {_ms:F3} ms");
-                m_textLine += m_textIncrement;
+                DrawTextLine($"partial rebuild {_boxCount} : {_ms:F3} ms");
+                
             }
                 break;
 
@@ -483,7 +483,7 @@ public class DynamicTree : Sample
         float areaRatio = b2DynamicTree_GetAreaRatio(m_tree);
 
         int hmin = (int)(MathF.Ceiling(MathF.Log((float)m_proxyCount) / MathF.Log(2.0f) - 1.0f));
-        m_context.draw.DrawString(5, m_textLine, $"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
-        m_textLine += m_textIncrement;
+        DrawTextLine($"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
+        
     }
 }

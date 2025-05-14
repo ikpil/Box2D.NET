@@ -17,14 +17,14 @@ public class Kinematic : Sample
     private float m_time;
     private float m_timeStep;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new Kinematic(ctx, settings);
+        return new Kinematic(context);
     }
 
-    public Kinematic(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public Kinematic(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
             m_context.camera.m_zoom = 4.0f;
@@ -48,16 +48,16 @@ public class Kinematic : Sample
     }
 
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
-        m_timeStep = settings.hertz > 0.0f ? 1.0f / settings.hertz : 0.0f;
-        if (settings.pause && settings.singleStep == false)
+        m_timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        if (m_context.settings.pause && m_context.settings.singleStep == false)
         {
             m_timeStep = 0.0f;
         }
 
 
-        base.Step(settings);
+        base.Step();
 
         m_time += m_timeStep;
     }

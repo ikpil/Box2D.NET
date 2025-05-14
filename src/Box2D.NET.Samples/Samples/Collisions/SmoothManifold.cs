@@ -40,14 +40,14 @@ public class SmoothManifold : Sample
     private bool m_showAnchors;
     private bool m_showSeparation;
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new SmoothManifold(ctx, settings);
+        return new SmoothManifold(context);
     }
 
-    public SmoothManifold(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public SmoothManifold(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(2.0f, 20.0f);
             m_context.camera.m_zoom = 21.0f;
@@ -256,7 +256,7 @@ public class SmoothManifold : Sample
         }
     }
 
-    public override void Step(Settings _)
+    public override void Step()
     {
         B2HexColor color1 = B2HexColor.b2_colorYellow;
         B2HexColor color2 = B2HexColor.b2_colorMagenta;

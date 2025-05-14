@@ -30,15 +30,15 @@ public class BenchmarkSleep : Sample
     private bool m_awake;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkSleep(ctx, settings);
+        return new BenchmarkSleep(context);
     }
 
 
-    public BenchmarkSleep(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkSleep(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 50.0f);
             m_context.camera.m_zoom = 25.0f * 2.2f;
@@ -121,7 +121,7 @@ public class BenchmarkSleep : Sample
         m_bodyCount = index;
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         ulong ticks = b2GetTicks();
 
@@ -143,7 +143,7 @@ public class BenchmarkSleep : Sample
         }
 
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)
@@ -152,14 +152,14 @@ public class BenchmarkSleep : Sample
         
         if (m_wakeCount > 0)
         {
-            m_context.draw.DrawString(5, m_textLine, $"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
+            
         }
 
         if (m_sleepCount > 0)
         {
-            m_context.draw.DrawString(5, m_textLine, $"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
+            
         }
     }
 }

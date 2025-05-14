@@ -28,14 +28,14 @@ public class BenchmarkCreateDestroy : Sample
     private int m_iterations;
 
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new BenchmarkCreateDestroy(ctx, settings);
+        return new BenchmarkCreateDestroy(context);
     }
 
-    public BenchmarkCreateDestroy(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public BenchmarkCreateDestroy(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 50.0f);
             m_context.camera.m_zoom = 25.0f * 2.2f;
@@ -120,7 +120,7 @@ public class BenchmarkCreateDestroy : Sample
         b2World_Step(m_worldId, 1.0f / 60.0f, 4);
     }
 
-    public override void Step(Settings settings)
+    public override void Step()
     {
         m_createTime = 0.0f;
         m_destroyTime = 0.0f;
@@ -131,7 +131,7 @@ public class BenchmarkCreateDestroy : Sample
         }
 
 
-        base.Step(settings);
+        base.Step();
     }
 
     public override void Draw(Settings settings)

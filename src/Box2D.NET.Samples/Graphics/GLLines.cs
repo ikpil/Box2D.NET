@@ -21,7 +21,6 @@ public class GLLines
     public const int e_batchSize = 2 * 2048;
 
     private GL _gl;
-    private Camera _camera;
     private List<VertexData> m_points = new();
 
     private uint[] m_vaoId = new uint[1];
@@ -29,10 +28,9 @@ public class GLLines
     private uint m_programId;
     private int m_projectionUniform;
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
         _gl = context.gl;
-        _camera = context.camera;
 
         string vs = "#version 330\n"
                     + "uniform mat4 projectionMatrix;\n"
@@ -105,7 +103,7 @@ public class GLLines
         m_points.Add(new VertexData(p2, rgba));
     }
 
-    public void Flush()
+    public void Flush(Camera camera)
     {
         int count = m_points.Count;
         if (count == 0)
@@ -123,7 +121,7 @@ public class GLLines
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
 
-        _camera.BuildProjectionMatrix(proj, 0.1f);
+        camera.BuildProjectionMatrix(proj, 0.1f);
 
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
 

@@ -18,7 +18,6 @@ public class GLSolidPolygons
     public const int e_batchSize = 512;
 
     private GL _gl;
-    private Camera _camera;
     private List<PolygonData> m_polygons = new List<PolygonData>();
 
     private uint[] m_vaoId = new uint[1];
@@ -27,9 +26,8 @@ public class GLSolidPolygons
     private int m_projectionUniform;
     private int m_pixelScaleUniform;
 
-    public void Create(SampleAppContext context)
+    public void Create(SampleContext context)
     {
-        _camera = context.camera;
         _gl = context.gl;
 
         m_programId = _gl.CreateProgramFromFiles("data/solid_polygon.vs", "data/solid_polygon.fs");
@@ -140,7 +138,7 @@ public class GLSolidPolygons
         m_polygons.Add(data);
     }
 
-    public void Flush()
+    public void Flush(Camera camera)
     {
         int count = (int)m_polygons.Count;
         if (count == 0)
@@ -153,11 +151,11 @@ public class GLSolidPolygons
 
         B2FixedArray16<float> array16 = new B2FixedArray16<float>();
         Span<float> proj = array16.AsSpan();
-        
-        _camera.BuildProjectionMatrix(proj, 0.2f);
-        
+
+        camera.BuildProjectionMatrix(proj, 0.2f);
+
         _gl.UniformMatrix4(m_projectionUniform, 1, false, proj);
-        _gl.Uniform1(m_pixelScaleUniform, _camera.m_height / _camera.m_zoom);
+        _gl.Uniform1(m_pixelScaleUniform, camera.m_height / camera.m_zoom);
 
         _gl.BindVertexArray(m_vaoId[0]);
         _gl.BindBuffer(GLEnum.ArrayBuffer, m_vboIds[1]);

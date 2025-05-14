@@ -16,9 +16,9 @@ public class CircleStack : Sample
     private static readonly int SampleCircleStack = SampleFactory.Shared.RegisterSample("Stacking", "Circle Stack", Create);
     private List<Event> m_events = new List<Event>();
 
-    private static Sample Create(SampleAppContext ctx, Settings settings)
+    private static Sample Create(SampleContext context)
     {
-        return new CircleStack(ctx, settings);
+        return new CircleStack(context);
     }
 
     public struct Event
@@ -32,9 +32,9 @@ public class CircleStack : Sample
         }
     };
 
-    public CircleStack(SampleAppContext ctx, Settings settings) : base(ctx, settings)
+    public CircleStack(SampleContext context) : base(context)
     {
-        if (settings.restart == false)
+        if (m_context.settings.restart == false)
         {
             m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
             m_context.camera.m_zoom = 6.0f;
@@ -109,8 +109,8 @@ public class CircleStack : Sample
         int eventCount = m_events.Count;
         for (int i = 0; i < eventCount; ++i)
         {
-            m_context.draw.DrawString(5, m_textLine, $"{m_events[i].indexA}, {m_events[i].indexB}");
-            m_textLine += m_textIncrement;
+            DrawTextLine($"{m_events[i].indexA}, {m_events[i].indexB}");
+            
         }
     }
 }
