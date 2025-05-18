@@ -13,6 +13,14 @@
     <PackageReleaseNotes>https://github.com/ikpil/Box2D.NET/blob/main/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);ENABLED</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;ENABLED;B2_SNOOP_TABLE_COUNTERS;B2_SNOOP_PAIR_COUNTERS</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>

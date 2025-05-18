@@ -5,8 +5,12 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);ENABLED</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;B2_VALIDATE;ENABLED;B2_SNOOP_TABLE_COUNTERS;B2_SNOOP_PAIR_COUNTERS;B2_SNOOP_TOI_COUNTERS</DefineConstants>
+    <DefineConstants>$(DefineConstants);B2_SNOOP_TOI_COUNTERS;ENABLED;B2_SNOOP_TABLE_COUNTERS;B2_SNOOP_PAIR_COUNTERS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,18 +18,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageReference Include="NUnit" Version="4.3.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0"/>
+    <PackageReference Include="NUnit" Version="4.3.2"/>
     <PackageReference Include="NUnit.Analyzers" Version="4.7.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="5.0.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Box2D.NET\Box2D.NET.csproj" />
-    <ProjectReference Include="..\..\src\Box2D.NET.Shared\Box2D.NET.Shared.csproj" />
+    <ProjectReference Include="..\..\src\Box2D.NET\Box2D.NET.csproj"/>
+    <ProjectReference Include="..\..\src\Box2D.NET.Shared\Box2D.NET.Shared.csproj"/>
   </ItemGroup>
 
 </Project>

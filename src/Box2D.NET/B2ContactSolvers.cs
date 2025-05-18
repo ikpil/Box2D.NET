@@ -39,7 +39,7 @@ namespace Box2D.NET
             B2ContactSim[] contacts = color.contactSims.data;
             B2BodyState[] awakeStates = context.states;
 
-#if B2_VALIDATE
+#if DEBUG
             B2Body[] bodies = world.bodies.data;
 #endif
 
@@ -61,7 +61,7 @@ namespace Box2D.NET
                 int indexA = contactSim.bodySimIndexA;
                 int indexB = contactSim.bodySimIndexB;
 
-#if B2_VALIDATE
+#if DEBUG
                 B2Body bodyA = bodies[contactSim.bodyIdA];
                 int validIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                 B2_ASSERT(indexA == validIndexA);
@@ -1123,7 +1123,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             Span<B2ContactSim> contacts = context.contacts;
             Span<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
             B2BodyState[] awakeStates = context.states;
-#if B2_VALIDATE
+#if DEBUG
             B2Body[] bodies = world.bodies.data;
 #endif
 
@@ -1148,7 +1148,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         int indexA = contactSim.bodySimIndexA;
                         int indexB = contactSim.bodySimIndexB;
 
-#if B2_VALIDATE
+#if DEBUG
                         B2Body bodyA = bodies[contactSim.bodyIdA];
                         int validIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                         B2Body bodyB = bodies[contactSim.bodyIdB];

@@ -881,7 +881,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.split);
         }
 
-#if B2_VALIDATE
+#if DEBUG
         public static void b2ValidateIsland(B2World world, int islandId)
         {
             B2Island island = b2Array_Get(ref world.islands, islandId);
