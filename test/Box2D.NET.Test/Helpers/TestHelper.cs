@@ -23,29 +23,32 @@ public static class TestHelper
 
     private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
     {
+        // Execute the task immediately for testing purposes
+        task(0, itemCount, 0, taskContext);
         return null;
     }
 
     private static void FinishTask(object userTask, object userContext)
     {
+        // No cleanup needed for testing
     }
 
-    public static B2ShapeId CreateCircle(B2WorldId worldId, B2Vec2 position, float radius)
+    public static B2ShapeId Circle(B2WorldId worldId, B2Vec2 position, float radius, B2BodyType bodyType)
     {
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.type = bodyType;
         bodyDef.position = position;
         bodyDef.gravityScale = 0.0f;
         bodyDef.enableSleep = true;
-        var bodyIdA = b2CreateBody(worldId, ref bodyDef);
+        var bodyId = b2CreateBody(worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 1.0f;
+        shapeDef.density = bodyType == B2BodyType.b2_staticBody ? 0.0f : 1.0f;
         shapeDef.material.friction = 0.5f;
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), radius);
-        B2ShapeId shapeId = b2CreateCircleShape(bodyIdA, ref shapeDef, ref circle);
-        
+        B2ShapeId shapeId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+
         return shapeId;
     }
 }

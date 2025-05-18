@@ -6,7 +6,6 @@ using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2DynamicTrees;
 
 namespace Box2D.NET.Test;
 
@@ -317,9 +316,9 @@ public class B2BoardPhasesTests
         var worldId = worldHandle.Id;
         var world = b2GetWorldFromId(worldId);
 
-        B2ShapeId shapeIdA = TestHelper.CreateCircle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f);
-        B2ShapeId shapeIdB = TestHelper.CreateCircle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f);
-        B2ShapeId shapeIdC = TestHelper.CreateCircle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f);
+        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         var proxyKeyA = world.broadPhase.moveArray.data[0];
         var proxyKeyB = world.broadPhase.moveArray.data[1];
@@ -328,7 +327,7 @@ public class B2BoardPhasesTests
         B2BodyType proxyTypeA = B2_PROXY_TYPE(proxyKeyA);
         B2BodyType proxyTypeB = B2_PROXY_TYPE(proxyKeyB);
         B2BodyType proxyTypeC = B2_PROXY_TYPE(proxyKeyC);
-        
+
         var proxyIdA = B2_PROXY_ID(proxyKeyA);
         var proxyIdB = B2_PROXY_ID(proxyKeyB);
         var proxyIdC = B2_PROXY_ID(proxyKeyC);
@@ -339,7 +338,6 @@ public class B2BoardPhasesTests
         queryContext.queryTreeType = proxyTypeA;
         queryContext.queryProxyKey = proxyKeyA;
         queryContext.queryShapeIndex = shapeIdA.index1 - 1;
-        
 
         // a <-> a
         {
@@ -359,7 +357,7 @@ public class B2BoardPhasesTests
             Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(queryContext.queryShapeIndex));
             Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo((ulong)shapeIdB.index1 - 1));
         }
-        
+
         // a <-> c
         {
             queryContext.moveResult = new B2MoveResult();
@@ -370,6 +368,180 @@ public class B2BoardPhasesTests
             Assert.That(queryContext.moveResult.pairList.shapeIndexA, Is.EqualTo(queryContext.queryShapeIndex));
             Assert.That(queryContext.moveResult.pairList.shapeIndexB, Is.EqualTo((ulong)shapeIdC.index1 - 1));
         }
+    }
 
+    [Test]
+    public void Test_B2BoardPhases_b2FindPairsTask()
+    {
+        // Arrange
+        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
+        var worldId = worldHandle.Id;
+        var world = b2GetWorldFromId(worldId);
+
+        // Create shapes in the world
+        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
+
+        // Get proxy keys from the created shapes
+        var proxyKeyA = world.broadPhase.moveArray.data[0];
+        var proxyKeyB = world.broadPhase.moveArray.data[1];
+        var proxyKeyC = world.broadPhase.moveArray.data[2];
+
+        // Add A to moveArray (it will collide with B but not C)
+        b2BufferMove(world.broadPhase, proxyKeyA);
+
+        // Allocate moveResults array
+        world.broadPhase.moveResults = new B2MoveResult[1];
+        world.broadPhase.moveResults[0] = new B2MoveResult { pairList = null };
+
+        // Act: Call b2FindPairsTask
+        b2FindPairsTask(0, 1, 0, world);
+
+        // Assert: Check that A collides with B but not C
+        B2MovePair pair = world.broadPhase.moveResults[0].pairList;
+        Assert.That(pair, Is.Not.Null, "Should find at least one collision pair");
+        Assert.That(pair.shapeIndexA, Is.EqualTo(shapeIdA.index1 - 1), "First shape should be A");
+        Assert.That(pair.shapeIndexB, Is.EqualTo(shapeIdB.index1 - 1), "Second shape should be B");
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2FindPairsTask_NoCollision()
+    {
+        // Arrange
+        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
+        var worldId = worldHandle.Id;
+        var world = b2GetWorldFromId(worldId);
+
+        // Create shapes in the world that don't overlap
+        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
+
+        // Get proxy keys from the created shapes
+        var proxyKeyA = world.broadPhase.moveArray.data[0];
+        var proxyKeyB = world.broadPhase.moveArray.data[1];
+
+        // Add A to moveArray
+        b2BufferMove(world.broadPhase, proxyKeyA);
+
+        // Allocate moveResults array
+        world.broadPhase.moveResults = new B2MoveResult[1];
+        world.broadPhase.moveResults[0] = new B2MoveResult { pairList = null };
+
+        // Act: Call b2FindPairsTask
+        b2FindPairsTask(0, 1, 0, world);
+
+        // Assert: Check that no collision pairs were found
+        Assert.That(world.broadPhase.moveResults[0].pairList, Is.Null, "Should not find any collision pairs");
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2FindPairsTask_DynamicDynamicCollision()
+    {
+        // Arrange
+        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
+        var worldId = worldHandle.Id;
+        var world = b2GetWorldFromId(worldId);
+
+        // Create two dynamic shapes that overlap
+        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 1.0f, B2BodyType.b2_dynamicBody);
+
+        // Get proxy keys from the created shapes
+        var proxyKeyA = world.broadPhase.moveArray.data[0];
+        var proxyKeyB = world.broadPhase.moveArray.data[1];
+
+        // Add A to moveArray
+        b2BufferMove(world.broadPhase, proxyKeyA);
+
+        // Allocate moveResults array
+        world.broadPhase.moveResults = new B2MoveResult[1];
+        world.broadPhase.moveResults[0] = new B2MoveResult { pairList = null };
+
+        // Act: Call b2FindPairsTask
+        b2FindPairsTask(0, 1, 0, world);
+
+        // Assert: Check that A collides with B
+        B2MovePair pair = world.broadPhase.moveResults[0].pairList;
+        Assert.That(pair, Is.Not.Null, "Should find collision pair between dynamic bodies");
+        Assert.That(pair.shapeIndexA, Is.EqualTo(shapeIdA.index1 - 1), "First shape should be A");
+        Assert.That(pair.shapeIndexB, Is.EqualTo(shapeIdB.index1 - 1), "Second shape should be B");
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2UpdateBroadPhasePairs()
+    {
+        // Arrange
+        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
+        var worldId = worldHandle.Id;
+        var world = b2GetWorldFromId(worldId);
+
+        // Create test shapes with different collision scenarios:
+        // A and B: Dynamic-Dynamic collision (overlapping)
+        // C and D: Static-Dynamic collision (overlapping)
+        // E: Isolated dynamic body (no collision)
+        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(0.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to A
+        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(3.0f, 0.0f), 1.0f, B2BodyType.b2_staticBody);
+        B2ShapeId shapeIdD = TestHelper.Circle(worldId, new B2Vec2(3.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to C
+        B2ShapeId shapeIdE = TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
+
+        // Get proxy keys for each shape
+        var proxyKeyA = world.broadPhase.moveArray.data[0];
+        var proxyKeyB = world.broadPhase.moveArray.data[1];
+        var proxyKeyC = world.broadPhase.moveArray.data[2];
+        var proxyKeyD = world.broadPhase.moveArray.data[3];
+        var proxyKeyE = world.broadPhase.moveArray.data[4];
+
+        b2BufferMove(world.broadPhase, proxyKeyA); // Dynamic A
+        b2BufferMove(world.broadPhase, proxyKeyD); // Dynamic D (will collide with static C)
+
+        // Act: Update broad phase pairs to detect collisions
+        b2UpdateBroadPhasePairs(world);
+
+        // Assert
+
+        // 1. Memory Management Verification
+        // - Verify that all temporary buffers are properly cleared
+        // - Check that all allocated memory is freed
+        // - Ensure indices are reset to initial state
+        Assert.That(world.broadPhase.moveArray.count, Is.EqualTo(0), "moveArray should be cleared");
+        Assert.That(world.broadPhase.moveSet.count, Is.EqualTo(0), "moveSet should be cleared");
+        Assert.That(world.broadPhase.moveResults.Array, Is.Null, "moveResults should be freed");
+        Assert.That(world.broadPhase.movePairs.Array, Is.Null, "movePairs should be freed");
+        Assert.That(world.broadPhase.movePairIndex.value, Is.EqualTo(2), "movePairIndex should reflect the number of collision pairs created");
+
+        // 2. Collision Detection Results
+        // - Verify that exactly two collision pairs are created:
+        //   1. Between dynamic shapes A and B
+        //   2. Between static shape C and dynamic shape D
+        Assert.That(world.contacts.count, Is.EqualTo(2), 
+            "Should create exactly two contacts: one for A-B collision and one for C-D collision");
+
+        // 3. Contact Pair Verification
+        // - Verify that the correct shapes are paired in collisions
+        // - Check both dynamic-dynamic and static-dynamic collision pairs
+        Assert.That(world.contacts.data, Is.Not.Null, "Should have contacts array");
+        Assert.That(world.contacts.count, Is.EqualTo(2), "Should have exactly two contacts");
+
+        // Verify A-B contact (Dynamic-Dynamic collision)
+        bool foundAB = false;
+        bool foundCD = false;
+        for (int i = 0; i < world.contacts.count; i++)
+        {
+            var contact = world.contacts.data[i];
+            if ((contact.shapeIdA == shapeIdA.index1 - 1 && contact.shapeIdB == shapeIdB.index1 - 1) ||
+                (contact.shapeIdA == shapeIdB.index1 - 1 && contact.shapeIdB == shapeIdA.index1 - 1))
+            {
+                foundAB = true;
+            }
+            else if ((contact.shapeIdA == shapeIdC.index1 - 1 && contact.shapeIdB == shapeIdD.index1 - 1) ||
+                     (contact.shapeIdA == shapeIdD.index1 - 1 && contact.shapeIdB == shapeIdC.index1 - 1))
+            {
+                foundCD = true;
+            }
+        }
+        Assert.That(foundAB, Is.True, "Should have contact between shapes A and B");
+        Assert.That(foundCD, Is.True, "Should have contact between shapes C and D");
     }
 }
