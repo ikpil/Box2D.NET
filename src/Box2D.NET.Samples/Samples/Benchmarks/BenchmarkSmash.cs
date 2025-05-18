@@ -61,7 +61,7 @@ public class BenchmarkSmash : Sample
         float height = 110.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
-        ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Benchmark: Smash", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
         if (ImGui.SliderInt("rows", ref m_rowCount, 1, MaxRowCount, "%d"))
