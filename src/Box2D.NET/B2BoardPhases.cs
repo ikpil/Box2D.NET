@@ -523,7 +523,7 @@ namespace Box2D.NET
 
         public static void b2ValidateNoEnlarged(B2BroadPhase bp)
         {
-#if B2_VALIDATE
+#if DEBUG
             for (int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j)
             {
                 B2DynamicTree tree = bp.trees[j];

@@ -61,7 +61,7 @@ namespace Box2D.NET
             b2Array_Push(ref pool.freeArray, id);
         }
 
-#if B2_VALIDATE
+#if DEBUG
         public static void b2ValidateFreeId(B2IdPool pool, int id)
         {
             int freeCount = pool.freeArray.count;

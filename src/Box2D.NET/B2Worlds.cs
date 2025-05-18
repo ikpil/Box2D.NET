@@ -2775,7 +2775,7 @@ void b2World_Dump()
             world.enableSpeculative = flag;
         }
 
-#if B2_VALIDATE
+#if DEBUG
         // When validating islands ids I have to compare the root island
         // ids because islands are not merged until the next time step.
         public static int b2GetRootIslandId(B2World world, int islandId)

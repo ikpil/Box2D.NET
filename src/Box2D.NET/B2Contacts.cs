@@ -276,7 +276,7 @@ namespace Box2D.NET
             ref B2ContactSim contactSim = ref b2Array_Add(ref set.contactSims);
             contactSim.contactId = contactId;
 
-#if B2_VALIDATE
+#if DEBUG
             contactSim.bodyIdA = shapeA.bodyId;
             contactSim.bodyIdB = shapeB.bodyId;
 #endif

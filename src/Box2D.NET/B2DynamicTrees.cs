@@ -921,7 +921,7 @@ namespace Box2D.NET
             return empty;
         }
 
-#if B2_VALIDATE
+#if DEBUG
         // Compute the height of a sub-tree.
         public static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
         {
@@ -1025,7 +1025,7 @@ namespace Box2D.NET
         /// Validate this tree. For testing.
         public static void b2DynamicTree_Validate(B2DynamicTree tree)
         {
-#if B2_VALIDATE
+#if DEBUG
             if (tree.root == B2_NULL_INDEX)
             {
                 return;
@@ -1056,7 +1056,7 @@ namespace Box2D.NET
         /// Validate this tree has no enlarged AABBs. For testing.
         public static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
         {
-#if B2_VALIDATE
+#if DEBUG
             int capacity = tree.nodeCapacity;
             B2TreeNode[] nodes = tree.nodes;
             for (int i = 0; i < capacity; ++i)
@@ -1986,7 +1986,7 @@ namespace Box2D.NET
                 node = ref nodes[nodeIndex];
             }
 
-#if B2_VALIDATE
+#if DEBUG
             int capacity = tree.nodeCapacity;
             for (int i = 0; i < capacity; ++i)
             {

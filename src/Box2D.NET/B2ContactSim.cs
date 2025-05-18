@@ -11,7 +11,7 @@ namespace Box2D.NET
     {
         public int contactId;
 
-#if B2_VALIDATE
+#if DEBUG
         public int bodyIdA;
         public int bodyIdB;
 #endif
@@ -45,7 +45,7 @@ namespace Box2D.NET
         {
             contactId = other.contactId;
 
-#if B2_VALIDATE
+#if DEBUG
             bodyIdA = other.bodyIdA;
             bodyIdB = other.bodyIdB;
 #endif

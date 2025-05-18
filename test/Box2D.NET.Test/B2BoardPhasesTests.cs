@@ -624,4 +624,25 @@ public class B2BoardPhasesTests
         Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey1), Is.True, 
             "A proxy should be considered to overlap with itself");
     }
+
+    [Test]
+    public void Test_B2BoardPhases_b2BroadPhase_GetShapeIndex()
+    {
+        // Arrange: Create a new BroadPhase object
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        // Create a proxy with a known shape index
+        var aabb = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+        int shapeIndex = 123;
+        int proxyKey = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, 0x0001, shapeIndex, false);
+
+        // Act & Assert: Verify that the shape index is correctly extracted
+        Assert.That(b2BroadPhase_GetShapeIndex(bp, proxyKey), Is.EqualTo(shapeIndex), 
+            "Should correctly extract shape index from proxy key");
+    }
 }
