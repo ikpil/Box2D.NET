@@ -515,7 +515,7 @@ public class B2BoardPhasesTests
         // - Verify that exactly two collision pairs are created:
         //   1. Between dynamic shapes A and B
         //   2. Between static shape C and dynamic shape D
-        Assert.That(world.contacts.count, Is.EqualTo(2), 
+        Assert.That(world.contacts.count, Is.EqualTo(2),
             "Should create exactly two contacts: one for A-B collision and one for C-D collision");
 
         // 3. Contact Pair Verification
@@ -541,7 +541,87 @@ public class B2BoardPhasesTests
                 foundCD = true;
             }
         }
+
         Assert.That(foundAB, Is.True, "Should have contact between shapes A and B");
         Assert.That(foundCD, Is.True, "Should have contact between shapes C and D");
+    }
+
+    [Test]
+    public void Test_B2BoardPhases_b2BroadPhase_TestOverlap()
+    {
+        // Arrange: Create a new BroadPhase object
+        B2BroadPhase bp = null;
+        b2CreateBroadPhase(ref bp);
+
+        // Test 1: Overlapping dynamic bodies
+        // Purpose: Verify that two overlapping dynamic bodies are detected as colliding
+        var aabb1 = new B2AABB
+        {
+            lowerBound = new B2Vec2(0, 0),
+            upperBound = new B2Vec2(1, 1)
+        };
+        var aabb2 = new B2AABB
+        {
+            lowerBound = new B2Vec2(0.5f, 0.5f),
+            upperBound = new B2Vec2(1.5f, 1.5f)
+        };
+        int proxyKey1 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb1, 0x0001, 1, false);
+        int proxyKey2 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb2, 0x0001, 2, false);
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey2), Is.True, "Overlapping dynamic bodies should be detected");
+
+        // Test 2: Non-overlapping bodies
+        // Purpose: Verify that non-overlapping bodies are not detected as colliding
+        var aabb3 = new B2AABB
+        {
+            lowerBound = new B2Vec2(10, 10),
+            upperBound = new B2Vec2(11, 11)
+        };
+        int proxyKey3 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb3, 0x0001, 3, false);
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey3), Is.False, "Non-overlapping bodies should not be detected");
+
+        // Test 3: Static-Dynamic overlap
+        // Purpose: Verify that static and dynamic bodies can be tested for overlap
+        var aabb4 = new B2AABB
+        {
+            lowerBound = new B2Vec2(0.25f, 0.25f),
+            upperBound = new B2Vec2(0.75f, 0.75f)
+        };
+        int proxyKey4 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb4, 0x0001, 4, false);
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey4), Is.True, "Static-Dynamic overlap should be detected");
+
+        // Test 4: Edge case - touching but not overlapping
+        // Purpose: Verify that bodies that just touch at edges are considered overlapping in Box2D
+        var aabb5 = new B2AABB
+        {
+            lowerBound = new B2Vec2(1, 0),
+            upperBound = new B2Vec2(2, 1)
+        };
+        int proxyKey5 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb5, 0x0001, 5, false);
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey5), Is.True,
+            "Bodies touching at edges should be considered overlapping in Box2D");
+
+        // Test 4.1: Truly non-overlapping bodies
+        // Purpose: Verify that bodies with a gap between them are not considered overlapping
+        var aabb6 = new B2AABB
+        {
+            lowerBound = new B2Vec2(1.1f, 0),
+            upperBound = new B2Vec2(2.1f, 1)
+        };
+        int proxyKey6 = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb6, 0x0001, 6, false);
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey6), Is.False,
+            "Bodies with a gap between them should not be considered overlapping");
+
+#if DEBUG
+        // Test 5: Invalid proxy keys
+        // Purpose: Verify that invalid proxy keys are handled gracefully
+        int invalidProxyKey = B2_PROXY_KEY(9999, B2BodyType.b2_dynamicBody);
+        Assert.Throws<InvalidOperationException>(() => b2BroadPhase_TestOverlap(bp, proxyKey1, invalidProxyKey),
+            "Testing overlap with invalid proxy key should throw exception");
+#endif
+
+        // Test 6: Same proxy key
+        // Purpose: Verify that a proxy is considered to overlap with itself
+        Assert.That(b2BroadPhase_TestOverlap(bp, proxyKey1, proxyKey1), Is.True, 
+            "A proxy should be considered to overlap with itself");
     }
 }
