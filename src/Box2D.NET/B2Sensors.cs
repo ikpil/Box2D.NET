@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2DynamicTrees;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Profiling;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2MathFunction;

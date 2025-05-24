@@ -5,14 +5,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Box2D.NET.Shared;
 using NUnit.Framework;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Profiling;
 using static Box2D.NET.Shared.Determinism;
 
 namespace Box2D.NET.Test;

@@ -2,11 +2,11 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static Box2D.NET.B2CTZs;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Buffers;
 #if B2_SNOOP_TABLE_COUNTERS
 using static Box2D.NET.B2Atomics;
 #endif

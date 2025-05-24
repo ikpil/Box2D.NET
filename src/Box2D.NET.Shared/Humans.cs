@@ -13,7 +13,7 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Hulls;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Shared
 {

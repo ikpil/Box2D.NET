@@ -17,12 +17,11 @@
 
 #define B2_FORCE_OVERFLOW
 
-using System.Diagnostics;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2BitSets;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET
 {

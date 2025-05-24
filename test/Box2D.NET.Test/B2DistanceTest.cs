@@ -5,7 +5,6 @@
 using NUnit.Framework;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Distances;
-using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET.Test;
 

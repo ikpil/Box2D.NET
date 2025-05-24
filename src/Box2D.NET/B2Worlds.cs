@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.IO;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Buffers;
+using static Box2D.NET.B2Profiling;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2MathFunction;
@@ -19,7 +21,6 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2BoardPhases;
-using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2BitSets;

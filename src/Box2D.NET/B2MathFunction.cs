@@ -4,7 +4,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET
 {

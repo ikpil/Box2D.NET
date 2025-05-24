@@ -13,7 +13,7 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Shared
 {

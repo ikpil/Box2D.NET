@@ -17,7 +17,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 

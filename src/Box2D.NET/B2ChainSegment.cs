@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using static Box2D.NET.B2MathFunction;
-
 namespace Box2D.NET
 {
     /// A line segment with one-sided collision. Only collides on the right side.

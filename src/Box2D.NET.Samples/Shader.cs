@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using Serilog;
 using Silk.NET.OpenGL;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 
 public static class Shader
