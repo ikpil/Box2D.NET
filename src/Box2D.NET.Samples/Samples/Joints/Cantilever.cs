@@ -42,8 +42,8 @@ public class Cantilever : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 25.0f * 0.35f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 25.0f * 0.35f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -102,7 +102,7 @@ public class Cantilever : Sample
         base.UpdateGui();
 
         float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Cantilever", ImGuiWindowFlags.NoResize);

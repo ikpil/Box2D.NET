@@ -39,8 +39,8 @@ public class BenchmarkShapeDistance : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 3.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 3.0f;
         }
 
         {
@@ -101,7 +101,7 @@ public class BenchmarkShapeDistance : Sample
     public override void UpdateGui()
     {
         float height = 80.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
         ImGui.Begin("Benchmark: Shape Distance", ImGuiWindowFlags.NoResize);
 
@@ -158,12 +158,12 @@ public class BenchmarkShapeDistance : Sample
         B2Transform xfA = m_transformAs[m_drawIndex];
         B2Transform xfB = m_transformBs[m_drawIndex];
         B2DistanceOutput output = m_outputs[m_drawIndex];
-        m_context.draw.DrawSolidPolygon(ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
-        m_context.draw.DrawSolidPolygon(ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
-        m_context.draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
-        m_context.draw.DrawPoint(output.pointA, 10.0f, B2HexColor.b2_colorWhite);
-        m_context.draw.DrawPoint(output.pointB, 10.0f, B2HexColor.b2_colorWhite);
-        m_context.draw.DrawSegment(output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+        m_draw.DrawSolidPolygon(ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
+        m_draw.DrawSolidPolygon(ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
+        m_draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
+        m_draw.DrawPoint(output.pointA, 10.0f, B2HexColor.b2_colorWhite);
+        m_draw.DrawPoint(output.pointB, 10.0f, B2HexColor.b2_colorWhite);
+        m_draw.DrawSegment(output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
         DrawTextLine($"distance = {output.distance}");
     }
 }

@@ -54,8 +54,8 @@ public class BenchmarkCast : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_context.camera.m_zoom = 25.0f * 21.0f;
+            m_camera.m_center = new B2Vec2(500.0f, 500.0f);
+            m_camera.m_zoom = 25.0f * 21.0f;
             // m_context.settings.drawShapes = m_context.g_sampleDebug;
         }
 
@@ -227,12 +227,12 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_context.draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                m_context.draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                m_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_circleCast)
@@ -266,14 +266,14 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_context.draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
                 B2Vec2 t = b2Lerp(p1, p2, drawResult.fraction);
-                m_context.draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
-                m_context.draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                m_draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
+                m_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_overlap)
@@ -310,12 +310,12 @@ public class BenchmarkCast : Sample
                 B2Vec2 origin = m_origins[m_drawIndex];
                 B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
-                m_context.draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
+                m_draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
             }
 
             for (int i = 0; i < drawResult.count; ++i)
             {
-                m_context.draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
+                m_draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
             }
         }
     }
@@ -325,7 +325,7 @@ public class BenchmarkCast : Sample
         base.UpdateGui();
 
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

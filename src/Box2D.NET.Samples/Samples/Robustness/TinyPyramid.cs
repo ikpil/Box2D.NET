@@ -25,8 +25,8 @@ public class TinyPyramid : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.8f);
-            m_context.camera.m_zoom = 1.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.8f);
+            m_camera.m_zoom = 1.0f;
         }
 
         {

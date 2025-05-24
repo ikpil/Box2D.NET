@@ -56,9 +56,6 @@ public class Mover : Sample
     private readonly B2Vec2 m_elevatorBase = new B2Vec2(112.0f, 10.0f);
     private const float m_elevatorAmplitude = 4.0f;
 
-    private float m_pogoRestLength = 0.5f;
-    private float m_capsuleRadius = 0.4f;
-    private float m_capsuleInteriorLength = 0.5f;
     private float m_jumpSpeed = 10.0f;
     private float m_maxSpeed = 6.0f;
     private float m_minSpeed = 0.1f;
@@ -69,13 +66,10 @@ public class Mover : Sample
     private float m_gravity = 30.0f;
     private float m_pogoHertz = 5.0f;
     private float m_pogoDampingRatio = 0.8f;
-    private float m_stepDownHeight = 0.5f;
 
     private int m_pogoShape = (int)PogoShape.PogoSegment;
     private B2Transform m_transform;
     private B2Vec2 m_velocity;
-    private B2Vec2 m_groundNormal;
-    private B2Vec2 m_nonWalkablePosition;
     private B2Capsule m_capsule;
     private B2BodyId m_elevatorId;
     private B2ShapeId m_ballId;
@@ -86,9 +80,7 @@ public class Mover : Sample
     public int m_totalIterations;
     public float m_pogoVelocity;
     public float m_time;
-    public float m_noWalkTime;
     public bool m_onGround;
-    public bool m_canWalk;
     public bool m_jumpReleased;
     public bool m_lockCamera;
 
@@ -115,14 +107,14 @@ public class Mover : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(20.0f, 9.0f);
-            m_context.camera.m_zoom = 10.0f;
+            m_camera.m_center = new B2Vec2(20.0f, 9.0f);
+            m_camera.m_zoom = 10.0f;
         }
 
         m_context.settings.drawJoints = false;
         m_transform = new B2Transform(new B2Vec2(2.0f, 8.0f), b2Rot_identity);
         m_velocity = new B2Vec2(0.0f, 0.0f);
-        m_capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f * m_capsuleInteriorLength), new B2Vec2(0.0f, 0.5f * m_capsuleInteriorLength), m_capsuleInteriorLength);
+        m_capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.3f);
 
         B2BodyId groundId1;
         {
@@ -131,12 +123,11 @@ public class Mover : Sample
             groundId1 = b2CreateBody(m_worldId, ref bodyDef);
 
             const string path =
-                "M -34.395834,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 "
+                "M 2.6458333,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 "
                 + "-31.73269,7.9375 -21.16667,2.64583 -23.8125,10.58333 H 142.875 v -5.29167 h -5.29166 v 5.29167 H 119.0625 v "
                 + "-2.64583 h -2.64583 v -2.64584 h -2.64584 v -2.64583 H 111.125 v -2.64583 H 84.666668 v -2.64583 h -5.291666 v "
-                + "-2.64584 h -5.291667 v -2.64583 H 68.791668 V 174.625 h -5.291666 v -2.64584 H 52.916669 L 39.6875,177.27083 h "
-                + "-5.291667 l -7.937499,5.29167 H 15.875001 l -47.625002,-50.27083 v -26.45834 h -2.645834 l 10e-7,95.25";
-
+                + "-2.64584 h -5.291667 v -2.64583 H 68.791668 V 174.625 h -5.291666 v -2.64584 H 52.916669 L 39.6875,177.27083 H "
+                + "34.395833 L 23.8125,185.20833 H 15.875 L 5.2916669,187.85416 V 153.45833 H 2.6458333 v 47.625";
 
             B2Vec2[] points = new B2Vec2[64];
 
@@ -276,13 +267,9 @@ public class Mover : Sample
             b2CreatePolygonShape(m_elevatorId, ref shapeDef, ref box);
         }
 
-        m_nonWalkablePosition = m_transform.p;
-        m_noWalkTime = 0.0f;
-        m_groundNormal = b2Vec2_zero;
         m_totalIterations = 0;
         m_pogoVelocity = 0.0f;
         m_onGround = false;
-        m_canWalk = false;
         m_jumpReleased = true;
         m_lockCamera = true;
         m_planeCount = 0;
@@ -292,8 +279,6 @@ public class Mover : Sample
     // https://github.com/id-Software/Quake/blob/master/QW/client/pmove.c#L390
     void SolveMove(float timeStep, float throttle)
     {
-        bool walkable = m_groundNormal.Y > 0.71f;
-        
         // Friction
         float speed = b2Length(m_velocity);
         if (speed < m_minSpeed)
@@ -301,7 +286,7 @@ public class Mover : Sample
             m_velocity.X = 0.0f;
             m_velocity.Y = 0.0f;
         }
-        else if ( m_onGround && walkable )
+        else if (m_onGround)
         {
             // Linear damping above stopSpeed and fixed reduction below stopSpeed
             float control = speed < m_stopSpeed ? m_stopSpeed : speed;
@@ -322,37 +307,9 @@ public class Mover : Sample
         }
 
         float noWalkSteer = 0.0f;
-        if ( m_onGround )
+        if (m_onGround)
         {
-            if ( walkable )
-            {
-                m_velocity.Y = 0.0f;
-                noWalkSteer = m_airSteer;
-                m_noWalkTime = 0.0f;
-            }
-            else
-            {
-                if ( m_noWalkTime == 0.0f )
-                {
-                    m_nonWalkablePosition = m_transform.p;
-                }
-
-                m_velocity = m_velocity - b2Dot( m_velocity, m_groundNormal ) * m_groundNormal;
-                // m_noWalkSpeed = m_airSteer * b2MaxFloat( 0.0f, 1.0f - 0.25f * speed / b2MaxFloat(m_stopSpeed, 1.0f) );
-
-                float noWalkDistance = b2Distance( m_transform.p, m_nonWalkablePosition );
-                noWalkSteer = m_airSteer;
-                m_noWalkTime += timeStep;
-                // if ( noWalkDistance / m_noWalkTime < 0.5f * m_airSteer * m_maxSpeed )
-                //{
-                //	noWalkSteer = m_airSteer + 0.5f * m_noWalkTime * ( 1.0f - m_airSteer );
-                //	noWalkSteer = b2ClampFloat( noWalkSteer, m_airSteer, 1.0f );
-                // }
-            }
-        }
-        else
-        {
-            m_noWalkTime = 0.0f;
+            m_velocity.Y = 0.0f;
         }
 
         // Accelerate
@@ -360,18 +317,8 @@ public class Mover : Sample
         float addSpeed = desiredSpeed - currentSpeed;
         if (addSpeed > 0.0f)
         {
-            float steer;
-            if ( m_onGround )
-            {
-                steer = walkable ? 1.0f : noWalkSteer;
-            }
-            else
-            {
-                steer = m_airSteer;
-            }
+            float steer = m_onGround ? 1.0f : m_airSteer;
 
-            DrawTextLine( $"steer = {steer:F2}f" );
-            
             float accelSpeed = steer * m_accelerate * m_maxSpeed * timeStep;
             if (accelSpeed > addSpeed)
             {
@@ -383,19 +330,15 @@ public class Mover : Sample
 
         m_velocity.Y -= m_gravity * timeStep;
 
-        // This ray extension keeps you glued to the ground when walking down slopes.
-        // The extension increases with velocity.
-        float rayExtension = m_stepDownHeight;
-        rayExtension += m_onGround ? b2Length( m_velocity ) * timeStep : 0.0f;
-
-        float rayLength = m_pogoRestLength + m_capsule.radius + rayExtension;
-
-        DrawTextLine( $"extension = {rayExtension:F3}f" );
-        
+        float pogoRestLength = 3.0f * m_capsule.radius;
+        float rayLength = pogoRestLength + m_capsule.radius;
         B2Vec2 origin = b2TransformPoint(ref m_transform, m_capsule.center1);
-        B2Circle circle = new B2Circle(origin, 0.9f * m_capsule.radius);
-        B2Vec2 segmentOffset = new B2Vec2(0.9f * m_capsule.radius, 0.0f);
-        B2Segment segment = new B2Segment(origin - segmentOffset, origin + segmentOffset);
+        B2Circle circle = new B2Circle(origin, 0.5f * m_capsule.radius);
+        B2Vec2 segmentOffset = new B2Vec2(0.75f * m_capsule.radius, 0.0f);
+        B2Segment segment = new B2Segment(
+            origin - segmentOffset,
+            origin + segmentOffset
+        );
 
         B2ShapeProxy proxy = new B2ShapeProxy();
         B2Vec2 translation;
@@ -433,52 +376,49 @@ public class Mover : Sample
         if (castResult.hit == false)
         {
             m_pogoVelocity = 0.0f;
-            m_groundNormal = b2Vec2_zero;
 
             B2Vec2 delta = translation;
-            m_context.draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+            m_draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
-                m_context.draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorGray);
+                m_draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorGray);
             }
             else if (m_pogoShape == (int)PogoShape.PogoCircle)
             {
-                m_context.draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorGray);
+                m_draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorGray);
             }
             else
             {
-                m_context.draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
+                m_draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
             }
         }
         else
         {
-            m_groundNormal = castResult.normal;
-
-            float pogoCurrentLength = castResult.fraction * rayLength - m_capsuleRadius;
+            float pogoCurrentLength = castResult.fraction * rayLength;
 
             float zeta = m_pogoDampingRatio;
             float hertz = m_pogoHertz;
             float omega = 2.0f * B2_PI * hertz;
             float omegaH = omega * timeStep;
 
-            m_pogoVelocity = ( m_pogoVelocity - omega * omegaH * ( pogoCurrentLength - m_pogoRestLength ) ) /
-                             ( 1.0f + 2.0f * zeta * omegaH + omegaH * omegaH );
+            m_pogoVelocity = (m_pogoVelocity - omega * omegaH * (pogoCurrentLength - pogoRestLength)) /
+                             (1.0f + 2.0f * zeta * omegaH + omegaH * omegaH);
 
             B2Vec2 delta = castResult.fraction * translation;
-            m_context.draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+            m_draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
-                m_context.draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorPlum);
+                m_draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorPlum);
             }
             else if (m_pogoShape == (int)PogoShape.PogoCircle)
             {
-                m_context.draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorPlum);
+                m_draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorPlum);
             }
             else
             {
-                m_context.draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
+                m_draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
             }
 
             b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), castResult.point, true);
@@ -528,7 +468,7 @@ public class Mover : Sample
     public override void UpdateGui()
     {
         float height = 350.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 25.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(340.0f, height));
 
         ImGui.Begin("Mover", 0);
@@ -609,12 +549,12 @@ public class Mover : Sample
     {
         if (key == Keys.K)
         {
-            B2Vec2 point = b2TransformPoint(ref m_transform, new B2Vec2(0.0f, m_capsule.center1.Y - m_capsuleRadius));
+            B2Vec2 point = b2TransformPoint(ref m_transform, new B2Vec2(0.0f, m_capsule.center1.Y - 3.0f * m_capsule.radius));
             B2Circle circle = new B2Circle(point, 0.5f);
             B2ShapeProxy proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2QueryFilter filter = new B2QueryFilter(MoverBit, DebrisBit);
             b2World_OverlapShape(m_worldId, ref proxy, filter, Kick, this);
-            m_context.draw.DrawCircle(circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
+            m_draw.DrawCircle(circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
         }
 
         base.Keyboard(key);
@@ -663,8 +603,7 @@ public class Mover : Sample
 
             if (InputAction.Press == GetKey(Keys.Space))
             {
-                bool walkable = m_groundNormal.Y > 0.71f;
-                if ( m_onGround == true && walkable && m_jumpReleased )
+                if (m_onGround == true && m_jumpReleased)
                 {
                     m_velocity.Y = m_jumpSpeed;
                     m_onGround = false;
@@ -690,8 +629,8 @@ public class Mover : Sample
             B2Plane plane = m_planes[i].plane;
             B2Vec2 p1 = m_transform.p + (plane.offset - m_capsule.radius) * plane.normal;
             B2Vec2 p2 = p1 + 0.1f * plane.normal;
-            m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorYellow);
-            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorYellow);
+            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorYellow);
+            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorYellow);
         }
 
         {
@@ -699,8 +638,8 @@ public class Mover : Sample
             B2Vec2 p2 = b2TransformPoint(ref m_transform, m_capsule.center2);
 
             B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
-            m_context.draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
-            m_context.draw.DrawSegment(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
+            m_draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
+            m_draw.DrawSegment(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
         }
 
         B2Vec2 p = m_transform.p;
@@ -710,7 +649,7 @@ public class Mover : Sample
 
         if (m_lockCamera)
         {
-            m_context.camera.m_center.X = m_transform.p.X;
+            m_camera.m_center.X = m_transform.p.X;
         }
     }
 }

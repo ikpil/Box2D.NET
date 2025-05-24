@@ -27,8 +27,8 @@ public class UserConstraint : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(3.0f, -1.0f);
-            m_context.camera.m_zoom = 25.0f * 0.15f;
+            m_camera.m_center = new B2Vec2(3.0f, -1.0f);
+            m_camera.m_zoom = 25.0f * 0.15f;
         }
 
         B2Polygon box = b2MakeBox(1.0f, 0.5f);
@@ -53,7 +53,7 @@ public class UserConstraint : Sample
         base.Step();
 
         B2Transform axes = b2Transform_identity;
-        m_context.draw.DrawTransform(axes);
+        m_draw.DrawTransform(axes);
 
         if (m_context.settings.pause)
         {
@@ -102,12 +102,12 @@ public class UserConstraint : Sample
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                m_context.draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
+                m_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            m_context.draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            m_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
             B2Vec2 axis = b2Normalize(deltaAnchor);
 
             B2Vec2 rB = b2Sub(anchorB, pB);

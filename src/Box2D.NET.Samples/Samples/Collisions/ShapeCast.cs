@@ -67,8 +67,8 @@ public class ShapeCast : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(-0.0f, 0.25f);
-            m_context.camera.m_zoom = 3.0f;
+            m_camera.m_center = new B2Vec2(-0.0f, 0.25f);
+            m_camera.m_zoom = 3.0f;
         }
 
         m_point = b2Vec2_zero;
@@ -189,11 +189,11 @@ public class ShapeCast : Sample
                 B2Vec2 p = b2TransformPoint(ref transform, m_point);
                 if (radius > 0.0f)
                 {
-                    m_context.draw.DrawSolidCircle(ref transform, m_point, radius, color);
+                    m_draw.DrawSolidCircle(ref transform, m_point, radius, color);
                 }
                 else
                 {
-                    m_context.draw.DrawPoint(p, 5.0f, color);
+                    m_draw.DrawPoint(p, 5.0f, color);
                 }
             }
                 break;
@@ -205,21 +205,21 @@ public class ShapeCast : Sample
 
                 if (radius > 0.0f)
                 {
-                    m_context.draw.DrawSolidCapsule(p1, p2, radius, color);
+                    m_draw.DrawSolidCapsule(p1, p2, radius, color);
                 }
                 else
                 {
-                    m_context.draw.DrawSegment(p1, p2, color);
+                    m_draw.DrawSegment(p1, p2, color);
                 }
             }
                 break;
 
             case ShapeType.e_triangle:
-                m_context.draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
+                m_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
                 break;
 
             case ShapeType.e_box:
-                m_context.draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
+                m_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
                 break;
 
             default:
@@ -290,7 +290,7 @@ public class ShapeCast : Sample
     public override void UpdateGui()
     {
         float height = 300.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -386,8 +386,8 @@ public class ShapeCast : Sample
         if (output.hit)
         {
             DrawShape(m_typeB, inputTransform, m_radiusB, B2HexColor.b2_colorPlum);
-            m_context.draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawSegment(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+            m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawSegment(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
         }
 
         if (m_showIndices)
@@ -395,13 +395,13 @@ public class ShapeCast : Sample
             for (int i = 0; i < m_proxyA.count; ++i)
             {
                 B2Vec2 p = m_proxyA.points[i];
-                m_context.draw.DrawString(p, $" {i}");
+                m_draw.DrawString(p, $" {i}");
             }
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
                 B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
-                m_context.draw.DrawString(p, $" {i}");
+                m_draw.DrawString(p, $" {i}");
             }
         }
 

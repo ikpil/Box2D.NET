@@ -38,8 +38,8 @@ public class Driving : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center.Y = 5.0f;
-            m_context.camera.m_zoom = 25.0f * 0.4f;
+            m_camera.m_center.Y = 5.0f;
+            m_camera.m_zoom = 25.0f * 0.4f;
             m_context.settings.drawJoints = false;
         }
 
@@ -216,7 +216,7 @@ public class Driving : Sample
         base.UpdateGui();
 
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Driving", ImGuiWindowFlags.NoResize);
@@ -283,6 +283,6 @@ public class Driving : Sample
         
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
-        m_context.camera.m_center.X = carPosition.X;
+        m_camera.m_center.X = carPosition.X;
     }
 }

@@ -42,8 +42,8 @@ public class FootSensor : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 6.0f);
-            m_context.camera.m_zoom = 7.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 6.0f);
+            m_camera.m_zoom = 7.5f;
         }
 
         {
@@ -147,7 +147,7 @@ public class FootSensor : Sample
             B2ShapeId shapeId = m_overlaps[i];
             B2AABB aabb = b2Shape_GetAABB(shapeId);
             B2Vec2 point = b2AABB_Center(aabb);
-            m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
         }
 
         DrawTextLine($"count == {m_overlapCount}");

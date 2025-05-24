@@ -42,8 +42,8 @@ public class BodyMove : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(2.0f, 8.0f);
-            m_context.camera.m_zoom = 25.0f * 0.55f;
+            m_camera.m_center = new B2Vec2(2.0f, 8.0f);
+            m_camera.m_zoom = 25.0f * 0.55f;
         }
 
         {
@@ -139,7 +139,7 @@ public class BodyMove : Sample
         {
             // draw the transform of every body that moved (not sleeping)
             ref B2BodyMoveEvent @event = ref events.moveEvents[i];
-            m_context.draw.DrawTransform(@event.transform);
+            m_draw.DrawTransform(@event.transform);
 
             B2Transform transform = b2Body_GetTransform(@event.bodyId);
             B2_ASSERT(transform.p.X == @event.transform.p.X);
@@ -174,7 +174,7 @@ public class BodyMove : Sample
         base.UpdateGui();
 
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Body Move", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -198,7 +198,7 @@ public class BodyMove : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        m_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         DrawTextLine($"sleep count: {m_sleepCount}");
         

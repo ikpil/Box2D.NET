@@ -55,6 +55,20 @@ namespace Box2D.NET
             return joint.uj.prismaticJoint.dampingRatio;
         }
 
+        /// Set the prismatic joint spring target angle, usually in meters
+        public static void b2PrismaticJoint_SetTargetTranslation(B2JointId jointId, float translation)
+        {
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
+            joint.uj.prismaticJoint.targetTranslation = translation;
+        }
+
+        /// Get the prismatic joint spring target translation, usually in meters
+        public static float b2PrismaticJoint_GetTargetTranslation(B2JointId jointId)
+        {
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
+            return joint.uj.prismaticJoint.targetTranslation;
+        }
+
         public static void b2PrismaticJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
@@ -420,7 +434,7 @@ namespace Box2D.NET
             if (joint.enableSpring)
             {
                 // This is a real spring and should be applied even during relax
-                float C = translation;
+                float C = translation - joint.targetTranslation;
                 float bias = joint.springSoftness.biasRate * C;
                 float massScale = joint.springSoftness.massScale;
                 float impulseScale = joint.springSoftness.impulseScale;

@@ -55,6 +55,20 @@ namespace Box2D.NET
             return joint.uj.revoluteJoint.dampingRatio;
         }
 
+        /// Set the revolute joint spring target angle, radians
+        public static void b2RevoluteJoint_SetTargetAngle(B2JointId jointId, float angle)
+        {
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
+            joint.uj.revoluteJoint.targetAngle = angle;
+        }
+
+        /// Get the revolute joint spring target angle, radians
+        public static float b2RevoluteJoint_GetTargetAngle(B2JointId jointId)
+        {
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
+            return joint.uj.revoluteJoint.targetAngle;
+        }
+
         public static float b2RevoluteJoint_GetAngle(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
@@ -229,8 +243,7 @@ namespace Box2D.NET
             joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
             joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
-            joint.deltaAngle = b2RelativeAngle(bodySimB.transform.q, bodySimA.transform.q) - joint.referenceAngle;
-            joint.deltaAngle = b2UnwindAngle(joint.deltaAngle);
+            joint.deltaAngle = b2RelativeAngle(bodySimB.transform.q, bodySimA.transform.q);
 
             float k = iA + iB;
             joint.axialMass = k > 0.0f ? 1.0f / k : 0.0f;
@@ -303,7 +316,10 @@ namespace Box2D.NET
             // Solve spring.
             if (joint.enableSpring && fixedRotation == false)
             {
-                float C = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                float jointAngle = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                float jointAngleDelta = b2UnwindAngle(jointAngle - joint.targetAngle);
+
+                float C = jointAngleDelta;
                 float bias = joint.springSoftness.biasRate * C;
                 float massScale = joint.springSoftness.massScale;
                 float impulseScale = joint.springSoftness.impulseScale;
@@ -332,7 +348,8 @@ namespace Box2D.NET
 
             if (joint.enableLimit && fixedRotation == false)
             {
-                float jointAngle = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                float jointAngle =
+                    b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle - joint.referenceAngle;
                 jointAngle = b2UnwindAngle(jointAngle);
 
                 // Lower limit

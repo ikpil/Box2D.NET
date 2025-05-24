@@ -41,8 +41,8 @@ public class ChainShape : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 25.0f * 1.75f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 25.0f * 1.75f;
         }
 
         m_groundId = b2_nullBodyId;
@@ -183,13 +183,13 @@ public class ChainShape : Sample
     {
         base.UpdateGui();
 
-        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
-        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
+        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
+        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
 
         float height = 155.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Chain Shape", ImGuiWindowFlags.NoResize);

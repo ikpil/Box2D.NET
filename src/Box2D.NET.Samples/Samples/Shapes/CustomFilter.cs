@@ -29,8 +29,8 @@ public class CustomFilter : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_context.camera.m_zoom = 10.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.m_zoom = 10.0f;
         }
 
         // Register custom filter
@@ -103,7 +103,7 @@ public class CustomFilter : Sample
         for (int i = 0; i < e_count; ++i)
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            m_context.draw.DrawString(new B2Vec2(p.X, p.Y), $"{i}");
+            m_draw.DrawString(new B2Vec2(p.X, p.Y), $"{i}");
         }
     }
 }

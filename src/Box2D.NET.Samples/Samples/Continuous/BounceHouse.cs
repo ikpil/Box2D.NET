@@ -40,8 +40,8 @@ public class BounceHouse : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 25.0f * 0.45f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 25.0f * 0.45f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -128,7 +128,7 @@ public class BounceHouse : Sample
         base.UpdateGui();
 
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Bounce House", ImGuiWindowFlags.NoResize);
@@ -188,8 +188,8 @@ public class BounceHouse : Sample
             ref HitEvent e = ref m_hitEvents[i];
             if (e.stepIndex > 0 && m_stepCount <= e.stepIndex + 30)
             {
-                m_context.draw.DrawCircle(e.point, 0.1f, B2HexColor.b2_colorOrangeRed);
-                m_context.draw.DrawString(e.point, $"{e.speed:F1}");
+                m_draw.DrawCircle(e.point, 0.1f, B2HexColor.b2_colorOrangeRed);
+                m_draw.DrawString(e.point, $"{e.speed:F1}");
             }
         }
     }

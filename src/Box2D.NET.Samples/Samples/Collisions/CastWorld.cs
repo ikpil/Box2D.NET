@@ -79,8 +79,8 @@ public class CastWorld : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(2.0f, 14.0f);
-            m_context.camera.m_zoom = 25.0f * 0.75f;
+            m_camera.m_center = new B2Vec2(2.0f, 14.0f);
+            m_camera.m_zoom = 25.0f * 0.75f;
         }
 
         // Ground body
@@ -289,7 +289,7 @@ public class CastWorld : Sample
         base.UpdateGui();
 
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Ray-cast World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -386,14 +386,14 @@ public class CastWorld : Sample
             if (result.hit == true)
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
-                m_context.draw.DrawPoint(result.point, 5.0f, color1);
-                m_context.draw.DrawSegment(m_rayStart, c, color2);
+                m_draw.DrawPoint(result.point, 5.0f, color1);
+                m_draw.DrawSegment(m_rayStart, c, color2);
                 B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
-                m_context.draw.DrawSegment(result.point, head, color3);
+                m_draw.DrawSegment(result.point, head, color3);
             }
             else
             {
-                m_context.draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
             }
         }
         else
@@ -451,53 +451,53 @@ public class CastWorld : Sample
                     B2Vec2 c = b2MulAdd(m_rayStart, context.fractions[i], rayTranslation);
                     B2Vec2 p = context.points[i];
                     B2Vec2 n = context.normals[i];
-                    m_context.draw.DrawPoint(p, 5.0f, colors[i]);
-                    m_context.draw.DrawSegment(m_rayStart, c, color2);
+                    m_draw.DrawPoint(p, 5.0f, colors[i]);
+                    m_draw.DrawSegment(m_rayStart, c, color2);
                     B2Vec2 head = b2MulAdd(p, 0.5f, n);
-                    m_context.draw.DrawSegment(p, head, color3);
+                    m_draw.DrawSegment(p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
                     B2Transform shiftedTransform = new B2Transform(t, b2Rot_identity);
 
                     if (m_castType == CastType.e_circleCast)
                     {
-                        m_context.draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorYellow);
+                        m_draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_capsuleCast)
                     {
                         B2Vec2 p1 = capsule.center1 + t;
                         B2Vec2 p2 = capsule.center2 + t;
-                        m_context.draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                        m_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        m_context.draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                        m_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
             else
             {
                 B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, rayTranslation), transform.q);
-                m_context.draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
 
                 if (m_castType == CastType.e_circleCast)
                 {
-                    m_context.draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
+                    m_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
                 }
                 else if (m_castType == CastType.e_capsuleCast)
                 {
                     B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), rayTranslation);
                     B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), rayTranslation);
-                    m_context.draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                    m_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    m_context.draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                    m_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }
 
-        m_context.draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
+        m_draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
     }
 
     public override void Draw(Settings settings)
@@ -548,7 +548,7 @@ public class CastWorld : Sample
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.X -= 0.2f;
-            m_context.draw.DrawString(p, "ign");
+            m_draw.DrawString(p, "ign");
         }
     }
 

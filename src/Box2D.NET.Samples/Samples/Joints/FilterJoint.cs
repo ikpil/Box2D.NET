@@ -25,8 +25,8 @@ public class FilterJoint : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 7.0f);
-            m_context.camera.m_zoom = 25.0f * 0.4f;
+            m_camera.m_center = new B2Vec2(0.0f, 7.0f);
+            m_camera.m_zoom = 25.0f * 0.4f;
         }
 
         {
