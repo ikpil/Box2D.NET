@@ -1,4 +1,3 @@
-using Box2D.NET;
 using NUnit.Framework;
 
 namespace Box2D.NET.Test;
@@ -123,4 +122,89 @@ public class B2Vec2Test
         Assert.That(result4.X, Is.EqualTo(0.0f));
         Assert.That(result4.Y, Is.EqualTo(0.0f));
     }
-} 
+
+    [Test]
+    public void Test_B2Vec2_Equality()
+    {
+        // Case 1: Exact equality
+        var vec1 = new B2Vec2(1.0f, 2.0f);
+        var vec2 = new B2Vec2(1.0f, 2.0f);
+        Assert.That(vec1 == vec2, Is.True);
+        Assert.That(vec1 != vec2, Is.False);
+
+        // Case 2: Within epsilon
+        var vec3 = new B2Vec2(1.0f + B2MathFunction.FLT_EPSILON * 0.5f, 2.0f);
+        var vec4 = new B2Vec2(1.0f, 2.0f);
+        Assert.That(vec3 == vec4, Is.True);
+        Assert.That(vec3 != vec4, Is.False);
+
+        // Case 3: Beyond epsilon
+        var vec5 = new B2Vec2(1.0f + B2MathFunction.FLT_EPSILON * 2.0f, 2.0f);
+        var vec6 = new B2Vec2(1.0f, 2.0f);
+        Assert.That(vec5 == vec6, Is.False);
+        Assert.That(vec5 != vec6, Is.True);
+
+        // Case 4: NaN handling
+        var vec7 = new B2Vec2(float.NaN, 2.0f);
+        var vec8 = new B2Vec2(1.0f, 2.0f);
+        Assert.That(vec7 == vec8, Is.False);
+        Assert.That(vec7 != vec8, Is.True);
+
+        // Case 5: Infinity handling
+        var vec9 = new B2Vec2(float.PositiveInfinity, 2.0f);
+        var vec10 = new B2Vec2(float.PositiveInfinity, 2.0f);
+        Assert.That(vec9 == vec10, Is.True);  // Infinity == Infinity in C/C++
+        Assert.That(vec9 != vec10, Is.False);
+
+        // Case 5.1: Different infinity signs
+        var vec9_1 = new B2Vec2(float.PositiveInfinity, 2.0f);
+        var vec10_1 = new B2Vec2(float.NegativeInfinity, 2.0f);
+        Assert.That(vec9_1 == vec10_1, Is.False);  // +Infinity != -Infinity
+        Assert.That(vec9_1 != vec10_1, Is.True);
+
+        // Case 6: Zero comparison
+        var vec11 = new B2Vec2(0.0f, 0.0f);
+        var vec12 = new B2Vec2(0.0f, 0.0f);
+        Assert.That(vec11 == vec12, Is.True);
+        Assert.That(vec11 != vec12, Is.False);
+
+        // Case 7: Very small numbers
+        var vec13 = new B2Vec2(float.Epsilon, float.Epsilon);
+        var vec14 = new B2Vec2(0.0f, 0.0f);
+        Assert.That(vec13 == vec14, Is.False);
+        Assert.That(vec13 != vec14, Is.True);
+
+        // Case 8: Self comparison
+        var vec15 = new B2Vec2(1.0f, 2.0f);
+        Assert.That(vec15 == vec15, Is.True);
+        Assert.That(vec15 != vec15, Is.False);
+    }
+
+    [Test]
+    public void Test_B2Vec2_Equality_EdgeCases()
+    {
+        // Case 1: Maximum float values
+        var vec1 = new B2Vec2(float.MaxValue, float.MaxValue);
+        var vec2 = new B2Vec2(float.MaxValue, float.MaxValue);
+        Assert.That(vec1 == vec2, Is.True);
+        Assert.That(vec1 != vec2, Is.False);
+
+        // Case 2: Minimum float values
+        var vec3 = new B2Vec2(float.MinValue, float.MinValue);
+        var vec4 = new B2Vec2(float.MinValue, float.MinValue);
+        Assert.That(vec3 == vec4, Is.True);
+        Assert.That(vec3 != vec4, Is.False);
+
+        // Case 3: Mixed signs
+        var vec5 = new B2Vec2(-1.0f, 1.0f);
+        var vec6 = new B2Vec2(-1.0f, 1.0f);
+        Assert.That(vec5 == vec6, Is.True);
+        Assert.That(vec5 != vec6, Is.False);
+
+        // Case 4: Very small numbers (using float.Epsilon)
+        var vec7 = new B2Vec2(float.Epsilon, float.Epsilon);
+        var vec8 = new B2Vec2(0.0f, 0.0f);
+        Assert.That(vec7 == vec8, Is.False);  // float.Epsilon은 0이 아님
+        Assert.That(vec7 != vec8, Is.True);
+    }
+}

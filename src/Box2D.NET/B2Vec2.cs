@@ -67,14 +67,14 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(B2Vec2 a, B2Vec2 b)
         {
-            return a.X == b.X && a.Y == b.Y;
+            return a.X.Equals(b.X) && a.Y.Equals(b.Y);
         }
 
         /// Binary vector inequality
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(B2Vec2 a, B2Vec2 b)
         {
-            return a.X != b.X || a.Y != b.Y;
+            return !(a == b);
         }
     }
 }
