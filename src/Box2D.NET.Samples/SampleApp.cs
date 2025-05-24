@@ -58,6 +58,9 @@ public class SampleApp
         _context.settings.Load();
         _context.settings.workerCount = b2MinInt(8, Environment.ProcessorCount / 2);
 
+        _context.camera.m_width = _context.settings.windowWidth;
+        _context.camera.m_height = _context.settings.windowHeight;
+
         SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
 

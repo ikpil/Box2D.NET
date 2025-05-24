@@ -19,6 +19,7 @@ public class Camera
     {
         m_width = 1920;
         m_height = 1080;
+        
         ResetView();
     }
 
