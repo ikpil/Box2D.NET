@@ -77,8 +77,8 @@ public class DynamicTree : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_context.camera.m_zoom = 25.0f * 21.0f;
+            m_camera.m_center = new B2Vec2(500.0f, 500.0f);
+            m_camera.m_zoom = 25.0f * 21.0f;
         }
 
         m_fill = 0.25f;
@@ -192,7 +192,7 @@ public class DynamicTree : Sample
         base.UpdateGui();
 
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Dynamic Tree", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -315,11 +315,11 @@ public class DynamicTree : Sample
 
             if (p.queryStamp == m_timeStamp || p.rayStamp == m_timeStamp)
             {
-                m_context.draw.DrawAABB(p.box, qc);
+                m_draw.DrawAABB(p.box, qc);
             }
             else
             {
-                m_context.draw.DrawAABB(p.box, c);
+                m_draw.DrawAABB(p.box, c);
             }
 
             float moveTest = RandomFloatRange(0.0f, 1.0f);
@@ -429,7 +429,7 @@ public class DynamicTree : Sample
 
             b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
-            m_context.draw.DrawAABB(box, B2HexColor.b2_colorWhite);
+            m_draw.DrawAABB(box, B2HexColor.b2_colorWhite);
         }
 
         // m_startPoint = {-1.0f, 0.5f};
@@ -443,9 +443,9 @@ public class DynamicTree : Sample
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
             B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
 
-            m_context.draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
-            m_context.draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
+            m_draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
             DrawTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
             

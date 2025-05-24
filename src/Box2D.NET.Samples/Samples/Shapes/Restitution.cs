@@ -37,8 +37,8 @@ public class Restitution : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(4.0f, 17.0f);
-            m_context.camera.m_zoom = 27.5f;
+            m_camera.m_center = new B2Vec2(4.0f, 17.0f);
+            m_camera.m_zoom = 27.5f;
         }
 
         {
@@ -109,7 +109,7 @@ public class Restitution : Sample
         base.UpdateGui();
 
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Restitution", ImGuiWindowFlags.NoResize);

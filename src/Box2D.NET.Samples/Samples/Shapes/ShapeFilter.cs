@@ -40,8 +40,8 @@ public class ShapeFilter : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_zoom = 25.0f * 0.5f;
-            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
         }
 
         {
@@ -92,7 +92,7 @@ public class ShapeFilter : Sample
         base.UpdateGui();
         
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Filter", ImGuiWindowFlags.NoResize);
@@ -211,13 +211,13 @@ public class ShapeFilter : Sample
         base.Draw(settings);
         
         B2Vec2 p1 = b2Body_GetPosition(m_player1Id);
-        m_context.draw.DrawString(new B2Vec2(p1.X - 0.5f, p1.Y), "player 1");
+        m_draw.DrawString(new B2Vec2(p1.X - 0.5f, p1.Y), "player 1");
 
         B2Vec2 p2 = b2Body_GetPosition(m_player2Id);
-        m_context.draw.DrawString(new B2Vec2(p2.X - 0.5f, p2.Y), "player 2");
+        m_draw.DrawString(new B2Vec2(p2.X - 0.5f, p2.Y), "player 2");
 
         B2Vec2 p3 = b2Body_GetPosition(m_player3Id);
-        m_context.draw.DrawString(new B2Vec2(p3.X - 0.5f, p3.Y), "player 3");
+        m_draw.DrawString(new B2Vec2(p3.X - 0.5f, p3.Y), "player 3");
 
     }
 }

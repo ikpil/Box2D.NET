@@ -59,7 +59,7 @@ namespace Box2D.NET
         {
             if (hertz == 0.0f)
             {
-                return new B2Softness(0.0f, 1.0f, 0.0f);
+                return new B2Softness(0.0f, 0.0f, 0.0f);
             }
 
             float omega = 2.0f * B2_PI * hertz;
@@ -372,7 +372,7 @@ namespace Box2D.NET
                 }
             }
 
-            if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents))
+            if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preSolveFcn != null)
             {
                 // Pre-solve is expensive because I need to compute a temporary manifold
                 B2Transform transformA = b2GetSweepTransform(ref input.sweepA, hitFraction);

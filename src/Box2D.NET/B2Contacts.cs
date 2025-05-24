@@ -479,7 +479,7 @@ namespace Box2D.NET
             int pointCount = contactSim.manifold.pointCount;
             bool touching = pointCount > 0;
 
-            if (touching && null != world.preSolveFcn && (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnablePreSolveEvents) != 0)
+            if (touching && world.preSolveFcn != null && (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnablePreSolveEvents) != 0)
             {
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);

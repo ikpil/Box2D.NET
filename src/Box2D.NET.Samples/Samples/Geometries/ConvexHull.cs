@@ -37,8 +37,8 @@ public class ConvexHull : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.5f, 0.0f);
-            m_context.camera.m_zoom = 25.0f * 0.3f;
+            m_camera.m_center = new B2Vec2(0.5f, 0.0f);
+            m_camera.m_zoom = 25.0f * 0.3f;
         }
 
         m_generation = 0;
@@ -214,18 +214,18 @@ public class ConvexHull : Sample
 
         if (0 < m_hull.count)
         {
-            m_context.draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
+            m_draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
         }
 
         for (int i = 0; i < m_count; ++i)
         {
-            m_context.draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
-            m_context.draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
+            m_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
+            m_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
         }
 
         for (int i = 0; i < m_hull.count; ++i)
         {
-            m_context.draw.DrawPoint(m_hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(m_hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }

@@ -47,8 +47,8 @@ public class RayCast : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 20.0f);
-            m_context.camera.m_zoom = 17.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 20.0f);
+            m_camera.m_zoom = 17.5f;
         }
 
         m_circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 2.0f);
@@ -83,7 +83,7 @@ public class RayCast : Sample
         base.UpdateGui();
 
         float height = 230.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Ray-cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -183,12 +183,12 @@ public class RayCast : Sample
         if (output.hit)
         {
             B2Vec2 p = b2MulAdd(p1, output.fraction, d);
-            m_context.draw.DrawSegment(p1, p, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_context.draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawSegment(p1, p, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
 
             B2Vec2 n = b2MulAdd(p, 1.0f, output.normal);
-            m_context.draw.DrawSegment(p, n, B2HexColor.b2_colorViolet);
+            m_draw.DrawSegment(p, n, B2HexColor.b2_colorViolet);
 
             // if (m_rayRadius > 0.0f)
             //{
@@ -199,14 +199,14 @@ public class RayCast : Sample
             if (m_showFraction)
             {
                 B2Vec2 ps = new B2Vec2(p.X + 0.05f, p.Y - 0.02f);
-                m_context.draw.DrawString(ps, $"{output.fraction:F2}");
+                m_draw.DrawString(ps, $"{output.fraction:F2}");
             }
         }
         else
         {
-            m_context.draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_context.draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+            m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
 
             // if (m_rayRadius > 0.0f)
             //{
@@ -229,7 +229,7 @@ public class RayCast : Sample
         // circle
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            m_context.draw.DrawSolidCircle(ref transform, m_circle.center, m_circle.radius, color1);
+            m_draw.DrawSolidCircle(ref transform, m_circle.center, m_circle.radius, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
@@ -252,7 +252,7 @@ public class RayCast : Sample
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
             B2Vec2 v1 = b2TransformPoint(ref transform, m_capsule.center1);
             B2Vec2 v2 = b2TransformPoint(ref transform, m_capsule.center2);
-            m_context.draw.DrawSolidCapsule(v1, v2, m_capsule.radius, color1);
+            m_draw.DrawSolidCapsule(v1, v2, m_capsule.radius, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
@@ -273,7 +273,7 @@ public class RayCast : Sample
         // box
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            m_context.draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, 0.0f, color1);
+            m_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
@@ -294,7 +294,7 @@ public class RayCast : Sample
         // triangle
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            m_context.draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, 0.0f, color1);
+            m_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
@@ -318,7 +318,7 @@ public class RayCast : Sample
 
             B2Vec2 p1 = b2TransformPoint(ref transform, m_segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform, m_segment.point2);
-            m_context.draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawSegment(p1, p2, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));

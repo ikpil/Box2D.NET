@@ -89,8 +89,8 @@ public class OverlapWorld : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 10.0f);
-            m_context.camera.m_zoom = 25.0f * 0.7f;
+            m_camera.m_center = new B2Vec2(0.0f, 10.0f);
+            m_camera.m_zoom = 25.0f * 0.7f;
         }
 
         m_userData = new ShapeUserData[e_maxCount];
@@ -270,7 +270,7 @@ public class OverlapWorld : Sample
         base.UpdateGui();
 
         float height = 330.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Overlap World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -347,7 +347,7 @@ public class OverlapWorld : Sample
             circle.radius = 1.0f;
             proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2Transform identity = b2Transform_identity;
-            m_context.draw.DrawSolidCircle(ref identity, circle.center, circle.radius, B2HexColor.b2_colorWhite);
+            m_draw.DrawSolidCircle(ref identity, circle.center, circle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)
         {
@@ -356,13 +356,13 @@ public class OverlapWorld : Sample
             capsule.center2 = b2TransformPoint(ref transform, new B2Vec2(1.0f, 0.0f));
             capsule.radius = 0.5f;
             proxy = b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius);
-            m_context.draw.DrawSolidCapsule(capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);
+            m_draw.DrawSolidCapsule(capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_boxShape)
         {
             B2Polygon box = b2MakeOffsetBox(2.0f, 0.5f, transform.p, transform.q);
             proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
-            m_context.draw.DrawPolygon(box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
+            m_draw.DrawPolygon(box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
         }
 
         b2World_OverlapShape(m_worldId, ref proxy, b2DefaultQueryFilter(), OverlapResultFcn, this);
@@ -399,7 +399,7 @@ public class OverlapWorld : Sample
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.X -= 0.2f;
-            m_context.draw.DrawString(p, "skip");
+            m_draw.DrawString(p, "skip");
         }
     }
 }

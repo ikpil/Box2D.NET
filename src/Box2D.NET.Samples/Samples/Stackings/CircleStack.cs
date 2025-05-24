@@ -36,8 +36,8 @@ public class CircleStack : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_context.camera.m_zoom = 6.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.m_zoom = 6.0f;
         }
 
         int shapeIndex = 0;
@@ -101,7 +101,7 @@ public class CircleStack : Sample
             int indexA = (int)userDataA;
             int indexB = (int)userDataB;
 
-            m_context.draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }

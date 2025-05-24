@@ -79,8 +79,8 @@ public class ShapeDistance : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 3.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 3.0f;
         }
 
         m_point = b2Vec2_zero;
@@ -172,11 +172,11 @@ public class ShapeDistance : Sample
                 B2Vec2 p = b2TransformPoint(ref transform, m_point);
                 if (radius > 0.0f)
                 {
-                    m_context.draw.DrawSolidCircle(ref transform, m_point, radius, color);
+                    m_draw.DrawSolidCircle(ref transform, m_point, radius, color);
                 }
                 else
                 {
-                    m_context.draw.DrawPoint(p, 5.0f, color);
+                    m_draw.DrawPoint(p, 5.0f, color);
                 }
             }
                 break;
@@ -188,21 +188,21 @@ public class ShapeDistance : Sample
 
                 if (radius > 0.0f)
                 {
-                    m_context.draw.DrawSolidCapsule(p1, p2, radius, color);
+                    m_draw.DrawSolidCapsule(p1, p2, radius, color);
                 }
                 else
                 {
-                    m_context.draw.DrawSegment(p1, p2, color);
+                    m_draw.DrawSegment(p1, p2, color);
                 }
             }
                 break;
 
             case ShapeType.e_triangle:
-                m_context.draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
+                m_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
                 break;
 
             case ShapeType.e_box:
-                m_context.draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
+                m_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
                 break;
 
             default:
@@ -216,7 +216,7 @@ public class ShapeDistance : Sample
         base.UpdateGui();
 
         float height = 310.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -402,9 +402,9 @@ public class ShapeDistance : Sample
                 B2Vec2 pointB = new B2Vec2();
                 ComputeSimplexWitnessPoints(ref pointA, ref pointB, ref simplex);
 
-                m_context.draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
-                m_context.draw.DrawPoint(pointA, 10.0f, B2HexColor.b2_colorWhite);
-                m_context.draw.DrawPoint(pointB, 10.0f, B2HexColor.b2_colorWhite);
+                m_draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
+                m_draw.DrawPoint(pointA, 10.0f, B2HexColor.b2_colorWhite);
+                m_draw.DrawPoint(pointB, 10.0f, B2HexColor.b2_colorWhite);
             }
 
             B2HexColor[] colors = new B2HexColor[3] { B2HexColor.b2_colorRed, B2HexColor.b2_colorGreen, B2HexColor.b2_colorBlue };
@@ -412,17 +412,17 @@ public class ShapeDistance : Sample
             for (int i = 0; i < simplex.count; ++i)
             {
                 ref B2SimplexVertex vertex = ref vertices[i];
-                m_context.draw.DrawPoint(vertex.wA, 10.0f, colors[i]);
-                m_context.draw.DrawPoint(vertex.wB, 10.0f, colors[i]);
+                m_draw.DrawPoint(vertex.wA, 10.0f, colors[i]);
+                m_draw.DrawPoint(vertex.wB, 10.0f, colors[i]);
             }
         }
         else
         {
-            m_context.draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
-            m_context.draw.DrawPoint(_outputPointA, 10.0f, B2HexColor.b2_colorWhite);
-            m_context.draw.DrawPoint(_outputPointB, 10.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
+            m_draw.DrawPoint(_outputPointA, 10.0f, B2HexColor.b2_colorWhite);
+            m_draw.DrawPoint(_outputPointB, 10.0f, B2HexColor.b2_colorWhite);
             
-            m_context.draw.DrawSegment( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
+            m_draw.DrawSegment( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
         }
 
         if (m_showIndices)
@@ -430,13 +430,13 @@ public class ShapeDistance : Sample
             for (int i = 0; i < m_proxyA.count; ++i)
             {
                 B2Vec2 p = m_proxyA.points[i];
-                m_context.draw.DrawString(p, $" {i}");
+                m_draw.DrawString(p, $" {i}");
             }
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
                 B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
-                m_context.draw.DrawString(p, $" {i}");
+                m_draw.DrawString(p, $" {i}");
             }
         }
 

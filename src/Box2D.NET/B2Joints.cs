@@ -549,12 +549,6 @@ namespace Box2D.NET
             joint.uj.revoluteJoint = empty;
 
             joint.uj.revoluteJoint.referenceAngle = b2ClampFloat(def.referenceAngle, -B2_PI, B2_PI);
-            joint.uj.revoluteJoint.linearImpulse = b2Vec2_zero;
-            joint.uj.revoluteJoint.axialMass = 0.0f;
-            joint.uj.revoluteJoint.springImpulse = 0.0f;
-            joint.uj.revoluteJoint.motorImpulse = 0.0f;
-            joint.uj.revoluteJoint.lowerImpulse = 0.0f;
-            joint.uj.revoluteJoint.upperImpulse = 0.0f;
             joint.uj.revoluteJoint.hertz = def.hertz;
             joint.uj.revoluteJoint.dampingRatio = def.dampingRatio;
             joint.uj.revoluteJoint.lowerAngle = def.lowerAngle;

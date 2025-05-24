@@ -17,8 +17,8 @@ public class WorkbenchWorld : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_context.camera.m_zoom = 25.0f * 0.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.m_zoom = 25.0f * 0.5f;
         }
 
         B2ShapeId shapeIdA = CreateCircle(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f);

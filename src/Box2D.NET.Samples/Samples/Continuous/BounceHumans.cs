@@ -34,8 +34,8 @@ public class BounceHumans : Sample
 
     public BounceHumans(SampleContext context) : base(context)
     {
-        m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-        m_context.camera.m_zoom = 12.0f;
+        m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+        m_camera.m_zoom = 12.0f;
 
         for (int i = 0; i < m_humans.Length; ++i)
         {
@@ -107,6 +107,6 @@ public class BounceHumans : Sample
     {
         base.Draw(settings);
 
-        m_context.draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
+        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
     }
 }

@@ -13,6 +13,7 @@ namespace Box2D.NET
         public float upperImpulse;
         public float hertz;
         public float dampingRatio;
+        public float targetAngle;
         public float maxMotorTorque;
         public float motorSpeed;
         public float referenceAngle;

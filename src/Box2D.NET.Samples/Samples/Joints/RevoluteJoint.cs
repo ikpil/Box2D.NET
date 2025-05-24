@@ -26,6 +26,7 @@ public class RevoluteJoint : Sample
     private float m_motorTorque;
     private float m_hertz;
     private float m_dampingRatio;
+    private float m_targetAngle;
     private bool m_enableSpring;
     private bool m_enableMotor;
     private bool m_enableLimit;
@@ -39,8 +40,8 @@ public class RevoluteJoint : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 15.5f);
-            m_context.camera.m_zoom = 25.0f * 0.7f;
+            m_camera.m_center = new B2Vec2(0.0f, 15.5f);
+            m_camera.m_zoom = 25.0f * 0.7f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -60,6 +61,7 @@ public class RevoluteJoint : Sample
         m_enableMotor = false;
         m_hertz = 1.0f;
         m_dampingRatio = 0.5f;
+        m_targetAngle = 0.0f;
         m_motorSpeed = 1.0f;
         m_motorTorque = 1000.0f;
 
@@ -143,7 +145,7 @@ public class RevoluteJoint : Sample
         base.UpdateGui();
 
         float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Revolute Joint", ImGuiWindowFlags.NoResize);
@@ -183,7 +185,7 @@ public class RevoluteJoint : Sample
 
         if (m_enableSpring)
         {
-            if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 10.0f, "%.1f"))
+            if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 30.0f, "%.1f"))
             {
                 b2RevoluteJoint_SetSpringHertz(m_jointId1, m_hertz);
                 b2Joint_WakeBodies(m_jointId1);
@@ -193,6 +195,13 @@ public class RevoluteJoint : Sample
             {
                 b2RevoluteJoint_SetSpringDampingRatio(m_jointId1, m_dampingRatio);
                 b2Joint_WakeBodies(m_jointId1);
+            }
+            
+            
+            if ( ImGui.SliderFloat( "Degrees", ref m_targetAngle, -180.0f, 180.0f, "%.0f" ) )
+            {
+                b2RevoluteJoint_SetTargetAngle( m_jointId1, B2_PI * m_targetAngle / 180.0f );
+                b2Joint_WakeBodies( m_jointId1 );
             }
         }
 

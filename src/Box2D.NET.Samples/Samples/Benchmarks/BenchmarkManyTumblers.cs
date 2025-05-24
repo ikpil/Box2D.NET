@@ -43,8 +43,8 @@ public class BenchmarkManyTumblers : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(1.0f, -5.5f);
-            m_context.camera.m_zoom = 25.0f * 3.4f;
+            m_camera.m_center = new B2Vec2(1.0f, -5.5f);
+            m_camera.m_zoom = 25.0f * 3.4f;
             m_context.settings.drawJoints = false;
         }
 
@@ -143,7 +143,7 @@ public class BenchmarkManyTumblers : Sample
         base.UpdateGui();
         
         float height = 110.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
         ImGui.Begin("Benchmark: Many Tumblers", ImGuiWindowFlags.NoResize);
         ImGui.PushItemWidth(100.0f);

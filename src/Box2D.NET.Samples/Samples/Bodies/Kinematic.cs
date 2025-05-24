@@ -26,8 +26,8 @@ public class Kinematic : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 4.0f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 4.0f;
         }
 
         m_amplitude = 2.0f;
@@ -74,8 +74,8 @@ public class Kinematic : Sample
             B2Rot rotation = b2MakeRot(2.0f * m_time);
 
             B2Vec2 axis = b2RotateVector(rotation, new B2Vec2(0.0f, 1.0f));
-            m_context.draw.DrawSegment(point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
-            m_context.draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorPlum);
+            m_draw.DrawSegment(point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
+            m_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorPlum);
 
             b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep);
         }

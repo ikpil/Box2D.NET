@@ -45,8 +45,8 @@ public class ContactEvent : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 25.0f * 1.75f;
+            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
+            m_camera.m_zoom = 25.0f * 1.75f;
         }
 
         {
@@ -148,7 +148,7 @@ public class ContactEvent : Sample
         base.UpdateGui();
 
         float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Contact Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -232,8 +232,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
-                            m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -262,8 +262,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_context.draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
-                            m_context.draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            m_draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }

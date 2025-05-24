@@ -35,6 +35,9 @@ public class Sample : IDisposable
 #endif
 
     protected SampleContext m_context;
+    protected Camera m_camera;
+    protected Draw m_draw;
+    
     protected TaskScheduler m_scheduler;
     protected SampleTask[] m_tasks;
     protected int m_taskCount;
@@ -54,6 +57,9 @@ public class Sample : IDisposable
     public Sample(SampleContext context)
     {
         m_context = context;
+        m_camera = context.camera;
+        m_draw = context.draw;
+        
         m_scheduler = new TaskScheduler();
         m_scheduler.Initialize(m_context.settings.workerCount);
 
@@ -235,7 +241,7 @@ public class Sample : IDisposable
 
     public void DrawTitle(string title)
     {
-        m_context.draw.DrawString(5, 5, title);
+        m_draw.DrawString(5, 5, title);
         m_textLine = (int)26.0f;
     }
 
@@ -453,7 +459,7 @@ public class Sample : IDisposable
             }
         }
 
-        m_context.draw.m_debugDraw.drawingBounds = m_context.camera.GetViewBounds();
+        m_context.draw.m_debugDraw.drawingBounds = m_camera.GetViewBounds();
         m_context.draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
 
         // todo testing

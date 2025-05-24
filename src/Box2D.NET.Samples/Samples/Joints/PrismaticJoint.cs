@@ -23,6 +23,7 @@ public class PrismaticJoint : Sample
     private float m_motorForce;
     private float m_hertz;
     private float m_dampingRatio;
+    private float m_translation;
     private bool m_enableSpring;
     private bool m_enableMotor;
     private bool m_enableLimit;
@@ -36,8 +37,8 @@ public class PrismaticJoint : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_context.camera.m_zoom = 25.0f * 0.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 8.0f);
+            m_camera.m_zoom = 25.0f * 0.5f;
         }
 
         B2BodyId groundId;
@@ -53,6 +54,7 @@ public class PrismaticJoint : Sample
         m_motorForce = 25.0f;
         m_hertz = 1.0f;
         m_dampingRatio = 0.5f;
+        m_translation = 0.0f;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -91,8 +93,8 @@ public class PrismaticJoint : Sample
     {
         base.UpdateGui();
 
-        float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        float height = 240.0f;
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Prismatic Joint", ImGuiWindowFlags.NoResize);
@@ -143,6 +145,12 @@ public class PrismaticJoint : Sample
                 b2PrismaticJoint_SetSpringDampingRatio(m_jointId, m_dampingRatio);
                 b2Joint_WakeBodies(m_jointId);
             }
+
+            if (ImGui.SliderFloat("Translation", ref m_translation, -5.0f, 5.0f, "%.1f"))
+            {
+                b2PrismaticJoint_SetTargetTranslation(m_jointId, m_translation);
+                b2Joint_WakeBodies(m_jointId);
+            }
         }
 
         ImGui.End();
@@ -151,17 +159,16 @@ public class PrismaticJoint : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
         DrawTextLine($"Motor Force = {force:4,F1}");
-        
+
 
         float translation = b2PrismaticJoint_GetTranslation(m_jointId);
         DrawTextLine($"Translation = {translation:4,F1}");
-        
+
 
         float speed = b2PrismaticJoint_GetSpeed(m_jointId);
         DrawTextLine($"Speed = {speed:4,F8}");
-        
     }
 }

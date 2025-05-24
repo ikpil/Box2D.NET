@@ -29,8 +29,8 @@ public class TiltedStack : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(7.5f, 7.5f);
-            m_context.camera.m_zoom = 20.0f;
+            m_camera.m_center = new B2Vec2(7.5f, 7.5f);
+            m_camera.m_zoom = 20.0f;
         }
 
         {

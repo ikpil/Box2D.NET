@@ -26,8 +26,8 @@ public class RecreateStatic : Sample
     {
         if (m_context.settings.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_context.camera.m_zoom = 3.5f;
+            m_camera.m_center = new B2Vec2(0.0f, 2.5f);
+            m_camera.m_zoom = 3.5f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
