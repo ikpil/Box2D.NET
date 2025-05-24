@@ -1,6 +1,4 @@
-﻿using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2Types;
-using static Box2D.NET.B2MathFunction;
+﻿using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 

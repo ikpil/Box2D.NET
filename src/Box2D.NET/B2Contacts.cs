@@ -2,10 +2,9 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Diagnostics;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Shapes;

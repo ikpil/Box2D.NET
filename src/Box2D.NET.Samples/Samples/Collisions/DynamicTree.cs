@@ -12,7 +12,7 @@ using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Constants;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 

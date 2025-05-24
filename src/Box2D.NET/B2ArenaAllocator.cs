@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Collections.Generic;
 
 namespace Box2D.NET
 {

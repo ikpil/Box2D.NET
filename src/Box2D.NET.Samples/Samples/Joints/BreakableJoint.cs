@@ -12,7 +12,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 

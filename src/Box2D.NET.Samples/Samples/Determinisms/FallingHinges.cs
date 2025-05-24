@@ -2,13 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System;
 using Box2D.NET.Shared;
 using Serilog;
-using static Box2D.NET.B2Bodies;
-using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2Timers;
-using static Box2D.NET.B2Constants;
 using static Box2D.NET.Shared.Determinism;
 
 namespace Box2D.NET.Samples.Samples.Determinisms;

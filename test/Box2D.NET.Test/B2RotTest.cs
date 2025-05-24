@@ -1,4 +1,3 @@
-using Box2D.NET;
 using NUnit.Framework;
 using static Box2D.NET.B2MathFunction;
 using System;

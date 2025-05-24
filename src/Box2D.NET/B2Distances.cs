@@ -3,9 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Timers;

@@ -2,9 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
@@ -14,7 +12,7 @@ using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.Shared.Humans;
 using static Box2D.NET.B2Shapes;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Shared
 {

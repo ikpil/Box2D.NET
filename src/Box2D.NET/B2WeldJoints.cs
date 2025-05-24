@@ -8,7 +8,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET
 {

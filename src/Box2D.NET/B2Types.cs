@@ -5,6 +5,7 @@
 using System;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET

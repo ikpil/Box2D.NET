@@ -16,7 +16,7 @@ using static Box2D.NET.B2Movers;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Distances;
-using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Characters;
 
