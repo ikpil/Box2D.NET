@@ -101,12 +101,12 @@ public class MotorJoint : Sample
         {
         }
 
-        if (ImGui.SliderFloat("Max Force", ref m_maxForce, 0.0f, 1000.0f, "%.0f"))
+        if (ImGui.SliderFloat("Max Force", ref m_maxForce, 0.0f, 10000.0f, "%.0f"))
         {
             b2MotorJoint_SetMaxForce(m_jointId, m_maxForce);
         }
 
-        if (ImGui.SliderFloat("Max Torque", ref m_maxTorque, 0.0f, 1000.0f, "%.0f"))
+        if (ImGui.SliderFloat("Max Torque", ref m_maxTorque, 0.0f, 10000.0f, "%.0f"))
         {
             b2MotorJoint_SetMaxTorque(m_jointId, m_maxTorque);
         }
@@ -136,7 +136,7 @@ public class MotorJoint : Sample
         linearOffset.X = 6.0f * MathF.Sin(2.0f * m_time);
         linearOffset.Y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
 
-        float angularOffset = B2_PI * MathF.Sin(-0.5f * m_time);
+        float angularOffset = 2.0f * m_time;
 
         b2MotorJoint_SetLinearOffset(m_jointId, linearOffset);
         b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);

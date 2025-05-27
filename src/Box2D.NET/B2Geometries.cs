@@ -553,11 +553,23 @@ namespace Box2D.NET
 
             // Shift ray so circle center is the origin
             B2Vec2 s = b2Sub(input.origin, p);
+
+            float r = shape.radius;
+            float rr = r * r;
+
             float length = 0;
             B2Vec2 d = b2GetLengthAndNormalize(ref length, input.translation);
             if (length == 0.0f)
             {
                 // zero length ray
+
+                if (b2LengthSquared(s) < rr)
+                {
+                    // initial overlap
+                    output.point = input.origin;
+                    output.hit = true;
+                }
+
                 return output;
             }
 
@@ -570,8 +582,6 @@ namespace Box2D.NET
             B2Vec2 c = b2MulAdd(s, t, d);
 
             float cc = b2Dot(c, c);
-            float r = shape.radius;
-            float rr = r * r;
 
             if (cc > rr)
             {
@@ -586,7 +596,15 @@ namespace Box2D.NET
 
             if (fraction < 0.0f || input.maxFraction * length < fraction)
             {
-                // outside the range of the ray segment
+                // intersection is point outside the range of the ray segment
+
+                if (b2LengthSquared(s) < rr)
+                {
+                    // initial overlap
+                    output.point = input.origin;
+                    output.hit = true;
+                }
+
                 return output;
             }
 
@@ -645,7 +663,7 @@ namespace Box2D.NET
                     return b2RayCastCircle(ref input, ref circle);
                 }
 
-                if (qa > 1.0f)
+                if (qa > capsuleLength)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
@@ -653,6 +671,8 @@ namespace Box2D.NET
                 }
 
                 // ray starts inside capsule . no hit
+                output.point = input.origin;
+                output.hit = true;
                 return output;
             }
 
@@ -826,8 +846,11 @@ namespace Box2D.NET
 
             if (shape.radius == 0.0f)
             {
-                // Put the ray into the polygon's frame of reference.
-                B2Vec2 p1 = input.origin;
+                // Shift all math to first vertex since the polygon may be far
+                // from the origin.
+                B2Vec2 @base = shape.vertices[0];
+
+                B2Vec2 p1 = b2Sub(input.origin, @base);
                 B2Vec2 d = input.translation;
 
                 float lower = 0.0f, upper = input.maxFraction;
@@ -841,7 +864,8 @@ namespace Box2D.NET
                     // p = p1 + a * d
                     // dot(normal, p - v) = 0
                     // dot(normal, p1 - v) + a * dot(normal, d) = 0
-                    float numerator = b2Dot(shape.normals[i], b2Sub(shape.vertices[i], p1));
+                    B2Vec2 vertex = b2Sub(shape.vertices[i], @base);
+                    float numerator = b2Dot(shape.normals[i], b2Sub(vertex, p1));
                     float denominator = b2Dot(shape.normals[i], d);
 
                     if (denominator == 0.0f)
@@ -872,23 +896,26 @@ namespace Box2D.NET
                         }
                     }
 
-                    // The use of epsilon here causes the Debug.Assert on lower to trip
-                    // in some cases. Apparently the use of epsilon was to make edge
-                    // shapes work, but now those are handled separately.
-                    // if (upper < lower - b2_epsilon)
                     if (upper < lower)
                     {
+                        // Ray misses
                         return output;
                     }
                 }
 
                 B2_ASSERT(0.0f <= lower && lower <= input.maxFraction);
 
-                if (index >= 0)
+                if ( index >= 0 )
                 {
                     output.fraction = lower;
                     output.normal = shape.normals[index];
-                    output.point = b2MulAdd(p1, lower, d);
+                    output.point = b2MulAdd( input.origin, lower, d );
+                    output.hit = true;
+                }
+                else
+                {
+                    // initial overlap
+                    output.point = input.origin;
                     output.hit = true;
                 }
 

@@ -42,17 +42,6 @@ namespace Box2D.NET
         private static readonly B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
         private static bool s_initialized = false;
 
-        public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
-        {
-            if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
-            {
-                return filterA.groupIndex > 0;
-            }
-
-            bool collide = (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
-            return collide;
-        }
-
         public static B2Manifold b2CircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);

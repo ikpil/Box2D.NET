@@ -21,6 +21,8 @@ using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
+// This sample shows how to use the ray and shape cast functions on a b2World. This
+// sample is configured to ignore initial overlap.
 public class CastWorld : Sample
 {
     private static readonly int SampleRayCastWorld = SampleFactory.Shared.RegisterSample("Collision", "Cast World", Create);
@@ -383,7 +385,7 @@ public class CastWorld : Sample
             // This version doesn't have a callback, but it doesn't skip the ignored shape
             B2RayResult result = b2World_CastRayClosest(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter());
 
-            if (result.hit == true)
+            if (result.hit == true && result.fraction > 0.0f)
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
                 m_draw.DrawPoint(result.point, 5.0f, color1);
@@ -453,7 +455,7 @@ public class CastWorld : Sample
                     B2Vec2 n = context.normals[i];
                     m_draw.DrawPoint(p, 5.0f, colors[i]);
                     m_draw.DrawSegment(m_rayStart, c, color2);
-                    B2Vec2 head = b2MulAdd(p, 0.5f, n);
+                    B2Vec2 head = b2MulAdd(p, 1.0f, n);
                     m_draw.DrawSegment(p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
@@ -505,16 +507,11 @@ public class CastWorld : Sample
         base.Draw(settings);
 
         DrawTextLine("Click left mouse button and drag to modify ray cast");
-        
         DrawTextLine("Shape 7 is intentionally ignored by the ray");
-        
-
-        
 
         if (m_simple)
         {
             DrawTextLine("Simple closest point ray cast");
-            
         }
         else
         {
@@ -540,8 +537,6 @@ public class CastWorld : Sample
                     B2_ASSERT(false);
                     break;
             }
-
-            
         }
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
@@ -559,7 +554,9 @@ public class CastWorld : Sample
         CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-        if (userData != null && userData.ignore)
+
+        // Ignore a specific shape. Also ignore initial overlap.
+        if ((userData != null && userData.ignore) || fraction == 0.0f)
         {
             // By returning -1, we instruct the calling code to ignore this shape and
             // continue the ray-cast to the next shape.
@@ -585,7 +582,9 @@ public class CastWorld : Sample
         CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-        if (userData != null && userData.ignore)
+
+        // Ignore a specific shape. Also ignore initial overlap.
+        if ((userData != null && userData.ignore) || fraction == 0.0f)
         {
             // By returning -1, we instruct the calling code to ignore this shape and
             // continue the ray-cast to the next shape.
@@ -613,7 +612,9 @@ public class CastWorld : Sample
         CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-        if (userData != null && userData.ignore)
+
+        // Ignore a specific shape. Also ignore initial overlap.
+        if ((userData != null && userData.ignore) || fraction == 0.0f)
         {
             // By returning -1, we instruct the calling code to ignore this shape and
             // continue the ray-cast to the next shape.
@@ -639,13 +640,15 @@ public class CastWorld : Sample
         return 1.0f;
     }
 
-// This ray cast collects multiple hits along the ray and sorts them.
+    // This ray cast collects multiple hits along the ray and sorts them.
     static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         CastContext rayContext = (CastContext)context;
 
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
-        if (userData != null && userData.ignore)
+
+        // Ignore a specific shape. Also ignore initial overlap.
+        if ((userData != null && userData.ignore) || fraction == 0.0f)
         {
             // By returning -1, we instruct the calling code to ignore this shape and
             // continue the ray-cast to the next shape.

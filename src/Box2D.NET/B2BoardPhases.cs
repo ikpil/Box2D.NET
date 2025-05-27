@@ -16,6 +16,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET
 {

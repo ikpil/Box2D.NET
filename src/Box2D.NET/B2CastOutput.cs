@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    /// Low level ray cast or shape-cast output data
+    /// Low level ray cast or shape-cast output data. Returns a zero fraction and normal in the case of initial overlap.
     public struct B2CastOutput
     {
         /// The surface normal at the hit point

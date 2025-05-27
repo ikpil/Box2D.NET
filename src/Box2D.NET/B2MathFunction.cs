@@ -444,37 +444,12 @@ namespace Box2D.NET
             return b2Atan2(s, c);
         }
 
-        /// Convert an angle in the range [-2*pi, 2*pi] into the range [-pi, pi]
+        /// Convert any angle into the range [-pi, pi]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float b2UnwindAngle(float radians)
         {
-            if (radians < -B2_PI)
-            {
-                return radians + 2.0f * B2_PI;
-            }
-            else if (radians > B2_PI)
-            {
-                return radians - 2.0f * B2_PI;
-            }
-
-            return radians;
-        }
-
-        /// Convert any into the range [-pi, pi] (slow)
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2UnwindLargeAngle(float radians)
-        {
-            while (radians > B2_PI)
-            {
-                radians -= 2.0f * B2_PI;
-            }
-
-            while (radians < -B2_PI)
-            {
-                radians += 2.0f * B2_PI;
-            }
-
-            return radians;
+            // Assuming this is deterministic
+            return (float)Math.IEEERemainder(radians, 2.0f * B2_PI);
         }
 
         /// Rotate a vector
@@ -708,6 +683,17 @@ namespace Box2D.NET
             return b2IsNormalizedRot(q);
         }
 
+        /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2IsValidAABB(B2AABB a)
+        {
+            B2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
+            bool valid = d.X >= 0.0f && d.Y >= 0.0f;
+            valid = valid && b2IsValidVec2(a.lowerBound) && b2IsValidVec2(a.upperBound);
+            return valid;
+        }
+
+        /// Is this a valid plane? Normal is a unit vector. Not Nan or infinity.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsValidPlane(B2Plane a)
         {
@@ -769,7 +755,7 @@ namespace Box2D.NET
         // https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
         public static B2CosSin b2ComputeCosSin(float radians)
         {
-            float x = b2UnwindLargeAngle(radians);
+            float x = b2UnwindAngle(radians);
             float pi2 = B2_PI * B2_PI;
 
             // cosine needs angle in [-pi/2, pi/2]

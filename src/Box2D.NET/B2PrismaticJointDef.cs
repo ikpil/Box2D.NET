@@ -30,6 +30,10 @@ namespace Box2D.NET
 
         /// The constrained angle between the bodies: bodyB_angle - bodyA_angle
         public float referenceAngle;
+        
+        /// The target translation for the joint in meters. The spring-damper will drive
+        /// to this translation.
+        public float targetTranslation;
 
         /// Enable a linear spring along the prismatic joint axis
         public bool enableSpring;

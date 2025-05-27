@@ -8,6 +8,7 @@ using Silk.NET.GLFW;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -182,19 +183,24 @@ public class RayCast : Sample
 
         if (output.hit)
         {
-            B2Vec2 p = b2MulAdd(p1, output.fraction, d);
-            m_draw.DrawSegment(p1, p, B2HexColor.b2_colorWhite);
-            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
+            B2Vec2 p;
 
-            B2Vec2 n = b2MulAdd(p, 1.0f, output.normal);
-            m_draw.DrawSegment(p, n, B2HexColor.b2_colorViolet);
+            if (output.fraction == 0.0f)
+            {
+                B2_ASSERT(output.normal.X == 0.0f && output.normal.Y == 0.0f);
+                p = output.point;
+                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorPeru);
+            }
+            else
+            {
+                p = b2MulAdd(p1, output.fraction, d);
+                m_draw.DrawSegment(p1, p, B2HexColor.b2_colorWhite);
+                m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
 
-            // if (m_rayRadius > 0.0f)
-            //{
-            //	m_context.g_draw.DrawCircle(p1, m_rayRadius, b2HexColor.b2_colorGreen);
-            //	m_context.g_draw.DrawCircle(p, m_rayRadius, b2HexColor.b2_colorRed);
-            // }
+                B2Vec2 n = b2MulAdd(p, 1.0f, output.normal);
+                m_draw.DrawSegment(p, n, B2HexColor.b2_colorViolet);
+            }
 
             if (m_showFraction)
             {
@@ -207,12 +213,6 @@ public class RayCast : Sample
             m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
-
-            // if (m_rayRadius > 0.0f)
-            //{
-            //	m_context.g_draw.DrawCircle(p1, m_rayRadius, b2HexColor.b2_colorGreen);
-            //	m_context.g_draw.DrawCircle(p2, m_rayRadius, b2HexColor.b2_colorRed);
-            // }
         }
     }
 
