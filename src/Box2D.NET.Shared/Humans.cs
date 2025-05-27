@@ -32,7 +32,9 @@ namespace Box2D.NET.Shared
                 human.bones[i].parentIndex = -1;
             }
 
+            human.originalScale = scale;
             human.scale = scale;
+            human.frictionTorque = frictionTorque;
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -81,7 +83,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.95f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "hip";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
 
                 if (colorize)
@@ -101,7 +103,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.2f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "torso";
-                
+
                 // bodyDef.type = b2_staticBody;
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
@@ -185,7 +187,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_left_leg";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 1.0f;
 
@@ -233,7 +235,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "lower_left_leg";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -280,7 +282,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_right_leg";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 1.0f;
 
@@ -319,7 +321,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "lower_right_leg";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -367,7 +369,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_left_arm";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
 
                 if (colorize)
@@ -405,7 +407,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.name = "lower_left_arm";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.1f;
 
@@ -445,7 +447,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_right_arm";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.5f;
 
@@ -484,7 +486,7 @@ namespace Box2D.NET.Shared
                 bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.name = "lower_right_arm";
-                
+
                 bone.bodyId = b2CreateBody(worldId, ref bodyDef);
                 bone.frictionScale = 0.1f;
 
@@ -632,6 +634,79 @@ namespace Box2D.NET.Shared
             {
                 b2Shape_EnableSensorEvents(shapeId[0], enable);
             }
+        }
+
+        public static void Human_SetScale(ref Human human, float scale)
+        {
+            B2_ASSERT(human.isSpawned == true);
+            B2_ASSERT(0.01f < scale && scale < 100.0f);
+            B2_ASSERT(0.0f < human.scale);
+
+            float ratio = scale / human.scale;
+
+            // Torque scales by pow(length, 4) due to mass change and length change. However, gravity is also a factor
+            // so I'm using pow(length, 3)
+            float originalRatio = scale / human.originalScale;
+            float frictionTorque = (originalRatio * originalRatio * originalRatio) * human.frictionTorque;
+
+            B2Vec2 origin = b2Body_GetPosition(human.bones[0].bodyId);
+
+            for (int boneIndex = 0; boneIndex < (int)BoneId.bone_count; ++boneIndex)
+            {
+                ref Bone bone = ref human.bones[boneIndex];
+
+                if (boneIndex > 0)
+                {
+                    B2Transform transform = b2Body_GetTransform(bone.bodyId);
+                    transform.p = b2MulAdd(origin, ratio, b2Sub(transform.p, origin));
+                    b2Body_SetTransform(bone.bodyId, transform.p, transform.q);
+
+                    B2Vec2 localAnchorA = b2Joint_GetLocalAnchorA(bone.jointId);
+                    B2Vec2 localAnchorB = b2Joint_GetLocalAnchorB(bone.jointId);
+                    localAnchorA = b2MulSV(ratio, localAnchorA);
+                    localAnchorB = b2MulSV(ratio, localAnchorB);
+                    b2Joint_SetLocalAnchorA(bone.jointId, localAnchorA);
+                    b2Joint_SetLocalAnchorB(bone.jointId, localAnchorB);
+
+                    B2JointType type = b2Joint_GetType(bone.jointId);
+                    if (type == B2JointType.b2_revoluteJoint)
+                    {
+                        b2RevoluteJoint_SetMaxMotorTorque(bone.jointId, bone.frictionScale * frictionTorque);
+                    }
+                }
+
+                B2ShapeId[] shapeIds = new B2ShapeId[2];
+                int shapeCount = b2Body_GetShapes(bone.bodyId, shapeIds, 2);
+                for (int shapeIndex = 0; shapeIndex < shapeCount; ++shapeIndex)
+                {
+                    B2ShapeType type = b2Shape_GetType(shapeIds[shapeIndex]);
+                    if (type == B2ShapeType.b2_capsuleShape)
+                    {
+                        B2Capsule capsule = b2Shape_GetCapsule(shapeIds[shapeIndex]);
+                        capsule.center1 = b2MulSV(ratio, capsule.center1);
+                        capsule.center2 = b2MulSV(ratio, capsule.center2);
+                        capsule.radius *= ratio;
+                        b2Shape_SetCapsule(shapeIds[shapeIndex], ref capsule);
+                    }
+                    else if (type == B2ShapeType.b2_polygonShape)
+                    {
+                        B2Polygon polygon = b2Shape_GetPolygon(shapeIds[shapeIndex]);
+                        for (int pointIndex = 0; pointIndex < polygon.count; ++pointIndex)
+                        {
+                            polygon.vertices[pointIndex] = b2MulSV(ratio, polygon.vertices[pointIndex]);
+                        }
+
+                        polygon.centroid = b2MulSV(ratio, polygon.centroid);
+                        polygon.radius *= ratio;
+
+                        b2Shape_SetPolygon(shapeIds[shapeIndex], ref polygon);
+                    }
+                }
+
+                b2Body_ApplyMassFromShapes(bone.bodyId);
+            }
+
+            human.scale = scale;
         }
     }
 }

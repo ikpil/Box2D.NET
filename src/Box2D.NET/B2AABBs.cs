@@ -50,15 +50,6 @@ namespace Box2D.NET
             return changed;
         }
 
-        /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2IsValidAABB(B2AABB a)
-        {
-            B2Vec2 d = b2Sub(a.upperBound, a.lowerBound);
-            bool valid = d.X >= 0.0f && d.Y >= 0.0f;
-            valid = valid && b2IsValidVec2(a.lowerBound) && b2IsValidVec2(a.upperBound);
-            return valid;
-        }
 
         // Ray cast an AABB
         // From Real-time Collision Detection, p179.

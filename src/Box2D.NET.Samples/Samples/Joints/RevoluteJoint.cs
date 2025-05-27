@@ -26,6 +26,7 @@ public class RevoluteJoint : Sample
     private float m_motorTorque;
     private float m_hertz;
     private float m_dampingRatio;
+    private float m_targetDegrees;
     private float m_targetAngle;
     private bool m_enableSpring;
     private bool m_enableMotor;
@@ -59,9 +60,9 @@ public class RevoluteJoint : Sample
         m_enableSpring = false;
         m_enableLimit = true;
         m_enableMotor = false;
-        m_hertz = 1.0f;
+        m_hertz = 2.0f;
         m_dampingRatio = 0.5f;
-        m_targetAngle = 0.0f;
+        m_targetAngle = 45.0f;
         m_motorSpeed = 1.0f;
         m_motorTorque = 1000.0f;
 
@@ -83,6 +84,7 @@ public class RevoluteJoint : Sample
             jointDef.bodyIdB = bodyId;
             jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
             jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.targetAngle = B2_PI * m_targetDegrees / 180.0f;
             jointDef.enableSpring = m_enableSpring;
             jointDef.hertz = m_hertz;
             jointDef.dampingRatio = m_dampingRatio;
@@ -198,9 +200,9 @@ public class RevoluteJoint : Sample
             }
             
             
-            if ( ImGui.SliderFloat( "Degrees", ref m_targetAngle, -180.0f, 180.0f, "%.0f" ) )
+            if ( ImGui.SliderFloat( "Degrees", ref m_targetDegrees, -180.0f, 180.0f, "%.0f" ) )
             {
-                b2RevoluteJoint_SetTargetAngle( m_jointId1, B2_PI * m_targetAngle / 180.0f );
+                b2RevoluteJoint_SetTargetAngle( m_jointId1, B2_PI * m_targetDegrees / 180.0f );
                 b2Joint_WakeBodies( m_jointId1 );
             }
         }

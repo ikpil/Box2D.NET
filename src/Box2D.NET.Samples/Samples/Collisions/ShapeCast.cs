@@ -113,8 +113,8 @@ public class ShapeCast : Sample
             m_box = b2MakePolygon( &hull, 0.0f );
         }
 #endif
-        
-        m_transform = new B2Transform( new B2Vec2( -0.6f, 0.0f ), b2Rot_identity );
+
+        m_transform = new B2Transform(new B2Vec2(-0.6f, 0.0f), b2Rot_identity);
         m_translation = new B2Vec2(2.0f, 0.0f);
         m_angle = 0.0f;
         m_startPoint = new B2Vec2(0.0f, 0.0f);
@@ -376,7 +376,7 @@ public class ShapeCast : Sample
     {
         base.Draw(settings);
 
-        DrawTextLine($"hit = {output.hit}, iterations = {output.iterations}, lambda = {output.fraction}, distance = {_distanceOutput.distance}");
+        DrawTextLine($"hit = {output.hit}, iterations = {output.iterations}, fraction = {output.fraction}, distance = {_distanceOutput.distance}");
 
         DrawShape(m_typeA, b2Transform_identity, m_radiusA, B2HexColor.b2_colorCyan);
         DrawShape(m_typeB, m_transform, m_radiusB, B2HexColor.b2_colorLightGreen);
@@ -386,8 +386,17 @@ public class ShapeCast : Sample
         if (output.hit)
         {
             DrawShape(m_typeB, inputTransform, m_radiusB, B2HexColor.b2_colorPlum);
-            m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
-            m_draw.DrawSegment(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+
+
+            if (output.fraction > 0.0f)
+            {
+                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
+                m_draw.DrawSegment(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+            }
+            else
+            {
+                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorPeru);
+            }
         }
 
         if (m_showIndices)

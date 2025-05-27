@@ -14,22 +14,26 @@ namespace Box2D.NET
 {
     public static class B2MotorJoints
     {
+        /// Set the motor joint linear offset target
         public static void b2MotorJoint_SetLinearOffset(B2JointId jointId, B2Vec2 linearOffset)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearOffset = linearOffset;
         }
 
+        /// Get the motor joint linear offset target
         public static B2Vec2 b2MotorJoint_GetLinearOffset(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             return joint.uj.motorJoint.linearOffset;
         }
 
+        /// Set the motor joint angular offset target in radians. This angle will be unwound
+        /// so the motor will drive along the shortest arc.
         public static void b2MotorJoint_SetAngularOffset(B2JointId jointId, float angularOffset)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
-            joint.uj.motorJoint.angularOffset = b2ClampFloat(angularOffset, -B2_PI, B2_PI);
+            joint.uj.motorJoint.angularOffset = angularOffset;
         }
 
         public static float b2MotorJoint_GetAngularOffset(B2JointId jointId)
@@ -85,19 +89,19 @@ namespace Box2D.NET
             return world.inv_h * @base.uj.motorJoint.angularImpulse;
         }
 
-// Point-to-point constraint
-// C = p2 - p1
-// Cdot = v2 - v1
-//      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-// J = [-I -r1_skew I r2_skew ]
-// Identity used:
-// w k % (rx i + ry j) = w * (-ry i + rx j)
+        // Point-to-point constraint
+        // C = p2 - p1
+        // Cdot = v2 - v1
+        //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
+        // J = [-I -r1_skew I r2_skew ]
+        // Identity used:
+        // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-// Angle constraint
-// C = angle2 - angle1 - referenceAngle
-// Cdot = w2 - w1
-// J = [0 0 -1 0 0 1]
-// K = invI1 + invI2
+        // Angle constraint
+        // C = angle2 - angle1 - referenceAngle
+        // Cdot = w2 - w1
+        // J = [0 0 -1 0 0 1]
+        // K = invI1 + invI2
 
         public static void b2PrepareMotorJoint(B2JointSim @base, B2StepContext context)
         {
@@ -141,7 +145,6 @@ namespace Box2D.NET
             joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
             joint.deltaCenter = b2Sub(b2Sub(bodySimB.center, bodySimA.center), joint.linearOffset);
             joint.deltaAngle = b2RelativeAngle(bodySimB.transform.q, bodySimA.transform.q) - joint.angularOffset;
-            joint.deltaAngle = b2UnwindAngle(joint.deltaAngle);
 
             B2Vec2 rA = joint.anchorA;
             B2Vec2 rB = joint.anchorB;
@@ -211,10 +214,10 @@ namespace Box2D.NET
 
             // angular constraint
             {
-                float angularSeperation = b2RelativeAngle(bodyB.deltaRotation, bodyA.deltaRotation) + joint.deltaAngle;
-                angularSeperation = b2UnwindAngle(angularSeperation);
+                float angularSeparation = b2RelativeAngle(bodyB.deltaRotation, bodyA.deltaRotation) + joint.deltaAngle;
+                angularSeparation = b2UnwindAngle(angularSeparation);
 
-                float angularBias = context.inv_h * joint.correctionFactor * angularSeperation;
+                float angularBias = context.inv_h * joint.correctionFactor * angularSeparation;
 
                 float Cdot = wB - wA;
                 float impulse = -joint.angularMass * (Cdot + angularBias);

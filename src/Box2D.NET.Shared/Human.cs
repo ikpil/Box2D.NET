@@ -9,6 +9,8 @@ namespace Box2D.NET.Shared
     public struct Human
     {
         public B2FixedArray11<Bone> bones;
+        public float frictionTorque;
+        public float originalScale;
         public float scale;
         public bool isSpawned;
 

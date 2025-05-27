@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -38,6 +39,24 @@ namespace Box2D.NET
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
+        {
+            if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
+            {
+                return filterA.groupIndex > 0;
+            }
+
+            return (filterA.maskBits & filterB.categoryBits) != 0 && (filterA.categoryBits & filterB.maskBits) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2ShouldQueryCollide(B2Filter shapeFilter, B2QueryFilter queryFilter)
+        {
+            return (shapeFilter.categoryBits & queryFilter.maskBits) != 0 && (shapeFilter.maskBits & queryFilter.categoryBits) != 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Shape b2GetShape(B2World world, B2ShapeId shapeId)
         {
             int id = shapeId.index1 - 1;

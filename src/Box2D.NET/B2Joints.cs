@@ -407,6 +407,8 @@ namespace Box2D.NET
             return jointId;
         }
 
+        /// Create a motor joint
+        /// @see b2MotorJointDef for details
         public static B2JointId b2CreateMotorJoint(B2WorldId worldId, ref B2MotorJointDef def)
         {
             B2_CHECK_DEF(ref def);
@@ -549,6 +551,7 @@ namespace Box2D.NET
             joint.uj.revoluteJoint = empty;
 
             joint.uj.revoluteJoint.referenceAngle = b2ClampFloat(def.referenceAngle, -B2_PI, B2_PI);
+            joint.uj.revoluteJoint.targetAngle = b2ClampFloat(def.targetAngle, -B2_PI, B2_PI);
             joint.uj.revoluteJoint.hertz = def.hertz;
             joint.uj.revoluteJoint.dampingRatio = def.dampingRatio;
             joint.uj.revoluteJoint.lowerAngle = def.lowerAngle;
@@ -598,12 +601,7 @@ namespace Box2D.NET
 
             joint.uj.prismaticJoint.localAxisA = b2Normalize(def.localAxisA);
             joint.uj.prismaticJoint.referenceAngle = def.referenceAngle;
-            joint.uj.prismaticJoint.impulse = b2Vec2_zero;
-            joint.uj.prismaticJoint.axialMass = 0.0f;
-            joint.uj.prismaticJoint.springImpulse = 0.0f;
-            joint.uj.prismaticJoint.motorImpulse = 0.0f;
-            joint.uj.prismaticJoint.lowerImpulse = 0.0f;
-            joint.uj.prismaticJoint.upperImpulse = 0.0f;
+            joint.uj.prismaticJoint.targetTranslation = def.targetTranslation;
             joint.uj.prismaticJoint.hertz = def.hertz;
             joint.uj.prismaticJoint.dampingRatio = def.dampingRatio;
             joint.uj.prismaticJoint.lowerTranslation = def.lowerTranslation;
@@ -860,10 +858,22 @@ namespace Box2D.NET
             return b2MakeBodyId(world, joint.edges[1].bodyId);
         }
 
+        /// Get the world that owns this joint
         public static B2WorldId b2Joint_GetWorld(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             return new B2WorldId((ushort)(jointId.world0 + 1), world.generation);
+        }
+
+        /// Set the local anchor on bodyA
+        public static void b2Joint_SetLocalAnchorA(B2JointId jointId, B2Vec2 localAnchor)
+        {
+            B2_ASSERT(b2IsValidVec2(localAnchor));
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+            jointSim.localOriginAnchorA = localAnchor;
         }
 
         public static B2Vec2 b2Joint_GetLocalAnchorA(B2JointId jointId)
@@ -872,6 +882,17 @@ namespace Box2D.NET
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim jointSim = b2GetJointSim(world, joint);
             return jointSim.localOriginAnchorA;
+        }
+
+        /// Set the local anchor on bodyB
+        public static void b2Joint_SetLocalAnchorB(B2JointId jointId, B2Vec2 localAnchor)
+        {
+            B2_ASSERT(b2IsValidVec2(localAnchor));
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+            jointSim.localOriginAnchorB = localAnchor;
         }
 
         public static B2Vec2 b2Joint_GetLocalAnchorB(B2JointId jointId)
@@ -1002,6 +1023,7 @@ namespace Box2D.NET
             }
         }
 
+        /// Get the current constraint torque for this joint. Usually in Newton * meters.
         public static float b2Joint_GetConstraintTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
@@ -1033,6 +1055,198 @@ namespace Box2D.NET
 
                 case B2JointType.b2_wheelJoint:
                     return b2GetWheelJointTorque(world, @base);
+
+                default:
+                    B2_ASSERT(false);
+                    return 0.0f;
+            }
+        }
+
+        /// Get the current linear separation error for this joint. Does not consider admissible movement. Usually in meters.
+        public static float b2Joint_GetLinearSeparation(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+
+            B2Transform xfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
+            B2Transform xfB = b2GetBodyTransform(world, joint.edges[1].bodyId);
+
+            B2Vec2 pA = b2TransformPoint(ref xfA, @base.localOriginAnchorA);
+            B2Vec2 pB = b2TransformPoint(ref xfB, @base.localOriginAnchorB);
+            B2Vec2 dp = b2Sub(pB, pA);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_distanceJoint:
+                {
+                    ref B2DistanceJoint distanceJoint = ref @base.uj.distanceJoint;
+                    float length = b2Length(dp);
+                    if (distanceJoint.enableSpring)
+                    {
+                        if (distanceJoint.enableLimit)
+                        {
+                            if (length < distanceJoint.minLength)
+                            {
+                                return distanceJoint.minLength - length;
+                            }
+                            else if (length > distanceJoint.maxLength)
+                            {
+                                return length - distanceJoint.maxLength;
+                            }
+
+                            return 0.0f;
+                        }
+
+                        return 0.0f;
+                    }
+
+                    return b2AbsFloat(length - distanceJoint.length);
+                }
+
+                case B2JointType.b2_motorJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_mouseJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_filterJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_prismaticJoint:
+                {
+                    ref B2PrismaticJoint prismaticJoint = ref @base.uj.prismaticJoint;
+                    B2Vec2 axisA = b2RotateVector(xfA.q, prismaticJoint.localAxisA);
+                    B2Vec2 perpA = b2LeftPerp(axisA);
+                    float perpendicularSeparation = b2AbsFloat(b2Dot(perpA, dp));
+                    float limitSeparation = 0.0f;
+
+                    if (prismaticJoint.enableLimit)
+                    {
+                        float translation = b2Dot(axisA, dp);
+                        if (translation < prismaticJoint.lowerTranslation)
+                        {
+                            limitSeparation = prismaticJoint.lowerTranslation - translation;
+                        }
+
+                        if (prismaticJoint.upperTranslation < translation)
+                        {
+                            limitSeparation = translation - prismaticJoint.upperTranslation;
+                        }
+                    }
+
+                    return MathF.Sqrt(perpendicularSeparation * perpendicularSeparation + limitSeparation * limitSeparation);
+                }
+
+                case B2JointType.b2_revoluteJoint:
+                    return b2Length(dp);
+
+                case B2JointType.b2_weldJoint:
+                {
+                    ref B2WeldJoint weldJoint = ref @base.uj.weldJoint;
+                    if (weldJoint.linearHertz == 0.0f)
+                    {
+                        return b2Length(dp);
+                    }
+
+                    return 0.0f;
+                }
+
+                case B2JointType.b2_wheelJoint:
+                {
+                    ref B2WheelJoint wheelJoint = ref @base.uj.wheelJoint;
+                    B2Vec2 axisA = b2RotateVector(xfA.q, wheelJoint.localAxisA);
+                    B2Vec2 perpA = b2LeftPerp(axisA);
+                    float perpendicularSeparation = b2AbsFloat(b2Dot(perpA, dp));
+                    float limitSeparation = 0.0f;
+
+                    if (wheelJoint.enableLimit)
+                    {
+                        float translation = b2Dot(axisA, dp);
+                        if (translation < wheelJoint.lowerTranslation)
+                        {
+                            limitSeparation = wheelJoint.lowerTranslation - translation;
+                        }
+
+                        if (wheelJoint.upperTranslation < translation)
+                        {
+                            limitSeparation = translation - wheelJoint.upperTranslation;
+                        }
+                    }
+
+                    return MathF.Sqrt(perpendicularSeparation * perpendicularSeparation + limitSeparation * limitSeparation);
+                }
+
+                default:
+                    B2_ASSERT(false);
+                    return 0.0f;
+            }
+        }
+
+        /// Get the current angular separation error for this joint. Does not consider admissible movement. Usually in meters.
+        public static float b2Joint_GetAngularSeparation(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+
+            B2Transform xfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
+            B2Transform xfB = b2GetBodyTransform(world, joint.edges[1].bodyId);
+            float relativeAngle = b2RelativeAngle(xfB.q, xfA.q);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_distanceJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_motorJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_mouseJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_filterJoint:
+                    return 0.0f;
+
+                case B2JointType.b2_prismaticJoint:
+                {
+                    ref B2PrismaticJoint prismaticJoint = ref @base.uj.prismaticJoint;
+                    return b2UnwindAngle(relativeAngle - prismaticJoint.referenceAngle);
+                }
+
+                case B2JointType.b2_revoluteJoint:
+                {
+                    ref B2RevoluteJoint revoluteJoint = ref @base.uj.revoluteJoint;
+                    if (revoluteJoint.enableLimit)
+                    {
+                        float angle = b2UnwindAngle(relativeAngle - revoluteJoint.referenceAngle);
+                        if (angle < revoluteJoint.lowerAngle)
+                        {
+                            return revoluteJoint.lowerAngle - angle;
+                        }
+
+                        if (revoluteJoint.upperAngle < angle)
+                        {
+                            return angle - revoluteJoint.upperAngle;
+                        }
+                    }
+
+                    return 0.0f;
+                }
+
+                case B2JointType.b2_weldJoint:
+                {
+                    ref B2WeldJoint weldJoint = ref @base.uj.weldJoint;
+                    if (weldJoint.angularHertz == 0.0f)
+                    {
+                        return b2UnwindAngle(relativeAngle - weldJoint.referenceAngle);
+                    }
+
+                    return 0.0f;
+                }
+
+                case B2JointType.b2_wheelJoint:
+                    return 0.0f;
 
                 default:
                     B2_ASSERT(false);

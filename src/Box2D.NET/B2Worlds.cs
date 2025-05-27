@@ -650,7 +650,7 @@ namespace Box2D.NET
                     else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching))
                     {
                         B2_ASSERT(contact.islandId == B2_NULL_INDEX);
-                        
+
                         if (0 != (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
                             B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, ref contactSim.manifold);
@@ -1344,7 +1344,7 @@ namespace Box2D.NET
                     }
 
                     B2BodySim bodySim = b2GetBodySim(world, body);
-                    
+
                     B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
                     B2Vec2 p = b2TransformPoint(ref transform, offset);
                     draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
@@ -2091,10 +2091,7 @@ namespace Box2D.NET
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
-
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return true;
             }
@@ -2143,10 +2140,7 @@ namespace Box2D.NET
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
-
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return true;
             }
@@ -2214,10 +2208,8 @@ namespace Box2D.NET
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
 
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return input.maxFraction;
             }
@@ -2245,7 +2237,6 @@ namespace Box2D.NET
 
         /// Cast a ray into the world to collect shapes in the path of the ray.
         /// Your callback function controls whether you get the closest point, any point, or n-points.
-        /// The ray-cast ignores shapes that contain the starting point.
         /// @note The callback function may receive shapes in any order
         /// @param worldId The world to cast the ray against
         /// @param origin The start point of the ray
@@ -2293,6 +2284,12 @@ namespace Box2D.NET
         // This callback finds the closest hit. This is the most common callback used in games.
         public static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
         {
+            // Ignore initial overlap
+            if (fraction == 0.0f)
+            {
+                return -1.0f;
+            }
+
             B2RayResult rayResult = context as B2RayResult;
             rayResult.shapeId = shapeId;
             rayResult.point = point;
@@ -2302,7 +2299,7 @@ namespace Box2D.NET
             return fraction;
         }
 
-        /// Cast a ray into the world to collect the closest hit. This is a convenience function.
+        /// Cast a ray into the world to collect the closest hit. This is a convenience function. Ignores initial overlap.
         /// This is less general than b2World_CastRay() and does not allow for custom filtering.
         public static B2RayResult b2World_CastRayClosest(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter)
         {
@@ -2349,10 +2346,8 @@ namespace Box2D.NET
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
 
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return input.maxFraction;
             }
@@ -2429,10 +2424,8 @@ namespace Box2D.NET
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
 
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return worldContext.fraction;
             }
@@ -2501,13 +2494,11 @@ namespace Box2D.NET
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
-            B2Filter shapeFilter = shape.filter;
-            B2QueryFilter queryFilter = worldContext.filter;
-
-            if ((shapeFilter.categoryBits & queryFilter.maskBits) == 0 || (shapeFilter.maskBits & queryFilter.categoryBits) == 0)
+            if (b2ShouldQueryCollide(shape.filter, worldContext.filter) == false)
             {
                 return true;
             }
+
 
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
@@ -3041,7 +3032,7 @@ void b2World_Dump()
                                 // contact should be non-touching if awake
                                 // or it could be this contact hasn't been transferred yet
                                 B2_ASSERT(contactSim.manifold.pointCount == 0 ||
-                                             (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching) != 0);
+                                          (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching) != 0);
                             }
 
                             B2_ASSERT(contact.setIndex == setIndex);
@@ -3109,7 +3100,7 @@ void b2World_Dump()
                         B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
                         // contact should be touching in the constraint graph or awaiting transfer to non-touching
                         B2_ASSERT(contactSim.manifold.pointCount > 0 ||
-                                     (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
+                                  (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
                         B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
                         B2_ASSERT(contact.colorIndex == colorIndex);
                         B2_ASSERT(contact.localIndex == i);

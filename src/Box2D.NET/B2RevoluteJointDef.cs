@@ -33,6 +33,10 @@ namespace Box2D.NET
         /// The bodyB angle minus bodyA angle in the reference state (radians).
         /// This defines the zero angle for the joint limit.
         public float referenceAngle;
+        
+        /// The target angle for the joint in radians. The spring-damper will drive
+        /// to this angle.
+        public float targetAngle;
 
         /// Enable a rotational spring on the revolute hinge axis
         public bool enableSpring;

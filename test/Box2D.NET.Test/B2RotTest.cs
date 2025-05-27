@@ -44,9 +44,9 @@ public class B2RotTest
         var rot = b2MakeRot(0.0f);
         float deltaAngle = B2_PI / 2;
         var result = b2IntegrateRotation(rot, deltaAngle);
-        float expectedMag = MathF.Sqrt(1.0f + (B2_PI/2) * (B2_PI/2));
+        float expectedMag = MathF.Sqrt(1.0f + (B2_PI / 2) * (B2_PI / 2));
         float expectedC = 1.0f / expectedMag;
-        float expectedS = (B2_PI/2) / expectedMag;
+        float expectedS = (B2_PI / 2) / expectedMag;
         Assert.That(result.c, Is.EqualTo(expectedC).Within(0.0001f), "Integrated rotation cosine should match expected value");
         Assert.That(result.s, Is.EqualTo(expectedS).Within(0.0001f), "Integrated rotation sine should match expected value");
         Assert.That(result.c * result.c + result.s * result.s, Is.EqualTo(1.0f).Within(0.0001f), "Integrated rotation should remain normalized");
@@ -119,13 +119,8 @@ public class B2RotTest
         Assert.That(b2UnwindAngle(-3 * B2_PI / 2), Is.EqualTo(B2_PI / 2).Within(FLT_EPSILON), "Angle less than -PI should be normalized to [-PI, PI]");
         Assert.That(b2UnwindAngle(B2_PI), Is.EqualTo(B2_PI).Within(FLT_EPSILON), "PI should remain unchanged");
         Assert.That(b2UnwindAngle(-B2_PI), Is.EqualTo(-B2_PI).Within(FLT_EPSILON), "-PI should remain unchanged");
-    }
-
-    [Test]
-    public void Test_B2Rot_UnwindLargeAngle()
-    {
-        Assert.That(b2UnwindLargeAngle(5 * B2_PI), Is.EqualTo(B2_PI).Within(0.0001f), "Large angle should be normalized to [-PI, PI]");
-        Assert.That(b2UnwindLargeAngle(-5 * B2_PI), Is.EqualTo(-B2_PI).Within(0.0001f), "Large negative angle should be normalized to [-PI, PI]");
+        Assert.That(b2UnwindAngle(5 * B2_PI), Is.EqualTo(-B2_PI).Within(0.0001f), "Large angle should be normalized to [-PI, PI]");
+        Assert.That(b2UnwindAngle(-5 * B2_PI), Is.EqualTo(B2_PI).Within(0.0001f), "Large negative angle should be normalized to [-PI, PI]");
     }
 
     [Test]
@@ -137,4 +132,4 @@ public class B2RotTest
         Assert.That(result.X, Is.EqualTo(1.0f).Within(FLT_EPSILON), "Inverse rotation should map (0,1) back to (1,0)");
         Assert.That(result.Y, Is.EqualTo(0.0f).Within(FLT_EPSILON), "Inverse rotation should map (0,1) back to (1,0)");
     }
-} 
+}

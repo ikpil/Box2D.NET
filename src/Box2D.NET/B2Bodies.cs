@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -42,6 +43,15 @@ namespace Box2D.NET
             s.q2 = bodySim.transform.q;
             s.localCenter = bodySim.localCenter;
             return s;
+        }
+
+        public static void b2LimitVelocity(B2BodyState state, float maxLinearSpeed)
+        {
+            float v2 = b2LengthSquared(state.linearVelocity);
+            if (v2 > maxLinearSpeed * maxLinearSpeed)
+            {
+                state.linearVelocity = b2MulSV(maxLinearSpeed / MathF.Sqrt(v2), state.linearVelocity);
+            }
         }
 
         // Get a validated body from a world using an id.
@@ -975,6 +985,8 @@ namespace Box2D.NET
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
                 state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(point, bodySim.center), impulse);
+
+                b2LimitVelocity(state, world.maxLinearSpeed);
             }
         }
 
@@ -995,6 +1007,8 @@ namespace Box2D.NET
                 B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
+
+                b2LimitVelocity(state, world.maxLinearSpeed);
             }
         }
 
@@ -1863,6 +1877,7 @@ namespace Box2D.NET
 
             return jointCount;
         }
+
 
         public static bool b2ShouldBodiesCollide(B2World world, B2Body bodyA, B2Body bodyB)
         {

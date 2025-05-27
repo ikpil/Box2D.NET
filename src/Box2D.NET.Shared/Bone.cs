@@ -9,6 +9,7 @@ namespace Box2D.NET.Shared
         public B2BodyId bodyId;
         public B2JointId jointId;
         public float frictionScale;
+        public float maxTorque;
         public int parentIndex;
     }
 }

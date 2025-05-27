@@ -28,7 +28,10 @@ public class B2MathTest
             Assert.That(r.c - c, Is.LessThan(0.002f));
             Assert.That(r.s - s, Is.LessThan(0.002f));
 
-            float xn = b2UnwindLargeAngle(angle);
+            float xn = b2UnwindAngle(angle);
+
+            Assert.That(-B2_PI <= xn && xn <= B2_PI, Is.True);
+
             float a = b2Atan2(s, c);
             Assert.That(b2IsValidFloat(a));
 
