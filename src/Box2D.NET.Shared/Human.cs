@@ -25,6 +25,8 @@ namespace Box2D.NET.Shared
 
             scale = 0.0f;
             isSpawned = false;
+            frictionTorque = 0.0f;
+            originalScale = 0.0f;
         }
     }
 }
