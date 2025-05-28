@@ -734,7 +734,6 @@ namespace Box2D.NET
                 if (denominator >= 0.0f)
                 {
                     // Miss
-                    output.fraction = 1.0f;
                     return output;
                 }
 

@@ -24,6 +24,7 @@ namespace Box2D.NET
 {
     public static class B2Shapes
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float b2GetShapeRadius(B2Shape shape)
         {
             switch (shape.type)

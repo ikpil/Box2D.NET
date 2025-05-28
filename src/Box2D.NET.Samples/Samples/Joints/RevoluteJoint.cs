@@ -27,7 +27,6 @@ public class RevoluteJoint : Sample
     private float m_hertz;
     private float m_dampingRatio;
     private float m_targetDegrees;
-    private float m_targetAngle;
     private bool m_enableSpring;
     private bool m_enableMotor;
     private bool m_enableLimit;
@@ -62,7 +61,7 @@ public class RevoluteJoint : Sample
         m_enableMotor = false;
         m_hertz = 2.0f;
         m_dampingRatio = 0.5f;
-        m_targetAngle = 45.0f;
+        m_targetDegrees = 45.0f;
         m_motorSpeed = 1.0f;
         m_motorTorque = 1000.0f;
 
@@ -198,12 +197,12 @@ public class RevoluteJoint : Sample
                 b2RevoluteJoint_SetSpringDampingRatio(m_jointId1, m_dampingRatio);
                 b2Joint_WakeBodies(m_jointId1);
             }
-            
-            
-            if ( ImGui.SliderFloat( "Degrees", ref m_targetDegrees, -180.0f, 180.0f, "%.0f" ) )
+
+
+            if (ImGui.SliderFloat("Degrees", ref m_targetDegrees, -180.0f, 180.0f, "%.0f"))
             {
-                b2RevoluteJoint_SetTargetAngle( m_jointId1, B2_PI * m_targetDegrees / 180.0f );
-                b2Joint_WakeBodies( m_jointId1 );
+                b2RevoluteJoint_SetTargetAngle(m_jointId1, B2_PI * m_targetDegrees / 180.0f);
+                b2Joint_WakeBodies(m_jointId1);
             }
         }
 
@@ -213,17 +212,16 @@ public class RevoluteJoint : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
         DrawTextLine($"Angle (Deg) 1 = {angle1:F1}");
-        
+
 
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
         DrawTextLine($"Motor Torque 1 = {torque1:F1}");
-        
+
 
         float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
         DrawTextLine($"Motor Torque 2 = {torque2:F1}");
-        
     }
 }

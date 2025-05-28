@@ -256,8 +256,10 @@ public class SmoothManifold : Sample
         }
     }
 
-    public override void Step()
+    public override void Draw(Settings settings)
     {
+        base.Draw(settings);
+        
         B2HexColor color1 = B2HexColor.b2_colorYellow;
         B2HexColor color2 = B2HexColor.b2_colorMagenta;
 
