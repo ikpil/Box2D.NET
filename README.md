@@ -60,17 +60,18 @@ dotnet run --project src/Box2D.NET.Samples --framework net9.0 -c Release
 ## 📚 Documentation & Links
 
 ### Box2D.NET Links
+
  - [Box2D.NET/issues](https://github.com/ikpil/Box2D.NET/issues)
 
 ### Original Box2D Links
+
  - [box2d.org](https://box2d.org)
  - [box2d/issues](https://github.com/erincatto/box2d/issues)
  - [box2d.org/documentation](https://box2d.org/documentation/)
 
 You can use the original Box2D documentation as a reference, since the Box2D.NET API closely mirrors the original implementation. If you are new to Box2D, we recommend starting with the original documentation to learn the basics and core concepts.
 
-
-Key Naming Conventions:
+**Key Naming Conventions:**
 
 - Properties and methods: Start with lowercase (matches original Box2D)
 - Classes and structs: Start with Uppercase (differs from original Box2D)
