@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Buffers;
@@ -32,16 +33,19 @@ namespace Box2D.NET
             flags = (ushort)B2TreeNodeFlags.b2_allocatedNode,
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsLeaf(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_leafNode);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2IsAllocated(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ushort b2MaxUInt16(ushort a, ushort b)
         {
             return a > b ? a : b;
@@ -775,6 +779,7 @@ namespace Box2D.NET
         }
 
         /// Get the number of proxies created
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetProxyCount(B2DynamicTree tree)
         {
             return tree.proxyCount;
@@ -910,6 +915,7 @@ namespace Box2D.NET
         }
 
         /// Get the bounding box that contains the entire tree
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2DynamicTree_GetRootBounds(B2DynamicTree tree)
         {
             if (tree.root != B2_NULL_INDEX)
@@ -1078,6 +1084,7 @@ namespace Box2D.NET
         }
 
         /// Get the number of bytes used by this tree
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetByteCount(B2DynamicTree tree)
         {
             // TODO: @ikpil, check
@@ -1088,6 +1095,7 @@ namespace Box2D.NET
         }
 
         /// Get proxy user data
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2DynamicTree_GetUserData(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
@@ -1095,6 +1103,7 @@ namespace Box2D.NET
         }
 
         /// Get the AABB of a proxy
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2DynamicTree_GetAABB(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
