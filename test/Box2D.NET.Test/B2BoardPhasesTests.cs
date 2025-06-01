@@ -1,4 +1,8 @@
-﻿using System;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using System;
 using Box2D.NET.Test.Helpers;
 using NUnit.Framework;
 using static Box2D.NET.B2BoardPhases;
