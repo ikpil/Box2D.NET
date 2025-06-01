@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Buffers;
 
@@ -27,6 +28,7 @@ namespace Box2D.NET
     public static class B2Arrays
     {
         /* Resize */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Resize<T>(ref B2Array<T> a, int count) where T : new()
         {
             b2Array_Reserve(ref a, count);
@@ -34,6 +36,7 @@ namespace Box2D.NET
         }
 
         /* Get */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T b2Array_Get<T>(ref B2Array<T> a, int index)
         {
             if (0 > index || index >= a.count)
@@ -45,6 +48,7 @@ namespace Box2D.NET
         }
 
         /* Add */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref T b2Array_Add<T>(ref B2Array<T> a) where T : new()
         {
             if (a.count == a.capacity)
@@ -58,6 +62,7 @@ namespace Box2D.NET
         }
 
         /* Push */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Push<T>(ref B2Array<T> a, T value) where T : new()
         {
             if (a.count == a.capacity)
@@ -71,6 +76,7 @@ namespace Box2D.NET
         }
 
         /* Set */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Set<T>(ref B2Array<T> a, int index, T value)
         {
             ref T v = ref b2Array_Get(ref a, index);
@@ -78,6 +84,7 @@ namespace Box2D.NET
         }
 
         /* RemoveSwap */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2Array_RemoveSwap<T>(ref B2Array<T> a, int index) where T : new()
         {
             if (0 > index || index >= a.count)
@@ -103,6 +110,7 @@ namespace Box2D.NET
         }
 
         /* Pop */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T b2Array_Pop<T>(ref B2Array<T> a) where T : new()
         {
             if (0 >= a.count)
@@ -123,12 +131,14 @@ namespace Box2D.NET
         }
 
         /* Clear */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Clear<T>(ref B2Array<T> a)
         {
             a.count = 0;
         }
 
         /* ByteCount */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2Array_ByteCount<T>(ref B2Array<T> a)
         {
             if (typeof(T).IsValueType)
@@ -141,6 +151,7 @@ namespace Box2D.NET
 
         // Array implementations to be instantiated in a source file where the type T is known
         /* Create */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Array<T> b2Array_Create<T>(int capacity = 0) where T : new()
         {
             B2Array<T> a = new B2Array<T>();
@@ -162,6 +173,7 @@ namespace Box2D.NET
         }
 
         /* Reserve */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Reserve<T>(ref B2Array<T> a, int newCapacity) where T : new()
         {
             if (newCapacity <= a.capacity)
@@ -174,6 +186,7 @@ namespace Box2D.NET
         }
 
         /* Destroy */
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Destroy<T>(ref B2Array<T> a)
         {
             b2Free(a.data, a.capacity);

@@ -316,13 +316,13 @@ public class B2BoardPhasesTests
     public void Test_B2BroadPhases_b2BroadPhase_b2PairQueryCallback()
     {
         // Arrange
-        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
-        var worldId = worldHandle.Id;
+        using B2TestContext context = B2TestContext.CreateFor();
+        var worldId = context.WorldId;
         var world = b2GetWorldFromId(worldId);
 
-        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdA = B2TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = B2TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdC = B2TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         var proxyKeyA = world.broadPhase.moveArray.data[0];
         var proxyKeyB = world.broadPhase.moveArray.data[1];
@@ -378,14 +378,14 @@ public class B2BoardPhasesTests
     public void Test_B2BoardPhases_b2FindPairsTask()
     {
         // Arrange
-        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
-        var worldId = worldHandle.Id;
+        using B2TestContext context = B2TestContext.CreateFor();
+        var worldId = context.WorldId;
         var world = b2GetWorldFromId(worldId);
 
         // Create shapes in the world
-        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdA = B2TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = B2TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 2.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdC = B2TestHelper.Circle(worldId, new B2Vec2(50.0f, 40.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         // Get proxy keys from the created shapes
         var proxyKeyA = world.broadPhase.moveArray.data[0];
@@ -413,13 +413,13 @@ public class B2BoardPhasesTests
     public void Test_B2BoardPhases_b2FindPairsTask_NoCollision()
     {
         // Arrange
-        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
-        var worldId = worldHandle.Id;
+        using B2TestContext context = B2TestContext.CreateFor();
+        var worldId = context.WorldId;
         var world = b2GetWorldFromId(worldId);
 
         // Create shapes in the world that don't overlap
-        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdA = B2TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = B2TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         // Get proxy keys from the created shapes
         var proxyKeyA = world.broadPhase.moveArray.data[0];
@@ -443,13 +443,13 @@ public class B2BoardPhasesTests
     public void Test_B2BoardPhases_b2FindPairsTask_DynamicDynamicCollision()
     {
         // Arrange
-        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
-        var worldId = worldHandle.Id;
+        using B2TestContext context = B2TestContext.CreateFor();
+        var worldId = context.WorldId;
         var world = b2GetWorldFromId(worldId);
 
         // Create two dynamic shapes that overlap
-        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdA = B2TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = B2TestHelper.Circle(worldId, new B2Vec2(1.0f, 1.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         // Get proxy keys from the created shapes
         var proxyKeyA = world.broadPhase.moveArray.data[0];
@@ -476,19 +476,19 @@ public class B2BoardPhasesTests
     public void Test_B2BoardPhases_b2UpdateBroadPhasePairs()
     {
         // Arrange
-        using TestWorldHandle worldHandle = TestHelper.CreateWorld();
-        var worldId = worldHandle.Id;
+        using B2TestContext context = B2TestContext.CreateFor();
+        var worldId = context.WorldId;
         var world = b2GetWorldFromId(worldId);
 
         // Create test shapes with different collision scenarios:
         // A and B: Dynamic-Dynamic collision (overlapping)
         // C and D: Static-Dynamic collision (overlapping)
         // E: Isolated dynamic body (no collision)
-        B2ShapeId shapeIdA = TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
-        B2ShapeId shapeIdB = TestHelper.Circle(worldId, new B2Vec2(0.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to A
-        B2ShapeId shapeIdC = TestHelper.Circle(worldId, new B2Vec2(3.0f, 0.0f), 1.0f, B2BodyType.b2_staticBody);
-        B2ShapeId shapeIdD = TestHelper.Circle(worldId, new B2Vec2(3.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to C
-        B2ShapeId shapeIdE = TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdA = B2TestHelper.Circle(worldId, new B2Vec2(0.0f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody);
+        B2ShapeId shapeIdB = B2TestHelper.Circle(worldId, new B2Vec2(0.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to A
+        B2ShapeId shapeIdC = B2TestHelper.Circle(worldId, new B2Vec2(3.0f, 0.0f), 1.0f, B2BodyType.b2_staticBody);
+        B2ShapeId shapeIdD = B2TestHelper.Circle(worldId, new B2Vec2(3.5f, 0.0f), 1.0f, B2BodyType.b2_dynamicBody); // Moved closer to C
+        B2ShapeId shapeIdE = B2TestHelper.Circle(worldId, new B2Vec2(50.0f, 50.0f), 1.0f, B2BodyType.b2_dynamicBody);
 
         // Get proxy keys for each shape
         var proxyKeyA = world.broadPhase.moveArray.data[0];
