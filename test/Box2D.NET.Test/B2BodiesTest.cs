@@ -95,13 +95,17 @@ public class B2BodiesTest
         // Test case 2: Get body after destruction
         {
             b2DestroyBody(bodyId);
+#if DEBUG
             Assert.Throws<InvalidOperationException>(() => b2GetBodyFullId(world, bodyId), "Destroyed body access should throw.");
+#endif
         }
 
         // Test case 3: Get body with invalid ID
         {
             B2BodyId invalidId = b2_nullBodyId;
+#if DEBUG
             Assert.Throws<InvalidOperationException>(() => b2GetBodyFullId(world, invalidId), "invalid body access should throw.");
+#endif
         }
     }
 
