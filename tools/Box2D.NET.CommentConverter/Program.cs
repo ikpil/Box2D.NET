@@ -4,7 +4,13 @@ const string SummaryStart = "/// <summary>";
 const string SummaryEnd = "/// </summary>";
 const string FileFilter = "*.cs";
 
-var folderPath = @"..\..\..\..\..\src\Box2D.NET\";
+var repoRoot = Directory.GetCurrentDirectory();
+
+#if DEBUG
+repoRoot = Path.GetFullPath(Path.Combine(repoRoot, "..", "..", "..", "..", ".."));
+#endif
+
+var folderPath = Path.Combine(repoRoot, "src", "Box2D.NET");
 
 // Tests: B2BodySim, B2World, B2WorldId
 var files = Directory.GetFiles(folderPath, FileFilter, SearchOption.AllDirectories)
