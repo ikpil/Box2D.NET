@@ -22,8 +22,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run Box2D.NET.CommentConverter.csproj
-      run: dotnet run --project ../../tools/Box2D.NET.CommentConverter/Box2D.NET.CommentConverter.csproj --configuration Release
-      working-directory: src/Box2D.NET
+      run: dotnet run --project tools/Box2D.NET.CommentConverter/Box2D.NET.CommentConverter.csproj --configuration Release
 
     - name: Install DocFX
       # This installs the latest version of DocFX and may introduce breaking changes
