@@ -27,8 +27,8 @@
     "resource": [
       {
         "files": [
-          "favicon.ico",
-          "favicon.png",
+          "favicon-32x32.png",
+          "favicon-16x16.png",
           "images/**"
         ]
       }
@@ -49,6 +49,7 @@
       "_appName": "",
       "_appTitle": "Box2D Docs",
       "_appLogoPath": "images/box2d_logo.svg",
+      "_appFaviconPath": "favicon-32x32.png",
       "_enableSearch": true,
       "pdf": false,
       "_gitContribute": {
