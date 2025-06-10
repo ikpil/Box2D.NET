@@ -1,9 +1,10 @@
 const string DoubleSlashCommentPrefix = "// ";
-const string TripleSlashCommentPrefix = "/// ";
+const string TripleSlashCommentPrefix = "///";
 const string SummaryStart = "/// <summary>";
 const string SummaryEnd = "/// </summary>";
 const string FileFilter = "*.cs";
 
+var commentStarts = new HashSet<string> { DoubleSlashCommentPrefix, TripleSlashCommentPrefix };
 var repoRoot = Directory.GetCurrentDirectory();
 
 #if DEBUG
@@ -14,7 +15,7 @@ var folderPath = Path.Combine(repoRoot, "src", "Box2D.NET");
 
 // Tests: B2BodySim, B2World, B2WorldId
 var files = Directory.GetFiles(folderPath, FileFilter, SearchOption.AllDirectories)
-    //.Where(w => w.Contains("B2WorldId"))
+    //.Where(w => w.Contains("B2PrismaticJointDef"))
     //.Take(50)
     .ToList();
 
@@ -110,10 +111,8 @@ static List<CommentBlock> ExtractCommentBlocks(List<string> lines, List<int> com
     }
 }
 
-static List<int> ExtractCommentLineIndexes(List<string> lines)
+List<int> ExtractCommentLineIndexes(List<string> lines)
 {
-    HashSet<string> commentStarts = [DoubleSlashCommentPrefix, TripleSlashCommentPrefix];
-
     return lines
          .Select((line, index) => (line, index))
          .Where(item => commentStarts.Any(commentStart =>
