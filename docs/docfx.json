@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "..",
+          "files": [
+            "src/Box2D.NET/Box2D.NET.csproj"
+          ]
+        }
+      ],
+      "dest": "api"
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "_site/**"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "favicon-32x32.png",
+          "favicon-16x16.png",
+          "images/**"
+        ]
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern",
+      "template"
+    ],
+    "fileMetadata": {
+      "_appTitle": {
+        "api/**/*.md": "Box2D API",
+        "api/**/*.yml": "Box2D API"
+      }
+    },
+    "globalMetadata": {
+      "_appName": "",
+      "_appTitle": "Box2D Docs",
+      "_appLogoPath": "images/box2d_logo.svg",
+      "_appFaviconPath": "favicon-32x32.png",
+      "_enableSearch": true,
+      "pdf": false,
+      "_gitContribute": {
+        "repo": "https://github.com/ikpil/Box2D.NET",
+        "branch": "master"
+      },
+      "_gitUrlPattern": "github",
+      "_gitRepo": "https://github.com/ikpil/Box2D.NET"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+- name: 📚 Docs
+  href: docs/index.md
+- name: 🔧 API
+  href: api/
