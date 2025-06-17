@@ -79,6 +79,14 @@ public class B2IdsTest
     [Test]
     public void Test_B2Ids_StoreLoad()
     {
+        uint a = 0x01234567;
+
+        {
+            B2WorldId id = b2LoadWorldId(a);
+            uint b = b2StoreWorldId(id);
+            Assert.That(b, Is.EqualTo(a));
+        }
+
         // Test storing and loading IDs
         ulong testValue = 0x0123456789ABCDEFul;
 
@@ -177,4 +185,4 @@ public class B2IdsTest
         var loadedJoint = b2LoadJointId(storedJoint);
         Assert.That(loadedJoint.generation, Is.EqualTo(testGeneration), "Joint ID generation number should be preserved");
     }
-} 
+}

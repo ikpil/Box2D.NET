@@ -1416,7 +1416,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState[] states = context.states;
             Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW minBiasVel = b2SplatW(-context.world.maxContactPushSpeed);
+            B2FloatW minBiasVel = b2SplatW(-context.world.contactSpeed);
             B2FloatW oneW = b2SplatW(1.0f);
 
             for (int i = startIndex; i < endIndex; ++i)

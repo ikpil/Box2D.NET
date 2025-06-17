@@ -7,15 +7,15 @@ namespace Box2D.NET
     /// Result returned by b2SolvePlane
     public struct B2PlaneSolverResult
     {
-        /// The final position of the mover
-        public B2Vec2 position;
+        /// The translation of the mover
+        public B2Vec2 translation;
         
         /// The number of iterations used by the plane solver. For diagnostics.
         public int iterationCount;
 
-        public B2PlaneSolverResult(B2Vec2 position, int iterationCount)
+        public B2PlaneSolverResult(B2Vec2 translation, int iterationCount)
         {
-            this.position = position;
+            this.translation = translation;
             this.iterationCount = iterationCount;
         }
     }

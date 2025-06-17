@@ -628,6 +628,18 @@ namespace Box2D.NET
             return b2Dot(plane.normal, point) - plane.offset;
         }
 
+        /// One-dimensional mass-spring-damper simulation. Returns the new velocity given the position and time step.
+        /// You can then compute the new position using:
+        /// position += timeStep * newVelocity
+        /// This drives towards a zero position. By using implicit integration we get a stable solution
+        /// that doesn't require transcendental functions.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float b2SpringDamper(float hertz, float dampingRatio, float position, float velocity, float timeStep)
+        {
+            float omega = 2.0f * B2_PI * hertz;
+            float omegaH = omega * timeStep;
+            return (velocity - omega * omegaH * position) / (1.0f + 2.0f * dampingRatio * omegaH + omegaH * omegaH);
+        }
 
         /**@}*/
         //B2_ASSERT( sizeof( int ) == sizeof( int ), "Box2D expects int and int to be the same" );

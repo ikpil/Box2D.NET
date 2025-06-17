@@ -13,17 +13,16 @@ namespace Box2D.NET.Samples.Samples;
 
 public class Doohickey
 {
-    B2BodyId m_wheelId1;
-    B2BodyId m_wheelId2;
-    B2BodyId m_barId1;
-    B2BodyId m_barId2;
+    private B2BodyId m_wheelId1;
+    private B2BodyId m_wheelId2;
+    private B2BodyId m_barId1;
+    private B2BodyId m_barId2;
 
-    B2JointId m_axleId1;
-    B2JointId m_axleId2;
-    B2JointId m_sliderId;
+    private B2JointId m_axleId1;
+    private B2JointId m_axleId2;
+    private B2JointId m_sliderId;
 
-    bool m_isSpawned;
-
+    private bool m_isSpawned;
 
     public Doohickey()
     {
@@ -37,6 +36,8 @@ public class Doohickey
         bodyDef.type = B2BodyType.b2_dynamicBody;
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
+        shapeDef.material.rollingResistance = 0.1f;
+        
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f * scale);
         B2Capsule capsule = new B2Capsule(new B2Vec2(-3.5f * scale, 0.0f), new B2Vec2(3.5f * scale, 0.0f), 0.15f * scale);
 

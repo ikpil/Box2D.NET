@@ -92,8 +92,6 @@ public class ScissorLift : Sample
                 revoluteDef.bodyIdB = bodyId1;
                 revoluteDef.localAnchorA = baseAnchor1;
                 revoluteDef.localAnchorB = new B2Vec2(-2.5f, 0.0f);
-                revoluteDef.enableMotor = false;
-                revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = (i == 0) ? true : false;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
@@ -118,8 +116,6 @@ public class ScissorLift : Sample
                     revoluteDef.bodyIdB = bodyId2;
                     revoluteDef.localAnchorA = baseAnchor2;
                     revoluteDef.localAnchorB = new B2Vec2(2.5f, 0.0f);
-                    revoluteDef.enableMotor = false;
-                    revoluteDef.maxMotorTorque = 1.0f;
                     revoluteDef.collideConnected = false;
 
                     b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
@@ -130,8 +126,6 @@ public class ScissorLift : Sample
                 revoluteDef.bodyIdB = bodyId2;
                 revoluteDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
                 revoluteDef.localAnchorB = new B2Vec2(0.0f, 0.0f);
-                revoluteDef.enableMotor = false;
-                revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = false;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
@@ -157,8 +151,6 @@ public class ScissorLift : Sample
                 revoluteDef.bodyIdB = baseId1;
                 revoluteDef.localAnchorA = new B2Vec2(-2.5f, -0.4f);
                 revoluteDef.localAnchorB = baseAnchor1;
-                revoluteDef.enableMotor = false;
-                revoluteDef.maxMotorTorque = 1.0f;
                 revoluteDef.collideConnected = true;
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
             }

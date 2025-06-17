@@ -51,7 +51,8 @@ public class BallAndChain : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
-
+            shapeDef.filter.categoryBits = 0x1;
+            shapeDef.filter.maskBits = 0x2;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
 
             int jointIndex = 0;
@@ -70,8 +71,10 @@ public class BallAndChain : Sample
                 jointDef.bodyIdB = bodyId;
                 jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-                // jointDef.enableMotor = true;
+                jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
+                jointDef.enableSpring = i > 0;
+                jointDef.hertz = 4.0f;
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = bodyId;
@@ -83,8 +86,10 @@ public class BallAndChain : Sample
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * m_count) * hx + circle.radius - hx, m_count * hx);
-
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                
+                shapeDef.filter.categoryBits = 0x2;
+                shapeDef.filter.maskBits = 0x1;
                 b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * m_count) * hx, m_count * hx);
@@ -94,6 +99,8 @@ public class BallAndChain : Sample
                 jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
+                jointDef.enableSpring = true;
+                jointDef.hertz = 4.0f;
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
                 B2_ASSERT(jointIndex == m_count + 1);
             }

@@ -79,7 +79,7 @@ public class GearLift : Sample
         float linkCount = 40;
         float doorHalfHeight = 1.5f;
 
-        B2Vec2 gearPosition1 = new B2Vec2(-4.25f, 10.25f);
+        B2Vec2 gearPosition1 = new B2Vec2(-4.25f, 9.75f);
         B2Vec2 gearPosition2 = gearPosition1 + new B2Vec2(2.0f, 1.0f);
         B2Vec2 linkAttachPosition = gearPosition2 + new B2Vec2(gearRadius + 2.0f * toothHalfWidth + toothRadius, 0.0f);
         B2Vec2 doorPosition = linkAttachPosition - new B2Vec2(0.0f, 2.0f * linkCount * linkHalfLength + doorHalfHeight);

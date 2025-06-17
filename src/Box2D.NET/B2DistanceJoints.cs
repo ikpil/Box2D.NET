@@ -385,9 +385,9 @@ namespace Box2D.NET
                         }
                         else if (useBias)
                         {
-                            bias = context.jointSoftness.biasRate * C;
-                            massCoeff = context.jointSoftness.massScale;
-                            impulseCoeff = context.jointSoftness.impulseScale;
+                            bias = @base.constraintSoftness.biasRate * C;
+                            massCoeff = @base.constraintSoftness.massScale;
+                            impulseCoeff = @base.constraintSoftness.impulseScale;
                         }
 
                         float impulse = -massCoeff * joint.axialMass * (Cdot + bias) - impulseCoeff * joint.lowerImpulse;
@@ -419,9 +419,9 @@ namespace Box2D.NET
                         }
                         else if (useBias)
                         {
-                            bias = context.jointSoftness.biasRate * C;
-                            massScale = context.jointSoftness.massScale;
-                            impulseScale = context.jointSoftness.impulseScale;
+                            bias = @base.constraintSoftness.biasRate * C;
+                            massScale = @base.constraintSoftness.massScale;
+                            impulseScale = @base.constraintSoftness.impulseScale;
                         }
 
                         float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.upperImpulse;
@@ -467,9 +467,9 @@ namespace Box2D.NET
                 float impulseScale = 0.0f;
                 if (useBias)
                 {
-                    bias = context.jointSoftness.biasRate * C;
-                    massScale = context.jointSoftness.massScale;
-                    impulseScale = context.jointSoftness.impulseScale;
+                    bias = @base.constraintSoftness.biasRate * C;
+                    massScale = @base.constraintSoftness.massScale;
+                    impulseScale = @base.constraintSoftness.impulseScale;
                 }
 
                 float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.impulse;

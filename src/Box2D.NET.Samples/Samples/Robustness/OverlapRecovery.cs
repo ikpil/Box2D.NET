@@ -22,7 +22,7 @@ public class OverlapRecovery : Sample
     private int m_baseCount;
     private float m_overlap;
     private float m_extent;
-    private float m_pushout;
+    private float m_pushOut;
     private float m_hertz;
     private float m_dampingRatio;
 
@@ -36,7 +36,7 @@ public class OverlapRecovery : Sample
         if (m_context.settings.restart == false)
         {
             m_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_camera.m_zoom = 25.0f * 0.15f;
+            m_camera.m_zoom = 3.75f;
         }
 
         m_bodyIds = null;
@@ -44,7 +44,7 @@ public class OverlapRecovery : Sample
         m_baseCount = 4;
         m_overlap = 0.25f;
         m_extent = 0.5f;
-        m_pushout = 3.0f;
+        m_pushOut = 3.0f;
         m_hertz = 30.0f;
         m_dampingRatio = 10.0f;
 
@@ -69,7 +69,7 @@ public class OverlapRecovery : Sample
             b2DestroyBody(m_bodyIds[i]);
         }
 
-        b2World_SetContactTuning(m_worldId, m_hertz, m_dampingRatio, m_pushout);
+        b2World_SetContactTuning(m_worldId, m_hertz, m_dampingRatio, m_pushOut);
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -120,8 +120,8 @@ public class OverlapRecovery : Sample
         changed = changed || ImGui.SliderFloat("Extent", ref m_extent, 0.1f, 1.0f, "%.1f");
         changed = changed || ImGui.SliderInt("Base Count", ref m_baseCount, 1, 10);
         changed = changed || ImGui.SliderFloat("Overlap", ref m_overlap, 0.0f, 1.0f, "%.2f");
-        changed = changed || ImGui.SliderFloat("Pushout", ref m_pushout, 0.0f, 10.0f, "%.1f");
-        changed = changed || ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 120.0f, "%.f");
+        changed = changed || ImGui.SliderFloat("Speed", ref m_pushOut, 0.0f, 10.0f, "%.1f");
+        changed = changed || ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 240.0f, "%.f");
         changed = changed || ImGui.SliderFloat("Damping Ratio", ref m_dampingRatio, 0.0f, 20.0f, "%.1f");
         changed = changed || ImGui.Button("Reset Scene");
 

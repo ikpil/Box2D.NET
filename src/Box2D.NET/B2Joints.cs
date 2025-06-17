@@ -24,6 +24,7 @@ using static Box2D.NET.B2SolverSets;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2Solvers;
 
 
 namespace Box2D.NET
@@ -297,6 +298,14 @@ namespace Box2D.NET
 
                 B2_ASSERT(joint.setIndex == setIndex);
             }
+
+            jointSim.constraintHertz = B2_JOINT_CONSTRAINT_HERTZ;
+            jointSim.constraintDampingRatio = B2_JOINT_CONSTRAINT_DAMPING_RATIO;
+            jointSim.constraintSoftness = new B2Softness(
+                0.0f,
+                1.0f,
+                0.0f
+            );
 
             B2_ASSERT(jointSim.jointId == jointId);
             B2_ASSERT(jointSim.bodyIdA == bodyIdA);
@@ -903,6 +912,102 @@ namespace Box2D.NET
             return jointSim.localOriginAnchorB;
         }
 
+        /// Get the joint reference angle in radians (revolute, prismatic, and weld)
+        public static float b2Joint_GetReferenceAngle(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_prismaticJoint:
+                    return jointSim.uj.prismaticJoint.referenceAngle;
+
+                case B2JointType.b2_revoluteJoint:
+                    return jointSim.uj.revoluteJoint.referenceAngle;
+
+                case B2JointType.b2_weldJoint:
+                    return jointSim.uj.weldJoint.referenceAngle;
+
+                default:
+                    return 0.0f;
+            }
+        }
+
+        /// Set the joint reference angle in radians, must be in [-pi,pi]. (revolute, prismatic, and weld)
+        public static void b2Joint_SetReferenceAngle(B2JointId jointId, float angleInRadians)
+        {
+            B2_ASSERT(b2IsValidFloat(angleInRadians));
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_prismaticJoint:
+                    jointSim.uj.prismaticJoint.referenceAngle = angleInRadians;
+                    break;
+
+                case B2JointType.b2_revoluteJoint:
+                    jointSim.uj.revoluteJoint.referenceAngle = angleInRadians;
+                    break;
+
+                case B2JointType.b2_weldJoint:
+                    jointSim.uj.weldJoint.referenceAngle = angleInRadians;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// Set the local axis on bodyA (prismatic and wheel)
+        public static void b2Joint_SetLocalAxisA(B2JointId jointId, B2Vec2 localAxis)
+        {
+            B2_ASSERT(b2IsValidVec2(localAxis));
+            B2_ASSERT(b2IsNormalized(localAxis));
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_prismaticJoint:
+                    jointSim.uj.prismaticJoint.localAxisA = localAxis;
+                    break;
+
+                case B2JointType.b2_wheelJoint:
+                    jointSim.uj.wheelJoint.localAxisA = localAxis;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        /// Get the local axis on bodyA (prismatic and wheel)
+        public static B2Vec2 b2Joint_GetLocalAxisA(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim jointSim = b2GetJointSim(world, joint);
+
+            switch (joint.type)
+            {
+                case B2JointType.b2_prismaticJoint:
+                    return jointSim.uj.prismaticJoint.localAxisA;
+
+                case B2JointType.b2_wheelJoint:
+                    return jointSim.uj.wheelJoint.localAxisA;
+
+                default:
+                    return b2Vec2_zero;
+            }
+        }
+
         public static void b2Joint_SetCollideConnected(B2JointId jointId, bool shouldCollide)
         {
             B2World world = b2GetWorldLocked(jointId.world0);
@@ -1254,8 +1359,38 @@ namespace Box2D.NET
             }
         }
 
+        /// Get the joint constraint tuning. Advanced feature.
+        public static void b2Joint_GetConstraintTuning(B2JointId jointId, out float hertz, out float dampingRatio)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            hertz = @base.constraintHertz;
+            dampingRatio = @base.constraintDampingRatio;
+        }
+
+        /// Set the joint constraint tuning. Advanced feature.
+        /// @param jointId the joint
+        /// @param hertz the stiffness in Hertz (cycles per second)
+        /// @param dampingRatio the non-dimensional damping ratio (one for critical damping)
+        public static void b2Joint_SetConstraintTuning(B2JointId jointId, float hertz, float dampingRatio)
+        {
+            B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            @base.constraintHertz = hertz;
+            @base.constraintDampingRatio = dampingRatio;
+        }
+
         public static void b2PrepareJoint(B2JointSim joint, B2StepContext context)
         {
+            // Clamp joint hertz based on the time step to reduce jitter.
+            float hertz = b2MinFloat(joint.constraintHertz, 0.25f * context.inv_h);
+            joint.constraintSoftness = b2MakeSoft(hertz, joint.constraintDampingRatio, context.h);
+
             switch (joint.type)
             {
                 case B2JointType.b2_distanceJoint:

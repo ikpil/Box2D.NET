@@ -14,19 +14,6 @@ namespace Box2D.NET
 {
     public static class B2WeldJoints
     {
-        public static float b2WeldJoint_GetReferenceAngle(B2JointId jointId)
-        {
-            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            return joint.uj.weldJoint.referenceAngle;
-        }
-
-        public static void b2WeldJoint_SetReferenceAngle(B2JointId jointId, float angleInRadians)
-        {
-            B2_ASSERT(b2IsValidFloat(angleInRadians));
-            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
-            joint.uj.weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
-        }
-
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
@@ -155,7 +142,7 @@ namespace Box2D.NET
 
             if (joint.linearHertz == 0.0f)
             {
-                joint.linearSoftness = context.jointSoftness;
+                joint.linearSoftness = @base.constraintSoftness;
             }
             else
             {
@@ -164,7 +151,7 @@ namespace Box2D.NET
 
             if (joint.angularHertz == 0.0f)
             {
-                joint.angularSoftness = context.jointSoftness;
+                joint.angularSoftness = @base.constraintSoftness;
             }
             else
             {

@@ -26,6 +26,8 @@ public class JointSeparation : Sample
     private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     private B2JointId[] m_jointIds = new B2JointId[e_count];
     private float m_impulse;
+    private float m_jointHertz;
+    private float m_jointDampingRatio;
 
     private static Sample Create(SampleContext context)
     {
@@ -171,11 +173,13 @@ public class JointSeparation : Sample
         }
 
         m_impulse = 500.0f;
+        m_jointHertz = 60.0f;
+        m_jointDampingRatio = 2.0f;
     }
 
     public override void UpdateGui()
     {
-        float height = 120.0f;
+        float height = 180.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(260.0f, height));
 
@@ -197,6 +201,22 @@ public class JointSeparation : Sample
         }
 
         ImGui.SliderFloat("magnitude", ref m_impulse, 0.0f, 1000.0f, "%.0f");
+
+        if (ImGui.SliderFloat("hertz", ref m_jointHertz, 15.0f, 120.0f, "%.0f"))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                b2Joint_SetConstraintTuning(m_jointIds[i], m_jointHertz, m_jointDampingRatio);
+            }
+        }
+
+        if (ImGui.SliderFloat("damping", ref m_jointDampingRatio, 0.0f, 10.0f, "%.1f"))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                b2Joint_SetConstraintTuning(m_jointIds[i], m_jointHertz, m_jointDampingRatio);
+            }
+        }
 
         ImGui.End();
     }

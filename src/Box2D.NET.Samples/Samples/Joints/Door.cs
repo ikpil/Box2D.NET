@@ -24,6 +24,8 @@ public class Door : Sample
     private B2JointId m_jointId;
     private float m_impulse;
     private float m_translationError;
+    private float m_jointHertz;
+    private float m_jointDampingRatio;
     private bool m_enableLimit;
 
     private static Sample Create(SampleContext context)
@@ -47,6 +49,10 @@ public class Door : Sample
         }
 
         m_enableLimit = true;
+        m_impulse = 50000.0f;
+        m_translationError = 0.0f;
+        m_jointHertz = 240.0f;
+        m_jointDampingRatio = 1.0f;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -62,12 +68,11 @@ public class Door : Sample
             B2Polygon box = b2MakeBox(0.1f, 1.5f);
             b2CreatePolygonShape(m_doorId, ref shapeDef, ref box);
 
-            B2Vec2 pivot = new B2Vec2(0.0f, 0.0f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.bodyIdA = groundId;
             jointDef.bodyIdB = m_doorId;
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
+            jointDef.localAnchorB = new B2Vec2(0.0f, -1.5f);
             jointDef.targetAngle = 0.0f;
             jointDef.enableSpring = true;
             jointDef.hertz = 1.0f;
@@ -81,10 +86,8 @@ public class Door : Sample
             jointDef.enableLimit = m_enableLimit;
 
             m_jointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2Joint_SetConstraintTuning(m_jointId, m_jointHertz, m_jointDampingRatio);
         }
-
-        m_impulse = 50000.0f;
-        m_translationError = 0.0f;
     }
 
     public override void UpdateGui()
@@ -109,6 +112,16 @@ public class Door : Sample
             b2RevoluteJoint_EnableLimit(m_jointId, m_enableLimit);
         }
 
+        if ( ImGui.SliderFloat( "hertz", ref m_jointHertz, 15.0f, 480.0f, "%.0f" ) )
+        {
+            b2Joint_SetConstraintTuning( m_jointId, m_jointHertz, m_jointDampingRatio );
+        }
+
+        if ( ImGui.SliderFloat( "damping", ref m_jointDampingRatio, 0.0f, 10.0f, "%.1f" ) )
+        {
+            b2Joint_SetConstraintTuning( m_jointId, m_jointHertz, m_jointDampingRatio );
+        }
+        
         ImGui.End();
     }
 
