@@ -21,7 +21,6 @@ namespace Box2D.NET
 
         public int subStepCount;
 
-        public B2Softness jointSoftness;
         public B2Softness contactSoftness;
         public B2Softness staticSoftness;
 

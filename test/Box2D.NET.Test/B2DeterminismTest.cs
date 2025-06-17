@@ -131,8 +131,8 @@ public class b2TaskTester : IDisposable
 
 public class B2DeterminismTest
 {
-    private const int EXPECTED_SLEEP_STEP = 323;
-    private const uint EXPECTED_HASH = 0xdf9ee1fb;
+    private const int EXPECTED_SLEEP_STEP = 288;
+    private const uint EXPECTED_HASH = 0x35467e1e;
 
     private const int e_maxTasks = 128;
 

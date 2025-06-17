@@ -35,6 +35,10 @@ namespace Box2D.NET
 {
     public static class B2Solvers
     {
+        // todo testing
+        public const int ITERATIONS = 1;
+        public const int RELAX_ITERATIONS = 1;
+
         // TODO: @ikpil. check SIMD
         public static readonly int B2_SIMD_SHIFT = b2SIMDShift();
 
@@ -66,6 +70,28 @@ namespace Box2D.NET
             float a1 = 2.0f * zeta + h * omega;
             float a2 = h * omega * a1;
             float a3 = 1.0f / (1.0f + a2);
+
+            // bias = w / (2 * z + hw)
+            // massScale = hw * (2 * z + hw) / (1 + hw * (2 * z + hw))
+            // impulseScale = 1 / (1 + hw * (2 * z + hw))
+
+            // If z == 0
+            // bias = 1/h
+            // massScale = hw^2 / (1 + hw^2)
+            // impulseScale = 1 / (1 + hw^2)
+
+            // w -> inf
+            // bias = 1/h
+            // massScale = 1
+            // impulseScale = 0
+
+            // if w = pi / 4  * inv_h
+            // massScale = (pi/4)^2 / (1 + (pi/4)^2) = pi^2 / (16 + pi^2) ~= 0.38
+            // impulseScale = 1 / (1 + (pi/4)^2) = 16 / (16 + pi^2) ~= 0.62
+
+            // In all cases:
+            // massScale + impulseScale == 1
+
             return new B2Softness(omega / a1, a2 * a3, a3);
         }
 
@@ -779,16 +805,13 @@ public enum b2SolverBlockType
                     break;
 
                 case B2SolverStageType.b2_stageWarmStart:
-                    if (context.world.enableWarmStarting)
+                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        if (blockType == B2SolverBlockType.b2_graphContactBlock)
-                        {
-                            b2WarmStartContactsTask(startIndex, endIndex, context, stage.colorIndex);
-                        }
-                        else if (blockType == B2SolverBlockType.b2_graphJointBlock)
-                        {
-                            b2WarmStartJointsTask(startIndex, endIndex, context, stage.colorIndex);
-                        }
+                        b2WarmStartContactsTask(startIndex, endIndex, context, stage.colorIndex);
+                    }
+                    else if (blockType == B2SolverBlockType.b2_graphJointBlock)
+                    {
+                        b2WarmStartJointsTask(startIndex, endIndex, context, stage.colorIndex);
                     }
 
                     break;
@@ -1037,18 +1060,22 @@ public enum b2SolverBlockType
 
                     // solve constraints
                     bool useBias = true;
-                    b2SolveOverflowJoints(context, useBias);
-                    b2SolveOverflowContacts(context, useBias);
 
-                    for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
+                    for (int j = 0; j < ITERATIONS; ++j)
                     {
-                        syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
-                        b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                        iterStageIndex += 1;
-                    }
+                        b2SolveOverflowJoints(context, useBias);
+                        b2SolveOverflowContacts(context, useBias);
 
-                    graphSyncIndex += 1;
+                        for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
+                        {
+                            syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
+                            B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
+                            b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
+                            iterStageIndex += 1;
+                        }
+
+                        graphSyncIndex += 1;
+                    }
 
                     profile.solveImpulses += b2GetMillisecondsAndReset(ref ticks);
 
@@ -1063,25 +1090,28 @@ public enum b2SolverBlockType
 
                     // relax constraints
                     useBias = false;
-                    b2SolveOverflowJoints(context, useBias);
-                    b2SolveOverflowContacts(context, useBias);
-
-                    for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
+                    for (int j = 0; j < RELAX_ITERATIONS; ++j)
                     {
-                        syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
-                        b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                        iterStageIndex += 1;
-                    }
+                        b2SolveOverflowJoints(context, useBias);
+                        b2SolveOverflowContacts(context, useBias);
 
-                    graphSyncIndex += 1;
+                        for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
+                        {
+                            syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
+                            B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
+                            b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
+                            iterStageIndex += 1;
+                        }
+
+                        graphSyncIndex += 1;
+                    }
 
                     profile.relaxImpulses += b2GetMillisecondsAndReset(ref ticks);
                 }
 
                 // advance the stage according to the sub-stepping tasks just completed
                 // integrate velocities / warm start / solve / integrate positions / relax
-                stageIndex += 1 + activeColorCount + activeColorCount + 1 + activeColorCount;
+                stageIndex += 1 + activeColorCount + ITERATIONS * activeColorCount + 1 + RELAX_ITERATIONS * activeColorCount;
 
                 // Restitution
                 {
@@ -1469,11 +1499,11 @@ public enum b2SolverBlockType
                 // b2_stageWarmStart
                 stageCount += activeColorCount;
                 // b2_stageSolve
-                stageCount += activeColorCount;
+                stageCount += ITERATIONS * activeColorCount;
                 // b2_stageIntegratePositions
                 stageCount += 1;
                 // b2_stageRelax
-                stageCount += activeColorCount;
+                stageCount += RELAX_ITERATIONS * activeColorCount;
                 // b2_stageRestitution
                 stageCount += activeColorCount;
                 // b2_stageStoreImpulses
@@ -1629,14 +1659,17 @@ public enum b2SolverBlockType
                 }
 
                 // Solve graph
-                for (int i = 0; i < activeColorCount; ++i)
+                for (int j = 0; j < ITERATIONS; ++j)
                 {
-                    stage.type = B2SolverStageType.b2_stageSolve;
-                    stage.blocks = graphColorBlocks[i];
-                    stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
-                    stage.colorIndex = activeColorIndices[i];
-                    b2AtomicStoreInt(ref stage.completionCount, 0);
-                    stage = stages[++stageIdx];
+                    for (int i = 0; i < activeColorCount; ++i)
+                    {
+                        stage.type = B2SolverStageType.b2_stageSolve;
+                        stage.blocks = graphColorBlocks[i];
+                        stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
+                        stage.colorIndex = activeColorIndices[i];
+                        b2AtomicStoreInt(ref stage.completionCount, 0);
+                        stage = stages[++stageIdx];
+                    }
                 }
 
                 // Integrate positions
@@ -1648,14 +1681,17 @@ public enum b2SolverBlockType
                 stage = stages[++stageIdx];
 
                 // Relax constraints
-                for (int i = 0; i < activeColorCount; ++i)
+                for (int j = 0; j < RELAX_ITERATIONS; ++j)
                 {
-                    stage.type = B2SolverStageType.b2_stageRelax;
-                    stage.blocks = graphColorBlocks[i];
-                    stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
-                    stage.colorIndex = activeColorIndices[i];
-                    b2AtomicStoreInt(ref stage.completionCount, 0);
-                    stage = stages[++stageIdx];
+                    for (int i = 0; i < activeColorCount; ++i)
+                    {
+                        stage.type = B2SolverStageType.b2_stageRelax;
+                        stage.blocks = graphColorBlocks[i];
+                        stage.blockCount = colorJointBlockCounts[i] + colorContactBlockCounts[i];
+                        stage.colorIndex = activeColorIndices[i];
+                        b2AtomicStoreInt(ref stage.completionCount, 0);
+                        stage = stages[++stageIdx];
+                    }
                 }
 
                 // Restitution

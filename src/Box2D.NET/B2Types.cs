@@ -24,8 +24,7 @@ namespace Box2D.NET
             def.maxContactPushSpeed = 3.0f * b2_lengthUnitsPerMeter;
             def.contactHertz = 30.0f;
             def.contactDampingRatio = 10.0f;
-            def.jointHertz = 60.0f;
-            def.jointDampingRatio = 2.0f;
+            
             // 400 meters per second, faster than the speed of sound
             def.maximumLinearSpeed = 400.0f * b2_lengthUnitsPerMeter;
             def.enableSleep = true;

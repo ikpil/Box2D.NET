@@ -81,6 +81,21 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
+        /// Store a world id into a uint32_t.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint b2StoreWorldId(B2WorldId id)
+        {
+            return ((uint)id.index1 << 16) | (uint)id.generation;
+        }
+
+        /// Load a uint32_t into a world id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2WorldId b2LoadWorldId(uint x)
+        {
+            B2WorldId id = new B2WorldId((ushort)(x >> 16), (ushort)(x));
+            return id;
+        }
+
         /// Store a body id into a ulong.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreBodyId(B2BodyId id)

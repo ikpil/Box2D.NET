@@ -27,7 +27,7 @@ public class Sample : IDisposable
     public const int k_maxContactPoints = 12 * 2048;
     public const int m_maxTasks = 64;
     public const int m_maxThreads = 64;
-    
+
 #if DEBUG
     public const bool m_isDebug = true;
 #else
@@ -37,7 +37,7 @@ public class Sample : IDisposable
     protected SampleContext m_context;
     protected Camera m_camera;
     protected Draw m_draw;
-    
+
     protected TaskScheduler m_scheduler;
     protected SampleTask[] m_tasks;
     protected int m_taskCount;
@@ -50,7 +50,7 @@ public class Sample : IDisposable
     protected B2JointId m_mouseJointId;
     protected B2Profile m_maxProfile;
     protected B2Profile m_totalProfile;
-    
+
     private int m_textLine;
     private int m_textIncrement;
 
@@ -59,7 +59,7 @@ public class Sample : IDisposable
         m_context = context;
         m_camera = context.camera;
         m_draw = context.draw;
-        
+
         m_scheduler = new TaskScheduler();
         m_scheduler.Initialize(m_context.settings.workerCount);
 
@@ -301,9 +301,9 @@ public class Sample : IDisposable
                 mouseDef.bodyIdA = m_groundBodyId;
                 mouseDef.bodyIdB = queryContext.bodyId;
                 mouseDef.target = p;
-                mouseDef.hertz = 5.0f;
+                mouseDef.hertz = 10.0f;
                 mouseDef.dampingRatio = 0.7f;
-                mouseDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId);
+                mouseDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
                 m_mouseJointId = b2CreateMouseJoint(m_worldId, ref mouseDef);
 
                 b2Body_SetAwake(queryContext.bodyId, true);
@@ -355,7 +355,7 @@ public class Sample : IDisposable
         ImGui.TextColored(new Vector4(230, 153, 153, 255), text);
         ImGui.PopFont();
         ImGui.End();
-        
+
         m_textLine += m_textIncrement;
     }
 
@@ -455,7 +455,6 @@ public class Sample : IDisposable
             if (m_context.draw.m_showUI)
             {
                 DrawTextLine("****PAUSED****");
-                
             }
         }
 

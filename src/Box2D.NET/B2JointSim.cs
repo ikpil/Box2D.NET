@@ -23,6 +23,11 @@ namespace Box2D.NET
         public float invIA, invIB;
 
 
+        public float constraintHertz;
+        public float constraintDampingRatio;
+
+        public B2Softness constraintSoftness;
+
         // TODO: @ikpil, check union
         public B2JointUnion uj;
 
@@ -38,6 +43,9 @@ namespace Box2D.NET
             invMassB = 0.0f;
             invIA = 0.0f;
             invIB = 0.0f;
+            constraintHertz = 0.0f;
+            constraintDampingRatio = 0.0f;
+            constraintSoftness = new B2Softness();
             uj = new B2JointUnion();
         }
 
@@ -53,6 +61,9 @@ namespace Box2D.NET
             invMassB = other.invMassB;
             invIA = other.invIA;
             invIB = other.invIB;
+            constraintHertz = other.constraintHertz;
+            constraintDampingRatio = other.constraintDampingRatio;
+            constraintSoftness = other.constraintSoftness;
             uj = other.uj;
         }
     }

@@ -210,8 +210,6 @@ namespace Box2D.NET
             world.maxContactPushSpeed = def.maxContactPushSpeed;
             world.contactHertz = def.contactHertz;
             world.contactDampingRatio = def.contactDampingRatio;
-            world.jointHertz = def.jointHertz;
-            world.jointDampingRatio = def.jointDampingRatio;
 
             if (def.frictionCallback == null)
             {
@@ -783,12 +781,11 @@ namespace Box2D.NET
             world.inv_h = context.inv_h;
 
             // Hertz values get reduced for large time steps
-            float contactHertz = b2MinFloat(world.contactHertz, 0.25f * context.inv_h);
-            float jointHertz = b2MinFloat(world.jointHertz, 0.125f * context.inv_h);
-
+            float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
             context.contactSoftness = b2MakeSoft(contactHertz, world.contactDampingRatio, context.h);
             context.staticSoftness = b2MakeSoft(2.0f * contactHertz, world.contactDampingRatio, context.h);
-            context.jointSoftness = b2MakeSoft(jointHertz, world.jointDampingRatio, context.h);
+
+            world.contactSpeed = world.maxContactPushSpeed / context.staticSoftness.massScale;
 
             context.restitutionThreshold = world.restitutionThreshold;
             context.maxLinearVelocity = world.maxLinearSpeed;
@@ -1442,9 +1439,9 @@ namespace Box2D.NET
                             else if (draw.drawContactImpulses)
                             {
                                 B2Vec2 p1 = point.point;
-                                B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.normalImpulse, normal);
+                                B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.totalNormalImpulse, normal);
                                 draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
-                                var buffer = $"{1000.0f * point.normalImpulse:F2}";
+                                var buffer = $"{1000.0f * point.totalNormalImpulse:F2}";
                                 draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                             }
 
@@ -1866,19 +1863,6 @@ namespace Box2D.NET
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
             world.maxContactPushSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
-        }
-
-        public static void b2World_SetJointTuning(B2WorldId worldId, float hertz, float dampingRatio)
-        {
-            B2World world = b2GetWorldFromId(worldId);
-            B2_ASSERT(world.locked == false);
-            if (world.locked)
-            {
-                return;
-            }
-
-            world.jointHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
-            world.jointDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
         }
 
         public static void b2World_SetMaximumLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
@@ -2505,7 +2489,8 @@ namespace Box2D.NET
 
             B2PlaneResult result = b2CollideMover(shape, transform, ref worldContext.mover);
 
-            if (result.hit)
+            // todo handle deep overlap
+            if (result.hit && b2IsNormalized(result.plane.normal))
             {
                 B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                 return worldContext.fcn(id, ref result, worldContext.userContext);

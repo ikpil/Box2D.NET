@@ -8,6 +8,7 @@ using ImGuiNET;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.Humans;
 
 namespace Box2D.NET.Samples.Samples.Joints;
@@ -15,7 +16,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 public class Ragdoll : Sample
 {
     private static readonly int SampleRagdoll = SampleFactory.Shared.RegisterSample("Joints", "Ragdoll", Create);
-    
+
     private Human m_human;
     private float m_jointFrictionTorque;
     private float m_jointHertz;
@@ -50,18 +51,20 @@ public class Ragdoll : Sample
         m_jointDampingRatio = 0.5f;
 
         Spawn();
+
+        b2World_SetContactTuning(m_worldId, 240.0f, 0.0f, 2.0f);
     }
 
     void Spawn()
     {
         CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, null, false);
-        Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
+        //Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
     }
 
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
         float height = 140.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));

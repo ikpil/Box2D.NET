@@ -38,7 +38,8 @@ public class FallingHinges : Sample
             m_camera.m_center = new B2Vec2(0.0f, 7.5f);
             m_camera.m_zoom = 10.0f;
         }
-        m_data = CreateFallingHinges( m_worldId );
+
+        m_data = CreateFallingHinges(m_worldId);
         m_done = false;
     }
 
@@ -47,9 +48,9 @@ public class FallingHinges : Sample
     {
         base.Step();
 
-        if (m_done == false)
+        if (m_context.settings.pause == false && m_done == false)
         {
-            m_done = UpdateFallingHinges( m_worldId, ref m_data );
+            m_done = UpdateFallingHinges(m_worldId, ref m_data);
         }
     }
 
@@ -60,7 +61,6 @@ public class FallingHinges : Sample
         if (m_done)
         {
             DrawTextLine($"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
-            
         }
     }
 }

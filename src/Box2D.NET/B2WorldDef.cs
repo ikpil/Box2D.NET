@@ -31,12 +31,6 @@ namespace Box2D.NET
         /// decreasing the damping ratio.
         public float maxContactPushSpeed;
 
-        /// Joint stiffness. Cycles per second.
-        public float jointHertz;
-
-        /// Joint bounciness. Non-dimensional.
-        public float jointDampingRatio;
-
         /// Maximum linear speed. Usually meters per second.
         public float maximumLinearSpeed;
 

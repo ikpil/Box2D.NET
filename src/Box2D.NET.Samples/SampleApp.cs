@@ -417,7 +417,7 @@ public class SampleApp
         long sizeAligned = ((size - 1) | (uint)(alignment - 1)) + 1;
         B2_ASSERT((sizeAligned & (alignment - 1)) == 0);
 
-// #if defined( _WIN64 ) || defined( _WIN32 )
+// #if defined( _MSC_VER ) || defined( __MINGW32__ ) || defined( __MINGW64__ )
 //         void* ptr = _aligned_malloc( sizeAligned, alignment );
 // #else
 //         void* ptr = aligned_alloc(alignment, sizeAligned);
@@ -429,7 +429,7 @@ public class SampleApp
 
     private void FreeFcn(byte[] mem)
     {
-// #if defined( _WIN64 ) || defined( _WIN32 )
+// #if defined( _MSC_VER ) || defined( __MINGW32__ ) || defined( __MINGW64__ )
 //         _aligned_free( mem );
 // #else
 //         free(mem);
@@ -737,8 +737,8 @@ public class SampleApp
                 if (ImGui.BeginTabItem("Controls"))
                 {
                     ImGui.PushItemWidth(100.0f);
-                    ImGui.SliderInt("Sub-steps", ref _context.settings.subStepCount, 1, 50);
-                    ImGui.SliderFloat("Hertz", ref _context.settings.hertz, 5.0f, 120.0f, "%.0f hz");
+                    ImGui.SliderInt("Sub-steps", ref _context.settings.subStepCount, 1, 32);
+                    ImGui.SliderFloat("Hertz", ref _context.settings.hertz, 5.0f, 240.0f, "%.0f hz");
 
                     if (ImGui.SliderInt("Workers", ref _context.settings.workerCount, 1, maxWorkers))
                     {
