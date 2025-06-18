@@ -69,10 +69,10 @@ public class Door : Sample
             b2CreatePolygonShape(m_doorId, ref shapeDef, ref box);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_doorId;
-            jointDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
-            jointDef.localAnchorB = new B2Vec2(0.0f, -1.5f);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_doorId;
+            jointDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.0f);
+            jointDef.@base.localFrameB.p = new B2Vec2(0.0f, -1.5f);
             jointDef.targetAngle = 0.0f;
             jointDef.enableSpring = true;
             jointDef.hertz = 1.0f;
@@ -80,7 +80,6 @@ public class Door : Sample
             jointDef.motorSpeed = 0.0f;
             jointDef.maxMotorTorque = 0.0f;
             jointDef.enableMotor = false;
-            jointDef.referenceAngle = 0.0f;
             jointDef.lowerAngle = -0.5f * B2_PI;
             jointDef.upperAngle = 0.5f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
@@ -112,16 +111,16 @@ public class Door : Sample
             b2RevoluteJoint_EnableLimit(m_jointId, m_enableLimit);
         }
 
-        if ( ImGui.SliderFloat( "hertz", ref m_jointHertz, 15.0f, 480.0f, "%.0f" ) )
+        if (ImGui.SliderFloat("hertz", ref m_jointHertz, 15.0f, 480.0f, "%.0f"))
         {
-            b2Joint_SetConstraintTuning( m_jointId, m_jointHertz, m_jointDampingRatio );
+            b2Joint_SetConstraintTuning(m_jointId, m_jointHertz, m_jointDampingRatio);
         }
 
-        if ( ImGui.SliderFloat( "damping", ref m_jointDampingRatio, 0.0f, 10.0f, "%.1f" ) )
+        if (ImGui.SliderFloat("damping", ref m_jointDampingRatio, 0.0f, 10.0f, "%.1f"))
         {
-            b2Joint_SetConstraintTuning( m_jointId, m_jointHertz, m_jointDampingRatio );
+            b2Joint_SetConstraintTuning(m_jointId, m_jointHertz, m_jointDampingRatio);
         }
-        
+
         ImGui.End();
     }
 
@@ -131,8 +130,6 @@ public class Door : Sample
 
         B2Vec2 p = b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f));
         m_draw.DrawPoint(p, 5.0f, B2HexColor.b2_colorDarkKhaki);
-
-        m_draw.DrawTransform(b2Transform_identity);
 
         float translationError = b2Joint_GetLinearSeparation(m_jointId);
         m_translationError = b2MaxFloat(m_translationError, translationError);

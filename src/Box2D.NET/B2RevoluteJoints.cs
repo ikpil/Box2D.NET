@@ -76,8 +76,10 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
 
-            float angle = b2RelativeAngle(transformB.q, transformA.q) - jointSim.uj.revoluteJoint.referenceAngle;
-            angle = b2UnwindAngle(angle);
+            B2Rot qA = b2MulRot(transformA.q, jointSim.localFrameA.q);
+            B2Rot qB = b2MulRot(transformB.q, jointSim.localFrameB.q);
+
+            float angle = b2RelativeAngle(qA, qB);
             return angle;
         }
 
@@ -239,11 +241,18 @@ namespace Box2D.NET
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
-            // initial anchors in world space
-            joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
-            joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
+            // Compute joint anchor frames with world space rotation, relative to center of mass.
+            // Avoid round-off here as much as possible.
+            // b2Vec2 pf = (xf.p - c) + rot(xf.q, f.p)
+            // pf = xf.p - (xf.p + rot(xf.q, lc)) + rot(xf.q, f.p)
+            // pf = rot(xf.q, f.p - lc)
+            joint.frameA.q = b2MulRot(bodySimA.transform.q, @base.localFrameA.q);
+            joint.frameA.p = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
+            joint.frameB.q = b2MulRot(bodySimB.transform.q, @base.localFrameB.q);
+            joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
+
+            // Compute the initial center delta. Incremental position updates are relative to this.
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
-            joint.deltaAngle = b2RelativeAngle(bodySimB.transform.q, bodySimA.transform.q);
 
             float k = iA + iB;
             joint.axialMass = k > 0.0f ? 1.0f / k : 0.0f;
@@ -276,8 +285,8 @@ namespace Box2D.NET
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
             float axialImpulse = joint.springImpulse + joint.motorImpulse + joint.lowerImpulse - joint.upperImpulse;
 
@@ -310,15 +319,16 @@ namespace Box2D.NET
             B2Vec2 vB = stateB.linearVelocity;
             float wB = stateB.angularVelocity;
 
-            B2Rot dqA = stateA.deltaRotation;
-            B2Rot dqB = stateB.deltaRotation;
+            B2Rot qA = b2MulRot(stateA.deltaRotation, joint.frameA.q);
+            B2Rot qB = b2MulRot(stateB.deltaRotation, joint.frameB.q);
+            B2Rot relQ = b2InvMulRot(qA, qB);
 
             bool fixedRotation = (iA + iB == 0.0f);
 
             // Solve spring.
             if (joint.enableSpring && fixedRotation == false)
             {
-                float jointAngle = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                float jointAngle = b2Rot_GetAngle(relQ);
                 float jointAngleDelta = b2UnwindAngle(jointAngle - joint.targetAngle);
 
                 float C = jointAngleDelta;
@@ -350,8 +360,7 @@ namespace Box2D.NET
 
             if (joint.enableLimit && fixedRotation == false)
             {
-                float jointAngle = b2RelativeAngle(dqB, dqA) + joint.deltaAngle - joint.referenceAngle;
-                jointAngle = b2UnwindAngle(jointAngle);
+                float jointAngle = b2Rot_GetAngle(relQ);
 
                 // Lower limit
                 {
@@ -422,8 +431,8 @@ namespace Box2D.NET
                 //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB]
 
                 // current anchors
-                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
                 B2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
 
@@ -495,59 +504,56 @@ namespace Box2D.NET
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
-            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
+            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
+            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
 
-            B2HexColor c1 = B2HexColor.b2_colorGray;
-            B2HexColor c2 = B2HexColor.b2_colorGreen;
-            B2HexColor c3 = B2HexColor.b2_colorRed;
+            float radius = 0.25f * drawSize;
+            draw.DrawCircleFcn(frameB.p, radius, B2HexColor.b2_colorGray, draw.context);
 
-            float L = drawSize;
-            // draw.drawPoint(pA, 3.0f, b2HexColor.b2_colorGray40, draw.context);
-            // draw.drawPoint(pB, 3.0f, b2HexColor.b2_colorLightBlue, draw.context);
-            draw.DrawCircleFcn(pB, L, c1, draw.context);
+            B2Vec2 rx = new B2Vec2(radius, 0.0f);
+            B2Vec2 r = b2RotateVector(frameA.q, rx);
+            draw.DrawSegmentFcn(frameA.p, b2Add(frameA.p, r), B2HexColor.b2_colorGray, draw.context);
 
-            float angle = b2RelativeAngle(transformB.q, transformA.q);
-
-            B2Rot rot = b2MakeRot(angle);
-            B2Vec2 r = new B2Vec2(L * rot.c, L * rot.s);
-            B2Vec2 pC = b2Add(pB, r);
-            draw.DrawSegmentFcn(pB, pC, c1, draw.context);
+            r = b2RotateVector(frameB.q, rx);
+            draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, r), B2HexColor.b2_colorBlue, draw.context);
 
             if (draw.drawJointExtras)
             {
-                float jointAngle = b2UnwindAngle(angle - joint.referenceAngle);
-                string buffer = $" {180.0f * jointAngle / B2_PI} deg";
-                draw.DrawStringFcn(pC, buffer, B2HexColor.b2_colorWhite, draw.context);
+                float jointAngle = b2RelativeAngle(frameA.q, frameB.q);
+                string buffer = $"{(180.0f * jointAngle / B2_PI):F1} deg";
+                draw.DrawStringFcn(b2Add(frameA.p, r), buffer, B2HexColor.b2_colorWhite, draw.context);
             }
 
-            float lowerAngle = joint.lowerAngle + joint.referenceAngle;
-            float upperAngle = joint.upperAngle + joint.referenceAngle;
+            float lowerAngle = joint.lowerAngle;
+            float upperAngle = joint.upperAngle;
 
             if (joint.enableLimit)
             {
-                B2Rot rotLo = b2MakeRot(lowerAngle);
-                B2Vec2 rlo = new B2Vec2(L * rotLo.c, L * rotLo.s);
+                B2Rot rotLo = b2MulRot(frameA.q, b2MakeRot(lowerAngle));
+                B2Vec2 rlo = b2RotateVector(rotLo, rx);
 
-                B2Rot rotHi = b2MakeRot(upperAngle);
-                B2Vec2 rhi = new B2Vec2(L * rotHi.c, L * rotHi.s);
+                B2Rot rotHi = b2MulRot(frameA.q, b2MakeRot(upperAngle));
+                B2Vec2 rhi = b2RotateVector(rotHi, rx);
 
-                draw.DrawSegmentFcn(pB, b2Add(pB, rlo), c2, draw.context);
-                draw.DrawSegmentFcn(pB, b2Add(pB, rhi), c3, draw.context);
+                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, rlo), B2HexColor.b2_colorGreen, draw.context);
+                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, rhi), B2HexColor.b2_colorRed, draw.context);
+            }
 
-                B2Rot rotRef = b2MakeRot(joint.referenceAngle);
-                B2Vec2 @ref = new B2Vec2(L * rotRef.c, L * rotRef.s);
-                draw.DrawSegmentFcn(pB, b2Add(pB, @ref), B2HexColor.b2_colorBlue, draw.context);
+            if (joint.enableSpring)
+            {
+                B2Rot q = b2MulRot(frameA.q, b2MakeRot(joint.targetAngle));
+                B2Vec2 v = b2RotateVector(q, rx);
+                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, v), B2HexColor.b2_colorViolet, draw.context);
             }
 
             B2HexColor color = B2HexColor.b2_colorGold;
-            draw.DrawSegmentFcn(transformA.p, pA, color, draw.context);
-            draw.DrawSegmentFcn(pA, pB, color, draw.context);
-            draw.DrawSegmentFcn(transformB.p, pB, color, draw.context);
+            draw.DrawSegmentFcn(transformA.p, frameA.p, color, draw.context);
+            draw.DrawSegmentFcn(frameA.p, frameB.p, color, draw.context);
+            draw.DrawSegmentFcn(transformB.p, frameB.p, color, draw.context);
 
             // char buffer[32];
-            // sprintf(buffer, "%.1f", b2Length(joint.impulse));
-            // draw.DrawString(pA, buffer, draw.context);
+            // sprintf(buffer, "%.1f", b2Length(joint->impulse));
+            // draw->DrawString(pA, buffer, draw->context);
         }
     }
 }

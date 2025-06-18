@@ -137,10 +137,10 @@ public class SensorFunnel : Sample
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
-                revoluteDef.bodyIdA = groundId;
-                revoluteDef.bodyIdB = bodyId;
-                revoluteDef.localAnchorA = bodyDef.position;
-                revoluteDef.localAnchorB = b2Vec2_zero;
+                revoluteDef.@base.bodyIdA = groundId;
+                revoluteDef.@base.bodyIdB = bodyId;
+                revoluteDef.@base.localFrameA.p = bodyDef.position;
+                revoluteDef.@base.localFrameB.p = b2Vec2_zero;
                 revoluteDef.maxMotorTorque = 200.0f;
                 revoluteDef.motorSpeed = 2.0f * sign;
                 revoluteDef.enableMotor = true;
@@ -202,7 +202,7 @@ public class SensorFunnel : Sample
         {
             ref Donut donut = ref m_donuts[index];
             // donut->Spawn(m_worldId, center, index + 1, donut);
-            donut.Create(m_worldId, center, 1.0f, 0, true, BodyUserData.Create(index));
+            donut.Create(m_worldId, center, 1.0f, 0, true, CustomUserData.Create(index));
         }
         else
         {
@@ -212,7 +212,7 @@ public class SensorFunnel : Sample
             float jointHertz = 6.0f;
             float jointDamping = 0.5f;
             bool colorize = true;
-            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, BodyUserData.Create(index), colorize);
+            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, CustomUserData.Create(index), colorize);
             Human_EnableSensorEvents(ref human, true);
         }
 
@@ -301,7 +301,7 @@ public class SensorFunnel : Sample
 
             if (m_type == (int)ea.e_donut)
             {
-                BodyUserData<int> donut = b2Body_GetUserData(bodyId) as BodyUserData<int>;
+                CustomUserData<int> donut = b2Body_GetUserData(bodyId) as CustomUserData<int>;
                 if (donut != null)
                 {
                     int index = donut.Value;
@@ -313,7 +313,7 @@ public class SensorFunnel : Sample
             }
             else
             {
-                BodyUserData<int> human = b2Body_GetUserData(bodyId) as BodyUserData<int>;
+                CustomUserData<int> human = b2Body_GetUserData(bodyId) as CustomUserData<int>;
                 if (human != null)
                 {
                     int index = human.Value;

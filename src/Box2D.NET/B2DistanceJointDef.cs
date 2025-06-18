@@ -13,17 +13,8 @@ namespace Box2D.NET
     /// @ingroup distance_joint
     public struct B2DistanceJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// The local anchor point relative to bodyA's origin
-        public B2Vec2 localAnchorA;
-
-        /// The local anchor point relative to bodyB's origin
-        public B2Vec2 localAnchorB;
+        /// Base joint definition
+        public B2JointDef @base;
 
         /// The rest length of this joint. Clamped to a stable minimum value.
         public float length;
@@ -55,12 +46,6 @@ namespace Box2D.NET
 
         /// The desired motor speed, usually in meters per second
         public float motorSpeed;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

@@ -79,16 +79,19 @@ public class Cantilever : Sample
                 b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, 0.0f);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = m_bodyIds[i];
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = m_bodyIds[i];
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.linearHertz = m_linearHertz;
                 jointDef.linearDampingRatio = m_linearDampingRatio;
                 jointDef.angularHertz = m_angularHertz;
                 jointDef.angularDampingRatio = m_angularDampingRatio;
-                jointDef.collideConnected = m_collideConnected;
+                jointDef.@base.collideConnected = m_collideConnected;
                 m_jointIds[i] = b2CreateWeldJoint(m_worldId, ref jointDef);
+
+                // Experimental tuning
+                b2Joint_SetConstraintTuning(m_jointIds[i], 120.0f, 10.0f);
 
                 prevBodyId = m_bodyIds[i];
             }
@@ -167,6 +170,5 @@ public class Cantilever : Sample
 
         B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
         DrawTextLine($"tip-y = {tipPosition.Y:F2}");
-        
     }
 }

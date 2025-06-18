@@ -20,7 +20,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 public class Bridge : Sample
 {
     private static readonly int SampleBridgeIndex = SampleFactory.Shared.RegisterSample("Joints", "Bridge", Create);
-    
+
     public const int m_count = 160;
 
     private B2BodyId[] m_bodyIds = new B2BodyId[m_count];
@@ -57,7 +57,7 @@ public class Bridge : Sample
             m_springDampingRatio = 0.7f;
             m_frictionTorque = 200.0f;
 
-            B2Polygon box = b2MakeBox( 0.5f, 0.125f );
+            B2Polygon box = b2MakeBox(0.5f, 0.125f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
@@ -85,10 +85,10 @@ public class Bridge : Sample
                 b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, ref box);
 
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * i, 20.0f);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = m_bodyIds[i];
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = m_bodyIds[i];
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = m_bodyIds[i];
@@ -96,10 +96,10 @@ public class Bridge : Sample
 
             {
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * m_count, 20.0f);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = groundId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = groundId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 B2_ASSERT(jointIndex == m_count + 1);
@@ -141,7 +141,7 @@ public class Bridge : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
         float height = 180.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(320.0f, height));
@@ -158,35 +158,35 @@ public class Bridge : Sample
             }
         }
 
-        if ( ImGui.SliderFloat( "Spring hertz", ref m_springHertz, 0.0f, 30.0f, "%.0f" ) )
+        if (ImGui.SliderFloat("Spring hertz", ref m_springHertz, 0.0f, 30.0f, "%.0f"))
         {
-            for ( int i = 0; i <= m_count; ++i )
+            for (int i = 0; i <= m_count; ++i)
             {
-                b2RevoluteJoint_SetSpringHertz( m_jointIds[i], m_springHertz );
+                b2RevoluteJoint_SetSpringHertz(m_jointIds[i], m_springHertz);
             }
         }
 
-        if ( ImGui.SliderFloat( "Spring damping", ref m_springDampingRatio, 0.0f, 2.0f, "%.1f" ) )
+        if (ImGui.SliderFloat("Spring damping", ref m_springDampingRatio, 0.0f, 2.0f, "%.1f"))
         {
-            for ( int i = 0; i <= m_count; ++i )
+            for (int i = 0; i <= m_count; ++i)
             {
-                b2RevoluteJoint_SetSpringDampingRatio( m_jointIds[i], m_springDampingRatio );
+                b2RevoluteJoint_SetSpringDampingRatio(m_jointIds[i], m_springDampingRatio);
             }
         }
 
-        if ( ImGui.SliderFloat( "Constraint hertz", ref m_constraintHertz, 15.0f, 240.0f, "%.0f" ) )
+        if (ImGui.SliderFloat("Constraint hertz", ref m_constraintHertz, 15.0f, 240.0f, "%.0f"))
         {
-            for ( int i = 0; i <= m_count; ++i )
+            for (int i = 0; i <= m_count; ++i)
             {
-                b2Joint_SetConstraintTuning( m_jointIds[i], m_constraintHertz, m_constraintDampingRatio );
+                b2Joint_SetConstraintTuning(m_jointIds[i], m_constraintHertz, m_constraintDampingRatio);
             }
         }
 
-        if ( ImGui.SliderFloat( "Constraint damping", ref m_constraintDampingRatio, 0.0f, 10.0f, "%.1f" ) )
+        if (ImGui.SliderFloat("Constraint damping", ref m_constraintDampingRatio, 0.0f, 10.0f, "%.1f"))
         {
-            for ( int i = 0; i <= m_count; ++i )
+            for (int i = 0; i <= m_count; ++i)
             {
-                b2Joint_SetConstraintTuning( m_jointIds[i], m_constraintHertz, m_constraintDampingRatio );
+                b2Joint_SetConstraintTuning(m_jointIds[i], m_constraintHertz, m_constraintDampingRatio);
             }
         }
 

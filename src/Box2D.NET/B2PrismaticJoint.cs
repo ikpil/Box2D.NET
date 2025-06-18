@@ -6,7 +6,6 @@ namespace Box2D.NET
 {
     public struct B2PrismaticJoint
     {
-        public B2Vec2 localAxisA;
         public B2Vec2 impulse;
         public float springImpulse;
         public float motorImpulse;
@@ -17,17 +16,14 @@ namespace Box2D.NET
         public float targetTranslation;
         public float maxMotorForce;
         public float motorSpeed;
-        public float referenceAngle;
         public float lowerTranslation;
         public float upperTranslation;
 
         public int indexA;
         public int indexB;
-        public B2Vec2 anchorA;
-        public B2Vec2 anchorB;
-        public B2Vec2 axisA;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
-        public float deltaAngle;
         public float axialMass;
         public B2Softness springSoftness;
 

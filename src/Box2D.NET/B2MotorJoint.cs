@@ -16,10 +16,9 @@ namespace Box2D.NET
 
         public int indexA;
         public int indexB;
-        public B2Vec2 anchorA;
-        public B2Vec2 anchorB;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
-        public float deltaAngle;
         public B2Mat22 linearMass;
         public float angularMass;
     }

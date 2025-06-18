@@ -4,21 +4,21 @@
 
 namespace Box2D.NET.Samples.Primitives;
 
-public static class BodyUserData
+public static class CustomUserData
 {
-    public static BodyUserData<T> Create<T>(T value)
+    public static CustomUserData<T> Create<T>(T value)
     {
-        var userData = new BodyUserData<T>();
+        var userData = new CustomUserData<T>();
         userData.Value = value;
 
         return userData;
     }
 }
-public class BodyUserData<T>
+public class CustomUserData<T>
 {
     public T Value;
 
-    internal BodyUserData()
+    internal CustomUserData()
     {
         
     }

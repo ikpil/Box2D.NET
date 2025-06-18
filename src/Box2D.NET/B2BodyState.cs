@@ -44,7 +44,7 @@ namespace Box2D.NET
         // the solver and must use zero delta rotation for static bodies (c,s) = (1,0)
         public B2Rot deltaRotation; // 8
 
-        public static B2BodyState Create(B2BodyState other)
+        public static B2BodyState Create(B2BodyState other) // todo : @ikpil how to remove
         {
             var state = new B2BodyState();
             state.CopyFrom(other);

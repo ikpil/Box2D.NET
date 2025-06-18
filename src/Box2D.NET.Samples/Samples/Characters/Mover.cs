@@ -200,10 +200,10 @@ public class Mover : Sample
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * i, yBase);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = bodyId;
@@ -211,10 +211,10 @@ public class Mover : Sample
 
             {
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * count, yBase);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = groundId2;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = groundId2;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
             }
         }

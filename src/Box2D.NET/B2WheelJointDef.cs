@@ -13,20 +13,8 @@ namespace Box2D.NET
     /// @ingroup wheel_joint
     public struct B2WheelJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// The local anchor point relative to bodyA's origin
-        public B2Vec2 localAnchorA;
-
-        /// The local anchor point relative to bodyB's origin
-        public B2Vec2 localAnchorB;
-
-        /// The local translation unit axis in bodyA
-        public B2Vec2 localAxisA;
+        /// Base joint definition
+        public B2JointDef @base;
 
         /// Enable a linear spring along the local axis
         public bool enableSpring;
@@ -54,12 +42,6 @@ namespace Box2D.NET
 
         /// The desired motor speed in radians per second
         public float motorSpeed;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

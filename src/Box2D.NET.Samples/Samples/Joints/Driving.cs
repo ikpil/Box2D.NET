@@ -116,10 +116,10 @@ public class Driving : Sample
 
             B2Vec2 pivot = bodyDef.position;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = bodyId;
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.lowerAngle = -8.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 8.0f * B2_PI / 180.0f;
             jointDef.enableLimit = true;
@@ -144,10 +144,10 @@ public class Driving : Sample
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * i, -0.125f);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 prevBodyId = bodyId;
@@ -155,10 +155,10 @@ public class Driving : Sample
 
             {
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * N, -0.125f);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = groundId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = groundId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = 50.0f;
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
@@ -275,12 +275,12 @@ public class Driving : Sample
         base.Draw(settings);
 
         DrawTextLine("Keys: left = a, brake = s, right = d");
-        
+
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.X * 3.6f;
         DrawTextLine($"speed in kph: {kph:G2}");
-        
+
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
         m_camera.m_center.X = carPosition.X;

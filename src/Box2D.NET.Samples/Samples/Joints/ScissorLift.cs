@@ -88,11 +88,11 @@ public class ScissorLift : Sample
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 
                 // left pin
-                revoluteDef.bodyIdA = baseId1;
-                revoluteDef.bodyIdB = bodyId1;
-                revoluteDef.localAnchorA = baseAnchor1;
-                revoluteDef.localAnchorB = new B2Vec2(-2.5f, 0.0f);
-                revoluteDef.collideConnected = (i == 0) ? true : false;
+                revoluteDef.@base.bodyIdA = baseId1;
+                revoluteDef.@base.bodyIdB = bodyId1;
+                revoluteDef.@base.localFrameA.p = baseAnchor1;
+                revoluteDef.@base.localFrameB.p = new B2Vec2(-2.5f, 0.0f);
+                revoluteDef.@base.collideConnected = (i == 0) ? true : false;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
@@ -100,33 +100,32 @@ public class ScissorLift : Sample
                 if (i == 0)
                 {
                     B2WheelJointDef wheelDef = b2DefaultWheelJointDef();
-                    wheelDef.bodyIdA = baseId2;
-                    wheelDef.bodyIdB = bodyId2;
-                    wheelDef.localAxisA = new B2Vec2(1.0f, 0.0f);
-                    wheelDef.localAnchorA = baseAnchor2;
-                    wheelDef.localAnchorB = new B2Vec2(2.5f, 0.0f);
+                    wheelDef.@base.bodyIdA = baseId2;
+                    wheelDef.@base.bodyIdB = bodyId2;
+                    wheelDef.@base.localFrameA.p = baseAnchor2;
+                    wheelDef.@base.localFrameB.p = new B2Vec2(2.5f, 0.0f);
                     wheelDef.enableSpring = false;
-                    wheelDef.collideConnected = true;
+                    wheelDef.@base.collideConnected = true;
 
                     b2CreateWheelJoint(m_worldId, ref wheelDef);
                 }
                 else
                 {
-                    revoluteDef.bodyIdA = baseId2;
-                    revoluteDef.bodyIdB = bodyId2;
-                    revoluteDef.localAnchorA = baseAnchor2;
-                    revoluteDef.localAnchorB = new B2Vec2(2.5f, 0.0f);
-                    revoluteDef.collideConnected = false;
+                    revoluteDef.@base.bodyIdA = baseId2;
+                    revoluteDef.@base.bodyIdB = bodyId2;
+                    revoluteDef.@base.localFrameA.p = baseAnchor2;
+                    revoluteDef.@base.localFrameB.p = new B2Vec2(2.5f, 0.0f);
+                    revoluteDef.@base.collideConnected = false;
 
                     b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
                 }
 
                 // middle pin
-                revoluteDef.bodyIdA = bodyId1;
-                revoluteDef.bodyIdB = bodyId2;
-                revoluteDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
-                revoluteDef.localAnchorB = new B2Vec2(0.0f, 0.0f);
-                revoluteDef.collideConnected = false;
+                revoluteDef.@base.bodyIdA = bodyId1;
+                revoluteDef.@base.bodyIdB = bodyId2;
+                revoluteDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.0f);
+                revoluteDef.@base.localFrameB.p = new B2Vec2(0.0f, 0.0f);
+                revoluteDef.@base.collideConnected = false;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
@@ -147,24 +146,23 @@ public class ScissorLift : Sample
             // left pin
             {
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
-                revoluteDef.bodyIdA = platformId;
-                revoluteDef.bodyIdB = baseId1;
-                revoluteDef.localAnchorA = new B2Vec2(-2.5f, -0.4f);
-                revoluteDef.localAnchorB = baseAnchor1;
-                revoluteDef.collideConnected = true;
+                revoluteDef.@base.bodyIdA = platformId;
+                revoluteDef.@base.bodyIdB = baseId1;
+                revoluteDef.@base.localFrameA.p = new B2Vec2(-2.5f, -0.4f);
+                revoluteDef.@base.localFrameB.p = baseAnchor1;
+                revoluteDef.@base.collideConnected = true;
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
             }
 
             // right pin
             {
                 B2WheelJointDef wheelDef = b2DefaultWheelJointDef();
-                wheelDef.bodyIdA = platformId;
-                wheelDef.bodyIdB = baseId2;
-                wheelDef.localAxisA = new B2Vec2(1.0f, 0.0f);
-                wheelDef.localAnchorA = new B2Vec2(2.5f, -0.4f);
-                wheelDef.localAnchorB = baseAnchor2;
+                wheelDef.@base.bodyIdA = platformId;
+                wheelDef.@base.bodyIdB = baseId2;
+                wheelDef.@base.localFrameA.p = new B2Vec2(2.5f, -0.4f);
+                wheelDef.@base.localFrameB.p = baseAnchor2;
                 wheelDef.enableSpring = false;
-                wheelDef.collideConnected = true;
+                wheelDef.@base.collideConnected = true;
                 b2CreateWheelJoint(m_worldId, ref wheelDef);
             }
 
@@ -173,10 +171,10 @@ public class ScissorLift : Sample
             m_motorForce = 2000.0f;
 
             B2DistanceJointDef distanceDef = b2DefaultDistanceJointDef();
-            distanceDef.bodyIdA = groundId;
-            distanceDef.bodyIdB = linkId1;
-            distanceDef.localAnchorA = new B2Vec2(-2.5f, 0.2f);
-            distanceDef.localAnchorB = new B2Vec2(0.5f, 0.0f);
+            distanceDef.@base.bodyIdA = groundId;
+            distanceDef.@base.bodyIdB = linkId1;
+            distanceDef.@base.localFrameA.p = new B2Vec2(-2.5f, 0.2f);
+            distanceDef.@base.localFrameB.p = new B2Vec2(0.5f, 0.0f);
             distanceDef.enableSpring = true;
             distanceDef.minLength = 0.2f;
             distanceDef.maxLength = 5.5f;

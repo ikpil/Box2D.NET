@@ -70,6 +70,7 @@ namespace Box2D.NET
         public B2Array<B2BodyMoveEvent> bodyMoveEvents;
         public B2Array<B2SensorBeginTouchEvent> sensorBeginEvents;
         public B2Array<B2ContactBeginTouchEvent> contactBeginEvents;
+        public B2Array<B2JointEvent> jointEvents;
 
         // End events are double buffered so that the user doesn't need to flush events
         public B2Array<B2SensorEndTouchEvent>[] sensorEndEvents = new B2Array<B2SensorEndTouchEvent>[2];
@@ -183,6 +184,7 @@ namespace Box2D.NET
             bodyMoveEvents = new B2Array<B2BodyMoveEvent>();
             sensorBeginEvents = new B2Array<B2SensorBeginTouchEvent>();
             contactBeginEvents = new B2Array<B2ContactBeginTouchEvent>();
+            jointEvents = new B2Array<B2JointEvent>();
 
             sensorEndEvents[0] = new B2Array<B2SensorEndTouchEvent>();
             sensorEndEvents[1] = new B2Array<B2SensorEndTouchEvent>();

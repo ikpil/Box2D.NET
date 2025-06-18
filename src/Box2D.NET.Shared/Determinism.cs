@@ -56,9 +56,9 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = true;
                 jointDef.hertz = 0.5f;
                 jointDef.dampingRatio = 0.5f;
-                jointDef.localAnchorA = new B2Vec2(h, h);
-                jointDef.localAnchorB = new B2Vec2(offset, -h);
-                jointDef.drawSize = 0.1f;
+                jointDef.@base.localFrameA.p = new B2Vec2(h, h);
+                jointDef.@base.localFrameB.p = new B2Vec2(offset, -h);
+                jointDef.@base.drawSize = 0.1f;
 
                 int bodyIndex = 0;
 
@@ -87,8 +87,8 @@ namespace Box2D.NET.Shared
                         }
                         else
                         {
-                            jointDef.bodyIdA = prevBodyId;
-                            jointDef.bodyIdB = bodyId;
+                            jointDef.@base.bodyIdA = prevBodyId;
+                            jointDef.@base.bodyIdB = bodyId;
                             b2CreateRevoluteJoint(worldId, ref jointDef);
                             prevBodyId = b2_nullBodyId;
                         }

@@ -113,7 +113,7 @@ public class B2RotTest
     {
         var rot1 = b2MakeRot(0.0f);
         var rot2 = b2MakeRot(B2_PI / 2);
-        Assert.That(b2RelativeAngle(rot2, rot1), Is.EqualTo(B2_PI / 2).Within(FLT_EPSILON), "Relative angle between 0 and 90 degrees should be 90 degrees");
+        Assert.That(b2RelativeAngle(rot1, rot2), Is.EqualTo(B2_PI / 2).Within(FLT_EPSILON), "Relative angle between 0 and 90 degrees should be 90 degrees");
     }
 
     [Test]

@@ -94,7 +94,7 @@ public class BodyMove : Sample
         {
             bodyDef.position = new B2Vec2(x, y);
             bodyDef.isBullet = (m_count % 12 == 0);
-            bodyDef.userData = BodyUserData.Create(m_count);
+            bodyDef.userData = CustomUserData.Create(m_count);
             m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
             m_sleeping[m_count] = false;
 
@@ -149,7 +149,7 @@ public class BodyMove : Sample
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
-            var diff = (BodyUserData<int>)@event.userData;
+            var diff = (CustomUserData<int>)@event.userData;
             //ptrdiff_t diff = bodyId - m_bodyIds;
             ref bool sleeping = ref m_sleeping[diff.Value];
 

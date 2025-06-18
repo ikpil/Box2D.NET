@@ -83,11 +83,11 @@ public struct Car
 
         B2WheelJointDef jointDef = b2DefaultWheelJointDef();
 
-        jointDef.bodyIdA = m_chassisId;
-        jointDef.bodyIdB = m_rearWheelId;
-        jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);
-        jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-        jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+        jointDef.@base.bodyIdA = m_chassisId;
+        jointDef.@base.bodyIdB = m_rearWheelId;
+        jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
+        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
         jointDef.motorSpeed = 0.0f;
         jointDef.maxMotorTorque = torque;
         jointDef.enableMotor = true;
@@ -99,11 +99,11 @@ public struct Car
         m_rearAxleId = b2CreateWheelJoint(worldId, ref jointDef);
 
         pivot = b2Body_GetPosition(m_frontWheelId);
-        jointDef.bodyIdA = m_chassisId;
-        jointDef.bodyIdB = m_frontWheelId;
-        jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);
-        jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-        jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+        jointDef.@base.bodyIdA = m_chassisId;
+        jointDef.@base.bodyIdB = m_frontWheelId;
+        jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
+        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
         jointDef.motorSpeed = 0.0f;
         jointDef.maxMotorTorque = torque;
         jointDef.enableMotor = true;

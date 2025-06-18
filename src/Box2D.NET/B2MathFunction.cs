@@ -332,6 +332,13 @@ namespace Box2D.NET
             return new B2Rot(cs.cosine, cs.sine);
         }
 
+        /// Make a rotation using a unit vector
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Rot b2MakeRotFromUnitVector(B2Vec2 unitVector)
+        {
+            B2_ASSERT(b2IsNormalized(unitVector));
+            return new B2Rot(unitVector.X, unitVector.Y);
+        }
 
         /// Is this rotation normalized?
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -419,28 +426,29 @@ namespace Box2D.NET
             return qr;
         }
 
-        /// Transpose multiply two rotations: qT * r
+        /// Transpose multiply two rotations: inv(a) * b
+        /// This rotates a vector local in frame b into a vector local in frame a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Rot b2InvMulRot(B2Rot q, B2Rot r)
+        public static B2Rot b2InvMulRot(B2Rot a, B2Rot b)
         {
-            // [ qc qs] * [rc -rs] = [qc*rc+qs*rs -qc*rs+qs*rc]
-            // [-qs qc]   [rs  rc]   [-qs*rc+qc*rs qs*rs+qc*rc]
-            // s(q - r) = qc * rs - qs * rc
-            // c(q - r) = qc * rc + qs * rs
-            B2Rot qr;
-            qr.s = q.c * r.s - q.s * r.c;
-            qr.c = q.c * r.c + q.s * r.s;
-            return qr;
+            // [ ac as] * [bc -bs] = [ac*bc+qs*bs -ac*bs+as*bc]
+            // [-as ac]   [bs  bc]   [-as*bc+ac*bs as*bs+ac*bc]
+            // s(a - b) = ac * bs - as * bc
+            // c(a - b) = ac * bc + as * bs
+            B2Rot r;
+            r.s = a.c * b.s - a.s * b.c;
+            r.c = a.c * b.c + a.s * b.s;
+            return r;
         }
 
-        /// relative angle between b and a (rot_b * inv(rot_a))
+        /// Relative angle between a and b
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2RelativeAngle(B2Rot b, B2Rot a)
+        public static float b2RelativeAngle(B2Rot a, B2Rot b)
         {
             // sin(b - a) = bs * ac - bc * as
             // cos(b - a) = bc * ac + bs * as
-            float s = b.s * a.c - b.c * a.s;
-            float c = b.c * a.c + b.s * a.s;
+            float s = a.c * b.s - a.s * b.c;
+            float c = a.c * b.c + a.s * b.s;
             return b2Atan2(s, c);
         }
 
@@ -693,6 +701,18 @@ namespace Box2D.NET
             }
 
             return b2IsNormalizedRot(q);
+        }
+
+        /// Is this a valid transform? Not NaN or infinity. Rotation is normalized.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2IsValidTransform(B2Transform t)
+        {
+            if (b2IsValidVec2(t.p) == false)
+            {
+                return false;
+            }
+
+            return b2IsValidRotation(t.q);
         }
 
         /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.

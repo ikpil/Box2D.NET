@@ -51,7 +51,7 @@ namespace Box2D.NET
         public const float B2_JOINT_CONSTRAINT_HERTZ = 60.0f;
 
         // The default joint constraint damping ratio
-        public const float B2_JOINT_CONSTRAINT_DAMPING_RATIO = 2.0f;
+        public const float B2_JOINT_CONSTRAINT_DAMPING_RATIO = 0.0f;
 
 
         // collision

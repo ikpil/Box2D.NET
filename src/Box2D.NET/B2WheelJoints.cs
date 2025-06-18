@@ -148,11 +148,14 @@ namespace Box2D.NET
 
         public static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
-            ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
+            int idA = @base.bodyIdA;
+            B2Transform transformA = b2GetBodyTransform(world, idA);
 
-            // This is a frame behind
-            B2Vec2 axisA = joint.axisA;
+            B2Vec2 localAxisA = b2RotateVector(@base.localFrameA.q, new B2Vec2(1.0f, 0.0f));
+            B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
+
+            ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
             float perpForce = world.inv_h * joint.perpImpulse;
             float axialForce = world.inv_h * (joint.springImpulse + joint.lowerImpulse - joint.upperImpulse);
@@ -220,19 +223,20 @@ namespace Box2D.NET
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
-            B2Rot qA = bodySimA.transform.q;
-            B2Rot qB = bodySimB.transform.q;
+            // Compute joint anchor frames with world space rotation, relative to center of mass
+            joint.frameA.q = b2MulRot(bodySimA.transform.q, @base.localFrameA.q);
+            joint.frameA.p = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
+            joint.frameB.q = b2MulRot(bodySimB.transform.q, @base.localFrameB.q);
+            joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
-            joint.anchorA = b2RotateVector(qA, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
-            joint.anchorB = b2RotateVector(qB, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
-            joint.axisA = b2RotateVector(qA, joint.localAxisA);
+            // Compute the initial center delta. Incremental position updates are relative to this.
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
 
-            B2Vec2 rA = joint.anchorA;
-            B2Vec2 rB = joint.anchorB;
+            B2Vec2 rA = joint.frameA.p;
+            B2Vec2 rB = joint.frameB.p;
 
             B2Vec2 d = b2Add(joint.deltaCenter, b2Sub(rB, rA));
-            B2Vec2 axisA = joint.axisA;
+            B2Vec2 axisA = b2RotateVector(joint.frameA.q, new B2Vec2(1.0f, 0.0f));
             B2Vec2 perpA = b2LeftPerp(axisA);
 
             // perpendicular constraint (keep wheel on line)
@@ -281,11 +285,12 @@ namespace Box2D.NET
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
             B2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
-            B2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
+            B2Vec2 axisA = b2RotateVector(joint.frameA.q, new B2Vec2(1.0f, 0.0f));
+            axisA = b2RotateVector(stateA.deltaRotation, axisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
 
             float a1 = b2Cross(b2Add(d, rA), axisA);
@@ -330,11 +335,12 @@ namespace Box2D.NET
             bool fixedRotation = (iA + iB == 0.0f);
 
             // current anchors
-            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
             B2Vec2 d = b2Add(b2Add(b2Sub(stateB.deltaPosition, stateA.deltaPosition), joint.deltaCenter), b2Sub(rB, rA));
-            B2Vec2 axisA = b2RotateVector(stateA.deltaRotation, joint.axisA);
+            B2Vec2 axisA = b2RotateVector(joint.frameA.q, new B2Vec2(1.0f, 0.0f));
+            axisA = b2RotateVector(stateA.deltaRotation, axisA);
             float translation = b2Dot(axisA, d);
 
             float a1 = b2Cross(b2Add(d, rA), axisA);
@@ -522,9 +528,9 @@ namespace Box2D.NET
 
             ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
-            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
-            B2Vec2 axis = b2RotateVector(transformA.q, joint.localAxisA);
+            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
+            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+            B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
             B2HexColor c1 = B2HexColor.b2_colorGray;
             B2HexColor c2 = B2HexColor.b2_colorGreen;
@@ -532,24 +538,24 @@ namespace Box2D.NET
             B2HexColor c4 = B2HexColor.b2_colorDimGray;
             B2HexColor c5 = B2HexColor.b2_colorBlue;
 
-            draw.DrawSegmentFcn(pA, pB, c5, draw.context);
+            draw.DrawSegmentFcn(frameA.p, frameB.p, c5, draw.context);
 
             if (joint.enableLimit)
             {
-                B2Vec2 lower = b2MulAdd(pA, joint.lowerTranslation, axis);
-                B2Vec2 upper = b2MulAdd(pA, joint.upperTranslation, axis);
-                B2Vec2 perp = b2LeftPerp(axis);
+                B2Vec2 lower = b2MulAdd(frameA.p, joint.lowerTranslation, axisA);
+                B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
+                B2Vec2 perp = b2LeftPerp(axisA);
                 draw.DrawSegmentFcn(lower, upper, c1, draw.context);
                 draw.DrawSegmentFcn(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
                 draw.DrawSegmentFcn(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
             }
             else
             {
-                draw.DrawSegmentFcn(b2MulSub(pA, 1.0f, axis), b2MulAdd(pA, 1.0f, axis), c1, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(frameA.p, 1.0f, axisA), b2MulAdd(frameA.p, 1.0f, axisA), c1, draw.context);
             }
 
-            draw.DrawPointFcn(pA, 5.0f, c1, draw.context);
-            draw.DrawPointFcn(pB, 5.0f, c4, draw.context);
+            draw.DrawPointFcn(frameA.p, 5.0f, c1, draw.context);
+            draw.DrawPointFcn(frameB.p, 5.0f, c4, draw.context);
         }
     }
 }

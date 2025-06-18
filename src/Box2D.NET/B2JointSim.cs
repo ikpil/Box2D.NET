@@ -15,19 +15,20 @@ namespace Box2D.NET
 
         public B2JointType type;
 
-        // Anchors relative to body origin
-        public B2Vec2 localOriginAnchorA;
-        public B2Vec2 localOriginAnchorB;
+        public B2Transform localFrameA;
+        public B2Transform localFrameB;
 
         public float invMassA, invMassB;
         public float invIA, invIB;
-
 
         public float constraintHertz;
         public float constraintDampingRatio;
 
         public B2Softness constraintSoftness;
 
+        public float forceThreshold;
+        public float torqueThreshold;
+        
         // TODO: @ikpil, check union
         public B2JointUnion uj;
 
@@ -37,8 +38,8 @@ namespace Box2D.NET
             bodyIdA = 0;
             bodyIdB = 0;
             type = B2JointType.b2_distanceJoint;
-            localOriginAnchorA = new B2Vec2();
-            localOriginAnchorB = new B2Vec2();
+            localFrameA = new B2Transform();
+            localFrameB = new B2Transform();
             invMassA = 0.0f;
             invMassB = 0.0f;
             invIA = 0.0f;
@@ -46,6 +47,8 @@ namespace Box2D.NET
             constraintHertz = 0.0f;
             constraintDampingRatio = 0.0f;
             constraintSoftness = new B2Softness();
+            forceThreshold = 0;
+            torqueThreshold = 0;
             uj = new B2JointUnion();
         }
 
@@ -55,8 +58,8 @@ namespace Box2D.NET
             bodyIdA = other.bodyIdA;
             bodyIdB = other.bodyIdB;
             type = other.type;
-            localOriginAnchorA = other.localOriginAnchorA;
-            localOriginAnchorB = other.localOriginAnchorB;
+            localFrameA = other.localFrameA;
+            localFrameB = other.localFrameB;
             invMassA = other.invMassA;
             invMassB = other.invMassB;
             invIA = other.invIA;
@@ -64,6 +67,8 @@ namespace Box2D.NET
             constraintHertz = other.constraintHertz;
             constraintDampingRatio = other.constraintDampingRatio;
             constraintSoftness = other.constraintSoftness;
+            forceThreshold = other.forceThreshold;
+            torqueThreshold = other.torqueThreshold;
             uj = other.uj;
         }
     }

@@ -13,23 +13,8 @@ namespace Box2D.NET
     /// @ingroup prismatic_joint
     public struct B2PrismaticJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// The local anchor point relative to bodyA's origin
-        public B2Vec2 localAnchorA;
-
-        /// The local anchor point relative to bodyB's origin
-        public B2Vec2 localAnchorB;
-
-        /// The local translation unit axis in bodyA
-        public B2Vec2 localAxisA;
-
-        /// The constrained angle between the bodies: bodyB_angle - bodyA_angle
-        public float referenceAngle;
+        /// Base joint definition
+        public B2JointDef @base;
         
         /// The target translation for the joint in meters. The spring-damper will drive
         /// to this translation.
@@ -61,12 +46,6 @@ namespace Box2D.NET
 
         /// The desired motor speed, typically in meters per second
         public float motorSpeed;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

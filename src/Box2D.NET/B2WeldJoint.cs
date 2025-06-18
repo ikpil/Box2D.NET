@@ -6,7 +6,6 @@ namespace Box2D.NET
 {
     public struct B2WeldJoint
     {
-        public float referenceAngle;
         public float linearHertz;
         public float linearDampingRatio;
         public float angularHertz;
@@ -19,10 +18,9 @@ namespace Box2D.NET
 
         public int indexA;
         public int indexB;
-        public B2Vec2 anchorA;
-        public B2Vec2 anchorB;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
-        public float deltaAngle;
         public float axialMass;
     }
 }

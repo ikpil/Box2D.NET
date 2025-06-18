@@ -97,30 +97,29 @@ public class BodyType : Sample
 
             B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
-            revoluteDef.bodyIdA = m_attachmentId;
-            revoluteDef.bodyIdB = m_platformId;
-            revoluteDef.localAnchorA = b2Body_GetLocalPoint(m_attachmentId, pivot);
-            revoluteDef.localAnchorB = b2Body_GetLocalPoint(m_platformId, pivot);
+            revoluteDef.@base.bodyIdA = m_attachmentId;
+            revoluteDef.@base.bodyIdB = m_platformId;
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_attachmentId, pivot);
+            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
             b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
             pivot = new B2Vec2(3.0f, 5.0f);
-            revoluteDef.bodyIdA = m_secondAttachmentId;
-            revoluteDef.bodyIdB = m_platformId;
-            revoluteDef.localAnchorA = b2Body_GetLocalPoint(m_secondAttachmentId, pivot);
-            revoluteDef.localAnchorB = b2Body_GetLocalPoint(m_platformId, pivot);
+            revoluteDef.@base.bodyIdA = m_secondAttachmentId;
+            revoluteDef.@base.bodyIdB = m_platformId;
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_secondAttachmentId, pivot);
+            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
             b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
             B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
             B2Vec2 anchor = new B2Vec2(0.0f, 5.0f);
-            prismaticDef.bodyIdA = groundId;
-            prismaticDef.bodyIdB = m_platformId;
-            prismaticDef.localAnchorA = b2Body_GetLocalPoint(groundId, anchor);
-            prismaticDef.localAnchorB = b2Body_GetLocalPoint(m_platformId, anchor);
-            prismaticDef.localAxisA = new B2Vec2(1.0f, 0.0f);
+            prismaticDef.@base.bodyIdA = groundId;
+            prismaticDef.@base.bodyIdB = m_platformId;
+            prismaticDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, anchor);
+            prismaticDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, anchor);
             prismaticDef.maxMotorForce = 1000.0f;
             prismaticDef.motorSpeed = 0.0f;
             prismaticDef.enableMotor = true;
@@ -128,7 +127,7 @@ public class BodyType : Sample
             prismaticDef.upperTranslation = 10.0f;
             prismaticDef.enableLimit = true;
 
-            b2CreatePrismaticJoint(m_worldId, prismaticDef);
+            b2CreatePrismaticJoint(m_worldId, ref prismaticDef);
 
             m_speed = 3.0f;
         }

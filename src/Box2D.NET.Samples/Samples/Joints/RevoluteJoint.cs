@@ -57,7 +57,7 @@ public class RevoluteJoint : Sample
         }
 
         m_enableSpring = false;
-        m_enableLimit = true;
+        m_enableLimit = false;
         m_enableMotor = false;
         m_hertz = 2.0f;
         m_dampingRatio = 0.5f;
@@ -79,10 +79,11 @@ public class RevoluteJoint : Sample
 
             B2Vec2 pivot = new B2Vec2(-10.0f, 20.5f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = bodyId;
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
+            jointDef.@base.localFrameA.q = b2MakeRot( 0.5f * B2_PI );
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdA, pivot );
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
             jointDef.targetAngle = B2_PI * m_targetDegrees / 180.0f;
             jointDef.enableSpring = m_enableSpring;
             jointDef.hertz = m_hertz;
@@ -90,12 +91,13 @@ public class RevoluteJoint : Sample
             jointDef.motorSpeed = m_motorSpeed;
             jointDef.maxMotorTorque = m_motorTorque;
             jointDef.enableMotor = m_enableMotor;
-            jointDef.referenceAngle = 0.5f * B2_PI;
             jointDef.lowerAngle = -0.5f * B2_PI;
             jointDef.upperAngle = 0.75f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
 
             m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            
+            b2Joint_SetConstraintTuning( m_jointId1, 120.0f, 0.0f );
         }
 
         {
@@ -126,12 +128,12 @@ public class RevoluteJoint : Sample
 
             B2Vec2 pivot = new B2Vec2(19.0f, 10.0f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = body;
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = body;
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdA, pivot );
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
             jointDef.lowerAngle = -0.25f * B2_PI;
-            jointDef.upperAngle = 0.1f * B2_PI;
+            jointDef.upperAngle = 0.0f * B2_PI;
             jointDef.enableLimit = true;
             jointDef.enableMotor = true;
             jointDef.motorSpeed = 0.0f;
@@ -220,8 +222,7 @@ public class RevoluteJoint : Sample
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
         DrawTextLine($"Motor Torque 1 = {torque1:F1}");
 
-
-        float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        DrawTextLine($"Motor Torque 2 = {torque2:F1}");
+        // float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
+        // DrawTextLine($"Motor Torque 2 = {torque2:F1}");
     }
 }

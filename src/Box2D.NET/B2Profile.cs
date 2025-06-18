@@ -25,6 +25,7 @@ namespace Box2D.NET
         public float storeImpulses;
         public float splitIslands;
         public float transforms;
+        public float jointEvents;
         public float hitEvents;
         public float refit;
         public float bullets;

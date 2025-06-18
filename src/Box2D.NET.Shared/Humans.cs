@@ -119,10 +119,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.0f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.25f * B2_PI;
                 jointDef.upperAngle = 0.0f;
@@ -131,7 +131,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -162,10 +162,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.4f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.3f * B2_PI;
                 jointDef.upperAngle = 0.1f * B2_PI;
@@ -174,7 +174,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -201,10 +201,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.05f * B2_PI;
                 jointDef.upperAngle = 0.4f * B2_PI;
@@ -213,7 +213,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -257,10 +257,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.5f * B2_PI;
                 jointDef.upperAngle = -0.02f * B2_PI;
@@ -269,7 +269,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -296,10 +296,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.05f * B2_PI;
                 jointDef.upperAngle = 0.4f * B2_PI;
@@ -308,7 +308,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -343,10 +343,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.5f * B2_PI;
                 jointDef.upperAngle = -0.02f * B2_PI;
@@ -355,7 +355,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -382,10 +382,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.1f * B2_PI;
                 jointDef.upperAngle = 0.8f * B2_PI;
@@ -394,7 +394,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -421,11 +421,11 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-                jointDef.referenceAngle = 0.25f * B2_PI;
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameA.q = b2MakeRot(0.25f * B2_PI);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.2f * B2_PI;
                 jointDef.upperAngle = 0.3f * B2_PI;
@@ -434,7 +434,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -461,10 +461,10 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.1f * B2_PI;
                 jointDef.upperAngle = 0.8f * B2_PI;
@@ -473,7 +473,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -500,11 +500,11 @@ namespace Box2D.NET.Shared
 
                 B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-                jointDef.bodyIdA = human.bones[bone.parentIndex].bodyId;
-                jointDef.bodyIdB = bone.bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-                jointDef.referenceAngle = 0.25f * B2_PI;
+                jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
+                jointDef.@base.bodyIdB = bone.bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameA.q = b2MakeRot(0.25f * B2_PI);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableLimit = enableLimit;
                 jointDef.lowerAngle = -0.2f * B2_PI;
                 jointDef.upperAngle = 0.3f * B2_PI;
@@ -513,7 +513,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.drawSize = drawSize;
+                jointDef.@base.drawSize = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -661,12 +661,12 @@ namespace Box2D.NET.Shared
                     transform.p = b2MulAdd(origin, ratio, b2Sub(transform.p, origin));
                     b2Body_SetTransform(bone.bodyId, transform.p, transform.q);
 
-                    B2Vec2 localAnchorA = b2Joint_GetLocalAnchorA(bone.jointId);
-                    B2Vec2 localAnchorB = b2Joint_GetLocalAnchorB(bone.jointId);
-                    localAnchorA = b2MulSV(ratio, localAnchorA);
-                    localAnchorB = b2MulSV(ratio, localAnchorB);
-                    b2Joint_SetLocalAnchorA(bone.jointId, localAnchorA);
-                    b2Joint_SetLocalAnchorB(bone.jointId, localAnchorB);
+                    B2Transform localFrameA = b2Joint_GetLocalFrameA(bone.jointId);
+                    B2Transform localFrameB = b2Joint_GetLocalFrameB(bone.jointId);
+                    localFrameA.p = b2MulSV(ratio, localFrameA.p);
+                    localFrameB.p = b2MulSV(ratio, localFrameB.p);
+                    b2Joint_SetLocalFrameA(bone.jointId, localFrameA);
+                    b2Joint_SetLocalFrameB(bone.jointId, localFrameB);
 
                     B2JointType type = b2Joint_GetType(bone.jointId);
                     if (type == B2JointType.b2_revoluteJoint)

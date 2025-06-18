@@ -69,12 +69,12 @@ public class JointSeparation : Sample
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
             B2Vec2 pivot2 = new B2Vec2(position.X, position.Y + 1.0f);
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyIds[index];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot1);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot2);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
             jointDef.length = length;
-            jointDef.collideConnected = true;
+            jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
@@ -91,13 +91,12 @@ public class JointSeparation : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyIds[index];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new B2Vec2(1.0f, 0.0f));
-            jointDef.collideConnected = true;
-            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.collideConnected = true;
+            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
         }
 
         position.X += 10.0f;
@@ -113,11 +112,11 @@ public class JointSeparation : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyIds[index];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.collideConnected = true;
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
@@ -134,11 +133,11 @@ public class JointSeparation : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyIds[index];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.collideConnected = true;
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
@@ -155,11 +154,10 @@ public class JointSeparation : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyIds[index];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, new B2Vec2(1.0f, 0.0f));
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.hertz = 1.0f;
             jointDef.dampingRatio = 0.7f;
             jointDef.lowerTranslation = -1.0f;
@@ -168,7 +166,7 @@ public class JointSeparation : Sample
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
-            jointDef.collideConnected = true;
+            jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
         }
 
@@ -234,8 +232,8 @@ public class JointSeparation : Sample
 
             float linear = b2Joint_GetLinearSeparation(m_jointIds[i]);
             float angular = b2Joint_GetAngularSeparation(m_jointIds[i]);
-            B2Vec2 point = b2Joint_GetLocalAnchorA(m_jointIds[i]);
-            m_draw.DrawString(point, $"{linear:F2} m, {180.0f * angular / B2_PI:F1} deg");
+            B2Transform localFrame = b2Joint_GetLocalFrameA(m_jointIds[i]);
+            m_draw.DrawString(localFrame.p, $"{linear:F2} m, {180.0f * angular / B2_PI:F1} deg");
         }
     }
 }

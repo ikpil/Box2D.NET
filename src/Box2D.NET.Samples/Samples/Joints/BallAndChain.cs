@@ -67,10 +67,10 @@ public class BallAndChain : Sample
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, m_count * hx);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 jointDef.enableSpring = i > 0;
@@ -87,16 +87,16 @@ public class BallAndChain : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * m_count) * hx + circle.radius - hx, m_count * hx);
                 B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                
+
                 shapeDef.filter.categoryBits = 0x2;
                 shapeDef.filter.maskBits = 0x1;
                 b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * m_count) * hx, m_count * hx);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 jointDef.enableSpring = true;

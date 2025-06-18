@@ -6,7 +6,6 @@ namespace Box2D.NET
 {
     public struct B2MouseJoint
     {
-        public B2Vec2 targetA;
         public float hertz;
         public float dampingRatio;
         public float maxForce;
@@ -16,9 +15,12 @@ namespace Box2D.NET
 
         public B2Softness linearSoftness;
         public B2Softness angularSoftness;
+        public int indexA;
         public int indexB;
-        public B2Vec2 anchorB;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
         public B2Mat22 linearMass;
+        public float axialMass;
     }
 }

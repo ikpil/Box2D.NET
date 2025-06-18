@@ -16,7 +16,7 @@ namespace Box2D.NET.Samples.Samples.Joints;
 public class WheelJoint : Sample
 {
     private static readonly int SampleWheel = SampleFactory.Shared.RegisterSample("Joints", "Wheel", Create);
-    
+
     private B2JointId m_jointId;
     private float m_hertz;
     private float m_dampingRatio;
@@ -67,11 +67,11 @@ public class WheelJoint : Sample
             B2Vec2 pivot = new B2Vec2(0.0f, 10.0f);
             B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = bodyId;
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
+            jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector(axis);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.motorSpeed = m_motorSpeed;
             jointDef.maxMotorTorque = m_motorTorque;
             jointDef.enableMotor = m_enableMotor;
@@ -88,7 +88,7 @@ public class WheelJoint : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
         float height = 220.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -142,9 +142,8 @@ public class WheelJoint : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
         DrawTextLine($"Motor Torque = {torque,4:F1}");
-        
     }
 }
