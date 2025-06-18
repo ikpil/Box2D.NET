@@ -71,19 +71,20 @@ public struct Donut
         B2WeldJointDef weldDef = b2DefaultWeldJointDef();
         weldDef.angularHertz = 5.0f;
         weldDef.angularDampingRatio = 0.0f;
-        weldDef.localAnchorA = new B2Vec2(0.0f, 0.5f * length);
-        weldDef.localAnchorB = new B2Vec2(0.0f, -0.5f * length);
+        weldDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.5f * length);
+        weldDef.@base.localFrameB.p = new B2Vec2(0.0f, -0.5f * length);
+        weldDef.@base.drawSize = 0.5f * scale;
 
         B2BodyId prevBodyId = m_bodyIds[m_sides - 1];
         for (int i = 0; i < m_sides; ++i)
         {
-            weldDef.bodyIdA = prevBodyId;
-            weldDef.bodyIdB = m_bodyIds[i];
-            B2Rot rotA = b2Body_GetRotation(prevBodyId);
-            B2Rot rotB = b2Body_GetRotation(m_bodyIds[i]);
-            weldDef.referenceAngle = b2RelativeAngle(rotB, rotA);
+            weldDef.@base.bodyIdA = prevBodyId;
+            weldDef.@base.bodyIdB = m_bodyIds[i];
+            B2Rot qA = b2Body_GetRotation(prevBodyId);
+            B2Rot qB = b2Body_GetRotation(m_bodyIds[i]);
+            weldDef.@base.localFrameA.q = b2InvMulRot(qA, qB);
             m_jointIds[i] = b2CreateWeldJoint(worldId, ref weldDef);
-            prevBodyId = weldDef.bodyIdB;
+            prevBodyId = weldDef.@base.bodyIdB;
         }
 
         m_isSpawned = true;

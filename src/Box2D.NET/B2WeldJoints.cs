@@ -9,6 +9,7 @@ using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Geometries;
 
 namespace Box2D.NET
 {
@@ -128,14 +129,14 @@ namespace Box2D.NET
             joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
-            B2Rot qA = bodySimA.transform.q;
-            B2Rot qB = bodySimB.transform.q;
+            // Compute joint anchor frames with world space rotation, relative to center of mass
+            joint.frameA.q = b2MulRot(bodySimA.transform.q, @base.localFrameA.q);
+            joint.frameA.p = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
+            joint.frameB.q = b2MulRot(bodySimB.transform.q, @base.localFrameB.q);
+            joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
-            joint.anchorA = b2RotateVector(qA, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
-            joint.anchorB = b2RotateVector(qB, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
+            // Compute the initial center delta. Incremental position updates are relative to this.
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
-            joint.deltaAngle = b2RelativeAngle(qB, qA) - joint.referenceAngle;
-            joint.deltaAngle = b2UnwindAngle(joint.deltaAngle);
 
             float ka = iA + iB;
             joint.axialMass = ka > 0.0f ? 1.0f / ka : 0.0f;
@@ -180,8 +181,8 @@ namespace Box2D.NET
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
             B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
 
-            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
             stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, joint.linearImpulse);
             stateA.angularVelocity -= iA * (b2Cross(rA, joint.linearImpulse) + joint.angularImpulse);
@@ -214,12 +215,17 @@ namespace Box2D.NET
 
             // angular constraint
             {
+                B2Rot qA = b2MulRot(stateA.deltaRotation, joint.frameA.q);
+                B2Rot qB = b2MulRot(stateB.deltaRotation, joint.frameB.q);
+                B2Rot relQ = b2InvMulRot(qA, qB);
+                float jointAngle = b2Rot_GetAngle(relQ);
+
                 float bias = 0.0f;
                 float massScale = 1.0f;
                 float impulseScale = 0.0f;
                 if (useBias || joint.angularHertz > 0.0f)
                 {
-                    float C = b2RelativeAngle(stateB.deltaRotation, stateA.deltaRotation) + joint.deltaAngle;
+                    float C = jointAngle;
                     bias = joint.angularSoftness.biasRate * C;
                     massScale = joint.angularSoftness.massScale;
                     impulseScale = joint.angularSoftness.impulseScale;
@@ -235,8 +241,8 @@ namespace Box2D.NET
 
             // linear constraint
             {
-                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.anchorA);
-                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.anchorB);
+                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
 
                 B2Vec2 bias = b2Vec2_zero;
                 float massScale = 1.0f;
@@ -281,22 +287,48 @@ namespace Box2D.NET
         }
 
 #if FALSE
-    public static void b2DumpWeldJoint()
-    {
-        int32 indexA = m_bodyA.m_islandIndex;
-        int32 indexB = m_bodyB.m_islandIndex;
+        public static void b2DumpWeldJoint()
+        {
+            int32 indexA = m_bodyA.m_islandIndex;
+            int32 indexB = m_bodyB.m_islandIndex;
 
-        b2Dump("  b2WeldJointDef jd;\n");
-        b2Dump("  jd.bodyA = sims[%d];\n", indexA);
-        b2Dump("  jd.bodyB = sims[%d];\n", indexB);
-        b2Dump("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-        b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", m_localAnchorA.x, m_localAnchorA.y);
-        b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", m_localAnchorB.x, m_localAnchorB.y);
-        b2Dump("  jd.referenceAngle = %.9g;\n", m_referenceAngle);
-        b2Dump("  jd.stiffness = %.9g;\n", m_stiffness);
-        b2Dump("  jd.damping = %.9g;\n", m_damping);
-        b2Dump("  joints[%d] = m_world.CreateJoint(&jd);\n", m_index);
-    }
+            b2Dump("  b2WeldJointDef jd;\n");
+            b2Dump("  jd.bodyA = sims[%d];\n", indexA);
+            b2Dump("  jd.bodyB = sims[%d];\n", indexB);
+            b2Dump("  jd.collideConnected = bool(%d);\n", m_collideConnected);
+            b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", m_localAnchorA.x, m_localAnchorA.y);
+            b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", m_localAnchorB.x, m_localAnchorB.y);
+            b2Dump("  jd.referenceAngle = %.9g;\n", m_referenceAngle);
+            b2Dump("  jd.stiffness = %.9g;\n", m_stiffness);
+            b2Dump("  jd.damping = %.9g;\n", m_damping);
+            b2Dump("  joints[%d] = m_world.CreateJoint(&jd);\n", m_index);
+        }
 #endif
+
+        public static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawSize)
+        {
+            B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
+
+            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
+            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+
+            B2Polygon box = b2MakeBox(0.25f * drawSize, 0.125f * drawSize);
+
+            B2FixedArray4<B2Vec2> points = new B2FixedArray4<B2Vec2>();
+
+            for (int i = 0; i < 4; ++i)
+            {
+                points[i] = b2TransformPoint(ref frameA, box.vertices[i]);
+            }
+
+            draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkOrange, draw.context);
+
+            for (int i = 0; i < 4; ++i)
+            {
+                points[i] = b2TransformPoint(ref frameB, box.vertices[i]);
+            }
+
+            draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkCyan, draw.context);
+        }
     }
 }

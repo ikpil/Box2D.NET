@@ -12,22 +12,9 @@ namespace Box2D.NET
     /// @ingroup weld_joint
     public struct B2WeldJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// The local anchor point relative to bodyA's origin
-        public B2Vec2 localAnchorA;
-
-        /// The local anchor point relative to bodyB's origin
-        public B2Vec2 localAnchorB;
-
-        /// The bodyB angle minus bodyA angle in the reference state (radians)
-        /// todo maybe make this a b2Rot
-        public float referenceAngle;
-
+        /// Base joint definition
+        public B2JointDef @base;
+            
         /// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
         public float linearHertz;
 
@@ -39,12 +26,6 @@ namespace Box2D.NET
 
         /// Linear damping ratio, non-dimensional. Use 1 for critical damping.
         public float angularDampingRatio;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

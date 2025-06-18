@@ -70,11 +70,13 @@ public class PrismaticJoint : Sample
             // B2Vec2 axis = b2Normalize({1.0f, 0.0f});
             B2Vec2 axis = b2Normalize(new B2Vec2(1.0f, 1.0f));
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = bodyId;
-            jointDef.localAxisA = b2Body_GetLocalVector(jointDef.bodyIdA, axis);
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdA, pivot );
+            jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector( axis );
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
+            jointDef.@base.localFrameB.q = b2MakeRotFromUnitVector( axis );
+            jointDef.@base.drawSize = 2.0f;
             jointDef.motorSpeed = m_motorSpeed;
             jointDef.maxMotorForce = m_motorForce;
             jointDef.enableMotor = m_enableMotor;
@@ -85,7 +87,7 @@ public class PrismaticJoint : Sample
             jointDef.hertz = m_hertz;
             jointDef.dampingRatio = m_dampingRatio;
 
-            m_jointId = b2CreatePrismaticJoint(m_worldId, jointDef);
+            m_jointId = b2CreatePrismaticJoint(m_worldId, ref jointDef);
         }
     }
 
@@ -146,7 +148,7 @@ public class PrismaticJoint : Sample
                 b2Joint_WakeBodies(m_jointId);
             }
 
-            if (ImGui.SliderFloat("Translation", ref m_translation, -5.0f, 5.0f, "%.1f"))
+            if (ImGui.SliderFloat("Translation", ref m_translation, -15.0f, 15.0f, "%.1f"))
             {
                 b2PrismaticJoint_SetTargetTranslation(m_jointId, m_translation);
                 b2Joint_WakeBodies(m_jointId);

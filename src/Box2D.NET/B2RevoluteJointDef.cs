@@ -18,21 +18,8 @@ namespace Box2D.NET
     /// @ingroup revolute_joint
     public struct B2RevoluteJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// The local anchor point relative to bodyA's origin
-        public B2Vec2 localAnchorA;
-
-        /// The local anchor point relative to bodyB's origin
-        public B2Vec2 localAnchorB;
-
-        /// The bodyB angle minus bodyA angle in the reference state (radians).
-        /// This defines the zero angle for the joint limit.
-        public float referenceAngle;
+        /// Base joint definition
+        public B2JointDef @base;
         
         /// The target angle for the joint in radians. The spring-damper will drive
         /// to this angle.
@@ -64,15 +51,6 @@ namespace Box2D.NET
 
         /// The desired motor speed in radians per second
         public float motorSpeed;
-
-        /// Scale the debug draw
-        public float drawSize;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

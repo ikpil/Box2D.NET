@@ -6,7 +6,6 @@ namespace Box2D.NET
 {
     public struct B2WheelJoint
     {
-        public B2Vec2 localAxisA;
         public float perpImpulse;
         public float motorImpulse;
         public float springImpulse;
@@ -21,9 +20,8 @@ namespace Box2D.NET
 
         public int indexA;
         public int indexB;
-        public B2Vec2 anchorA;
-        public B2Vec2 anchorB;
-        public B2Vec2 axisA;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
         public float perpMass;
         public float motorMass;

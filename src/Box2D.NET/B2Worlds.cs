@@ -197,6 +197,7 @@ namespace Box2D.NET
             world.contactEndEvents[0] = b2Array_Create<B2ContactEndTouchEvent>(4);
             world.contactEndEvents[1] = b2Array_Create<B2ContactEndTouchEvent>(4);
             world.contactHitEvents = b2Array_Create<B2ContactHitEvent>(4);
+            world.jointEvents = b2Array_Create<B2JointEvent>(4);
             world.endEventArrayIndex = 0;
 
             world.stepIndex = 0;
@@ -264,6 +265,7 @@ namespace Box2D.NET
             for (int i = 0; i < world.workerCount; ++i)
             {
                 world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
+                world.taskContexts.data[i].jointStateBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].enlargedSimBitSet = b2CreateBitSet(256);
                 world.taskContexts.data[i].awakeIslandBitSet = b2CreateBitSet(256);
 
@@ -291,6 +293,7 @@ namespace Box2D.NET
             for (int i = 0; i < world.workerCount; ++i)
             {
                 b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].awakeIslandBitSet);
 
@@ -308,6 +311,7 @@ namespace Box2D.NET
             b2Array_Destroy(ref world.contactEndEvents[0]);
             b2Array_Destroy(ref world.contactEndEvents[1]);
             b2Array_Destroy(ref world.contactHitEvents);
+            b2Array_Destroy(ref world.jointEvents);
 
             int chainCapacity = world.chainShapes.count;
             for (int i = 0; i < chainCapacity; ++i)
@@ -730,6 +734,7 @@ namespace Box2D.NET
             b2Array_Clear(ref world.sensorBeginEvents);
             b2Array_Clear(ref world.contactBeginEvents);
             b2Array_Clear(ref world.contactHitEvents);
+            b2Array_Clear(ref world.jointEvents);
 
             // world.profile = ( b2Profile ){ 0 };
             world.profile = new B2Profile();
@@ -1513,6 +1518,7 @@ namespace Box2D.NET
             }
         }
 
+        /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
         public static B2BodyEvents b2World_GetBodyEvents(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
@@ -1527,6 +1533,7 @@ namespace Box2D.NET
             return events;
         }
 
+        /// Get sensor events for the current time step. The event data is transient. Do not store a reference to this data.
         public static B2SensorEvents b2World_GetSensorEvents(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
@@ -1552,6 +1559,7 @@ namespace Box2D.NET
             return events;
         }
 
+        /// Get contact events for this current time step. The event data is transient. Do not store a reference to this data.
         public static B2ContactEvents b2World_GetContactEvents(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
@@ -1578,6 +1586,21 @@ namespace Box2D.NET
                 hitCount = hitCount,
             };
 
+            return events;
+        }
+
+        /// Get the joint events for the current time step. The event data is transient. Do not store a reference to this data.
+        public static B2JointEvents b2World_GetJointEvents(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return new B2JointEvents();
+            }
+
+            int count = world.jointEvents.count;
+            B2JointEvents events = new B2JointEvents(world.jointEvents.data, count);
             return events;
         }
 

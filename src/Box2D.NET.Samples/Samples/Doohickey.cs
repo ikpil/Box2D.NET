@@ -37,7 +37,7 @@ public class Doohickey
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.material.rollingResistance = 0.1f;
-        
+
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f * scale);
         B2Capsule capsule = new B2Capsule(new B2Vec2(-3.5f * scale, 0.0f), new B2Vec2(3.5f * scale, 0.0f), 0.15f * scale);
 
@@ -59,28 +59,27 @@ public class Doohickey
 
         B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 
-        revoluteDef.bodyIdA = m_wheelId1;
-        revoluteDef.bodyIdB = m_barId1;
-        revoluteDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
-        revoluteDef.localAnchorB = new B2Vec2(-3.5f * scale, 0.0f);
+        revoluteDef.@base.bodyIdA = m_wheelId1;
+        revoluteDef.@base.bodyIdB = m_barId1;
+        revoluteDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.0f);
+        revoluteDef.@base.localFrameB.p = new B2Vec2(-3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
         b2CreateRevoluteJoint(worldId, ref revoluteDef);
 
-        revoluteDef.bodyIdA = m_wheelId2;
-        revoluteDef.bodyIdB = m_barId2;
-        revoluteDef.localAnchorA = new B2Vec2(0.0f, 0.0f);
-        revoluteDef.localAnchorB = new B2Vec2(3.5f * scale, 0.0f);
+        revoluteDef.@base.bodyIdA = m_wheelId2;
+        revoluteDef.@base.bodyIdB = m_barId2;
+        revoluteDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.0f);
+        revoluteDef.@base.localFrameB.p = new B2Vec2(3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
         b2CreateRevoluteJoint(worldId, ref revoluteDef);
 
         B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
-        prismaticDef.bodyIdA = m_barId1;
-        prismaticDef.bodyIdB = m_barId2;
-        prismaticDef.localAxisA = new B2Vec2(1.0f, 0.0f);
-        prismaticDef.localAnchorA = new B2Vec2(2.0f * scale, 0.0f);
-        prismaticDef.localAnchorB = new B2Vec2(-2.0f * scale, 0.0f);
+        prismaticDef.@base.bodyIdA = m_barId1;
+        prismaticDef.@base.bodyIdB = m_barId2;
+        prismaticDef.@base.localFrameA.p = new B2Vec2(2.0f * scale, 0.0f);
+        prismaticDef.@base.localFrameB.p = new B2Vec2(-2.0f * scale, 0.0f);
         prismaticDef.lowerTranslation = -2.0f * scale;
         prismaticDef.upperTranslation = 2.0f * scale;
         prismaticDef.enableLimit = true;
@@ -89,7 +88,7 @@ public class Doohickey
         prismaticDef.enableSpring = true;
         prismaticDef.hertz = 1.0f;
         prismaticDef.dampingRatio = 0.5f;
-        b2CreatePrismaticJoint(worldId, prismaticDef);
+        b2CreatePrismaticJoint(worldId, ref prismaticDef);
     }
 
     public void Despawn()

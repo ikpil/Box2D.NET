@@ -90,8 +90,8 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
 
-            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
+            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localFrameB.p);
             B2Vec2 d = b2Sub(pB, pA);
             float length = b2Length(d);
             return length;
@@ -189,8 +189,8 @@ namespace Box2D.NET
             B2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
             B2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
 
-            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
+            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localFrameB.p);
             B2Vec2 d = b2Sub(pB, pA);
             B2Vec2 axis = b2Normalize(d);
             float force = (joint.impulse + joint.lowerImpulse - joint.upperImpulse + joint.motorImpulse) * world.inv_h;
@@ -251,8 +251,8 @@ namespace Box2D.NET
             joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
             // initial anchors in world space
-            joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localOriginAnchorA, bodySimA.localCenter));
-            joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localOriginAnchorB, bodySimB.localCenter));
+            joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
+            joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
 
             B2Vec2 rA = joint.anchorA;
@@ -515,8 +515,8 @@ namespace Box2D.NET
 
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
-            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localOriginAnchorA);
-            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localOriginAnchorB);
+            B2Vec2 pA = b2TransformPoint(ref transformA, @base.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(ref transformB, @base.localFrameB.p);
 
             B2Vec2 axis = b2Normalize(b2Sub(pB, pA));
 

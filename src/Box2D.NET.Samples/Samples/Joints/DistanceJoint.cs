@@ -114,10 +114,10 @@ public class DistanceJoint : Sample
 
             B2Vec2 pivotA = new B2Vec2(m_length * i, yOffset);
             B2Vec2 pivotB = new B2Vec2(m_length * (i + 1.0f), yOffset);
-            jointDef.bodyIdA = prevBodyId;
-            jointDef.bodyIdB = m_bodyIds[i];
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivotA);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivotB);
+            jointDef.@base.bodyIdA = prevBodyId;
+            jointDef.@base.bodyIdB = m_bodyIds[i];
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivotA);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivotB);
             m_jointIds[i] = b2CreateDistanceJoint(m_worldId, ref jointDef);
 
             prevBodyId = m_bodyIds[i];

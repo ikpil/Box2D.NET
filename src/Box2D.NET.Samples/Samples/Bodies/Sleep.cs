@@ -127,10 +127,10 @@ public class Sleep : Sample
 
             B2Vec2 pivot = bodyDef.position;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_pendulumId;
-            jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-            jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_pendulumId;
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
@@ -265,7 +265,6 @@ public class Sleep : Sample
         for (int i = 0; i < 2; ++i)
         {
             DrawTextLine($"sensor touch {i} = {m_sensorTouching[i]}");
-            
         }
     }
 }

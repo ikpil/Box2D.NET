@@ -38,6 +38,7 @@ public class GearLift : Sample
         {
             m_camera.m_center = new B2Vec2(0.0f, 6.0f);
             m_camera.m_zoom = 7.0f;
+            m_context.settings.drawJoints = false;
         }
 
         B2BodyId groundId;
@@ -120,10 +121,10 @@ public class GearLift : Sample
             m_motorSpeed = 0.0f;
             m_enableMotor = true;
 
-            revoluteDef.bodyIdA = groundId;
-            revoluteDef.bodyIdB = bodyId;
-            revoluteDef.localAnchorA = b2Body_GetLocalPoint(groundId, position);
-            revoluteDef.localAnchorB = b2Vec2_zero;
+            revoluteDef.@base.bodyIdA = groundId;
+            revoluteDef.@base.bodyIdB = bodyId;
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, position);
+            revoluteDef.@base.localFrameB.p = b2Vec2_zero;
             revoluteDef.enableMotor = m_enableMotor;
             revoluteDef.maxMotorTorque = m_motorTorque;
             revoluteDef.motorSpeed = m_motorSpeed;
@@ -164,13 +165,13 @@ public class GearLift : Sample
 
             B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 
-            revoluteDef.bodyIdA = groundId;
-            revoluteDef.bodyIdB = followerId;
-            revoluteDef.localAnchorA = b2Body_GetLocalPoint(groundId, position);
-            revoluteDef.localAnchorB = b2Vec2_zero;
+            revoluteDef.@base.bodyIdA = groundId;
+            revoluteDef.@base.bodyIdB = followerId;
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, position);
+            revoluteDef.@base.localFrameA.q = b2MakeRot(0.25f * B2_PI);
+            revoluteDef.@base.localFrameB.p = b2Vec2_zero;
             revoluteDef.enableMotor = true;
             revoluteDef.maxMotorTorque = 0.5f;
-            revoluteDef.referenceAngle = 0.25f * B2_PI;
             revoluteDef.lowerAngle = -0.3f * B2_PI;
             revoluteDef.upperAngle = 0.8f * B2_PI;
             revoluteDef.enableLimit = true;
@@ -203,10 +204,11 @@ public class GearLift : Sample
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2(position.X, position.Y + linkHalfLength);
-                jointDef.bodyIdA = prevBodyId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(jointDef.bodyIdA, pivot);
-                jointDef.localAnchorB = b2Body_GetLocalPoint(jointDef.bodyIdB, pivot);
+                jointDef.@base.bodyIdA = prevBodyId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.drawSize = 0.2f;
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 position.Y -= 2.0f * linkHalfLength;
@@ -232,26 +234,28 @@ public class GearLift : Sample
             {
                 B2Vec2 pivot = doorPosition + new B2Vec2(0.0f, doorHalfHeight);
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
-                revoluteDef.bodyIdA = lastLinkId;
-                revoluteDef.bodyIdB = bodyId;
-                revoluteDef.localAnchorA = b2Body_GetLocalPoint(lastLinkId, pivot);
-                revoluteDef.localAnchorB = new B2Vec2(0.0f, doorHalfHeight);
+                revoluteDef.@base.bodyIdA = lastLinkId;
+                revoluteDef.@base.bodyIdB = bodyId;
+                revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(lastLinkId, pivot);
+                revoluteDef.@base.localFrameB.p = new B2Vec2(0.0f, doorHalfHeight);
                 revoluteDef.enableMotor = true;
                 revoluteDef.maxMotorTorque = 0.05f;
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
             }
 
             {
+                B2Vec2 localAxis = new B2Vec2(0.0f, 1.0f);
                 B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-                jointDef.bodyIdA = groundId;
-                jointDef.bodyIdB = bodyId;
-                jointDef.localAnchorA = b2Body_GetLocalPoint(groundId, doorPosition);
-                jointDef.localAnchorB = b2Vec2_zero;
-                jointDef.localAxisA = new B2Vec2(0.0f, 1.0f);
+                jointDef.@base.bodyIdA = groundId;
+                jointDef.@base.bodyIdB = bodyId;
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, doorPosition);
+                jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector(localAxis);
+                jointDef.@base.localFrameB.p = b2Vec2_zero;
+                jointDef.@base.localFrameB.q = b2MakeRotFromUnitVector(localAxis);
                 jointDef.maxMotorForce = 0.2f;
                 jointDef.enableMotor = true;
-                jointDef.collideConnected = true;
-                b2CreatePrismaticJoint(m_worldId, jointDef);
+                jointDef.@base.collideConnected = true;
+                b2CreatePrismaticJoint(m_worldId, ref jointDef);
             }
         }
 

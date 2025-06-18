@@ -9,14 +9,8 @@ namespace Box2D.NET
     /// @ingroup filter_joint
     public struct b2FilterJointDef
     {
-        /// The first attached body.
-        public B2BodyId bodyIdA;
-
-        /// The second attached body.
-        public B2BodyId bodyIdB;
-
-        /// User data pointer
-        public object userData;
+        /// Base joint definition
+        public B2JointDef @base;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

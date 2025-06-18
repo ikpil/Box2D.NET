@@ -10,17 +10,8 @@ namespace Box2D.NET
     /// @ingroup motor_joint
     public struct B2MotorJointDef
     {
-        /// The first attached body
-        public B2BodyId bodyIdA;
-
-        /// The second attached body
-        public B2BodyId bodyIdB;
-
-        /// Position of bodyB minus the position of bodyA, in bodyA's frame
-        public B2Vec2 linearOffset;
-
-        /// The bodyB angle minus bodyA angle in radians
-        public float angularOffset;
+        /// Base joint definition
+        public B2JointDef @base;
 
         /// The maximum motor force in newtons
         public float maxForce;
@@ -30,12 +21,6 @@ namespace Box2D.NET
 
         /// Position correction factor in the range [0,1]
         public float correctionFactor;
-
-        /// Set this flag to true if the attached bodies should collide
-        public bool collideConnected;
-
-        /// User data pointer
-        public object userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

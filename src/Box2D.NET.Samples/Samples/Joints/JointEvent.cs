@@ -1,101 +1,85 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System.Numerics;
-using ImGuiNET;
+using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2Joints;
-using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-// This test ensures joints work correctly with bodies that have fixed rotation
-public class FixedRotation : Sample
+// This sample shows how to break joints when the internal reaction force becomes large. Instead of polling, this uses events.
+public class JointEvent : Sample
 {
-    private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
-
+    private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Events", "Joint", Create);
     public const int e_count = 6;
 
-    private B2BodyId m_groundId;
-    private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    private B2JointId[] m_jointIds = new B2JointId[e_count];
-    private bool m_fixedRotation;
+    private readonly B2JointId[] m_jointIds;
 
     private static Sample Create(SampleContext context)
     {
-        return new FixedRotation(context);
+        return new JointEvent(context);
     }
 
-    public FixedRotation(SampleContext context) : base(context)
+    public JointEvent(SampleContext context) : base(context)
     {
         if (m_context.settings.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_camera.m_zoom = 25.0f * 0.7f;
+            m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
+            m_context.camera.m_zoom = 25.0f * 0.7f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
-        m_fixedRotation = true;
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
 
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
+        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+
+        m_jointIds = new B2JointId[e_count];
         for (int i = 0; i < e_count; ++i)
         {
-            m_bodyIds[i] = b2_nullBodyId;
             m_jointIds[i] = b2_nullJointId;
         }
 
-        CreateScene();
-    }
-
-    void CreateScene()
-    {
-        for (int i = 0; i < e_count; ++i)
-        {
-            if (B2_IS_NON_NULL(m_jointIds[i]))
-            {
-                b2DestroyJoint(m_jointIds[i]);
-                m_jointIds[i] = b2_nullJointId;
-            }
-
-            if (B2_IS_NON_NULL(m_bodyIds[i]))
-            {
-                b2DestroyBody(m_bodyIds[i]);
-                m_bodyIds[i] = b2_nullBodyId;
-            }
-        }
-
         B2Vec2 position = new B2Vec2(-12.5f, 10.0f);
-        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.fixedRotation = m_fixedRotation;
+        bodyDef.enableSleep = false;
 
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
 
         int index = 0;
+
+        float forceThreshold = 20000.0f;
+        float torqueThreshold = 10000.0f;
 
         // distance joint
         {
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             float length = 2.0f;
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
             B2Vec2 pivot2 = new B2Vec2(position.X, position.Y + 1.0f);
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
             jointDef.length = length;
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
@@ -107,16 +91,19 @@ public class FixedRotation : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = position;
-            jointDef.maxForce = 200.0f;
+            jointDef.maxForce = 1000.0f;
             jointDef.maxTorque = 20.0f;
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
@@ -128,16 +115,19 @@ public class FixedRotation : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
         }
 
@@ -149,16 +139,19 @@ public class FixedRotation : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
@@ -170,20 +163,23 @@ public class FixedRotation : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-            jointDef.angularHertz = 1.0f;
+            jointDef.angularHertz = 2.0f;
             jointDef.angularDampingRatio = 0.5f;
-            jointDef.linearHertz = 1.0f;
+            jointDef.linearHertz = 2.0f;
             jointDef.linearDampingRatio = 0.5f;
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
@@ -195,14 +191,13 @@ public class FixedRotation : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
-            B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
-            jointDef.@base.bodyIdB = m_bodyIds[index];
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.hertz = 1.0f;
@@ -213,6 +208,10 @@ public class FixedRotation : Sample
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
+            jointDef.@base.forceThreshold = forceThreshold;
+            jointDef.@base.torqueThreshold = torqueThreshold;
+            jointDef.@base.collideConnected = true;
+            jointDef.@base.userData = CustomUserData.Create(index);
             m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
         }
 
@@ -220,24 +219,25 @@ public class FixedRotation : Sample
         ++index;
     }
 
-    public override void UpdateGui()
+    public override void Step()
     {
-        base.UpdateGui();
+        base.Step();
 
-        float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
-
-        ImGui.Begin("Fixed Rotation", ImGuiWindowFlags.NoResize);
-
-        if (ImGui.Checkbox("Fixed Rotation", ref m_fixedRotation))
+        // Process joint events
+        B2JointEvents events = b2World_GetJointEvents(m_worldId);
+        for (int i = 0; i < events.count; ++i)
         {
-            for (int i = 0; i < e_count; ++i)
+            // Destroy the joint if it is still valid
+            ref readonly B2JointEvent @event = ref events.jointEvents[i];
+
+            if (b2Joint_IsValid(@event.jointId))
             {
-                b2Body_SetFixedRotation(m_bodyIds[i], m_fixedRotation);
+                CustomUserData<int> userData = @event.userData as CustomUserData<int>;
+                int index = userData?.Value ?? -1;
+                B2_ASSERT(0 <= index && index < e_count);
+                b2DestroyJoint(@event.jointId);
+                m_jointIds[index] = b2_nullJointId;
             }
         }
-
-        ImGui.End();
     }
-}
+};

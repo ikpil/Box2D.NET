@@ -7,8 +7,11 @@ namespace Box2D.NET
     // Per thread task storage
     public class B2TaskContext
     {
-        // These bits align with the b2ConstraintGraph::contactBlocks and signal a change in contact status
+        // These bits align with the contact id capacity and signal a change in contact status
         public B2BitSet contactStateBitSet;
+
+        // These bits align with the joint id capacity and signal a change in contact status
+        public B2BitSet jointStateBitSet;
 
         // Used to track bodies with shapes that have enlarged AABBs. This avoids having a bit array
         // that is very large when there are many static shapes.

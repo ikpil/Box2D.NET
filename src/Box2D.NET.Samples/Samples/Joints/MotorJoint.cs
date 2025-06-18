@@ -73,8 +73,8 @@ public class MotorJoint : Sample
             m_correctionFactor = 0.3f;
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
-            jointDef.bodyIdA = groundId;
-            jointDef.bodyIdB = m_bodyId;
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = m_bodyId;
             jointDef.maxForce = m_maxForce;
             jointDef.maxTorque = m_maxTorque;
             jointDef.correctionFactor = m_correctionFactor;
@@ -138,10 +138,8 @@ public class MotorJoint : Sample
 
         float angularOffset = 2.0f * m_time;
 
-        b2MotorJoint_SetLinearOffset(m_jointId, linearOffset);
-        b2MotorJoint_SetAngularOffset(m_jointId, angularOffset);
-
         _transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
+        b2Joint_SetLocalFrameA(m_jointId, _transform);
 
         base.Step();
     }

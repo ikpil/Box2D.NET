@@ -854,7 +854,7 @@ namespace Box2D.NET
             {
                 B2Rot q1 = sim.transform.q;
                 B2Rot q2 = target.q;
-                float deltaAngle = b2RelativeAngle(q2, q1);
+                float deltaAngle = b2RelativeAngle(q1, q2);
                 angularVelocity = invTimeStep * deltaAngle;
             }
 

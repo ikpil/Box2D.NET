@@ -50,13 +50,13 @@ public class Explosion : Sample
         m_referenceAngle = 0.0f;
 
         B2WeldJointDef weldDef = b2DefaultWeldJointDef();
-        weldDef.referenceAngle = m_referenceAngle;
+        weldDef.@base.bodyIdA = groundId;
+        weldDef.@base.localFrameA.q = b2MakeRot(m_referenceAngle);
+        weldDef.@base.localFrameB.p = b2Vec2_zero;
         weldDef.angularHertz = 0.5f;
         weldDef.angularDampingRatio = 0.7f;
         weldDef.linearHertz = 0.5f;
         weldDef.linearDampingRatio = 0.7f;
-        weldDef.bodyIdA = groundId;
-        weldDef.localAnchorB = b2Vec2_zero;
 
         float r = 8.0f;
         for (float angle = 0.0f; angle < 360.0f; angle += 30.0f)
@@ -68,8 +68,9 @@ public class Explosion : Sample
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
-            weldDef.localAnchorA = bodyDef.position;
-            weldDef.bodyIdB = bodyId;
+            weldDef.@base.localFrameA.p = bodyDef.position;
+            weldDef.@base.bodyIdB = bodyId;
+
             B2JointId jointId = b2CreateWeldJoint(m_worldId, ref weldDef);
             m_jointIds.Add(jointId);
         }
@@ -116,7 +117,9 @@ public class Explosion : Sample
             int count = m_jointIds.Count;
             for (int i = 0; i < count; ++i)
             {
-                b2Joint_SetReferenceAngle(m_jointIds[i], m_referenceAngle);
+                B2Transform localFrameA = b2Joint_GetLocalFrameA(m_jointIds[i]);
+                localFrameA.q = b2MakeRot(m_referenceAngle);
+                b2Joint_SetLocalFrameA(m_jointIds[i], localFrameA);
             }
         }
 
@@ -126,9 +129,9 @@ public class Explosion : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         DrawTextLine($"reference angle = {m_referenceAngle:g}");
-        
+
 
         m_draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
         m_draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);

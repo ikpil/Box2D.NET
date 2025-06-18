@@ -174,6 +174,7 @@ public class Sample : IDisposable
                 aveProfile.storeImpulses = scale * m_totalProfile.storeImpulses;
                 aveProfile.transforms = scale * m_totalProfile.transforms;
                 aveProfile.splitIslands = scale * m_totalProfile.splitIslands;
+                aveProfile.jointEvents = scale * m_totalProfile.jointEvents;
                 aveProfile.hitEvents = scale * m_totalProfile.hitEvents;
                 aveProfile.refit = scale * m_totalProfile.refit;
                 aveProfile.bullets = scale * m_totalProfile.bullets;
@@ -197,6 +198,7 @@ public class Sample : IDisposable
             DrawTextLine($">> store impulses [ave] (max) = {p.storeImpulses,5:F2} [{aveProfile.storeImpulses,6:F2}] ({m_maxProfile.storeImpulses,6:F2})");
             DrawTextLine($">> split islands [ave] (max) = {p.splitIslands,5:F2} [{aveProfile.splitIslands,6:F2}] ({m_maxProfile.splitIslands,6:F2})");
             DrawTextLine($"> update transforms [ave] (max) = {p.transforms,5:F2} [{aveProfile.transforms,6:F2}] ({m_maxProfile.transforms,6:F2})");
+            DrawTextLine($"> joint events [ave] (max) = {p.jointEvents,5:F2} [{aveProfile.jointEvents,6:F2}] ({m_maxProfile.jointEvents})");
             DrawTextLine($"> hit events [ave] (max) = {p.hitEvents,5:F2} [{aveProfile.hitEvents,6:F2}] ({m_maxProfile.hitEvents,6:F2})");
             DrawTextLine($"> refit BVH [ave] (max) = {p.refit,5:F2} [{aveProfile.refit,6:F2}] ({m_maxProfile.refit,6:F2})");
             DrawTextLine($"> sleep islands [ave] (max) = {p.sleepIslands,5:F2} [{aveProfile.sleepIslands,6:F2}] ({m_maxProfile.sleepIslands,6:F2})");
@@ -297,14 +299,15 @@ public class Sample : IDisposable
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 m_groundBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
-                B2MouseJointDef mouseDef = b2DefaultMouseJointDef();
-                mouseDef.bodyIdA = m_groundBodyId;
-                mouseDef.bodyIdB = queryContext.bodyId;
-                mouseDef.target = p;
-                mouseDef.hertz = 10.0f;
-                mouseDef.dampingRatio = 0.7f;
-                mouseDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
-                m_mouseJointId = b2CreateMouseJoint(m_worldId, ref mouseDef);
+                B2MouseJointDef jointDef = b2DefaultMouseJointDef();
+                jointDef.@base.bodyIdA = m_groundBodyId;
+                jointDef.@base.bodyIdB = queryContext.bodyId;
+                jointDef.@base.localFrameA.p = p;
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(queryContext.bodyId, p);
+                jointDef.hertz = 7.5f;
+                jointDef.dampingRatio = 0.7f;
+                jointDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
+                m_mouseJointId = b2CreateMouseJoint(m_worldId, ref jointDef);
 
                 b2Body_SetAwake(queryContext.bodyId, true);
             }
@@ -339,7 +342,8 @@ public class Sample : IDisposable
 
         if (B2_IS_NON_NULL(m_mouseJointId))
         {
-            b2MouseJoint_SetTarget(m_mouseJointId, p);
+            B2Transform localFrameA = new B2Transform(p, b2Rot_identity);
+            b2Joint_SetLocalFrameA(m_mouseJointId, localFrameA);
             B2BodyId bodyIdB = b2Joint_GetBodyB(m_mouseJointId);
             b2Body_SetAwake(bodyIdB, true);
         }
@@ -417,6 +421,7 @@ public class Sample : IDisposable
             m_maxProfile.storeImpulses = b2MaxFloat(m_maxProfile.storeImpulses, p.storeImpulses);
             m_maxProfile.transforms = b2MaxFloat(m_maxProfile.transforms, p.transforms);
             m_maxProfile.splitIslands = b2MaxFloat(m_maxProfile.splitIslands, p.splitIslands);
+            m_maxProfile.jointEvents = b2MaxFloat(m_maxProfile.jointEvents, p.jointEvents);
             m_maxProfile.hitEvents = b2MaxFloat(m_maxProfile.hitEvents, p.hitEvents);
             m_maxProfile.refit = b2MaxFloat(m_maxProfile.refit, p.refit);
             m_maxProfile.bullets = b2MaxFloat(m_maxProfile.bullets, p.bullets);
@@ -440,6 +445,7 @@ public class Sample : IDisposable
             m_totalProfile.storeImpulses += p.storeImpulses;
             m_totalProfile.transforms += p.transforms;
             m_totalProfile.splitIslands += p.splitIslands;
+            m_totalProfile.jointEvents += p.jointEvents;
             m_totalProfile.hitEvents += p.hitEvents;
             m_totalProfile.refit += p.refit;
             m_totalProfile.bullets += p.bullets;

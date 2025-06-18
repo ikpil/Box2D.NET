@@ -30,6 +30,7 @@ using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2SolverSets;
+using static Box2D.NET.B2IdPools;
 
 namespace Box2D.NET
 {
@@ -203,7 +204,8 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.warm_joints);
         }
 
-        public static void b2SolveJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias)
+        static void b2SolveJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias,
+            int workerIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
 
@@ -212,15 +214,31 @@ namespace Box2D.NET
             B2_ASSERT(0 <= startIndex && startIndex < color.jointSims.count);
             B2_ASSERT(startIndex <= endIndex && endIndex <= color.jointSims.count);
 
+            ref B2BitSet jointStateBitSet = ref context.world.taskContexts.data[workerIndex].jointStateBitSet;
+
             for (int i = startIndex; i < endIndex; ++i)
             {
                 B2JointSim joint = joints[i];
                 b2SolveJoint(joint, context, useBias);
+
+                if (useBias &&
+                    (joint.forceThreshold < float.MaxValue || joint.torqueThreshold < float.MaxValue) &&
+                    b2GetBit(ref jointStateBitSet, joint.jointId) == false)
+                {
+                    float force, torque;
+                    b2GetJointReaction(joint, context.inv_h, out force, out torque);
+
+                    // Check thresholds. A zero threshold means all awake joints get reported.
+                    if (force >= joint.forceThreshold || torque >= joint.torqueThreshold)
+                    {
+                        // Flag this joint for processing.
+                        b2SetBit(ref jointStateBitSet, joint.jointId);
+                    }
+                }
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_joints);
         }
-
 
         public static void b2IntegratePositionsTask(int startIndex, int endIndex, B2StepContext context)
         {
@@ -783,7 +801,7 @@ public enum b2SolverBlockType
 } b2SolverBlockType;
 */
 
-        public static void b2ExecuteBlock(B2SolverStage stage, B2StepContext context, B2SolverBlock block)
+        public static void b2ExecuteBlock(B2SolverStage stage, B2StepContext context, B2SolverBlock block, int workerIndex)
         {
             B2SolverStageType stageType = stage.type;
             B2SolverBlockType blockType = (B2SolverBlockType)block.blockType;
@@ -823,7 +841,7 @@ public enum b2SolverBlockType
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, true);
+                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, true, workerIndex);
                     }
 
                     break;
@@ -839,7 +857,7 @@ public enum b2SolverBlockType
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, false);
+                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, false, workerIndex);
                     }
 
                     break;
@@ -894,7 +912,7 @@ public enum b2SolverBlockType
 
                 B2_ASSERT(completedCount < blockCount);
 
-                b2ExecuteBlock(stage, context, blocks[blockIndex]);
+                b2ExecuteBlock(stage, context, blocks[blockIndex], workerIndex);
 
                 completedCount += 1;
                 blockIndex += 1;
@@ -923,7 +941,7 @@ public enum b2SolverBlockType
                     break;
                 }
 
-                b2ExecuteBlock(stage, context, blocks[blockIndex]);
+                b2ExecuteBlock(stage, context, blocks[blockIndex], workerIndex);
                 completedCount += 1;
                 blockIndex -= 1;
             }
@@ -939,9 +957,11 @@ public enum b2SolverBlockType
                 return;
             }
 
+            int workerIndex = 0;
+
             if (blockCount == 1)
             {
-                b2ExecuteBlock(stage, context, stage.blocks[0]);
+                b2ExecuteBlock(stage, context, stage.blocks[0], workerIndex);
             }
             else
             {
@@ -951,7 +971,7 @@ public enum b2SolverBlockType
                 B2_ASSERT(syncIndex > 0);
                 int previousSyncIndex = syncIndex - 1;
 
-                b2ExecuteStage(stage, context, previousSyncIndex, syncIndex, 0);
+                b2ExecuteStage(stage, context, previousSyncIndex, syncIndex, workerIndex);
 
                 // todo consider using the cycle counter as well
                 while (b2AtomicLoadInt(ref stage.completionCount) != blockCount)
@@ -1743,8 +1763,11 @@ public enum b2SolverBlockType
                 ulong constraintTicks = b2GetTicks();
 
                 // Must use worker index because thread 0 can be assigned multiple tasks by enkiTS
+                int jointIdCapacity = b2GetIdCapacity(world.jointIdPool);
                 for (int i = 0; i < workerCount; ++i)
                 {
+                    b2SetBitCountAndClear(ref world.taskContexts.data[i].jointStateBitSet, jointIdCapacity);
+
                     workerContext[i].context = stepContext;
                     workerContext[i].workerIndex = i;
                     workerContext[i].userTask = world.enqueueTaskFcn(b2SolverTask, 1, 1, workerContext[i], world.userTaskContext);
@@ -1809,6 +1832,56 @@ public enum b2SolverBlockType
 
                 world.profile.transforms = b2GetMilliseconds(transformTicks);
                 b2TracyCZoneEnd(B2TracyCZone.update_transforms);
+            }
+
+            // Report joint events
+            {
+                b2TracyCZoneNC(B2TracyCZone.joint_events, "Joint Events", B2HexColor.b2_colorPeru, true);
+                ulong jointEventTicks = b2GetTicks();
+
+                // Gather bits for all joints that have force/torque events
+                ref B2BitSet jointStateBitSet = ref world.taskContexts.data[0].jointStateBitSet;
+                for (int i = 1; i < world.workerCount; ++i)
+                {
+                    b2InPlaceUnion(ref jointStateBitSet, ref world.taskContexts.data[i].jointStateBitSet);
+                }
+
+                {
+                    uint wordCount = (uint)jointStateBitSet.blockCount;
+                    ulong[] bits = jointStateBitSet.bits;
+
+                    B2Joint[] jointArray = world.joints.data;
+                    int jointCapacity = world.joints.capacity;
+                    ushort worldIndex0 = world.worldId;
+
+                    for (uint k = 0; k < wordCount; ++k)
+                    {
+                        ulong word = bits[k];
+                        while (word != 0)
+                        {
+                            uint ctz = b2CTZ64(word);
+                            int jointId = (int)(64 * k + ctz);
+
+                            B2_ASSERT(jointId < jointCapacity);
+
+                            B2Joint joint = jointArray[jointId];
+
+                            B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+
+                            B2JointEvent @event = new B2JointEvent();
+                            @event.jointId = new B2JointId(jointId + 1, worldIndex0, joint.generation);
+                            @event.userData = joint.userData;
+
+                            b2Array_Push(ref world.jointEvents, @event);
+
+                            // Clear the smallest set bit
+                            word = word & (word - 1);
+                        }
+                    }
+                }
+
+                world.profile.jointEvents = b2GetMilliseconds(jointEventTicks);
+                b2TracyCZoneEnd(B2TracyCZone.joint_events);
             }
 
             // Report hit events

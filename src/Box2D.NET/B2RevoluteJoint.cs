@@ -16,16 +16,14 @@ namespace Box2D.NET
         public float targetAngle;
         public float maxMotorTorque;
         public float motorSpeed;
-        public float referenceAngle;
         public float lowerAngle;
         public float upperAngle;
 
         public int indexA;
         public int indexB;
-        public B2Vec2 anchorA;
-        public B2Vec2 anchorB;
+        public B2Transform frameA;
+        public B2Transform frameB;
         public B2Vec2 deltaCenter;
-        public float deltaAngle;
         public float axialMass;
         public B2Softness springSoftness;
 

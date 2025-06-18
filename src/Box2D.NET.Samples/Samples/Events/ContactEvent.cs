@@ -31,7 +31,7 @@ public class ContactEvent : Sample
     private B2BodyId m_playerId;
     private B2ShapeId m_coreShapeId;
     private B2BodyId[] m_debrisIds = new B2BodyId[e_count];
-    private BodyUserData<int>[] m_bodyUserData = new BodyUserData<int>[e_count];
+    private CustomUserData<int>[] m_bodyUserData = new CustomUserData<int>[e_count];
     private float m_force;
     private float m_wait;
 
@@ -85,7 +85,7 @@ public class ContactEvent : Sample
         for (int i = 0; i < e_count; ++i)
         {
             m_debrisIds[i] = b2_nullBodyId;
-            m_bodyUserData[i] = BodyUserData.Create(i);
+            m_bodyUserData[i] = CustomUserData.Create(i);
         }
 
         m_wait = 0.5f;
@@ -271,7 +271,7 @@ public class ContactEvent : Sample
 
             if (B2_ID_EQUALS(bodyIdA, m_playerId))
             {
-                BodyUserData<int> userDataB = b2Body_GetUserData(bodyIdB) as BodyUserData<int>;
+                CustomUserData<int> userDataB = b2Body_GetUserData(bodyIdB) as CustomUserData<int>;
                 if (userDataB == null)
                 {
                     if (B2_ID_EQUALS(@event.shapeIdA, m_coreShapeId) == false && destroyCount < e_count)
@@ -306,7 +306,7 @@ public class ContactEvent : Sample
             {
                 // Only expect events for the player
                 B2_ASSERT(B2_ID_EQUALS(bodyIdB, m_playerId));
-                BodyUserData<int> userDataA = b2Body_GetUserData(bodyIdA) as BodyUserData<int>;
+                CustomUserData<int> userDataA = b2Body_GetUserData(bodyIdA) as CustomUserData<int>;
                 if (userDataA == null)
                 {
                     if (B2_ID_EQUALS(@event.shapeIdB, m_coreShapeId) == false && destroyCount < e_count)

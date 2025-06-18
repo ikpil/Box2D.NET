@@ -34,6 +34,7 @@ namespace Box2D.NET
         prepare_stages,
         solve_constraints,
         update_transforms,
+        joint_events,
         hit_events,
         refit_bvh,
         bullets,
