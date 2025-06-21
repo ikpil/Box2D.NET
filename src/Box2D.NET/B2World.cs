@@ -70,7 +70,6 @@ namespace Box2D.NET
         public B2Array<B2BodyMoveEvent> bodyMoveEvents;
         public B2Array<B2SensorBeginTouchEvent> sensorBeginEvents;
         public B2Array<B2ContactBeginTouchEvent> contactBeginEvents;
-        public B2Array<B2JointEvent> jointEvents;
 
         // End events are double buffered so that the user doesn't need to flush events
         public B2Array<B2SensorEndTouchEvent>[] sensorEndEvents = new B2Array<B2SensorEndTouchEvent>[2];
@@ -78,6 +77,7 @@ namespace Box2D.NET
         public int endEventArrayIndex;
 
         public B2Array<B2ContactHitEvent> contactHitEvents;
+        public B2Array<B2JointEvent> jointEvents;
 
         // Used to track debug draw
         public B2BitSet debugBodySet;
@@ -101,7 +101,6 @@ namespace Box2D.NET
         public float hitEventThreshold;
         public float restitutionThreshold;
         public float maxLinearSpeed;
-        public float maxContactPushSpeed;
         public float contactSpeed;
         public float contactHertz;
         public float contactDampingRatio;
@@ -184,7 +183,6 @@ namespace Box2D.NET
             bodyMoveEvents = new B2Array<B2BodyMoveEvent>();
             sensorBeginEvents = new B2Array<B2SensorBeginTouchEvent>();
             contactBeginEvents = new B2Array<B2ContactBeginTouchEvent>();
-            jointEvents = new B2Array<B2JointEvent>();
 
             sensorEndEvents[0] = new B2Array<B2SensorEndTouchEvent>();
             sensorEndEvents[1] = new B2Array<B2SensorEndTouchEvent>();
@@ -193,6 +191,7 @@ namespace Box2D.NET
             endEventArrayIndex = 0;
 
             contactHitEvents = new B2Array<B2ContactHitEvent>();
+            jointEvents = new B2Array<B2JointEvent>();
 
             // debugBodySet = null;
             // debugJointSet = null;
@@ -206,7 +205,6 @@ namespace Box2D.NET
             hitEventThreshold = 0.0f;
             restitutionThreshold = 0.0f;
             maxLinearSpeed = 0.0f;
-            maxContactPushSpeed = 0.0f;
             contactSpeed = 0.0f;
             contactHertz = 0.0f;
             contactDampingRatio = 0.0f;

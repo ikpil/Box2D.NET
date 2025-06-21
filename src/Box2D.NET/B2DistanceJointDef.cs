@@ -5,11 +5,8 @@
 namespace Box2D.NET
 {
     /// Distance joint definition
-    ///
-    /// This requires defining an anchor point on both
-    /// bodies and the non-zero distance of the distance joint. The definition uses
-    /// local anchor points so that the initial configuration can violate the
-    /// constraint slightly. This helps when saving and loading a game.
+    /// Connects a point on body A with a point on body B by a segment.
+    /// Useful for ropes and springs.
     /// @ingroup distance_joint
     public struct B2DistanceJointDef
     {

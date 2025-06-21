@@ -42,6 +42,7 @@ namespace Box2D.NET
         public bool isFast;
 
         public bool isBullet;
+        public bool enableSensorHits;
         public bool isSpeedCapped;
         public bool allowFastRotation;
         public bool enlargeAABB;

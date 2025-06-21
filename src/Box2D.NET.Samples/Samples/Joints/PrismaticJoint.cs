@@ -76,7 +76,7 @@ public class PrismaticJoint : Sample
             jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector( axis );
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
             jointDef.@base.localFrameB.q = b2MakeRotFromUnitVector( axis );
-            jointDef.@base.drawSize = 2.0f;
+            jointDef.@base.drawScale = 2.0f;
             jointDef.motorSpeed = m_motorSpeed;
             jointDef.maxMotorForce = m_motorForce;
             jointDef.enableMotor = m_enableMotor;

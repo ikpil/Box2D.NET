@@ -38,7 +38,9 @@ namespace Box2D.NET
             def.localFrameB.q = b2Rot_identity;
             def.forceThreshold = float.MaxValue;
             def.torqueThreshold = float.MaxValue;
-            def.drawSize = 1.0f;
+            def.constraintHertz = 60.0f;
+            def.constraintDampingRatio = 0.0f;
+            def.drawScale = 1.0f;
             return def;
         }
 
@@ -236,7 +238,7 @@ namespace Box2D.NET
             joint.islandId = B2_NULL_INDEX;
             joint.islandPrev = B2_NULL_INDEX;
             joint.islandNext = B2_NULL_INDEX;
-            joint.drawSize = def.drawSize;
+            joint.drawScale = def.drawScale;
             joint.type = type;
             joint.collideConnected = def.collideConnected;
             joint.isMarked = false;
@@ -364,12 +366,12 @@ namespace Box2D.NET
             jointSim.localFrameA = def.localFrameA;
             jointSim.localFrameB = def.localFrameB;
             jointSim.type = type;
-            jointSim.constraintHertz = B2_JOINT_CONSTRAINT_HERTZ;
-            jointSim.constraintDampingRatio = B2_JOINT_CONSTRAINT_DAMPING_RATIO;
+            jointSim.constraintHertz = def.constraintHertz;
+            jointSim.constraintDampingRatio = def.constraintDampingRatio;
             jointSim.constraintSoftness = new B2Softness(
-                0.0f,
-                1.0f,
-                0.0f
+                biasRate: 0.0f,
+                massScale: 1.0f,
+                impulseScale: 0.0f
             );
 
             B2_ASSERT(b2IsValidFloat(def.forceThreshold) && def.forceThreshold >= 0.0f);
@@ -521,6 +523,40 @@ namespace Box2D.NET
             return jointId;
         }
 
+        public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, ref B2PrismaticJointDef def)
+        {
+            B2_CHECK_DEF(ref def);
+            B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
+
+            B2World world = b2GetWorldFromId(worldId);
+
+            B2_ASSERT(world.locked == false);
+
+            if (world.locked)
+            {
+                return new B2JointId();
+            }
+
+            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_prismaticJoint);
+
+            B2JointSim joint = pair.jointSim;
+
+            joint.uj.prismaticJoint = new B2PrismaticJoint();
+            joint.uj.prismaticJoint.hertz = def.hertz;
+            joint.uj.prismaticJoint.dampingRatio = def.dampingRatio;
+            joint.uj.prismaticJoint.targetTranslation = def.targetTranslation;
+            joint.uj.prismaticJoint.lowerTranslation = def.lowerTranslation;
+            joint.uj.prismaticJoint.upperTranslation = def.upperTranslation;
+            joint.uj.prismaticJoint.maxMotorForce = def.maxMotorForce;
+            joint.uj.prismaticJoint.motorSpeed = def.motorSpeed;
+            joint.uj.prismaticJoint.enableSpring = def.enableSpring;
+            joint.uj.prismaticJoint.enableLimit = def.enableLimit;
+            joint.uj.prismaticJoint.enableMotor = def.enableMotor;
+
+            B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+            return jointId;
+        }
+
         public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, ref B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(ref def);
@@ -559,41 +595,6 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, ref B2PrismaticJointDef def)
-        {
-            B2_CHECK_DEF(ref def);
-            B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
-
-            B2World world = b2GetWorldFromId(worldId);
-
-            B2_ASSERT(world.locked == false);
-
-            if (world.locked)
-            {
-                return new B2JointId();
-            }
-
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_prismaticJoint);
-
-            B2JointSim joint = pair.jointSim;
-
-            B2PrismaticJoint empty = new B2PrismaticJoint();
-            joint.uj.prismaticJoint = empty;
-
-            joint.uj.prismaticJoint.targetTranslation = def.targetTranslation;
-            joint.uj.prismaticJoint.hertz = def.hertz;
-            joint.uj.prismaticJoint.dampingRatio = def.dampingRatio;
-            joint.uj.prismaticJoint.lowerTranslation = def.lowerTranslation;
-            joint.uj.prismaticJoint.upperTranslation = def.upperTranslation;
-            joint.uj.prismaticJoint.maxMotorForce = def.maxMotorForce;
-            joint.uj.prismaticJoint.motorSpeed = def.motorSpeed;
-            joint.uj.prismaticJoint.enableSpring = def.enableSpring;
-            joint.uj.prismaticJoint.enableLimit = def.enableLimit;
-            joint.uj.prismaticJoint.enableMotor = def.enableMotor;
-
-            B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
-            return jointId;
-        }
 
         public static B2JointId b2CreateWeldJoint(B2WorldId worldId, ref B2WeldJointDef def)
         {
@@ -1124,7 +1125,8 @@ namespace Box2D.NET
                             {
                                 return distanceJoint.minLength - length;
                             }
-                            else if (length > distanceJoint.maxLength)
+
+                            if (length > distanceJoint.maxLength)
                             {
                                 return length - distanceJoint.maxLength;
                             }
@@ -1526,15 +1528,15 @@ namespace Box2D.NET
                     break;
 
                 case B2JointType.b2_prismaticJoint:
-                    b2DrawPrismaticJoint(draw, jointSim, transformA, transformB, joint.drawSize);
+                    b2DrawPrismaticJoint(draw, jointSim, transformA, transformB, joint.drawScale);
                     break;
 
                 case B2JointType.b2_revoluteJoint:
-                    b2DrawRevoluteJoint(draw, jointSim, transformA, transformB, joint.drawSize);
+                    b2DrawRevoluteJoint(draw, jointSim, transformA, transformB, joint.drawScale);
                     break;
 
                 case B2JointType.b2_weldJoint:
-                    b2DrawWeldJoint(draw, jointSim, transformA, transformB, joint.drawSize);
+                    b2DrawWeldJoint(draw, jointSim, transformA, transformB, joint.drawScale);
                     break;
 
                 case B2JointType.b2_wheelJoint:

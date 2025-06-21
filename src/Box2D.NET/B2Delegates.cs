@@ -92,7 +92,7 @@ namespace Box2D.NET
     /// Return false if you want to disable the contact this step
     /// @warning Do not attempt to modify the world inside this callback
     /// @ingroup world
-    public delegate bool b2PreSolveFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context);
+    public delegate bool b2PreSolveFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context);
 
     /// Prototype callback for overlap queries.
     /// Called for each shape found in the query.

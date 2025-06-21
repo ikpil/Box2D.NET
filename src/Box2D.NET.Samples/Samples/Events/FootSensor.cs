@@ -141,7 +141,7 @@ public class FootSensor : Sample
         m_overlaps.Clear();
         m_overlaps.Resize(capacity);
 
-        int count = b2Shape_GetSensorOverlaps(m_sensorId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
+        int count = b2Shape_GetSensorData(m_sensorId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
         for (int i = 0; i < count; ++i)
         {
             B2ShapeId shapeId = m_overlaps[i];

@@ -28,7 +28,7 @@ namespace Box2D.NET
         public int islandPrev;
         public int islandNext;
 
-        public float drawSize;
+        public float drawScale;
 
         public B2JointType type;
 

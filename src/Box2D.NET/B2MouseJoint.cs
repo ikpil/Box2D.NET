@@ -21,6 +21,6 @@ namespace Box2D.NET
         public B2Transform frameB;
         public B2Vec2 deltaCenter;
         public B2Mat22 linearMass;
-        public float axialMass;
+        public float angularMass;
     }
 }

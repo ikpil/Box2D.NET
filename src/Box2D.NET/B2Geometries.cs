@@ -490,14 +490,14 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a circle in local space
-        public static bool b2PointInCircle(B2Vec2 point, ref B2Circle shape)
+        public static bool b2PointInCircle(ref B2Circle shape, B2Vec2 point)
         {
             B2Vec2 center = shape.center;
             return b2DistanceSquared(point, center) <= shape.radius * shape.radius;
         }
 
         /// Test a point for overlap with a capsule in local space
-        public static bool b2PointInCapsule(B2Vec2 point, ref B2Capsule shape)
+        public static bool b2PointInCapsule(ref B2Capsule shape, B2Vec2 point)
         {
             float rr = shape.radius * shape.radius;
             B2Vec2 p1 = shape.center1;
@@ -525,7 +525,7 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a convex polygon in local space
-        public static bool b2PointInPolygon(B2Vec2 point, ref B2Polygon shape)
+        public static bool b2PointInPolygon(ref B2Polygon shape, B2Vec2 point)
         {
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, 0.0f);
@@ -540,10 +540,10 @@ namespace Box2D.NET
             return output.distance <= shape.radius;
         }
 
-        /// Ray cast versus circle shape in local space. Initial overlap is treated as a miss.
+        /// Ray cast versus circle shape in local space.
         // Precision Improvements for Ray / Sphere Intersection - Ray Tracing Gems 2019
         // http://www.codercorner.com/blog/?p=321
-        public static B2CastOutput b2RayCastCircle(ref B2RayCastInput input, ref B2Circle shape)
+        public static B2CastOutput b2RayCastCircle(ref B2Circle shape, ref B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(ref input));
 
@@ -619,8 +619,8 @@ namespace Box2D.NET
             return output;
         }
 
-        /// Ray cast versus capsule shape in local space. Initial overlap is treated as a miss.
-        public static B2CastOutput b2RayCastCapsule(ref B2RayCastInput input, ref B2Capsule shape)
+        /// Ray cast versus capsule shape in local space.
+        public static B2CastOutput b2RayCastCapsule(ref B2Capsule shape, ref B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(ref input));
 
@@ -638,7 +638,7 @@ namespace Box2D.NET
             {
                 // Capsule is really a circle
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref input, ref circle);
+                return b2RayCastCircle(ref circle, ref input);
             }
 
             B2Vec2 p1 = input.origin;
@@ -660,14 +660,14 @@ namespace Box2D.NET
                 {
                     // start point behind capsule segment
                     B2Circle circle = new B2Circle(v1, shape.radius);
-                    return b2RayCastCircle(ref input, ref circle);
+                    return b2RayCastCircle(ref circle, ref input);
                 }
 
                 if (qa > capsuleLength)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
-                    return b2RayCastCircle(ref input, ref circle);
+                    return b2RayCastCircle(ref circle, ref input);
                 }
 
                 // ray starts inside capsule . no hit
@@ -736,13 +736,13 @@ namespace Box2D.NET
             {
                 // ray passes behind capsule segment
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref input, ref circle);
+                return b2RayCastCircle(ref circle, ref input);
             }
             else if (capsuleLength < s1)
             {
                 // ray passes ahead of capsule segment
                 B2Circle circle = new B2Circle(v2, shape.radius);
-                return b2RayCastCircle(ref input, ref circle);
+                return b2RayCastCircle(ref circle, ref input);
             }
             else
             {
@@ -758,7 +758,7 @@ namespace Box2D.NET
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
         // Ray vs line segment
-        public static B2CastOutput b2RayCastSegment(ref B2RayCastInput input, ref B2Segment shape, bool oneSided)
+        public static B2CastOutput b2RayCastSegment(ref B2Segment shape, ref B2RayCastInput input, bool oneSided)
         {
             if (oneSided)
             {
@@ -839,8 +839,8 @@ namespace Box2D.NET
             return output;
         }
 
-        /// Ray cast versus polygon shape in local space. Initial overlap is treated as a miss.
-        public static B2CastOutput b2RayCastPolygon(ref B2RayCastInput input, ref B2Polygon shape)
+        /// Ray cast versus polygon shape in local space.
+        public static B2CastOutput b2RayCastPolygon(ref B2Polygon shape, ref B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(ref input));
 
@@ -859,17 +859,18 @@ namespace Box2D.NET
 
                 B2CastOutput output = new B2CastOutput();
 
-                for (int i = 0; i < shape.count; ++i)
+                for (int edgeIndex = 0; edgeIndex < shape.count; ++edgeIndex)
                 {
                     // p = p1 + a * d
                     // dot(normal, p - v) = 0
                     // dot(normal, p1 - v) + a * dot(normal, d) = 0
-                    B2Vec2 vertex = b2Sub(shape.vertices[i], @base);
-                    float numerator = b2Dot(shape.normals[i], b2Sub(vertex, p1));
-                    float denominator = b2Dot(shape.normals[i], d);
+                    B2Vec2 vertex = b2Sub(shape.vertices[edgeIndex], @base);
+                    float numerator = b2Dot(shape.normals[edgeIndex], b2Sub(vertex, p1));
+                    float denominator = b2Dot(shape.normals[edgeIndex], d);
 
                     if (denominator == 0.0f)
                     {
+                        // Parallel and runs outside edge
                         if (numerator < 0.0f)
                         {
                             return output;
@@ -886,7 +887,7 @@ namespace Box2D.NET
                             // Increase lower.
                             // The segment enters this half-space.
                             lower = numerator / denominator;
-                            index = i;
+                            index = edgeIndex;
                         }
                         else if (denominator > 0.0f && numerator < upper * denominator)
                         {
@@ -905,11 +906,11 @@ namespace Box2D.NET
 
                 B2_ASSERT(0.0f <= lower && lower <= input.maxFraction);
 
-                if ( index >= 0 )
+                if (index >= 0)
                 {
                     output.fraction = lower;
                     output.normal = shape.normals[index];
-                    output.point = b2MulAdd( input.origin, lower, d );
+                    output.point = b2MulAdd(input.origin, lower, d);
                     output.hit = true;
                 }
                 else
@@ -922,7 +923,6 @@ namespace Box2D.NET
                 return output;
             }
 
-            // TODO_ERIN this is not working for ray vs box (zero radii)
             B2ShapeCastPairInput castInput = new B2ShapeCastPairInput();
             castInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
             castInput.proxyB = b2MakeProxy(input.origin, 1, 0.0f);
@@ -934,8 +934,8 @@ namespace Box2D.NET
             return b2ShapeCast(ref castInput);
         }
 
-        /// Shape cast versus a circle. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCircle(ref B2ShapeCastInput input, ref B2Circle shape)
+        /// Shape cast versus a circle.
+        public static B2CastOutput b2ShapeCastCircle(ref B2Circle shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -950,8 +950,8 @@ namespace Box2D.NET
             return output;
         }
 
-        /// Shape cast versus a capsule. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastCapsule(ref B2ShapeCastInput input, ref B2Capsule shape)
+        /// Shape cast versus a capsule.
+        public static B2CastOutput b2ShapeCastCapsule(ref B2Capsule shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -966,8 +966,8 @@ namespace Box2D.NET
             return output;
         }
 
-        /// Shape cast versus a line segment. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastSegment(ref B2ShapeCastInput input, ref B2Segment shape)
+        /// Shape cast versus a line segment.
+        public static B2CastOutput b2ShapeCastSegment(ref B2Segment shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -982,8 +982,8 @@ namespace Box2D.NET
             return output;
         }
 
-        /// Shape cast versus a convex polygon. Initial overlap is treated as a miss.
-        public static B2CastOutput b2ShapeCastPolygon(ref B2ShapeCastInput input, ref B2Polygon shape)
+        /// Shape cast versus a convex polygon.
+        public static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -998,7 +998,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2PlaneResult b2CollideMoverAndCircle(ref B2Circle shape, ref B2Capsule mover)
+        public static B2PlaneResult b2CollideMoverAndCircle(ref B2Capsule mover, ref B2Circle shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
@@ -1021,7 +1021,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule shape, ref B2Capsule mover)
+        public static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule mover, ref B2Capsule shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, 0.0f);
@@ -1044,7 +1044,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndPolygon(ref B2Polygon shape, ref B2Capsule mover)
+        public static B2PlaneResult b2CollideMoverAndPolygon(ref B2Capsule mover, ref B2Polygon shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -1067,7 +1067,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndSegment(ref B2Segment shape, ref B2Capsule mover)
+        public static B2PlaneResult b2CollideMoverAndSegment(ref B2Capsule mover, ref B2Segment shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);

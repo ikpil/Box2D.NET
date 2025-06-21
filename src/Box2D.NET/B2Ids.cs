@@ -37,7 +37,6 @@ namespace Box2D.NET
         /// Use these to make your identifiers null.
         /// You may also use zero initialization to get null.
         public static readonly B2WorldId b2_nullWorldId = new B2WorldId(0, 0);
-
         public static readonly B2BodyId b2_nullBodyId = new B2BodyId(0, 0, 0);
         public static readonly B2ShapeId b2_nullShapeId = new B2ShapeId(0, 0, 0);
         public static readonly B2ChainId b2_nullChainId = new B2ChainId(0, 0, 0);

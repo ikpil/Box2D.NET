@@ -15,7 +15,7 @@ namespace Box2D.NET
         ///	@see b2Shape_IsValid
         public B2ShapeId sensorShapeId;
 
-        /// The id of the dynamic shape that stopped touching the sensor shape
+        /// The id of the shape that stopped touching the sensor shape
         ///	@warning this shape may have been destroyed
         ///	@see b2Shape_IsValid
         public B2ShapeId visitorShapeId;

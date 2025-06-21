@@ -9,8 +9,17 @@ namespace Box2D.NET
     /// @see b2Shape_GetContactData() and b2Body_GetContactData()
     public struct B2ContactData
     {
+        public B2ContactId contactId;
         public B2ShapeId shapeIdA;
         public B2ShapeId shapeIdB;
         public B2Manifold manifold;
+
+        public B2ContactData(B2ContactId contactId, B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Manifold manifold)
+        {
+            this.contactId = contactId;
+            this.shapeIdA = shapeIdA;
+            this.shapeIdB = shapeIdB;
+            this.manifold = manifold;
+        }
     }
 }

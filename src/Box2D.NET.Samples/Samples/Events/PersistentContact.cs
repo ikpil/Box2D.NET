@@ -92,7 +92,7 @@ public class PersistentContact : Sample
 
         if (B2_IS_NON_NULL(m_contactId) && b2Contact_IsValid(m_contactId))
         {
-            B2Manifold manifold = b2Contact_GetManifold(m_contactId);
+            B2Manifold manifold = b2Contact_GetData(m_contactId);
 
             for (int i = 0; i < manifold.pointCount; ++i)
             {

@@ -17,7 +17,11 @@ namespace Box2D.NET
         /// Get the current version of Box2D
         public static B2Version b2GetVersion()
         {
-            return new B2Version(3, 1, 1);
+            return new B2Version(
+                major: 3,
+                minor: 2,
+                revision: 0
+            );
         }
 
         // This allows the user to change the length units at runtime

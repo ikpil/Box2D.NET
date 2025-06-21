@@ -4,10 +4,19 @@
 
 namespace Box2D.NET
 {
-    /// Output parameters for b2TimeOfImpact.
+    /// Time of impact output
     public struct B2TOIOutput
     {
-        public B2TOIState state; // The type of result
-        public float fraction; // The sweep time of the collision
+        /// The type of result
+        public B2TOIState state;
+
+        /// The hit point
+        public B2Vec2 point;
+
+        /// The hit normal
+        public B2Vec2 normal;
+
+        /// The sweep time of the collision 
+        public float fraction;
     }
 }

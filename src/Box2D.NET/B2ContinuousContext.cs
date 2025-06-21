@@ -12,5 +12,6 @@ namespace Box2D.NET
         public B2Vec2 centroid1, centroid2;
         public B2Sweep sweep;
         public float fraction;
+        asdflkjasdlfkjasldkfj
     }
 }

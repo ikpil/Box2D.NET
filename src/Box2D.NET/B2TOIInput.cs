@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    /// Input parameters for b2TimeOfImpact
+    /// Time of impact input
     public struct B2TOIInput
     {
         public B2ShapeProxy proxyA; // The proxy for shape A

@@ -5,7 +5,6 @@
 namespace Box2D.NET
 {
     /// Wheel joint definition
-    ///
     /// Body B is a wheel that may rotate freely and slide along the local x-axis in frame A.
     /// The joint translation is zero when the local frame origins coincide in world space.
     /// @ingroup wheel_joint

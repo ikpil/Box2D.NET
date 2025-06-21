@@ -70,7 +70,6 @@ namespace Box2D.NET
         {
             B2_ASSERT(@base.type == B2JointType.b2_mouseJoint);
 
-            // chase body id to the solver set where the body lives
             int idA = @base.bodyIdA;
             int idB = @base.bodyIdB;
 
@@ -133,7 +132,7 @@ namespace Box2D.NET
             joint.linearMass = b2GetInverse22(K);
 
             float ka = iA + iB;
-            joint.axialMass = ka > 0.0f ? 1.0f / ka : 0.0f;
+            joint.angularMass = ka > 0.0f ? 1.0f / ka : 0.0f;
 
             if (context.enableWarmStarting == false)
             {
@@ -196,7 +195,7 @@ namespace Box2D.NET
                 float impulseScale = joint.angularSoftness.impulseScale;
 
                 float Cdot = wB - wA;
-                float impulse = -massScale * joint.axialMass * Cdot - impulseScale * joint.angularImpulse;
+                float impulse = -massScale * joint.angularMass * Cdot - impulseScale * joint.angularImpulse;
                 joint.angularImpulse += impulse;
 
                 wA -= iA * impulse;

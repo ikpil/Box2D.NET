@@ -145,7 +145,7 @@ public class SensorTypes : Sample
         m_overlaps.Resize(capacity);
 
         // Get all overlaps and record the actual count
-        int count = b2Shape_GetSensorOverlaps(sensorShapeId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
+        int count = b2Shape_GetSensorData(sensorShapeId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
         m_overlaps.Resize(count);
 
         var builder = new StringBuilder();

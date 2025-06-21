@@ -244,7 +244,7 @@ namespace Box2D.NET
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             float inv_h = context.inv_h;
-            float pushout = context.world.maxContactPushSpeed;
+            float contactSpeed = context.world.contactSpeed;
 
             // This is a dummy body to represent a static body since static bodies don't have a solver body.
             B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
@@ -301,7 +301,7 @@ namespace Box2D.NET
                     }
                     else if (useBias)
                     {
-                        velocityBias = b2MaxFloat(softness.biasRate * s, -pushout);
+                        velocityBias = b2MaxFloat(softness.massScale * softness.biasRate * s, -contactSpeed);
                         massScale = softness.massScale;
                         impulseScale = softness.impulseScale;
                     }
@@ -312,7 +312,7 @@ namespace Box2D.NET
                     float vn = b2Dot(b2Sub(vrB, vrA), normal);
 
                     // incremental normal impulse
-                    float impulse = -cp.normalMass * massScale * (vn + velocityBias) - impulseScale * cp.normalImpulse;
+                    float impulse = -cp.normalMass * (massScale * vn + velocityBias) - impulseScale * cp.normalImpulse;
 
                     // clamp the accumulated impulse
                     float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
@@ -1416,7 +1416,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState[] states = context.states;
             Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW minBiasVel = b2SplatW(-context.world.contactSpeed);
+            B2FloatW contactSpeed = b2SplatW(-context.world.contactSpeed);
             B2FloatW oneW = b2SplatW(1.0f);
 
             for (int i = startIndex; i < endIndex; ++i)
@@ -1429,7 +1429,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2FloatW biasRate, massScale, impulseScale;
                 if (useBias)
                 {
-                    biasRate = c.biasRate;
+                    biasRate = b2MulW(c.massScale, c.biasRate);
                     massScale = c.massScale;
                     impulseScale = c.impulseScale;
                 }
@@ -1460,10 +1460,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
 
                     // Apply speculative bias if separation is greater than zero, otherwise apply soft constraint bias
-                    // The minBiasVel is meant to limit stiffness, not increase it.
+                    // The contactSpeed is meant to limit stiffness, not increase it.
                     B2FloatW mask = b2GreaterThanW(s, b2ZeroW());
                     B2FloatW specBias = b2MulW(s, inv_h);
-                    B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), minBiasVel);
+                    B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
 
                     // todo try b2MaxW(softBias, specBias);
                     B2FloatW bias = b2BlendW(softBias, specBias, mask);
@@ -1477,7 +1477,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass1, b2MulW(pointMassScale, b2AddW(vn, bias))), b2MulW(pointImpulseScale, c.normalImpulse1));
+                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass1, b2AddW(b2MulW(pointMassScale, vn), bias)), b2MulW(pointImpulseScale, c.normalImpulse1));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), b2ZeroW());
@@ -1512,7 +1512,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                     B2FloatW mask = b2GreaterThanW(s, b2ZeroW());
                     B2FloatW specBias = b2MulW(s, inv_h);
-                    B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), minBiasVel);
+                    B2FloatW softBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
                     B2FloatW bias = b2BlendW(softBias, specBias, mask);
 
                     B2FloatW pointMassScale = b2BlendW(massScale, oneW, mask);
