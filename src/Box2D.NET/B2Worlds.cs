@@ -639,6 +639,13 @@ namespace Box2D.NET
                     B2Shape shapeB = shapes[contact.shapeIdB];
                     B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
                     B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
+                    B2ContactId contactFullId = new B2ContactId(
+                        index1: contactId + 1,
+                        world0: worldId,
+                        padding: 0,
+                        generation: contact.generation
+                    );
+
                     uint flags = contact.flags;
                     uint simFlags = contactSim.simFlags;
 
@@ -655,7 +662,7 @@ namespace Box2D.NET
 
                         if (0 != (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
-                            B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, ref contactSim.manifold);
+                            B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactFullId, ref contactSim.manifold);
                             b2Array_Push(ref world.contactBeginEvents, @event);
                         }
 
@@ -688,7 +695,7 @@ namespace Box2D.NET
 
                         if (0 != (contact.flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
-                            B2ContactEndTouchEvent @event = new B2ContactEndTouchEvent(shapeIdA, shapeIdB);
+                            B2ContactEndTouchEvent @event = new B2ContactEndTouchEvent(shapeIdA, shapeIdB, contactFullId);
                             b2Array_Push(ref world.contactEndEvents[endEventArrayIndex], @event);
                         }
 
@@ -3280,5 +3287,43 @@ void b2World_Dump()
         }
 
 #endif
+        /**
+ * @defgroup contact Contact
+ * Access to contacts
+ * @{
+ */
+        /// Contact identifier validation. Provides validation for up to 2^32 allocations.
+        public static bool b2Contact_IsValid(B2ContactId id)
+        {
+            if (B2_MAX_WORLDS <= id.world0)
+            {
+                return false;
+            }
+
+            B2World world = b2_worlds[id.world0];
+            if (world.worldId != id.world0)
+            {
+                // world is free
+                return false;
+            }
+
+            int contactId = id.index1 - 1;
+            if (contactId < 0 || world.contacts.count <= contactId)
+            {
+                return false;
+            }
+
+            B2Contact contact = world.contacts.data[contactId];
+            if (contact.contactId == B2_NULL_INDEX)
+            {
+                // contact is free
+                return false;
+            }
+
+            B2_ASSERT(contact.contactId == contactId);
+
+            return id.generation == contact.generation;
+        }
+
     }
 }

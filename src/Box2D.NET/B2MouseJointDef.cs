@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A mouse joint is used to make a point on a body track a specified world point.
-    ///
+    /// You may move local frame A to change the target point.
     /// This a soft constraint and allows the constraint to stretch without
     /// applying huge forces. This also applies rotation constraint heuristic to improve control.
     /// @ingroup mouse_joint

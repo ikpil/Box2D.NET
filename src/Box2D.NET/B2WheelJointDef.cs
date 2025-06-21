@@ -6,10 +6,8 @@ namespace Box2D.NET
 {
     /// Wheel joint definition
     ///
-    /// This requires defining a line of motion using an axis and an anchor point.
-    /// The definition uses local  anchor points and a local axis so that the initial
-    /// configuration can violate the constraint slightly. The joint translation is zero
-    /// when the local anchor points coincide in world space.
+    /// Body B is a wheel that may rotate freely and slide along the local x-axis in frame A.
+    /// The joint translation is zero when the local frame origins coincide in world space.
     /// @ingroup wheel_joint
     public struct B2WheelJointDef
     {

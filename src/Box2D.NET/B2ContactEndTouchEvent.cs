@@ -19,11 +19,15 @@ namespace Box2D.NET
         ///	@warning this shape may have been destroyed
         ///	@see b2Shape_IsValid
         public B2ShapeId shapeIdB;
+        
+        /// Id of the contact
+        public B2ContactId contactId;
 
-        public B2ContactEndTouchEvent(B2ShapeId shapeIdA, B2ShapeId shapeIdB)
+        public B2ContactEndTouchEvent(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2ContactId contactId)
         {
             this.shapeIdA = shapeIdA;
             this.shapeIdB = shapeIdB;
+            this.contactId = contactId;
         }
     }
 }
