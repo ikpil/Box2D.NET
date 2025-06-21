@@ -152,7 +152,7 @@ public class Draw
         m_solidCapsules.AddCapsule(p1, p2, radius, color);
     }
 
-    public void DrawSegment(B2Vec2 p1, B2Vec2 p2, B2HexColor color)
+    public void DrawLine(B2Vec2 p1, B2Vec2 p2, B2HexColor color)
     {
         m_lines.AddLine(p1, p2, color);
     }
@@ -205,7 +205,7 @@ public class Draw
         ImGui.End();
     }
 
-    public void DrawAABB(B2AABB aabb, B2HexColor c)
+    public void DrawBounds(B2AABB aabb, B2HexColor c)
     {
         B2Vec2 p1 = aabb.lowerBound;
         B2Vec2 p2 = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
@@ -261,7 +261,7 @@ public class Draw
 
     public static void DrawSegmentFcn(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context)
     {
-        (context as Draw).DrawSegment(p1, p2, color);
+        (context as Draw).DrawLine(p1, p2, color);
     }
 
     public static void DrawTransformFcn(B2Transform transform, object context)

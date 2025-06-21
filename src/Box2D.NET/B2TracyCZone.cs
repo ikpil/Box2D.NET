@@ -44,5 +44,6 @@ namespace Box2D.NET
         collide,
         contact_state,
         world_step,
+        sensor_hits,
     }
 }

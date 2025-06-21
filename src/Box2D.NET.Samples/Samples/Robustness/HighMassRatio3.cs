@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 // Big box on small triangles
 public class HighMassRatio3 : Sample
 {
-    private static readonly int SampleIndex3 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio3", Create);
+    private static readonly int SampleHighMassRatio3 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio3", Create);
 
     private static Sample Create(SampleContext context)
     {

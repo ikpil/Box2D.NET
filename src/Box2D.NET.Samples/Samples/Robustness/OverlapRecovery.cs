@@ -15,14 +15,14 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 
 public class OverlapRecovery : Sample
 {
-    private static readonly int SampleIndex4 = SampleFactory.Shared.RegisterSample("Robustness", "Overlap Recovery", Create);
+    private static readonly int SampleOverlapRecovery = SampleFactory.Shared.RegisterSample("Robustness", "Overlap Recovery", Create);
 
     private B2BodyId[] m_bodyIds;
     private int m_bodyCount;
     private int m_baseCount;
     private float m_overlap;
     private float m_extent;
-    private float m_pushOut;
+    private float m_speed;
     private float m_hertz;
     private float m_dampingRatio;
 
@@ -44,18 +44,14 @@ public class OverlapRecovery : Sample
         m_baseCount = 4;
         m_overlap = 0.25f;
         m_extent = 0.5f;
-        m_pushOut = 3.0f;
+        m_speed = 3.0f;
         m_hertz = 30.0f;
         m_dampingRatio = 10.0f;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
-
-        float groundWidth = 40.0f;
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 1.0f;
-
-        B2Segment segment = new B2Segment(new B2Vec2(-groundWidth, 0.0f), new B2Vec2(groundWidth, 0.0f));
+        B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
         b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
 
         CreateScene();
@@ -69,7 +65,7 @@ public class OverlapRecovery : Sample
             b2DestroyBody(m_bodyIds[i]);
         }
 
-        b2World_SetContactTuning(m_worldId, m_hertz, m_dampingRatio, m_pushOut);
+        b2World_SetContactTuning(m_worldId, m_hertz, m_dampingRatio, m_speed);
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -120,7 +116,7 @@ public class OverlapRecovery : Sample
         changed = changed || ImGui.SliderFloat("Extent", ref m_extent, 0.1f, 1.0f, "%.1f");
         changed = changed || ImGui.SliderInt("Base Count", ref m_baseCount, 1, 10);
         changed = changed || ImGui.SliderFloat("Overlap", ref m_overlap, 0.0f, 1.0f, "%.2f");
-        changed = changed || ImGui.SliderFloat("Speed", ref m_pushOut, 0.0f, 10.0f, "%.1f");
+        changed = changed || ImGui.SliderFloat("Speed", ref m_speed, 0.0f, 10.0f, "%.1f");
         changed = changed || ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 240.0f, "%.f");
         changed = changed || ImGui.SliderFloat("Damping Ratio", ref m_dampingRatio, 0.0f, 20.0f, "%.1f");
         changed = changed || ImGui.Button("Reset Scene");

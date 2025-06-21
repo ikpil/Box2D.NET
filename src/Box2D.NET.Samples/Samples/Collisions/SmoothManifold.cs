@@ -229,7 +229,7 @@ public class SmoothManifold : Sample
 
             B2Vec2 p1 = mp.point;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
 
             if (m_showAnchors)
             {
@@ -271,7 +271,7 @@ public class SmoothManifold : Sample
             ref readonly B2ChainSegment segment = ref m_segments[i];
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
-            m_draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawLine(p1, p2, color1);
             m_draw.DrawPoint(p1, 4.0f, color1);
         }
 

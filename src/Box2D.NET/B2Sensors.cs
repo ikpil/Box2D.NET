@@ -73,6 +73,19 @@ namespace Box2D.NET
                 return true;
             }
 
+            // Custom user filter
+            b2CustomFilterFcn customFilterFcn = queryContext.world.customFilterFcn;
+            if (customFilterFcn != null)
+            {
+                B2ShapeId idA = new B2ShapeId(sensorShapeId + 1, world.worldId, sensorShape.generation);
+                B2ShapeId idB = new B2ShapeId(shapeId + 1, world.worldId, otherShape.generation);
+                bool shouldCollide = customFilterFcn(idA, idB, queryContext.world.customFilterContext);
+                if (shouldCollide == false)
+                {
+                    return true;
+                }
+            }
+
             B2Transform otherTransform = b2GetBodyTransform(world, otherShape.bodyId);
 
             B2DistanceInput input = new B2DistanceInput();
@@ -93,6 +106,7 @@ namespace Box2D.NET
             // Record the overlap
             B2Sensor sensor = queryContext.sensor;
             ref B2ShapeRef shapeRef = ref b2Array_Add(ref sensor.overlaps2);
+            shapeRef.transform = otherTransform;
             shapeRef.shapeId = shapeId;
             shapeRef.generation = otherShape.generation;
 
@@ -107,19 +121,6 @@ namespace Box2D.NET
             if (sa.shapeId < sb.shapeId)
             {
                 return -1;
-            }
-
-            if (sa.shapeId == sb.shapeId)
-            {
-                if (sa.generation < sb.generation)
-                {
-                    return -1;
-                }
-
-                if (sa.generation == sb.generation)
-                {
-                    return 0;
-                }
             }
 
             return 1;
@@ -141,17 +142,28 @@ namespace Box2D.NET
                 B2Sensor sensor = b2Array_Get(ref world.sensors, sensorIndex);
                 B2Shape sensorShape = b2Array_Get(ref world.shapes, sensor.shapeId);
 
-                // swap overlap arrays
+                // Swap overlap arrays
                 B2Array<B2ShapeRef> temp = sensor.overlaps1;
                 sensor.overlaps1 = sensor.overlaps2;
                 sensor.overlaps2 = temp;
                 b2Array_Clear(ref sensor.overlaps2);
+
+                // Append sensor hits
+                int hitCount = sensor.hits.count;
+                for (int i = 0; i < hitCount; ++i)
+                {
+                    b2Array_Push(ref sensor.overlaps2, sensor.hits.data[i]);
+                }
+
+                // Clear the hits
+                b2Array_Clear(ref sensor.hits);
 
                 B2Body body = b2Array_Get(ref world.bodies, sensorShape.bodyId);
                 if (body.setIndex == (int)B2SetType.b2_disabledSet || sensorShape.enableSensorEvents == false)
                 {
                     if (sensor.overlaps1.count != 0)
                     {
+                        // This sensor is dropping all overlaps because it has been disabled.
                         b2SetBit(ref taskContext.eventBits, sensorIndex);
                     }
 
@@ -179,6 +191,21 @@ namespace Box2D.NET
 
                 // Sort the overlaps to enable finding begin and end events.
                 Array.Sort(sensor.overlaps2.data, 0, sensor.overlaps2.count, B2ShapeRefComparer.Shared);
+
+                // Remove duplicates from overlaps2 (sorted). Duplicates are possible due to the hit events appended earlier.
+                int uniqueCount = 0;
+                int overlapCount = sensor.overlaps2.count;
+                Span<B2ShapeRef> overlapData = sensor.overlaps2.data;
+                for (int i = 0; i < overlapCount; ++i)
+                {
+                    if (uniqueCount == 0 || overlapData[i].shapeId != overlapData[uniqueCount - 1].shapeId)
+                    {
+                        overlapData[uniqueCount] = overlapData[i];
+                        uniqueCount += 1;
+                    }
+                }
+
+                sensor.overlaps2.count = uniqueCount;
 
                 int count1 = sensor.overlaps1.count;
                 int count2 = sensor.overlaps2.count;
@@ -242,7 +269,7 @@ namespace Box2D.NET
             }
 
             // Iterate sensors bits and publish events
-            // Process contact state changes. Iterate over set bits
+            // Process sensor state changes. Iterate over set bits
             ulong[] bits = bitSet.bits;
             int blockCount = bitSet.blockCount;
 

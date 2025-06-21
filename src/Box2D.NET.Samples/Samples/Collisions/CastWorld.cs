@@ -389,13 +389,13 @@ public class CastWorld : Sample
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
                 m_draw.DrawPoint(result.point, 5.0f, color1);
-                m_draw.DrawSegment(m_rayStart, c, color2);
+                m_draw.DrawLine(m_rayStart, c, color2);
                 B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
-                m_draw.DrawSegment(result.point, head, color3);
+                m_draw.DrawLine(result.point, head, color3);
             }
             else
             {
-                m_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_draw.DrawLine(m_rayStart, m_rayEnd, color2);
             }
         }
         else
@@ -454,9 +454,9 @@ public class CastWorld : Sample
                     B2Vec2 p = context.points[i];
                     B2Vec2 n = context.normals[i];
                     m_draw.DrawPoint(p, 5.0f, colors[i]);
-                    m_draw.DrawSegment(m_rayStart, c, color2);
+                    m_draw.DrawLine(m_rayStart, c, color2);
                     B2Vec2 head = b2MulAdd(p, 1.0f, n);
-                    m_draw.DrawSegment(p, head, color3);
+                    m_draw.DrawLine(p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
                     B2Transform shiftedTransform = new B2Transform(t, b2Rot_identity);
@@ -480,7 +480,7 @@ public class CastWorld : Sample
             else
             {
                 B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, rayTranslation), transform.q);
-                m_draw.DrawSegment(m_rayStart, m_rayEnd, color2);
+                m_draw.DrawLine(m_rayStart, m_rayEnd, color2);
 
                 if (m_castType == CastType.e_circleCast)
                 {

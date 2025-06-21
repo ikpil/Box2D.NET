@@ -92,14 +92,14 @@ public class PersistentContact : Sample
 
         if (B2_IS_NON_NULL(m_contactId) && b2Contact_IsValid(m_contactId))
         {
-            B2Manifold manifold = b2Contact_GetManifold(m_contactId);
+            B2ContactData data = b2Contact_GetData(m_contactId);
 
-            for (int i = 0; i < manifold.pointCount; ++i)
+            for (int i = 0; i < data.manifold.pointCount; ++i)
             {
-                ref readonly B2ManifoldPoint manifoldPoint = ref manifold.points[i];
+                ref readonly B2ManifoldPoint manifoldPoint = ref data.manifold.points[i];
                 B2Vec2 p1 = manifoldPoint.point;
-                B2Vec2 p2 = p1 + manifoldPoint.totalNormalImpulse * manifold.normal;
-                m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorCrimson);
+                B2Vec2 p2 = p1 + manifoldPoint.totalNormalImpulse * data.manifold.normal;
+                m_draw.DrawLine(p1, p2, B2HexColor.b2_colorCrimson);
                 m_draw.DrawPoint(p1, 6.0f, B2HexColor.b2_colorCrimson);
                 m_draw.DrawString(p1, $"{manifoldPoint.totalNormalImpulse:F2}");
             }

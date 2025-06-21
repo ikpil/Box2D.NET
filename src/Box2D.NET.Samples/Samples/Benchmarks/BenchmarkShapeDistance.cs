@@ -160,10 +160,10 @@ public class BenchmarkShapeDistance : Sample
         B2DistanceOutput output = m_outputs[m_drawIndex];
         m_draw.DrawSolidPolygon(ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
         m_draw.DrawSolidPolygon(ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
-        m_draw.DrawSegment(output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
+        m_draw.DrawLine(output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
         m_draw.DrawPoint(output.pointA, 10.0f, B2HexColor.b2_colorWhite);
         m_draw.DrawPoint(output.pointB, 10.0f, B2HexColor.b2_colorWhite);
-        m_draw.DrawSegment(output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+        m_draw.DrawLine(output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
         DrawTextLine($"distance = {output.distance}");
     }
 }

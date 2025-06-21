@@ -255,11 +255,12 @@ public class B2WorldTest
         return true;
     }
 
-    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
+    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
-        B2_UNUSED(manifold);
+        B2_UNUSED(point);
+        B2_UNUSED(normal);
         Assert.That(context, Is.EqualTo(null));
         return false;
     }

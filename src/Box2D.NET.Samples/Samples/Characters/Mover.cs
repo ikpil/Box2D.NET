@@ -378,7 +378,7 @@ public class Mover : Sample
             m_pogoVelocity = 0.0f;
 
             B2Vec2 delta = translation;
-            m_draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+            m_draw.DrawLine(origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
@@ -390,7 +390,7 @@ public class Mover : Sample
             }
             else
             {
-                m_draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
+                m_draw.DrawLine(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
             }
         }
         else
@@ -401,7 +401,7 @@ public class Mover : Sample
             m_pogoVelocity = b2SpringDamper(m_pogoHertz, m_pogoDampingRatio, offset, m_pogoVelocity, timeStep);
 
             B2Vec2 delta = castResult.fraction * translation;
-            m_draw.DrawSegment(origin, origin + delta, B2HexColor.b2_colorGray);
+            m_draw.DrawLine(origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
@@ -413,7 +413,7 @@ public class Mover : Sample
             }
             else
             {
-                m_draw.DrawSegment(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
+                m_draw.DrawLine(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
             }
 
             b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), castResult.point, true);
@@ -623,7 +623,7 @@ public class Mover : Sample
             B2Vec2 p1 = m_transform.p + (plane.offset - m_capsule.radius) * plane.normal;
             B2Vec2 p2 = p1 + 0.1f * plane.normal;
             m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorYellow);
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorYellow);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorYellow);
         }
 
         {
@@ -632,7 +632,7 @@ public class Mover : Sample
 
             B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
             m_draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
-            m_draw.DrawSegment(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
+            m_draw.DrawLine(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
         }
 
         B2Vec2 p = m_transform.p;

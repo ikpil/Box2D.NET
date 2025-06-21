@@ -7,6 +7,9 @@ namespace Box2D.NET
     // Per thread task storage
     public class B2TaskContext
     {
+        // Collect per thread sensor continuous hit events.
+        public B2Array<B2SensorHit> sensorHits;
+        
         // These bits align with the contact id capacity and signal a change in contact status
         public B2BitSet contactStateBitSet;
 

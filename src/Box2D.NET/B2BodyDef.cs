@@ -65,8 +65,14 @@ namespace Box2D.NET
         /// Treat this body as high speed object that performs continuous collision detection
         /// against dynamic and kinematic bodies, but not other bullet bodies.
         /// @warning Bullets should be used sparingly. They are not a solution for general dynamic-versus-dynamic
-        /// continuous collision. They may interfere with joint constraints.
+        /// continuous collision.
         public bool isBullet;
+        
+        /// Option to perform continuous collision checks with sensors. This only applies to dynamic bodies.
+        /// This is expensive and should be used sparingly. You still need to enable sensor events on the child shapes
+        /// for this to work. This only works if the body is awake. This will use a time of impact calculation to
+        /// generate sensor begin touch events, but not end events. End events are handled using regular overlap checks.
+        public bool enableSensorHits;
 
         /// Used to disable a body. A disabled body does not move or collide.
         public bool isEnabled;

@@ -5,7 +5,6 @@
 namespace Box2D.NET
 {
     /// Prismatic joint definition
-    ///
     /// Body B may slide along the x-axis in local frame A. Body B cannot rotate relative to body A.
     /// The joint translation is zero when the local frame origins coincide in world space.
     /// @ingroup prismatic_joint
@@ -13,10 +12,6 @@ namespace Box2D.NET
     {
         /// Base joint definition
         public B2JointDef @base;
-        
-        /// The target translation for the joint in meters. The spring-damper will drive
-        /// to this translation.
-        public float targetTranslation;
 
         /// Enable a linear spring along the prismatic joint axis
         public bool enableSpring;
@@ -26,6 +21,10 @@ namespace Box2D.NET
 
         /// The spring damping ratio, non-dimensional
         public float dampingRatio;
+        
+        /// The target translation for the joint in meters. The spring-damper will drive
+        /// to this translation.
+        public float targetTranslation;
 
         /// Enable/disable the joint limit
         public bool enableLimit;

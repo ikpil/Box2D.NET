@@ -268,6 +268,7 @@ namespace Box2D.NET
             bodySim.gravityScale = def.gravityScale;
             bodySim.bodyId = bodyId;
             bodySim.isBullet = def.isBullet;
+            bodySim.enableSensorHits = def.enableSensorHits;
             bodySim.allowFastRotation = def.allowFastRotation;
 
             if (setId == (int)B2SetType.b2_awakeSet)
@@ -493,6 +494,7 @@ namespace Box2D.NET
                     B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
                     B2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
 
+                    contactData[index].contactId = new B2ContactId(contact.contactId + 1, bodyId.world0, 0, contact.generation);
                     contactData[index].shapeIdA = new B2ShapeId(shapeA.id + 1, bodyId.world0, shapeA.generation);
                     contactData[index].shapeIdB = new B2ShapeId(shapeB.id + 1, bodyId.world0, shapeB.generation);
 
@@ -680,6 +682,7 @@ namespace Box2D.NET
             return b2TransformPoint(ref transform, localPoint);
         }
 
+        /// Get a local vector on a body given a world vector
         public static B2Vec2 b2Body_GetLocalVector(B2BodyId bodyId, B2Vec2 worldVector)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -688,6 +691,7 @@ namespace Box2D.NET
             return b2InvRotateVector(transform.q, worldVector);
         }
 
+        /// Get the world transform of a body.
         public static B2Vec2 b2Body_GetWorldVector(B2BodyId bodyId, B2Vec2 localVector)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -696,6 +700,9 @@ namespace Box2D.NET
             return b2RotateVector(transform.q, localVector);
         }
 
+        /// Set the world transform of a body. This acts as a teleport and is fairly expensive.
+        /// @note Generally you should create a body with then intended transform.
+        /// @see b2BodyDef::position and b2BodyDef::rotation
         public static void b2Body_SetTransform(B2BodyId bodyId, B2Vec2 position, B2Rot rotation)
         {
             B2_ASSERT(b2IsValidVec2(position));
@@ -1301,6 +1308,7 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
+        /// Set the body name. Up to 31 characters excluding 0 termination.
         public static void b2Body_SetName(B2BodyId bodyId, string name)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1316,6 +1324,7 @@ namespace Box2D.NET
             }
         }
 
+        /// Get the body name.
         public static string b2Body_GetName(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1323,6 +1332,7 @@ namespace Box2D.NET
             return body.name;
         }
 
+        /// Set the user data for a body
         public static void b2Body_SetUserData(B2BodyId bodyId, object userData)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1330,6 +1340,7 @@ namespace Box2D.NET
             body.userData = userData;
         }
 
+        /// Get the user data stored in a body
         public static object b2Body_GetUserData(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);

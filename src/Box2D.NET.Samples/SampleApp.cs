@@ -41,7 +41,7 @@ public class SampleApp
     private SampleContext _context;
     private bool s_rightMouseDown = false;
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
-    private float s_windowScale = 1.0f;
+    private float s_fontScale = 1.0f;
     private float s_framebufferScale = 1.0f;
     private float _frameTime = 0.0f;
 
@@ -100,7 +100,7 @@ public class SampleApp
                 }
                 else
                 {
-                    _context.glfw.GetMonitorContentScale(primaryMonitor, out s_windowScale, out s_windowScale);
+                    _context.glfw.GetMonitorContentScale(primaryMonitor, out s_fontScale, out s_fontScale);
                 }
             }
         }
@@ -109,13 +109,13 @@ public class SampleApp
         bool fullscreen = false;
         if (fullscreen)
         {
-            options.Size = new Vector2D<int>((int)(1920 * s_windowScale), (int)(1080 * s_windowScale));
-            //_ctx.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(1920 * s_windowScale), (int)(1080 * s_windowScale), buffer, _ctx.g_glfw.GetPrimaryMonitor(), null);
+            options.Size = new Vector2D<int>((int)(1920), (int)(1080));
+            //_context.g_mainWindow = _context.g_glfw.CreateWindow((int)(1920 ), (int)(1080 ), buffer, _ctx.g_glfw.GetPrimaryMonitor(), null);
         }
         else
         {
-            options.Size = new Vector2D<int>((int)(_context.camera.m_width * s_windowScale), (int)(_context.camera.m_height * s_windowScale));
-            //_ctx.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(_ctx.g_camera.m_width * s_windowScale), (int)(_ctx.g_camera.m_height * s_windowScale), buffer, null, null);
+            options.Size = new Vector2D<int>((int)(_context.camera.m_width), (int)(_context.camera.m_height));
+            //_context.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(_ctx.g_camera.m_width * s_windowScale), (int)(_ctx.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
         _window = Window.Create(options);
@@ -157,11 +157,11 @@ public class SampleApp
     {
         var width = resize.X;
         var height = resize.Y;
-        _context.settings.windowWidth = (int)(width / s_windowScale);
-        _context.settings.windowHeight = (int)(height / s_windowScale);
+        _context.settings.windowWidth = width;
+        _context.settings.windowHeight = height;
 
-        _context.camera.m_width = (int)(width / s_windowScale);
-        _context.camera.m_height = (int)(height / s_windowScale);
+        _context.camera.m_width = width;
+        _context.camera.m_height = height;
     }
 
     private void OnWindowFrameBufferResize(Vector2D<int> resize)
@@ -196,14 +196,14 @@ public class SampleApp
                 return;
             }
 
-            // if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            // {
-            //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_framebufferScale, out s_framebufferScale);
-            // }
-            // else
-            // {
-            //     _ctx.g_glfw.GetWindowContentScale(_ctx.g_mainWindow, out s_windowScale, out s_windowScale);
-            // }
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                //_context.glfw.GetWindowContentScale(_context.window, out s_framebufferScale, out s_framebufferScale);
+            }
+            else
+            {
+                //_context.glfw.GetWindowContentScale(_context.window, out s_fontScale, out s_fontScale);
+            }
 
             _context.glfw.MakeContextCurrent(_context.window);
         }
@@ -497,11 +497,13 @@ public class SampleApp
         // var imGuiIo = ImGui.GetIO();
         // var s = new ImFontConfig();
         // ImFontConfigPtr fontConfig = new ImFontConfigPtr(&s);
-        // fontConfig.RasterizerMultiply = s_windowScale * s_framebufferScale;
-        // _ctx.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f, fontConfig, IntPtr.Zero);
-        // _ctx.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f, fontConfig, IntPtr.Zero);
-        // _ctx.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f, fontConfig, IntPtr.Zero);
-        // _ctx.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f, fontConfig, IntPtr.Zero);
+        // fontConfig.RasterizerMultiply = s_fontScale * s_framebufferScale;
+        // _context.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f * s_fontScale, fontConfig, IntPtr.Zero);
+        // _context.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f * s_fontScale, fontConfig, IntPtr.Zero);
+        // _context.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f * s_fontScale, fontConfig, IntPtr.Zero);
+        // _context.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f * s_fontScale, fontConfig, IntPtr.Zero);
+
+        //imGuiIo.FontDefault = _context.draw.m_smallFont;
     }
 
     public void DestroyUI()
@@ -651,7 +653,7 @@ public class SampleApp
 
         double xd, yd;
         _context.glfw.GetCursorPos(_context.window, out xd, out yd);
-        B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
+        B2Vec2 ps = new B2Vec2((float)(xd), (float)(yd));
 
         // Use the mouse to move things around.
         if (button == (int)MouseButton.Left)
@@ -684,7 +686,7 @@ public class SampleApp
 
     private unsafe void MouseMotionCallback(WindowHandle* window, double xd, double yd)
     {
-        B2Vec2 ps = new B2Vec2((float)(xd / s_windowScale), (float)(yd / s_windowScale));
+        B2Vec2 ps = new B2Vec2((float)(xd), (float)(yd));
 
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
 

@@ -61,6 +61,7 @@ namespace Box2D.NET
             ThrowIf(B2FixedArray8<int>.Size == B2_MAX_POLYGON_VERTICES, $"B2FixedArray8<int> and {nameof(B2_MAX_POLYGON_VERTICES)} have the same size, which is unexpected.");
             ThrowIf(B2FixedArray8<B2Vec2>.Size == B2_MAX_POLYGON_VERTICES, $"B2FixedArray8<B2Vec2> and {nameof(B2_MAX_POLYGON_VERTICES)} have the same size, which is unexpected.");
             ThrowIf(B2FixedArray4<int>.Size == B2_SIMD_WIDTH, $"B2FixedArray4<int> and {nameof(B2_SIMD_WIDTH)}have the same size, which is unexpected.");
+            ThrowIf(B2FixedArray8<float>.Size == B2_MAX_CONTINUOUS_SENSOR_HITS, $"B2FixedArray8<float> and {nameof(B2_MAX_CONTINUOUS_SENSOR_HITS)}have the same size, which is unexpected.");
         }
 
         private void CheckFixedArraySeries()

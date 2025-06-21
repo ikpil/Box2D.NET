@@ -29,7 +29,7 @@ public class SensorTypes : Sample
 
     private B2BodyId m_kinematicBodyId;
 
-    private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
+    private List<B2SensorData> m_sensorData = new List<B2SensorData>();
 
 
     private static Sample Create(SampleContext context)
@@ -142,16 +142,16 @@ public class SensorTypes : Sample
     {
         // Determine the necessary capacity
         int capacity = b2Shape_GetSensorCapacity(sensorShapeId);
-        m_overlaps.Resize(capacity);
+        m_sensorData.Resize(capacity);
 
         // Get all overlaps and record the actual count
-        int count = b2Shape_GetSensorOverlaps(sensorShapeId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
-        m_overlaps.Resize(count);
+        int count = b2Shape_GetSensorData(sensorShapeId, CollectionsMarshal.AsSpan(m_sensorData), capacity);
+        m_sensorData.Resize(count);
 
         var builder = new StringBuilder();
         for (int i = 0; i < count; ++i)
         {
-            B2ShapeId visitorId = m_overlaps[i];
+            B2ShapeId visitorId = m_sensorData[i].visitorId;
             if (b2Shape_IsValid(visitorId) == false)
             {
                 continue;
@@ -199,7 +199,7 @@ public class SensorTypes : Sample
         B2Vec2 origin = new B2Vec2(5.0f, 1.0f);
         B2Vec2 translation = new B2Vec2(-10.0f, 0.0f);
         B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, b2DefaultQueryFilter());
-        m_draw.DrawSegment(origin, origin + translation, B2HexColor.b2_colorDimGray);
+        m_draw.DrawLine(origin, origin + translation, B2HexColor.b2_colorDimGray);
 
         if (result.hit)
         {

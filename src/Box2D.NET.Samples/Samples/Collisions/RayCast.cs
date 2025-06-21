@@ -194,12 +194,12 @@ public class RayCast : Sample
             else
             {
                 p = b2MulAdd(p1, output.fraction, d);
-                m_draw.DrawSegment(p1, p, B2HexColor.b2_colorWhite);
+                m_draw.DrawLine(p1, p, B2HexColor.b2_colorWhite);
                 m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
                 m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
 
                 B2Vec2 n = b2MulAdd(p, 1.0f, output.normal);
-                m_draw.DrawSegment(p, n, B2HexColor.b2_colorViolet);
+                m_draw.DrawLine(p, n, B2HexColor.b2_colorViolet);
             }
 
             if (m_showFraction)
@@ -210,7 +210,7 @@ public class RayCast : Sample
         }
         else
         {
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
         }
@@ -235,7 +235,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCircle(ref input, ref m_circle);
+            B2CastOutput localOutput = b2RayCastCircle(ref m_circle, ref input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -258,7 +258,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCapsule(ref input, ref m_capsule);
+            B2CastOutput localOutput = b2RayCastCapsule(ref m_capsule, ref input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -279,7 +279,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref input, ref m_box);
+            B2CastOutput localOutput = b2RayCastPolygon(ref m_box, ref input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -300,7 +300,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref input, ref m_triangle);
+            B2CastOutput localOutput = b2RayCastPolygon(ref m_triangle, ref input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -318,13 +318,13 @@ public class RayCast : Sample
 
             B2Vec2 p1 = b2TransformPoint(ref transform, m_segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform, m_segment.point2);
-            m_draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawLine(p1, p2, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastSegment(ref input, ref m_segment, false);
+            B2CastOutput localOutput = b2RayCastSegment(ref m_segment, ref input, false);
             if (localOutput.hit)
             {
                 output = localOutput;

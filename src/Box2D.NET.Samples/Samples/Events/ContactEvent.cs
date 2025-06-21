@@ -232,7 +232,7 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            m_draw.DrawLine(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
                             m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
@@ -262,7 +262,7 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_draw.DrawSegment(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            m_draw.DrawLine(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
                             m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }

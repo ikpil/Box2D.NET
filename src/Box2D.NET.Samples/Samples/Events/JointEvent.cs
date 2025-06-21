@@ -17,7 +17,8 @@ namespace Box2D.NET.Samples.Samples.Events;
 // This sample shows how to break joints when the internal reaction force becomes large. Instead of polling, this uses events.
 public class JointEvent : Sample
 {
-    private static readonly int SampleBreakableJoint = SampleFactory.Shared.RegisterSample("Events", "Joint", Create);
+    private static readonly int SampleJointEvent = SampleFactory.Shared.RegisterSample("Events", "Joint", Create);
+    
     public const int e_count = 6;
 
     private readonly B2JointId[] m_jointIds;
@@ -174,8 +175,6 @@ public class JointEvent : Sample
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.angularHertz = 2.0f;
             jointDef.angularDampingRatio = 0.5f;
-            jointDef.linearHertz = 2.0f;
-            jointDef.linearDampingRatio = 0.5f;
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;

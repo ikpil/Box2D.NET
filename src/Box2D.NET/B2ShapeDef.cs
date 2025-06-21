@@ -42,7 +42,7 @@ namespace Box2D.NET
         public bool enableHitEvents;
 
         /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive
-        /// and must be carefully handled due to threading. Ignored for sensors.
+        /// and must be carefully handled due to multithreading. Ignored for sensors.
         public bool enablePreSolveEvents;
 
         /// When shapes are created they will scan the environment for collision the next time step. This can significantly slow down

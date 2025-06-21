@@ -192,7 +192,7 @@ public class ShapeDistance : Sample
                 }
                 else
                 {
-                    m_draw.DrawSegment(p1, p2, color);
+                    m_draw.DrawLine(p1, p2, color);
                 }
             }
                 break;
@@ -402,7 +402,7 @@ public class ShapeDistance : Sample
                 B2Vec2 pointB = new B2Vec2();
                 ComputeSimplexWitnessPoints(ref pointA, ref pointB, ref simplex);
 
-                m_draw.DrawSegment(pointA, pointB, B2HexColor.b2_colorWhite);
+                m_draw.DrawLine(pointA, pointB, B2HexColor.b2_colorWhite);
                 m_draw.DrawPoint(pointA, 10.0f, B2HexColor.b2_colorWhite);
                 m_draw.DrawPoint(pointB, 10.0f, B2HexColor.b2_colorWhite);
             }
@@ -418,11 +418,11 @@ public class ShapeDistance : Sample
         }
         else
         {
-            m_draw.DrawSegment(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
+            m_draw.DrawLine(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
             m_draw.DrawPoint(_outputPointA, 10.0f, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(_outputPointB, 10.0f, B2HexColor.b2_colorWhite);
             
-            m_draw.DrawSegment( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
+            m_draw.DrawLine( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
         }
 
         if (m_showIndices)

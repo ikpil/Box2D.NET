@@ -12,8 +12,8 @@ public class Camera
 {
     public B2Vec2 m_center;
     public float m_zoom;
-    public int m_width;
-    public int m_height;
+    public float m_width;
+    public float m_height;
 
     public Camera()
     {

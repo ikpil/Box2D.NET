@@ -131,7 +131,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -174,7 +174,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -213,7 +213,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -269,7 +269,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -308,7 +308,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -355,7 +355,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -394,7 +394,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -434,7 +434,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -473,7 +473,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
@@ -513,7 +513,7 @@ namespace Box2D.NET.Shared
                 jointDef.enableSpring = hertz > 0.0f;
                 jointDef.hertz = hertz;
                 jointDef.dampingRatio = dampingRatio;
-                jointDef.@base.drawSize = drawSize;
+                jointDef.@base.drawScale = drawSize;
 
                 bone.jointId = b2CreateRevoluteJoint(worldId, ref jointDef);
             }
