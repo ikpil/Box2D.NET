@@ -107,6 +107,6 @@ public class BounceHumans : Sample
     {
         base.Draw(settings);
 
-        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
+        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
     }
 }

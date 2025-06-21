@@ -9,6 +9,7 @@ namespace Box2D.NET
      * @brief Geometry types and algorithms
      *
      * Definitions of circles, capsules, segments, and polygons. Various algorithms to compute hulls, mass properties, and so on.
+     * Functions should take the shape as the first argument to assist editor auto-complete.
      * @{
      */
     /// Low level ray cast input data

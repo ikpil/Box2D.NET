@@ -287,11 +287,13 @@ namespace Box2D.NET
                 return true;
             }
 
-            // Skip sensors
-            if (shape.sensorIndex != B2_NULL_INDEX)
+            // Skip sensors except if the body wants sensor hits
+            bool isSensor = shape.sensorIndex != B2_NULL_INDEX;
+            if (isSensor && fastBodySim.enableSensorHits == false)
             {
                 return true;
             }
+
 
             // Skip filtered shapes
             bool canCollide = b2ShouldShapesCollide(fastShape.filter, shape.filter);
@@ -332,8 +334,9 @@ namespace Box2D.NET
                 }
             }
 
-            // Prevent pausing on chain segment junctions
-            if (shape.type == B2ShapeType.b2_chainSegmentShape)
+            // Early out on fast parallel movement over a chain shape.
+            // No early out for sensor sweeps.
+            if (shape.type == B2ShapeType.b2_chainSegmentShape && isSensor == false)
             {
                 B2Transform transform = bodySim.transform;
                 B2Vec2 p1 = b2TransformPoint(ref transform, shape.us.chainSegment.segment.point1);
@@ -392,54 +395,69 @@ namespace Box2D.NET
             input.sweepB = continuousContext.sweep;
             input.maxFraction = continuousContext.fraction;
 
-            float hitFraction = continuousContext.fraction;
-
-            bool didHit = false;
             B2TOIOutput output = b2TimeOfImpact(ref input);
-            if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
+            if (isSensor)
             {
-                hitFraction = output.fraction;
-                didHit = true;
+                // Only accept a sensor hit that is sooner than the current solid hit.
+                if (output.fraction <= continuousContext.fraction && continuousContext.sensorCount < B2_MAX_CONTINUOUS_SENSOR_HITS)
+                {
+                    int index = continuousContext.sensorCount;
+                    B2Transform hitTransform = b2GetSweepTransform(ref continuousContext.sweep, output.fraction);
+                    B2SensorHit sensorHit = new B2SensorHit()
+                    {
+                        sensorId = shape.id,
+                        visitorId = fastShape.id,
+                        visitorTransform = hitTransform,
+                    };
+                    continuousContext.sensorHits[index] = sensorHit;
+                    continuousContext.sensorFractions[index] = output.fraction;
+                    continuousContext.sensorCount += 1;
+                }
             }
-            else if (0.0f == output.fraction)
+            else
             {
-                // fallback to TOI of a small circle around the fast shape centroid
-                B2Vec2 centroid = b2GetShapeCentroid(fastShape);
-                B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
-                float radius = 0.25f * extent.minExtent;
-                input.proxyB = b2MakeProxy(centroid, 1, radius);
-                output = b2TimeOfImpact(ref input);
+                float hitFraction = continuousContext.fraction;
+                bool didHit = false;
+
                 if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                 {
                     hitFraction = output.fraction;
                     didHit = true;
                 }
+                else if (0.0f == output.fraction)
+                {
+                    // fallback to TOI of a small circle around the fast shape centroid
+                    B2Vec2 centroid = b2GetShapeCentroid(fastShape);
+                    B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
+                    float radius = 0.25f * extent.minExtent;
+                    input.proxyB = b2MakeProxy(centroid, 1, radius);
+                    output = b2TimeOfImpact(ref input);
+                    if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
+                    {
+                        hitFraction = output.fraction;
+                        didHit = true;
+                    }
+                }
+
+                if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preSolveFcn != null)
+                {
+                    // Pre-solve is expensive because I need to compute a temporary manifold
+                    B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                    B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
+                    didHit = world.preSolveFcn(shapeIdA, shapeIdB, output.point, output.normal, world.preSolveContext);
+                }
+
+                if (didHit)
+                {
+                    continuousContext.fraction = hitFraction;
+                }
             }
 
-            if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preSolveFcn != null)
-            {
-                // Pre-solve is expensive because I need to compute a temporary manifold
-                B2Transform transformA = b2GetSweepTransform(ref input.sweepA, hitFraction);
-                B2Transform transformB = b2GetSweepTransform(ref input.sweepB, hitFraction);
-                B2Manifold manifold = b2ComputeManifold(shape, transformA, fastShape, transformB);
-                B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
-
-                // The user may modify the temporary manifold here but it doesn't matter. They will be able to
-                // modify the real manifold in the discrete solver.
-                didHit = world.preSolveFcn(shapeIdA, shapeIdB, ref manifold, world.preSolveContext);
-            }
-
-            if (didHit)
-            {
-                continuousContext.fraction = hitFraction;
-            }
-
+            // Continue query
             return true;
         }
 
-        // Continuous collision of dynamic versus static
-        public static void b2SolveContinuous(B2World world, int bodySimIndex)
+        public static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext)
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
 
@@ -482,7 +500,6 @@ namespace Box2D.NET
 
                 B2AABB box1 = fastShape.aabb;
                 B2AABB box2 = b2ComputeShapeAABB(fastShape, xf2);
-                B2AABB box = b2AABB_Union(box1, box2);
 
                 // Store this to avoid double computation in the case there is no impact event
                 fastShape.aabb = box2;
@@ -493,12 +510,13 @@ namespace Box2D.NET
                     continue;
                 }
 
-                b2DynamicTree_Query(staticTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                B2AABB sweptBox = b2AABB_Union(box1, box2);
+                b2DynamicTree_Query(staticTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
 
                 if (isBullet)
                 {
-                    b2DynamicTree_Query(kinematicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
-                    b2DynamicTree_Query(dynamicTree, box, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                    b2DynamicTree_Query(kinematicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                    b2DynamicTree_Query(dynamicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
                 }
             }
 
@@ -524,8 +542,7 @@ namespace Box2D.NET
                 @event.transform = transform;
 
                 // Prepare AABBs for broad-phase.
-                // Even though a body is fast, it may not move much. So the
-                // AABB may not need enlargement.
+                // Even though a body is fast, it may not move much. So the AABB may not need enlargement.
 
                 shapeId = fastBody.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
@@ -586,6 +603,15 @@ namespace Box2D.NET
                     }
 
                     shapeId = shape.nextShapeId;
+                }
+            }
+
+            // Push sensor hits on the the task context for serial processing.
+            for (int i = 0; i < context.sensorCount; ++i)
+            {
+                if (context.sensorFractions[i] < context.fraction)
+                {
+                    b2Array_Push(ref taskContext.sensorHits, context.sensorHits[i]);
                 }
             }
 
@@ -689,7 +715,7 @@ namespace Box2D.NET
                         }
                         else
                         {
-                            b2SolveContinuous(world, simIndex);
+                            b2SolveContinuous(world, simIndex, taskContext);
                         }
                     }
                     else
@@ -1221,20 +1247,21 @@ public enum b2SolverBlockType
             }
         }
 
-        public static void b2BulletBodyTask(int startIndex, int endIndex, uint threadIndex, object taskContext)
+        public static void b2BulletBodyTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             B2_UNUSED(threadIndex);
 
             b2TracyCZoneNC(B2TracyCZone.bullet_body_task, "Bullet", B2HexColor.b2_colorLightSkyBlue, true);
 
-            B2StepContext stepContext = taskContext as B2StepContext;
+            B2StepContext stepContext = context as B2StepContext;
+            B2TaskContext taskContext = b2Array_Get(ref stepContext.world.taskContexts, (int)threadIndex);
 
             B2_ASSERT(startIndex <= endIndex);
 
             for (int i = startIndex; i < endIndex; ++i)
             {
                 int simIndex = stepContext.bulletBodies[i];
-                b2SolveContinuous(stepContext.world, simIndex);
+                b2SolveContinuous(stepContext.world, simIndex, taskContext);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.bullet_body_task);
@@ -1766,7 +1793,8 @@ public enum b2SolverBlockType
                 int jointIdCapacity = b2GetIdCapacity(world.jointIdPool);
                 for (int i = 0; i < workerCount; ++i)
                 {
-                    b2SetBitCountAndClear(ref world.taskContexts.data[i].jointStateBitSet, jointIdCapacity);
+                    B2TaskContext taskContext = b2Array_Get(ref world.taskContexts, i);
+                    b2SetBitCountAndClear(ref taskContext.jointStateBitSet, jointIdCapacity);
 
                     workerContext[i].context = stepContext;
                     workerContext[i].workerIndex = i;
@@ -1805,6 +1833,7 @@ public enum b2SolverBlockType
                 for (int i = 0; i < world.workerCount; ++i)
                 {
                     B2TaskContext taskContext = world.taskContexts.data[i];
+                    b2Array_Clear(ref taskContext.sensorHits);
                     b2SetBitCountAndClear(ref taskContext.enlargedSimBitSet, awakeBodyCount);
                     b2SetBitCountAndClear(ref taskContext.awakeIslandBitSet, awakeIslandCount);
                     taskContext.splitIslandId = B2_NULL_INDEX;
@@ -2120,6 +2149,41 @@ public enum b2SolverBlockType
             b2FreeArenaItem(world.arena, stepContext.bulletBodies);
             stepContext.bulletBodies = null;
             b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
+
+            // Report sensor hits. This may include bullets sensor hits.
+            {
+                b2TracyCZoneNC(B2TracyCZone.sensor_hits, "Sensor Hits", B2HexColor.b2_colorPowderBlue, true);
+                ulong sensorHitTicks = b2GetTicks();
+
+                int workerCount = world.workerCount;
+                B2_ASSERT(workerCount == world.taskContexts.count);
+
+                for (int i = 0; i < workerCount; ++i)
+                {
+                    B2TaskContext taskContext = world.taskContexts.data[i];
+                    int hitCount = taskContext.sensorHits.count;
+                    Span<B2SensorHit> hits = taskContext.sensorHits.data;
+
+                    for (int j = 0; j < hitCount; ++j)
+                    {
+                        B2SensorHit hit = hits[j];
+                        B2Shape sensorShape = b2Array_Get(ref world.shapes, hit.sensorId);
+                        B2Shape visitor = b2Array_Get(ref world.shapes, hit.visitorId);
+
+                        B2Sensor sensor = b2Array_Get(ref world.sensors, sensorShape.sensorIndex);
+                        B2ShapeRef shapeRef = new B2ShapeRef()
+                        {
+                            transform = hit.visitorTransform,
+                            shapeId = hit.visitorId,
+                            generation = visitor.generation,
+                        };
+                        b2Array_Push(ref sensor.hits, shapeRef);
+                    }
+                }
+
+                world.profile.sensorHits = b2GetMilliseconds(sensorHitTicks);
+                b2TracyCZoneEnd(B2TracyCZone.sensor_hits);
+            }
 
             // Island sleeping
             // This must be done last because putting islands to sleep invalidates the enlarged body bits.

@@ -208,7 +208,7 @@ public class GearLift : Sample
                 jointDef.@base.bodyIdB = bodyId;
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                jointDef.@base.drawSize = 0.2f;
+                jointDef.@base.drawScale = 0.2f;
                 b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
                 position.Y -= 2.0f * linkHalfLength;

@@ -5,11 +5,10 @@
 namespace Box2D.NET
 {
     /// Weld joint definition
-    ///
-    /// A weld joint connect to bodies together rigidly. This constraint provides springs to mimic
+    /// Connects two bodies together rigidly. This constraint provides springs to mimic
     /// soft-body simulation.
     /// @note The approximate solver in Box2D cannot hold many bodies together rigidly
-    /// @ingroup weld_joint
+    /// @ingroup weld_join
     public struct B2WeldJointDef
     {
         /// Base joint definition

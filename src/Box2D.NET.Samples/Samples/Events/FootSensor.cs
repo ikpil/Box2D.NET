@@ -29,7 +29,7 @@ public class FootSensor : Sample
 
     private B2BodyId m_playerId;
     private B2ShapeId m_sensorId;
-    private List<B2ShapeId> m_overlaps = new List<B2ShapeId>();
+    private List<B2SensorData> m_sensorData = new List<B2SensorData>();
     private int m_overlapCount;
 
     private static Sample Create(SampleContext context)
@@ -138,13 +138,13 @@ public class FootSensor : Sample
         base.Draw(settings);
 
         int capacity = b2Shape_GetSensorCapacity(m_sensorId);
-        m_overlaps.Clear();
-        m_overlaps.Resize(capacity);
+        m_sensorData.Clear();
+        m_sensorData.Resize(capacity);
 
-        int count = b2Shape_GetSensorOverlaps(m_sensorId, CollectionsMarshal.AsSpan(m_overlaps), capacity);
+        int count = b2Shape_GetSensorData(m_sensorId, CollectionsMarshal.AsSpan(m_sensorData), capacity);
         for (int i = 0; i < count; ++i)
         {
-            B2ShapeId shapeId = m_overlaps[i];
+            B2ShapeId shapeId = m_sensorData[i].visitorId;
             B2AABB aabb = b2Shape_GetAABB(shapeId);
             B2Vec2 point = b2AABB_Center(aabb);
             m_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);

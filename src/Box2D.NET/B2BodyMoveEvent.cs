@@ -16,9 +16,9 @@ namespace Box2D.NET
     /// @note If sleeping is disabled all dynamic and kinematic bodies will trigger move events.
     public struct B2BodyMoveEvent
     {
+        public object userData;
         public B2Transform transform;
         public B2BodyId bodyId;
-        public object userData;
         public bool fellAsleep;
     }
 }

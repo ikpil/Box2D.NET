@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Robustness;
 // Pyramid with heavy box on top
 public class HighMassRatio1 : Sample
 {
-    private static readonly int SampleIndex1 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio1", Create);
+    private static readonly int SampleHighMassRatio1 = SampleFactory.Shared.RegisterSample("Robustness", "HighMassRatio1", Create);
 
     private static Sample Create(SampleContext context)
     {

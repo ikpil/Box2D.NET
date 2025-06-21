@@ -113,17 +113,17 @@ public class B2ShapeTest
 
         {
             bool hit;
-            hit = b2PointInCircle(p1, ref circle);
+            hit = b2PointInCircle(ref circle, p1);
             Assert.That(hit, Is.EqualTo(true));
-            hit = b2PointInCircle(p2, ref circle);
+            hit = b2PointInCircle(ref circle, p2);
             Assert.That(hit, Is.EqualTo(false));
         }
 
         {
             bool hit;
-            hit = b2PointInPolygon(p1, ref box);
+            hit = b2PointInPolygon(ref box, p1);
             Assert.That(hit, Is.EqualTo(true));
-            hit = b2PointInPolygon(p2, ref box);
+            hit = b2PointInPolygon(ref box, p2);
             Assert.That(hit, Is.EqualTo(false));
         }
     }
@@ -134,7 +134,7 @@ public class B2ShapeTest
         B2RayCastInput input = new B2RayCastInput(new B2Vec2(-4.0f, 0.0f), new B2Vec2(8.0f, 0.0f), 1.0f);
 
         {
-            B2CastOutput output = b2RayCastCircle(ref input, ref circle);
+            B2CastOutput output = b2RayCastCircle(ref circle, ref input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -142,7 +142,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastPolygon(ref input, ref box);
+            B2CastOutput output = b2RayCastPolygon(ref box, ref input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -150,7 +150,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastSegment(ref input, ref segment, true);
+            B2CastOutput output = b2RayCastSegment(ref segment, ref input, true);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));

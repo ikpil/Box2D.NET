@@ -135,7 +135,7 @@ public class Weeble : Sample
         B2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
 
         B2Vec2 offset = new B2Vec2(0.05f, 0.0f);
-        m_draw.DrawSegment(worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
-        m_draw.DrawSegment(worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
+        m_draw.DrawLine(worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
+        m_draw.DrawLine(worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
     }
 }

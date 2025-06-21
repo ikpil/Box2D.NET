@@ -315,11 +315,11 @@ public class DynamicTree : Sample
 
             if (p.queryStamp == m_timeStamp || p.rayStamp == m_timeStamp)
             {
-                m_draw.DrawAABB(p.box, qc);
+                m_draw.DrawBounds(p.box, qc);
             }
             else
             {
-                m_draw.DrawAABB(p.box, c);
+                m_draw.DrawBounds(p.box, c);
             }
 
             float moveTest = RandomFloatRange(0.0f, 1.0f);
@@ -429,7 +429,7 @@ public class DynamicTree : Sample
 
             b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
-            m_draw.DrawAABB(box, B2HexColor.b2_colorWhite);
+            m_draw.DrawBounds(box, B2HexColor.b2_colorWhite);
         }
 
         // m_startPoint = {-1.0f, 0.5f};
@@ -443,7 +443,7 @@ public class DynamicTree : Sample
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
             B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
 
-            m_draw.DrawSegment(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
+            m_draw.DrawLine(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
             m_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 

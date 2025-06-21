@@ -47,13 +47,9 @@ namespace Box2D.NET
         // The time that a body must be still before it will go to sleep. In seconds.
         public const float B2_TIME_TO_SLEEP = 0.5f;
         
-        // The default joint constraint hertz
-        public const float B2_JOINT_CONSTRAINT_HERTZ = 60.0f;
-
-        // The default joint constraint damping ratio
-        public const float B2_JOINT_CONSTRAINT_DAMPING_RATIO = 0.0f;
-
-
+        // solver
+        public const int B2_MAX_CONTINUOUS_SENSOR_HITS = 8;
+        
         // collision
         // -----------------------------------------------------------------------------------------------------------------
         /// The maximum number of vertices on a convex polygon. Changing this affects performance even if you

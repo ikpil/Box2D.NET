@@ -78,7 +78,7 @@ public class Kinematic : Sample
             B2Rot rotation = b2MakeRot(2.0f * m_time);
 
             B2Vec2 axis = b2RotateVector(rotation, new B2Vec2(0.0f, 1.0f));
-            m_draw.DrawSegment(point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
+            m_draw.DrawLine(point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
             m_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorPlum);
 
             b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep);

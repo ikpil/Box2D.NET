@@ -183,11 +183,12 @@ namespace Box2D.NET
             if (def.isSensor)
             {
                 shape.sensorIndex = world.sensors.count;
-                B2Sensor sensor = new B2Sensor()
+                B2Sensor sensor = new B2Sensor
                 {
+                    hits = b2Array_Create<B2ShapeRef>(4),
                     overlaps1 = b2Array_Create<B2ShapeRef>(16),
                     overlaps2 = b2Array_Create<B2ShapeRef>(16),
-                    shapeId = shapeId,
+                    shapeId = shapeId
                 };
                 b2Array_Push(ref world.sensors, sensor);
             }
@@ -327,6 +328,7 @@ namespace Box2D.NET
                 }
 
                 // Destroy sensor
+                b2Array_Destroy(ref sensor.hits);
                 b2Array_Destroy(ref sensor.overlaps1);
                 b2Array_Destroy(ref sensor.overlaps2);
 
@@ -833,19 +835,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(ref localInput, ref shape.us.capsule);
+                    output = b2RayCastCapsule(ref shape.us.capsule, ref localInput);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, ref shape.us.circle);
+                    output = b2RayCastCircle(ref shape.us.circle, ref localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
+                    output = b2RayCastPolygon(ref shape.us.polygon, ref localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, ref shape.us.segment, false);
+                    output = b2RayCastSegment(ref shape.us.segment, ref localInput, false);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, ref shape.us.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref shape.us.chainSegment.segment, ref localInput, true);
                     break;
                 default:
                     return output;
@@ -871,19 +873,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2ShapeCastCapsule(ref localInput, ref shape.us.capsule);
+                    output = b2ShapeCastCapsule(ref shape.us.capsule, ref localInput);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(ref localInput, ref shape.us.circle);
+                    output = b2ShapeCastCircle(ref shape.us.circle, ref localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(ref localInput, ref shape.us.polygon);
+                    output = b2ShapeCastPolygon(ref shape.us.polygon, ref localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(ref localInput, ref shape.us.segment);
+                    output = b2ShapeCastSegment(ref shape.us.segment, ref localInput);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2ShapeCastSegment(ref localInput, ref shape.us.chainSegment.segment);
+                    output = b2ShapeCastSegment(ref shape.us.chainSegment.segment, ref localInput);
                     break;
                 default:
                     return output;
@@ -894,7 +896,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2PlaneResult b2CollideMover(B2Shape shape, B2Transform transform, ref B2Capsule mover)
+        public static B2PlaneResult b2CollideMover(ref B2Capsule mover, B2Shape shape, B2Transform transform)
         {
             B2Capsule localMover = new B2Capsule();
             localMover.center1 = b2InvTransformPoint(transform, mover.center1);
@@ -905,19 +907,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    result = b2CollideMoverAndCapsule(ref shape.us.capsule, ref localMover);
+                    result = b2CollideMoverAndCapsule(ref localMover, ref shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    result = b2CollideMoverAndCircle(ref shape.us.circle, ref localMover);
+                    result = b2CollideMoverAndCircle(ref localMover, ref shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    result = b2CollideMoverAndPolygon(ref shape.us.polygon, ref localMover);
+                    result = b2CollideMoverAndPolygon(ref localMover, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    result = b2CollideMoverAndSegment(ref shape.us.segment, ref localMover);
+                    result = b2CollideMoverAndSegment(ref localMover, ref shape.us.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    result = b2CollideMoverAndSegment(ref shape.us.chainSegment.segment, ref localMover);
+                    result = b2CollideMoverAndSegment(ref localMover, ref shape.us.chainSegment.segment);
                     break;
                 default:
                     return result;
@@ -1025,20 +1027,20 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2PointInCapsule(localPoint, ref shape.us.capsule);
+                    return b2PointInCapsule(ref shape.us.capsule, localPoint);
 
                 case B2ShapeType.b2_circleShape:
-                    return b2PointInCircle(localPoint, ref shape.us.circle);
+                    return b2PointInCircle(ref shape.us.circle, localPoint);
 
                 case B2ShapeType.b2_polygonShape:
-                    return b2PointInPolygon(localPoint, ref shape.us.polygon);
+                    return b2PointInPolygon(ref shape.us.polygon, localPoint);
 
                 default:
                     return false;
             }
         }
 
-// todo_erin untested
+        // todo_erin untested
         public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, ref B2RayCastInput input)
         {
             B2World world = b2GetWorld(shapeId.world0);
@@ -1056,23 +1058,23 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(ref localInput, ref shape.us.capsule);
+                    output = b2RayCastCapsule(ref shape.us.capsule, ref localInput);
                     break;
 
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(ref localInput, ref shape.us.circle);
+                    output = b2RayCastCircle(ref shape.us.circle, ref localInput);
                     break;
 
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(ref localInput, ref shape.us.segment, false);
+                    output = b2RayCastSegment(ref shape.us.segment, ref localInput, false);
                     break;
 
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref localInput, ref shape.us.polygon);
+                    output = b2RayCastPolygon(ref shape.us.polygon, ref localInput);
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(ref localInput, ref shape.us.chainSegment.segment, true);
+                    output = b2RayCastSegment(ref shape.us.chainSegment.segment, ref localInput, true);
                     break;
 
                 default:
@@ -1675,6 +1677,7 @@ namespace Box2D.NET
                     B2Shape shapeA = world.shapes.data[contact.shapeIdA];
                     B2Shape shapeB = world.shapes.data[contact.shapeIdB];
 
+                    contactData[index].contactId = new B2ContactId(contact.contactId + 1, shapeId.world0, 0, contact.generation);
                     contactData[index].shapeIdA = new B2ShapeId(shapeA.id + 1, shapeId.world0, shapeA.generation);
                     contactData[index].shapeIdB = new B2ShapeId(shapeB.id + 1, shapeId.world0, shapeB.generation);
 
@@ -1709,7 +1712,14 @@ namespace Box2D.NET
             return sensor.overlaps2.count;
         }
 
-        public static int b2Shape_GetSensorOverlaps(B2ShapeId shapeId, Span<B2ShapeId> overlaps, int capacity)
+        /// Get the overlap data for a sensor shape.
+        /// @param shapeId the id of a sensor shape
+        /// @param sensorData a user allocated array that is filled with the overlapping shapes (visitors)
+        /// @param capacity the capacity of overlappedShapes
+        /// @returns the number of elements filled in the provided array
+        /// @warning do not ignore the return value, it specifies the valid number of elements
+        /// @warning overlaps may contain destroyed shapes so use b2Shape_IsValid to confirm each overlap
+        public static int b2Shape_GetSensorData(B2ShapeId shapeId, Span<B2SensorData> sensorData, int capacity)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1726,15 +1736,25 @@ namespace Box2D.NET
             B2Sensor sensor = b2Array_Get(ref world.sensors, shape.sensorIndex);
 
             int count = b2MinInt(sensor.overlaps2.count, capacity);
-            ref readonly B2ShapeRef[] refs = ref sensor.overlaps2.data;
+            ReadOnlySpan<B2ShapeRef> refs = sensor.overlaps2.data;
             for (int i = 0; i < count; ++i)
             {
-                overlaps[i] = new B2ShapeId(refs[i].shapeId + 1, shapeId.world0, refs[i].generation);
+                B2ShapeId visitorId = new B2ShapeId(
+                    index1: refs[i].shapeId + 1,
+                    world0: shapeId.world0,
+                    generation: refs[i].generation
+                );
+
+                sensorData[i] = new B2SensorData(
+                    visitorId: visitorId,
+                    visitTransform: refs[i].transform
+                );
             }
 
             return count;
         }
 
+        /// Get the current world AABB
         public static B2AABB b2Shape_GetAABB(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
@@ -1747,7 +1767,8 @@ namespace Box2D.NET
             return shape.aabb;
         }
 
-        public static B2MassData b2Shape_GetMassData(B2ShapeId shapeId)
+        /// Compute the mass data for a shape
+        public static B2MassData b2Shape_ComputeMassData(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)

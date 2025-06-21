@@ -58,7 +58,7 @@ namespace Box2D.NET.Shared
                 jointDef.dampingRatio = 0.5f;
                 jointDef.@base.localFrameA.p = new B2Vec2(h, h);
                 jointDef.@base.localFrameB.p = new B2Vec2(offset, -h);
-                jointDef.@base.drawSize = 0.1f;
+                jointDef.@base.drawScale = 0.1f;
 
                 int bodyIndex = 0;
 

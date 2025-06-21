@@ -19,7 +19,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 // Shows how to make a rigid body character mover and use the pre-solve callback. In this
 // case the platform should get the pre-solve event, not the player.
-public class Platformer : Sample
+public class Platform : Sample
 {
     private static readonly int SamplePlatformer = SampleFactory.Shared.RegisterSample("Events", "Platformer", Create);
 
@@ -37,10 +37,10 @@ public class Platformer : Sample
 
     private static Sample Create(SampleContext context)
     {
-        return new Platformer(context);
+        return new Platform(context);
     }
 
-    public Platformer(SampleContext context) : base(context)
+    public Platform(SampleContext context) : base(context)
     {
         if (m_context.settings.restart == false)
         {
@@ -116,16 +116,16 @@ public class Platformer : Sample
         m_jumping = false;
     }
 
-    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
+    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
     {
-        Platformer platformer = context as Platformer;
-        return platformer.PreSolve(shapeIdA, shapeIdB, ref manifold);
+        Platform self = context as Platform;
+        return self.PreSolve(shapeIdA, shapeIdB, point, normal);
     }
 
     // This callback must be thread-safe. It may be called multiple times simultaneously.
     // Notice how this method is constant and doesn't change any data. It also
     // does not try to access any values in the world that may be changing, such as contact data.
-    private bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold)
+    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal)
     {
         B2_ASSERT(b2Shape_IsValid(shapeIdA));
         B2_ASSERT(b2Shape_IsValid(shapeIdB));
@@ -145,22 +145,8 @@ public class Platformer : Sample
             return true;
         }
 
-        B2Vec2 normal = manifold.normal;
         if (sign * normal.Y > 0.95f)
         {
-            return true;
-        }
-
-        float separation = 0.0f;
-        for (int i = 0; i < manifold.pointCount; ++i)
-        {
-            float s = manifold.points[i].separation;
-            separation = separation < s ? separation : s;
-        }
-
-        if (separation > 0.1f * m_radius)
-        {
-            // shallow overlap
             return true;
         }
 
@@ -171,7 +157,7 @@ public class Platformer : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
         float height = 100.0f;
         ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
@@ -261,23 +247,21 @@ public class Platformer : Sample
             m_jumpDelay = b2MaxFloat(0.0f, m_jumpDelay - 1.0f / m_context.settings.hertz);
         }
     }
-    
+
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         {
             Span<B2ContactData> contactData = stackalloc B2ContactData[1];
             int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
             DrawTextLine($"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
-        
+
 
         DrawTextLine("Movement: A/D/Space");
-        
+
 
         DrawTextLine($"Can jump = {m_canJump}");
-        
     }
-
 }

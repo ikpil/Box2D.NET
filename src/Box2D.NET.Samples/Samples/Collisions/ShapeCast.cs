@@ -209,7 +209,7 @@ public class ShapeCast : Sample
                 }
                 else
                 {
-                    m_draw.DrawSegment(p1, p2, color);
+                    m_draw.DrawLine(p1, p2, color);
                 }
             }
                 break;
@@ -391,7 +391,7 @@ public class ShapeCast : Sample
             if (output.fraction > 0.0f)
             {
                 m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
-                m_draw.DrawSegment(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+                m_draw.DrawLine(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
             }
             else
             {

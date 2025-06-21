@@ -227,7 +227,7 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
@@ -266,7 +266,7 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorWhite);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
             m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
@@ -310,7 +310,7 @@ public class BenchmarkCast : Sample
                 B2Vec2 origin = m_origins[m_drawIndex];
                 B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
-                m_draw.DrawAABB(aabb, B2HexColor.b2_colorWhite);
+                m_draw.DrawBounds(aabb, B2HexColor.b2_colorWhite);
             }
 
             for (int i = 0; i < drawResult.count; ++i)

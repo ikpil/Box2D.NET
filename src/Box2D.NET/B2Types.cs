@@ -21,7 +21,7 @@ namespace Box2D.NET
             def.gravity.Y = -10.0f;
             def.hitEventThreshold = 1.0f * b2_lengthUnitsPerMeter;
             def.restitutionThreshold = 1.0f * b2_lengthUnitsPerMeter;
-            def.maxContactPushSpeed = 3.0f * b2_lengthUnitsPerMeter;
+            def.contactSpeed = 3.0f * b2_lengthUnitsPerMeter;
             def.contactHertz = 30.0f;
             def.contactDampingRatio = 10.0f;
             

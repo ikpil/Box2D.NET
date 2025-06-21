@@ -183,8 +183,8 @@ public class ChainShape : Sample
     {
         base.UpdateGui();
 
-        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
-        m_draw.DrawSegment(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
+        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
+        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
 

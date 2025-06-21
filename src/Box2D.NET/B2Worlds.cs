@@ -208,7 +208,7 @@ namespace Box2D.NET
             world.hitEventThreshold = def.hitEventThreshold;
             world.restitutionThreshold = def.restitutionThreshold;
             world.maxLinearSpeed = def.maximumLinearSpeed;
-            world.maxContactPushSpeed = def.maxContactPushSpeed;
+            world.contactSpeed = def.contactSpeed;
             world.contactHertz = def.contactHertz;
             world.contactDampingRatio = def.contactDampingRatio;
 
@@ -264,6 +264,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < world.workerCount; ++i)
             {
+                world.taskContexts.data[i].sensorHits = b2Array_Create<B2SensorHit>(8);
                 world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].jointStateBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].enlargedSimBitSet = b2CreateBitSet(256);
@@ -292,6 +293,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < world.workerCount; ++i)
             {
+                b2Array_Destroy(ref world.taskContexts.data[i].sensorHits);
                 b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
@@ -331,6 +333,7 @@ namespace Box2D.NET
             int sensorCount = world.sensors.count;
             for (int i = 0; i < sensorCount; ++i)
             {
+                b2Array_Destroy(ref world.sensors.data[i].hits);
                 b2Array_Destroy(ref world.sensors.data[i].overlaps1);
                 b2Array_Destroy(ref world.sensors.data[i].overlaps2);
             }
@@ -662,7 +665,7 @@ namespace Box2D.NET
 
                         if (0 != (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
-                            B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactFullId, ref contactSim.manifold);
+                            B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactFullId);
                             b2Array_Push(ref world.contactBeginEvents, @event);
                         }
 
@@ -796,8 +799,6 @@ namespace Box2D.NET
             float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
             context.contactSoftness = b2MakeSoft(contactHertz, world.contactDampingRatio, context.h);
             context.staticSoftness = b2MakeSoft(2.0f * contactHertz, world.contactDampingRatio, context.h);
-
-            world.contactSpeed = world.maxContactPushSpeed / context.staticSoftness.massScale;
 
             context.restitutionThreshold = world.restitutionThreshold;
             context.maxLinearVelocity = world.maxLinearSpeed;
@@ -1892,7 +1893,7 @@ namespace Box2D.NET
 
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
-            world.maxContactPushSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
+            world.contactSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
         }
 
         public static void b2World_SetMaximumLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
@@ -2517,7 +2518,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2PlaneResult result = b2CollideMover(shape, transform, ref worldContext.mover);
+            B2PlaneResult result = b2CollideMover(ref worldContext.mover, shape, transform);
 
             // todo handle deep overlap
             if (result.hit && b2IsNormalized(result.plane.normal))
@@ -3324,6 +3325,5 @@ void b2World_Dump()
 
             return id.generation == contact.generation;
         }
-
     }
 }

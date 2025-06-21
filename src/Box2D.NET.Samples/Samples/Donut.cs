@@ -73,7 +73,7 @@ public struct Donut
         weldDef.angularDampingRatio = 0.0f;
         weldDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.5f * length);
         weldDef.@base.localFrameB.p = new B2Vec2(0.0f, -0.5f * length);
-        weldDef.@base.drawSize = 0.5f * scale;
+        weldDef.@base.drawScale = 0.5f * scale;
 
         B2BodyId prevBodyId = m_bodyIds[m_sides - 1];
         for (int i = 0; i < m_sides; ++i)

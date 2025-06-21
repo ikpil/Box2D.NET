@@ -102,12 +102,12 @@ public class UserConstraint : Sample
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                m_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
+                m_draw.DrawLine(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            m_draw.DrawSegment(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            m_draw.DrawLine(anchorA, anchorB, B2HexColor.b2_colorViolet);
             B2Vec2 axis = b2Normalize(deltaAnchor);
 
             B2Vec2 rB = b2Sub(anchorB, pB);

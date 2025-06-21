@@ -466,13 +466,6 @@ public class Sample : IDisposable
 
         m_context.draw.m_debugDraw.drawingBounds = m_camera.GetViewBounds();
         m_context.draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
-
-        // todo testing
-        // b2Transform t1 = {m_context.g_draw.m_debugDraw.drawingBounds.lowerBound, b2Rot_identity};
-        // b2Transform t2 = {m_context.g_draw.m_debugDraw.drawingBounds.upperBound, b2Rot_identity};
-        // m_context.g_draw.DrawSolidCircle(ref t1, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
-        // m_context.g_draw.DrawSolidCircle(ref t2, b2Vec2_zero, 1.0f, {1.0f, 0.0f, 0.0f, 1.0f});
-
         m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
         m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
         m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;

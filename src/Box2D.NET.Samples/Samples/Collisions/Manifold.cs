@@ -189,7 +189,7 @@ public class Manifold : Sample
 
             B2Vec2 p1 = mp.point;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
-            m_draw.DrawSegment(p1, p2, B2HexColor.b2_colorViolet);
+            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorViolet);
 
             if (m_showAnchors)
             {
@@ -285,7 +285,7 @@ public class Manifold : Sample
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
-            m_draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawLine(p1, p2, color1);
 
             m_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
@@ -369,7 +369,7 @@ public class Manifold : Sample
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
-            m_draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawLine(p1, p2, color1);
 
             p1 = b2TransformPoint(ref transform2, capsule.center1);
             p2 = b2TransformPoint(ref transform2, capsule.center2);
@@ -475,7 +475,7 @@ public class Manifold : Sample
 
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.point2);
-            m_draw.DrawSegment(p1, p2, color1);
+            m_draw.DrawLine(p1, p2, color1);
             m_draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
@@ -573,9 +573,9 @@ public class Manifold : Sample
             B2Vec2 g2 = b2TransformPoint(ref transform1, segment.ghost2);
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
-            m_draw.DrawSegment(g1, p1, B2HexColor.b2_colorLightGray);
-            m_draw.DrawSegment(p1, p2, color1);
-            m_draw.DrawSegment(p2, g2, B2HexColor.b2_colorLightGray);
+            m_draw.DrawLine(g1, p1, B2HexColor.b2_colorLightGray);
+            m_draw.DrawLine(p1, p2, color1);
+            m_draw.DrawLine(p2, g2, B2HexColor.b2_colorLightGray);
             m_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
 
             DrawManifold(ref m, transform1.p, transform2.p);
@@ -616,18 +616,18 @@ public class Manifold : Sample
                 B2Vec2 g2 = b2TransformPoint(ref transform1, segment1.ghost2);
                 B2Vec2 p1 = b2TransformPoint(ref transform1, segment1.segment.point1);
                 B2Vec2 p2 = b2TransformPoint(ref transform1, segment1.segment.point2);
-                m_draw.DrawSegment(p1, p2, color1);
+                m_draw.DrawLine(p1, p2, color1);
                 m_draw.DrawPoint(p1, 4.0f, color1);
                 m_draw.DrawPoint(p2, 4.0f, color1);
-                m_draw.DrawSegment(p2, g2, B2HexColor.b2_colorLightGray);
+                m_draw.DrawLine(p2, g2, B2HexColor.b2_colorLightGray);
             }
 
             {
                 B2Vec2 g1 = b2TransformPoint(ref transform1, segment2.ghost1);
                 B2Vec2 p1 = b2TransformPoint(ref transform1, segment2.segment.point1);
                 B2Vec2 p2 = b2TransformPoint(ref transform1, segment2.segment.point2);
-                m_draw.DrawSegment(g1, p1, B2HexColor.b2_colorLightGray);
-                m_draw.DrawSegment(p1, p2, color1);
+                m_draw.DrawLine(g1, p1, B2HexColor.b2_colorLightGray);
+                m_draw.DrawLine(p1, p2, color1);
                 m_draw.DrawPoint(p1, 4.0f, color1);
                 m_draw.DrawPoint(p2, 4.0f, color1);
             }
@@ -672,18 +672,18 @@ public class Manifold : Sample
                 B2Vec2 p1 = b2TransformPoint(ref transform1, segment1.segment.point1);
                 B2Vec2 p2 = b2TransformPoint(ref transform1, segment1.segment.point2);
                 // m_context.g_draw.DrawSegment(g1, p1, b2HexColor.b2_colorLightGray);
-                m_draw.DrawSegment(p1, p2, color1);
+                m_draw.DrawLine(p1, p2, color1);
                 m_draw.DrawPoint(p1, 4.0f, color1);
                 m_draw.DrawPoint(p2, 4.0f, color1);
-                m_draw.DrawSegment(p2, g2, B2HexColor.b2_colorLightGray);
+                m_draw.DrawLine(p2, g2, B2HexColor.b2_colorLightGray);
             }
 
             {
                 B2Vec2 g1 = b2TransformPoint(ref transform1, segment2.ghost1);
                 B2Vec2 p1 = b2TransformPoint(ref transform1, segment2.segment.point1);
                 B2Vec2 p2 = b2TransformPoint(ref transform1, segment2.segment.point2);
-                m_draw.DrawSegment(g1, p1, B2HexColor.b2_colorLightGray);
-                m_draw.DrawSegment(p1, p2, color1);
+                m_draw.DrawLine(g1, p1, B2HexColor.b2_colorLightGray);
+                m_draw.DrawLine(p1, p2, color1);
                 m_draw.DrawPoint(p1, 4.0f, color1);
                 m_draw.DrawPoint(p2, 4.0f, color1);
                 // m_context.g_draw.DrawSegment(p2, g2, b2HexColor.b2_colorLightGray);

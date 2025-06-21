@@ -485,13 +485,28 @@ namespace Box2D.NET
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
+                ref B2Manifold manifold = ref contactSim.manifold;
+                float bestSeparation = manifold.points[0].separation;
+                B2Vec2 bestPoint = manifold.points[0].point;
+
+                // Get deepest point
+                for (int i = 1; i < manifold.pointCount; ++i)
+                {
+                    float separation = manifold.points[i].separation;
+                    if (separation < bestSeparation)
+                    {
+                        bestSeparation = separation;
+                        bestPoint = manifold.points[i].point;
+                    }
+                }
+
                 // this call assumes thread safety
-                touching = world.preSolveFcn(shapeIdA, shapeIdB, ref contactSim.manifold, world.preSolveContext);
+                touching = world.preSolveFcn(shapeIdA, shapeIdB, bestPoint, manifold.normal, world.preSolveContext);
                 if (touching == false)
                 {
                     // disable contact
                     pointCount = 0;
-                    contactSim.manifold.pointCount = 0;
+                    manifold.pointCount = 0;
                 }
             }
 
@@ -627,32 +642,31 @@ namespace Box2D.NET
         }
 
 
-        /// Get manifold for a contact. The manifold may have no points if the contact is not touching.
-        public static B2Manifold b2Contact_GetManifold(B2ContactId contactId)
+        /// Get the data for a contact. The manifold may have no points if the contact is not touching.
+        public static B2ContactData b2Contact_GetData(B2ContactId contactId)
         {
             B2World world = b2GetWorld(contactId.world0);
             B2Contact contact = b2GetContactFullId(world, contactId);
             B2ContactSim contactSim = b2GetContactSim(world, contact);
-            return contactSim.manifold;
-        }
-
-        /// Get the shapes associated with a contact.
-        public static void b2Contact_GetShapeIds(B2ContactId contactId, out B2ShapeId shapeIdA, out B2ShapeId shapeIdB)
-        {
-            B2World world = b2GetWorld(contactId.world0);
-            B2Contact contact = b2GetContactFullId(world, contactId);
             B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
             B2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
-            shapeIdA = new B2ShapeId(
-                index1: shapeA.id + 1,
-                world0: contactId.world0,
-                generation: shapeA.generation
+
+            B2ContactData data = new B2ContactData(
+                contactId: contactId,
+                shapeIdA: new B2ShapeId(
+                    index1: shapeA.id + 1,
+                    world0: contactId.world0,
+                    generation: shapeA.generation
+                ),
+                shapeIdB: new B2ShapeId(
+                    index1: shapeB.id + 1,
+                    world0: contactId.world0,
+                    generation: shapeB.generation
+                ),
+                manifold: contactSim.manifold
             );
-            shapeIdB = new B2ShapeId(
-                index1: shapeB.id + 1,
-                world0: contactId.world0,
-                generation: shapeB.generation
-            );
+
+            return data;
         }
 
         /**@}*/
