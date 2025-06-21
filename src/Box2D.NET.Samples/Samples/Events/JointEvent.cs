@@ -12,7 +12,7 @@ using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Worlds;
 
-namespace Box2D.NET.Samples.Samples.Joints;
+namespace Box2D.NET.Samples.Samples.Events;
 
 // This sample shows how to break joints when the internal reaction force becomes large. Instead of polling, this uses events.
 public class JointEvent : Sample

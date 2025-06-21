@@ -14,7 +14,7 @@ using static Box2D.NET.B2Manifolds;
 using static Box2D.NET.B2Collisions;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2ConstraintGraphs;
-
+using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET
 {
@@ -201,6 +201,7 @@ namespace Box2D.NET
 
             B2Contact contact = b2Array_Get(ref world.contacts, contactId);
             contact.contactId = contactId;
+            contact.generation += 1;
             contact.setIndex = setIndex;
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = set.contactSims.count;
@@ -326,7 +327,18 @@ namespace Box2D.NET
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
 
-                B2ContactEndTouchEvent @event = new B2ContactEndTouchEvent(shapeIdA, shapeIdB);
+                B2ContactId contactId1 = new B2ContactId(
+                    index1: contact.contactId + 1,
+                    world0: world.worldId,
+                    padding: 0,
+                    generation: contact.generation
+                );
+
+                B2ContactEndTouchEvent @event = new B2ContactEndTouchEvent(
+                    shapeIdA: shapeIdA,
+                    shapeIdB: shapeIdB,
+                    contactId: contactId1
+                );
                 b2Array_Push(ref world.contactEndEvents[world.endEventArrayIndex], @event);
             }
 
@@ -405,11 +417,11 @@ namespace Box2D.NET
                 }
             }
 
+            // Free contact and id (preserve generation)
             contact.contactId = B2_NULL_INDEX;
             contact.setIndex = B2_NULL_INDEX;
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = B2_NULL_INDEX;
-
             b2FreeId(world.contactIdPool, contactId);
 
             if (wakeBodies && touching)
@@ -605,5 +617,44 @@ namespace Box2D.NET
             B2SimplexCache cache = new B2SimplexCache();
             return fcn(shapeA, transformA, shapeB, transformB, ref cache);
         }
+
+        public static B2Contact b2GetContactFullId(B2World world, B2ContactId contactId)
+        {
+            int id = contactId.index1 - 1;
+            B2Contact contact = b2Array_Get(ref world.contacts, id);
+            B2_ASSERT(contact.contactId == id && contact.generation == contactId.generation);
+            return contact;
+        }
+
+
+        /// Get manifold for a contact. The manifold may have no points if the contact is not touching.
+        public static B2Manifold b2Contact_GetManifold(B2ContactId contactId)
+        {
+            B2World world = b2GetWorld(contactId.world0);
+            B2Contact contact = b2GetContactFullId(world, contactId);
+            B2ContactSim contactSim = b2GetContactSim(world, contact);
+            return contactSim.manifold;
+        }
+
+        /// Get the shapes associated with a contact.
+        public static void b2Contact_GetShapeIds(B2ContactId contactId, out B2ShapeId shapeIdA, out B2ShapeId shapeIdB)
+        {
+            B2World world = b2GetWorld(contactId.world0);
+            B2Contact contact = b2GetContactFullId(world, contactId);
+            B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
+            B2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
+            shapeIdA = new B2ShapeId(
+                index1: shapeA.id + 1,
+                world0: contactId.world0,
+                generation: shapeA.generation
+            );
+            shapeIdB = new B2ShapeId(
+                index1: shapeB.id + 1,
+                world0: contactId.world0,
+                generation: shapeB.generation
+            );
+        }
+
+        /**@}*/
     }
 }

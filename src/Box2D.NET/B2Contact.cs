@@ -34,6 +34,10 @@ namespace Box2D.NET
 
         // b2ContactFlags
         public uint flags;
+        
+        // This is monotonically advanced when a contact is allocated in this slot
+        // Used to check for invalid b2ContactId
+        public uint generation;
 
         public bool isMarked;
     }

@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Box2D.NET
@@ -41,6 +42,8 @@ namespace Box2D.NET
         public static readonly B2ShapeId b2_nullShapeId = new B2ShapeId(0, 0, 0);
         public static readonly B2ChainId b2_nullChainId = new B2ChainId(0, 0, 0);
         public static readonly B2JointId b2_nullJointId = new B2JointId(0, 0, 0);
+        public static readonly B2ContactId b2_nullContactId = new B2ContactId(0, 0, 0, 0);
+
 
         /// Macro to determine if any id is null.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,12 +77,18 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2JointId id) => id.index1 != 0;
 
-        /// Compare two ids for equality. Doesn't work for b2WorldId.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool B2_IS_NON_NULL(B2ContactId id) => id.index1 != 0;
+
+        /// Compare two ids for equality. Doesn't work for b2WorldId. Don't mix types.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2BodyId id1, B2BodyId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool B2_ID_EQUALS(B2ContactId id1, B2ContactId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         /// Store a world id into a uint32_t.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -156,6 +165,26 @@ namespace Box2D.NET
             return id;
         }
 
+        /// Store a contact id into 16 bytes
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void b2StoreContactId(B2ContactId id, Span<uint> values)
+        {
+            values[0] = (uint)id.index1;
+            values[1] = (uint)id.world0;
+            values[2] = (uint)id.generation;
+        }
+
+        /// Load a two uint64_t into a contact id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2ContactId b2LoadContactId(Span<uint> values)
+        {
+            B2ContactId id = new B2ContactId((int)values[0], (ushort)values[1], 0, values[2]);
+            // id.index1 = (int32_t)values[0];
+            // id.world0 = (uint16_t)values[1];
+            // id.padding = 0;
+            // id.generation = (uint32_t)values[2];
+            return id;
+        }
 
         /**@}*/
     }

@@ -19,7 +19,7 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class FootSensor : Sample
 {
-    private static readonly int SampleCharacterSensor = SampleFactory.Shared.RegisterSample("Events", "Foot Sensor", Create);
+    private static readonly int SampleFootSensor = SampleFactory.Shared.RegisterSample("Events", "Foot Sensor", Create);
 
     public const uint GROUND = 0x00000001;
     public const uint PLAYER = 0x00000002;

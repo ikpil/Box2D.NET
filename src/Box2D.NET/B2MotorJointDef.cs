@@ -5,7 +5,7 @@
 namespace Box2D.NET
 {
     /// A motor joint is used to control the relative motion between two bodies
-    ///
+    /// You may move local frame A to change the target transform.
     /// A typical usage is to control the movement of a dynamic body with respect to the ground.
     /// @ingroup motor_joint
     public struct B2MotorJointDef

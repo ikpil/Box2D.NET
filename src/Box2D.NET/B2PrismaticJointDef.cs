@@ -6,10 +6,8 @@ namespace Box2D.NET
 {
     /// Prismatic joint definition
     ///
-    /// This requires defining a line of motion using an axis and an anchor point.
-    /// The definition uses local anchor points and a local axis so that the initial
-    /// configuration can violate the constraint slightly. The joint translation is zero
-    /// when the local anchor points coincide in world space.
+    /// Body B may slide along the x-axis in local frame A. Body B cannot rotate relative to body A.
+    /// The joint translation is zero when the local frame origins coincide in world space.
     /// @ingroup prismatic_joint
     public struct B2PrismaticJointDef
     {
