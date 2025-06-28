@@ -48,7 +48,9 @@ public class CastWorld : Sample
     private int m_bodyIndex;
     private B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
     private ShapeUserData[] m_userData = new ShapeUserData[e_maxCount];
-    private B2Polygon[] m_polygons = new B2Polygon[4];
+    private B2Polygon[] m_polygons = new B2Polygon[2];
+    private B2Polygon m_box;
+
     private B2Capsule m_capsule;
     private B2Circle m_circle;
     private B2Segment m_segment;
@@ -96,16 +98,10 @@ public class CastWorld : Sample
         }
 
         {
-            B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f) };
-            B2Hull hull = b2ComputeHull(vertices, 3);
-            m_polygons[0] = b2MakePolygon(ref hull, 0.0f);
-        }
-
-        {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.1f, 0.0f), new B2Vec2(0.1f, 0.0f), new B2Vec2(0.0f, 1.5f) };
             B2Hull hull = b2ComputeHull(vertices, 3);
-            m_polygons[1] = b2MakePolygon(ref hull, 0.0f);
-            m_polygons[1].radius = 0.5f;
+            m_polygons[0] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[0].radius = 0.5f;
         }
 
         {
@@ -126,10 +122,10 @@ public class CastWorld : Sample
             };
 
             B2Hull hull = b2ComputeHull(vertices, 8);
-            m_polygons[2] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[1] = b2MakePolygon(ref hull, 0.0f);
         }
 
-        m_polygons[3] = b2MakeBox(0.5f, 0.5f);
+        m_box = b2MakeBox(0.5f, 0.5f);
         for (int i = 0; i < m_userData.Length; ++i)
         {
             m_userData[i] = new ShapeUserData();
@@ -204,21 +200,35 @@ public class CastWorld : Sample
             m_userData[m_bodyIndex].ignore = true;
         }
 
-        if (index < 4)
+        if (index == 0)
         {
-            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_polygons[index]);
+            int polygonIndex = (m_bodyIndex & 1);
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_polygons[polygonIndex]);
         }
-        else if (index == 4)
+        else if (index == 1)
+        {
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_box);
+        }
+        else if (index == 2)
         {
             b2CreateCircleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_circle);
         }
-        else if (index == 5)
+        else if (index == 3)
         {
             b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_capsule);
         }
-        else
+        else if (index == 4)
         {
             b2CreateSegmentShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_segment);
+        }
+        else
+        {
+            B2Vec2[] points = [new B2Vec2(1.0f, 0.0f), new B2Vec2(-1.0f, 0.0f), new B2Vec2(-1.0f, -1.0f), new B2Vec2(1.0f, -1.0f)];
+            B2ChainDef chainDef = b2DefaultChainDef();
+            chainDef.points = points;
+            chainDef.count = 4;
+            chainDef.isLoop = true;
+            b2CreateChain(m_bodyIds[m_bodyIndex], ref chainDef);
         }
 
         m_bodyIndex = (m_bodyIndex + 1) % e_maxCount;
@@ -321,47 +331,42 @@ public class CastWorld : Sample
             }
         }
 
-        if (ImGui.Button("Polygon 1"))
+        if (ImGui.Button("Polygon"))
             Create(0);
+
         ImGui.SameLine();
-        if (ImGui.Button("10x##Poly1"))
+        if (ImGui.Button("10x##Poly"))
             CreateN(0, 10);
 
-        if (ImGui.Button("Polygon 2"))
+        if (ImGui.Button("Box"))
             Create(1);
         ImGui.SameLine();
-        if (ImGui.Button("10x##Poly2"))
+        if (ImGui.Button("10x##Box"))
             CreateN(1, 10);
 
-        if (ImGui.Button("Polygon 3"))
+        if (ImGui.Button("Circle"))
             Create(2);
         ImGui.SameLine();
-        if (ImGui.Button("10x##Poly3"))
+        if (ImGui.Button("10x##Circle"))
             CreateN(2, 10);
 
-        if (ImGui.Button("Box"))
+        if (ImGui.Button("Capsule"))
             Create(3);
         ImGui.SameLine();
-        if (ImGui.Button("10x##Box"))
+        if (ImGui.Button("10x##Capsule"))
             CreateN(3, 10);
 
-        if (ImGui.Button("Circle"))
+        if (ImGui.Button("Segment"))
             Create(4);
         ImGui.SameLine();
-        if (ImGui.Button("10x##Circle"))
+        if (ImGui.Button("10x##Segment"))
             CreateN(4, 10);
 
-        if (ImGui.Button("Capsule"))
+        if (ImGui.Button("Chain"))
             Create(5);
         ImGui.SameLine();
-        if (ImGui.Button("10x##Capsule"))
+        if (ImGui.Button("10x##Chain"))
             CreateN(5, 10);
-
-        if (ImGui.Button("Segment"))
-            Create(6);
-        ImGui.SameLine();
-        if (ImGui.Button("10x##Segment"))
-            CreateN(6, 10);
 
         if (ImGui.Button("Destroy Shape"))
         {
@@ -420,7 +425,7 @@ public class CastWorld : Sample
             B2Transform transform = new B2Transform(m_rayStart, b2MakeRot(m_angle));
             B2Circle circle = new B2Circle(m_rayStart, m_castRadius);
             B2Capsule capsule = new B2Capsule(b2TransformPoint(ref transform, new B2Vec2(-0.25f, 0.0f)), b2TransformPoint(ref transform, new B2Vec2(0.25f, 0.0f)), m_castRadius);
-            B2Polygon box = b2MakeOffsetRoundedBox(0.25f, 0.5f, transform.p, transform.q, m_castRadius);
+            B2Polygon box = b2MakeOffsetRoundedBox(0.125f, 0.25f, transform.p, transform.q, m_castRadius);
 
             B2ShapeProxy proxy = new B2ShapeProxy();
             if (m_castType == CastType.e_rayCast)
@@ -480,22 +485,22 @@ public class CastWorld : Sample
             }
             else
             {
-                B2Transform shiftedTransform = new B2Transform(b2Add(transform.p, rayTranslation), transform.q);
-                m_draw.DrawLine(m_rayStart, m_rayEnd, color2);
+                m_context.draw.DrawLine(m_rayStart, m_rayEnd, color2);
+                B2Transform shiftedTransform = new B2Transform(rayTranslation, b2Rot_identity);
 
                 if (m_castType == CastType.e_circleCast)
                 {
-                    m_draw.DrawSolidCircle(ref shiftedTransform, b2Vec2_zero, m_castRadius, B2HexColor.b2_colorGray);
+                    m_context.draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorGray);
                 }
                 else if (m_castType == CastType.e_capsuleCast)
                 {
-                    B2Vec2 p1 = b2Add(b2TransformPoint(ref transform, capsule.center1), rayTranslation);
-                    B2Vec2 p2 = b2Add(b2TransformPoint(ref transform, capsule.center2), rayTranslation);
-                    m_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                    B2Vec2 p1 = capsule.center1 + rayTranslation;
+                    B2Vec2 p2 = capsule.center2 + rayTranslation;
+                    m_context.draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    m_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                    m_context.draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }
