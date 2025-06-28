@@ -860,6 +860,13 @@ namespace Box2D.NET
 
         public static B2CastOutput b2ShapeCastShape(ref B2ShapeCastInput input, B2Shape shape, B2Transform transform)
         {
+            B2CastOutput output = new B2CastOutput();
+
+            if (input.proxy.count == 0)
+            {
+                return output;
+            }
+
             B2ShapeCastInput localInput = input;
 
             for (int i = 0; i < localInput.proxy.count; ++i)
@@ -869,7 +876,6 @@ namespace Box2D.NET
 
             localInput.translation = b2InvRotateVector(transform.q, input.translation);
 
-            B2CastOutput output = new B2CastOutput();
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
@@ -885,7 +891,27 @@ namespace Box2D.NET
                     output = b2ShapeCastSegment(ref shape.us.segment, ref localInput);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
+                {
+                    // Check for back side collision
+                    B2Vec2 approximateCentroid = localInput.proxy.points[0];
+                    for (int i = 1; i < localInput.proxy.count; ++i)
+                    {
+                        approximateCentroid = b2Add(approximateCentroid, localInput.proxy.points[i]);
+                    }
+
+                    approximateCentroid = b2MulSV(1.0f / localInput.proxy.count, approximateCentroid);
+
+                    B2Vec2 edge = b2Sub(shape.us.chainSegment.segment.point2, shape.us.chainSegment.segment.point1);
+                    B2Vec2 r = b2Sub(approximateCentroid, shape.us.chainSegment.segment.point1);
+
+                    if (b2Cross(r, edge) < 0.0f)
+                    {
+                        // Shape cast starts behind
+                        return output;
+                    }
+
                     output = b2ShapeCastSegment(ref shape.us.chainSegment.segment, ref localInput);
+                }
                     break;
                 default:
                     return output;
