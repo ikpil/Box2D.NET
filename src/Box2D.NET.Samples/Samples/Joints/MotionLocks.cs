@@ -4,6 +4,7 @@
 
 using System.Numerics;
 using ImGuiNET;
+using Silk.NET.GLFW;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Geometries;
@@ -14,24 +15,24 @@ using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
-// This test ensures joints work correctly with bodies that have fixed rotation
-public class FixedRotation : Sample
+// This test ensures joints work correctly with bodies that have motion locks
+public class MotionLocks : Sample
 {
-    private static readonly int SampleFixedRotation = SampleFactory.Shared.RegisterSample("Joints", "Fixed Rotation", Create);
+    private static readonly int SampleMotionLocks = SampleFactory.Shared.RegisterSample("Joints", "Motion Locks", Create);
 
     public const int e_count = 6;
 
     private B2BodyId m_groundId;
     private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
     private B2JointId[] m_jointIds = new B2JointId[e_count];
-    private bool m_fixedRotation;
+    private B2MotionLocks m_motionLocks;
 
     private static Sample Create(SampleContext context)
     {
-        return new FixedRotation(context);
+        return new MotionLocks(context);
     }
 
-    public FixedRotation(SampleContext context) : base(context)
+    public MotionLocks(SampleContext context) : base(context)
     {
         if (m_context.settings.restart == false)
         {
@@ -41,7 +42,7 @@ public class FixedRotation : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         m_groundId = b2CreateBody(m_worldId, ref bodyDef);
-        m_fixedRotation = true;
+        m_motionLocks = new B2MotionLocks(false, false, true);
 
         for (int i = 0; i < e_count; ++i)
         {
@@ -72,7 +73,7 @@ public class FixedRotation : Sample
         B2Vec2 position = new B2Vec2(-12.5f, 10.0f);
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.fixedRotation = m_fixedRotation;
+        bodyDef.motionLocks = m_motionLocks;
 
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
 
@@ -116,7 +117,7 @@ public class FixedRotation : Sample
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = position;
             jointDef.maxForce = 200.0f;
-            jointDef.maxTorque = 20.0f;
+            jointDef.maxTorque = 200.0f;
             m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
@@ -224,20 +225,52 @@ public class FixedRotation : Sample
     {
         base.UpdateGui();
 
-        float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        float fontSize = ImGui.GetFontSize();
+        float height = 8.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
-        ImGui.Begin("Fixed Rotation", ImGuiWindowFlags.NoResize);
+        ImGui.Begin("Motion Locks", ImGuiWindowFlags.NoResize);
 
-        if (ImGui.Checkbox("Fixed Rotation", ref m_fixedRotation))
+        if (ImGui.Checkbox("Lock Linear X", ref m_motionLocks.linearX))
         {
             for (int i = 0; i < e_count; ++i)
             {
-                b2Body_SetFixedRotation(m_bodyIds[i], m_fixedRotation);
+                b2Body_SetMotionLocks(m_bodyIds[i], m_motionLocks);
+                b2Body_SetAwake(m_bodyIds[i], true);
+            }
+        }
+
+        if (ImGui.Checkbox("Lock Linear Y", ref m_motionLocks.linearY))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                b2Body_SetMotionLocks(m_bodyIds[i], m_motionLocks);
+                b2Body_SetAwake(m_bodyIds[i], true);
+            }
+        }
+
+        if (ImGui.Checkbox("Lock Angular Z", ref m_motionLocks.angularZ))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                b2Body_SetMotionLocks(m_bodyIds[i], m_motionLocks);
+                b2Body_SetAwake(m_bodyIds[i], true);
             }
         }
 
         ImGui.End();
+    }
+
+    public override void Step()
+    {
+        base.Step();
+
+        if (GetKey(Keys.L) == InputAction.Press)
+        {
+            b2Body_ApplyLinearImpulseToCenter(m_bodyIds[0], new B2Vec2(
+                100.0f, 0.0f
+            ), true);
+        }
     }
 }

@@ -2,9 +2,12 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
+
 namespace Box2D.NET
 {
     // Shifted to be distinct from b2ContactFlags
+    [Flags]
     public enum B2ContactSimFlags
     {
         // Set when the shapes are touching

@@ -58,7 +58,7 @@ public class PixelImperfect : Sample
             //ballShapeDef.restitution = 1.f;
             b2CreatePolygonShape(m_ballId, ref ballShapeDef, ref ballShape);
             b2Body_SetLinearVelocity(m_ballId, new B2Vec2(0.0f, -5.0f));
-            b2Body_SetFixedRotation(m_ballId, true);
+            b2Body_SetMotionLocks(m_ballId, new B2MotionLocks(false, false, true));
         }
     }
 
@@ -73,10 +73,9 @@ public class PixelImperfect : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
         DrawTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
-        
     }
 }

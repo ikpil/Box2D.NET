@@ -81,9 +81,9 @@ public class RevoluteJoint : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.q = b2MakeRot( 0.5f * B2_PI );
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdA, pivot );
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
+            jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.targetAngle = B2_PI * m_targetDegrees / 180.0f;
             jointDef.enableSpring = m_enableSpring;
             jointDef.hertz = m_hertz;
@@ -96,8 +96,8 @@ public class RevoluteJoint : Sample
             jointDef.enableLimit = m_enableLimit;
 
             m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
-            
-            b2Joint_SetConstraintTuning( m_jointId1, 120.0f, 0.0f );
+
+            b2Joint_SetConstraintTuning(m_jointId1, 120.0f, 0.0f);
         }
 
         {
@@ -130,8 +130,8 @@ public class RevoluteJoint : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = body;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdA, pivot );
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint( jointDef.@base.bodyIdB, pivot );
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.lowerAngle = -0.25f * B2_PI;
             jointDef.upperAngle = 0.0f * B2_PI;
             jointDef.enableLimit = true;
@@ -147,9 +147,10 @@ public class RevoluteJoint : Sample
     {
         base.UpdateGui();
 
-        float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 8.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(8.0f * fontSize, height));
 
         ImGui.Begin("Revolute Joint", ImGuiWindowFlags.NoResize);
 

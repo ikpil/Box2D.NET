@@ -100,9 +100,10 @@ public class BenchmarkShapeDistance : Sample
 
     public override void UpdateGui()
     {
-        float height = 80.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(220.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 5.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(17.0f * fontSize, height));
         ImGui.Begin("Benchmark: Shape Distance", ImGuiWindowFlags.NoResize);
 
         ImGui.SliderInt("draw index", ref m_drawIndex, 0, m_count - 1);

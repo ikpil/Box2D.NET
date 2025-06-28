@@ -25,7 +25,7 @@ using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2BoardPhases;
 using static Box2D.NET.B2Solvers;
-
+using static Box2D.NET.B2Ids;
 
 namespace Box2D.NET
 {
@@ -213,6 +213,9 @@ namespace Box2D.NET
         {
             B2_ASSERT(b2IsValidTransform(def.localFrameA));
             B2_ASSERT(b2IsValidTransform(def.localFrameB));
+            B2_ASSERT(world.worldId == def.bodyIdA.world0);
+            B2_ASSERT(world.worldId == def.bodyIdB.world0);
+            B2_ASSERT(B2_ID_EQUALS(def.bodyIdA, def.bodyIdB) == false);
 
             B2Body bodyA = b2GetBodyFullId(world, def.bodyIdA);
             B2Body bodyB = b2GetBodyFullId(world, def.bodyIdB);

@@ -41,7 +41,6 @@ public class SampleApp
     private SampleContext _context;
     private bool s_rightMouseDown = false;
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
-    private float s_fontScale = 1.0f;
     private float s_framebufferScale = 1.0f;
     private float _frameTime = 0.0f;
 
@@ -100,7 +99,9 @@ public class SampleApp
                 }
                 else
                 {
-                    _context.glfw.GetMonitorContentScale(primaryMonitor, out s_fontScale, out s_fontScale);
+                    float uiScale = 1.0f;
+                    _context.glfw.GetMonitorContentScale(primaryMonitor, out uiScale, out uiScale);
+                    _context.settings.uiScale = uiScale;
                 }
             }
         }
@@ -109,7 +110,7 @@ public class SampleApp
         bool fullscreen = false;
         if (fullscreen)
         {
-            options.Size = new Vector2D<int>((int)(1920), (int)(1080));
+            options.Size = new Vector2D<int>(1920, 1080);
             //_context.g_mainWindow = _context.g_glfw.CreateWindow((int)(1920 ), (int)(1080 ), buffer, _ctx.g_glfw.GetPrimaryMonitor(), null);
         }
         else
@@ -194,15 +195,6 @@ public class SampleApp
             {
                 Logger.Information("Failed to open GLFW _ctx.g_mainWindow.");
                 return;
-            }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                //_context.glfw.GetWindowContentScale(_context.window, out s_framebufferScale, out s_framebufferScale);
-            }
-            else
-            {
-                //_context.glfw.GetWindowContentScale(_context.window, out s_fontScale, out s_fontScale);
             }
 
             _context.glfw.MakeContextCurrent(_context.window);
@@ -302,7 +294,7 @@ public class SampleApp
             // #todo restore all drawing settings that may have been overridden by a sample
             _context.settings.subStepCount = 4;
             _context.settings.drawJoints = true;
-            _context.settings.useCameraBounds = false;
+            _context.settings.useCameraBounds = true;
 
             s_sample?.Dispose();
             s_sample = null;
@@ -485,25 +477,30 @@ public class SampleApp
             return;
         }
 
-
         // for windows : Microsoft Visual C++ Redistributable Package
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
         var imGuiFontConfig = new ImGuiFontConfig(fontPath, 15, null);
         _imgui = new ImGuiController(_context.gl, _window, _input, imGuiFontConfig);
 
-        //ImGui.GetStyle().ScaleAllSizes(2);
-        //imGuiIo.FontGlobalScale = 2.0f;
+        ImGui.GetFontSize();
+        ImGui.GetStyle().ScaleAllSizes(_context.settings.uiScale);
 
-        // var imGuiIo = ImGui.GetIO();
-        // var s = new ImFontConfig();
-        // ImFontConfigPtr fontConfig = new ImFontConfigPtr(&s);
-        // fontConfig.RasterizerMultiply = s_fontScale * s_framebufferScale;
-        // _context.draw.m_smallFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 14.0f * s_fontScale, fontConfig, IntPtr.Zero);
-        // _context.draw.m_regularFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 18.0f * s_fontScale, fontConfig, IntPtr.Zero);
-        // _context.draw.m_mediumFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 40.0f * s_fontScale, fontConfig, IntPtr.Zero);
-        // _context.draw.m_largeFont = imGuiIo.Fonts.AddFontFromFileTTF(fontPath, 64.0f * s_fontScale, fontConfig, IntPtr.Zero);
+        unsafe
+        {
+            // ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+            // fontConfig.RasterizerMultiply = _context.settings.uiScale * s_framebufferScale;
+            //
+            // float regularSize = MathF.Floor(13.0f * _context.settings.uiScale);
+            // float mediumSize = MathF.Floor(40.0f * _context.settings.uiScale);
+            // float largeSize = MathF.Floor(64.0f * _context.settings.uiScale);
+            //
+            // var io = ImGui.GetIO();
+            //_context.draw.m_regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize, fontConfig);
+            // _context.draw.m_mediumFont = io.Fonts.AddFontFromFileTTF(fontPath, mediumSize, fontConfig);
+            // _context.draw.m_largeFont = io.Fonts.AddFontFromFileTTF(fontPath, largeSize, fontConfig);
 
-        //imGuiIo.FontDefault = _context.draw.m_smallFont;
+            //io.FontDefault = _context.draw.m_regularFont;
+        }
     }
 
     public void DestroyUI()
@@ -726,11 +723,12 @@ public class SampleApp
     {
         int maxWorkers = (int)(Environment.ProcessorCount * 1.5f);
 
-        float menuWidth = 180.0f;
+        float fontSize = ImGui.GetFontSize();
+        float menuWidth = 13.0f * fontSize;
         if (_context.draw.m_showUI)
         {
-            ImGui.SetNextWindowPos(new Vector2(_context.camera.m_width - menuWidth - 10.0f, 10.0f));
-            ImGui.SetNextWindowSize(new Vector2(menuWidth, _context.camera.m_height - 20.0f));
+            ImGui.SetNextWindowPos(new Vector2(_context.camera.m_width - menuWidth - 0.5f * fontSize, 0.5f * fontSize));
+            ImGui.SetNextWindowSize(new Vector2(menuWidth, _context.camera.m_height - fontSize));
 
             ImGui.Begin("Tools", ref _context.draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 

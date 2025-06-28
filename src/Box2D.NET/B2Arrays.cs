@@ -23,6 +23,16 @@ namespace Box2D.NET
     // Cons
     // - cannot debug
     // - breaks code navigation
+    
+    // The fragmentation problem with factor 2:
+    // When you double capacity, the new allocation is larger than the sum of all previous allocations:
+    //
+    // 1st allocation: 8 bytes
+    // 2nd allocation: 16 bytes
+    // 3rd allocation: 32 bytes (larger than 8 + 16 = 24)
+    //
+    // This means the memory freed from previous allocations can never be reused for future expansions
+    // of the same array. The allocator must always find fresh memory.
 
     // todo_erin consider code-gen: https://github.com/IbrahimHindawi/haikal
     public static class B2Arrays

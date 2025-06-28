@@ -24,7 +24,7 @@ namespace Box2D.NET
             def.contactSpeed = 3.0f * b2_lengthUnitsPerMeter;
             def.contactHertz = 30.0f;
             def.contactDampingRatio = 10.0f;
-            
+
             // 400 meters per second, faster than the speed of sound
             def.maximumLinearSpeed = 400.0f * b2_lengthUnitsPerMeter;
             def.enableSleep = true;
@@ -88,7 +88,7 @@ namespace Box2D.NET
 
             return material;
         }
-        
+
         /// Use this to initialize your chain definition
         /// @ingroup shape
         public static B2ChainDef b2DefaultChainDef()
@@ -165,6 +165,11 @@ namespace Box2D.NET
             draw.DrawTransformFcn = b2EmptyDrawTransform;
             draw.DrawPointFcn = b2EmptyDrawPoint;
             draw.DrawStringFcn = b2EmptyDrawString;
+
+            draw.drawingBounds.lowerBound = new B2Vec2(-float.MaxValue, -float.MaxValue);
+            draw.drawingBounds.upperBound = new B2Vec2(float.MaxValue, float.MaxValue);
+            draw.useDrawingBounds = true;
+
             return draw;
         }
     }

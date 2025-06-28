@@ -21,7 +21,7 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 public class BenchmarkBarrel : Sample
 {
     private static readonly int SampleBenchmarkBarrel = SampleFactory.Shared.RegisterSample("Benchmark", "Barrel", Create);
-    
+
     public enum ShapeType
     {
         e_circleShape = 0,
@@ -309,10 +309,12 @@ public class BenchmarkBarrel : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(220.0f, height));
+
+        float fontSize = ImGui.GetFontSize();
+        float height = 6.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(15.0f * fontSize, height));
+
         ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
@@ -332,7 +334,7 @@ public class BenchmarkBarrel : Sample
         {
             changed = true;
         }
-            
+
         m_shapeType = (ShapeType)shapeType;
 
         if (ImGui.Button("Reset Scene"))

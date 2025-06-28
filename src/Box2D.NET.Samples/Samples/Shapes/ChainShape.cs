@@ -179,18 +179,24 @@ public class ChainShape : Sample
         m_stepCount = 0;
     }
 
-    public override void UpdateGui()
+    public override void Draw(Settings settings)
     {
-        base.UpdateGui();
-
+        base.Draw(settings);
+        
         m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
         m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
+    }
 
+    public override void UpdateGui()
+    {
+        base.UpdateGui();
+
+        float fontSize = ImGui.GetFontSize();
         float height = 155.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( new Vector2( 240.0f, height ) );
 
         ImGui.Begin("Chain Shape", ImGuiWindowFlags.NoResize);
 

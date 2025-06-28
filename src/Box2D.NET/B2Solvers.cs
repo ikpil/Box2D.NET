@@ -153,15 +153,30 @@ namespace Box2D.NET
                 {
                     float ratio = maxLinearSpeed / b2Length(v);
                     v = b2MulSV(ratio, v);
-                    sim.isSpeedCapped = true;
+                    sim.flags |= (int)B2BodyFlags.b2_isSpeedCapped;
                 }
 
                 // Clamp to max angular speed
-                if (w * w > maxAngularSpeedSquared && sim.allowFastRotation == false)
+                if (w * w > maxAngularSpeedSquared && (sim.flags & (uint)B2BodyFlags.b2_allowFastRotation) == 0)
                 {
                     float ratio = maxAngularSpeed / b2AbsFloat(w);
                     w *= ratio;
-                    sim.isSpeedCapped = true;
+                    sim.flags |= (uint)B2BodyFlags.b2_isSpeedCapped;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
+                {
+                    v.X = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
+                {
+                    v.Y = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
+                {
+                    w = 0.0f;
                 }
 
                 state.linearVelocity = v;
@@ -252,8 +267,24 @@ namespace Box2D.NET
             for (int i = startIndex; i < endIndex; ++i)
             {
                 B2BodyState state = states[i];
-                state.deltaRotation = b2IntegrateRotation(state.deltaRotation, h * state.angularVelocity);
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
+                {
+                    state.linearVelocity.X = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
+                {
+                    state.linearVelocity.Y = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
+                {
+                    state.angularVelocity = 0.0f;
+                }
+
                 state.deltaPosition = b2MulAdd(state.deltaPosition, h, state.linearVelocity);
+                state.deltaRotation = b2IntegrateRotation(state.deltaRotation, h * state.angularVelocity);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.integrate_positions);
@@ -289,7 +320,7 @@ namespace Box2D.NET
 
             // Skip sensors except if the body wants sensor hits
             bool isSensor = shape.sensorIndex != B2_NULL_INDEX;
-            if (isSensor && fastBodySim.enableSensorHits == false)
+            if (isSensor && (fastBodySim.flags & (uint)B2BodyFlags.b2_enableSensorHits) == 0)
             {
                 return true;
             }
@@ -305,10 +336,10 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
 
             B2BodySim bodySim = b2GetBodySim(world, body);
-            B2_ASSERT(body.type == B2BodyType.b2_staticBody || fastBodySim.isBullet);
+            B2_ASSERT(body.type == B2BodyType.b2_staticBody || 0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isBullet));
 
             // Skip bullets
-            if (bodySim.isBullet)
+            if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet))
             {
                 return true;
             }
@@ -463,7 +494,7 @@ namespace Box2D.NET
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
-            B2_ASSERT(fastBodySim.isFast);
+            B2_ASSERT(0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isFast));
 
             B2Sweep sweep = b2MakeSweep(fastBodySim);
 
@@ -486,7 +517,7 @@ namespace Box2D.NET
             context.fastBodySim = fastBodySim;
             context.fraction = 1.0f;
 
-            bool isBullet = fastBodySim.isBullet;
+            bool isBullet = (fastBodySim.flags & (uint)B2BodyFlags.b2_isBullet) != 0;
 
             int shapeId = fastBody.headShapeId;
             while (shapeId != B2_NULL_INDEX)
@@ -567,7 +598,7 @@ namespace Box2D.NET
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
-                        fastBodySim.enlargeAABB = true;
+                        fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
                     }
 
                     shapeId = shape.nextShapeId;
@@ -599,7 +630,7 @@ namespace Box2D.NET
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
-                        fastBodySim.enlargeAABB = true;
+                        fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
                     }
 
                     shapeId = shape.nextShapeId;
@@ -653,6 +684,21 @@ namespace Box2D.NET
                 B2BodyState state = states[simIndex];
                 B2BodySim sim = sims[simIndex];
 
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
+                {
+                    state.linearVelocity.X = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
+                {
+                    state.linearVelocity.Y = 0.0f;
+                }
+
+                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
+                {
+                    state.angularVelocity = 0.0f;
+                }
+
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
 
@@ -691,10 +737,8 @@ namespace Box2D.NET
                 sim.force = b2Vec2_zero;
                 sim.torque = 0.0f;
 
-                body.isSpeedCapped = sim.isSpeedCapped;
-                sim.isSpeedCapped = false;
-
-                sim.isFast = false;
+                body.isSpeedCapped = (sim.flags & (uint)B2BodyFlags.b2_isSpeedCapped) != 0;
+                sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped);
 
                 if (enableSleep == false || body.enableSleep == false || sleepVelocity > body.sleepThreshold)
                 {
@@ -704,11 +748,11 @@ namespace Box2D.NET
                     if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxVelocity * timeStep > 0.5f * sim.minExtent)
                     {
                         // This flag is only retained for debug draw
-                        sim.isFast = true;
+                        sim.flags |= (uint)B2BodyFlags.b2_isFast;
 
                         // Store in fast array for the continuous collision stage
                         // This is deterministic because the order of TOI sweeps doesn't matter
-                        if (sim.isBullet)
+                        if (0 != (sim.flags & (uint)B2BodyFlags.b2_isBullet))
                         {
                             int bulletIndex = b2AtomicFetchAddInt(ref stepContext.bulletBodyCount, 1);
                             stepContext.bulletBodies[bulletIndex] = simIndex;
@@ -754,7 +798,7 @@ namespace Box2D.NET
 
                 // Update shapes AABBs
                 B2Transform transform = sim.transform;
-                bool isFast = sim.isFast;
+                bool isFast = (sim.flags & (uint)B2BodyFlags.b2_isFast) != 0;
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
@@ -2024,7 +2068,7 @@ public enum b2SolverBlockType
                             B2Body body = bodyArray[bodySim.bodyId];
 
                             int shapeId = body.headShapeId;
-                            if (bodySim.isBullet && bodySim.isFast)
+                            if ((bodySim.flags & ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast)) == ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast))
                             {
                                 // Fast bullet bodies don't have their final AABB yet
                                 while (shapeId != B2_NULL_INDEX)
@@ -2103,13 +2147,13 @@ public enum b2SolverBlockType
                 for (int i = 0; i < bulletBodyCount; ++i)
                 {
                     B2BodySim bulletBodySim = bodySimArray[bulletBodySimIndices[i]];
-                    if (bulletBodySim.enlargeAABB == false)
+                    if ((bulletBodySim.flags & (uint)B2BodyFlags.b2_enlargeBounds) == 0)
                     {
                         continue;
                     }
 
-                    // clear flag
-                    bulletBodySim.enlargeAABB = false;
+                    // Clear flag
+                    bulletBodySim.flags &= ~(uint)B2BodyFlags.b2_enlargeBounds;
 
                     int bodyId = bulletBodySim.bodyId;
                     B2_ASSERT(0 <= bodyId && bodyId < world.bodies.count);
@@ -2125,7 +2169,7 @@ public enum b2SolverBlockType
                             continue;
                         }
 
-                        // clear flag
+                        // Clear flag
                         shape.enlargedAABB = false;
 
                         int proxyKey = shape.proxyKey;

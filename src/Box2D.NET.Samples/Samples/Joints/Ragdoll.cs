@@ -65,12 +65,13 @@ public class Ragdoll : Sample
     {
         base.UpdateGui();
 
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 10.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(14.0f * fontSize, height));
 
         ImGui.Begin("Ragdoll", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(8.0f * fontSize);
 
         if (ImGui.SliderFloat("Friction", ref m_jointFrictionTorque, 0.0f, 1.0f, "%3.2f"))
         {

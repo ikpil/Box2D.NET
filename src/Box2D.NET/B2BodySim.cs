@@ -8,7 +8,6 @@ namespace Box2D.NET
     // Transform data used for collision and solver preparation.
     public class B2BodySim
     {
-        // todo better to have transform in sim or in @base body? Try both!
         // transform for body origin
         public B2Transform transform;
 
@@ -38,14 +37,7 @@ namespace Box2D.NET
         // body data can be moved around, the id is stable (used in b2BodyId)
         public int bodyId;
 
-        // This flag is used for debug draw
-        public bool isFast;
-
-        public bool isBullet;
-        public bool enableSensorHits;
-        public bool isSpeedCapped;
-        public bool allowFastRotation;
-        public bool enlargeAABB;
+        public uint flags;
 
         public void Clear()
         {
@@ -72,12 +64,7 @@ namespace Box2D.NET
 
             bodyId = 0;
 
-            isFast = false;
-            isBullet = false;
-
-            isSpeedCapped = false;
-            allowFastRotation = false;
-            enlargeAABB = false;
+            flags = 0;
         }
 
         public void CopyFrom(B2BodySim other)
@@ -105,12 +92,7 @@ namespace Box2D.NET
 
             bodyId = other.bodyId;
 
-            isFast = other.isFast;
-            isBullet = other.isBullet;
-
-            isSpeedCapped = other.isSpeedCapped;
-            allowFastRotation = other.allowFastRotation;
-            enlargeAABB = other.enlargeAABB;
+            flags = other.flags;
         }
     }
 }

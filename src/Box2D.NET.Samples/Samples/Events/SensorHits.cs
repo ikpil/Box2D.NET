@@ -174,8 +174,9 @@ public class SensorHits : Sample
 
     public override void UpdateGui()
     {
+        float fontSize = ImGui.GetFontSize();
         float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_context.camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(120.0f, height));
 
         ImGui.Begin("Sensor Hit", ImGuiWindowFlags.NoResize);

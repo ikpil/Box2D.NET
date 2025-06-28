@@ -135,9 +135,10 @@ public class SmoothManifold : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
+        float fontSize = ImGui.GetFontSize();
         float height = 290.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Smooth Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -259,7 +260,7 @@ public class SmoothManifold : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         B2HexColor color1 = B2HexColor.b2_colorYellow;
         B2HexColor color2 = B2HexColor.b2_colorMagenta;
 
