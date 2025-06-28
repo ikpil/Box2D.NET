@@ -297,6 +297,7 @@ public class Sample : IDisposable
             if (B2_IS_NON_NULL(queryContext.bodyId))
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_kinematicBody;
                 m_groundBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 B2MouseJointDef jointDef = b2DefaultMouseJointDef();
@@ -306,7 +307,7 @@ public class Sample : IDisposable
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(queryContext.bodyId, p);
                 jointDef.hertz = 7.5f;
                 jointDef.dampingRatio = 0.7f;
-                jointDef.maxForce = 1000.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
+                jointDef.maxForce = 100.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
                 m_mouseJointId = b2CreateMouseJoint(m_worldId, ref jointDef);
 
                 b2Body_SetAwake(queryContext.bodyId, true);
