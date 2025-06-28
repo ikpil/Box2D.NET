@@ -34,9 +34,10 @@ namespace Box2D.NET
         public float angularDamping;
         public float gravityScale;
 
-        // body data can be moved around, the id is stable (used in b2BodyId)
+        // Index of b2Body
         public int bodyId;
 
+        // b2BodyFlags
         public uint flags;
 
         public void Clear()

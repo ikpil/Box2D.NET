@@ -275,7 +275,6 @@ namespace Box2D.NET
             bodySim.bodyId = bodyId;
             bodySim.flags = lockFlags;
             bodySim.flags |= def.isBullet ? (uint)B2BodyFlags.b2_isBullet : 0;
-            bodySim.flags |= def.enableSensorHits ? (uint)B2BodyFlags.b2_enableSensorHits : 0;
             bodySim.flags |= def.allowFastRotation ? (uint)B2BodyFlags.b2_allowFastRotation : 0;
 
             if (setId == (int)B2SetType.b2_awakeSet)
@@ -287,7 +286,7 @@ namespace Box2D.NET
                 bodyState.linearVelocity = def.linearVelocity;
                 bodyState.angularVelocity = def.angularVelocity;
                 bodyState.deltaRotation = b2Rot_identity;
-                bodyState.flags = (int)lockFlags;
+                bodyState.flags = lockFlags;
             }
 
             if (bodyId == world.bodies.count)
@@ -553,10 +552,6 @@ namespace Box2D.NET
             // Compute mass data from shapes. Each shape has its own density.
             body.mass = 0.0f;
             body.inertia = 0.0f;
-
-            // Copy lock flags from body to sim body
-            bodySim.flags &= ~(uint)B2BodyFlags.b2_allLocks;
-            bodySim.flags |= (body.flags & (uint)B2BodyFlags.b2_allLocks);
 
             bodySim.invMass = 0.0f;
             bodySim.invInertia = 0.0f;
@@ -871,15 +866,12 @@ namespace Box2D.NET
             B2Vec2 center2 = b2TransformPoint(ref target, sim.localCenter);
             float invTimeStep = 1.0f / timeStep;
             B2Vec2 linearVelocity = b2MulSV(invTimeStep, b2Sub(center2, center1));
-            linearVelocity.X = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearX) ? 0.0f : linearVelocity.X;
-            linearVelocity.Y = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearY) ? 0.0f : linearVelocity.Y;
 
             // Compute angular velocity
             B2Rot q1 = sim.transform.q;
             B2Rot q2 = target.q;
             float deltaAngle = b2RelativeAngle(q1, q2);
             float angularVelocity = invTimeStep * deltaAngle;
-            angularVelocity = 0 != (body.flags & (uint)B2BodyFlags.b2_lockAngularZ) ? 0.0f : angularVelocity;
 
             // Early out if the body is asleep already and the desired movement is small
             if (body.setIndex != (int)B2SetType.b2_awakeSet)
@@ -1006,6 +998,16 @@ namespace Box2D.NET
             }
         }
 
+        /// Apply an impulse at a point. This immediately modifies the velocity.
+        /// It also modifies the angular velocity if the point of application
+        /// is not at the center of mass. This optionally wakes the body.
+        /// The impulse is ignored if the body is not awake.
+        /// @param bodyId The body id
+        /// @param impulse the world impulse vector, usually in N*s or kg*m/s.
+        /// @param point the world position of the point of application.
+        /// @param wake also wake up the body
+        /// @warning This should be used for one-shot impulses. If you need a steady force,
+        /// use a force instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Vec2 point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1034,6 +1036,13 @@ namespace Box2D.NET
             }
         }
 
+        /// Apply an impulse to the center of mass. This immediately modifies the velocity.
+        /// The impulse is ignored if the body is not awake. This optionally wakes the body.
+        /// @param bodyId The body id
+        /// @param impulse the world impulse vector, usually in N*s or kg*m/s.
+        /// @param wake also wake up the body
+        /// @warning This should be used for one-shot impulses. If you need a steady force,
+        /// use a force instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyLinearImpulseToCenter(B2BodyId bodyId, B2Vec2 impulse, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1061,6 +1070,13 @@ namespace Box2D.NET
             }
         }
 
+        /// Apply an angular impulse. The impulse is ignored if the body is not awake.
+        /// This optionally wakes the body.
+        /// @param bodyId The body id
+        /// @param impulse the angular impulse, usually in units of kg*m*m/s
+        /// @param wake also wake up the body
+        /// @warning This should be used for one-shot impulses. If you need a steady torque,
+        /// use a torque instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyAngularImpulse(B2BodyId bodyId, float impulse, bool wake)
         {
             B2_ASSERT(b2Body_IsValid(bodyId));
@@ -1793,7 +1809,7 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        /// Set this body to have fixed rotation. This causes the mass to be reset in all cases.
+        /// Set the motion locks on this body.
         public static void b2Body_SetMotionLocks(B2BodyId bodyId, B2MotionLocks locks)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
@@ -1813,11 +1829,15 @@ namespace Box2D.NET
                 body.flags &= ~(uint)B2BodyFlags.b2_allLocks;
                 body.flags |= newFlags;
 
+                B2BodySim bodySim = b2GetBodySim(world, body);
+                bodySim.flags &= ~(uint)B2BodyFlags.b2_allLocks;
+                bodySim.flags |= newFlags;
+
                 B2BodyState state = b2GetBodyState(world, body);
 
                 if (state != null)
                 {
-                    state.flags = (int)body.flags;
+                    state.flags = body.flags;
 
                     if (locks.linearX)
                     {
@@ -1834,12 +1854,10 @@ namespace Box2D.NET
                         state.angularVelocity = 0.0f;
                     }
                 }
-
-                b2UpdateBodyMassData(world, body);
             }
         }
 
-        /// Does this body have fixed rotation?
+        /// Get the motion locks for this body.
         public static B2MotionLocks b2Body_GetMotionLocks(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);

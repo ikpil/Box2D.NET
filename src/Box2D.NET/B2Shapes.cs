@@ -185,9 +185,9 @@ namespace Box2D.NET
                 shape.sensorIndex = world.sensors.count;
                 B2Sensor sensor = new B2Sensor
                 {
-                    hits = b2Array_Create<B2ShapeRef>(4),
-                    overlaps1 = b2Array_Create<B2ShapeRef>(16),
-                    overlaps2 = b2Array_Create<B2ShapeRef>(16),
+                    hits = b2Array_Create<B2Visitor>(4),
+                    overlaps1 = b2Array_Create<B2Visitor>(16),
+                    overlaps2 = b2Array_Create<B2Visitor>(16),
                     shapeId = shapeId
                 };
                 b2Array_Push(ref world.sensors, sensor);
@@ -317,7 +317,7 @@ namespace Box2D.NET
                 B2Sensor sensor = b2Array_Get(ref world.sensors, shape.sensorIndex);
                 for (int i = 0; i < sensor.overlaps2.count; ++i)
                 {
-                    ref readonly B2ShapeRef @ref = ref sensor.overlaps2.data[i];
+                    ref readonly B2Visitor @ref = ref sensor.overlaps2.data[i];
                     B2SensorEndTouchEvent @event = new B2SensorEndTouchEvent()
                     {
                         sensorShapeId = new B2ShapeId(shapeId + 1, world.worldId, shape.generation),
@@ -1740,12 +1740,12 @@ namespace Box2D.NET
 
         /// Get the overlap data for a sensor shape.
         /// @param shapeId the id of a sensor shape
-        /// @param sensorData a user allocated array that is filled with the overlapping shapes (visitors)
+        /// @param visitorIds a user allocated array that is filled with the overlapping shapes (visitors)
         /// @param capacity the capacity of overlappedShapes
         /// @returns the number of elements filled in the provided array
         /// @warning do not ignore the return value, it specifies the valid number of elements
         /// @warning overlaps may contain destroyed shapes so use b2Shape_IsValid to confirm each overlap
-        public static int b2Shape_GetSensorData(B2ShapeId shapeId, Span<B2SensorData> sensorData, int capacity)
+        public static int b2Shape_GetSensorData(B2ShapeId shapeId, Span<B2ShapeId> visitorIds, int capacity)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1762,7 +1762,7 @@ namespace Box2D.NET
             B2Sensor sensor = b2Array_Get(ref world.sensors, shape.sensorIndex);
 
             int count = b2MinInt(sensor.overlaps2.count, capacity);
-            ReadOnlySpan<B2ShapeRef> refs = sensor.overlaps2.data;
+            ReadOnlySpan<B2Visitor> refs = sensor.overlaps2.data;
             for (int i = 0; i < count; ++i)
             {
                 B2ShapeId visitorId = new B2ShapeId(
@@ -1771,10 +1771,7 @@ namespace Box2D.NET
                     generation: refs[i].generation
                 );
 
-                sensorData[i] = new B2SensorData(
-                    visitorId: visitorId,
-                    visitTransform: refs[i].transform
-                );
+                visitorIds[i] = visitorId;
             }
 
             return count;

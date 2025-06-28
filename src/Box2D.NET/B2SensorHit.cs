@@ -5,6 +5,5 @@
     {
         public int sensorId;
         public int visitorId;
-        public B2Transform visitorTransform; 
     }
 }

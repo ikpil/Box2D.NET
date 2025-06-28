@@ -22,9 +22,7 @@ public class MotionLocks : Sample
 
     public const int e_count = 6;
 
-    private B2BodyId m_groundId;
     private B2BodyId[] m_bodyIds = new B2BodyId[e_count];
-    private B2JointId[] m_jointIds = new B2JointId[e_count];
     private B2MotionLocks m_motionLocks;
 
     private static Sample Create(SampleContext context)
@@ -41,37 +39,16 @@ public class MotionLocks : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+
         m_motionLocks = new B2MotionLocks(false, false, true);
 
         for (int i = 0; i < e_count; ++i)
         {
             m_bodyIds[i] = b2_nullBodyId;
-            m_jointIds[i] = b2_nullJointId;
-        }
-
-        CreateScene();
-    }
-
-    void CreateScene()
-    {
-        for (int i = 0; i < e_count; ++i)
-        {
-            if (B2_IS_NON_NULL(m_jointIds[i]))
-            {
-                b2DestroyJoint(m_jointIds[i]);
-                m_jointIds[i] = b2_nullJointId;
-            }
-
-            if (B2_IS_NON_NULL(m_bodyIds[i]))
-            {
-                b2DestroyBody(m_bodyIds[i]);
-                m_bodyIds[i] = b2_nullBodyId;
-            }
         }
 
         B2Vec2 position = new B2Vec2(-12.5f, 10.0f);
-        B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.motionLocks = m_motionLocks;
 
@@ -92,12 +69,12 @@ public class MotionLocks : Sample
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
             B2Vec2 pivot2 = new B2Vec2(position.X, position.Y + 1.0f);
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
             jointDef.length = length;
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
+            b2CreateDistanceJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -113,12 +90,12 @@ public class MotionLocks : Sample
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = position;
             jointDef.maxForce = 200.0f;
             jointDef.maxTorque = 200.0f;
-            m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
+            b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -135,11 +112,11 @@ public class MotionLocks : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            b2CreatePrismaticJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -156,11 +133,11 @@ public class MotionLocks : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -177,7 +154,7 @@ public class MotionLocks : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
@@ -185,7 +162,7 @@ public class MotionLocks : Sample
             jointDef.angularDampingRatio = 0.5f;
             jointDef.linearHertz = 1.0f;
             jointDef.linearDampingRatio = 0.5f;
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
+            b2CreateWeldJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -202,7 +179,7 @@ public class MotionLocks : Sample
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
-            jointDef.@base.bodyIdA = m_groundId;
+            jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
@@ -214,7 +191,7 @@ public class MotionLocks : Sample
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
-            m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
+            b2CreateWheelJoint(m_worldId, ref jointDef);
         }
 
         position.X += 5.0f;
@@ -228,7 +205,7 @@ public class MotionLocks : Sample
         float fontSize = ImGui.GetFontSize();
         float height = 8.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
+        ImGui.SetNextWindowSize(new Vector2(14.0f * fontSize, height));
 
         ImGui.Begin("Motion Locks", ImGuiWindowFlags.NoResize);
 
