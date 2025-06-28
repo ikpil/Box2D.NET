@@ -342,7 +342,7 @@ namespace Box2D.NET
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
-                // These must be set to accomodate the merge below
+                // These must be set to accommodate the merge below
                 jointSim.jointId = jointId;
                 jointSim.bodyIdA = bodyIdA;
                 jointSim.bodyIdB = bodyIdB;

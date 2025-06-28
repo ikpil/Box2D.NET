@@ -353,6 +353,7 @@ namespace Box2D.NET
             if (body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, body.setIndex);
+                b2ValidateSolverSets(world);
                 return true;
             }
 

@@ -167,8 +167,6 @@ namespace Box2D.NET
 
             // destroy the sleeping set
             b2DestroySolverSet(world, setIndex);
-
-            b2ValidateSolverSets(world);
         }
 
         public static void b2TrySleepIsland(B2World world, int islandId)
