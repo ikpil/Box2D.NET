@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Box2D.NET
 {
-    public class B2ShapeRefComparer : IComparer<B2ShapeRef>
+    public class B2ShapeRefComparer : IComparer<B2Visitor>
     {
         public static readonly B2ShapeRefComparer Shared = new B2ShapeRefComparer();
 
@@ -14,9 +14,9 @@ namespace Box2D.NET
         {
         }
 
-        public int Compare(B2ShapeRef a, B2ShapeRef b)
+        public int Compare(B2Visitor a, B2Visitor b)
         {
-            return B2Sensors.b2CompareShapeRefs(ref a, ref b);
+            return B2Sensors.b2CompareVisitors(ref a, ref b);
         }
     }
 }

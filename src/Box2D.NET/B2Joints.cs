@@ -1292,16 +1292,6 @@ namespace Box2D.NET
             }
         }
 
-        /// Get the joint constraint tuning. Advanced feature.
-        public static void b2Joint_GetConstraintTuning(B2JointId jointId, out float hertz, out float dampingRatio)
-        {
-            B2World world = b2GetWorld(jointId.world0);
-            B2Joint joint = b2GetJointFullId(world, jointId);
-            B2JointSim @base = b2GetJointSim(world, joint);
-            hertz = @base.constraintHertz;
-            dampingRatio = @base.constraintDampingRatio;
-        }
-
         /// Set the joint constraint tuning. Advanced feature.
         /// @param jointId the joint
         /// @param hertz the stiffness in Hertz (cycles per second)
@@ -1316,6 +1306,56 @@ namespace Box2D.NET
             B2JointSim @base = b2GetJointSim(world, joint);
             @base.constraintHertz = hertz;
             @base.constraintDampingRatio = dampingRatio;
+        }
+
+        /// Get the joint constraint tuning. Advanced feature.
+        public static void b2Joint_GetConstraintTuning(B2JointId jointId, out float hertz, out float dampingRatio)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            hertz = @base.constraintHertz;
+            dampingRatio = @base.constraintDampingRatio;
+        }
+
+        /// Set the force threshold for joint events (Newtons)
+        public static void b2Joint_SetForceThreshold(B2JointId jointId, float threshold)
+        {
+            B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            @base.forceThreshold = threshold;
+        }
+
+        /// Get the force threshold for joint events (Newtons)
+        public static float b2Joint_GetForceThreshold(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            return @base.forceThreshold;
+        }
+
+        /// Set the torque threshold for joint events (N-m)
+        public static void b2Joint_SetTorqueThreshold(B2JointId jointId, float threshold)
+        {
+            B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
+
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            @base.torqueThreshold = threshold;
+        }
+
+        /// Get the torque threshold for joint events (N-m)
+        public static float b2Joint_GetTorqueThreshold(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2Joint joint = b2GetJointFullId(world, jointId);
+            B2JointSim @base = b2GetJointSim(world, joint);
+            return @base.torqueThreshold;
         }
 
         public static void b2PrepareJoint(B2JointSim joint, B2StepContext context)

@@ -35,7 +35,9 @@ namespace Box2D.NET
     {
         public B2Vec2 linearVelocity; // 8
         public float angularVelocity; // 4
-        public int flags; // 4
+        
+        // b2BodyFlags
+        public uint flags; // 4
 
         // Using delta position reduces round-off error far from the origin
         public B2Vec2 deltaPosition; // 8

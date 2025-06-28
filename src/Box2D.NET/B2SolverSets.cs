@@ -76,7 +76,7 @@ namespace Box2D.NET
                 ref B2BodyState state = ref b2Array_Add(ref awakeSet.bodyStates);
                 //*state = b2_identityBodyState;
                 state.CopyFrom(b2_identityBodyState);
-                state.flags = (int)body.flags;
+                state.flags = body.flags;
 
                 // move non-touching contacts from disabled set to awake set
                 int contactKey = body.headContactKey;
@@ -580,7 +580,7 @@ namespace Box2D.NET
                 ref B2BodyState state = ref b2Array_Add(ref targetSet.bodyStates);
                 //*state = b2_identityBodyState;
                 state.CopyFrom(b2_identityBodyState);
-                state.flags = (int)body.flags;
+                state.flags = body.flags;
             }
 
             body.setIndex = targetSet.setIndex;

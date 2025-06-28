@@ -29,7 +29,7 @@ public class SensorTypes : Sample
 
     private B2BodyId m_kinematicBodyId;
 
-    private List<B2SensorData> m_sensorData = new List<B2SensorData>();
+    private List<B2ShapeId> m_visitorIds = new List<B2ShapeId>();
 
 
     private static Sample Create(SampleContext context)
@@ -142,16 +142,16 @@ public class SensorTypes : Sample
     {
         // Determine the necessary capacity
         int capacity = b2Shape_GetSensorCapacity(sensorShapeId);
-        m_sensorData.Resize(capacity);
+        m_visitorIds.Resize(capacity);
 
         // Get all overlaps and record the actual count
-        int count = b2Shape_GetSensorData(sensorShapeId, CollectionsMarshal.AsSpan(m_sensorData), capacity);
-        m_sensorData.Resize(count);
+        int count = b2Shape_GetSensorData(sensorShapeId, CollectionsMarshal.AsSpan(m_visitorIds), capacity);
+        m_visitorIds.Resize(count);
 
         var builder = new StringBuilder();
         for (int i = 0; i < count; ++i)
         {
-            B2ShapeId visitorId = m_sensorData[i].visitorId;
+            B2ShapeId visitorId = m_visitorIds[i];
             if (b2Shape_IsValid(visitorId) == false)
             {
                 continue;

@@ -302,6 +302,8 @@ namespace Box2D.NET
             B2Shape fastShape = continuousContext.fastShape;
             B2BodySim fastBodySim = continuousContext.fastBodySim;
 
+            B2_ASSERT(fastShape.sensorIndex == B2_NULL_INDEX);
+
             // Skip same shape
             if (shapeId == fastShape.id)
             {
@@ -318,9 +320,10 @@ namespace Box2D.NET
                 return true;
             }
 
-            // Skip sensors except if the body wants sensor hits
             bool isSensor = shape.sensorIndex != B2_NULL_INDEX;
-            if (isSensor && (fastBodySim.flags & (uint)B2BodyFlags.b2_enableSensorHits) == 0)
+
+            // Skip sensors unless the shapes want sensor events
+            if (isSensor && (shape.enableSensorEvents == false || fastShape.enableSensorEvents == false))
             {
                 return true;
             }
@@ -366,8 +369,7 @@ namespace Box2D.NET
             }
 
             // Early out on fast parallel movement over a chain shape.
-            // No early out for sensor sweeps.
-            if (shape.type == B2ShapeType.b2_chainSegmentShape && isSensor == false)
+            if (shape.type == B2ShapeType.b2_chainSegmentShape)
             {
                 B2Transform transform = bodySim.transform;
                 B2Vec2 p1 = b2TransformPoint(ref transform, shape.us.chainSegment.segment.point1);
@@ -433,12 +435,11 @@ namespace Box2D.NET
                 if (output.fraction <= continuousContext.fraction && continuousContext.sensorCount < B2_MAX_CONTINUOUS_SENSOR_HITS)
                 {
                     int index = continuousContext.sensorCount;
-                    B2Transform hitTransform = b2GetSweepTransform(ref continuousContext.sweep, output.fraction);
+                    // The hit shape is a sensor
                     B2SensorHit sensorHit = new B2SensorHit()
                     {
                         sensorId = shape.id,
                         visitorId = fastShape.id,
-                        visitorTransform = hitTransform,
                     };
                     continuousContext.sensorHits[index] = sensorHit;
                     continuousContext.sensorFractions[index] = output.fraction;
@@ -640,6 +641,7 @@ namespace Box2D.NET
             // Push sensor hits on the the task context for serial processing.
             for (int i = 0; i < context.sensorCount; ++i)
             {
+                // Skip any sensor hits that occurred after a solid hit
                 if (context.sensorFractions[i] < context.fraction)
                 {
                     b2Array_Push(ref taskContext.sensorHits, context.sensorHits[i]);
@@ -2215,9 +2217,8 @@ public enum b2SolverBlockType
                         B2Shape visitor = b2Array_Get(ref world.shapes, hit.visitorId);
 
                         B2Sensor sensor = b2Array_Get(ref world.sensors, sensorShape.sensorIndex);
-                        B2ShapeRef shapeRef = new B2ShapeRef()
+                        B2Visitor shapeRef = new B2Visitor()
                         {
-                            transform = hit.visitorTransform,
                             shapeId = hit.visitorId,
                             generation = visitor.generation,
                         };

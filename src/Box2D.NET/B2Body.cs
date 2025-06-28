@@ -53,14 +53,16 @@ namespace Box2D.NET
 
         public int id;
 
+        // b2BodyFlags
+        public uint flags;
+
         public B2BodyType type;
 
         // This is monotonically advanced when a body is allocated in this slot
         // Used to check for invalid b2BodyId
         public ushort generation;
 
-        public uint flags;
-
+        // todo move into flags
         public bool enableSleep;
         public bool isSpeedCapped;
         public bool isMarked;

@@ -6,9 +6,10 @@ namespace Box2D.NET
 {
     public class B2Sensor
     {
-        public B2Array<B2ShapeRef> hits;
-        public B2Array<B2ShapeRef> overlaps1;
-        public B2Array<B2ShapeRef> overlaps2;
+        // todo find a way to pool these
+        public B2Array<B2Visitor> hits;
+        public B2Array<B2Visitor> overlaps1;
+        public B2Array<B2Visitor> overlaps2;
         public int shapeId;
     }
 }

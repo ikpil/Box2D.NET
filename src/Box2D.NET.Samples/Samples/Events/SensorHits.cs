@@ -38,7 +38,6 @@ public class SensorHits : Sample
     private B2Transform[] m_transforms = new B2Transform[m_transformCapacity];
 
     private bool m_isBullet;
-    private bool m_enableSensorHits;
     private int m_beginCount;
     private int m_endCount;
 
@@ -138,7 +137,6 @@ public class SensorHits : Sample
         m_bodyId = new B2BodyId();
         m_shapeId = new B2ShapeId();
         m_transformCount = 0;
-        m_enableSensorHits = true;
         m_isBullet = true;
 
         Launch();
@@ -161,7 +159,6 @@ public class SensorHits : Sample
         float speed = RandomFloatRange(200.0f, 300.0f);
         bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
         bodyDef.isBullet = m_isBullet;
-        bodyDef.enableSensorHits = m_enableSensorHits;
         m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -181,7 +178,6 @@ public class SensorHits : Sample
 
         ImGui.Begin("Sensor Hit", ImGuiWindowFlags.NoResize);
 
-        ImGui.Checkbox("Enable Hits", ref m_enableSensorHits);
         ImGui.Checkbox("Bullet", ref m_isBullet);
 
         if (ImGui.Button("Launch") || GetKey(Keys.B) == InputAction.Press)
@@ -195,12 +191,13 @@ public class SensorHits : Sample
     void CollectTransforms(B2ShapeId sensorShapeId)
     {
         const int capacity = 5;
-        Span<B2SensorData> sensorData = stackalloc B2SensorData[capacity];
-        int count = b2Shape_GetSensorData(sensorShapeId, sensorData, capacity);
+        Span<B2ShapeId> visitorIds = stackalloc B2ShapeId[capacity];
+        int count = b2Shape_GetSensorData(sensorShapeId, visitorIds, capacity);
 
         for (int i = 0; i < count && m_transformCount < m_transformCapacity; ++i)
         {
-            m_transforms[m_transformCount] = sensorData[i].visitTransform;
+            B2BodyId sensorBodyId = b2Shape_GetBody(sensorShapeId);
+            m_transforms[m_transformCount] = b2Body_GetTransform(sensorBodyId);
             m_transformCount += 1;
         }
     }
@@ -237,7 +234,10 @@ public class SensorHits : Sample
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
             ref readonly B2SensorBeginTouchEvent @event = ref sensorEvents.beginEvents[i];
-            CollectTransforms(@event.sensorShapeId);
+            if (b2Shape_IsValid(@event.sensorShapeId) == true)
+            {
+                CollectTransforms(@event.sensorShapeId);
+            }
         }
     }
 
