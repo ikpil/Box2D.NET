@@ -104,12 +104,13 @@ public class Cantilever : Sample
     {
         base.UpdateGui();
 
-        float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 14.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(19.0f * fontSize, height));
 
         ImGui.Begin("Cantilever", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(8.0f * fontSize);
 
         if (ImGui.SliderFloat("Linear Hertz", ref m_linearHertz, 0.0f, 20.0f, "%.0f"))
         {

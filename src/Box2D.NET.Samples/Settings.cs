@@ -18,6 +18,7 @@ public class Settings
     public int windowWidth = 1920;
     public int windowHeight = 1080;
 
+    public float uiScale = 1.0f;
     public float hertz = 60.0f;
     public int subStepCount = 4;
     public int workerCount = 1;
@@ -67,6 +68,7 @@ public class Settings
         windowWidth = other.windowWidth;
         windowHeight = other.windowHeight;
 
+        uiScale = other.uiScale;
         hertz = other.hertz;
         subStepCount = other.subStepCount;
         workerCount = other.workerCount;

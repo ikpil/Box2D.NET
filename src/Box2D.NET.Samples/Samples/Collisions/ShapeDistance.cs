@@ -18,7 +18,7 @@ namespace Box2D.NET.Samples.Samples.Collisions;
 public class ShapeDistance : Sample
 {
     private static readonly int SampleShapeDistance = SampleFactory.Shared.RegisterSample("Collision", "Shape Distance", Create);
-    
+
     public const int m_simplexCapacity = 20;
 
     B2Polygon m_box;
@@ -90,7 +90,7 @@ public class ShapeDistance : Sample
             B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.0f) };
             B2Hull hull = b2ComputeHull(points, 3);
             m_triangle = b2MakePolygon(ref hull, 0.0f);
-            
+
             // m_triangle = b2MakeSquare( 0.4f );
         }
 
@@ -140,10 +140,11 @@ public class ShapeDistance : Sample
                 break;
 
             case ShapeType.e_triangle:
-                for ( int i = 0; i < m_triangle.count; ++i )
+                for (int i = 0; i < m_triangle.count; ++i)
                 {
                     proxy.points[i] = m_triangle.vertices[i];
                 }
+
                 proxy.count = m_triangle.count;
                 break;
 
@@ -215,8 +216,9 @@ public class ShapeDistance : Sample
     {
         base.UpdateGui();
 
+        float fontSize = ImGui.GetFontSize();
         float height = 310.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -309,7 +311,7 @@ public class ShapeDistance : Sample
     {
         if (m_dragging)
         {
-            m_transform.p = m_basePosition + 0.5f * ( p - m_startPoint );
+            m_transform.p = m_basePosition + 0.5f * (p - m_startPoint);
         }
         else if (m_rotating)
         {
@@ -421,8 +423,8 @@ public class ShapeDistance : Sample
             m_draw.DrawLine(_outputPointA, _outputPointB, B2HexColor.b2_colorDimGray);
             m_draw.DrawPoint(_outputPointA, 10.0f, B2HexColor.b2_colorWhite);
             m_draw.DrawPoint(_outputPointB, 10.0f, B2HexColor.b2_colorWhite);
-            
-            m_draw.DrawLine( _outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow );
+
+            m_draw.DrawLine(_outputPointA, _outputPointA + 0.5f * _outputNormal, B2HexColor.b2_colorYellow);
         }
 
         if (m_showIndices)
@@ -441,11 +443,11 @@ public class ShapeDistance : Sample
         }
 
         DrawTextLine("mouse button 1: drag");
-        
+
         DrawTextLine("mouse button 1 + shift: rotate");
-        
+
         DrawTextLine($"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
-        
+
 
         if (m_cache.count == 1)
         {
@@ -459,7 +461,5 @@ public class ShapeDistance : Sample
         {
             DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
         }
-
-        
     }
 }

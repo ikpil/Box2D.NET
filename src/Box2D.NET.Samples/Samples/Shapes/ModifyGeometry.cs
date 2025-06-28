@@ -18,7 +18,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 public class ModifyGeometry : Sample
 {
     private static readonly int SampleModifyGeometry = SampleFactory.Shared.RegisterSample("Shapes", "Modify Geometry", Create);
-    
+
     private B2ShapeId m_shapeId;
     private B2ShapeType m_shapeType;
     private object m_shape;
@@ -111,9 +111,10 @@ public class ModifyGeometry : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
+        float fontSize = ImGui.GetFontSize();
         float height = 230.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Modify Geometry", ImGuiWindowFlags.NoResize);

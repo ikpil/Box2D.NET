@@ -296,8 +296,9 @@ public class GearLift : Sample
 
     public override void UpdateGui()
     {
+        float fontSize = ImGui.GetFontSize();
         float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Gear Lift", ImGuiWindowFlags.NoResize);

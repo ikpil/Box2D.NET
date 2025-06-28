@@ -50,7 +50,7 @@ namespace Box2D.NET
             state.CopyFrom(other);
             return state;
         }
-        
+
         public void Clear()
         {
             linearVelocity = new B2Vec2();
@@ -61,15 +61,14 @@ namespace Box2D.NET
 
             deltaRotation = new B2Rot();
         }
-        
+
         public void CopyFrom(B2BodyState other)
         {
             linearVelocity = other.linearVelocity;
             angularVelocity = other.angularVelocity;
             flags = other.flags;
-
+            
             deltaPosition = other.deltaPosition;
-
             deltaRotation = other.deltaRotation;
         }
     }

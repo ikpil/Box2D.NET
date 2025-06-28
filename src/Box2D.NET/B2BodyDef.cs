@@ -52,15 +52,15 @@ namespace Box2D.NET
 
         /// Use this to store application specific body data.
         public object userData;
+        
+        /// Motions locks to restrict linear and angular movement
+        public B2MotionLocks motionLocks;
 
         /// Set this flag to false if this body should never fall asleep.
         public bool enableSleep;
 
         /// Is this body initially awake or sleeping?
         public bool isAwake;
-
-        /// Should this body be prevented from rotating? Useful for characters.
-        public bool fixedRotation;
 
         /// Treat this body as high speed object that performs continuous collision detection
         /// against dynamic and kinematic bodies, but not other bullet bodies.

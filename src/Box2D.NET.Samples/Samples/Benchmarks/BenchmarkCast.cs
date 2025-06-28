@@ -243,7 +243,7 @@ public class BenchmarkCast : Sample
 
             for (int i = 0; i < sampleCount; ++i)
             {
-                B2ShapeProxy proxy = b2MakeProxy( m_origins[i], 1, m_radius );
+                B2ShapeProxy proxy = b2MakeProxy(m_origins[i], 1, m_radius);
 
                 B2Vec2 translation = m_translations[i];
 
@@ -324,13 +324,14 @@ public class BenchmarkCast : Sample
     {
         base.UpdateGui();
 
-        float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 17.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(13.0f * fontSize, height));
 
         ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(7.5f * fontSize);
 
         bool changed = false;
 
@@ -400,19 +401,18 @@ public class BenchmarkCast : Sample
         base.Draw(settings);
 
         DrawTextLine($"build time ms = {m_buildTime:g}");
-        
+
 
         DrawTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
-        
+
 
         DrawTextLine($"total ms = {ms:F3}");
-        
+
 
         DrawTextLine($"min total ms = {m_minTime:F3}");
-        
+
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
         DrawTextLine($"average us = {aveRayCost:F2}");
-        
     }
 }

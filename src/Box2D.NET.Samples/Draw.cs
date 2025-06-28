@@ -27,7 +27,6 @@ public class Draw
     private GLSolidPolygons m_solidPolygons;
     public B2DebugDraw m_debugDraw;
 
-    public ImFontPtr m_smallFont;
     public ImFontPtr m_regularFont;
     public ImFontPtr m_mediumFont;
     public ImFontPtr m_largeFont;
@@ -76,7 +75,6 @@ public class Draw
 
         m_debugDraw.context = this;
 
-        m_smallFont = default;
         m_mediumFont = default;
         m_largeFont = default;
         m_regularFont = default;

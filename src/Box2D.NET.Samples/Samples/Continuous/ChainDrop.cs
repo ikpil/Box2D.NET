@@ -15,7 +15,7 @@ namespace Box2D.NET.Samples.Samples.Continuous;
 public class ChainDrop : Sample
 {
     private static readonly int SampleChainDrop = SampleFactory.Shared.RegisterSample("Continuous", "Chain Drop", Create);
-    
+
     private B2BodyId m_bodyId;
     private B2ShapeId m_shapeId;
     private float m_yOffset;
@@ -69,7 +69,7 @@ public class ChainDrop : Sample
         bodyDef.linearVelocity = new B2Vec2(0.0f, m_speed);
         bodyDef.position = new B2Vec2(0.0f, 10.0f + m_yOffset);
         bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
-        bodyDef.fixedRotation = true;
+        bodyDef.motionLocks.angularZ = true;
         m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -88,9 +88,10 @@ public class ChainDrop : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
+        float fontSize = ImGui.GetFontSize();
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Chain Drop", ImGuiWindowFlags.NoResize);

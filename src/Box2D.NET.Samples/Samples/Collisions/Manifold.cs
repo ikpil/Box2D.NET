@@ -89,13 +89,14 @@ public class Manifold : Sample
     {
         base.UpdateGui();
 
-        float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(340.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 24.0f * fontSize;
+        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize ), ImGuiCond.Once );
+        ImGui.SetNextWindowSize( new Vector2( 20.0f * fontSize, height ) );
 
-        ImGui.Begin("Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+        ImGui.Begin( "Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
 
-        ImGui.PushItemWidth(280.0f);
+        ImGui.PushItemWidth( 14.0f * fontSize );
 
         ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
         ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");

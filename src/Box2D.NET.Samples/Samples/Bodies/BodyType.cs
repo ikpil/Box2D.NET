@@ -201,10 +201,10 @@ public class BodyType : Sample
     {
         base.UpdateGui();
 
-
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 11.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(9.0f * fontSize, height));
         ImGui.Begin("Body Type", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.RadioButton("Static", m_type == B2BodyType.b2_staticBody))

@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 public class ShapeFilter : Sample
 {
     private static readonly int SampleShapeFilter = SampleFactory.Shared.RegisterSample("Shapes", "Filter", Create);
-    
+
     public const ulong GROUND = 0x00000001;
     public const ulong TEAM1 = 0x00000002;
     public const ulong TEAM2 = 0x00000004;
@@ -90,9 +90,10 @@ public class ShapeFilter : Sample
     public override void UpdateGui()
     {
         base.UpdateGui();
-        
+
+        float fontSize = ImGui.GetFontSize();
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Filter", ImGuiWindowFlags.NoResize);
@@ -209,7 +210,7 @@ public class ShapeFilter : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
+
         B2Vec2 p1 = b2Body_GetPosition(m_player1Id);
         m_draw.DrawString(new B2Vec2(p1.X - 0.5f, p1.Y), "player 1");
 
@@ -218,6 +219,5 @@ public class ShapeFilter : Sample
 
         B2Vec2 p3 = b2Body_GetPosition(m_player3Id);
         m_draw.DrawString(new B2Vec2(p3.X - 0.5f, p3.Y), "player 3");
-
     }
 }

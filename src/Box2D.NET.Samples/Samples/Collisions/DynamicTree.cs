@@ -191,8 +191,9 @@ public class DynamicTree : Sample
     {
         base.UpdateGui();
 
+        float fontSize = ImGui.GetFontSize();
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Dynamic Tree", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -448,7 +449,6 @@ public class DynamicTree : Sample
             m_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
             DrawTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
-            
         }
 
         switch ((UpdateType)m_updateType)
@@ -456,21 +456,18 @@ public class DynamicTree : Sample
             case UpdateType.Update_Incremental:
             {
                 DrawTextLine($"incremental : {_ms:F3} ms");
-                
             }
                 break;
 
             case UpdateType.Update_FullRebuild:
             {
                 DrawTextLine($"full build {_boxCount} : {_ms:F3} ms");
-                
             }
                 break;
 
             case UpdateType.Update_PartialRebuild:
             {
                 DrawTextLine($"partial rebuild {_boxCount} : {_ms:F3} ms");
-                
             }
                 break;
 
@@ -484,6 +481,5 @@ public class DynamicTree : Sample
 
         int hmin = (int)(MathF.Ceiling(MathF.Log((float)m_proxyCount) / MathF.Log(2.0f) - 1.0f));
         DrawTextLine($"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
-        
     }
 }

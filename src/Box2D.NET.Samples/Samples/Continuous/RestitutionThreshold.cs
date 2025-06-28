@@ -63,7 +63,7 @@ public class RestitutionThreshold : Sample
             b2CreateCircleShape(m_ballId, ref ballShapeDef, ref ballShape);
 
             b2Body_SetLinearVelocity(m_ballId, new B2Vec2(0.0f, -2.9f)); // Initial velocity
-            b2Body_SetFixedRotation(m_ballId, true); // Do not rotate a ball
+            b2Body_SetMotionLocks(m_ballId, new B2MotionLocks(false, false, true)); // Do not rotate a ball
         }
     }
 
@@ -82,6 +82,5 @@ public class RestitutionThreshold : Sample
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
         DrawTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
-        
     }
 }

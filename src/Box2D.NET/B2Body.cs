@@ -59,8 +59,9 @@ namespace Box2D.NET
         // Used to check for invalid b2BodyId
         public ushort generation;
 
+        public uint flags;
+
         public bool enableSleep;
-        public bool fixedRotation;
         public bool isSpeedCapped;
         public bool isMarked;
     }

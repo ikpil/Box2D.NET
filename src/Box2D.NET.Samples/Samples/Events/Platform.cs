@@ -97,7 +97,7 @@ public class Platform : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.fixedRotation = true;
+            bodyDef.motionLocks.angularZ = true;
             bodyDef.linearDamping = 0.5f;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
             m_playerId = b2CreateBody(m_worldId, ref bodyDef);
@@ -158,8 +158,9 @@ public class Platform : Sample
     {
         base.UpdateGui();
 
+        float fontSize = ImGui.GetFontSize();
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("One-Sided Platform", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);

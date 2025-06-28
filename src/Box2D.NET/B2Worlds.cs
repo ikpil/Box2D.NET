@@ -898,7 +898,6 @@ namespace Box2D.NET
             }
         }
 
-
         public static bool DrawQueryCallback(int proxyId, ulong userData, ref B2DrawContext context)
         {
             B2_UNUSED(proxyId);
@@ -938,7 +937,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorWheat;
                 }
-                else if (bodySim.isBullet && body.setIndex == (int)B2SetType.b2_awakeSet)
+                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SetType.b2_awakeSet)
                 {
                     color = B2HexColor.b2_colorTurquoise;
                 }
@@ -946,7 +945,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorYellow;
                 }
-                else if (bodySim.isFast)
+                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isFast))
                 {
                     color = B2HexColor.b2_colorSalmon;
                 }
@@ -1245,7 +1244,7 @@ namespace Box2D.NET
                             {
                                 color = B2HexColor.b2_colorWheat;
                             }
-                            else if (bodySim.isBullet && body.setIndex == (int)B2SetType.b2_awakeSet)
+                            else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SetType.b2_awakeSet)
                             {
                                 color = B2HexColor.b2_colorTurquoise;
                             }
@@ -1253,7 +1252,7 @@ namespace Box2D.NET
                             {
                                 color = B2HexColor.b2_colorYellow;
                             }
-                            else if (bodySim.isFast)
+                            else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isFast))
                             {
                                 color = B2HexColor.b2_colorSalmon;
                             }

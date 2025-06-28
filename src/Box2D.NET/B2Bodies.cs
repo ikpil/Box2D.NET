@@ -252,6 +252,12 @@ namespace Box2D.NET
 
             int bodyId = b2AllocId(world.bodyIdPool);
 
+            uint lockFlags = 0;
+            lockFlags |= def.motionLocks.linearX ? (uint)B2BodyFlags.b2_lockLinearX : 0;
+            lockFlags |= def.motionLocks.linearY ? (uint)B2BodyFlags.b2_lockLinearY : 0;
+            lockFlags |= def.motionLocks.angularZ ? (uint)B2BodyFlags.b2_lockAngularZ : 0;
+
+
             B2SolverSet set = b2Array_Get(ref world.solverSets, setId);
             ref B2BodySim bodySim = ref b2Array_Add(ref set.bodySims);
             //*bodySim = ( b2BodySim ){ 0 };
@@ -267,9 +273,10 @@ namespace Box2D.NET
             bodySim.angularDamping = def.angularDamping;
             bodySim.gravityScale = def.gravityScale;
             bodySim.bodyId = bodyId;
-            bodySim.isBullet = def.isBullet;
-            bodySim.enableSensorHits = def.enableSensorHits;
-            bodySim.allowFastRotation = def.allowFastRotation;
+            bodySim.flags = lockFlags;
+            bodySim.flags |= def.isBullet ? (uint)B2BodyFlags.b2_isBullet : 0;
+            bodySim.flags |= def.enableSensorHits ? (uint)B2BodyFlags.b2_enableSensorHits : 0;
+            bodySim.flags |= def.allowFastRotation ? (uint)B2BodyFlags.b2_allowFastRotation : 0;
 
             if (setId == (int)B2SetType.b2_awakeSet)
             {
@@ -280,6 +287,7 @@ namespace Box2D.NET
                 bodyState.linearVelocity = def.linearVelocity;
                 bodyState.angularVelocity = def.angularVelocity;
                 bodyState.deltaRotation = b2Rot_identity;
+                bodyState.flags = (int)lockFlags;
             }
 
             if (bodyId == world.bodies.count)
@@ -323,8 +331,8 @@ namespace Box2D.NET
             body.sleepThreshold = def.sleepThreshold;
             body.sleepTime = 0.0f;
             body.type = def.type;
+            body.flags = lockFlags;
             body.enableSleep = def.enableSleep;
-            body.fixedRotation = def.fixedRotation;
             body.isSpeedCapped = false;
             body.isMarked = false;
 
@@ -546,6 +554,10 @@ namespace Box2D.NET
             body.mass = 0.0f;
             body.inertia = 0.0f;
 
+            // Copy lock flags from body to sim body
+            bodySim.flags &= ~(uint)B2BodyFlags.b2_allLocks;
+            bodySim.flags |= (body.flags & (uint)B2BodyFlags.b2_allLocks);
+
             bodySim.invMass = 0.0f;
             bodySim.invInertia = 0.0f;
             bodySim.localCenter = b2Vec2_zero;
@@ -602,7 +614,7 @@ namespace Box2D.NET
                 localCenter = b2MulSV(bodySim.invMass, localCenter);
             }
 
-            if (body.inertia > 0.0f && body.fixedRotation == false)
+            if (body.inertia > 0.0f)
             {
                 // Center the inertia about the center of mass.
                 body.inertia -= body.mass * b2Dot(localCenter, localCenter);
@@ -814,7 +826,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type == B2BodyType.b2_staticBody || body.fixedRotation)
+            if (body.type == B2BodyType.b2_staticBody || 0 != (body.flags & (uint)B2BodyFlags.b2_lockAngularZ))
             {
                 return;
             }
@@ -842,6 +854,11 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
+            if (body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
+
             if (body.type == B2BodyType.b2_staticBody || timeStep <= 0.0f)
             {
                 return;
@@ -854,34 +871,34 @@ namespace Box2D.NET
             B2Vec2 center2 = b2TransformPoint(ref target, sim.localCenter);
             float invTimeStep = 1.0f / timeStep;
             B2Vec2 linearVelocity = b2MulSV(invTimeStep, b2Sub(center2, center1));
+            linearVelocity.X = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearX) ? 0.0f : linearVelocity.X;
+            linearVelocity.Y = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearY) ? 0.0f : linearVelocity.Y;
 
             // Compute angular velocity
-            float angularVelocity = 0.0f;
-            if (body.fixedRotation == false)
+            B2Rot q1 = sim.transform.q;
+            B2Rot q2 = target.q;
+            float deltaAngle = b2RelativeAngle(q1, q2);
+            float angularVelocity = invTimeStep * deltaAngle;
+            angularVelocity = 0 != (body.flags & (uint)B2BodyFlags.b2_lockAngularZ) ? 0.0f : angularVelocity;
+
+            // Early out if the body is asleep already and the desired movement is small
+            if (body.setIndex != (int)B2SetType.b2_awakeSet)
             {
-                B2Rot q1 = sim.transform.q;
-                B2Rot q2 = target.q;
-                float deltaAngle = b2RelativeAngle(q1, q2);
-                angularVelocity = invTimeStep * deltaAngle;
+                float maxVelocity = b2Length(linearVelocity) + b2AbsFloat(angularVelocity) * sim.maxExtent;
+
+                // Return if velocity would be sleepy
+                if (maxVelocity < body.sleepThreshold)
+                {
+                    return;
+                }
+
+                // Must wake for state to exist
+                b2WakeBody(world, body);
             }
 
-            float maxVelocity = b2Length(linearVelocity) + b2AbsFloat(angularVelocity) * sim.maxExtent;
-
-            // Return if velocity would be sleepy
-            if (maxVelocity < body.sleepThreshold)
-            {
-                return;
-            }
-
-            // Must wake for state to exist
-            b2WakeBody(world, body);
+            B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
 
             B2BodyState state = b2GetBodyState(world, body);
-            if (state == null)
-            {
-                return;
-            }
-
             state.linearVelocity = linearVelocity;
             state.angularVelocity = angularVelocity;
         }
@@ -927,6 +944,11 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
+
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
@@ -945,6 +967,11 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
+
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
@@ -962,6 +989,11 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
+
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
@@ -978,6 +1010,11 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
+
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
 
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
@@ -1002,6 +1039,11 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
+
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
@@ -1023,10 +1065,12 @@ namespace Box2D.NET
         {
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
 
-            int id = bodyId.index1 - 1;
-            B2Body body = b2Array_Get(ref world.bodies, id);
-            B2_ASSERT(body.generation == bodyId.generation);
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            {
+                return;
+            }
 
             if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
@@ -1190,7 +1234,7 @@ namespace Box2D.NET
                 b2RemoveBodyFromIsland(world, body);
 
                 B2BodySim bodySim = b2Array_Get(ref staticSet.bodySims, body.localIndex);
-                bodySim.isFast = false;
+                bodySim.flags &= ~(uint)B2BodyFlags.b2_isFast;
 
                 // Maybe transfer joints to static set.
                 int jointKey = body.headJointKey;
@@ -1749,7 +1793,8 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static void b2Body_SetFixedRotation(B2BodyId bodyId, bool flag)
+        /// Set this body to have fixed rotation. This causes the mass to be reset in all cases.
+        public static void b2Body_SetMotionLocks(B2BodyId bodyId, B2MotionLocks locks)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1757,26 +1802,54 @@ namespace Box2D.NET
                 return;
             }
 
+            uint newFlags = 0;
+            newFlags |= locks.linearX ? (uint)B2BodyFlags.b2_lockLinearX : 0;
+            newFlags |= locks.linearY ? (uint)B2BodyFlags.b2_lockLinearY : 0;
+            newFlags |= locks.angularZ ? (uint)B2BodyFlags.b2_lockAngularZ : 0;
+
             B2Body body = b2GetBodyFullId(world, bodyId);
-            if (body.fixedRotation != flag)
+            if ((body.flags & (uint)B2BodyFlags.b2_allLocks) != newFlags)
             {
-                body.fixedRotation = flag;
+                body.flags &= ~(uint)B2BodyFlags.b2_allLocks;
+                body.flags |= newFlags;
 
                 B2BodyState state = b2GetBodyState(world, body);
+
                 if (state != null)
                 {
-                    state.angularVelocity = 0.0f;
+                    state.flags = (int)body.flags;
+
+                    if (locks.linearX)
+                    {
+                        state.linearVelocity.X = 0.0f;
+                    }
+
+                    if (locks.linearY)
+                    {
+                        state.linearVelocity.Y = 0.0f;
+                    }
+
+                    if (locks.angularZ)
+                    {
+                        state.angularVelocity = 0.0f;
+                    }
                 }
 
                 b2UpdateBodyMassData(world, body);
             }
         }
 
-        public static bool b2Body_IsFixedRotation(B2BodyId bodyId)
+        /// Does this body have fixed rotation?
+        public static B2MotionLocks b2Body_GetMotionLocks(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            return body.fixedRotation;
+
+            B2MotionLocks locks;
+            locks.linearX = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearX);
+            locks.linearY = 0 != (body.flags & (uint)B2BodyFlags.b2_lockLinearY);
+            locks.angularZ = 0 != (body.flags & (uint)B2BodyFlags.b2_lockAngularZ);
+            return locks;
         }
 
         public static void b2Body_SetBullet(B2BodyId bodyId, bool flag)
@@ -1789,7 +1862,15 @@ namespace Box2D.NET
 
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
-            bodySim.isBullet = flag;
+
+            if (flag)
+            {
+                bodySim.flags |= (uint)B2BodyFlags.b2_isBullet;
+            }
+            else
+            {
+                bodySim.flags &= ~(uint)B2BodyFlags.b2_isBullet;
+            }
         }
 
         public static bool b2Body_IsBullet(B2BodyId bodyId)
@@ -1797,7 +1878,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
-            return bodySim.isBullet;
+            return (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) != 0;
         }
 
         public static void b2Body_EnableContactEvents(B2BodyId bodyId, bool flag)

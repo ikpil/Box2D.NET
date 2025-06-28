@@ -22,7 +22,7 @@ namespace Box2D.NET.Samples.Samples.Characters;
 
 public class Mover : Sample
 {
-    private static int SampleMover = SampleFactory.Shared.RegisterSample("Character", "Mover", Create);
+    private static readonly int SampleMover = SampleFactory.Shared.RegisterSample("Character", "Mover", Create);
 
     public class ShapeUserData
     {
@@ -460,8 +460,9 @@ public class Mover : Sample
 
     public override void UpdateGui()
     {
+        float fontSize = ImGui.GetFontSize();
         float height = 350.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(340.0f, height));
 
         ImGui.Begin("Mover", 0);

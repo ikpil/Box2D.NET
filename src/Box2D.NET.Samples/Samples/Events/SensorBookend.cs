@@ -122,9 +122,10 @@ public class SensorBookend : Sample
 
     public override void UpdateGui()
     {
-        float height = 260.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
+        float fontSize = ImGui.GetFontSize();
+        float height = 19.0f * fontSize;
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(12.0f * fontSize, height));
 
         ImGui.Begin("Sensor Bookend", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 

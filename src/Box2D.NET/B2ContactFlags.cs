@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
+
 namespace Box2D.NET
 {
     // A contact edge is used to connect bodies and contacts together
@@ -9,6 +11,7 @@ namespace Box2D.NET
     // is an edge. A contact edge belongs to a doubly linked list
     // maintained in each attached body. Each contact has two contact
     // edges, one for each attached body.
+    [Flags]
     public enum B2ContactFlags
     {
         // Set when the solid shapes are touching.
