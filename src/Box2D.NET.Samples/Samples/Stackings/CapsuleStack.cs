@@ -11,7 +11,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class CapsuleStack : Sample
 {
-    private static int SampleCapsuleStack = SampleFactory.Shared.RegisterSample("Stacking", "Capsule Stack", Create);
+    private static readonly int SampleCapsuleStack = SampleFactory.Shared.RegisterSample("Stacking", "Capsule Stack", Create);
 
     struct Event
     {
