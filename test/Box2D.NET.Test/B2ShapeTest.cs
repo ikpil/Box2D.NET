@@ -28,7 +28,7 @@ public class B2ShapeTest
             Assert.That(md.mass - B2_PI, Is.LessThan(FLT_EPSILON));
             Assert.That(md.center.X, Is.EqualTo(1.0f));
             Assert.That(md.center.Y, Is.EqualTo(0.0f));
-            Assert.That(md.rotationalInertia - 1.5f * B2_PI, Is.LessThan(FLT_EPSILON));
+            Assert.That(md.rotationalInertia - 0.5f * B2_PI, Is.LessThan(FLT_EPSILON));
         }
 
         {

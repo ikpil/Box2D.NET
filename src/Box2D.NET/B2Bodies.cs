@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -19,6 +18,7 @@ using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2Sensors;
 using static Box2D.NET.B2SolverSets;
 using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2ArenaAllocators;
 
 namespace Box2D.NET
 {
@@ -584,9 +584,13 @@ namespace Box2D.NET
                 return;
             }
 
+            int shapeCount = body.shapeCount;
+            ArraySegment<B2MassData> masses = b2AllocateArenaItem<B2MassData>(world.arena, shapeCount, "mass data");
+
             // Accumulate mass over all shapes.
             B2Vec2 localCenter = b2Vec2_zero;
             int shapeId = body.headShapeId;
+            int shapeIndex = 0;
             while (shapeId != B2_NULL_INDEX)
             {
                 B2Shape s = b2Array_Get(ref world.shapes, shapeId);
@@ -594,13 +598,16 @@ namespace Box2D.NET
 
                 if (s.density == 0.0f)
                 {
+                    masses[shapeIndex] = new B2MassData();
                     continue;
                 }
 
                 B2MassData massData = b2ComputeShapeMass(s);
                 body.mass += massData.mass;
                 localCenter = b2MulAdd(localCenter, massData.mass, massData.center);
-                body.inertia += massData.rotationalInertia;
+                
+                masses[shapeIndex] = massData;
+                shapeIndex += 1;
             }
 
             // Compute center of mass.
@@ -610,11 +617,28 @@ namespace Box2D.NET
                 localCenter = b2MulSV(bodySim.invMass, localCenter);
             }
 
+            // Second loop to accumulate the rotational inertia about the center of mass
+            for (shapeIndex = 0; shapeIndex < shapeCount; ++shapeIndex)
+            {
+                B2MassData massData = masses[shapeIndex];
+                if (massData.mass == 0.0f)
+                {
+                    continue;
+                }
+
+                // Shift to center of mass. This is safe because it can only increase.
+                B2Vec2 offset = b2Sub(localCenter, massData.center);
+                float inertia = massData.rotationalInertia + massData.mass * b2Dot(offset, offset);
+                body.inertia += inertia;
+            }
+
+            b2FreeArenaItem(world.arena, masses);
+            masses = null;
+
+            B2_ASSERT(body.inertia >= 0.0f);
+
             if (body.inertia > 0.0f)
             {
-                // Center the inertia about the center of mass.
-                body.inertia -= body.mass * b2Dot(localCenter, localCenter);
-                B2_ASSERT(body.inertia > 0.0f);
                 bodySim.invInertia = 1.0f / body.inertia;
             }
             else
