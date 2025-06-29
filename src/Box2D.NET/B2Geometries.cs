@@ -257,8 +257,8 @@ namespace Box2D.NET
             massData.mass = density * B2_PI * rr;
             massData.center = shape.center;
 
-            // inertia about the local origin
-            massData.rotationalInertia = massData.mass * (0.5f * rr + b2Dot(shape.center, shape.center));
+            // inertia about the center of mass
+            massData.rotationalInertia = massData.mass * 0.5f * rr;
 
             return massData;
         }
@@ -299,9 +299,6 @@ namespace Box2D.NET
             float circleInertia = circleMass * (0.5f * rr + h * h + 2.0f * h * lc);
             float boxInertia = boxMass * (4.0f * rr + ll) / 12.0f;
             massData.rotationalInertia = circleInertia + boxInertia;
-
-            // inertia about the local origin
-            massData.rotationalInertia += massData.mass * b2Dot(massData.center, massData.center);
 
             return massData;
         }
@@ -424,8 +421,11 @@ namespace Box2D.NET
             // Inertia tensor relative to the local origin (point s).
             massData.rotationalInertia = density * rotationalInertia;
 
-            // Shift to center of mass then to original body origin.
-            massData.rotationalInertia += massData.mass * (b2Dot(massData.center, massData.center) - b2Dot(center, center));
+            // Shift inertia to center of mass
+            massData.rotationalInertia -= massData.mass * b2Dot(center, center);
+
+            // If this goes negative we are hosed
+            B2_ASSERT(massData.rotationalInertia >= 0.0f);
 
             return massData;
         }
