@@ -505,17 +505,20 @@ public class SampleApp
 
     public void DestroyUI()
     {
-        // ImGui_ImplOpenGL3_Shutdown();
-        // ImGui_ImplGlfw_Shutdown();
-        // ImGui.DestroyContext();
-        _imgui.Dispose();
+        var tmp = _imgui;
         _imgui = null;
+        tmp.Dispose();
     }
 
     private unsafe void KeyCallback(WindowHandle* window, Keys key, int scancode, InputAction action, KeyModifiers mods)
     {
-        //ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-        if (ImGui.GetIO().WantCaptureKeyboard)
+        if (null == _imgui)
+        {
+            return;
+        }
+
+        var io = ImGui.GetIO();
+        if (io.WantCaptureKeyboard)
         {
             return;
         }
@@ -639,11 +642,27 @@ public class SampleApp
     private unsafe void CharCallback(WindowHandle* window, uint c)
     {
         //ImGui_ImplGlfw_CharCallback(window, c);
+        if (null == _imgui)
+        {
+            return;
+        }
+
+        var io = ImGui.GetIO();
+        if (io.WantCaptureKeyboard)
+        {
+            return;
+        }
     }
 
     private unsafe void MouseButtonCallback(WindowHandle* window, MouseButton button, InputAction action, KeyModifiers modifiers)
     {
-        if (ImGui.GetIO().WantCaptureMouse)
+        if (null == _imgui)
+        {
+            return;
+        }
+
+        var io = ImGui.GetIO();
+        if (io.WantCaptureMouse)
         {
             return;
         }
@@ -683,6 +702,17 @@ public class SampleApp
 
     private unsafe void MouseMotionCallback(WindowHandle* window, double xd, double yd)
     {
+        if (null == _imgui)
+        {
+            return;
+        }
+
+        var io = ImGui.GetIO();
+        if (io.WantCaptureMouse)
+        {
+            return;
+        }
+
         B2Vec2 ps = new B2Vec2((float)(xd), (float)(yd));
 
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
@@ -701,11 +731,15 @@ public class SampleApp
 
     private unsafe void ScrollCallback(WindowHandle* window, double dx, double dy)
     {
-        var io = ImGui.GetIO();
-        io.AddMouseWheelEvent((float)dx, (float)dy);
+        if (null == _imgui)
+        {
+            return;
+        }
 
+        var io = ImGui.GetIO();
         if (io.WantCaptureMouse)
         {
+            io.AddMouseWheelEvent((float)dx, (float)dy);
             return;
         }
 
