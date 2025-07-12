@@ -23,7 +23,6 @@ public class Settings
     public int subStepCount = 4;
     public int workerCount = 1;
 
-    public bool useCameraBounds = false;
     public bool drawShapes = true;
     public bool drawJoints = true;
     public bool drawJointExtras = false;
@@ -73,7 +72,6 @@ public class Settings
         subStepCount = other.subStepCount;
         workerCount = other.workerCount;
 
-        useCameraBounds = other.useCameraBounds;
         drawShapes = other.drawShapes;
         drawJoints = other.drawJoints;
         drawJointExtras = other.drawJointExtras;

@@ -58,7 +58,6 @@ public class LargeWorld : Sample
             m_camera.m_center = m_viewPosition;
             m_camera.m_zoom = 25.0f * 1.0f;
             m_context.settings.drawJoints = false;
-            m_context.settings.useCameraBounds = true;
         }
 
         {

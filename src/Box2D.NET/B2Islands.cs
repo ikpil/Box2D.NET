@@ -225,7 +225,7 @@ namespace Box2D.NET
             {
                 b2AddContactToIsland(world, islandIdB, contact);
             }
-            
+
             // todo why not merge the islands right here?
         }
 
@@ -395,10 +395,13 @@ namespace Box2D.NET
             }
         }
 
-// Unlink a joint from the island graph when it is destroyed
+        // Unlink a joint from the island graph when it is destroyed
         public static void b2UnlinkJoint(B2World world, B2Joint joint)
         {
-            B2_ASSERT(joint.islandId != B2_NULL_INDEX);
+            if (joint.islandId == B2_NULL_INDEX)
+            {
+                return;
+            }
 
             // remove from island
             int islandId = joint.islandId;
@@ -884,6 +887,11 @@ namespace Box2D.NET
 #if DEBUG
         public static void b2ValidateIsland(B2World world, int islandId)
         {
+            if (islandId == B2_NULL_INDEX)
+            {
+                return;
+            }
+
             B2Island island = b2Array_Get(ref world.islands, islandId);
             B2_ASSERT(island.islandId == islandId);
             B2_ASSERT(island.setIndex != B2_NULL_INDEX);

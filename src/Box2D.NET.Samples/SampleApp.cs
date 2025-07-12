@@ -294,7 +294,6 @@ public class SampleApp
             // #todo restore all drawing settings that may have been overridden by a sample
             _context.settings.subStepCount = 4;
             _context.settings.drawJoints = true;
-            _context.settings.useCameraBounds = true;
 
             s_sample?.Dispose();
             s_sample = null;

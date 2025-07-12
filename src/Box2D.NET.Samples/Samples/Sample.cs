@@ -466,7 +466,6 @@ public class Sample : IDisposable
         }
 
         m_context.draw.m_debugDraw.drawingBounds = m_camera.GetViewBounds();
-        m_context.draw.m_debugDraw.useDrawingBounds = settings.useCameraBounds;
         m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
         m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
         m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;

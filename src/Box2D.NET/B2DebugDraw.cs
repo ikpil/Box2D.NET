@@ -22,9 +22,6 @@ namespace Box2D.NET
         /// Bounds to use if restricting drawing to a rectangular region
         public B2AABB drawingBounds;
 
-        /// Option to restrict drawing to a rectangular region. May suffer from unstable depth sorting.
-        public bool useDrawingBounds;
-
         /// Option to draw shapes
         public bool drawShapes;
 

@@ -40,6 +40,8 @@ namespace Box2D.NET
         public const int ITERATIONS = 1;
         public const int RELAX_ITERATIONS = 1;
 
+        public const float B2_CORE_FRACTION = 0.25f;
+
         // TODO: @ikpil. check SIMD
         public static readonly int B2_SIMD_SHIFT = b2SIMDShift();
 
@@ -380,13 +382,14 @@ namespace Box2D.NET
                 if (length > B2_LINEAR_SLOP)
                 {
                     B2Vec2 c1 = continuousContext.centroid1;
-                    float offset1 = b2Cross(b2Sub(c1, p1), e);
+                    float separation1 = b2Cross(b2Sub(c1, p1), e);
                     B2Vec2 c2 = continuousContext.centroid2;
-                    float offset2 = b2Cross(b2Sub(c2, p1), e);
+                    float separation2 = b2Cross(b2Sub(c2, p1), e);
 
-                    // todo this should use the min extent of the fast shape, not the body
-                    const float allowedFraction = 0.25f;
-                    if (offset1 < 0.0f || offset1 - offset2 < allowedFraction * fastBodySim.minExtent)
+                    float coreDistance = B2_CORE_FRACTION * fastBodySim.minExtent;
+
+                    if (separation1 < 0.0f ||
+                        (separation1 - separation2 < coreDistance && separation2 > coreDistance))
                     {
                         // Minimal clipping
                         return true;
@@ -461,7 +464,7 @@ namespace Box2D.NET
                     // fallback to TOI of a small circle around the fast shape centroid
                     B2Vec2 centroid = b2GetShapeCentroid(fastShape);
                     B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
-                    float radius = 0.25f * extent.minExtent;
+                    float radius = B2_CORE_FRACTION * extent.minExtent;
                     input.proxyB = b2MakeProxy(centroid, 1, radius);
                     output = b2TimeOfImpact(ref input);
                     if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
@@ -481,6 +484,7 @@ namespace Box2D.NET
 
                 if (didHit)
                 {
+                    fastBodySim.flags |= (uint)B2BodyFlags.b2_hadTimeOfImpact;
                     continuousContext.fraction = hitFraction;
                 }
             }
@@ -739,8 +743,9 @@ namespace Box2D.NET
                 sim.force = b2Vec2_zero;
                 sim.torque = 0.0f;
 
-                body.isSpeedCapped = (sim.flags & (uint)B2BodyFlags.b2_isSpeedCapped) != 0;
-                sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped);
+                body.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
+                body.flags |= (sim.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
+                sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
 
                 if (enableSleep == false || body.enableSleep == false || sleepVelocity > body.sleepThreshold)
                 {
@@ -1155,6 +1160,7 @@ public enum b2SolverBlockType
 
                     for (int j = 0; j < ITERATIONS; ++j)
                     {
+                        // Overflow constraints have lower priority
                         b2SolveOverflowJoints(context, useBias);
                         b2SolveOverflowContacts(context, useBias);
 
@@ -1405,16 +1411,16 @@ public enum b2SolverBlockType
 
                 // Configure blocks for tasks parallel-for each active graph color
                 // The blocks are a mix of SIMD contact blocks and joint blocks
-                B2_ASSERT(B2FixedArray12<int>.Size == B2_GRAPH_COLOR_COUNT);
-                B2FixedArray12<int> arrayActiveColorIndices = new B2FixedArray12<int>();
+                B2_ASSERT(B2FixedArray24<int>.Size == B2_GRAPH_COLOR_COUNT);
+                B2FixedArray24<int> arrayActiveColorIndices = new B2FixedArray24<int>();
 
-                B2FixedArray12<int> arrayColorContactCounts = new B2FixedArray12<int>();
-                B2FixedArray12<int> arrayColorContactBlockSizes = new B2FixedArray12<int>();
-                B2FixedArray12<int> arrayColorContactBlockCounts = new B2FixedArray12<int>();
+                B2FixedArray24<int> arrayColorContactCounts = new B2FixedArray24<int>();
+                B2FixedArray24<int> arrayColorContactBlockSizes = new B2FixedArray24<int>();
+                B2FixedArray24<int> arrayColorContactBlockCounts = new B2FixedArray24<int>();
 
-                B2FixedArray12<int> arrayColorJointCounts = new B2FixedArray12<int>();
-                B2FixedArray12<int> arrayColorJointBlockSizes = new B2FixedArray12<int>();
-                B2FixedArray12<int> arrayColorJointBlockCounts = new B2FixedArray12<int>();
+                B2FixedArray24<int> arrayColorJointCounts = new B2FixedArray24<int>();
+                B2FixedArray24<int> arrayColorJointBlockSizes = new B2FixedArray24<int>();
+                B2FixedArray24<int> arrayColorJointBlockCounts = new B2FixedArray24<int>();
 
                 Span<int> activeColorIndices = arrayActiveColorIndices.AsSpan();
 
@@ -1926,7 +1932,6 @@ public enum b2SolverBlockType
                     ulong[] bits = jointStateBitSet.bits;
 
                     B2Joint[] jointArray = world.joints.data;
-                    int jointCapacity = world.joints.capacity;
                     ushort worldIndex0 = world.worldId;
 
                     for (uint k = 0; k < wordCount; ++k)
@@ -1937,7 +1942,7 @@ public enum b2SolverBlockType
                             uint ctz = b2CTZ64(word);
                             int jointId = (int)(64 * k + ctz);
 
-                            B2_ASSERT(jointId < jointCapacity);
+                            B2_ASSERT(jointId < world.joints.capacity);
 
                             B2Joint joint = jointArray[jointId];
 

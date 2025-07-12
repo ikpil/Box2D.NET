@@ -168,7 +168,8 @@ namespace Box2D.NET
 
             draw.drawingBounds.lowerBound = new B2Vec2(-float.MaxValue, -float.MaxValue);
             draw.drawingBounds.upperBound = new B2Vec2(float.MaxValue, float.MaxValue);
-            draw.useDrawingBounds = true;
+
+            draw.drawShapes = true;
 
             return draw;
         }

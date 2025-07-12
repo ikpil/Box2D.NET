@@ -1695,12 +1695,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), b2ZeroW());
-                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse1);
+                    B2FloatW deltaImpulse = b2SubW(newImpulse, c.normalImpulse1);
                     c.normalImpulse1 = newImpulse;
 
+                    // Add the incremental impulse rather than the full impulse because this is not a sub-step
+                    c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, deltaImpulse);
+
                     // Apply contact impulse
-                    B2FloatW Px = b2MulW(impulse, c.normal.X);
-                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+                    B2FloatW Px = b2MulW(deltaImpulse, c.normal.X);
+                    B2FloatW Py = b2MulW(deltaImpulse, c.normal.Y);
 
                     bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                     bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
@@ -1733,12 +1736,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), b2ZeroW());
-                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse2);
+                    B2FloatW deltaImpulse = b2SubW(newImpulse, c.normalImpulse2);
                     c.normalImpulse2 = newImpulse;
 
+                    // Add the incremental impulse rather than the full impulse because this is not a sub-step
+                    c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, deltaImpulse);
+
                     // Apply contact impulse
-                    B2FloatW Px = b2MulW(impulse, c.normal.X);
-                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+                    B2FloatW Px = b2MulW(deltaImpulse, c.normal.X);
+                    B2FloatW Py = b2MulW(deltaImpulse, c.normal.Y);
 
                     bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                     bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);

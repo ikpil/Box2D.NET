@@ -30,12 +30,18 @@ namespace Box2D.NET
         // This holds constraints that cannot fit the graph color limit. This happens when a single dynamic body
         // is touching many other bodies.
         public const int B2_OVERFLOW_INDEX = B2_GRAPH_COLOR_COUNT - 1;
+        
+        // This keeps constraints involving two dynamic bodies at a lower solver priority than constraints
+        // involving a dynamic and static bodies. This reduces tunneling due to push through.
+        public const int B2_DYNAMIC_COLOR_COUNT = (B2_GRAPH_COLOR_COUNT - 4);
+
 
         public static void b2CreateGraph(ref B2ConstraintGraph graph, int bodyCapacity)
         {
-            B2_ASSERT(B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12");
+            //B2_ASSERT(B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12");
             B2_ASSERT(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
             B2_ASSERT(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
+            B2_ASSERT(B2_DYNAMIC_COLOR_COUNT >= 2, "need more dynamic colors");
 
             graph = new B2ConstraintGraph();
             graph.colors = new B2GraphColor[B2_GRAPH_COLOR_COUNT];
@@ -96,14 +102,15 @@ namespace Box2D.NET
             int bodyIdB = contact.edges[1].bodyId;
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.setIndex == (int)B2SetType.b2_staticSet;
-            bool staticB = bodyB.setIndex == (int)B2SetType.b2_staticSet;
+            bool staticA = bodyA.type == B2BodyType.b2_staticBody;
+            bool staticB = bodyB.type == B2BodyType.b2_staticBody;
             B2_ASSERT(staticA == false || staticB == false);
 
 #if B2_FORCE_OVERFLOW
             if (staticA == false && staticB == false)
             {
-                for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
+                // Dynamic constraint colors cannot encroach on colors reserved for static constraints
+                for (int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i)
                 {
                     ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdA) || b2GetBit(ref color0.bodySet, bodyIdB))
@@ -119,8 +126,8 @@ namespace Box2D.NET
             }
             else if (staticA == false)
             {
-                // No static contacts in color 0
-                for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
+                // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
+                for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
                     ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdA))
@@ -135,8 +142,8 @@ namespace Box2D.NET
             }
             else if (staticB == false)
             {
-                // No static contacts in color 0
-                for (int i = 1; i < B2_OVERFLOW_INDEX; ++i)
+                // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
+                for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
                     ref B2GraphColor color0 = ref graph.colors[i];
                     if (b2GetBit(ref color0.bodySet, bodyIdB))
@@ -237,7 +244,8 @@ namespace Box2D.NET
 #if B2_FORCE_OVERFLOW
             if (staticA == false && staticB == false)
             {
-                for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
+                // Dynamic constraint colors cannot encroach on colors reserved for static constraints
+                for ( int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i )
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA) || b2GetBit(ref color.bodySet, bodyIdB))
@@ -252,7 +260,8 @@ namespace Box2D.NET
             }
             else if (staticA == false)
             {
-                for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
+                // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
+                for ( int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i )
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA))
@@ -266,7 +275,8 @@ namespace Box2D.NET
             }
             else if (staticB == false)
             {
-                for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
+                // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
+                for ( int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i )
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdB))
@@ -293,8 +303,8 @@ namespace Box2D.NET
             int bodyIdB = joint.edges[1].bodyId;
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.setIndex == (int)B2SetType.b2_staticSet;
-            bool staticB = bodyB.setIndex == (int)B2SetType.b2_staticSet;
+            bool staticA = bodyA.type == B2BodyType.b2_staticBody;
+            bool staticB = bodyB.type == B2BodyType.b2_staticBody;
 
             int colorIndex = b2AssignJointColor(ref graph, bodyIdA, bodyIdB, staticA, staticB);
 
