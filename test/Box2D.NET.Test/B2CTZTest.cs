@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Numerics;
 using NUnit.Framework;
 using static Box2D.NET.B2CTZs;
@@ -46,6 +47,26 @@ public class B2CTZTest
         {
             Assert.That(b2CTZ64(value), Is.EqualTo(BitOperations.TrailingZeroCount(value)), $"CTZ64 failed for {value}");
             Assert.That(b2PopCount64(value), Is.EqualTo(BitOperations.PopCount(value)), $"PopCount64 failed for {value}");
+        }
+    }
+    
+    [Test]
+    public void Test_Fuzz()
+    {
+        var rng = new Random((int)(DateTime.Now.Ticks / TimeSpan.TicksPerSecond));
+        for (int i = 0; i < 1000000; i++)
+        {
+            // 무작위 uint 생성
+            uint value32 = (uint)rng.Next(int.MinValue, int.MaxValue);
+            ulong value64 = ((ulong)(uint)rng.Next(int.MinValue, int.MaxValue) << 32) | (uint)rng.Next(int.MinValue, int.MaxValue);
+
+            // 32비트 테스트
+            Assert.That(b2CTZ32(value32), Is.EqualTo(BitOperations.TrailingZeroCount(value32)), $"CTZ32 failed for 0x{value32:X8}");
+            Assert.That(b2CLZ32(value32), Is.EqualTo(BitOperations.LeadingZeroCount(value32)), $"CLZ32 failed for 0x{value32:X8}");
+
+            // 64비트 테스트
+            Assert.That(b2CTZ64(value64), Is.EqualTo(BitOperations.TrailingZeroCount(value64)), $"CTZ64 failed for 0x{value64:X16}");
+            Assert.That(b2PopCount64(value64), Is.EqualTo(BitOperations.PopCount(value64)), $"PopCount64 failed for 0x{value64:X16}");
         }
     }
 }
