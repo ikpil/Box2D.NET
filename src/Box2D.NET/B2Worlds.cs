@@ -937,11 +937,15 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorWheat;
                 }
+                else if (0 != (body.flags & (uint)B2BodyFlags.b2_hadTimeOfImpact))
+                {
+                    color = B2HexColor.b2_colorLime;
+                }
                 else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SetType.b2_awakeSet)
                 {
                     color = B2HexColor.b2_colorTurquoise;
                 }
-                else if (body.isSpeedCapped)
+                else if (0 != (body.flags & (uint)B2BodyFlags.b2_isSpeedCapped))
                 {
                     color = B2HexColor.b2_colorYellow;
                 }
@@ -1003,9 +1007,35 @@ namespace Box2D.NET
 
             Span<B2HexColor> graphColors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT]
             {
-                B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen,
-                B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue, B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink,
-                B2HexColor.b2_colorChocolate, B2HexColor.b2_colorGoldenRod, B2HexColor.b2_colorCoral, B2HexColor.b2_colorBlack
+                B2HexColor.b2_colorRed,
+                B2HexColor.b2_colorOrange,
+                B2HexColor.b2_colorYellow,
+                B2HexColor.b2_colorGreen,
+
+                B2HexColor.b2_colorCyan,
+                B2HexColor.b2_colorBlue,
+                B2HexColor.b2_colorViolet,
+                B2HexColor.b2_colorPink,
+
+                B2HexColor.b2_colorChocolate,
+                B2HexColor.b2_colorGoldenRod,
+                B2HexColor.b2_colorCoral,
+                B2HexColor.b2_colorRosyBrown,
+
+                B2HexColor.b2_colorAqua,
+                B2HexColor.b2_colorPeru,
+                B2HexColor.b2_colorLime,
+                B2HexColor.b2_colorGold,
+
+                B2HexColor.b2_colorPlum,
+                B2HexColor.b2_colorSnow,
+                B2HexColor.b2_colorTeal,
+                B2HexColor.b2_colorKhaki,
+
+                B2HexColor.b2_colorSalmon,
+                B2HexColor.b2_colorPeachPuff,
+                B2HexColor.b2_colorHoneyDew,
+                B2HexColor.b2_colorBlack,
             };
 
             int bodyCapacity = b2GetIdCapacity(world.bodyIdPool);
@@ -1200,329 +1230,7 @@ namespace Box2D.NET
                 return;
             }
 
-            // todo it seems bounds drawing is fast enough for regular usage
-            if (draw.useDrawingBounds)
-            {
-                b2DrawWithBounds(world, draw);
-                return;
-            }
-
-            if (draw.drawShapes)
-            {
-                int setCount = world.solverSets.count;
-                for (int setIndex = 0; setIndex < setCount; ++setIndex)
-                {
-                    B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
-                    int bodyCount = set.bodySims.count;
-                    for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
-                    {
-                        B2BodySim bodySim = set.bodySims.data[bodyIndex];
-                        B2Body body = b2Array_Get(ref world.bodies, bodySim.bodyId);
-                        B2_ASSERT(body.setIndex == setIndex);
-
-                        B2Transform xf = bodySim.transform;
-                        int shapeId = body.headShapeId;
-                        while (shapeId != B2_NULL_INDEX)
-                        {
-                            B2Shape shape = world.shapes.data[shapeId];
-                            B2HexColor color;
-
-                            if (shape.customColor != 0)
-                            {
-                                color = (B2HexColor)shape.customColor;
-                            }
-                            else if (body.type == B2BodyType.b2_dynamicBody && body.mass == 0.0f)
-                            {
-                                // Bad body
-                                color = B2HexColor.b2_colorRed;
-                            }
-                            else if (body.setIndex == (int)B2SetType.b2_disabledSet)
-                            {
-                                color = B2HexColor.b2_colorSlateGray;
-                            }
-                            else if (shape.sensorIndex != B2_NULL_INDEX)
-                            {
-                                color = B2HexColor.b2_colorWheat;
-                            }
-                            else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SetType.b2_awakeSet)
-                            {
-                                color = B2HexColor.b2_colorTurquoise;
-                            }
-                            else if (body.isSpeedCapped)
-                            {
-                                color = B2HexColor.b2_colorYellow;
-                            }
-                            else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isFast))
-                            {
-                                color = B2HexColor.b2_colorSalmon;
-                            }
-                            else if (body.type == B2BodyType.b2_staticBody)
-                            {
-                                color = B2HexColor.b2_colorPaleGreen;
-                            }
-                            else if (body.type == B2BodyType.b2_kinematicBody)
-                            {
-                                color = B2HexColor.b2_colorRoyalBlue;
-                            }
-                            else if (body.setIndex == (int)B2SetType.b2_awakeSet)
-                            {
-                                color = B2HexColor.b2_colorPink;
-                            }
-                            else
-                            {
-                                color = B2HexColor.b2_colorGray;
-                            }
-
-                            b2DrawShape(draw, shape, xf, color);
-                            shapeId = shape.nextShapeId;
-                        }
-                    }
-                }
-            }
-
-            if (draw.drawJoints)
-            {
-                int count = world.joints.count;
-                for (int i = 0; i < count; ++i)
-                {
-                    B2Joint joint = world.joints.data[i];
-                    if (joint.setIndex == B2_NULL_INDEX)
-                    {
-                        continue;
-                    }
-
-                    b2DrawJoint(draw, world, joint);
-                }
-            }
-
-            if (draw.drawBounds)
-            {
-                B2HexColor color = B2HexColor.b2_colorGold;
-
-                int setCount = world.solverSets.count;
-                var array4 = new B2FixedArray4<B2Vec2>();
-                Span<B2Vec2> vs = array4.AsSpan();
-                for (int setIndex = 0; setIndex < setCount; ++setIndex)
-                {
-                    B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
-                    int bodyCount = set.bodySims.count;
-                    for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
-                    {
-                        B2BodySim bodySim = set.bodySims.data[bodyIndex];
-
-                        string buffer = "" + bodySim.bodyId;
-                        draw.DrawStringFcn(bodySim.center, buffer, B2HexColor.b2_colorWhite, draw.context);
-
-                        B2Body body = b2Array_Get(ref world.bodies, bodySim.bodyId);
-                        B2_ASSERT(body.setIndex == setIndex);
-
-                        int shapeId = body.headShapeId;
-                        while (shapeId != B2_NULL_INDEX)
-                        {
-                            B2Shape shape = world.shapes.data[shapeId];
-                            B2AABB aabb = shape.fatAABB;
-
-                            vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
-                            vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
-                            vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
-                            vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
-
-                            draw.DrawPolygonFcn(vs, 4, color, draw.context);
-
-                            shapeId = shape.nextShapeId;
-                        }
-                    }
-                }
-            }
-
-            if (draw.drawBodyNames)
-            {
-                B2Vec2 offset = new B2Vec2(0.05f, 0.05f);
-                int count = world.bodies.count;
-                for (int i = 0; i < count; ++i)
-                {
-                    B2Body body = world.bodies.data[i];
-                    if (body.setIndex == B2_NULL_INDEX)
-                    {
-                        continue;
-                    }
-
-                    if (string.IsNullOrEmpty(body.name))
-                    {
-                        continue;
-                    }
-
-                    B2BodySim bodySim = b2GetBodySim(world, body);
-
-                    B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                    B2Vec2 p = b2TransformPoint(ref transform, offset);
-                    draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
-                }
-            }
-
-            if (draw.drawMass)
-            {
-                B2Vec2 offset = new B2Vec2(0.1f, 0.1f);
-                int setCount = world.solverSets.count;
-                for (int setIndex = 0; setIndex < setCount; ++setIndex)
-                {
-                    B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
-                    int bodyCount = set.bodySims.count;
-                    for (int bodyIndex = 0; bodyIndex < bodyCount; ++bodyIndex)
-                    {
-                        B2BodySim bodySim = set.bodySims.data[bodyIndex];
-
-                        B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawTransformFcn(transform, draw.context);
-
-                        B2Vec2 p = b2TransformPoint(ref transform, offset);
-
-                        float mass = bodySim.invMass > 0.0f ? 1.0f / bodySim.invMass : 0.0f;
-                        string buffer = $"{mass:F2}";
-                        draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorWhite, draw.context);
-                    }
-                }
-            }
-
-            if (draw.drawContacts)
-            {
-                const float k_impulseScale = 1.0f;
-                const float k_axisScale = 0.3f;
-                float linearSlop = B2_LINEAR_SLOP;
-
-                B2HexColor speculativeColor = B2HexColor.b2_colorLightGray;
-                B2HexColor addColor = B2HexColor.b2_colorGreen;
-                B2HexColor persistColor = B2HexColor.b2_colorBlue;
-                B2HexColor normalColor = B2HexColor.b2_colorDimGray;
-                B2HexColor impulseColor = B2HexColor.b2_colorMagenta;
-                B2HexColor frictionColor = B2HexColor.b2_colorYellow;
-
-                Span<B2HexColor> colors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT]
-                {
-                    B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen,
-                    B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue, B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink,
-                    B2HexColor.b2_colorChocolate, B2HexColor.b2_colorGoldenRod, B2HexColor.b2_colorCoral, B2HexColor.b2_colorBlack
-                };
-
-                for (int colorIndex = 0; colorIndex < B2_GRAPH_COLOR_COUNT; ++colorIndex)
-                {
-                    ref B2GraphColor graphColor = ref world.constraintGraph.colors[colorIndex];
-
-                    int contactCount = graphColor.contactSims.count;
-                    for (int contactIndex = 0; contactIndex < contactCount; ++contactIndex)
-                    {
-                        B2ContactSim contact = graphColor.contactSims.data[contactIndex];
-                        int pointCount = contact.manifold.pointCount;
-                        B2Vec2 normal = contact.manifold.normal;
-
-                        for (int j = 0; j < pointCount; ++j)
-                        {
-                            ref B2ManifoldPoint point = ref contact.manifold.points[j];
-
-                            if (draw.drawGraphColors && 0 <= colorIndex && colorIndex <= B2_GRAPH_COLOR_COUNT)
-                            {
-                                // graph color
-                                float pointSize = colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
-                                draw.DrawPointFcn(point.point, pointSize, colors[colorIndex], draw.context);
-                                // B2.g_draw.DrawString(point.position, "%d", point.color);
-                            }
-                            else if (point.separation > linearSlop)
-                            {
-                                // Speculative
-                                draw.DrawPointFcn(point.point, 5.0f, speculativeColor, draw.context);
-                            }
-                            else if (point.persisted == false)
-                            {
-                                // Add
-                                draw.DrawPointFcn(point.point, 10.0f, addColor, draw.context);
-                            }
-                            else if (point.persisted == true)
-                            {
-                                // Persist
-                                draw.DrawPointFcn(point.point, 5.0f, persistColor, draw.context);
-                            }
-
-                            if (draw.drawContactNormals)
-                            {
-                                B2Vec2 p1 = point.point;
-                                B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
-                                draw.DrawSegmentFcn(p1, p2, normalColor, draw.context);
-                            }
-                            else if (draw.drawContactImpulses)
-                            {
-                                B2Vec2 p1 = point.point;
-                                B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.totalNormalImpulse, normal);
-                                draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
-                                var buffer = $"{1000.0f * point.totalNormalImpulse:F2}";
-                                draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
-                            }
-
-                            if (draw.drawContactFeatures)
-                            {
-                                string buffer = "" + point.id;
-                                draw.DrawStringFcn(point.point, buffer, B2HexColor.b2_colorOrange, draw.context);
-                            }
-
-                            if (draw.drawFrictionImpulses)
-                            {
-                                B2Vec2 tangent = b2RightPerp(normal);
-                                B2Vec2 p1 = point.point;
-                                B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.tangentImpulse, tangent);
-                                draw.DrawSegmentFcn(p1, p2, frictionColor, draw.context);
-                                var buffer = $"{1000.0f * point.tangentImpulse:F2}";
-                                draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (draw.drawIslands)
-            {
-                int count = world.islands.count;
-                for (int i = 0; i < count; ++i)
-                {
-                    B2Island island = world.islands.data[i];
-                    if (island.setIndex == B2_NULL_INDEX)
-                    {
-                        continue;
-                    }
-
-                    int shapeCount = 0;
-                    B2AABB aabb = new B2AABB(
-                        new B2Vec2(float.MaxValue, float.MaxValue),
-                        new B2Vec2(-float.MaxValue, -float.MaxValue)
-                    );
-
-                    int bodyId = island.headBody;
-                    while (bodyId != B2_NULL_INDEX)
-                    {
-                        B2Body body = b2Array_Get(ref world.bodies, bodyId);
-                        int shapeId = body.headShapeId;
-                        while (shapeId != B2_NULL_INDEX)
-                        {
-                            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                            aabb = b2AABB_Union(aabb, shape.fatAABB);
-                            shapeCount += 1;
-                            shapeId = shape.nextShapeId;
-                        }
-
-                        bodyId = body.islandNext;
-                    }
-
-                    if (shapeCount > 0)
-                    {
-                        B2FixedArray4<B2Vec2> vsBuffer = new B2FixedArray4<B2Vec2>();
-                        Span<B2Vec2> vs = vsBuffer.AsSpan();
-                        vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
-                        vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
-                        vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
-                        vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
-
-                        draw.DrawPolygonFcn(vs, 4, B2HexColor.b2_colorOrangeRed, draw.context);
-                    }
-                }
-            }
+            b2DrawWithBounds(world, draw);
         }
 
         /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
@@ -2918,15 +2626,15 @@ void b2World_Dump()
                         B2_ASSERT(set.islandSims.count == 0);
                         B2_ASSERT(set.bodyStates.count == 0);
                     }
-                    else if (setIndex == (int)B2SetType.b2_awakeSet)
-                    {
-                        B2_ASSERT(set.bodySims.count == set.bodyStates.count);
-                        B2_ASSERT(set.jointSims.count == 0);
-                    }
                     else if (setIndex == (int)B2SetType.b2_disabledSet)
                     {
                         B2_ASSERT(set.islandSims.count == 0);
                         B2_ASSERT(set.bodyStates.count == 0);
+                    }
+                    else if (setIndex == (int)B2SetType.b2_awakeSet)
+                    {
+                        B2_ASSERT(set.bodySims.count == set.bodyStates.count);
+                        B2_ASSERT(set.jointSims.count == 0);
                     }
                     else
                     {
@@ -3106,7 +2814,8 @@ void b2World_Dump()
             for (int colorIndex = 0; colorIndex < B2_GRAPH_COLOR_COUNT; ++colorIndex)
             {
                 ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
-                {
+                    int bitCount = 0;
+
                     B2_ASSERT(color.contactSims.count >= 0);
                     totalContactCount += color.contactSims.count;
                     for (int i = 0; i < color.contactSims.count; ++i)
@@ -3129,11 +2838,14 @@ void b2World_Dump()
                             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
                             B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
                             B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
+                            
+                            bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
+                            bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
                         }
                     }
-                }
+                
 
-                {
+                
                     B2_ASSERT(color.jointSims.count >= 0);
                     totalJointCount += color.jointSims.count;
                     for (int i = 0; i < color.jointSims.count; ++i)
@@ -3153,9 +2865,14 @@ void b2World_Dump()
                             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
                             B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
                             B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
+                            
+                            bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
+                            bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
                         }
                     }
-                }
+                
+                // Validate the bit population for this graph color
+                B2_ASSERT(bitCount == b2CountSetBits(ref color.bodySet));
             }
 
             int contactIdCount = b2GetIdCount(world.contactIdPool);

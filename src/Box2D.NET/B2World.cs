@@ -79,6 +79,15 @@ namespace Box2D.NET
         public B2Array<B2ContactHitEvent> contactHitEvents;
         public B2Array<B2JointEvent> jointEvents;
 
+        // todo consider deferred waking and impulses to make it possible
+        // to apply forces and impulses from multiple threads
+        // impulses must be deferred because sleeping bodies have no velocity state
+        // Problems:
+        // - multiple forces applied to the same body from multiple threads
+        // Deferred wake
+        //b2BitSet bodyWakeSet;
+        //b2ImpulseArray deferredImpulses;
+
         // Used to track debug draw
         public B2BitSet debugBodySet;
         public B2BitSet debugJointSet;

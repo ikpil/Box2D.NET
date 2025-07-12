@@ -47,6 +47,7 @@ public class BodyType : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.name = "ground";
             groundId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
@@ -59,6 +60,7 @@ public class BodyType : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-2.0f, 3.0f);
+            bodyDef.name = "attach1";
             m_attachmentId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
@@ -73,6 +75,7 @@ public class BodyType : Sample
             bodyDef.type = m_type;
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(3.0f, 3.0f);
+            bodyDef.name = "attach2";
             m_secondAttachmentId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
@@ -87,6 +90,7 @@ public class BodyType : Sample
             bodyDef.type = m_type;
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(-4.0f, 5.0f);
+            bodyDef.name = "platform";
             m_platformId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
@@ -137,6 +141,7 @@ public class BodyType : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-3.0f, 8.0f);
+            bodyDef.name = "crate1";
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
@@ -153,6 +158,7 @@ public class BodyType : Sample
             bodyDef.type = m_type;
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(2.0f, 8.0f);
+            bodyDef.name = "crate2";
             m_secondPayloadId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
@@ -169,6 +175,7 @@ public class BodyType : Sample
             bodyDef.type = m_type;
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(8.0f, 0.2f);
+            bodyDef.name = "debris";
             m_touchingBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.25f);
@@ -186,6 +193,7 @@ public class BodyType : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(-8.0f, 12.0f);
             bodyDef.gravityScale = 0.0f;
+            bodyDef.name = "floater";
             m_floatingBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.5f), 0.25f);
@@ -221,6 +229,9 @@ public class BodyType : Sample
         {
             m_type = B2BodyType.b2_kinematicBody;
             b2Body_SetType(m_platformId, B2BodyType.b2_kinematicBody);
+            b2Body_SetLinearVelocity(m_secondAttachmentId, b2Vec2_zero);
+            b2Body_SetAngularVelocity(m_secondAttachmentId, 0.0f);
+
             b2Body_SetLinearVelocity(m_platformId, new B2Vec2(-m_speed, 0.0f));
             b2Body_SetAngularVelocity(m_platformId, 0.0f);
             b2Body_SetType(m_secondAttachmentId, B2BodyType.b2_kinematicBody);
@@ -243,24 +254,14 @@ public class BodyType : Sample
         {
             if (m_isEnabled)
             {
-                b2Body_Enable(m_platformId);
-                b2Body_Enable(m_secondAttachmentId);
+                b2Body_Enable(m_attachmentId);
                 b2Body_Enable(m_secondPayloadId);
-                b2Body_Enable(m_touchingBodyId);
                 b2Body_Enable(m_floatingBodyId);
-
-                if (m_type == B2BodyType.b2_kinematicBody)
-                {
-                    b2Body_SetLinearVelocity(m_platformId, new B2Vec2(-m_speed, 0.0f));
-                    b2Body_SetAngularVelocity(m_platformId, 0.0f);
-                }
             }
             else
             {
-                b2Body_Disable(m_platformId);
-                b2Body_Disable(m_secondAttachmentId);
+                b2Body_Disable(m_attachmentId);
                 b2Body_Disable(m_secondPayloadId);
-                b2Body_Disable(m_touchingBodyId);
                 b2Body_Disable(m_floatingBodyId);
             }
         }

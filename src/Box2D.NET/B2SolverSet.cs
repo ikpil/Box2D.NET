@@ -7,7 +7,7 @@ using static Box2D.NET.B2Arrays;
 namespace Box2D.NET
 {
     // This holds solver set data. The following sets are used:
-    // - static set for all static bodies (no contacts or joints)
+    // - static set for all static bodies and joints between static bodies
     // - active set for all active bodies with body states (no contacts or joints)
     // - disabled set for disabled bodies and their joints
     // - all further sets are sleeping island sets along with their contacts and joints

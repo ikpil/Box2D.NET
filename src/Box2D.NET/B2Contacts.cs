@@ -462,7 +462,6 @@ namespace Box2D.NET
             contactSim.friction = world.frictionCallback(shapeA.friction, shapeA.userMaterialId, shapeB.friction, shapeB.userMaterialId);
             contactSim.restitution = world.restitutionCallback(shapeA.restitution, shapeA.userMaterialId, shapeB.restitution, shapeB.userMaterialId);
 
-            // todo branch improves perf?
             if (shapeA.rollingResistance > 0.0f || shapeB.rollingResistance > 0.0f)
             {
                 float radiusA = b2GetShapeRadius(shapeA);

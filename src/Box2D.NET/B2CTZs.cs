@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Box2D.NET
@@ -19,6 +20,7 @@ namespace Box2D.NET
                 count++;
                 block >>= 1;
             }
+
             return count;
         }
 
@@ -34,6 +36,7 @@ namespace Box2D.NET
                 count++;
                 mask >>= 1;
             }
+
             return count;
         }
 
@@ -48,6 +51,20 @@ namespace Box2D.NET
                 count++;
                 block >>= 1;
             }
+
+            return count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2PopCount64(ulong block)
+        {
+            int count = 0;
+            while (block != 0)
+            {
+                count += (int)(block & 1);
+                block >>= 1;
+            }
+
             return count;
         }
 

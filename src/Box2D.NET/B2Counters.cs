@@ -17,6 +17,6 @@ namespace Box2D.NET
         public int treeHeight;
         public int byteCount;
         public int taskCount;
-        public B2FixedArray12<int> colorCounts;
+        public B2FixedArray24<int> colorCounts;
     }
 }

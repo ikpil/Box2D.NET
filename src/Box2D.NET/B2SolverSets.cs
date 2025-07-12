@@ -547,7 +547,10 @@ namespace Box2D.NET
 
         public static void b2TransferBody(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Body body)
         {
-            B2_ASSERT(targetSet != sourceSet);
+            if (targetSet == sourceSet)
+            {
+                return;
+            }
 
             int sourceIndex = body.localIndex;
             B2BodySim sourceSim = b2Array_Get(ref sourceSet.bodySims, sourceIndex);
@@ -556,6 +559,9 @@ namespace Box2D.NET
             ref B2BodySim targetSim = ref b2Array_Add(ref targetSet.bodySims);
             //memcpy( targetSim, sourceSim, sizeof( b2BodySim ) );
             targetSim.CopyFrom(sourceSim);
+
+            // Clear transient body flags
+            targetSim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
 
             // Remove body sim from solver set that owns it
             int movedIndex = b2Array_RemoveSwap(ref sourceSet.bodySims, sourceIndex);
@@ -587,7 +593,10 @@ namespace Box2D.NET
 
         public static void b2TransferJoint(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Joint joint)
         {
-            B2_ASSERT(targetSet != sourceSet);
+            if (targetSet == sourceSet)
+            {
+                return;
+            }
 
             int localIndex = joint.localIndex;
             int colorIndex = joint.colorIndex;

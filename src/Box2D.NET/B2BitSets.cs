@@ -6,6 +6,7 @@ using System;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Buffers;
+using static Box2D.NET.B2CTZs;
 
 namespace Box2D.NET
 {
@@ -123,6 +124,20 @@ namespace Box2D.NET
             }
 
             bitSet.blockCount = blockCount;
+        }
+
+        // This function is here because ctz.h is included by
+        // this file but not in bitset.c
+        public static int b2CountSetBits(ref B2BitSet set)
+        {
+            int popCount = 0;
+            int blockCount = set.blockCount;
+            for (uint i = 0; i < blockCount; ++i)
+            {
+                popCount += b2PopCount64(set.bits[i]);
+            }
+
+            return popCount;
         }
 
         public static void b2InPlaceUnion(ref B2BitSet setA, ref B2BitSet setB)
