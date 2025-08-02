@@ -97,18 +97,38 @@ namespace Box2D.NET
             return length;
         }
 
+        /// Enable/disable the distance joint spring. When disabled the distance joint is rigid.
         public static void b2DistanceJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.enableSpring = enableSpring;
         }
 
+        /// Is the distance joint spring enabled?
         public static bool b2DistanceJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             return @base.uj.distanceJoint.enableSpring;
         }
 
+        /// Set the force range for the spring.
+        public static void b2DistanceJoint_SetSpringForceRange(B2JointId jointId, float lowerForce, float upperForce)
+        {
+            B2_ASSERT( lowerForce <= upperForce );
+            B2JointSim @base = b2GetJointSimCheckType( jointId, B2JointType.b2_distanceJoint );
+            @base.uj.distanceJoint.lowerSpringForce = lowerForce;
+            @base.uj.distanceJoint.upperSpringForce = upperForce;
+        }
+
+        /// Get the force range for the spring.
+        public static void b2DistanceJoint_GetSpringForceRange(B2JointId jointId, out float lowerForce, out float upperForce)
+        {
+            B2JointSim @base = b2GetJointSimCheckType( jointId, B2JointType.b2_distanceJoint );
+            lowerForce = @base.uj.distanceJoint.lowerSpringForce;
+            upperForce = @base.uj.distanceJoint.upperSpringForce;
+        }
+
+        /// Set the spring stiffness in Hertz
         public static void b2DistanceJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
@@ -356,8 +376,12 @@ namespace Box2D.NET
                     float bias = joint.distanceSoftness.biasRate * C;
 
                     float m = joint.distanceSoftness.massScale * joint.axialMass;
-                    float impulse = -m * (Cdot + bias) - joint.distanceSoftness.impulseScale * joint.impulse;
-                    joint.impulse += impulse;
+                    float oldImpulse = joint.impulse;
+                    float impulse = -m * ( Cdot + bias ) - joint.distanceSoftness.impulseScale * oldImpulse;
+
+                    float h = context.h;
+                    joint.impulse = b2ClampFloat( joint.impulse + impulse, joint.lowerSpringForce * h, joint.upperSpringForce * h );
+                    impulse = joint.impulse - oldImpulse;
 
                     B2Vec2 P = b2MulSV(impulse, axis);
                     vA = b2MulSub(vA, mA, P);

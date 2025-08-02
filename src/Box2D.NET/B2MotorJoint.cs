@@ -6,13 +6,24 @@ namespace Box2D.NET
 {
     public struct B2MotorJoint
     {
-        public B2Vec2 linearOffset;
-        public float angularOffset;
-        public B2Vec2 linearImpulse;
-        public float angularImpulse;
-        public float maxForce;
-        public float maxTorque;
-        public float correctionFactor;
+        public B2Vec2 linearVelocity;
+        public float maxVelocityForce;
+        public float angularVelocity;
+        public float maxVelocityTorque;
+        public float linearHertz;
+        public float linearDampingRatio;
+        public float maxSpringForce;
+        public float angularHertz;
+        public float angularDampingRatio;
+        public float maxSpringTorque;
+
+        public B2Vec2 linearVelocityImpulse;
+        public float angularVelocityImpulse;
+        public B2Vec2 linearSpringImpulse;
+        public float angularSpringImpulse;
+
+        public B2Softness linearSpring;
+        public B2Softness angularSpring;
 
         public int indexA;
         public int indexB;

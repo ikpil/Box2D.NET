@@ -16,7 +16,6 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
-using static Box2D.NET.B2MouseJoints;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
 
@@ -43,11 +42,12 @@ public class Sample : IDisposable
     protected int m_taskCount;
     protected int m_threadCount;
 
-    protected B2BodyId m_groundBodyId;
+    protected B2BodyId m_mouseBodyId;
 
     public B2WorldId m_worldId;
-    public int m_stepCount;
     protected B2JointId m_mouseJointId;
+    protected B2Vec2 m_mousePoint;
+    public int m_stepCount;
     protected B2Profile m_maxProfile;
     protected B2Profile m_totalProfile;
 
@@ -81,7 +81,8 @@ public class Sample : IDisposable
 
         m_stepCount = 0;
 
-        m_groundBodyId = b2_nullBodyId;
+        m_mouseBodyId = b2_nullBodyId;
+        m_mousePoint = new B2Vec2();
 
         m_maxProfile = new B2Profile();
         m_totalProfile = new B2Profile();
@@ -161,7 +162,6 @@ public class Sample : IDisposable
                 aveProfile.pairs = scale * m_totalProfile.pairs;
                 aveProfile.collide = scale * m_totalProfile.collide;
                 aveProfile.solve = scale * m_totalProfile.solve;
-                aveProfile.mergeIslands = scale * m_totalProfile.mergeIslands;
                 aveProfile.prepareStages = scale * m_totalProfile.prepareStages;
                 aveProfile.solveConstraints = scale * m_totalProfile.solveConstraints;
                 aveProfile.prepareConstraints = scale * m_totalProfile.prepareConstraints;
@@ -185,7 +185,6 @@ public class Sample : IDisposable
             DrawTextLine($"pairs [ave] (max) = {p.pairs,5:F2} [{aveProfile.pairs,6:F2}] ({m_maxProfile.pairs,6:F2})");
             DrawTextLine($"collide [ave] (max) = {p.collide,5:F2} [{aveProfile.collide,6:F2}] ({m_maxProfile.collide,6:F2})");
             DrawTextLine($"solve [ave] (max) = {p.solve,5:F2} [{aveProfile.solve,6:F2}] ({m_maxProfile.solve,6:F2})");
-            DrawTextLine($"> merge islands [ave] (max) = {p.mergeIslands,5:F2} [{aveProfile.mergeIslands,6:F2}] ({m_maxProfile.mergeIslands,6:F2})");
             DrawTextLine($"> prepare tasks [ave] (max) = {p.prepareStages,5:F2} [{aveProfile.prepareStages,6:F2}] ({m_maxProfile.prepareStages,6:F2})");
             DrawTextLine($"> solve constraints [ave] (max) = {p.solveConstraints,5:F2} [{aveProfile.solveConstraints,6:F2}] ({m_maxProfile.solveConstraints,6:F2})");
             DrawTextLine($">> prepare constraints [ave] (max) = {p.prepareConstraints,5:F2} [{aveProfile.prepareConstraints,6:F2}] ({m_maxProfile.prepareConstraints,6:F2})");
@@ -290,6 +289,8 @@ public class Sample : IDisposable
             box.lowerBound = b2Sub(p, d);
             box.upperBound = b2Add(p, d);
 
+            m_mousePoint = p;
+
             // Query the world for overlapping shapes.
             QueryContext queryContext = new QueryContext(p, b2_nullBodyId);
             b2World_OverlapAABB(m_worldId, box, b2DefaultQueryFilter(), QueryCallback, queryContext);
@@ -298,38 +299,43 @@ public class Sample : IDisposable
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_kinematicBody;
-                m_groundBodyId = b2CreateBody(m_worldId, ref bodyDef);
+                bodyDef.position = p;
+                bodyDef.enableSleep = false;
+                m_mouseBodyId = b2CreateBody(m_worldId, ref bodyDef);
 
-                B2MouseJointDef jointDef = b2DefaultMouseJointDef();
-                jointDef.@base.bodyIdA = m_groundBodyId;
+                B2MotorJointDef jointDef = b2DefaultMotorJointDef();
+                jointDef.@base.bodyIdA = m_mouseBodyId;
                 jointDef.@base.bodyIdB = queryContext.bodyId;
-                jointDef.@base.localFrameA.p = p;
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(queryContext.bodyId, p);
-                jointDef.hertz = 7.5f;
-                jointDef.dampingRatio = 0.7f;
-                jointDef.maxForce = 100.0f * b2Body_GetMass(queryContext.bodyId) * b2Length(b2World_GetGravity(m_worldId));
-                m_mouseJointId = b2CreateMouseJoint(m_worldId, ref jointDef);
+                jointDef.linearHertz = 7.5f;
+                jointDef.linearDampingRatio = 0.7f;
 
-                b2Body_SetAwake(queryContext.bodyId, true);
+                B2MassData massData = b2Body_GetMassData(queryContext.bodyId);
+                float g = b2Length(b2World_GetGravity(m_worldId));
+                float mg = massData.mass * g;
+                jointDef.maxSpringForce = 100.0f * mg;
+
+                if (massData.mass > 0.0f)
+                {
+                    // This acts like angular friction
+                    float lever = MathF.Sqrt(massData.rotationalInertia / massData.mass);
+                    jointDef.maxVelocityTorque = 1.0f * lever * mg;
+                }
+
+                m_mouseJointId = b2CreateMotorJoint(m_worldId, ref jointDef);
             }
         }
     }
 
     public virtual void MouseUp(B2Vec2 p, MouseButton button)
     {
-        if (b2Joint_IsValid(m_mouseJointId) == false)
-        {
-            // The world or attached body was destroyed.
-            m_mouseJointId = b2_nullJointId;
-        }
-
         if (B2_IS_NON_NULL(m_mouseJointId) && button == (int)MouseButton.Left)
         {
             b2DestroyJoint(m_mouseJointId);
             m_mouseJointId = b2_nullJointId;
 
-            b2DestroyBody(m_groundBodyId);
-            m_groundBodyId = b2_nullBodyId;
+            b2DestroyBody(m_mouseBodyId);
+            m_mouseBodyId = b2_nullBodyId;
         }
     }
 
@@ -341,13 +347,7 @@ public class Sample : IDisposable
             m_mouseJointId = b2_nullJointId;
         }
 
-        if (B2_IS_NON_NULL(m_mouseJointId))
-        {
-            B2Transform localFrameA = new B2Transform(p, b2Rot_identity);
-            b2Joint_SetLocalFrameA(m_mouseJointId, localFrameA);
-            B2BodyId bodyIdB = b2Joint_GetBodyB(m_mouseJointId);
-            b2Body_SetAwake(bodyIdB, true);
-        }
+        m_mousePoint = p;
     }
 
     public void DrawTextLine(string text)
@@ -387,6 +387,23 @@ public class Sample : IDisposable
             }
         }
 
+        if (B2_IS_NON_NULL(m_mouseJointId) && b2Joint_IsValid(m_mouseJointId) == false)
+        {
+            // The world or attached body was destroyed.
+            m_mouseJointId = b2_nullJointId;
+
+            if (B2_IS_NON_NULL(m_mouseBodyId))
+            {
+                b2DestroyBody(m_mouseBodyId);
+                m_mouseBodyId = b2_nullBodyId;
+            }
+        }
+
+        if (B2_IS_NON_NULL(m_mouseBodyId) && timeStep > 0.0f)
+        {
+            b2Body_SetTargetTransform(m_mouseBodyId, new B2Transform(m_mousePoint, b2Rot_identity), timeStep);
+        }
+
         b2World_EnableSleeping(m_worldId, m_context.settings.enableSleep);
         b2World_EnableWarmStarting(m_worldId, m_context.settings.enableWarmStarting);
         b2World_EnableContinuous(m_worldId, m_context.settings.enableContinuous);
@@ -409,7 +426,6 @@ public class Sample : IDisposable
             m_maxProfile.pairs = b2MaxFloat(m_maxProfile.pairs, p.pairs);
             m_maxProfile.collide = b2MaxFloat(m_maxProfile.collide, p.collide);
             m_maxProfile.solve = b2MaxFloat(m_maxProfile.solve, p.solve);
-            m_maxProfile.mergeIslands = b2MaxFloat(m_maxProfile.mergeIslands, p.mergeIslands);
             m_maxProfile.prepareStages = b2MaxFloat(m_maxProfile.prepareStages, p.prepareStages);
             m_maxProfile.solveConstraints = b2MaxFloat(m_maxProfile.solveConstraints, p.solveConstraints);
             m_maxProfile.prepareConstraints = b2MaxFloat(m_maxProfile.prepareConstraints, p.prepareConstraints);
@@ -433,7 +449,6 @@ public class Sample : IDisposable
             m_totalProfile.pairs += p.pairs;
             m_totalProfile.collide += p.collide;
             m_totalProfile.solve += p.solve;
-            m_totalProfile.mergeIslands += p.mergeIslands;
             m_totalProfile.prepareStages += p.prepareStages;
             m_totalProfile.solveConstraints += p.solveConstraints;
             m_totalProfile.prepareConstraints += p.prepareConstraints;

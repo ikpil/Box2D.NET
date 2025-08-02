@@ -78,19 +78,19 @@ namespace Box2D.NET
             return world.inv_h * @base.uj.weldJoint.angularImpulse;
         }
 
-// Point-to-point constraint
-// C = p2 - p1
-// Cdot = v2 - v1
-//      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-// J = [-I -r1_skew I r2_skew ]
-// Identity used:
-// w k % (rx i + ry j) = w * (-ry i + rx j)
+        // Point-to-point constraint
+        // C = p2 - p1
+        // Cdot = v2 - v1
+        //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
+        // J = [-I -r1_skew I r2_skew ]
+        // Identity used:
+        // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-// Angle constraint
-// C = angle2 - angle1 - referenceAngle
-// Cdot = w2 - w1
-// J = [0 0 -1 0 0 1]
-// K = invI1 + invI2
+        // Angle constraint
+        // C = angle2 - angle1 - referenceAngle
+        // Cdot = w2 - w1
+        // J = [0 0 -1 0 0 1]
+        // K = invI1 + invI2
 
         public static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
@@ -143,20 +143,20 @@ namespace Box2D.NET
 
             if (joint.linearHertz == 0.0f)
             {
-                joint.linearSoftness = @base.constraintSoftness;
+                joint.linearSpring = @base.constraintSoftness;
             }
             else
             {
-                joint.linearSoftness = b2MakeSoft(joint.linearHertz, joint.linearDampingRatio, context.h);
+                joint.linearSpring = b2MakeSoft(joint.linearHertz, joint.linearDampingRatio, context.h);
             }
 
             if (joint.angularHertz == 0.0f)
             {
-                joint.angularSoftness = @base.constraintSoftness;
+                joint.angularSpring = @base.constraintSoftness;
             }
             else
             {
-                joint.angularSoftness = b2MakeSoft(joint.angularHertz, joint.angularDampingRatio, context.h);
+                joint.angularSpring = b2MakeSoft(joint.angularHertz, joint.angularDampingRatio, context.h);
             }
 
             if (context.enableWarmStarting == false)
@@ -226,9 +226,9 @@ namespace Box2D.NET
                 if (useBias || joint.angularHertz > 0.0f)
                 {
                     float C = jointAngle;
-                    bias = joint.angularSoftness.biasRate * C;
-                    massScale = joint.angularSoftness.massScale;
-                    impulseScale = joint.angularSoftness.impulseScale;
+                    bias = joint.angularSpring.biasRate * C;
+                    massScale = joint.angularSpring.massScale;
+                    impulseScale = joint.angularSpring.impulseScale;
                 }
 
                 float Cdot = wB - wA;
@@ -253,9 +253,9 @@ namespace Box2D.NET
                     B2Vec2 dcB = stateB.deltaPosition;
                     B2Vec2 C = b2Add(b2Add(b2Sub(dcB, dcA), b2Sub(rB, rA)), joint.deltaCenter);
 
-                    bias = b2MulSV(joint.linearSoftness.biasRate, C);
-                    massScale = joint.linearSoftness.massScale;
-                    impulseScale = joint.linearSoftness.impulseScale;
+                    bias = b2MulSV(joint.linearSpring.biasRate, C);
+                    massScale = joint.linearSpring.massScale;
+                    impulseScale = joint.linearSpring.impulseScale;
                 }
 
                 B2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));

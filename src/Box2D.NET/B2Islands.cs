@@ -57,7 +57,6 @@ namespace Box2D.NET
             island.headJoint = B2_NULL_INDEX;
             island.tailJoint = B2_NULL_INDEX;
             island.jointCount = 0;
-            island.parentIsland = B2_NULL_INDEX;
             island.constraintRemoveCount = 0;
 
             ref B2IslandSim islandSim = ref b2Array_Add(ref set.islandSims);
@@ -94,6 +93,158 @@ namespace Box2D.NET
             b2FreeId(world.islandIdPool, islandId);
         }
 
+
+        public static int b2MergeIslands(B2World world, int islandIdA, int islandIdB)
+        {
+            if (islandIdA == islandIdB)
+            {
+                return islandIdA;
+            }
+
+            if (islandIdA == B2_NULL_INDEX)
+            {
+                B2_ASSERT(islandIdB != B2_NULL_INDEX);
+                return islandIdB;
+            }
+
+            if (islandIdB == B2_NULL_INDEX)
+            {
+                B2_ASSERT(islandIdA != B2_NULL_INDEX);
+                return islandIdA;
+            }
+
+            B2Island islandA = b2Array_Get(ref world.islands, islandIdA);
+            B2Island islandB = b2Array_Get(ref world.islands, islandIdB);
+
+            // Keep the biggest island to reduce cache misses
+            B2Island big;
+            B2Island small;
+            if (islandA.bodyCount >= islandB.bodyCount)
+            {
+                big = islandA;
+                small = islandB;
+            }
+            else
+            {
+                big = islandB;
+                small = islandA;
+            }
+
+            int bigId = big.islandId;
+
+            // remap island indices (cache misses)
+            int bodyId = small.headBody;
+            while (bodyId != B2_NULL_INDEX)
+            {
+                B2Body body = b2Array_Get(ref world.bodies, bodyId);
+                body.islandId = bigId;
+                bodyId = body.islandNext;
+            }
+
+            int contactId = small.headContact;
+            while (contactId != B2_NULL_INDEX)
+            {
+                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                contact.islandId = bigId;
+                contactId = contact.islandNext;
+            }
+
+            int jointId = small.headJoint;
+            while (jointId != B2_NULL_INDEX)
+            {
+                B2Joint joint = b2Array_Get(ref world.joints, jointId);
+                joint.islandId = bigId;
+                jointId = joint.islandNext;
+            }
+
+            // connect body lists
+            B2_ASSERT(big.tailBody != B2_NULL_INDEX);
+            B2Body tailBody = b2Array_Get(ref world.bodies, big.tailBody);
+            B2_ASSERT(tailBody.islandNext == B2_NULL_INDEX);
+            tailBody.islandNext = small.headBody;
+
+            B2_ASSERT(small.headBody != B2_NULL_INDEX);
+            B2Body headBody = b2Array_Get(ref world.bodies, small.headBody);
+            B2_ASSERT(headBody.islandPrev == B2_NULL_INDEX);
+            headBody.islandPrev = big.tailBody;
+
+            big.tailBody = small.tailBody;
+            big.bodyCount += small.bodyCount;
+
+            // connect contact lists
+            if (big.headContact == B2_NULL_INDEX)
+            {
+                // Big island has no contacts
+                B2_ASSERT(big.tailContact == B2_NULL_INDEX && big.contactCount == 0);
+                big.headContact = small.headContact;
+                big.tailContact = small.tailContact;
+                big.contactCount = small.contactCount;
+            }
+            else if (small.headContact != B2_NULL_INDEX)
+            {
+                // Both islands have contacts
+                B2_ASSERT(small.tailContact != B2_NULL_INDEX && small.contactCount > 0);
+                B2_ASSERT(big.tailContact != B2_NULL_INDEX && big.contactCount > 0);
+
+                B2Contact tailContact = b2Array_Get(ref world.contacts, big.tailContact);
+                B2_ASSERT(tailContact.islandNext == B2_NULL_INDEX);
+                tailContact.islandNext = small.headContact;
+
+                B2Contact headContact = b2Array_Get(ref world.contacts, small.headContact);
+                B2_ASSERT(headContact.islandPrev == B2_NULL_INDEX);
+                headContact.islandPrev = big.tailContact;
+
+                big.tailContact = small.tailContact;
+                big.contactCount += small.contactCount;
+            }
+
+            if (big.headJoint == B2_NULL_INDEX)
+            {
+                // Root island has no joints
+                B2_ASSERT(big.tailJoint == B2_NULL_INDEX && big.jointCount == 0);
+                big.headJoint = small.headJoint;
+                big.tailJoint = small.tailJoint;
+                big.jointCount = small.jointCount;
+            }
+            else if (small.headJoint != B2_NULL_INDEX)
+            {
+                // Both islands have joints
+                B2_ASSERT(small.tailJoint != B2_NULL_INDEX && small.jointCount > 0);
+                B2_ASSERT(big.tailJoint != B2_NULL_INDEX && big.jointCount > 0);
+
+                B2Joint tailJoint = b2Array_Get(ref world.joints, big.tailJoint);
+                B2_ASSERT(tailJoint.islandNext == B2_NULL_INDEX);
+                tailJoint.islandNext = small.headJoint;
+
+                B2Joint headJoint = b2Array_Get(ref world.joints, small.headJoint);
+                B2_ASSERT(headJoint.islandPrev == B2_NULL_INDEX);
+                headJoint.islandPrev = big.tailJoint;
+
+                big.tailJoint = small.tailJoint;
+                big.jointCount += small.jointCount;
+            }
+
+            // Track removed constraints
+            big.constraintRemoveCount += small.constraintRemoveCount;
+
+            small.bodyCount = 0;
+            small.contactCount = 0;
+            small.jointCount = 0;
+            small.headBody = B2_NULL_INDEX;
+            small.headContact = B2_NULL_INDEX;
+            small.headJoint = B2_NULL_INDEX;
+            small.tailBody = B2_NULL_INDEX;
+            small.tailContact = B2_NULL_INDEX;
+            small.tailJoint = B2_NULL_INDEX;
+            small.constraintRemoveCount = 0;
+
+            b2DestroyIsland(world, small.islandId);
+
+            b2ValidateIsland(world, bigId);
+
+            return bigId;
+        }
+
         public static void b2AddContactToIsland(B2World world, int islandId, B2Contact contact)
         {
             B2_ASSERT(contact.islandId == B2_NULL_INDEX);
@@ -121,10 +272,7 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-        // Link contacts into the island graph when it starts having contact points
         // Link a contact into an island.
-        // This performs union-find and path compression to join islands.
-        // https://en.wikipedia.org/wiki/Disjoint-set_data_structure
         public static void b2LinkContact(B2World world, B2Contact contact)
         {
             B2_ASSERT((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0);
@@ -158,75 +306,11 @@ namespace Box2D.NET
             B2_ASSERT(bodyB.setIndex != (int)B2SetType.b2_staticSet || islandIdB == B2_NULL_INDEX);
             B2_ASSERT(islandIdA != B2_NULL_INDEX || islandIdB != B2_NULL_INDEX);
 
-            if (islandIdA == islandIdB)
-            {
-                // Contact in same island
-                b2AddContactToIsland(world, islandIdA, contact);
-                return;
-            }
+            // Merge islands. This will destroy one of the islands.
+            int finalIslandId = b2MergeIslands(world, islandIdA, islandIdB);
 
-            // Union-find root of islandA
-            B2Island islandA = null;
-            if (islandIdA != B2_NULL_INDEX)
-            {
-                islandA = b2Array_Get(ref world.islands, islandIdA);
-                int parentId = islandA.parentIsland;
-                while (parentId != B2_NULL_INDEX)
-                {
-                    B2Island parent = b2Array_Get(ref world.islands, parentId);
-                    if (parent.parentIsland != B2_NULL_INDEX)
-                    {
-                        // path compression
-                        islandA.parentIsland = parent.parentIsland;
-                    }
-
-                    islandA = parent;
-                    islandIdA = parentId;
-                    parentId = islandA.parentIsland;
-                }
-            }
-
-            // Union-find root of islandB
-            B2Island islandB = null;
-            if (islandIdB != B2_NULL_INDEX)
-            {
-                islandB = b2Array_Get(ref world.islands, islandIdB);
-                int parentId = islandB.parentIsland;
-                while (islandB.parentIsland != B2_NULL_INDEX)
-                {
-                    B2Island parent = b2Array_Get(ref world.islands, parentId);
-                    if (parent.parentIsland != B2_NULL_INDEX)
-                    {
-                        // path compression
-                        islandB.parentIsland = parent.parentIsland;
-                    }
-
-                    islandB = parent;
-                    islandIdB = parentId;
-                    parentId = islandB.parentIsland;
-                }
-            }
-
-            B2_ASSERT(islandA != null || islandB != null);
-
-            // Union-Find link island roots
-            if (islandA != islandB && islandA != null && islandB != null)
-            {
-                B2_ASSERT(islandA != islandB);
-                B2_ASSERT(islandB.parentIsland == B2_NULL_INDEX);
-                islandB.parentIsland = islandIdA;
-            }
-
-            if (islandA != null)
-            {
-                b2AddContactToIsland(world, islandIdA, contact);
-            }
-            else
-            {
-                b2AddContactToIsland(world, islandIdB, contact);
-            }
-
-            // todo why not merge the islands right here?
+            // Add contact to the island that survived
+            b2AddContactToIsland(world, finalIslandId, contact);
         }
 
         // Unlink contact from the island graph when it stops having contact points
@@ -302,7 +386,7 @@ namespace Box2D.NET
         }
 
         // Link a joint into the island graph when it is created
-        public static void b2LinkJoint(B2World world, B2Joint joint, bool mergeIslands)
+        public static void b2LinkJoint(B2World world, B2Joint joint)
         {
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
@@ -321,78 +405,11 @@ namespace Box2D.NET
 
             B2_ASSERT(islandIdA != B2_NULL_INDEX || islandIdB != B2_NULL_INDEX);
 
-            if (islandIdA == islandIdB)
-            {
-                // Joint in same island
-                b2AddJointToIsland(world, islandIdA, joint);
-                return;
-            }
+            // Merge islands. This will destroy one of the islands.
+            int finalIslandId = b2MergeIslands(world, islandIdA, islandIdB);
 
-            // Union-find root of islandA
-            B2Island islandA = null;
-            if (islandIdA != B2_NULL_INDEX)
-            {
-                islandA = b2Array_Get(ref world.islands, islandIdA);
-                while (islandA.parentIsland != B2_NULL_INDEX)
-                {
-                    B2Island parent = b2Array_Get(ref world.islands, islandA.parentIsland);
-                    if (parent.parentIsland != B2_NULL_INDEX)
-                    {
-                        // path compression
-                        islandA.parentIsland = parent.parentIsland;
-                    }
-
-                    islandIdA = islandA.parentIsland;
-                    islandA = parent;
-                }
-            }
-
-            // Union-find root of islandB
-            B2Island islandB = null;
-            if (islandIdB != B2_NULL_INDEX)
-            {
-                islandB = b2Array_Get(ref world.islands, islandIdB);
-                while (islandB.parentIsland != B2_NULL_INDEX)
-                {
-                    B2Island parent = b2Array_Get(ref world.islands, islandB.parentIsland);
-                    if (parent.parentIsland != B2_NULL_INDEX)
-                    {
-                        // path compression
-                        islandB.parentIsland = parent.parentIsland;
-                    }
-
-                    islandIdB = islandB.parentIsland;
-                    islandB = parent;
-                }
-            }
-
-            B2_ASSERT(islandA != null || islandB != null);
-
-            // Union-Find link island roots
-            if (islandA != islandB && islandA != null && islandB != null)
-            {
-                B2_ASSERT(islandA != islandB);
-                B2_ASSERT(islandB.parentIsland == B2_NULL_INDEX);
-                islandB.parentIsland = islandIdA;
-            }
-
-            if (islandA != null)
-            {
-                b2AddJointToIsland(world, islandIdA, joint);
-            }
-            else
-            {
-                b2AddJointToIsland(world, islandIdB, joint);
-            }
-
-            // Joints need to have islands merged immediately when they are created
-            // to keep the island graph valid.
-            // However, when a body type is being changed the merge can be deferred until
-            // all joints are linked.
-            if (mergeIslands)
-            {
-                b2MergeAwakeIslands(world);
-            }
+            // Add joint the island that survived
+            b2AddJointToIsland(world, finalIslandId, joint);
         }
 
         // Unlink a joint from the island graph when it is destroyed
@@ -441,180 +458,6 @@ namespace Box2D.NET
 
             b2ValidateIsland(world, islandId);
         }
-
-// Merge an island into its root island.
-// todo we can assume all islands are awake here
-        public static void b2MergeIsland(B2World world, B2Island island)
-        {
-            B2_ASSERT(island.parentIsland != B2_NULL_INDEX);
-
-            int rootId = island.parentIsland;
-            B2Island rootIsland = b2Array_Get(ref world.islands, rootId);
-            B2_ASSERT(rootIsland.parentIsland == B2_NULL_INDEX);
-
-            // remap island indices
-            int bodyId = island.headBody;
-            while (bodyId != B2_NULL_INDEX)
-            {
-                B2Body body = b2Array_Get(ref world.bodies, bodyId);
-                body.islandId = rootId;
-                bodyId = body.islandNext;
-            }
-
-            int contactId = island.headContact;
-            while (contactId != B2_NULL_INDEX)
-            {
-                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
-                contact.islandId = rootId;
-                contactId = contact.islandNext;
-            }
-
-            int jointId = island.headJoint;
-            while (jointId != B2_NULL_INDEX)
-            {
-                B2Joint joint = b2Array_Get(ref world.joints, jointId);
-                joint.islandId = rootId;
-                jointId = joint.islandNext;
-            }
-
-            // connect body lists
-            B2_ASSERT(rootIsland.tailBody != B2_NULL_INDEX);
-            B2Body tailBody = b2Array_Get(ref world.bodies, rootIsland.tailBody);
-            B2_ASSERT(tailBody.islandNext == B2_NULL_INDEX);
-            tailBody.islandNext = island.headBody;
-
-            B2_ASSERT(island.headBody != B2_NULL_INDEX);
-            B2Body headBody = b2Array_Get(ref world.bodies, island.headBody);
-            B2_ASSERT(headBody.islandPrev == B2_NULL_INDEX);
-            headBody.islandPrev = rootIsland.tailBody;
-
-            rootIsland.tailBody = island.tailBody;
-            rootIsland.bodyCount += island.bodyCount;
-
-            // connect contact lists
-            if (rootIsland.headContact == B2_NULL_INDEX)
-            {
-                // Root island has no contacts
-                B2_ASSERT(rootIsland.tailContact == B2_NULL_INDEX && rootIsland.contactCount == 0);
-                rootIsland.headContact = island.headContact;
-                rootIsland.tailContact = island.tailContact;
-                rootIsland.contactCount = island.contactCount;
-            }
-            else if (island.headContact != B2_NULL_INDEX)
-            {
-                // Both islands have contacts
-                B2_ASSERT(island.tailContact != B2_NULL_INDEX && island.contactCount > 0);
-                B2_ASSERT(rootIsland.tailContact != B2_NULL_INDEX && rootIsland.contactCount > 0);
-
-                B2Contact tailContact = b2Array_Get(ref world.contacts, rootIsland.tailContact);
-                B2_ASSERT(tailContact.islandNext == B2_NULL_INDEX);
-                tailContact.islandNext = island.headContact;
-
-                B2Contact headContact = b2Array_Get(ref world.contacts, island.headContact);
-                B2_ASSERT(headContact.islandPrev == B2_NULL_INDEX);
-                headContact.islandPrev = rootIsland.tailContact;
-
-                rootIsland.tailContact = island.tailContact;
-                rootIsland.contactCount += island.contactCount;
-            }
-
-            if (rootIsland.headJoint == B2_NULL_INDEX)
-            {
-                // Root island has no joints
-                B2_ASSERT(rootIsland.tailJoint == B2_NULL_INDEX && rootIsland.jointCount == 0);
-                rootIsland.headJoint = island.headJoint;
-                rootIsland.tailJoint = island.tailJoint;
-                rootIsland.jointCount = island.jointCount;
-            }
-            else if (island.headJoint != B2_NULL_INDEX)
-            {
-                // Both islands have joints
-                B2_ASSERT(island.tailJoint != B2_NULL_INDEX && island.jointCount > 0);
-                B2_ASSERT(rootIsland.tailJoint != B2_NULL_INDEX && rootIsland.jointCount > 0);
-
-                B2Joint tailJoint = b2Array_Get(ref world.joints, rootIsland.tailJoint);
-                B2_ASSERT(tailJoint.islandNext == B2_NULL_INDEX);
-                tailJoint.islandNext = island.headJoint;
-
-                B2Joint headJoint = b2Array_Get(ref world.joints, island.headJoint);
-                B2_ASSERT(headJoint.islandPrev == B2_NULL_INDEX);
-                headJoint.islandPrev = rootIsland.tailJoint;
-
-                rootIsland.tailJoint = island.tailJoint;
-                rootIsland.jointCount += island.jointCount;
-            }
-
-            // Track removed constraints
-            rootIsland.constraintRemoveCount += island.constraintRemoveCount;
-
-            b2ValidateIsland(world, rootId);
-        }
-
-// Iterate over all awake islands and merge any that need merging
-// Islands that get merged into a root island will be removed from the awake island array
-// and returned to the pool.
-// todo this might be faster if b2IslandSim held the connectivity data
-        public static void b2MergeAwakeIslands(B2World world)
-        {
-            b2TracyCZoneNC(B2TracyCZone.merge_islands, "Merge Islands", B2HexColor.b2_colorMediumTurquoise, true);
-
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
-            B2IslandSim[] islandSims = awakeSet.islandSims.data;
-            int awakeIslandCount = awakeSet.islandSims.count;
-
-            // Step 1: Ensure every child island points to its root island. This avoids merging a child island with
-            // a parent island that has already been merged with a grand-parent island.
-            for (int i = 0; i < awakeIslandCount; ++i)
-            {
-                int islandId = islandSims[i].islandId;
-
-                B2Island island = b2Array_Get(ref world.islands, islandId);
-
-                // find the root island
-                int rootId = islandId;
-                B2Island rootIsland = island;
-                while (rootIsland.parentIsland != B2_NULL_INDEX)
-                {
-                    B2Island parent = b2Array_Get(ref world.islands, rootIsland.parentIsland);
-                    if (parent.parentIsland != B2_NULL_INDEX)
-                    {
-                        // path compression
-                        rootIsland.parentIsland = parent.parentIsland;
-                    }
-
-                    rootId = rootIsland.parentIsland;
-                    rootIsland = parent;
-                }
-
-                if (rootIsland != island)
-                {
-                    island.parentIsland = rootId;
-                }
-            }
-
-            // Step 2: merge every awake island into its parent (which must be a root island)
-            // Reverse to support removal from awake array.
-            for (int i = awakeIslandCount - 1; i >= 0; --i)
-            {
-                int islandId = islandSims[i].islandId;
-                B2Island island = b2Array_Get(ref world.islands, islandId);
-
-                if (island.parentIsland == B2_NULL_INDEX)
-                {
-                    continue;
-                }
-
-                b2MergeIsland(world, island);
-
-                // this call does a remove swap from the end of the island sim array
-                b2DestroyIsland(world, islandId);
-            }
-
-            b2ValidateConnectivity(world);
-
-            b2TracyCZoneEnd(B2TracyCZone.merge_islands);
-        }
-
 
         public static void b2SplitIsland(B2World world, int baseId)
         {

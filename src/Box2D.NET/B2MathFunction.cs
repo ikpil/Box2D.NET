@@ -287,7 +287,7 @@ namespace Box2D.NET
         public static B2Rot b2NormalizeRot(B2Rot q)
         {
             float mag = MathF.Sqrt(q.s * q.s + q.c * q.c);
-            float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
+            float invMag = mag > 0.0f ? 1.0f / mag : 0.0f;
             B2Rot qn = new B2Rot(q.c * invMag, q.s * invMag);
             return qn;
         }
@@ -304,7 +304,7 @@ namespace Box2D.NET
             // s2 = s1 + omega * h * c1
             B2Rot q2 = new B2Rot(q1.c - deltaAngle * q1.s, q1.s + deltaAngle * q1.c);
             float mag = MathF.Sqrt(q2.s * q2.s + q2.c * q2.c);
-            float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
+            float invMag = mag > 0.0f ? 1.0f / mag : 0.0f;
             B2Rot qn = new B2Rot(q2.c * invMag, q2.s * invMag);
             return qn;
         }
@@ -363,7 +363,7 @@ namespace Box2D.NET
             };
 
             float mag = MathF.Sqrt(q.s * q.s + q.c * q.c);
-            float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
+            float invMag = mag > 0.0f ? 1.0f / mag : 0.0f;
             B2Rot qn = new B2Rot(q.c * invMag, q.s * invMag);
             return qn;
         }
@@ -823,7 +823,7 @@ namespace Box2D.NET
             }
 
             float mag = MathF.Sqrt(s * s + c * c);
-            float invMag = mag > 0.0 ? 1.0f / mag : 0.0f;
+            float invMag = mag > 0.0f ? 1.0f / mag : 0.0f;
             B2CosSin cs = new B2CosSin { cosine = c * invMag, sine = s * invMag };
             return cs;
         }

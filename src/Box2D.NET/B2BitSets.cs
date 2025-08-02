@@ -128,13 +128,13 @@ namespace Box2D.NET
 
         // This function is here because ctz.h is included by
         // this file but not in bitset.c
-        public static int b2CountSetBits(ref B2BitSet set)
+        public static int b2CountSetBits(ref B2BitSet bitSet)
         {
             int popCount = 0;
-            int blockCount = set.blockCount;
+            int blockCount = bitSet.blockCount;
             for (uint i = 0; i < blockCount; ++i)
             {
-                popCount += b2PopCount64(set.bits[i]);
+                popCount += b2PopCount64(bitSet.bits[i]);
             }
 
             return popCount;

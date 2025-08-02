@@ -117,10 +117,10 @@ namespace Box2D.NET.Shared
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 shapeDef.density = 1.0f;
 
-                float h = 0.5f;
-                B2Polygon box = b2MakeSquare(h);
+                float a = 0.5f;
+                B2Polygon box = b2MakeSquare(a);
 
-                float shift = 1.0f * h;
+                float shift = 1.0f * a;
 
                 for (int i = 0; i < baseCount; ++i)
                 {
@@ -128,7 +128,7 @@ namespace Box2D.NET.Shared
 
                     for (int j = i; j < baseCount; ++j)
                     {
-                        float x = (i + 1.0f) * shift + 2.0f * (j - i) * shift - h * baseCount;
+                        float x = (i + 1.0f) * shift + 2.0f * (j - i) * shift - a * baseCount;
 
                         bodyDef.position = new B2Vec2(x, y);
                         B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);

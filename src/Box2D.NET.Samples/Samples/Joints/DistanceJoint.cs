@@ -27,6 +27,8 @@ public class DistanceJoint : Sample
     private float m_hertz;
     private float m_dampingRatio;
     private float m_length;
+    private float m_tensionForce;
+    private float m_compressionForce;
     private float m_minLength;
     private float m_maxLength;
     private bool m_enableSpring;
@@ -51,11 +53,13 @@ public class DistanceJoint : Sample
         }
 
         m_count = 0;
-        m_hertz = 2.0f;
+        m_hertz = 5.0f;
         m_dampingRatio = 0.5f;
         m_length = 1.0f;
         m_minLength = m_length;
         m_maxLength = m_length;
+        m_tensionForce = 2000.0f;
+        m_compressionForce = 100.0f;        
         m_enableSpring = false;
         m_enableLimit = false;
 
@@ -97,6 +101,8 @@ public class DistanceJoint : Sample
         jointDef.hertz = m_hertz;
         jointDef.dampingRatio = m_dampingRatio;
         jointDef.length = m_length;
+        jointDef.lowerSpringForce = -m_tensionForce;
+        jointDef.upperSpringForce = m_compressionForce;
         jointDef.minLength = m_minLength;
         jointDef.maxLength = m_maxLength;
         jointDef.enableSpring = m_enableSpring;
@@ -107,7 +113,7 @@ public class DistanceJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.angularDamping = 0.1f;
+            bodyDef.angularDamping = 1.0f;
             bodyDef.position = new B2Vec2(m_length * (i + 1.0f), yOffset);
             m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
             b2CreateCircleShape(m_bodyIds[i], ref shapeDef, ref circle);
@@ -129,12 +135,12 @@ public class DistanceJoint : Sample
         base.UpdateGui();
 
         float fontSize = ImGui.GetFontSize();
-        float height = 240.0f;
+        float height = 20.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
+        ImGui.SetNextWindowSize(new Vector2(18.0f * fontSize, height));
 
         ImGui.Begin("Distance Joint", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(10.0f * fontSize);
 
         if (ImGui.SliderFloat("Length", ref m_length, 0.1f, 4.0f, "%3.1f"))
         {
@@ -156,6 +162,25 @@ public class DistanceJoint : Sample
 
         if (m_enableSpring)
         {
+            
+            if ( ImGui.SliderFloat( "Tension", ref m_tensionForce, 0.0f, 4000.0f ) )
+            {
+                for ( int i = 0; i < m_count; ++i )
+                {
+                    b2DistanceJoint_SetSpringForceRange( m_jointIds[i], -m_tensionForce, m_compressionForce );
+                    b2Joint_WakeBodies( m_jointIds[i] );
+                }
+            }
+
+            if ( ImGui.SliderFloat( "Compression", ref m_compressionForce, 0.0f, 200.0f ) )
+            {
+                for ( int i = 0; i < m_count; ++i )
+                {
+                    b2DistanceJoint_SetSpringForceRange( m_jointIds[i], -m_tensionForce, m_compressionForce );
+                    b2Joint_WakeBodies( m_jointIds[i] );
+                }
+            }
+            
             if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 15.0f, "%3.1f"))
             {
                 for (int i = 0; i < m_count; ++i)

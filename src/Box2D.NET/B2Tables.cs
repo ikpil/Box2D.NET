@@ -77,7 +77,8 @@ namespace Box2D.NET
         // https://lemire.me/blog/2018/08/15/fast-strongly-universal-64-bit-hashing-everywhere/
         // https://preshing.com/20130107/this-hash-set-is-faster-than-a-judy-array/
         // todo try: https://www.jandrewrogers.com/2019/02/12/fast-perfect-hashing/
-        // todo try: https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
+        // todo try:
+        // https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2KeyHash(ulong key)
         {

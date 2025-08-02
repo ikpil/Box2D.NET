@@ -18,18 +18,18 @@ namespace Box2D.NET.Samples.Samples.Joints;
 /// This test shows how to use a motor joint. A motor joint
 /// can be used to animate a dynamic body. With finite motor forces
 /// the body can be blocked by collision with other bodies.
-/// By setting the correction factor to zero, the motor joint acts
-/// like top-down dry friction.
 public class MotorJoint : Sample
 {
     private static readonly int SampleMotorJoint = SampleFactory.Shared.RegisterSample("Joints", "Motor Joint", Create);
 
+    private B2BodyId m_targetId;
     private B2BodyId m_bodyId;
     private B2JointId m_jointId;
+    private B2Transform m_transform;
     private float m_time;
+    private float m_speed;
     private float m_maxForce;
     private float m_maxTorque;
-    private float m_correctionFactor;
     private bool m_go;
 
     private B2Transform _transform;
@@ -56,32 +56,70 @@ public class MotorJoint : Sample
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
         }
 
+        m_transform = new B2Transform(new B2Vec2(0.0f, 8.0f), b2Rot_identity);
+
+        // Define a target body
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_kinematicBody;
+            bodyDef.position = m_transform.p;
+            m_targetId = b2CreateBody(m_worldId, ref bodyDef);
+        }
+
         // Define motorized body
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 8.0f);
+            bodyDef.position = m_transform.p;
             m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.density = 1.0f;
             b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
 
-            m_maxForce = 500.0f;
+            m_maxForce = 5000.0f;
             m_maxTorque = 500.0f;
-            m_correctionFactor = 0.3f;
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
-            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdA = m_targetId;
             jointDef.@base.bodyIdB = m_bodyId;
-            jointDef.maxForce = m_maxForce;
-            jointDef.maxTorque = m_maxTorque;
-            jointDef.correctionFactor = m_correctionFactor;
+            jointDef.linearHertz = 4.0f;
+            jointDef.linearDampingRatio = 0.7f;
+            jointDef.angularHertz = 4.0f;
+            jointDef.angularDampingRatio = 0.7f;
+            jointDef.maxSpringForce = m_maxForce;
+            jointDef.maxSpringTorque = m_maxTorque;
 
             m_jointId = b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
+        // Define spring body
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.position = new B2Vec2(-2.0f, 2.0f);
+            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+
+            B2Polygon box = b2MakeSquare(0.5f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+
+            B2MotorJointDef jointDef = b2DefaultMotorJointDef();
+            jointDef.@base.bodyIdA = groundId;
+            jointDef.@base.bodyIdB = bodyId;
+            jointDef.@base.localFrameA.p = b2Add(bodyDef.position, new B2Vec2(0.25f, 0.25f));
+            jointDef.@base.localFrameB.p = new B2Vec2(0.25f, 0.25f);
+            jointDef.linearHertz = 7.5f;
+            jointDef.linearDampingRatio = 0.7f;
+            jointDef.angularHertz = 7.5f;
+            jointDef.angularDampingRatio = 0.7f;
+            jointDef.maxSpringForce = 500.0f;
+            jointDef.maxSpringTorque = 10.0f;
+
+            b2CreateMotorJoint(m_worldId, ref jointDef);
+        }
+
+        m_speed = 1.0f;
         m_go = true;
         m_time = 0.0f;
     }
@@ -97,23 +135,18 @@ public class MotorJoint : Sample
 
         ImGui.Begin("Motor Joint", ImGuiWindowFlags.NoResize);
 
-        if (ImGui.Checkbox("Go", ref m_go))
+        if (ImGui.SliderFloat("Speed", ref m_speed, -5.0f, 5.0f, "%.0f"))
         {
         }
 
         if (ImGui.SliderFloat("Max Force", ref m_maxForce, 0.0f, 10000.0f, "%.0f"))
         {
-            b2MotorJoint_SetMaxForce(m_jointId, m_maxForce);
+            b2MotorJoint_SetMaxSpringForce(m_jointId, m_maxForce);
         }
 
         if (ImGui.SliderFloat("Max Torque", ref m_maxTorque, 0.0f, 10000.0f, "%.0f"))
         {
-            b2MotorJoint_SetMaxTorque(m_jointId, m_maxTorque);
-        }
-
-        if (ImGui.SliderFloat("Correction", ref m_correctionFactor, 0.0f, 1.0f, "%.1f"))
-        {
-            b2MotorJoint_SetCorrectionFactor(m_jointId, m_correctionFactor);
+            b2MotorJoint_SetMaxVelocityTorque(m_jointId, m_maxTorque);
         }
 
         if (ImGui.Button("Apply Impulse"))
@@ -127,19 +160,31 @@ public class MotorJoint : Sample
 
     public override void Step()
     {
-        if (m_go && m_context.settings.hertz > 0.0f)
+        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+
+        if (m_context.settings.pause)
         {
-            m_time += 1.0f / m_context.settings.hertz;
+            if (m_context.settings.singleStep == false)
+            {
+                timeStep = 0.0f;
+            }
         }
 
-        B2Vec2 linearOffset;
-        linearOffset.X = 6.0f * MathF.Sin(2.0f * m_time);
-        linearOffset.Y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
+        if (timeStep > 0.0f)
+        {
+            m_time += m_speed * timeStep;
 
-        float angularOffset = 2.0f * m_time;
+            B2Vec2 linearOffset;
+            linearOffset.X = 6.0f * MathF.Sin(2.0f * m_time);
+            linearOffset.Y = 8.0f + 4.0f * MathF.Sin(1.0f * m_time);
 
-        _transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
-        b2Joint_SetLocalFrameA(m_jointId, _transform);
+            float angularOffset = 2.0f * m_time;
+            m_transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
+
+            b2Body_SetTargetTransform(m_targetId, m_transform, timeStep);
+        }
+
+        m_context.draw.DrawTransform(m_transform);
 
         base.Step();
     }

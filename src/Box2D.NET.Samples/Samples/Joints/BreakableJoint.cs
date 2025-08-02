@@ -95,8 +95,8 @@ public class BreakableJoint : Sample
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.p = position;
-            jointDef.maxForce = 1000.0f;
-            jointDef.maxTorque = 20.0f;
+            jointDef.maxVelocityForce = 1000.0f;
+            jointDef.maxVelocityTorque = 20.0f;
             jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
         }

@@ -72,7 +72,7 @@ namespace Box2D.NET
     /// Notes:
     /// - this function must be thread-safe
     /// - this is only called if one of the two shapes has enabled custom filtering
-    /// - this is called only for awake dynamic bodies
+    /// - this may be called for awake dynamic bodies and sensors
     /// Return false if you want to disable the collision
     /// @see b2ShapeDef
     /// @warning Do not attempt to modify the world inside this callback
