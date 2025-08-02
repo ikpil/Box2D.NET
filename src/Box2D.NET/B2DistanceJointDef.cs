@@ -19,6 +19,12 @@ namespace Box2D.NET
         /// Enable the distance constraint to behave like a spring. If false
         /// then the distance joint will be rigid, overriding the limit and motor.
         public bool enableSpring;
+        
+        /// The lower spring force controls how much tension it can sustain
+        public float lowerSpringForce;
+
+        /// The upper spring force controls how much compression it an sustain
+        public float upperSpringForce;
 
         /// The spring linear stiffness Hertz, cycles per second
         public float hertz;

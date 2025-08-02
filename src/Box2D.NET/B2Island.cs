@@ -32,10 +32,6 @@ namespace Box2D.NET
         public int tailJoint;
         public int jointCount;
 
-        // Union find
-        // todo this could go away if islands are merged immediately with b2LinkJoint and b2LinkContact
-        public int parentIsland;
-
         // Keeps track of how many contacts have been removed from this island.
         // This is used to determine if an island is a candidate for splitting.
         public int constraintRemoveCount;

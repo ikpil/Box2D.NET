@@ -35,6 +35,7 @@ namespace Box2D.NET
         public ushort generation;
         public bool enableSensorEvents;
         public bool enableContactEvents;
+        public bool enableCustomFiltering;
         public bool enableHitEvents;
         public bool enablePreSolveEvents;
         public bool enlargedAABB;

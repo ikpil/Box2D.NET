@@ -10,7 +10,7 @@
 // body for kinematic bodies. We cannot access a kinematic body from multiple threads efficiently because the SIMD solver body
 // scatter would write to the same kinematic body from multiple threads. Even if these writes don't modify the body, they will
 // cause horrible cache stalls. To make this feasible I would need a way to block these writes.
-
+// todo should be possible to branch on the scatters to avoid writing to kinematic bodies
 
 // TODO: @ikpil, check 
 // This is used for debugging by making all constraints be assigned to overflow.
@@ -38,7 +38,6 @@ namespace Box2D.NET
 
         public static void b2CreateGraph(ref B2ConstraintGraph graph, int bodyCapacity)
         {
-            //B2_ASSERT(B2_GRAPH_COLOR_COUNT == 12, "graph color count assumed to be 12");
             B2_ASSERT(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
             B2_ASSERT(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
             B2_ASSERT(B2_DYNAMIC_COLOR_COUNT >= 2, "need more dynamic colors");

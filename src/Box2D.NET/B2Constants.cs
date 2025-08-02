@@ -17,6 +17,7 @@ namespace Box2D.NET
 
         // Maximum number of colors in the constraint graph. Constraints that cannot
         // find a color are added to the overflow set which are solved single-threaded.
+        // The compound barrel benchmark has minor overflow with 24 colors 
         public const int B2_GRAPH_COLOR_COUNT = 24;
 
         // A small length used as a collision and constraint tolerance. Usually it is

@@ -465,15 +465,15 @@ namespace Box2D.NET
                 int iF = C.children.child1;
                 int iG = C.children.child2;
 
-                ref B2TreeNode D = ref nodes[iD];
-                ref B2TreeNode E = ref nodes[iE];
-                ref B2TreeNode F = ref nodes[iF];
-                ref B2TreeNode G = ref nodes[iG];
-
                 B2_ASSERT(0 <= iD && iD < tree.nodeCapacity);
                 B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
                 B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
                 B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
+                
+                ref B2TreeNode D = ref nodes[iD];
+                ref B2TreeNode E = ref nodes[iE];
+                ref B2TreeNode F = ref nodes[iF];
+                ref B2TreeNode G = ref nodes[iG];
 
                 // Base cost
                 float areaB = b2Perimeter(B.aabb);

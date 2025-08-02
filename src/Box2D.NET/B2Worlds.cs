@@ -1337,6 +1337,8 @@ namespace Box2D.NET
             return id.generation == world.generation;
         }
 
+        /// Body identifier validation. A valid body exists in a world and is non-null.
+        /// This can be used to detect orphaned ids. Provides validation for up to 64K allocations.
         public static bool b2Body_IsValid(B2BodyId id)
         {
             if (B2_MAX_WORLDS <= id.world0)
@@ -2491,6 +2493,7 @@ void b2World_Dump()
         }
 
 #if DEBUG
+#if FALSE
         // When validating islands ids I have to compare the root island
         // ids because islands are not merged until the next time step.
         public static int b2GetRootIslandId(B2World world, int islandId)
@@ -2513,6 +2516,7 @@ void b2World_Dump()
 
             return rootId;
         }
+#endif
 
         // This validates island graph connectivity for each body
         public static void b2ValidateConnectivity(B2World world)
@@ -2534,7 +2538,8 @@ void b2World_Dump()
                 B2_ASSERT(bodyIndex == body.id);
 
                 // Need to get the root island because islands are not merged until the next time step
-                int bodyIslandId = b2GetRootIslandId(world, body.islandId);
+                //int bodyIslandId = b2GetRootIslandId(world, body.islandId);
+                int bodyIslandId = body.islandId;
                 int bodySetIndex = body.setIndex;
 
                 int contactKey = body.headContactKey;
@@ -2550,7 +2555,8 @@ void b2World_Dump()
                     {
                         if (bodySetIndex != (int)B2SetType.b2_staticSet)
                         {
-                            int contactIslandId = b2GetRootIslandId(world, contact.islandId);
+                            //int contactIslandId = b2GetRootIslandId(world, contact.islandId);
+                            int contactIslandId = contact.islandId;
                             B2_ASSERT(contactIslandId == bodyIslandId);
                         }
                     }
@@ -2587,7 +2593,8 @@ void b2World_Dump()
                     }
                     else
                     {
-                        int jointIslandId = b2GetRootIslandId(world, joint.islandId);
+                        //int jointIslandId = b2GetRootIslandId(world, joint.islandId);
+                        int jointIslandId = joint.islandId;
                         B2_ASSERT(jointIslandId == bodyIslandId);
                     }
 
@@ -2814,63 +2821,62 @@ void b2World_Dump()
             for (int colorIndex = 0; colorIndex < B2_GRAPH_COLOR_COUNT; ++colorIndex)
             {
                 ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
-                    int bitCount = 0;
+                int bitCount = 0;
 
-                    B2_ASSERT(color.contactSims.count >= 0);
-                    totalContactCount += color.contactSims.count;
-                    for (int i = 0; i < color.contactSims.count; ++i)
+                B2_ASSERT(color.contactSims.count >= 0);
+                totalContactCount += color.contactSims.count;
+                for (int i = 0; i < color.contactSims.count; ++i)
+                {
+                    B2ContactSim contactSim = color.contactSims.data[i];
+                    B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
+                    // contact should be touching in the constraint graph or awaiting transfer to non-touching
+                    B2_ASSERT(contactSim.manifold.pointCount > 0 ||
+                              (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
+                    B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(contact.colorIndex == colorIndex);
+                    B2_ASSERT(contact.localIndex == i);
+
+                    int bodyIdA = contact.edges[0].bodyId;
+                    int bodyIdB = contact.edges[1].bodyId;
+
+                    if (colorIndex < B2_OVERFLOW_INDEX)
                     {
-                        B2ContactSim contactSim = color.contactSims.data[i];
-                        B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
-                        // contact should be touching in the constraint graph or awaiting transfer to non-touching
-                        B2_ASSERT(contactSim.manifold.pointCount > 0 ||
-                                  (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
-                        B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
-                        B2_ASSERT(contact.colorIndex == colorIndex);
-                        B2_ASSERT(contact.localIndex == i);
+                        B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+                        B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
 
-                        int bodyIdA = contact.edges[0].bodyId;
-                        int bodyIdB = contact.edges[1].bodyId;
-
-                        if (colorIndex < B2_OVERFLOW_INDEX)
-                        {
-                            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-                            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                            B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                            B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
-                            
-                            bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
-                            bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
-                        }
+                        bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
+                        bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
                     }
-                
+                }
 
-                
-                    B2_ASSERT(color.jointSims.count >= 0);
-                    totalJointCount += color.jointSims.count;
-                    for (int i = 0; i < color.jointSims.count; ++i)
+
+                B2_ASSERT(color.jointSims.count >= 0);
+                totalJointCount += color.jointSims.count;
+                for (int i = 0; i < color.jointSims.count; ++i)
+                {
+                    B2JointSim jointSim = color.jointSims.data[i];
+                    B2Joint joint = b2Array_Get(ref world.joints, jointSim.jointId);
+                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(joint.colorIndex == colorIndex);
+                    B2_ASSERT(joint.localIndex == i);
+
+                    int bodyIdA = joint.edges[0].bodyId;
+                    int bodyIdB = joint.edges[1].bodyId;
+
+                    if (colorIndex < B2_OVERFLOW_INDEX)
                     {
-                        B2JointSim jointSim = color.jointSims.data[i];
-                        B2Joint joint = b2Array_Get(ref world.joints, jointSim.jointId);
-                        B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
-                        B2_ASSERT(joint.colorIndex == colorIndex);
-                        B2_ASSERT(joint.localIndex == i);
+                        B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+                        B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
 
-                        int bodyIdA = joint.edges[0].bodyId;
-                        int bodyIdB = joint.edges[1].bodyId;
-
-                        if (colorIndex < B2_OVERFLOW_INDEX)
-                        {
-                            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-                            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                            B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                            B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
-                            
-                            bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
-                            bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
-                        }
+                        bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
+                        bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
                     }
-                
+                }
+
                 // Validate the bit population for this graph color
                 B2_ASSERT(bitCount == b2CountSetBits(ref color.bodySet));
             }

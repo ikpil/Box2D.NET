@@ -24,6 +24,9 @@ namespace Box2D.NET
 
         /// Collision filtering data.
         public B2Filter filter;
+        
+        /// Enable custom filtering. Only one of the two shapes needs to enable custom filtering. See b2WorldDef.
+        public bool enableCustomFiltering;
 
         /// A sensor shape generates overlap events but never generates a collision response.
         /// Sensors do not have continuous collision. Instead, use a ray or shape cast for those scenarios.

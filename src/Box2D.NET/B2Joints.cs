@@ -50,6 +50,8 @@ namespace Box2D.NET
         {
             B2DistanceJointDef def = new B2DistanceJointDef();
             def.@base = b2DefaultJointDef();
+            def.lowerSpringForce = -float.MaxValue;
+            def.upperSpringForce = float.MaxValue;
             def.length = 1.0f;
             def.maxLength = B2_HUGE;
             def.internalValue = B2_SECRET_COOKIE;
@@ -60,9 +62,7 @@ namespace Box2D.NET
         {
             B2MotorJointDef def = new B2MotorJointDef();
             def.@base = b2DefaultJointDef();
-            def.maxForce = 1.0f;
-            def.maxTorque = 1.0f;
-            def.correctionFactor = 0.3f;
+            def.relativeTransform.q = b2Rot_identity;
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
@@ -390,8 +390,7 @@ namespace Box2D.NET
             if (joint.setIndex > (int)B2SetType.b2_disabledSet)
             {
                 // Add edge to island graph
-                bool mergeIslands = true;
-                b2LinkJoint(world, joint, mergeIslands);
+                b2LinkJoint(world, joint);
             }
 
             // If the joint prevents collisions, then destroy all contacts between attached bodies
@@ -418,6 +417,7 @@ namespace Box2D.NET
             }
 
             B2_ASSERT(b2IsValidFloat(def.length) && def.length > 0.0f);
+            B2_ASSERT(def.lowerSpringForce <= def.upperSpringForce);
 
             B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_distanceJoint);
 
@@ -433,6 +433,8 @@ namespace Box2D.NET
             joint.uj.distanceJoint.maxMotorForce = def.maxMotorForce;
             joint.uj.distanceJoint.motorSpeed = def.motorSpeed;
             joint.uj.distanceJoint.enableSpring = def.enableSpring;
+            joint.uj.distanceJoint.lowerSpringForce = def.lowerSpringForce;
+            joint.uj.distanceJoint.upperSpringForce = def.upperSpringForce;
             joint.uj.distanceJoint.enableLimit = def.enableLimit;
             joint.uj.distanceJoint.enableMotor = def.enableMotor;
             joint.uj.distanceJoint.impulse = 0.0f;
@@ -462,13 +464,21 @@ namespace Box2D.NET
             B2JointSim joint = pair.jointSim;
 
             joint.uj.motorJoint = new B2MotorJoint();
-            joint.uj.motorJoint.maxForce = def.maxForce;
-            joint.uj.motorJoint.maxTorque = def.maxTorque;
-            joint.uj.motorJoint.correctionFactor = b2ClampFloat(def.correctionFactor, 0.0f, 1.0f);
+            joint.uj.motorJoint.linearVelocity = def.linearVelocity;
+            joint.uj.motorJoint.maxVelocityForce = def.maxVelocityForce;
+            joint.uj.motorJoint.angularVelocity = def.angularVelocity;
+            joint.uj.motorJoint.maxVelocityTorque = def.maxVelocityTorque;
+            joint.uj.motorJoint.linearHertz = def.linearHertz;
+            joint.uj.motorJoint.linearDampingRatio = def.linearDampingRatio;
+            joint.uj.motorJoint.maxSpringForce = def.maxSpringForce;
+            joint.uj.motorJoint.angularHertz = def.angularHertz;
+            joint.uj.motorJoint.angularDampingRatio = def.angularDampingRatio;
+            joint.uj.motorJoint.maxSpringTorque = def.maxSpringTorque;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
+
 
         public static B2JointId b2CreateMouseJoint(B2WorldId worldId, ref B2MouseJointDef def)
         {
@@ -955,8 +965,8 @@ namespace Box2D.NET
                 case B2JointType.b2_motorJoint:
                 {
                     ref B2MotorJoint joint = ref sim.uj.motorJoint;
-                    linearImpulse = b2Length(joint.linearImpulse);
-                    angularImpulse = b2AbsFloat(joint.angularImpulse);
+                    linearImpulse = b2Length(b2Add(joint.linearVelocityImpulse, joint.linearSpringImpulse));
+                    angularImpulse = b2AbsFloat(joint.angularVelocityImpulse + joint.angularSpringImpulse);
                 }
                     break;
 
@@ -1570,6 +1580,11 @@ namespace Box2D.NET
                     draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
                     break;
 
+                case B2JointType.b2_motorJoint:
+                    draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
+                    draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
+                    break;
+
                 case B2JointType.b2_prismaticJoint:
                     b2DrawPrismaticJoint(draw, jointSim, transformA, transformB, joint.drawScale);
                     break;
@@ -1595,32 +1610,33 @@ namespace Box2D.NET
 
             if (draw.drawGraphColors)
             {
-                Span<B2HexColor> graphColors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT] {
+                Span<B2HexColor> graphColors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT]
+                {
                     B2HexColor.b2_colorRed,
                     B2HexColor.b2_colorOrange,
                     B2HexColor.b2_colorYellow,
                     B2HexColor.b2_colorGreen,
-			
+
                     B2HexColor.b2_colorCyan,
                     B2HexColor.b2_colorBlue,
                     B2HexColor.b2_colorViolet,
                     B2HexColor.b2_colorPink,
-			
+
                     B2HexColor.b2_colorChocolate,
                     B2HexColor.b2_colorGoldenRod,
                     B2HexColor.b2_colorCoral,
                     B2HexColor.b2_colorRosyBrown,
-			
+
                     B2HexColor.b2_colorAqua,
                     B2HexColor.b2_colorPeru,
                     B2HexColor.b2_colorLime,
                     B2HexColor.b2_colorGold,
-			
+
                     B2HexColor.b2_colorPlum,
                     B2HexColor.b2_colorSnow,
                     B2HexColor.b2_colorTeal,
                     B2HexColor.b2_colorKhaki,
-			
+
                     B2HexColor.b2_colorSalmon,
                     B2HexColor.b2_colorPeachPuff,
                     B2HexColor.b2_colorHoneyDew,
@@ -1632,7 +1648,7 @@ namespace Box2D.NET
                 if (colorIndex != B2_NULL_INDEX)
                 {
                     B2Vec2 p = b2Lerp(pA, pB, 0.5f);
-                    draw.DrawPointFcn( p, 5.0f, graphColors[colorIndex], draw.context );
+                    draw.DrawPointFcn(p, 5.0f, graphColors[colorIndex], draw.context);
                 }
             }
 

@@ -358,15 +358,18 @@ namespace Box2D.NET
             }
 
             // Custom user filtering
-            b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
-            if (customFilterFcn != null)
+            if (shape.enableCustomFiltering || fastShape.enableCustomFiltering)
             {
-                B2ShapeId idA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                B2ShapeId idB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
-                canCollide = customFilterFcn(idA, idB, world.customFilterContext);
-                if (canCollide == false)
+                b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
+                if (customFilterFcn != null)
                 {
-                    return true;
+                    B2ShapeId idA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                    B2ShapeId idB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
+                    canCollide = customFilterFcn(idA, idB, world.customFilterContext);
+                    if (canCollide == false)
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -1324,17 +1327,6 @@ public enum b2SolverBlockType
         public static void b2Solve(B2World world, B2StepContext stepContext)
         {
             world.stepIndex += 1;
-
-            // Merge islands
-            {
-                b2TracyCZoneNC(B2TracyCZone.merge, "Merge", B2HexColor.b2_colorLightGoldenRodYellow, true);
-                ulong mergeTicks = b2GetTicks();
-
-                b2MergeAwakeIslands(world);
-
-                world.profile.mergeIslands = b2GetMilliseconds(mergeTicks);
-                b2TracyCZoneEnd(B2TracyCZone.merge);
-            }
 
             // Are there any awake bodies? This scenario should not be important for profiling.
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);

@@ -50,6 +50,7 @@ public class CustomFilter : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.enableCustomFiltering = true;
             B2Polygon box = b2MakeSquare(1.0f);
             float x = -e_count;
 

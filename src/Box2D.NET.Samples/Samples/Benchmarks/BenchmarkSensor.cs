@@ -83,13 +83,25 @@ public class BenchmarkSensor : Sample
             shapeDef.enableSensorEvents = true;
 
             float yStart = 10.0f;
-
+            m_filterRow = m_rowCount >> 1;
+            
             for (int j = 0; j < m_rowCount; ++j)
             {
                 m_passiveSensors[j] = new ShapeUserData();
                 m_passiveSensors[j].row = j;
                 m_passiveSensors[j].active = false;
                 shapeDef.userData = m_passiveSensors[j];
+                
+                if ( j == m_filterRow )
+                {
+                    shapeDef.enableCustomFiltering = true;
+                    shapeDef.material.customColor = (uint)B2HexColor.b2_colorFuchsia;
+                }
+                else
+                {
+                    shapeDef.enableCustomFiltering = false;
+                    shapeDef.material.customColor = 0;
+                }
 
                 float y = j * shift + yStart;
                 for (int i = 0; i < m_columnCount; ++i)
@@ -104,7 +116,6 @@ public class BenchmarkSensor : Sample
         m_maxBeginCount = 0;
         m_maxEndCount = 0;
         m_lastStepCount = 0;
-        m_filterRow = m_rowCount >> 1;
     }
 
     void CreateRow(float y)

@@ -11,8 +11,8 @@ namespace Box2D.NET
         public float angularHertz;
         public float angularDampingRatio;
 
-        public B2Softness linearSoftness;
-        public B2Softness angularSoftness;
+        public B2Softness linearSpring;
+        public B2Softness angularSpring;
         public B2Vec2 linearImpulse;
         public float angularImpulse;
 

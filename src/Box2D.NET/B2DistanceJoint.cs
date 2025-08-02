@@ -9,6 +9,8 @@ namespace Box2D.NET
         public float length;
         public float hertz;
         public float dampingRatio;
+        public float lowerSpringForce;
+        public float upperSpringForce;
         public float minLength;
         public float maxLength;
 

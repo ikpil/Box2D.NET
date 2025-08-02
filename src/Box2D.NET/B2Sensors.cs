@@ -74,15 +74,18 @@ namespace Box2D.NET
             }
 
             // Custom user filter
-            b2CustomFilterFcn customFilterFcn = queryContext.world.customFilterFcn;
-            if (customFilterFcn != null)
+            if (sensorShape.enableCustomFiltering || otherShape.enableCustomFiltering)
             {
-                B2ShapeId idA = new B2ShapeId(sensorShapeId + 1, world.worldId, sensorShape.generation);
-                B2ShapeId idB = new B2ShapeId(shapeId + 1, world.worldId, otherShape.generation);
-                bool shouldCollide = customFilterFcn(idA, idB, queryContext.world.customFilterContext);
-                if (shouldCollide == false)
+                b2CustomFilterFcn customFilterFcn = queryContext.world.customFilterFcn;
+                if (customFilterFcn != null)
                 {
-                    return true;
+                    B2ShapeId idA = new B2ShapeId(sensorShapeId + 1, world.worldId, sensorShape.generation);
+                    B2ShapeId idB = new B2ShapeId(shapeId + 1, world.worldId, otherShape.generation);
+                    bool shouldCollide = customFilterFcn(idA, idB, queryContext.world.customFilterContext);
+                    if (shouldCollide == false)
+                    {
+                        return true;
+                    }
                 }
             }
 

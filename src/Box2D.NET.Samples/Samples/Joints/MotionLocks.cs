@@ -93,8 +93,8 @@ public class MotionLocks : Sample
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
             jointDef.@base.localFrameA.p = position;
-            jointDef.maxForce = 200.0f;
-            jointDef.maxTorque = 200.0f;
+            jointDef.maxVelocityForce = 200.0f;
+            jointDef.maxVelocityTorque = 200.0f;
             b2CreateMotorJoint(m_worldId, ref jointDef);
         }
 
