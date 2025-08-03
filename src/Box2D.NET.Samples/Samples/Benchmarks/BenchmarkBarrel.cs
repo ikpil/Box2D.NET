@@ -311,7 +311,7 @@ public class BenchmarkBarrel : Sample
         base.UpdateGui();
 
         float fontSize = ImGui.GetFontSize();
-        float height = 6.0f * fontSize;
+        float height = 10.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(15.0f * fontSize, height));
 

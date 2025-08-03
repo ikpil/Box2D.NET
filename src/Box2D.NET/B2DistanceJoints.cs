@@ -114,8 +114,8 @@ namespace Box2D.NET
         /// Set the force range for the spring.
         public static void b2DistanceJoint_SetSpringForceRange(B2JointId jointId, float lowerForce, float upperForce)
         {
-            B2_ASSERT( lowerForce <= upperForce );
-            B2JointSim @base = b2GetJointSimCheckType( jointId, B2JointType.b2_distanceJoint );
+            B2_ASSERT(lowerForce <= upperForce);
+            B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.lowerSpringForce = lowerForce;
             @base.uj.distanceJoint.upperSpringForce = upperForce;
         }
@@ -123,7 +123,7 @@ namespace Box2D.NET
         /// Get the force range for the spring.
         public static void b2DistanceJoint_GetSpringForceRange(B2JointId jointId, out float lowerForce, out float upperForce)
         {
-            B2JointSim @base = b2GetJointSimCheckType( jointId, B2JointType.b2_distanceJoint );
+            B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             lowerForce = @base.uj.distanceJoint.lowerSpringForce;
             upperForce = @base.uj.distanceJoint.upperSpringForce;
         }
@@ -377,10 +377,10 @@ namespace Box2D.NET
 
                     float m = joint.distanceSoftness.massScale * joint.axialMass;
                     float oldImpulse = joint.impulse;
-                    float impulse = -m * ( Cdot + bias ) - joint.distanceSoftness.impulseScale * oldImpulse;
+                    float impulse = -m * (Cdot + bias) - joint.distanceSoftness.impulseScale * oldImpulse;
 
                     float h = context.h;
-                    joint.impulse = b2ClampFloat( joint.impulse + impulse, joint.lowerSpringForce * h, joint.upperSpringForce * h );
+                    joint.impulse = b2ClampFloat(joint.impulse + impulse, joint.lowerSpringForce * h, joint.upperSpringForce * h);
                     impulse = joint.impulse - oldImpulse;
 
                     B2Vec2 P = b2MulSV(impulse, axis);
