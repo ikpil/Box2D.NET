@@ -507,7 +507,7 @@ public class Sample : IDisposable
 
             int totalCount = 0;
             var buffer = new StringBuilder();
-            B2_ASSERT(s.colorCounts.Length == 12);
+            B2_ASSERT(s.colorCounts.Length == 24);
 
             // todo fix this
             buffer.Append("colors: ");
