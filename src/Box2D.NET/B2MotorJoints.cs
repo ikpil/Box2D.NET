@@ -18,8 +18,11 @@ namespace Box2D.NET
          * @defgroup motor_joint Motor Joint
          * @brief Functions for the motor joint.
          *
-         * The motor joint is used to drive the relative transform between two bodies. The target
-         * is set by updating the local frames using b2Joint_SetLocalFrameA or b2Joint_SetLocalFrameB.
+         * The motor joint is designed to control the movement of a body while still being
+         * responsive to collisions. A spring controls the position and rotation. A velocity motor
+         * can be used to control velocity and allows for friction in top-down games. Both types
+         * of control can be combined. For example, you can have a spring with friction.
+         * Position and velocity control have force and torque limits.
          * @{
          */
         /// Set the desired relative linear velocity in meters per second
@@ -283,10 +286,17 @@ namespace Box2D.NET
             B2Vec2 linearImpulse = b2Add(joint.linearVelocityImpulse, joint.linearSpringImpulse);
             float angularImpulse = joint.angularVelocityImpulse + joint.angularSpringImpulse;
 
-            stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, linearImpulse);
-            stateA.angularVelocity -= iA * (b2Cross(rA, linearImpulse) + angularImpulse);
-            stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, linearImpulse);
-            stateB.angularVelocity += iB * (b2Cross(rB, linearImpulse) + angularImpulse);
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, linearImpulse);
+                stateA.angularVelocity -= iA * (b2Cross(rA, linearImpulse) + angularImpulse);
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, linearImpulse);
+                stateB.angularVelocity += iB * (b2Cross(rB, linearImpulse) + angularImpulse);
+            }
         }
 
         public static void b2SolveMotorJoint(B2JointSim @base, B2StepContext context)
@@ -427,10 +437,17 @@ namespace Box2D.NET
                 wB += iB * b2Cross(rB, impulse);
             }
 
-            stateA.linearVelocity = vA;
-            stateA.angularVelocity = wA;
-            stateB.linearVelocity = vB;
-            stateB.angularVelocity = wB;
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = vA;
+                stateA.angularVelocity = wA;
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = vB;
+                stateB.angularVelocity = wB;
+            }
         }
 
 #if FALSE

@@ -13,12 +13,8 @@ namespace Box2D.NET
         public int nextShapeId;
         public int sensorIndex;
         public B2ShapeType type;
+        public B2SurfaceMaterial material;
         public float density;
-        public float friction;
-        public float restitution;
-        public float rollingResistance;
-        public float tangentSpeed;
-        public int userMaterialId;
 
         public B2AABB aabb;
         public B2AABB fatAABB;
@@ -27,7 +23,6 @@ namespace Box2D.NET
 
         public B2Filter filter;
         public object userData;
-        public uint customColor;
 
         // TODO: @ikpil, check union
         public B2ShapeUnion us;

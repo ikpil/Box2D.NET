@@ -30,7 +30,7 @@ namespace Box2D.NET
         // This holds constraints that cannot fit the graph color limit. This happens when a single dynamic body
         // is touching many other bodies.
         public const int B2_OVERFLOW_INDEX = B2_GRAPH_COLOR_COUNT - 1;
-        
+
         // This keeps constraints involving two dynamic bodies at a lower solver priority than constraints
         // involving a dynamic and static bodies. This reduces tunneling due to push through.
         public const int B2_DYNAMIC_COLOR_COUNT = (B2_GRAPH_COLOR_COUNT - 4);
@@ -87,7 +87,6 @@ namespace Box2D.NET
 
         // Contacts are always created as non-touching. They get cloned into the constraint
         // graph once they are found to be touching.
-        // todo maybe kinematic bodies should not go into graph
         public static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
         {
             B2_ASSERT(contactSim.manifold.pointCount > 0);
@@ -101,73 +100,83 @@ namespace Box2D.NET
             int bodyIdB = contact.edges[1].bodyId;
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.type == B2BodyType.b2_staticBody;
-            bool staticB = bodyB.type == B2BodyType.b2_staticBody;
-            B2_ASSERT(staticA == false || staticB == false);
+
+
+            B2BodyType typeA = bodyA.type;
+            B2BodyType typeB = bodyB.type;
+            B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
 #if B2_FORCE_OVERFLOW
-            if (staticA == false && staticB == false)
+            if (typeA != B2BodyType.b2_staticBody && typeB != B2BodyType.b2_staticBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
                 for (int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i)
                 {
-                    ref B2GraphColor color0 = ref graph.colors[i];
-                    if (b2GetBit(ref color0.bodySet, bodyIdA) || b2GetBit(ref color0.bodySet, bodyIdB))
+                    ref B2GraphColor color = ref graph.colors[i];
+                    if (b2GetBit(ref color.bodySet, bodyIdA) || b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(ref color0.bodySet, bodyIdA);
-                    b2SetBitGrow(ref color0.bodySet, bodyIdB);
+                    if (typeA == B2BodyType.b2_dynamicBody)
+                    {
+                        b2SetBitGrow(ref color.bodySet, bodyIdA);
+                    }
+
+                    if (typeB == B2BodyType.b2_dynamicBody)
+                    {
+                        b2SetBitGrow(ref color.bodySet, bodyIdB);
+                    }
+
                     colorIndex = i;
                     break;
                 }
             }
-            else if (staticA == false)
+            else if (typeA == B2BodyType.b2_dynamicBody)
             {
                 // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
                 for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
-                    ref B2GraphColor color0 = ref graph.colors[i];
-                    if (b2GetBit(ref color0.bodySet, bodyIdA))
+                    ref B2GraphColor color = ref graph.colors[i];
+                    if (b2GetBit(ref color.bodySet, bodyIdA))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(ref color0.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color.bodySet, bodyIdA);
                     colorIndex = i;
                     break;
                 }
             }
-            else if (staticB == false)
+            else if (typeB == B2BodyType.b2_dynamicBody)
             {
                 // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
                 for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
-                    ref B2GraphColor color0 = ref graph.colors[i];
-                    if (b2GetBit(ref color0.bodySet, bodyIdB))
+                    ref B2GraphColor color = ref graph.colors[i];
+                    if (b2GetBit(ref color.bodySet, bodyIdB))
                     {
                         continue;
                     }
 
-                    b2SetBitGrow(ref color0.bodySet, bodyIdB);
+                    b2SetBitGrow(ref color.bodySet, bodyIdB);
                     colorIndex = i;
                     break;
                 }
             }
 #endif
 
-            ref B2GraphColor color = ref graph.colors[colorIndex];
+            ref B2GraphColor color0 = ref graph.colors[colorIndex];
             contact.colorIndex = colorIndex;
-            contact.localIndex = color.contactSims.count;
+            contact.localIndex = color0.contactSims.count;
 
-            ref B2ContactSim newContact = ref b2Array_Add(ref color.contactSims);
+            ref B2ContactSim newContact = ref b2Array_Add(ref color0.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
             newContact.CopyFrom(contactSim);
 
             // todo perhaps skip this if the contact is already awake
 
-            if (staticA)
+            if (typeA == B2BodyType.b2_staticBody)
             {
                 newContact.bodySimIndexA = B2_NULL_INDEX;
                 newContact.invMassA = 0.0f;
@@ -186,7 +195,7 @@ namespace Box2D.NET
                 newContact.invIA = bodySimA.invInertia;
             }
 
-            if (staticB)
+            if (typeB == B2BodyType.b2_staticBody)
             {
                 newContact.bodySimIndexB = B2_NULL_INDEX;
                 newContact.invMassB = 0.0f;
@@ -215,7 +224,7 @@ namespace Box2D.NET
 
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
-                // might clear a bit for a static body, but this has no effect
+                // This might clear a bit for a kinematic or static body, but this has no effect
                 b2ClearBit(ref color.bodySet, (uint)bodyIdA);
                 b2ClearBit(ref color.bodySet, (uint)bodyIdB);
             }
@@ -236,15 +245,15 @@ namespace Box2D.NET
             }
         }
 
-        public static int b2AssignJointColor(ref B2ConstraintGraph graph, int bodyIdA, int bodyIdB, bool staticA, bool staticB)
+        static int b2AssignJointColor(ref B2ConstraintGraph graph, int bodyIdA, int bodyIdB, B2BodyType typeA, B2BodyType typeB)
         {
-            B2_ASSERT(staticA == false || staticB == false);
+            B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
 #if B2_FORCE_OVERFLOW
-            if (staticA == false && staticB == false)
+            if (typeA != B2BodyType.b2_staticBody && typeB != B2BodyType.b2_staticBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
-                for ( int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i )
+                for (int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i)
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA) || b2GetBit(ref color.bodySet, bodyIdB))
@@ -252,15 +261,23 @@ namespace Box2D.NET
                         continue;
                     }
 
-                    b2SetBitGrow(ref color.bodySet, bodyIdA);
-                    b2SetBitGrow(ref color.bodySet, bodyIdB);
+                    if (typeA == B2BodyType.b2_dynamicBody)
+                    {
+                        b2SetBitGrow(ref color.bodySet, bodyIdA);
+                    }
+
+                    if (typeB == B2BodyType.b2_dynamicBody)
+                    {
+                        b2SetBitGrow(ref color.bodySet, bodyIdB);
+                    }
+
                     return i;
                 }
             }
-            else if (staticA == false)
+            else if (typeA == B2BodyType.b2_dynamicBody)
             {
                 // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
-                for ( int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i )
+                for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdA))
@@ -272,10 +289,10 @@ namespace Box2D.NET
                     return i;
                 }
             }
-            else if (staticB == false)
+            else if (typeB == B2BodyType.b2_dynamicBody)
             {
                 // Static constraint colors build from the end to get higher priority than dyn-dyn constraints
-                for ( int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i )
+                for (int i = B2_OVERFLOW_INDEX - 1; i >= 1; --i)
                 {
                     ref B2GraphColor color = ref graph.colors[i];
                     if (b2GetBit(ref color.bodySet, bodyIdB))
@@ -302,10 +319,8 @@ namespace Box2D.NET
             int bodyIdB = joint.edges[1].bodyId;
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            bool staticA = bodyA.type == B2BodyType.b2_staticBody;
-            bool staticB = bodyB.type == B2BodyType.b2_staticBody;
 
-            int colorIndex = b2AssignJointColor(ref graph, bodyIdA, bodyIdB, staticA, staticB);
+            int colorIndex = b2AssignJointColor(ref graph, bodyIdA, bodyIdB, bodyA.type, bodyB.type);
 
             ref B2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );

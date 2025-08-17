@@ -11,7 +11,7 @@ namespace Box2D.NET
         /// The collision plane between the mover and some shape
         public B2Plane plane;
         
-        /// Setting this to FLT_MAX makes the plane as rigid as possible. Lower values can
+        /// Setting this to float.MaxValue makes the plane as rigid as possible. Lower values can
         /// make the plane collision soft. Usually in meters.
         public float pushLimit;
         

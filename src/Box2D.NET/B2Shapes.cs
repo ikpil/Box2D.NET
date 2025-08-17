@@ -143,14 +143,9 @@ namespace Box2D.NET
             shape.bodyId = body.id;
             shape.type = shapeType;
             shape.density = def.density;
-            shape.friction = def.material.friction;
-            shape.restitution = def.material.restitution;
-            shape.rollingResistance = def.material.rollingResistance;
-            shape.tangentSpeed = def.material.tangentSpeed;
-            shape.userMaterialId = def.material.userMaterialId;
+            shape.material = def.material;
             shape.filter = def.filter;
             shape.userData = def.userData;
-            shape.customColor = def.material.customColor;
             shape.enlargedAABB = false;
             shape.enableSensorEvents = def.enableSensorEvents;
             shape.enableContactEvents = def.enableContactEvents;
@@ -1152,6 +1147,7 @@ namespace Box2D.NET
             return shape.density;
         }
 
+        /// Set the friction on a shape
         public static void b2Shape_SetFriction(B2ShapeId shapeId, float friction)
         {
             B2_ASSERT(b2IsValidFloat(friction) && friction >= 0.0f);
@@ -1164,14 +1160,14 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.friction = friction;
+            shape.material.friction = friction;
         }
 
         public static float b2Shape_GetFriction(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            return shape.friction;
+            return shape.material.friction;
         }
 
         public static void b2Shape_SetRestitution(B2ShapeId shapeId, float restitution)
@@ -1186,17 +1182,18 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.restitution = restitution;
+            shape.material.restitution = restitution;
         }
 
         public static float b2Shape_GetRestitution(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            return shape.restitution;
+            return shape.material.restitution;
         }
 
-        public static void b2Shape_SetMaterial(B2ShapeId shapeId, int material)
+        /// Set the user material identifier
+        public static void b2Shape_SetUserMaterial(B2ShapeId shapeId, ulong material)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2_ASSERT(world.locked == false);
@@ -1206,15 +1203,15 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.userMaterialId = material;
+            shape.material.userMaterialId = material;
         }
 
-        /// Get the shape material identifier
-        public static int b2Shape_GetMaterial(B2ShapeId shapeId)
+        /// Get the user material identifier
+        public static ulong b2Shape_GetUserMaterial(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            return shape.userMaterialId;
+            return shape.material.userMaterialId;
         }
 
         /// Get the shape surface material
@@ -1222,28 +1219,15 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            return new B2SurfaceMaterial()
-            {
-                friction = shape.friction,
-                restitution = shape.restitution,
-                rollingResistance = shape.rollingResistance,
-                tangentSpeed = shape.tangentSpeed,
-                userMaterialId = shape.userMaterialId,
-                customColor = shape.customColor,
-            };
+            return shape.material;
         }
 
         /// Set the shape surface material
-        public static void b2Shape_SetSurfaceMaterial(B2ShapeId shapeId, B2SurfaceMaterial surfaceMaterial)
+        public static void b2Shape_SetSurfaceMaterial(B2ShapeId shapeId, ref B2SurfaceMaterial surfaceMaterial)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
-            shape.friction = surfaceMaterial.friction;
-            shape.restitution = surfaceMaterial.restitution;
-            shape.rollingResistance = surfaceMaterial.rollingResistance;
-            shape.tangentSpeed = surfaceMaterial.tangentSpeed;
-            shape.userMaterialId = surfaceMaterial.userMaterialId;
-            shape.customColor = surfaceMaterial.customColor;
+            shape.material = surfaceMaterial;
         }
 
         public static B2Filter b2Shape_GetFilter(B2ShapeId shapeId)
@@ -1551,77 +1535,10 @@ namespace Box2D.NET
             return new B2ChainId();
         }
 
-        public static void b2Chain_SetFriction(B2ChainId chainId, float friction)
-        {
-            B2_ASSERT(b2IsValidFloat(friction) && friction >= 0.0f);
 
-            B2World world = b2GetWorldLocked(chainId.world0);
-            if (world == null)
-            {
-                return;
-            }
-
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-
-            int materialCount = chainShape.materialCount;
-            for (int i = 0; i < materialCount; ++i)
-            {
-                chainShape.materials[i].friction = friction;
-            }
-
-            int count = chainShape.count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                int shapeId = chainShape.shapeIndices[i];
-                B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                shape.friction = friction;
-            }
-        }
-
-        public static float b2Chain_GetFriction(B2ChainId chainId)
-        {
-            B2World world = b2GetWorld(chainId.world0);
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            return chainShape.materials[0].friction;
-        }
-
-        public static void b2Chain_SetRestitution(B2ChainId chainId, float restitution)
-        {
-            B2_ASSERT(b2IsValidFloat(restitution));
-
-            B2World world = b2GetWorldLocked(chainId.world0);
-            if (world == null)
-            {
-                return;
-            }
-
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-
-            int materialCount = chainShape.materialCount;
-            for (int i = 0; i < materialCount; ++i)
-            {
-                chainShape.materials[i].restitution = restitution;
-            }
-
-            int count = chainShape.count;
-
-            for (int i = 0; i < count; ++i)
-            {
-                int shapeId = chainShape.shapeIndices[i];
-                B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                shape.restitution = restitution;
-            }
-        }
-
-        public static float b2Chain_GetRestitution(B2ChainId chainId)
-        {
-            B2World world = b2GetWorld(chainId.world0);
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            return chainShape.materials[0].restitution;
-        }
-
-        public static void b2Chain_SetMaterial(B2ChainId chainId, int material)
+        /// Set a chain material. If the chain has only one material, this material is applied to all
+        /// segments. Otherwise it is applied to a single segment.
+        public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, ref B2SurfaceMaterial material, int materialIndex)
         {
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -1630,27 +1547,36 @@ namespace Box2D.NET
             }
 
             B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            int materialCount = chainShape.materialCount;
-            for (int i = 0; i < materialCount; ++i)
-            {
-                chainShape.materials[i].userMaterialId = material;
-            }
+            B2_ASSERT(0 <= materialIndex && materialIndex < chainShape.materialCount);
+            chainShape.materials[materialIndex] = material;
 
+            B2_ASSERT(chainShape.materialCount == 1 || chainShape.materialCount == chainShape.count);
             int count = chainShape.count;
 
-            for (int i = 0; i < count; ++i)
+            if (chainShape.materialCount == 1)
             {
-                int shapeId = chainShape.shapeIndices[i];
+                for (int i = 0; i < count; ++i)
+                {
+                    int shapeId = chainShape.shapeIndices[i];
+                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                    shape.material = material;
+                }
+            }
+            else
+            {
+                int shapeId = chainShape.shapeIndices[materialIndex];
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                shape.userMaterialId = material;
+                shape.material = material;
             }
         }
 
-        public static int b2Chain_GetMaterial(B2ChainId chainId)
+        /// Get a chain material by index.
+        public static B2SurfaceMaterial b2Chain_GetSurfaceMaterial(B2ChainId chainId, int segmentIndex)
         {
             B2World world = b2GetWorld(chainId.world0);
             B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            return chainShape.materials[0].userMaterialId;
+            B2_ASSERT(0 <= segmentIndex && segmentIndex < chainShape.count);
+            return chainShape.materials[segmentIndex];
         }
 
         public static int b2Shape_GetContactCapacity(B2ShapeId shapeId)

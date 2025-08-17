@@ -37,6 +37,7 @@ namespace Box2D.NET
         public float angularVelocity; // 4
         
         // b2BodyFlags
+        // Important flags: locking, dynamic
         public uint flags; // 4
 
         // Using delta position reduces round-off error far from the origin

@@ -23,7 +23,7 @@ namespace Box2D.NET
     // Cons
     // - cannot debug
     // - breaks code navigation
-    
+
     // The fragmentation problem with factor 2:
     // When you double capacity, the new allocation is larger than the sum of all previous allocations:
     //
@@ -53,7 +53,7 @@ namespace Box2D.NET
             {
                 throw new IndexOutOfRangeException($"Index is out of range - count({a.count}) index({index})");
             }
-            
+
             return ref a.data[index];
         }
 
@@ -101,7 +101,7 @@ namespace Box2D.NET
             {
                 throw new IndexOutOfRangeException($"Index is out of range - count({a.count}) index({index})");
             }
-            
+
             int movedIndex = B2_NULL_INDEX;
             if (index != a.count - 1)
             {

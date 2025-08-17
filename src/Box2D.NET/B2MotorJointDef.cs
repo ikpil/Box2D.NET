@@ -42,9 +42,6 @@ namespace Box2D.NET
         /// Maximum spring torque in newton-meters
         public float maxSpringTorque;
 
-        /// The desired relative transform. Body B relative to bodyA.
-        public B2Transform relativeTransform;
-
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;
     }

@@ -14,7 +14,6 @@ namespace Box2D.NET
         b2_distanceJoint,
         b2_filterJoint,
         b2_motorJoint,
-        b2_mouseJoint,
         b2_prismaticJoint,
         b2_revoluteJoint,
         b2_weldJoint,

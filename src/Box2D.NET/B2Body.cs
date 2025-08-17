@@ -64,6 +64,5 @@ namespace Box2D.NET
 
         // todo move into flags
         public bool enableSleep;
-        public bool isMarked;
     }
 }

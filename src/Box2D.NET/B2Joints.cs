@@ -14,7 +14,6 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2DistanceJoints;
 using static Box2D.NET.B2MotorJoints;
-using static Box2D.NET.B2MouseJoints;
 using static Box2D.NET.B2PrismaticJoints;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.B2WeldJoints;
@@ -39,7 +38,7 @@ namespace Box2D.NET
             def.forceThreshold = float.MaxValue;
             def.torqueThreshold = float.MaxValue;
             def.constraintHertz = 60.0f;
-            def.constraintDampingRatio = 0.0f;
+            def.constraintDampingRatio = 2.0f;
             def.drawScale = 1.0f;
             return def;
         }
@@ -62,18 +61,6 @@ namespace Box2D.NET
         {
             B2MotorJointDef def = new B2MotorJointDef();
             def.@base = b2DefaultJointDef();
-            def.relativeTransform.q = b2Rot_identity;
-            def.internalValue = B2_SECRET_COOKIE;
-            return def;
-        }
-
-        public static B2MouseJointDef b2DefaultMouseJointDef()
-        {
-            B2MouseJointDef def = new B2MouseJointDef();
-            def.@base = b2DefaultJointDef();
-            def.hertz = 4.0f;
-            def.dampingRatio = 1.0f;
-            def.maxForce = 1.0f;
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
@@ -244,7 +231,7 @@ namespace Box2D.NET
             joint.drawScale = def.drawScale;
             joint.type = type;
             joint.collideConnected = def.collideConnected;
-            joint.isMarked = false;
+            //joint.isMarked = false;
 
             // Doubly linked list on bodyA
             joint.edges[0].bodyId = bodyIdA;
@@ -295,9 +282,9 @@ namespace Box2D.NET
                 jointSim.bodyIdA = bodyIdA;
                 jointSim.bodyIdB = bodyIdB;
             }
-            else if (bodyA.setIndex == (int)B2SetType.b2_staticSet && bodyB.setIndex == (int)B2SetType.b2_staticSet)
+            else if (bodyA.type != B2BodyType.b2_dynamicBody && bodyB.type != B2BodyType.b2_dynamicBody)
             {
-                // joint is connecting static bodies
+                // joint is not attached to a dynamic body
                 B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
                 joint.setIndex = (int)B2SetType.b2_staticSet;
                 joint.localIndex = set.jointSims.count;
@@ -474,33 +461,6 @@ namespace Box2D.NET
             joint.uj.motorJoint.angularHertz = def.angularHertz;
             joint.uj.motorJoint.angularDampingRatio = def.angularDampingRatio;
             joint.uj.motorJoint.maxSpringTorque = def.maxSpringTorque;
-
-            B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
-            return jointId;
-        }
-
-
-        public static B2JointId b2CreateMouseJoint(B2WorldId worldId, ref B2MouseJointDef def)
-        {
-            B2_CHECK_DEF(ref def);
-            B2World world = b2GetWorldFromId(worldId);
-
-            B2_ASSERT(world.locked == false);
-
-            if (world.locked)
-            {
-                return new B2JointId();
-            }
-
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_mouseJoint);
-
-            B2JointSim joint = pair.jointSim;
-
-            B2MouseJoint empty = new B2MouseJoint();
-            joint.uj.mouseJoint = empty;
-            joint.uj.mouseJoint.hertz = def.hertz;
-            joint.uj.mouseJoint.dampingRatio = def.dampingRatio;
-            joint.uj.mouseJoint.maxForce = def.maxForce;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
@@ -970,14 +930,6 @@ namespace Box2D.NET
                 }
                     break;
 
-                case B2JointType.b2_mouseJoint:
-                {
-                    ref B2MouseJoint joint = ref sim.uj.mouseJoint;
-                    linearImpulse = b2Length(joint.linearImpulse);
-                    angularImpulse = b2AbsFloat(joint.angularImpulse);
-                }
-                    break;
-
                 case B2JointType.b2_prismaticJoint:
                 {
                     ref B2PrismaticJoint joint = ref sim.uj.prismaticJoint;
@@ -1035,9 +987,6 @@ namespace Box2D.NET
                 case B2JointType.b2_motorJoint:
                     return b2GetMotorJointForce(world, @base);
 
-                case B2JointType.b2_mouseJoint:
-                    return b2GetMouseJointForce(world, @base);
-
                 case B2JointType.b2_filterJoint:
                     return b2Vec2_zero;
 
@@ -1071,9 +1020,6 @@ namespace Box2D.NET
 
                 case B2JointType.b2_motorJoint:
                     return b2GetMotorJointTorque(world, @base);
-
-                case B2JointType.b2_mouseJoint:
-                    return b2GetMouseJointTorque(world, @base);
 
                 case B2JointType.b2_filterJoint:
                     return 0.0f;
@@ -1154,9 +1100,6 @@ namespace Box2D.NET
                 }
 
                 case B2JointType.b2_motorJoint:
-                    return 0.0f;
-
-                case B2JointType.b2_mouseJoint:
                     return 0.0f;
 
                 case B2JointType.b2_filterJoint:
@@ -1249,9 +1192,6 @@ namespace Box2D.NET
                     return 0.0f;
 
                 case B2JointType.b2_motorJoint:
-                    return 0.0f;
-
-                case B2JointType.b2_mouseJoint:
                     return 0.0f;
 
                 case B2JointType.b2_filterJoint:
@@ -1384,10 +1324,6 @@ namespace Box2D.NET
                     b2PrepareMotorJoint(joint, context);
                     break;
 
-                case B2JointType.b2_mouseJoint:
-                    b2PrepareMouseJoint(joint, context);
-                    break;
-
                 case B2JointType.b2_filterJoint:
                     break;
 
@@ -1425,10 +1361,6 @@ namespace Box2D.NET
                     b2WarmStartMotorJoint(joint, context);
                     break;
 
-                case B2JointType.b2_mouseJoint:
-                    b2WarmStartMouseJoint(joint, context);
-                    break;
-
                 case B2JointType.b2_filterJoint:
                     break;
 
@@ -1464,10 +1396,6 @@ namespace Box2D.NET
 
                 case B2JointType.b2_motorJoint:
                     b2SolveMotorJoint(joint, context);
-                    break;
-
-                case B2JointType.b2_mouseJoint:
-                    b2SolveMouseJoint(joint, context);
                     break;
 
                 case B2JointType.b2_filterJoint:
@@ -1570,12 +1498,6 @@ namespace Box2D.NET
                     b2DrawDistanceJoint(draw, jointSim, transformA, transformB);
                     break;
 
-                case B2JointType.b2_mouseJoint:
-                    draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
-                    draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
-                    draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
-                    break;
-
                 case B2JointType.b2_filterJoint:
                     draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
                     break;
@@ -1583,6 +1505,7 @@ namespace Box2D.NET
                 case B2JointType.b2_motorJoint:
                     draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
                     draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
+                    draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
                     break;
 
                 case B2JointType.b2_prismaticJoint:

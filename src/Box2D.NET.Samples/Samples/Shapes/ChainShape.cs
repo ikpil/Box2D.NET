@@ -29,8 +29,7 @@ public class ChainShape : Sample
     private B2ChainId m_chainId;
     private ShapeType m_shapeType;
     private B2ShapeId m_shapeId;
-    private float m_restitution;
-    private float m_friction;
+    private B2SurfaceMaterial m_material;
 
     private static Sample Create(SampleContext context)
     {
@@ -50,8 +49,11 @@ public class ChainShape : Sample
         m_chainId = b2_nullChainId;
         m_shapeId = b2_nullShapeId;
         m_shapeType = ShapeType.e_circleShape;
-        m_restitution = 0.0f;
-        m_friction = 0.2f;
+
+        m_material = b2DefaultSurfaceMaterial();
+        m_material.friction = 0.2f;
+        m_material.customColor = (uint)B2HexColor.b2_colorSteelBlue;
+        m_material.userMaterialId = 42;
 
         CreateScene();
         Launch();
@@ -121,15 +123,10 @@ public class ChainShape : Sample
         // }
         // Logger.Information("};\n");
 
-        B2SurfaceMaterial material = new B2SurfaceMaterial();
-        material.friction = 0.2f;
-        material.customColor = (uint)B2HexColor.b2_colorSteelBlue;
-        material.userMaterialId = 42;
-
         B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
         chainDef.count = count;
-        chainDef.materials = [material];
+        chainDef.materials = [m_material];
         chainDef.materialCount = 1;
         chainDef.isLoop = true;
 
@@ -152,9 +149,7 @@ public class ChainShape : Sample
         m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 1.0f;
-        shapeDef.material.friction = m_friction;
-        shapeDef.material.restitution = m_restitution;
+        shapeDef.material = m_material;
 
         if (m_shapeType == ShapeType.e_circleShape)
         {
@@ -208,15 +203,15 @@ public class ChainShape : Sample
             Launch();
         }
 
-        if (ImGui.SliderFloat("Friction", ref m_friction, 0.0f, 1.0f, "%.2f"))
+        if (ImGui.SliderFloat("Friction", ref m_material.friction, 0.0f, 1.0f, "%.2f"))
         {
-            b2Shape_SetFriction(m_shapeId, m_friction);
-            b2Chain_SetFriction(m_chainId, m_friction);
+            b2Shape_SetSurfaceMaterial(m_shapeId, ref m_material);
+            b2Chain_SetSurfaceMaterial(m_chainId, ref m_material, 1);
         }
 
-        if (ImGui.SliderFloat("Restitution", ref m_restitution, 0.0f, 2.0f, "%.1f"))
+        if (ImGui.SliderFloat("Restitution", ref m_material.restitution, 0.0f, 2.0f, "%.1f"))
         {
-            b2Shape_SetRestitution(m_shapeId, m_restitution);
+            b2Shape_SetSurfaceMaterial(m_shapeId, ref m_material);
         }
 
         if (ImGui.Button("Launch"))

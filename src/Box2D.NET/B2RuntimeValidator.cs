@@ -128,7 +128,6 @@ namespace Box2D.NET
 
                 int distanceJointSize = Marshal.SizeOf<B2DistanceJoint>();
                 int motorJointSize = Marshal.SizeOf<B2MotorJoint>();
-                int mouseJointSize = Marshal.SizeOf<B2MouseJoint>();
                 int revoluteJointSize = Marshal.SizeOf<B2RevoluteJoint>();
                 int prismaticJointSize = Marshal.SizeOf<B2PrismaticJoint>();
                 int weldJointSize = Marshal.SizeOf<B2WeldJoint>();
@@ -137,7 +136,6 @@ namespace Box2D.NET
                 int maxSize = 0;
                 maxSize = Math.Max(maxSize, distanceJointSize);
                 maxSize = Math.Max(maxSize, motorJointSize);
-                maxSize = Math.Max(maxSize, mouseJointSize);
                 maxSize = Math.Max(maxSize, revoluteJointSize);
                 maxSize = Math.Max(maxSize, prismaticJointSize);
                 maxSize = Math.Max(maxSize, weldJointSize);

@@ -94,13 +94,13 @@ namespace Box2D.NET
             B2_UNUSED(userTask, userContext);
         }
 
-        public static float b2DefaultFrictionCallback(float frictionA, int materialA, float frictionB, int materialB)
+        public static float b2DefaultFrictionCallback(float frictionA, ulong materialA, float frictionB, ulong materialB)
         {
             B2_UNUSED(materialA, materialB);
             return MathF.Sqrt(frictionA * frictionB);
         }
 
-        public static float b2DefaultRestitutionCallback(float restitutionA, int materialA, float restitutionB, int materialB)
+        public static float b2DefaultRestitutionCallback(float restitutionA, ulong materialA, float restitutionB, ulong materialB)
         {
             B2_UNUSED(materialA, materialB);
             return b2MaxFloat(restitutionA, restitutionB);
@@ -454,14 +454,14 @@ namespace Box2D.NET
 
                     // To make this work, the time of impact code needs to adjust the target
                     // distance based on the number of TOI events for a body.
-                    // if (touching && bodySimB->isFast)
+                    // if (touching && bodySimB.isFast)
                     //{
-                    //	b2Manifold* manifold = &contactSim->manifold;
-                    //	int pointCount = manifold->pointCount;
+                    //	b2Manifold* manifold = &contactSim.manifold;
+                    //	int pointCount = manifold.pointCount;
                     //	for (int i = 0; i < pointCount; ++i)
                     //	{
                     //		// trick the solver into pushing the fast shapes apart
-                    //		manifold->points[i].separation -= 0.25f * B2_SPECULATIVE_DISTANCE;
+                    //		manifold.points[i].separation -= 0.25f * B2_SPECULATIVE_DISTANCE;
                     //	}
                     //}
                 }
@@ -920,9 +920,9 @@ namespace Box2D.NET
 
                 B2HexColor color;
 
-                if (shape.customColor != 0)
+                if (shape.material.customColor != 0)
                 {
-                    color = (B2HexColor)shape.customColor;
+                    color = (B2HexColor)shape.material.customColor;
                 }
                 else if (body.type == B2BodyType.b2_dynamicBody && body.mass == 0.0f)
                 {
@@ -992,8 +992,16 @@ namespace Box2D.NET
 
         // todo this has varying order for moving shapes, causing flicker when overlapping shapes are moving
         // solution: display order by shape id modulus 3, keep 3 buckets in GLSolid* and flush in 3 passes.
-        public static void b2DrawWithBounds(B2World world, B2DebugDraw draw)
+        public static void b2World_Draw(B2WorldId worldId, B2DebugDraw draw)
         {
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+
+
             B2_ASSERT(b2IsValidAABB(draw.drawingBounds));
 
             const float k_impulseScale = 1.0f;
@@ -1047,14 +1055,18 @@ namespace Box2D.NET
             int contactCapacity = b2GetIdCapacity(world.contactIdPool);
             b2SetBitCountAndClear(ref world.debugContactSet, contactCapacity);
 
+            int islandCapacity = b2GetIdCapacity(world.islandIdPool);
+            b2SetBitCountAndClear(ref world.debugIslandSet, islandCapacity);
+
             B2DrawContext drawContext = new B2DrawContext();
             drawContext.world = world;
             drawContext.draw = draw;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_Query(world.broadPhase.trees[i], draw.drawingBounds, B2_DEFAULT_MASK_BITS, DrawQueryCallback, ref drawContext);
+                b2DynamicTree_QueryAll(world.broadPhase.trees[i], draw.drawingBounds, DrawQueryCallback, ref drawContext);
             }
+
 
             uint wordCount = (uint)world.debugBodySet.blockCount;
             ulong[] bits = world.debugBodySet.bits;
@@ -1084,11 +1096,12 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
+                        draw.DrawSegmentFcn(bodySim.center0, bodySim.center, B2HexColor.b2_colorWhiteSmoke, draw.context);
                         draw.DrawTransformFcn(transform, draw.context);
 
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
 
-                        string buffer = string.Format("{0:F2}", body.mass);
+                        string buffer = $"{body.mass:F2}";
                         draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorWhite, draw.context);
                     }
 
@@ -1107,18 +1120,13 @@ namespace Box2D.NET
                                 b2DrawJoint(draw, world, joint);
                                 b2SetBit(ref world.debugJointSet, jointId);
                             }
-                            else
-                            {
-                                // todo testing
-                                edgeIndex += 0;
-                            }
 
                             jointKey = joint.edges[edgeIndex].nextKey;
                         }
                     }
 
                     float linearSlop = B2_LINEAR_SLOP;
-                    if (draw.drawContacts && body.type == B2BodyType.b2_dynamicBody && body.setIndex == (int)B2SetType.b2_awakeSet)
+                    if (draw.drawContacts && body.type == B2BodyType.b2_dynamicBody)
                     {
                         int contactKey = body.headContactKey;
                         while (contactKey != B2_NULL_INDEX)
@@ -1128,18 +1136,11 @@ namespace Box2D.NET
                             B2Contact contact = b2Array_Get(ref world.contacts, contactId);
                             contactKey = contact.edges[edgeIndex].nextKey;
 
-                            if (contact.setIndex != (int)B2SetType.b2_awakeSet || contact.colorIndex == B2_NULL_INDEX)
-                            {
-                                continue;
-                            }
-
                             // avoid double draw
                             if (b2GetBit(ref world.debugContactSet, contactId) == false)
                             {
-                                B2_ASSERT(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);
+                                B2ContactSim contactSim = b2GetContactSim(world, contact);
 
-                                ref B2GraphColor gc = ref world.constraintGraph.colors[contact.colorIndex];
-                                B2ContactSim contactSim = b2Array_Get(ref gc.contactSims, contact.localIndex);
                                 int pointCount = contactSim.manifold.pointCount;
                                 B2Vec2 normal = contactSim.manifold.normal;
                                 string buffer;
@@ -1148,7 +1149,7 @@ namespace Box2D.NET
                                 {
                                     ref B2ManifoldPoint point = ref contactSim.manifold.points[j];
 
-                                    if (draw.drawGraphColors)
+                                    if (draw.drawGraphColors && contact.colorIndex != B2_NULL_INDEX)
                                     {
                                         // graph color
                                         float pointSize = contact.colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
@@ -1180,9 +1181,9 @@ namespace Box2D.NET
                                     else if (draw.drawContactImpulses)
                                     {
                                         B2Vec2 p1 = point.point;
-                                        B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.normalImpulse, normal);
+                                        B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.totalNormalImpulse, normal);
                                         draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
-                                        buffer = $"{1000.0f * point.normalImpulse:F1}";
+                                        buffer = $"{1000.0f * point.totalNormalImpulse:F1}";
                                         draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
 
@@ -1205,13 +1206,57 @@ namespace Box2D.NET
 
                                 b2SetBit(ref world.debugContactSet, contactId);
                             }
-                            else
-                            {
-                                // todo testing
-                                edgeIndex += 0;
-                            }
 
                             contactKey = contact.edges[edgeIndex].nextKey;
+                        }
+                    }
+
+                    if (draw.drawIslands)
+                    {
+                        int islandId = body.islandId;
+                        if (islandId != B2_NULL_INDEX && b2GetBit(ref world.debugIslandSet, islandId) == false)
+                        {
+                            B2Island island = world.islands.data[islandId];
+                            if (island.setIndex == B2_NULL_INDEX)
+                            {
+                                continue;
+                            }
+
+                            int shapeCount = 0;
+                            B2AABB aabb = new B2AABB(
+                                lowerBound: new B2Vec2(float.MaxValue, float.MaxValue),
+                                upperBound: new B2Vec2(-float.MaxValue, -float.MaxValue)
+                            );
+
+                            int islandBodyId = island.headBody;
+                            while (islandBodyId != B2_NULL_INDEX)
+                            {
+                                B2Body islandBody = b2Array_Get(ref world.bodies, islandBodyId);
+                                int shapeId = islandBody.headShapeId;
+                                while (shapeId != B2_NULL_INDEX)
+                                {
+                                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                                    aabb = b2AABB_Union(aabb, shape.fatAABB);
+                                    shapeCount += 1;
+                                    shapeId = shape.nextShapeId;
+                                }
+
+                                islandBodyId = islandBody.islandNext;
+                            }
+
+                            if (shapeCount > 0)
+                            {
+                                B2FixedArray4<B2Vec2> vsArray = new B2FixedArray4<B2Vec2>();
+                                Span<B2Vec2> vs = vsArray.AsSpan();
+                                vs[0] = new B2Vec2(aabb.lowerBound.X, aabb.lowerBound.Y);
+                                vs[1] = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);
+                                vs[2] = new B2Vec2(aabb.upperBound.X, aabb.upperBound.Y);
+                                vs[3] = new B2Vec2(aabb.lowerBound.X, aabb.upperBound.Y);
+
+                                draw.DrawPolygonFcn(vs, 4, B2HexColor.b2_colorOrangeRed, draw.context);
+                            }
+
+                            b2SetBit(ref world.debugIslandSet, islandId);
                         }
                     }
 
@@ -1219,18 +1264,6 @@ namespace Box2D.NET
                     word = word & (word - 1);
                 }
             }
-        }
-
-        public static void b2World_Draw(B2WorldId worldId, B2DebugDraw draw)
-        {
-            B2World world = b2GetWorldFromId(worldId);
-            B2_ASSERT(world.locked == false);
-            if (world.locked)
-            {
-                return;
-            }
-
-            b2DrawWithBounds(world, draw);
         }
 
         /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
@@ -2493,31 +2526,6 @@ void b2World_Dump()
         }
 
 #if DEBUG
-#if FALSE
-        // When validating islands ids I have to compare the root island
-        // ids because islands are not merged until the next time step.
-        public static int b2GetRootIslandId(B2World world, int islandId)
-        {
-            if (islandId == B2_NULL_INDEX)
-            {
-                return B2_NULL_INDEX;
-            }
-
-            B2Island island = b2Array_Get(ref world.islands, islandId);
-
-            int rootId = islandId;
-            B2Island rootIsland = island;
-            while (rootIsland.parentIsland != B2_NULL_INDEX)
-            {
-                B2Island parent = b2Array_Get(ref world.islands, rootIsland.parentIsland);
-                rootId = rootIsland.parentIsland;
-                rootIsland = parent;
-            }
-
-            return rootId;
-        }
-#endif
-
         // This validates island graph connectivity for each body
         public static void b2ValidateConnectivity(B2World world)
         {
@@ -2538,7 +2546,6 @@ void b2World_Dump()
                 B2_ASSERT(bodyIndex == body.id);
 
                 // Need to get the root island because islands are not merged until the next time step
-                //int bodyIslandId = b2GetRootIslandId(world, body.islandId);
                 int bodyIslandId = body.islandId;
                 int bodySetIndex = body.setIndex;
 
@@ -2555,7 +2562,6 @@ void b2World_Dump()
                     {
                         if (bodySetIndex != (int)B2SetType.b2_staticSet)
                         {
-                            //int contactIslandId = b2GetRootIslandId(world, contact.islandId);
                             int contactIslandId = contact.islandId;
                             B2_ASSERT(contactIslandId == bodyIslandId);
                         }
@@ -2586,14 +2592,18 @@ void b2World_Dump()
                     }
                     else if (bodySetIndex == (int)B2SetType.b2_staticSet)
                     {
+                        // Intentional nesting
                         if (otherBody.setIndex == (int)B2SetType.b2_staticSet)
                         {
                             B2_ASSERT(joint.islandId == B2_NULL_INDEX);
                         }
                     }
+                    else if (body.type != B2BodyType.b2_dynamicBody && otherBody.type != B2BodyType.b2_dynamicBody)
+                    {
+                        B2_ASSERT(joint.islandId == B2_NULL_INDEX);
+                    }
                     else
                     {
-                        //int jointIslandId = b2GetRootIslandId(world, joint.islandId);
                         int jointIslandId = joint.islandId;
                         B2_ASSERT(jointIslandId == bodyIslandId);
                     }
@@ -2730,6 +2740,10 @@ void b2World_Dump()
                                 {
                                     B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
                                 }
+                                else if (body.type != B2BodyType.b2_dynamicBody && otherBody.type != B2BodyType.b2_dynamicBody)
+                                {
+                                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
+                                }
                                 else if (setIndex == (int)B2SetType.b2_awakeSet)
                                 {
                                     B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
@@ -2843,11 +2857,12 @@ void b2World_Dump()
                     {
                         B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
                         B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
 
-                        bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
-                        bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type == B2BodyType.b2_dynamicBody));
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type == B2BodyType.b2_dynamicBody));
+
+                        bitCount += bodyA.type == B2BodyType.b2_dynamicBody ? 1 : 0;
+                        bitCount += bodyB.type == B2BodyType.b2_dynamicBody ? 1 : 0;
                     }
                 }
 
@@ -2869,11 +2884,12 @@ void b2World_Dump()
                     {
                         B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
                         B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type != B2BodyType.b2_staticBody));
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type != B2BodyType.b2_staticBody));
 
-                        bitCount += bodyA.type == B2BodyType.b2_staticBody ? 0 : 1;
-                        bitCount += bodyB.type == B2BodyType.b2_staticBody ? 0 : 1;
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type == B2BodyType.b2_dynamicBody));
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type == B2BodyType.b2_dynamicBody));
+
+                        bitCount += bodyA.type == B2BodyType.b2_dynamicBody ? 1 : 0;
+                        bitCount += bodyB.type == B2BodyType.b2_dynamicBody ? 1 : 0;
                     }
                 }
 

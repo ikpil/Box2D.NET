@@ -31,6 +31,12 @@ namespace Box2D.NET
 
         // This body need's to have its AABB increased
         b2_enlargeBounds = 0x00000100,
+        
+        // This body is dynamic so the solver should write to it.
+        // This prevents writing to kinematic bodies that causes a multithreaded sharing
+        // cache coherence problem even when the values are not changing.
+        // Used for b2BodyState flags.
+        b2_dynamicFlag = 0x00000200,
 
         // All lock flags
         b2_allLocks = b2_lockAngularZ | b2_lockLinearX | b2_lockLinearY,

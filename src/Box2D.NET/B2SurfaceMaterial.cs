@@ -23,7 +23,7 @@ namespace Box2D.NET
 
         /// User material identifier. This is passed with query results and to friction and restitution
         /// combining functions. It is not used internally.
-        public int userMaterialId;
+        public ulong userMaterialId;
 
         /// Custom debug draw color.
         public uint customColor;

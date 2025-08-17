@@ -222,10 +222,17 @@ namespace Box2D.NET
                 wA -= iA * constraint.rollingImpulse;
                 wB += iB * constraint.rollingImpulse;
 
-                stateA.linearVelocity = vA;
-                stateA.angularVelocity = wA;
-                stateB.linearVelocity = vB;
-                stateB.angularVelocity = wB;
+                if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateA.linearVelocity = vA;
+                    stateA.angularVelocity = wA;
+                }
+
+                if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateB.linearVelocity = vB;
+                    stateB.angularVelocity = wB;
+                }
             }
 
             b2TracyCZoneEnd(B2TracyCZone.warmstart_overflow_contact);
@@ -377,10 +384,17 @@ namespace Box2D.NET
                     wB += iB * deltaLambda;
                 }
 
-                stateA.linearVelocity = vA;
-                stateA.angularVelocity = wA;
-                stateB.linearVelocity = vB;
-                stateB.angularVelocity = wB;
+                if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateA.linearVelocity = vA;
+                    stateA.angularVelocity = wA;
+                }
+
+                if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateB.linearVelocity = vB;
+                    stateB.angularVelocity = wB;
+                }
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
@@ -475,10 +489,17 @@ namespace Box2D.NET
                     }
                 }
 
-                stateA.linearVelocity = vA;
-                stateA.angularVelocity = wA;
-                stateB.linearVelocity = vB;
-                stateB.angularVelocity = wB;
+                if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateA.linearVelocity = vA;
+                    stateA.angularVelocity = wA;
+                }
+
+                if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateB.linearVelocity = vB;
+                    stateB.angularVelocity = wB;
+                }
             }
 
             b2TracyCZoneEnd(B2TracyCZone.overflow_resitution);
@@ -835,21 +856,21 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 	// associated cache flushing.
     // todo could add a check for kinematic bodies here
 
-	if ( indices[0] != B2_NULL_INDEX )
+	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[0] ), _mm256_permute2f128_ps( tt0, tt4, 0x20 ) );
-	if ( indices[1] != B2_NULL_INDEX )
+	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[1] ), _mm256_permute2f128_ps( tt1, tt5, 0x20 ) );
-	if ( indices[2] != B2_NULL_INDEX )
+	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[2] ), _mm256_permute2f128_ps( tt2, tt6, 0x20 ) );
-	if ( indices[3] != B2_NULL_INDEX )
+	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[3] ), _mm256_permute2f128_ps( tt3, tt7, 0x20 ) );
-	if ( indices[4] != B2_NULL_INDEX )
+	if ( indices[4] != B2_NULL_INDEX && ( states[indices[4]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[4] ), _mm256_permute2f128_ps( tt0, tt4, 0x31 ) );
-	if ( indices[5] != B2_NULL_INDEX )
+	if ( indices[5] != B2_NULL_INDEX && ( states[indices[5]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[5] ), _mm256_permute2f128_ps( tt1, tt5, 0x31 ) );
-	if ( indices[6] != B2_NULL_INDEX )
+	if ( indices[6] != B2_NULL_INDEX && ( states[indices[6]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[6] ), _mm256_permute2f128_ps( tt2, tt6, 0x31 ) );
-	if ( indices[7] != B2_NULL_INDEX )
+	if ( indices[7] != B2_NULL_INDEX && ( states[indices[7]].flags & b2_dynamicFlag ) != 0 )
 		_mm256_store_ps( (float*)( states + indices[7] ), _mm256_permute2f128_ps( tt3, tt7, 0x31 ) );
 }
 
@@ -933,25 +954,25 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 	// I don't use any dummy body in the body array because this will lead to multithreaded sharing and the
 	// associated cache flushing.
-	if ( indices[0] != B2_NULL_INDEX )
+	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body1 = vcombine_f32( vget_low_f32( r1.val[0] ), vget_low_f32( r2.val[0] ) );
 		b2StoreW( (float*)( states + indices[0] ), body1 );
 	}
 
-	if ( indices[1] != B2_NULL_INDEX )
+	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body2 = vcombine_f32( vget_low_f32( r1.val[1] ), vget_low_f32( r2.val[1] ) );
 		b2StoreW( (float*)( states + indices[1] ), body2 );
 	}
 
-	if ( indices[2] != B2_NULL_INDEX )
+	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body3 = vcombine_f32( vget_high_f32( r1.val[0] ), vget_high_f32( r2.val[0] ) );
 		b2StoreW( (float*)( states + indices[2] ), body3 );
 	}
 
-	if ( indices[3] != B2_NULL_INDEX )
+	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body4 = vcombine_f32( vget_high_f32( r1.val[1] ), vget_high_f32( r2.val[1] ) );
 		b2StoreW( (float*)( states + indices[3] ), body4 );
@@ -1026,6 +1047,34 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 	// [w3 f3 w4 f4]
 	b2FloatW t4 = b2UnpackHiW( simdBody.w, simdBody.flags );
 
+#if ENABLED
+	// I don't use any dummy body in the body array because this will lead to multithreaded cache coherence problems.
+	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
+	{
+		// [t1.x t1.y t3.x t3.y]
+		b2StoreW( (float*)( states + indices[0] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+	}
+
+	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
+	{
+		// [t1.z t1.w t3.z t3.w]
+		b2StoreW( (float*)( states + indices[1] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+	}
+
+	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
+	{
+		// [t2.x t2.y t4.x t4.y]
+		b2StoreW( (float*)( states + indices[2] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+	}
+
+	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
+	{
+		// [t2.z t2.w t4.z t4.w]
+		b2StoreW( (float*)( states + indices[3] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+	}
+
+#else
+
 	// I don't use any dummy body in the body array because this will lead to multithreaded sharing and the
 	// associated cache flushing.
 	if ( indices[0] != B2_NULL_INDEX )
@@ -1051,6 +1100,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 		// [t2.z t2.w t4.z t4.w]
 		b2StoreW( (float*)( states + indices[3] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
 	}
+#endif
 }
 
 #else
@@ -1083,7 +1133,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         {
             // todo somehow skip writing to kinematic bodies
 
-            if (indices[0] != B2_NULL_INDEX)
+            if (indices[0] != B2_NULL_INDEX && (states[indices[0]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
                 B2BodyState state = states[indices[0]];
                 state.linearVelocity.X = simdBody.v.X.X;
@@ -1091,7 +1141,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 state.angularVelocity = simdBody.w.X;
             }
 
-            if (indices[1] != B2_NULL_INDEX)
+            if (indices[1] != B2_NULL_INDEX && (states[indices[1]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
                 B2BodyState state = states[indices[1]];
                 state.linearVelocity.X = simdBody.v.X.Y;
@@ -1099,7 +1149,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 state.angularVelocity = simdBody.w.Y;
             }
 
-            if (indices[2] != B2_NULL_INDEX)
+            if (indices[2] != B2_NULL_INDEX && (states[indices[2]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
                 B2BodyState state = states[indices[2]];
                 state.linearVelocity.X = simdBody.v.X.Z;
@@ -1107,7 +1157,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 state.angularVelocity = simdBody.w.Z;
             }
 
-            if (indices[3] != B2_NULL_INDEX)
+            if (indices[3] != B2_NULL_INDEX && (states[indices[3]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
                 B2BodyState state = states[indices[3]];
                 state.linearVelocity.X = simdBody.v.X.W;
