@@ -56,15 +56,6 @@ public class BenchmarkSleep : Sample
         m_baseCount = m_isDebug ? 40 : 100;
         m_bodyCount = 0;
 
-        for (int i = 0; i < e_maxBodyCount; ++i)
-        {
-            if (B2_IS_NON_NULL(m_bodies[i]))
-            {
-                b2DestroyBody(m_bodies[i]);
-                m_bodies[i] = b2_nullBodyId;
-            }
-        }
-
         int count = m_baseCount;
         float rad = 0.5f;
         float shift = rad * 2.0f;
