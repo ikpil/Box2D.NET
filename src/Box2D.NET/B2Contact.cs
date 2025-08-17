@@ -21,16 +21,15 @@ namespace Box2D.NET
         // B2_NULL_INDEX when slot is free
         public int localIndex;
 
-        public B2FixedArray2<B2ContactEdge> edges;
         public int shapeIdA;
         public int shapeIdB;
+        public int contactId;
 
         // A contact only belongs to an island if touching, otherwise B2_NULL_INDEX.
+        public B2FixedArray2<B2ContactEdge> edges;
         public int islandPrev;
         public int islandNext;
         public int islandId;
-
-        public int contactId;
 
         // b2ContactFlags
         public uint flags;
@@ -38,7 +37,5 @@ namespace Box2D.NET
         // This is monotonically advanced when a contact is allocated in this slot
         // Used to check for invalid b2ContactId
         public uint generation;
-
-        public bool isMarked;
     }
 }

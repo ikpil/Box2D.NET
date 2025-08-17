@@ -109,10 +109,10 @@ namespace Box2D.NET
                 tree.nodeCapacity += oldCapacity >> 1;
                 tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
                 B2_ASSERT(oldNodes != null);
-                //memcpy( tree->nodes, oldNodes, tree->nodeCount * sizeof( b2TreeNode ) );
+                //memcpy( tree.nodes, oldNodes, tree.nodeCount * sizeof( b2TreeNode ) );
                 Array.Copy(oldNodes, 0, tree.nodes, 0, oldCapacity);
 
-                //memset( tree->nodes + tree->nodeCount, 0, ( tree->nodeCapacity - tree->nodeCount ) * sizeof( b2TreeNode ) );
+                //memset( tree.nodes + tree.nodeCount, 0, ( tree.nodeCapacity - tree.nodeCount ) * sizeof( b2TreeNode ) );
 
                 b2Free(oldNodes, oldCapacity);
 
@@ -469,7 +469,7 @@ namespace Box2D.NET
                 B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
                 B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
                 B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
-                
+
                 ref B2TreeNode D = ref nodes[iD];
                 ref B2TreeNode E = ref nodes[iE];
                 ref B2TreeNode F = ref nodes[iF];
@@ -1131,17 +1131,67 @@ namespace Box2D.NET
             while (stackCount > 0)
             {
                 int nodeId = stack[--stackCount];
-                if (nodeId == B2_NULL_INDEX)
-                {
-                    // todo huh?
-                    B2_ASSERT(false);
-                    continue;
-                }
 
                 ref B2TreeNode node = ref tree.nodes[nodeId];
                 result.nodeVisits += 1;
 
                 if (b2AABB_Overlaps(node.aabb, aabb) && (node.categoryBits & maskBits) != 0)
+                {
+                    if (b2IsLeaf(ref node))
+                    {
+                        // callback to user code with proxy id
+                        bool proceed = callback(nodeId, node.children.userData, ref context);
+                        result.leafVisits += 1;
+
+                        if (proceed == false)
+                        {
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        if (stackCount < B2_TREE_STACK_SIZE - 1)
+                        {
+                            stack[stackCount++] = node.children.child1;
+                            stack[stackCount++] = node.children.child2;
+                        }
+                        else
+                        {
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
+        /// No filtering is performed.
+        ///	@return performance data
+        public static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        {
+            B2TreeStats result = new B2TreeStats();
+
+            if (tree.nodeCount == 0)
+            {
+                return result;
+            }
+
+            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
+            var dummy = new B2FixedArray1024<int>();
+            var stack = dummy.AsSpan();
+            int stackCount = 0;
+            stack[stackCount++] = tree.root;
+
+            while (stackCount > 0)
+            {
+                int nodeId = stack[--stackCount];
+
+                ref B2TreeNode node = ref tree.nodes[nodeId];
+                result.nodeVisits += 1;
+
+                if (b2AABB_Overlaps(node.aabb, aabb))
                 {
                     if (b2IsLeaf(ref node))
                     {
@@ -1181,7 +1231,7 @@ namespace Box2D.NET
         /// However, this filtering may be approximate, so the user should still apply filtering to results.
         /// @param tree the dynamic tree to ray cast
         /// @param input the ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1)
-        /// @param maskBits mask bit hint: `bool accept = (maskBits & node->categoryBits) != 0;`
+        /// @param maskBits mask bit hint: `bool accept = (maskBits & node.categoryBits) != 0;`
         /// @param callback a callback class that is called for each proxy that is hit by the ray
         /// @param context user context that is passed to the callback
         /// @return performance data
@@ -1314,7 +1364,7 @@ namespace Box2D.NET
         /// number of proxies in the tree.
         /// @param tree the dynamic tree to ray cast
         /// @param input the ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).
-        /// @param maskBits filter bits: `bool accept = (maskBits & node->categoryBits) != 0;`
+        /// @param maskBits filter bits: `bool accept = (maskBits & node.categoryBits) != 0;`
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data

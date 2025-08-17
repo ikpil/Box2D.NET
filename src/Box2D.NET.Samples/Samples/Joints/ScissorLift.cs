@@ -67,6 +67,9 @@ public class ScissorLift : Sample
             B2BodyId linkId1 = new B2BodyId();
             int N = 3;
 
+            float constraintDampingRatio = 20.0f;
+            float constraintHertz = 240.0f;
+
             for (int i = 0; i < N; ++i)
             {
                 bodyDef.position = new B2Vec2(0.0f, y);
@@ -93,6 +96,8 @@ public class ScissorLift : Sample
                 revoluteDef.@base.localFrameA.p = baseAnchor1;
                 revoluteDef.@base.localFrameB.p = new B2Vec2(-2.5f, 0.0f);
                 revoluteDef.@base.collideConnected = (i == 0) ? true : false;
+                revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
+                revoluteDef.@base.constraintHertz = constraintHertz;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
@@ -106,6 +111,8 @@ public class ScissorLift : Sample
                     wheelDef.@base.localFrameB.p = new B2Vec2(2.5f, 0.0f);
                     wheelDef.enableSpring = false;
                     wheelDef.@base.collideConnected = true;
+                    wheelDef.@base.constraintDampingRatio = constraintDampingRatio;
+                    wheelDef.@base.constraintHertz = constraintHertz;
 
                     b2CreateWheelJoint(m_worldId, ref wheelDef);
                 }
@@ -116,6 +123,8 @@ public class ScissorLift : Sample
                     revoluteDef.@base.localFrameA.p = baseAnchor2;
                     revoluteDef.@base.localFrameB.p = new B2Vec2(2.5f, 0.0f);
                     revoluteDef.@base.collideConnected = false;
+                    revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
+                    revoluteDef.@base.constraintHertz = constraintHertz;
 
                     b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
                 }
@@ -126,6 +135,8 @@ public class ScissorLift : Sample
                 revoluteDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.0f);
                 revoluteDef.@base.localFrameB.p = new B2Vec2(0.0f, 0.0f);
                 revoluteDef.@base.collideConnected = false;
+                revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
+                revoluteDef.@base.constraintHertz = constraintHertz;
 
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
 
@@ -151,6 +162,8 @@ public class ScissorLift : Sample
                 revoluteDef.@base.localFrameA.p = new B2Vec2(-2.5f, -0.4f);
                 revoluteDef.@base.localFrameB.p = baseAnchor1;
                 revoluteDef.@base.collideConnected = true;
+                revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
+                revoluteDef.@base.constraintHertz = constraintHertz;
                 b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
             }
 
@@ -163,6 +176,8 @@ public class ScissorLift : Sample
                 wheelDef.@base.localFrameB.p = baseAnchor2;
                 wheelDef.enableSpring = false;
                 wheelDef.@base.collideConnected = true;
+                wheelDef.@base.constraintDampingRatio = constraintDampingRatio;
+                wheelDef.@base.constraintHertz = constraintHertz;
                 b2CreateWheelJoint(m_worldId, ref wheelDef);
             }
 

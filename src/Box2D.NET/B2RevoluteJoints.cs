@@ -28,7 +28,7 @@ namespace Box2D.NET
         // Cdot = wB - wA
         // J = [0 0 -1 0 0 1]
         // K = invIA + invIB
-        
+
         public static void b2RevoluteJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -291,11 +291,17 @@ namespace Box2D.NET
 
             float axialImpulse = joint.springImpulse + joint.motorImpulse + joint.lowerImpulse - joint.upperImpulse;
 
-            stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, joint.linearImpulse);
-            stateA.angularVelocity -= iA * (b2Cross(rA, joint.linearImpulse) + axialImpulse);
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, joint.linearImpulse);
+                stateA.angularVelocity -= iA * (b2Cross(rA, joint.linearImpulse) + axialImpulse);
+            }
 
-            stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, joint.linearImpulse);
-            stateB.angularVelocity += iB * (b2Cross(rB, joint.linearImpulse) + axialImpulse);
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, joint.linearImpulse);
+                stateB.angularVelocity += iB * (b2Cross(rB, joint.linearImpulse) + axialImpulse);
+            }
         }
 
         public static void b2SolveRevoluteJoint(B2JointSim @base, B2StepContext context, bool useBias)
@@ -470,10 +476,17 @@ namespace Box2D.NET
                 wB += iB * b2Cross(rB, impulse);
             }
 
-            stateA.linearVelocity = vA;
-            stateA.angularVelocity = wA;
-            stateB.linearVelocity = vB;
-            stateB.angularVelocity = wB;
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = vA;
+                stateA.angularVelocity = wA;
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = vB;
+                stateB.angularVelocity = wB;
+            }
         }
 
 #if FALSE
@@ -553,8 +566,8 @@ namespace Box2D.NET
             draw.DrawSegmentFcn(transformB.p, frameB.p, color, draw.context);
 
             // char buffer[32];
-            // sprintf(buffer, "%.1f", b2Length(joint->impulse));
-            // draw->DrawString(pA, buffer, draw->context);
+            // sprintf(buffer, "%.1f", b2Length(joint.impulse));
+            // draw.DrawString(pA, buffer, draw.context);
         }
     }
 }

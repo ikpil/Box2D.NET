@@ -84,15 +84,15 @@ public class BenchmarkSensor : Sample
 
             float yStart = 10.0f;
             m_filterRow = m_rowCount >> 1;
-            
+
             for (int j = 0; j < m_rowCount; ++j)
             {
                 m_passiveSensors[j] = new ShapeUserData();
                 m_passiveSensors[j].row = j;
                 m_passiveSensors[j].active = false;
                 shapeDef.userData = m_passiveSensors[j];
-                
-                if ( j == m_filterRow )
+
+                if (j == m_filterRow)
                 {
                     shapeDef.enableCustomFiltering = true;
                     shapeDef.material.customColor = (uint)B2HexColor.b2_colorFuchsia;
@@ -199,7 +199,7 @@ public class BenchmarkSensor : Sample
                 // Modify color while overlapped with a sensor
                 B2SurfaceMaterial surfaceMaterial = b2Shape_GetSurfaceMaterial(@event.visitorShapeId);
                 surfaceMaterial.customColor = (uint)B2HexColor.b2_colorLime;
-                b2Shape_SetSurfaceMaterial(@event.visitorShapeId, surfaceMaterial);
+                b2Shape_SetSurfaceMaterial(@event.visitorShapeId, ref surfaceMaterial);
             }
         }
 
@@ -215,7 +215,7 @@ public class BenchmarkSensor : Sample
             // Restore color to default
             B2SurfaceMaterial surfaceMaterial = b2Shape_GetSurfaceMaterial(@event.visitorShapeId);
             surfaceMaterial.customColor = 0;
-            b2Shape_SetSurfaceMaterial(@event.visitorShapeId, surfaceMaterial);
+            b2Shape_SetSurfaceMaterial(@event.visitorShapeId, ref surfaceMaterial);
         }
 
         foreach (B2BodyId bodyId in zombies)

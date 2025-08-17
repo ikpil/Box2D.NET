@@ -16,9 +16,6 @@ namespace Box2D.NET
         public B2MotorJoint motorJoint;
         
         [FieldOffset(0)]
-        public B2MouseJoint mouseJoint;
-        
-        [FieldOffset(0)]
         public B2RevoluteJoint revoluteJoint;
         
         [FieldOffset(0)]
@@ -29,7 +26,6 @@ namespace Box2D.NET
         
         [FieldOffset(0)]
         public B2WheelJoint wheelJoint;
-            
     }
 
 }

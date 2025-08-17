@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Collections.Generic;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
@@ -13,6 +14,7 @@ using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.Shared.Humans;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Hulls;
 
 namespace Box2D.NET.Shared
 {
@@ -537,6 +539,132 @@ namespace Box2D.NET.Shared
                     }
 
                     y += 0.4f;
+                }
+            }
+        }
+
+        public static void CreateWasher(B2WorldId worldId, bool kinematic)
+        {
+            B2BodyId groundId;
+            {
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                groundId = b2CreateBody(worldId, ref bodyDef);
+            }
+
+            {
+                float motorSpeed = 25.0f;
+
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.position = new B2Vec2(0.0f, 10.0f);
+
+                if (kinematic == true)
+                {
+                    bodyDef.type = B2BodyType.b2_kinematicBody;
+                    bodyDef.angularVelocity = (B2_PI / 180.0f) * motorSpeed;
+                    bodyDef.linearVelocity = new B2Vec2(0.001f, -0.002f);
+                }
+                else
+                {
+                    bodyDef.type = B2BodyType.b2_dynamicBody;
+                }
+
+                B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+
+                B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                float r0 = 14.0f;
+                float r1 = 16.0f;
+                float r2 = 18.0f;
+
+                float angle = B2_PI / 18.0f;
+                B2Rot q = new B2Rot(MathF.Cos(angle), MathF.Sin(angle));
+                B2Rot qo = new B2Rot(MathF.Cos(0.1f * angle), MathF.Sin(0.1f * angle));
+                B2Vec2 u1 = new B2Vec2(1.0f, 0.0f);
+                for (int i = 0; i < 36; ++i)
+                {
+                    B2Vec2 u2;
+                    if (i == 35)
+                    {
+                        u2 = new B2Vec2(1.0f, 0.0f);
+                    }
+                    else
+                    {
+                        u2 = b2RotateVector(q, u1);
+                    }
+
+                    {
+                        B2Vec2 a1 = b2InvRotateVector(qo, u1);
+                        B2Vec2 a2 = b2RotateVector(qo, u2);
+
+                        B2Vec2 p1 = b2MulSV(r1, a1);
+                        B2Vec2 p2 = b2MulSV(r2, a1);
+                        B2Vec2 p3 = b2MulSV(r1, a2);
+                        B2Vec2 p4 = b2MulSV(r2, a2);
+
+                        B2Vec2[] points = new B2Vec2[] { p1, p2, p3, p4 };
+                        B2Hull hull = b2ComputeHull(points, 4);
+
+                        B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+                    }
+
+                    if (i % 9 == 0)
+                    {
+                        B2Vec2 p1 = b2MulSV(r0, u1);
+                        B2Vec2 p2 = b2MulSV(r1, u1);
+                        B2Vec2 p3 = b2MulSV(r0, u2);
+                        B2Vec2 p4 = b2MulSV(r1, u2);
+
+                        B2Vec2[] points = new B2Vec2[] { p1, p2, p3, p4 };
+                        B2Hull hull = b2ComputeHull(points, 4);
+
+                        B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+                    }
+
+                    u1 = u2;
+                }
+
+                if (kinematic == false)
+                {
+                    B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
+                    jointDef.@base.bodyIdA = groundId;
+                    jointDef.@base.bodyIdB = bodyId;
+                    jointDef.@base.localFrameA.p = new B2Vec2(0.0f, 10.0f);
+                    jointDef.@base.localFrameB.p = new B2Vec2(0.0f, 0.0f);
+                    jointDef.motorSpeed = (B2_PI / 180.0f) * motorSpeed;
+                    jointDef.maxMotorTorque = 1e8f;
+                    jointDef.enableMotor = true;
+
+                    b2CreateRevoluteJoint(worldId, ref jointDef);
+                }
+            }
+
+            {
+                int gridCount = BENCHMARK_DEBUG ? 20 : 90;
+                float a = 0.1f;
+
+                B2Polygon polygon = b2MakeSquare(a);
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_dynamicBody;
+                B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                float y = -1.1f * a * gridCount + 10.0f;
+                for (int i = 0; i < gridCount; ++i)
+                {
+                    float x = -1.1f * a * gridCount;
+
+                    for (int j = 0; j < gridCount; ++j)
+                    {
+                        bodyDef.position = new B2Vec2(x, y);
+                        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+
+                        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+
+                        x += 2.1f * a;
+                    }
+
+                    y += 2.1f * a;
                 }
             }
         }

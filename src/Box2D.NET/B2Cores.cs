@@ -86,12 +86,6 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2MouseJointDef def)
-        {
-            B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void B2_CHECK_DEF(ref B2MotorJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);

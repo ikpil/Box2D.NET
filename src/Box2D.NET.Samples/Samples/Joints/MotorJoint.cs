@@ -30,7 +30,6 @@ public class MotorJoint : Sample
     private float m_speed;
     private float m_maxForce;
     private float m_maxTorque;
-    private bool m_go;
 
     private B2Transform _transform;
 
@@ -120,7 +119,6 @@ public class MotorJoint : Sample
         }
 
         m_speed = 1.0f;
-        m_go = true;
         m_time = 0.0f;
     }
 

@@ -36,7 +36,6 @@ namespace Box2D.NET
         // Used to check for invalid b2JointId
         public ushort generation;
 
-        public bool isMarked;
         public bool collideConnected;
     }
 }

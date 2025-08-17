@@ -92,12 +92,12 @@ public class RevoluteJoint : Sample
             jointDef.maxMotorTorque = m_motorTorque;
             jointDef.enableMotor = m_enableMotor;
             jointDef.lowerAngle = -0.5f * B2_PI;
-            jointDef.upperAngle = 0.75f * B2_PI;
+            jointDef.upperAngle = 0.05f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
 
             m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
 
-            b2Joint_SetConstraintTuning(m_jointId1, 120.0f, 0.0f);
+            b2Joint_SetConstraintTuning(m_jointId1, 60.0f, 20.0f);
         }
 
         {
@@ -223,7 +223,7 @@ public class RevoluteJoint : Sample
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
         DrawTextLine($"Motor Torque 1 = {torque1:F1}");
 
-        // float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        // DrawTextLine($"Motor Torque 2 = {torque2:F1}");
+        float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
+        DrawTextLine($"Motor Torque 2 = {torque2:F1}");
     }
 }

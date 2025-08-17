@@ -100,9 +100,17 @@ public class Camera
 
     public B2AABB GetViewBounds()
     {
-        B2AABB bounds;
-        bounds.lowerBound = ConvertScreenToWorld(new B2Vec2(0.0f, (float)m_height));
-        bounds.upperBound = ConvertScreenToWorld(new B2Vec2((float)m_width, 0.0f));
-        return bounds;
+        if (m_height == 0.0f || m_width == 0.0f)
+        {
+            B2AABB bounds = new B2AABB(b2Vec2_zero, b2Vec2_zero);
+            return bounds;
+        }
+
+        {
+            B2AABB bounds;
+            bounds.lowerBound = ConvertScreenToWorld(new B2Vec2(0.0f, (float)m_height));
+            bounds.upperBound = ConvertScreenToWorld(new B2Vec2((float)m_width, 0.0f));
+            return bounds;
+        }
     }
 }

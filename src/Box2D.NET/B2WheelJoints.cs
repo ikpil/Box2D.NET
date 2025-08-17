@@ -304,10 +304,17 @@ namespace Box2D.NET
             float LA = axialImpulse * a1 + joint.perpImpulse * s1 + joint.motorImpulse;
             float LB = axialImpulse * a2 + joint.perpImpulse * s2 + joint.motorImpulse;
 
-            stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, P);
-            stateA.angularVelocity -= iA * LA;
-            stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, P);
-            stateB.angularVelocity += iB * LB;
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, P);
+                stateA.angularVelocity -= iA * LA;
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, P);
+                stateB.angularVelocity += iB * LB;
+            }
         }
 
         public static void b2SolveWheelJoint(B2JointSim @base, B2StepContext context, bool useBias)
@@ -493,10 +500,17 @@ namespace Box2D.NET
                 wB += iB * LB;
             }
 
-            stateA.linearVelocity = vA;
-            stateA.angularVelocity = wA;
-            stateB.linearVelocity = vB;
-            stateB.angularVelocity = wB;
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = vA;
+                stateA.angularVelocity = wA;
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = vB;
+                stateB.angularVelocity = wB;
+            }
         }
 
 #if FALSE

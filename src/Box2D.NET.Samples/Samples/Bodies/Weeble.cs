@@ -79,12 +79,12 @@ public class Weeble : Sample
         m_explosionMagnitude = 8.0f;
     }
 
-    static float FrictionCallback(float frictionA, int materialA, float frictionB, int materialB)
+    static float FrictionCallback(float frictionA, ulong materialA, float frictionB, ulong materialB)
     {
         return 0.1f;
     }
 
-    static float RestitutionCallback(float restitutionA, int materialA, float restitutionB, int materialB)
+    static float RestitutionCallback(float restitutionA, ulong materialA, float restitutionB, ulong materialB)
     {
         return 1.0f;
     }

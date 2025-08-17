@@ -9,6 +9,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Joints;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -22,11 +23,8 @@ public class BenchmarkSleep : Sample
     private B2BodyId[] m_bodies = new B2BodyId[e_maxBodyCount];
     private int m_bodyCount;
     private int m_baseCount;
-    private int m_iterations;
     private float m_wakeTotal;
     private float m_sleepTotal;
-    private int m_wakeCount;
-    private int m_sleepCount;
     private bool m_awake;
 
 
@@ -44,36 +42,20 @@ public class BenchmarkSleep : Sample
             m_camera.m_zoom = 25.0f * 2.2f;
         }
 
-        float groundSize = 100.0f;
-
-        B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
-
-        B2Polygon box = b2MakeBox(groundSize, 1.0f);
-        B2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(groundId, ref shapeDef, ref box);
-
-        for (int i = 0; i < e_maxBodyCount; ++i)
         {
-            m_bodies[i] = b2_nullBodyId;
+            float groundSize = 100.0f;
+
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+
+            B2Polygon box = b2MakeBox(groundSize, 1.0f);
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
         }
 
         m_baseCount = m_isDebug ? 40 : 100;
-        m_iterations = m_isDebug ? 1 : 41;
         m_bodyCount = 0;
-        m_awake = false;
 
-        m_wakeTotal = 0.0f;
-        m_wakeCount = 0;
-
-        m_sleepTotal = 0.0f;
-        m_sleepCount = 0;
-
-        CreateScene();
-    }
-
-    void CreateScene()
-    {
         for (int i = 0; i < e_maxBodyCount; ++i)
         {
             if (B2_IS_NON_NULL(m_bodies[i]))
@@ -89,59 +71,63 @@ public class BenchmarkSleep : Sample
         float centerx = shift * count / 2.0f;
         float centery = shift / 2.0f + 1.0f;
 
-        B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.type = B2BodyType.b2_dynamicBody;
-
-        B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.density = 1.0f;
-        shapeDef.material.friction = 0.5f;
-
-        float h = 0.5f;
-        B2Polygon box = b2MakeRoundedBox(h, h, 0.0f);
-
-        int index = 0;
-
-        for (int i = 0; i < count; ++i)
         {
-            float y = i * shift + centery;
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
 
-            for (int j = i; j < count; ++j)
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.density = 1.0f;
+            shapeDef.material.friction = 0.5f;
+
+            float h = 0.5f;
+            B2Polygon box = b2MakeRoundedBox(h, h, 0.0f);
+
+            int index = 0;
+
+            for (int i = 0; i < count; ++i)
             {
-                float x = 0.5f * i * shift + (j - i) * shift - centerx;
-                bodyDef.position = new B2Vec2(x, y);
+                float y = i * shift + centery;
 
-                B2_ASSERT(index < e_maxBodyCount);
-                m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
+                for (int j = i; j < count; ++j)
+                {
+                    float x = 0.5f * i * shift + (j - i) * shift - centerx;
+                    bodyDef.position = new B2Vec2(x, y);
 
-                index += 1;
+                    B2_ASSERT(index < e_maxBodyCount);
+                    m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
+                    b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
+
+                    index += 1;
+                }
             }
-        }
 
-        m_bodyCount = index;
+            m_bodyCount = index;
+            m_wakeTotal = 0.0f;
+            m_sleepTotal = 0.0f;
+        }
     }
 
     public override void Step()
     {
-        ulong ticks = b2GetTicks();
-
-        for (int i = 0; i < m_iterations; ++i)
+        // These operations don't show up in b2Profile
+        if (m_stepCount > 20)
         {
-            b2Body_SetAwake(m_bodies[0], m_awake);
-            if (m_awake)
-            {
-                m_wakeTotal += b2GetMillisecondsAndReset(ref ticks);
-                m_wakeCount += 1;
-            }
-            else
-            {
-                m_sleepTotal += b2GetMillisecondsAndReset(ref ticks);
-                m_sleepCount += 1;
-            }
+            // Creating and destroying a joint will engage the island splitter.
+            b2FilterJointDef jointDef = b2DefaultFilterJointDef();
+            jointDef.@base.bodyIdA = m_bodies[0];
+            jointDef.@base.bodyIdB = m_bodies[1];
+            B2JointId jointId = b2CreateFilterJoint(m_worldId, ref jointDef);
 
-            m_awake = !m_awake;
+            ulong ticks = b2GetTicks();
+
+            // This will wake the island
+            b2DestroyJoint(jointId);
+            m_wakeTotal += b2GetMillisecondsAndReset(ref ticks);
+
+            // Put the island back to sleep. It must be split because a constraint was removed.
+            b2Body_SetAwake(m_bodies[0], false);
+            m_sleepTotal += b2GetMillisecondsAndReset(ref ticks);
         }
-
 
         base.Step();
     }
@@ -149,17 +135,9 @@ public class BenchmarkSleep : Sample
     public override void Draw(Settings settings)
     {
         base.Draw(settings);
-        
-        if (m_wakeCount > 0)
-        {
-            DrawTextLine($"wake ave = {m_wakeTotal / m_wakeCount:g} ms");
-            
-        }
 
-        if (m_sleepCount > 0)
-        {
-            DrawTextLine($"sleep ave = {m_sleepTotal / m_sleepCount:g} ms");
-            
-        }
+        int count = m_stepCount - 20;
+        DrawTextLine($"wake ave = {m_wakeTotal / count:g} ms");
+        DrawTextLine($"sleep ave = {m_sleepTotal / count:g} ms");
     }
 }

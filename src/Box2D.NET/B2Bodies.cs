@@ -276,6 +276,8 @@ namespace Box2D.NET
             bodySim.flags = lockFlags;
             bodySim.flags |= def.isBullet ? (uint)B2BodyFlags.b2_isBullet : 0;
             bodySim.flags |= def.allowFastRotation ? (uint)B2BodyFlags.b2_allowFastRotation : 0;
+            bodySim.flags |= def.type == B2BodyType.b2_dynamicBody ? (uint)B2BodyFlags.b2_dynamicFlag : 0;
+
 
             if (setId == (int)B2SetType.b2_awakeSet)
             {
@@ -286,7 +288,7 @@ namespace Box2D.NET
                 bodyState.linearVelocity = def.linearVelocity;
                 bodyState.angularVelocity = def.angularVelocity;
                 bodyState.deltaRotation = b2Rot_identity;
-                bodyState.flags = lockFlags;
+                bodyState.flags = bodySim.flags;
             }
 
             if (bodyId == world.bodies.count)
@@ -330,9 +332,9 @@ namespace Box2D.NET
             body.sleepThreshold = def.sleepThreshold;
             body.sleepTime = 0.0f;
             body.type = def.type;
-            body.flags = lockFlags;
+            body.flags = bodySim.flags;
             body.enableSleep = def.enableSleep;
-            body.isMarked = false;
+            //body->isMarked = false;
 
             // dynamic and kinematic bodies that are enabled need a island
             if (setId >= (int)B2SetType.b2_awakeSet)
@@ -563,6 +565,7 @@ namespace Box2D.NET
             if (body.type != B2BodyType.b2_dynamicBody)
             {
                 bodySim.center = bodySim.transform.p;
+                bodySim.center0 = bodySim.center;
 
                 // Need extents for kinematic bodies for sleeping to work correctly.
                 if (body.type == B2BodyType.b2_kinematicBody)
@@ -1173,6 +1176,15 @@ namespace Box2D.NET
                 return;
             }
 
+            if (type == B2BodyType.b2_dynamicBody)
+            {
+                body.flags |= (uint)B2BodyFlags.b2_dynamicFlag;
+            }
+            else
+            {
+                body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
+            }
+
             // Stage 1: skip disabled bodies
             if (body.setIndex == (int)B2SetType.b2_disabledSet)
             {
@@ -1194,7 +1206,6 @@ namespace Box2D.NET
 
             // Stage 4: move joints to temporary storage
             B2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
 
             int jointKey = body.headJointKey;
             while (jointKey != B2_NULL_INDEX)
@@ -1231,6 +1242,7 @@ namespace Box2D.NET
             // Stage 5: change the body type and transfer body
             body.type = type;
 
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
             B2SolverSet sourceSet = b2Array_Get(ref world.solverSets, body.setIndex);
             B2SolverSet targetSet = type == B2BodyType.b2_staticBody ? staticSet : awakeSet;
 
@@ -1266,7 +1278,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                // All joints were transfered to the static set in an earlier stage
+                // All joints were transferred to the static set in an earlier stage
                 B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
 
                 B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
@@ -1274,7 +1286,7 @@ namespace Box2D.NET
                 B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_staticSet || bodyA.setIndex == (int)B2SetType.b2_awakeSet);
                 B2_ASSERT(bodyB.setIndex == (int)B2SetType.b2_staticSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
 
-                if (bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet)
+                if (bodyA.type == B2BodyType.b2_dynamicBody || bodyB.type == B2BodyType.b2_dynamicBody)
                 {
                     b2TransferJoint(world, awakeSet, staticSet, joint);
                 }
@@ -1311,7 +1323,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                if (body.type == B2BodyType.b2_staticBody && otherBody.type == B2BodyType.b2_staticBody)
+                if (body.type != B2BodyType.b2_dynamicBody && otherBody.type != B2BodyType.b2_dynamicBody)
                 {
                     continue;
                 }
@@ -1321,6 +1333,13 @@ namespace Box2D.NET
 
             // Body type affects the mass
             b2UpdateBodyMassData(world, body);
+
+            B2BodyState state = b2GetBodyState(world, body);
+            if (state != null)
+            {
+                // Ensure flags are in sync (b2_skipSolverWrite)
+                state.flags = body.flags;
+            }
 
             b2ValidateSolverSets(world);
             b2ValidateIsland(world, body.islandId);
@@ -1790,7 +1809,7 @@ namespace Box2D.NET
 
                 if (state != null)
                 {
-                    state.flags = body.flags;
+                    state.flags = bodySim.flags;
 
                     if (locks.linearX)
                     {

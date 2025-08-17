@@ -391,6 +391,8 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
+            B2_ASSERT(bodyA.type == B2BodyType.b2_dynamicBody || bodyB.type == B2BodyType.b2_dynamicBody);
+
             if (bodyA.setIndex == (int)B2SetType.b2_awakeSet && bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyB.setIndex);
@@ -459,6 +461,10 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
+        // Possible optimizations:
+        // 1. use the body island id as the mark
+        // 2. start from the sleepy bodies and stop processing if a sleep body is connected to a non-sleepy body
+        // 3. use a sleepy flag on bodies to avoid velocity access
         public static void b2SplitIsland(B2World world, int baseId)
         {
             B2Island baseIsland = b2Array_Get(ref world.islands, baseId);
@@ -496,35 +502,10 @@ namespace Box2D.NET
                 bodyIds[index++] = nextBody;
                 B2Body body = bodies[nextBody];
 
-                // Clear visitation mark
-                body.isMarked = false;
-
                 nextBody = body.islandNext;
             }
 
             B2_ASSERT(index == bodyCount);
-
-            // Clear contact island flags. Only need to consider contacts
-            // already in the @base island.
-            int nextContactId = baseIsland.headContact;
-            while (nextContactId != B2_NULL_INDEX)
-            {
-                B2Contact contact = b2Array_Get(ref world.contacts, nextContactId);
-                contact.isMarked = false;
-                nextContactId = contact.islandNext;
-            }
-
-            // Clear joint island flags.
-            int nextJoint = baseIsland.headJoint;
-            while (nextJoint != B2_NULL_INDEX)
-            {
-                B2Joint joint = b2Array_Get(ref world.joints, nextJoint);
-                joint.isMarked = false;
-                nextJoint = joint.islandNext;
-            }
-
-            // Done with the @base split island.
-            b2DestroyIsland(world, baseId);
 
             // Each island is found as a depth first search starting from a seed body
             for (int i = 0; i < bodyCount; ++i)
@@ -533,7 +514,7 @@ namespace Box2D.NET
                 B2Body seed = bodies[seedIndex];
                 B2_ASSERT(seed.setIndex == setIndex);
 
-                if (seed.isMarked == true)
+                if (seed.islandId != baseId)
                 {
                     // The body has already been visited
                     continue;
@@ -541,7 +522,6 @@ namespace Box2D.NET
 
                 int stackCount = 0;
                 stack[stackCount++] = seedIndex;
-                seed.isMarked = true;
 
                 // Create new island
                 // No lock needed because only a single island can split per time step. No islands are being used during the constraint
@@ -549,6 +529,7 @@ namespace Box2D.NET
                 B2Island island = b2CreateIsland(world, setIndex);
 
                 int islandId = island.islandId;
+                seed.islandId = islandId;
 
                 // Perform a depth first search (DFS) on the constraint graph.
                 while (stackCount > 0)
@@ -557,10 +538,9 @@ namespace Box2D.NET
                     int bodyId = stack[--stackCount];
                     B2Body body = bodies[bodyId];
                     B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
-                    B2_ASSERT(body.isMarked == true);
+                    B2_ASSERT(body.islandId == islandId);
 
                     // Add body to island
-                    body.islandId = islandId;
                     if (island.tailBody != B2_NULL_INDEX)
                     {
                         bodies[island.tailBody].islandNext = bodyId;
@@ -591,7 +571,7 @@ namespace Box2D.NET
                         contactKey = contact.edges[edgeIndex].nextKey;
 
                         // Has this contact already been added to this island?
-                        if (contact.isMarked)
+                        if (contact.islandId == islandId)
                         {
                             continue;
                         }
@@ -602,18 +582,18 @@ namespace Box2D.NET
                             continue;
                         }
 
-                        contact.isMarked = true;
-
                         int otherEdgeIndex = edgeIndex ^ 1;
                         int otherBodyId = contact.edges[otherEdgeIndex].bodyId;
                         B2Body otherBody = bodies[otherBodyId];
 
                         // Maybe add other body to stack
-                        if (otherBody.isMarked == false && otherBody.setIndex != (int)B2SetType.b2_staticSet)
+                        if (otherBody.islandId != islandId && otherBody.setIndex != (int)B2SetType.b2_staticSet)
                         {
                             B2_ASSERT(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;
-                            otherBody.isMarked = true;
+
+                            // Need to update the body's island id immediately so it is not traversed again
+                            otherBody.islandId = islandId;
                         }
 
                         // Add contact to island
@@ -650,12 +630,15 @@ namespace Box2D.NET
                         jointKey = joint.edges[edgeIndex].nextKey;
 
                         // Has this joint already been added to this island?
-                        if (joint.isMarked)
+                        if (joint.islandId == islandId)
                         {
                             continue;
                         }
 
-                        joint.isMarked = true;
+                        if (joint.setIndex == (int)B2SetType.b2_disabledSet)
+                        {
+                            continue;
+                        }
 
                         int otherEdgeIndex = edgeIndex ^ 1;
                         int otherBodyId = joint.edges[otherEdgeIndex].bodyId;
@@ -667,12 +650,20 @@ namespace Box2D.NET
                             continue;
                         }
 
+                        // At least one body must be dynamic
+                        if (body.type != B2BodyType.b2_dynamicBody && otherBody.type != B2BodyType.b2_dynamicBody)
+                        {
+                            continue;
+                        }
+
                         // Maybe add other body to stack
-                        if (otherBody.isMarked == false && otherBody.setIndex == (int)B2SetType.b2_awakeSet)
+                        if (otherBody.islandId != islandId && otherBody.setIndex == (int)B2SetType.b2_awakeSet)
                         {
                             B2_ASSERT(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;
-                            otherBody.isMarked = true;
+
+                            // Need to update the body's island id immediately so it is not traversed again
+                            otherBody.islandId = islandId;
                         }
 
                         // Add joint to island
@@ -698,6 +689,10 @@ namespace Box2D.NET
 
                 b2ValidateIsland(world, islandId);
             }
+
+            // Done with the base split island. This is delayed because the baseId is used as a marker and it
+            // should not be recycled in while splitting.
+            b2DestroyIsland(world, baseId);
 
             b2FreeArenaItem(alloc, bodyIds);
             b2FreeArenaItem(alloc, stack);

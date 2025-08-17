@@ -323,10 +323,17 @@ namespace Box2D.NET
             float axialImpulse = joint.impulse + joint.lowerImpulse - joint.upperImpulse + joint.motorImpulse;
             B2Vec2 P = b2MulSV(axialImpulse, axis);
 
-            stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, P);
-            stateA.angularVelocity -= iA * b2Cross(rA, P);
-            stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, P);
-            stateB.angularVelocity += iB * b2Cross(rB, P);
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = b2MulSub(stateA.linearVelocity, mA, P);
+                stateA.angularVelocity -= iA * b2Cross(rA, P);
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = b2MulAdd(stateB.linearVelocity, mB, P);
+                stateB.angularVelocity += iB * b2Cross(rB, P);
+            }
         }
 
         public static void b2SolveDistanceJoint(B2JointSim @base, B2StepContext context, bool useBias)
@@ -506,10 +513,17 @@ namespace Box2D.NET
                 wB += iB * b2Cross(rB, P);
             }
 
-            stateA.linearVelocity = vA;
-            stateA.angularVelocity = wA;
-            stateB.linearVelocity = vB;
-            stateB.angularVelocity = wB;
+            if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateA.linearVelocity = vA;
+                stateA.angularVelocity = wA;
+            }
+
+            if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+            {
+                stateB.linearVelocity = vB;
+                stateB.angularVelocity = wB;
+            }
         }
 
 #if FALSE
