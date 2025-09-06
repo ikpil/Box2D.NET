@@ -236,6 +236,7 @@ namespace Box2D.NET
             world.enableSleep = def.enableSleep;
             world.locked = false;
             world.enableWarmStarting = true;
+            world.enableContactSoftening = def.enableContactSoftening;
             world.enableContinuous = def.enableContinuous;
             world.enableSpeculative = true;
             world.userTreeTask = null;
@@ -2673,6 +2674,11 @@ void b2World_Dump()
                             B2_ASSERT(body.setIndex == setIndex);
                             B2_ASSERT(body.localIndex == i);
                             B2_ASSERT(body.generation == body.generation);
+                            
+                            if (body.type == B2BodyType.b2_dynamicBody)
+                            {
+                                B2_ASSERT(0 != (body.flags & (uint)B2BodyFlags.b2_dynamicFlag));
+                            }
 
                             if (setIndex == (int)B2SetType.b2_disabledSet)
                             {

@@ -19,6 +19,6 @@ public class BenchmarkWasher : Sample
             m_context.camera.m_zoom = 20.0f;
         }
 
-        CreateWasher(m_worldId, true);
+        CreateWasher(m_worldId);
     }
 }

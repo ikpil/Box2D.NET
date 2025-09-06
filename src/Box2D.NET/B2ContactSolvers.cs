@@ -13,6 +13,7 @@ using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2Bodies;
+using static Box2D.NET.B2Solvers;
 
 namespace Box2D.NET
 {
@@ -1131,8 +1132,6 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         // This writes only the velocities back to the solver bodies
         public static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
-            // todo somehow skip writing to kinematic bodies
-
             if (indices[0] != B2_NULL_INDEX && (states[indices[0]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
                 B2BodyState state = states[indices[0]];
@@ -1183,6 +1182,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             // Stiffer for static contacts to avoid bodies getting pushed through the ground
             B2Softness contactSoftness = context.contactSoftness;
             B2Softness staticSoftness = context.staticSoftness;
+            bool enableSoftening = world.enableContactSoftening;
 
             float warmStartScale = world.enableWarmStarting ? 1.0f : 0.0f;
 
@@ -1246,7 +1246,27 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             constraint.rollingMass[j] = k > 0.0f ? 1.0f / k : 0.0f;
                         }
 
-                        B2Softness soft = (indexA == B2_NULL_INDEX || indexB == B2_NULL_INDEX) ? staticSoftness : contactSoftness;
+                        B2Softness soft = contactSoftness;
+                        if (indexA == B2_NULL_INDEX || indexB == B2_NULL_INDEX)
+                        {
+                            soft = staticSoftness;
+                        }
+                        else if (enableSoftening)
+                        {
+                            // todo experimental feature
+                            float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
+                            float ratio = 1.0f;
+                            if (mA < mB)
+                            {
+                                ratio = b2MaxFloat(0.5f, mA / mB);
+                            }
+                            else if (mB < mA)
+                            {
+                                ratio = b2MaxFloat(0.5f, mB / mA);
+                            }
+
+                            soft = b2MakeSoft(ratio * contactHertz, ratio * world.contactDampingRatio, context.h);
+                        }
 
                         B2Vec2 normal = manifold.normal;
                         constraint.normal.X[j] = normal.X;

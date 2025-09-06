@@ -6,6 +6,10 @@ using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
+// This benchmark pushes Box2D to the limit for a large pile. It terminates once simulation is deemed to be slow.
+// The higher the body count achieved, the better.
+// Note: this benchmark stresses the sleep system more than any other benchmark. Better results are achieved if sleeping
+// is disabled.
 public class BenchmarkCapacity : Sample
 {
     private static readonly int benchmarkCapacity = SampleFactory.Shared.RegisterSample("Benchmark", "Capacity", Create);
@@ -27,6 +31,7 @@ public class BenchmarkCapacity : Sample
             m_context.camera.m_zoom = 200.0f;
         }
 
+        m_context.settings.enableSleep = false;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position.Y = -5.0f;

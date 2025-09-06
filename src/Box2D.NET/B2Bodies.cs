@@ -334,7 +334,6 @@ namespace Box2D.NET
             body.type = def.type;
             body.flags = bodySim.flags;
             body.enableSleep = def.enableSleep;
-            //body->isMarked = false;
 
             // dynamic and kinematic bodies that are enabled need a island
             if (setId >= (int)B2SetType.b2_awakeSet)
@@ -1176,20 +1175,20 @@ namespace Box2D.NET
                 return;
             }
 
-            if (type == B2BodyType.b2_dynamicBody)
-            {
-                body.flags |= (uint)B2BodyFlags.b2_dynamicFlag;
-            }
-            else
-            {
-                body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
-            }
-
             // Stage 1: skip disabled bodies
             if (body.setIndex == (int)B2SetType.b2_disabledSet)
             {
                 // Disabled bodies don't change solver sets or islands when they change type.
                 body.type = type;
+
+                if (type == B2BodyType.b2_dynamicBody)
+                {
+                    body.flags |= (uint)B2BodyFlags.b2_dynamicFlag;
+                }
+                else
+                {
+                    body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
+                }
 
                 // Body type affects the mass properties
                 b2UpdateBodyMassData(world, body);
@@ -1241,6 +1240,15 @@ namespace Box2D.NET
 
             // Stage 5: change the body type and transfer body
             body.type = type;
+
+            if (type == B2BodyType.b2_dynamicBody)
+            {
+                body.flags |= (uint)B2BodyFlags.b2_dynamicFlag;
+            }
+            else
+            {
+                body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
+            }
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
             B2SolverSet sourceSet = b2Array_Get(ref world.solverSets, body.setIndex);

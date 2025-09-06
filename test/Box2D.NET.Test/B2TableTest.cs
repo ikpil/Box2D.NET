@@ -41,11 +41,14 @@ public class B2TableTest
                 for (int j = i + 1; j < N; ++j)
                 {
                     ulong key = B2_SHAPE_PAIR_KEY(i, j);
+                    bool found = b2AddKey(ref set, key);
+                    Assert.That(found, Is.False);
+                    ;
                     b2AddKey(ref set, key);
                 }
             }
 
-            Assert.That(set.count, Is.EqualTo(itemCount));
+            Assert.That(b2GetSetCount(ref set), Is.EqualTo(itemCount));
 
             // Remove a portion of the set
             int k = 0;
@@ -57,7 +60,11 @@ public class B2TableTest
                     if (j == i + 1)
                     {
                         ulong key = B2_SHAPE_PAIR_KEY(i, j);
-                        b2RemoveKey(ref set, key);
+                        int size1 = b2GetSetCount(ref set);
+                        bool found = b2RemoveKey(ref set, key);
+                        Assert.That(found, Is.True);
+                        int size2 = b2GetSetCount(ref set);
+                        Assert.That(size2, Is.EqualTo(size1 - 1));
                         removed[k++] = true;
                         removeCount += 1;
                     }
@@ -68,7 +75,7 @@ public class B2TableTest
                 }
             }
 
-            Assert.That(set.count, Is.EqualTo((itemCount - removeCount)));
+            Assert.That(b2GetSetCount(ref set), Is.EqualTo((itemCount - removeCount)));
 
             // Snoop counters. These should be disabled in optimized builds because they are expensive.
 #if B2_SNOOP_TABLE_COUNTERS
@@ -86,7 +93,8 @@ public class B2TableTest
                 for (int j = i + 1; j < N; ++j)
                 {
                     ulong key = B2_SHAPE_PAIR_KEY(j, i);
-                    Assert.That(b2ContainsKey(ref set, key) || removed[k], $"b2ContainsKey(set, {key}) = {b2ContainsKey(ref set, key)} || removed[{k}] = {removed[k]}");
+                    bool found = b2ContainsKey(ref set, key);
+                    Assert.That(found || removed[k], Is.True, $"b2ContainsKey(set, {key}) = {b2ContainsKey(ref set, key)} || removed[{k}] = {removed[k]}");
                     k += 1;
                 }
             }
@@ -113,7 +121,7 @@ public class B2TableTest
                 }
             }
 
-            Assert.That(set.count, Is.EqualTo(0));
+            Assert.That(b2GetSetCount(ref set), Is.EqualTo(0));
 
             b2DestroySet(ref set);
         }
