@@ -26,7 +26,6 @@ namespace Box2D.NET
             return K1 < K2 ? (ulong)K1 << 32 | (ulong)K2 : (ulong)K2 << 32 | (ulong)K1;
         }
 
-        // todo compare with https://github.com/skeeto/scratch/blob/master/set32/set32.h
         public static B2HashSet b2CreateSet(int capacity)
         {
             B2HashSet set = new B2HashSet();
@@ -79,9 +78,27 @@ namespace Box2D.NET
         // todo try: https://www.jandrewrogers.com/2019/02/12/fast-perfect-hashing/
         // todo try:
         // https://probablydance.com/2018/06/16/fibonacci-hashing-the-optimization-that-the-world-forgot-or-a-better-alternative-to-integer-modulo/
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint b2KeyHash(ulong key)
+
+        // I compared with CC on https://jacksonallan.github.io/c_cpp_hash_tables_benchmark/ and got slightly better performance
+        // in the washer benchmark.
+        // I compared with verstable across 8 benchmarks and the performance was similar.
+
+#if FALSE
+        // Fast-hash
+        // https://jonkagstrom.com/bit-mixer-construction
+        // https://code.google.com/archive/p/fast-hash
+        public static uint64_t b2KeyHash( uint64_t key )
         {
+            key ^= key >> 23;
+            key *= 0x2127599BF4325C37ULL;
+            key ^= key >> 47;
+            return key;
+        }
+#elif TRUE
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ulong b2KeyHash(ulong key)
+        {
+            // Murmur hash
             // Murmur hash
             ulong h = key;
             h ^= h >> 33;
@@ -89,18 +106,17 @@ namespace Box2D.NET
             h ^= h >> 33;
             h *= 0xc4ceb9fe1a85ec53uL;
             h ^= h >> 33;
-
-            return (uint)h;
+            return h;
         }
-
-        public static int b2FindSlot(ref B2HashSet set, ulong key, uint hash)
+#endif
+        public static int b2FindSlot(ref B2HashSet set, ulong key, ulong hash)
         {
 #if B2_SNOOP_TABLE_COUNTERS
             b2AtomicFetchAddInt(ref b2_findCount, 1);
 #endif
 
             int capacity = set.capacity;
-            int index = (int)(hash & (capacity - 1));
+            int index = (int)(hash & ((uint)capacity - 1));
             B2SetItem[] items = set.items;
             while (items[index].hash != 0 && items[index].key != key)
             {
@@ -113,14 +129,14 @@ namespace Box2D.NET
             return index;
         }
 
-        public static void b2AddKeyHaveCapacity(ref B2HashSet set, ulong key, uint hash)
+        public static void b2AddKeyHaveCapacity(ref B2HashSet set, ulong key, ulong hash)
         {
             int index = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
             B2_ASSERT(items[index].hash == 0);
 
             items[index].key = key;
-            items[index].hash = hash;
+            items[index].hash = (uint)hash;
             set.count += 1;
         }
 
@@ -165,7 +181,7 @@ namespace Box2D.NET
         {
             // key of zero is a sentinel
             B2_ASSERT(key != 0);
-            uint hash = b2KeyHash(key);
+            ulong hash = b2KeyHash(key);
             int index = b2FindSlot(ref set, key, hash);
             return set.items[index].key == key;
         }
@@ -176,7 +192,7 @@ namespace Box2D.NET
             // key of zero is a sentinel
             B2_ASSERT(key != 0);
 
-            uint hash = b2KeyHash(key);
+            ulong hash = b2KeyHash(key);
             B2_ASSERT(hash != 0);
 
             int index = b2FindSlot(ref set, key, hash);
@@ -195,18 +211,30 @@ namespace Box2D.NET
             b2AddKeyHaveCapacity(ref set, key, hash);
             return false;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2GetHashSetBytes(ref B2HashSet set)
         {
             return set.capacity * Marshal.SizeOf<B2SetItem>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetSetCount(ref B2HashSet set)
+        {
+            return (int)set.count;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetSetCapacity(ref B2HashSet set)
+        {
+            return set.capacity;
+        }
+
         // Returns true if the key was found
         // See https://en.wikipedia.org/wiki/Open_addressing
         public static bool b2RemoveKey(ref B2HashSet set, ulong key)
         {
-            uint hash = b2KeyHash(key);
+            ulong hash = b2KeyHash(key);
             int i = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
             if (items[i].hash == 0)

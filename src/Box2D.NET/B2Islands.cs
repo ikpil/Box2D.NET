@@ -462,7 +462,6 @@ namespace Box2D.NET
         }
 
         // Possible optimizations:
-        // 1. use the body island id as the mark
         // 2. start from the sleepy bodies and stop processing if a sleep body is connected to a non-sleepy body
         // 3. use a sleepy flag on bodies to avoid velocity access
         public static void b2SplitIsland(B2World world, int baseId)
@@ -635,6 +634,7 @@ namespace Box2D.NET
                             continue;
                         }
 
+                        // todo redundant with test below?
                         if (joint.setIndex == (int)B2SetType.b2_disabledSet)
                         {
                             continue;

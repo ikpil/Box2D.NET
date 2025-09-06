@@ -45,6 +45,9 @@ namespace Box2D.NET
 
         /// Enable continuous collision
         public bool enableContinuous;
+        
+        /// Contact softening when mass ratios are large. Experimental.
+        public bool enableContactSoftening;
 
         /// Number of workers to use with the provided task system. Box2D performs best when using only
         /// performance cores and accessing a single L2 cache. Efficiency cores and hyper-threading provide

@@ -543,8 +543,10 @@ namespace Box2D.NET.Shared
             }
         }
 
-        public static void CreateWasher(B2WorldId worldId, bool kinematic)
+        public static void CreateWasher(B2WorldId worldId)
         {
+            bool kinematic = true;
+
             B2BodyId groundId;
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
