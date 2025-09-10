@@ -99,7 +99,6 @@ namespace Box2D.NET
         public static ulong b2KeyHash(ulong key)
         {
             // Murmur hash
-            // Murmur hash
             ulong h = key;
             h ^= h >> 33;
             h *= 0xff51afd7ed558ccduL;
