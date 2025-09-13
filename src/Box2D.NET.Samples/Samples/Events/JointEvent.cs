@@ -234,7 +234,7 @@ public class JointEvent : Sample
                 CustomUserData<int> userData = @event.userData as CustomUserData<int>;
                 int index = userData?.Value ?? -1;
                 B2_ASSERT(0 <= index && index < e_count);
-                b2DestroyJoint(@event.jointId);
+                b2DestroyJoint(@event.jointId, true);
                 m_jointIds[index] = b2_nullJointId;
             }
         }

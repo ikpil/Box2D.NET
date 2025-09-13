@@ -54,6 +54,7 @@ public class WheelJoint : Sample
         m_hertz = 1.0f;
         m_dampingRatio = 0.7f;
 
+        for (int i = 0; i < 2; ++i)
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 10.25f);

@@ -18,7 +18,7 @@ public class DistanceJoint : Sample
 {
     private static readonly int SampleDistanceJoint = SampleFactory.Shared.RegisterSample("Joints", "Distance Joint", Create);
 
-    public const int e_maxCount = 10;
+    private const int e_maxCount = 10;
 
     private B2BodyId m_groundId;
     private B2BodyId[] m_bodyIds = new B2BodyId[e_maxCount];
@@ -74,10 +74,9 @@ public class DistanceJoint : Sample
 
     void CreateScene(int newCount)
     {
-        // Must destroy joints before bodies
         for (int i = 0; i < m_count; ++i)
         {
-            b2DestroyJoint(m_jointIds[i]);
+            b2DestroyJoint(m_jointIds[i], false);
             m_jointIds[i] = b2_nullJointId;
         }
 

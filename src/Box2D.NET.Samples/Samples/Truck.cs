@@ -17,12 +17,12 @@ namespace Box2D.NET.Samples.Samples;
 
 public class Truck
 {
-    B2BodyId m_chassisId;
-    B2BodyId m_rearWheelId;
-    B2BodyId m_frontWheelId;
-    B2JointId m_rearAxleId;
-    B2JointId m_frontAxleId;
-    bool m_isSpawned;
+    private B2BodyId m_chassisId;
+    private B2BodyId m_rearWheelId;
+    private B2BodyId m_frontWheelId;
+    private B2JointId m_rearAxleId;
+    private B2JointId m_frontAxleId;
+    private bool m_isSpawned;
 
     public Truck()
     {
@@ -137,8 +137,8 @@ public class Truck
     {
         B2_ASSERT(m_isSpawned == true);
 
-        b2DestroyJoint(m_rearAxleId);
-        b2DestroyJoint(m_frontAxleId);
+        b2DestroyJoint(m_rearAxleId, false);
+        b2DestroyJoint(m_frontAxleId, false);
         b2DestroyBody(m_rearWheelId);
         b2DestroyBody(m_frontWheelId);
         b2DestroyBody(m_chassisId);

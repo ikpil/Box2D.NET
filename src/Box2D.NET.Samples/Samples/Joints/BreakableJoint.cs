@@ -234,7 +234,7 @@ public class BreakableJoint : Sample
             B2Vec2 force = b2Joint_GetConstraintForce(m_jointIds[i]);
             if (b2LengthSquared(force) > m_breakForce * m_breakForce)
             {
-                b2DestroyJoint(m_jointIds[i]);
+                b2DestroyJoint(m_jointIds[i], true);
                 m_jointIds[i] = b2_nullJointId;
             }
         }
