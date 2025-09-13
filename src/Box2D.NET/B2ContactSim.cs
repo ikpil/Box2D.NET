@@ -16,6 +16,7 @@ namespace Box2D.NET
         public int bodyIdB;
 #endif
 
+        // Transient body indices
         public int bodySimIndexA;
         public int bodySimIndexB;
 

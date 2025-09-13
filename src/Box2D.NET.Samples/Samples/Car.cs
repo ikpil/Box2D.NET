@@ -119,8 +119,8 @@ public struct Car
     {
         B2_ASSERT(m_isSpawned == true);
 
-        b2DestroyJoint(m_rearAxleId);
-        b2DestroyJoint(m_frontAxleId);
+        b2DestroyJoint(m_rearAxleId, false);
+        b2DestroyJoint(m_frontAxleId, false);
         b2DestroyBody(m_rearWheelId);
         b2DestroyBody(m_frontWheelId);
         b2DestroyBody(m_chassisId);

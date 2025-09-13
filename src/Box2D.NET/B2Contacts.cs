@@ -630,13 +630,6 @@ namespace Box2D.NET
             return touching;
         }
 
-        public static B2Manifold b2ComputeManifold(B2Shape shapeA, B2Transform transformA, B2Shape shapeB, B2Transform transformB)
-        {
-            b2ManifoldFcn fcn = s_registers[(int)shapeA.type, (int)shapeB.type].fcn;
-            B2SimplexCache cache = new B2SimplexCache();
-            return fcn(shapeA, transformA, shapeB, transformB, ref cache);
-        }
-
         public static B2Contact b2GetContactFullId(B2World world, B2ContactId contactId)
         {
             int id = contactId.index1 - 1;

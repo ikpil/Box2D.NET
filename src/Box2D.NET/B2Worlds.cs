@@ -2673,7 +2673,6 @@ void b2World_Dump()
                             B2Body body = bodies[bodyId];
                             B2_ASSERT(body.setIndex == setIndex);
                             B2_ASSERT(body.localIndex == i);
-                            B2_ASSERT(body.generation == body.generation);
                             
                             if (body.type == B2BodyType.b2_dynamicBody)
                             {

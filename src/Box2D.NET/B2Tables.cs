@@ -114,10 +114,10 @@ namespace Box2D.NET
             b2AtomicFetchAddInt(ref b2_findCount, 1);
 #endif
 
-            int capacity = set.capacity;
-            int index = (int)(hash & ((uint)capacity - 1));
+            uint capacity = (uint)set.capacity;
+            uint index = (uint)hash & (capacity - 1);
             B2SetItem[] items = set.items;
-            while (items[index].hash != 0 && items[index].key != key)
+            while (items[index].key != 0 && items[index].key != key)
             {
 #if B2_SNOOP_TABLE_COUNTERS
                 b2AtomicFetchAddInt(ref b2_probeCount, 1);
@@ -125,17 +125,16 @@ namespace Box2D.NET
                 index = (index + 1) & (capacity - 1);
             }
 
-            return index;
+            return (int)index;
         }
 
         public static void b2AddKeyHaveCapacity(ref B2HashSet set, ulong key, ulong hash)
         {
             int index = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
-            B2_ASSERT(items[index].hash == 0);
 
+            B2_ASSERT(items[index].key == 0);
             items[index].key = key;
-            items[index].hash = (uint)hash;
             set.count += 1;
         }
 
@@ -161,13 +160,14 @@ namespace Box2D.NET
             for (uint i = 0; i < oldCapacity; ++i)
             {
                 B2SetItem item = oldItems[i];
-                if (item.hash == 0)
+                if (item.key == 0)
                 {
                     // this item was empty
                     continue;
                 }
 
-                b2AddKeyHaveCapacity(ref set, item.key, item.hash);
+                ulong hash = b2KeyHash(item.key);
+                b2AddKeyHaveCapacity(ref set, item.key, hash);
             }
 
             B2_ASSERT(set.count == oldCount);
@@ -195,10 +195,10 @@ namespace Box2D.NET
             B2_ASSERT(hash != 0);
 
             int index = b2FindSlot(ref set, key, hash);
-            if (set.items[index].hash != 0)
+            if (set.items[index].key != 0)
             {
                 // Already in set
-                B2_ASSERT(set.items[index].hash == hash && set.items[index].key == key);
+                B2_ASSERT(set.items[index].key == key);
                 return true;
             }
 
@@ -236,7 +236,7 @@ namespace Box2D.NET
             ulong hash = b2KeyHash(key);
             int i = b2FindSlot(ref set, key, hash);
             B2SetItem[] items = set.items;
-            if (items[i].hash == 0)
+            if (items[i].key == 0)
             {
                 // Not in set
                 return false;
@@ -244,7 +244,6 @@ namespace Box2D.NET
 
             // Mark item i as unoccupied
             items[i].key = 0;
-            items[i].hash = 0;
 
             B2_ASSERT(set.count > 0);
             set.count -= 1;
@@ -255,13 +254,14 @@ namespace Box2D.NET
             for (;;)
             {
                 j = (j + 1) & (capacity - 1);
-                if (items[j].hash == 0)
+                if (items[j].key == 0)
                 {
                     break;
                 }
 
                 // k is the first item for the hash of j
-                int k = (int)(items[j].hash & (capacity - 1));
+                ulong hash_j = b2KeyHash( items[j].key );
+                int k = (int)(hash_j & (uint)(capacity - 1));
 
                 // determine if k lies cyclically in (i,j]
                 // i <= j: | i..k..j |
@@ -283,11 +283,9 @@ namespace Box2D.NET
 
                 // Move j into i
                 items[i].key = items[j].key;
-                items[i].hash = items[j].hash;
 
                 // Mark item j as unoccupied
                 items[j].key = 0;
-                items[j].hash = 0;
 
                 i = j;
             }

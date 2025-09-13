@@ -743,7 +743,8 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static void b2DestroyJoint(B2JointId jointId)
+        /// Destroy a joint. Optionally wake attached bodies.
+        public static void b2DestroyJoint(B2JointId jointId, bool wakeAttached)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2_ASSERT(world.locked == false);
@@ -755,7 +756,7 @@ namespace Box2D.NET
 
             B2Joint joint = b2GetJointFullId(world, jointId);
 
-            b2DestroyJointInternal(world, joint, true);
+            b2DestroyJointInternal(world, joint, wakeAttached);
         }
 
         public static B2JointType b2Joint_GetType(B2JointId jointId)

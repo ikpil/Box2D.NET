@@ -150,12 +150,17 @@ namespace Box2D.NET
             }
 
             // Does the ray start inside the box?
-            // Does the ray intersect beyond the max fraction?
-            if (tmin < 0.0f || 1.0f < tmin)
+            if ( tmin < 0.0f )
             {
                 return output;
             }
 
+            // Does the ray intersect beyond the segment length?
+            if ( 1.0f < tmin )
+            {
+                return output;
+            }
+            
             // Intersection.
             output.fraction = tmin;
             output.normal = normal;

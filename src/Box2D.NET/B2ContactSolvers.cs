@@ -1600,7 +1600,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass2, b2MulW(pointMassScale, b2AddW(vn, bias))), b2MulW(pointImpulseScale, c.normalImpulse2));
+                    B2FloatW negImpulse = b2AddW(b2MulW(c.normalMass2, b2AddW(b2MulW(pointMassScale, vn), bias)), b2MulW(pointImpulseScale, c.normalImpulse2));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), b2ZeroW());

@@ -1582,6 +1582,36 @@ namespace Box2D.NET
             }
         }
 
+        public static void b2Body_WakeTouching(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+
+            int contactKey = body.headContactKey;
+            while (contactKey != B2_NULL_INDEX)
+            {
+                int contactId = contactKey >> 1;
+                int edgeIndex = contactKey & 1;
+
+                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
+                B2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
+
+                if (shapeA.bodyId == bodyId.index1 - 1)
+                {
+                    B2Body otherBody = b2Array_Get(ref world.bodies, shapeB.bodyId);
+                    b2WakeBody(world, otherBody);
+                }
+                else
+                {
+                    B2Body otherBody = b2Array_Get(ref world.bodies, shapeA.bodyId);
+                    b2WakeBody(world, otherBody);
+                }
+
+                contactKey = contact.edges[edgeIndex].nextKey;
+            }
+        }
+
         public static bool b2Body_IsEnabled(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);

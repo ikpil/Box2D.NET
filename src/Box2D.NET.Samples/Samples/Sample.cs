@@ -322,7 +322,7 @@ public class Sample : IDisposable
                 {
                     // This acts like angular friction
                     float lever = MathF.Sqrt(massData.rotationalInertia / massData.mass);
-                    jointDef.maxVelocityTorque = 1.0f * lever * mg;
+                    jointDef.maxVelocityTorque = 0.25f * lever * mg;
                 }
 
                 m_mouseJointId = b2CreateMotorJoint(m_worldId, ref jointDef);
@@ -334,7 +334,7 @@ public class Sample : IDisposable
     {
         if (B2_IS_NON_NULL(m_mouseJointId) && button == (int)MouseButton.Left)
         {
-            b2DestroyJoint(m_mouseJointId);
+            b2DestroyJoint(m_mouseJointId, true);
             m_mouseJointId = b2_nullJointId;
 
             b2DestroyBody(m_mouseBodyId);
