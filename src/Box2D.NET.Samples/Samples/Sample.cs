@@ -37,19 +37,20 @@ public class Sample : IDisposable
     protected Camera m_camera;
     protected Draw m_draw;
 
-    protected TaskScheduler m_scheduler;
-    protected SampleTask[] m_tasks;
-    protected int m_taskCount;
+    private TaskScheduler m_scheduler;
+    private SampleTask[] m_tasks;
+    private int m_taskCount;
     protected int m_threadCount;
 
-    protected B2BodyId m_mouseBodyId;
+    private B2BodyId m_mouseBodyId;
 
     public B2WorldId m_worldId;
-    protected B2JointId m_mouseJointId;
-    protected B2Vec2 m_mousePoint;
+    private B2JointId m_mouseJointId;
+    private B2Vec2 m_mousePoint;
+    protected float m_mouseForceScale;
     public int m_stepCount;
-    protected B2Profile m_maxProfile;
-    protected B2Profile m_totalProfile;
+    private B2Profile m_maxProfile;
+    private B2Profile m_totalProfile;
 
     private int m_textLine;
     private int m_textIncrement;
@@ -83,6 +84,7 @@ public class Sample : IDisposable
 
         m_mouseBodyId = b2_nullBodyId;
         m_mousePoint = new B2Vec2();
+        m_mouseForceScale = 100.0f;
 
         m_maxProfile = new B2Profile();
         m_totalProfile = new B2Profile();
@@ -116,7 +118,7 @@ public class Sample : IDisposable
         worldDef.finishTask = FinishTask;
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_context.settings.enableSleep;
-        
+
         // todo experimental
         // worldDef.enableContactSoftening = true;
 
@@ -316,7 +318,7 @@ public class Sample : IDisposable
                 B2MassData massData = b2Body_GetMassData(queryContext.bodyId);
                 float g = b2Length(b2World_GetGravity(m_worldId));
                 float mg = massData.mass * g;
-                jointDef.maxSpringForce = 100.0f * mg;
+                jointDef.maxSpringForce = m_mouseForceScale * mg;
 
                 if (massData.mass > 0.0f)
                 {

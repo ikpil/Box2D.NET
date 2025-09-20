@@ -10,6 +10,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2Cores;
 
 namespace Box2D.NET
 {
@@ -237,50 +238,50 @@ namespace Box2D.NET
             return world.inv_h * @base.uj.prismaticJoint.impulse.Y;
         }
 
-// Linear constraint (point-to-line)
-// d = p2 - p1 = x2 + r2 - x1 - r1
-// C = dot(perp, d)
-// Cdot = dot(d, cross(w1, perp)) + dot(perp, v2 + cross(w2, r2) - v1 - cross(w1, r1))
-//      = -dot(perp, v1) - dot(cross(d + r1, perp), w1) + dot(perp, v2) + dot(cross(r2, perp), v2)
-// J = [-perp, -cross(d + r1, perp), perp, cross(r2,perp)]
-//
-// Angular constraint
-// C = a2 - a1 + a_initial
-// Cdot = w2 - w1
-// J = [0 0 -1 0 0 1]
-//
-// K = J * invM * JT
-//
-// J = [-a -s1 a s2]
-//     [0  -1  0  1]
-// a = perp
-// s1 = cross(d + r1, a) = cross(p2 - x1, a)
-// s2 = cross(r2, a) = cross(p2 - x2, a)
+        // Linear constraint (point-to-line)
+        // d = pB - pA = xB + rB - xA - rA
+        // C = dot(perp, d)
+        // Cdot = dot(d, cross(wA, perp)) + dot(perp, vB + cross(wB, rB) - vA - cross(wA, rA))
+        //      = -dot(perp, vA) - dot(cross(rA + d, perp), wA) + dot(perp, vB) + dot(cross(rB, perp), vB)
+        // J = [-perp, -cross(rA + d, perp), perp, cross(rB, perp)]
+        //
+        // Angular constraint
+        // C = aB - aA + a_initial
+        // Cdot = wB - wA
+        // J = [0 0 -1 0 0 1]
+        //
+        // K = J * invM * JT
+        //
+        // J = [-a -sA a sB]
+        //     [0  -1  0  1]
+        // a = perp
+        // sA = cross(rA + d, a) = cross(pB - xA, a)
+        // sB = cross(rB, a) = cross(pB - xB, a)
 
-// Motor/Limit linear constraint
-// C = dot(ax1, d)
-// Cdot = -dot(ax1, v1) - dot(cross(d + r1, ax1), w1) + dot(ax1, v2) + dot(cross(r2, ax1), v2)
-// J = [-ax1 -cross(d+r1,ax1) ax1 cross(r2,ax1)]
+        // Motor/Limit linear constraint
+        // C = dot(axA, d)
+        // Cdot = -dot(axA, vA) - dot(cross(rA + d, axA), wA) + dot(axA, vB) + dot(cross(rB, axA), vB)
+        // J = [-axA -cross(rA + d, axA) axA cross(rB, ax1)]
 
-// Predictive limit is applied even when the limit is not active.
-// Prevents a constraint speed that can lead to a constraint error in one time step.
-// Want C2 = C1 + h * Cdot >= 0
-// Or:
-// Cdot + C1/h >= 0
-// I do not apply a negative constraint error because that is handled in position correction.
-// So:
-// Cdot + max(C1, 0)/h >= 0
+        // Predictive limit is applied even when the limit is not active.
+        // Prevents a constraint speed that can lead to a constraint error in one time step.
+        // Want C2 = C1 + h * Cdot >= 0
+        // Or:
+        // Cdot + C1/h >= 0
+        // I do not apply a negative constraint error because that is handled in position correction.
+        // So:
+        // Cdot + max(C1, 0)/h >= 0
 
-// Block Solver
-// We develop a block solver that includes the angular and linear constraints. This makes the limit stiffer.
-//
-// The Jacobian has 2 rows:
-// J = [-uT -s1 uT s2] // linear
-//     [0   -1   0  1] // angular
-//
-// u = perp
-// s1 = cross(d + r1, u), s2 = cross(r2, u)
-// a1 = cross(d + r1, v), a2 = cross(r2, v)
+        // Block Solver
+        // We develop a block solver that includes the angular and linear constraints. This makes the limit stiffer.
+        //
+        // The Jacobian has 2 rows:
+        // J = [-uT -s1 uT s2] // linear
+        //     [0   -1   0  1] // angular
+        //
+        // u = perp
+        // s1 = cross(d + r1, u), s2 = cross(r2, u)
+        // a1 = cross(d + r1, v), a2 = cross(r2, v)
 
         public static void b2PreparePrismaticJoint(B2JointSim @base, B2StepContext context)
         {
@@ -328,19 +329,6 @@ namespace Box2D.NET
             // Compute the initial center delta. Incremental position updates are relative to this.
             joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
 
-            B2Vec2 rA = joint.frameA.p;
-            B2Vec2 rB = joint.frameB.p;
-
-            B2Vec2 axisA = b2RotateVector(joint.frameA.q, new B2Vec2(1.0f, 0.0f));
-
-            B2Vec2 d = b2Add(joint.deltaCenter, b2Sub(rB, rA));
-            float a1 = b2Cross(b2Add(d, rA), axisA);
-            float a2 = b2Cross(rB, axisA);
-
-            // effective masses
-            float k = mA + mB + iA * a1 * a1 + iB * a2 * a2;
-            joint.axialMass = k > 0.0f ? 1.0f / k : 0.0f;
-
             joint.springSoftness = b2MakeSoft(joint.hertz, joint.dampingRatio, context.h);
 
             if (context.enableWarmStarting == false)
@@ -379,13 +367,13 @@ namespace Box2D.NET
             axisA = b2RotateVector(stateA.deltaRotation, axisA);
 
             // impulse is applied at anchor point on body B
-            float a1 = b2Cross(b2Add(d, rA), axisA);
+            float a1 = b2Cross(b2Add(rA, d), axisA);
             float a2 = b2Cross(rB, axisA);
             float axialImpulse = joint.springImpulse + joint.motorImpulse + joint.lowerImpulse - joint.upperImpulse;
 
             // perpendicular constraint
             B2Vec2 perpA = b2LeftPerp(axisA);
-            float s1 = b2Cross(b2Add(d, rA), perpA);
+            float s1 = b2Cross(b2Add(rA, d), perpA);
             float s2 = b2Cross(rB, perpA);
             float perpImpulse = joint.impulse.X;
             float angleImpulse = joint.impulse.Y;
@@ -444,8 +432,13 @@ namespace Box2D.NET
             float translation = b2Dot(axisA, d);
 
             // These scalars are for torques generated by axial forces
-            float a1 = b2Cross(b2Add(d, rA), axisA);
+            float a1 = b2Cross(b2Add(rA, d), axisA);
             float a2 = b2Cross(rB, axisA);
+
+            float k = mA + mB + iA * a1 * a1 + iB * a2 * a2;
+            float axialMass = k > 0.0f ? 1.0f / k : 0.0f;
+
+            B2Softness softness = @base.constraintSoftness;
 
             // spring constraint
             if (joint.enableSpring)
@@ -457,7 +450,7 @@ namespace Box2D.NET
                 float impulseScale = joint.springSoftness.impulseScale;
 
                 float Cdot = b2Dot(axisA, b2Sub(vB, vA)) + a2 * wB - a1 * wA;
-                float deltaImpulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
+                float deltaImpulse = -massScale * axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
                 joint.springImpulse += deltaImpulse;
 
                 B2Vec2 P = b2MulSV(deltaImpulse, axisA);
@@ -474,7 +467,7 @@ namespace Box2D.NET
             if (joint.enableMotor)
             {
                 float Cdot = b2Dot(axisA, b2Sub(vB, vA)) + a2 * wB - a1 * wA;
-                float impulse = joint.axialMass * (joint.motorSpeed - Cdot);
+                float impulse = axialMass * (joint.motorSpeed - Cdot);
                 float oldImpulse = joint.motorImpulse;
                 float maxImpulse = context.h * joint.maxMotorForce;
                 joint.motorImpulse = b2ClampFloat(joint.motorImpulse + impulse, -maxImpulse, maxImpulse);
@@ -492,39 +485,51 @@ namespace Box2D.NET
 
             if (joint.enableLimit)
             {
+                // Clamp the speculative distance to a reasonable value
+                float speculativeDistance = 0.25f * (joint.upperTranslation - joint.lowerTranslation);
+
                 // Lower limit
                 {
                     float C = translation - joint.lowerTranslation;
-                    float bias = 0.0f;
-                    float massScale = 1.0f;
-                    float impulseScale = 0.0f;
 
-                    if (C > 0.0f)
+                    if (C < speculativeDistance)
                     {
-                        // speculation
-                        bias = C * context.inv_h;
+                        float bias = 0.0f;
+                        float massScale = 1.0f;
+                        float impulseScale = 0.0f;
+
+                        if (C > 0.0f)
+                        {
+                            // speculation
+                            float safe = b2_lengthUnitsPerMeter;
+                            bias = b2MinFloat(C, safe) * context.inv_h;
+                        }
+                        else if (useBias)
+                        {
+                            bias = softness.biasRate * C;
+                            massScale = softness.massScale;
+                            impulseScale = softness.impulseScale;
+                        }
+
+                        float oldImpulse = joint.lowerImpulse;
+                        float Cdot = b2Dot(axisA, b2Sub(vB, vA)) + a2 * wB - a1 * wA;
+                        float deltaImpulse = -axialMass * massScale * (Cdot + bias) - impulseScale * oldImpulse;
+                        joint.lowerImpulse = b2MaxFloat(oldImpulse + deltaImpulse, 0.0f);
+                        deltaImpulse = joint.lowerImpulse - oldImpulse;
+
+                        B2Vec2 P = b2MulSV(deltaImpulse, axisA);
+                        float LA = deltaImpulse * a1;
+                        float LB = deltaImpulse * a2;
+
+                        vA = b2MulSub(vA, mA, P);
+                        wA -= iA * LA;
+                        vB = b2MulAdd(vB, mB, P);
+                        wB += iB * LB;
                     }
-                    else if (useBias)
+                    else
                     {
-                        bias = @base.constraintSoftness.biasRate * C;
-                        massScale = @base.constraintSoftness.massScale;
-                        impulseScale = @base.constraintSoftness.impulseScale;
+                        joint.lowerImpulse = 0.0f;
                     }
-
-                    float oldImpulse = joint.lowerImpulse;
-                    float Cdot = b2Dot(axisA, b2Sub(vB, vA)) + a2 * wB - a1 * wA;
-                    float impulse = -joint.axialMass * massScale * (Cdot + bias) - impulseScale * oldImpulse;
-                    joint.lowerImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
-                    impulse = joint.lowerImpulse - oldImpulse;
-
-                    B2Vec2 P = b2MulSV(impulse, axisA);
-                    float LA = impulse * a1;
-                    float LB = impulse * a2;
-
-                    vA = b2MulSub(vA, mA, P);
-                    wA -= iA * LA;
-                    vB = b2MulAdd(vB, mB, P);
-                    wB += iB * LB;
                 }
 
                 // Upper limit
@@ -533,38 +538,48 @@ namespace Box2D.NET
                 {
                     // sign flipped
                     float C = joint.upperTranslation - translation;
-                    float bias = 0.0f;
-                    float massScale = 1.0f;
-                    float impulseScale = 0.0f;
 
-                    if (C > 0.0f)
+                    if (C < speculativeDistance)
                     {
-                        // speculation
-                        bias = C * context.inv_h;
+                        float bias = 0.0f;
+                        float massScale = 1.0f;
+                        float impulseScale = 0.0f;
+
+                        if (C > 0.0f)
+                        {
+                            // speculation
+                            float safe = b2_lengthUnitsPerMeter;
+                            bias = b2MinFloat(C, safe) * context.inv_h;
+                        }
+                        else if (useBias)
+                        {
+                            bias = softness.biasRate * C;
+                            massScale = softness.massScale;
+                            impulseScale = softness.impulseScale;
+                        }
+
+                        float oldImpulse = joint.upperImpulse;
+
+                        // sign flipped
+                        float Cdot = b2Dot(axisA, b2Sub(vA, vB)) + a1 * wA - a2 * wB;
+                        float deltaImpulse = -axialMass * massScale * (Cdot + bias) - impulseScale * oldImpulse;
+                        joint.upperImpulse = b2MaxFloat(oldImpulse + deltaImpulse, 0.0f);
+                        deltaImpulse = joint.upperImpulse - oldImpulse;
+
+                        B2Vec2 P = b2MulSV(deltaImpulse, axisA);
+                        float LA = deltaImpulse * a1;
+                        float LB = deltaImpulse * a2;
+
+                        // sign flipped
+                        vA = b2MulAdd(vA, mA, P);
+                        wA += iA * LA;
+                        vB = b2MulSub(vB, mB, P);
+                        wB -= iB * LB;
                     }
-                    else if (useBias)
+                    else
                     {
-                        bias = @base.constraintSoftness.biasRate * C;
-                        massScale = @base.constraintSoftness.massScale;
-                        impulseScale = @base.constraintSoftness.impulseScale;
+                        joint.upperImpulse = 0.0f;
                     }
-
-                    float oldImpulse = joint.upperImpulse;
-                    // sign flipped
-                    float Cdot = b2Dot(axisA, b2Sub(vA, vB)) + a1 * wA - a2 * wB;
-                    float impulse = -joint.axialMass * massScale * (Cdot + bias) - impulseScale * oldImpulse;
-                    joint.upperImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
-                    impulse = joint.upperImpulse - oldImpulse;
-
-                    B2Vec2 P = b2MulSV(impulse, axisA);
-                    float LA = impulse * a1;
-                    float LB = impulse * a2;
-
-                    // sign flipped
-                    vA = b2MulAdd(vA, mA, P);
-                    wA += iA * LA;
-                    vB = b2MulSub(vB, mB, P);
-                    wB -= iB * LB;
                 }
             }
 
@@ -589,9 +604,9 @@ namespace Box2D.NET
                     C.X = b2Dot(perpA, d);
                     C.Y = b2Rot_GetAngle(relQ);
 
-                    bias = b2MulSV(@base.constraintSoftness.biasRate, C);
-                    massScale = @base.constraintSoftness.massScale;
-                    impulseScale = @base.constraintSoftness.impulseScale;
+                    bias = b2MulSV(softness.biasRate, C);
+                    massScale = softness.massScale;
+                    impulseScale = softness.impulseScale;
                 }
 
                 float k11 = mA + mB + iA * s1 * s1 + iB * s2 * s2;
@@ -606,22 +621,27 @@ namespace Box2D.NET
                 B2Mat22 K = new B2Mat22(new B2Vec2(k11, k12), new B2Vec2(k12, k22));
 
                 B2Vec2 b = b2Solve22(K, b2Add(Cdot, bias));
-                B2Vec2 impulse;
-                impulse.X = -massScale * b.X - impulseScale * joint.impulse.X;
-                impulse.Y = -massScale * b.Y - impulseScale * joint.impulse.Y;
+                B2Vec2 deltaImpulse;
+                deltaImpulse.X = -massScale * b.X - impulseScale * joint.impulse.X;
+                deltaImpulse.Y = -massScale * b.Y - impulseScale * joint.impulse.Y;
 
-                joint.impulse.X += impulse.X;
-                joint.impulse.Y += impulse.Y;
+                joint.impulse.X += deltaImpulse.X;
+                joint.impulse.Y += deltaImpulse.Y;
 
-                B2Vec2 P = b2MulSV(impulse.X, perpA);
-                float LA = impulse.X * s1 + impulse.Y;
-                float LB = impulse.X * s2 + impulse.Y;
+                B2Vec2 P = b2MulSV(deltaImpulse.X, perpA);
+                float LA = deltaImpulse.X * s1 + deltaImpulse.Y;
+                float LB = deltaImpulse.X * s2 + deltaImpulse.Y;
 
                 vA = b2MulSub(vA, mA, P);
                 wA -= iA * LA;
                 vB = b2MulAdd(vB, mB, P);
                 wB += iB * LB;
             }
+
+            B2_ASSERT(b2IsValidVec2(vA));
+            B2_ASSERT(b2IsValidFloat(wA));
+            B2_ASSERT(b2IsValidVec2(vB));
+            B2_ASSERT(b2IsValidFloat(wB));
 
             if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
             {
