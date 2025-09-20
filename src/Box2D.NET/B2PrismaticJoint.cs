@@ -24,7 +24,6 @@ namespace Box2D.NET
         public B2Transform frameA;
         public B2Transform frameB;
         public B2Vec2 deltaCenter;
-        public float axialMass;
         public B2Softness springSoftness;
 
         public bool enableSpring;
