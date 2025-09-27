@@ -486,6 +486,8 @@ public class Sample : IDisposable
         }
 
         m_context.draw.m_debugDraw.drawingBounds = m_camera.GetViewBounds();
+        m_context.draw.m_debugDraw.jointScale = settings.jointScale;
+        m_context.draw.m_debugDraw.forceScale = settings.forceScale;
         m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
         m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
         m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
@@ -495,9 +497,9 @@ public class Sample : IDisposable
         m_context.draw.m_debugDraw.drawContacts = settings.drawContactPoints;
         m_context.draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
         m_context.draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
-        m_context.draw.m_debugDraw.drawContactImpulses = settings.drawContactImpulses;
+        m_context.draw.m_debugDraw.drawContactForces = settings.drawContactForces;
         m_context.draw.m_debugDraw.drawContactFeatures = settings.drawContactFeatures;
-        m_context.draw.m_debugDraw.drawFrictionImpulses = settings.drawFrictionImpulses;
+        m_context.draw.m_debugDraw.drawFrictionForces = settings.drawFrictionForces;
         m_context.draw.m_debugDraw.drawIslands = settings.drawIslands;
 
         b2World_Draw(m_worldId, m_context.draw.m_debugDraw);

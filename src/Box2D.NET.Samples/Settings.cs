@@ -14,26 +14,28 @@ public class Settings
     public const int MAX_TOKENS = 32;
     public const string fileName = "settings.ini";
 
-    public int sampleIndex = 0;
     public int windowWidth = 1920;
     public int windowHeight = 1080;
 
     public float uiScale = 1.0f;
     public float hertz = 60.0f;
+    public float jointScale = 1.0f;
+    public float forceScale = 1.0f;
     public int subStepCount = 4;
     public int workerCount = 1;
-
-    public bool drawShapes = true;
-    public bool drawJoints = true;
+    
+    public bool restart = false;
+    public bool pause = false;
+    public bool singleStep = false;
     public bool drawJointExtras = false;
     public bool drawBounds = false;
     public bool drawMass = false;
     public bool drawBodyNames = false;
     public bool drawContactPoints = false;
     public bool drawContactNormals = false;
-    public bool drawContactImpulses = false;
     public bool drawContactFeatures = false;
-    public bool drawFrictionImpulses = false;
+    public bool drawContactForces = false;
+    public bool drawFrictionForces = false;
     public bool drawIslands = false;
     public bool drawGraphColors = false;
     public bool drawCounters = false;
@@ -41,9 +43,11 @@ public class Settings
     public bool enableWarmStarting = true;
     public bool enableContinuous = true;
     public bool enableSleep = true;
-    public bool pause = false;
-    public bool singleStep = false;
-    public bool restart = false;
+    
+    // These are persisted
+    public int sampleIndex = 0;
+    public bool drawShapes = true;
+    public bool drawJoints = true;
 
     public void Save()
     {
@@ -80,9 +84,9 @@ public class Settings
         drawBodyNames = other.drawBodyNames;
         drawContactPoints = other.drawContactPoints;
         drawContactNormals = other.drawContactNormals;
-        drawContactImpulses = other.drawContactImpulses;
+        drawContactForces = other.drawContactForces;
         drawContactFeatures = other.drawContactFeatures;
-        drawFrictionImpulses = other.drawFrictionImpulses;
+        drawFrictionForces = other.drawFrictionForces;
         drawIslands = other.drawIslands;
         drawGraphColors = other.drawGraphColors;
         drawCounters = other.drawCounters;

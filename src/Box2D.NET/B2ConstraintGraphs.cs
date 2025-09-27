@@ -365,5 +365,13 @@ namespace Box2D.NET
                 movedJoint.localIndex = localIndex;
             }
         }
+
+        public static readonly B2HexColor[] b2_graphColors = new B2HexColor[]
+        {
+            B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen, B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue,
+            B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink, B2HexColor.b2_colorChocolate, B2HexColor.b2_colorGoldenRod, B2HexColor.b2_colorCoral, B2HexColor.b2_colorRosyBrown,
+            B2HexColor.b2_colorAqua, B2HexColor.b2_colorPeru, B2HexColor.b2_colorLime, B2HexColor.b2_colorGold, B2HexColor.b2_colorPlum, B2HexColor.b2_colorSnow,
+            B2HexColor.b2_colorTeal, B2HexColor.b2_colorKhaki, B2HexColor.b2_colorSalmon, B2HexColor.b2_colorPeachPuff, B2HexColor.b2_colorHoneyDew, B2HexColor.b2_colorBlack,
+        };
     }
 }

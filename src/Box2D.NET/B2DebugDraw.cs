@@ -19,8 +19,14 @@ namespace Box2D.NET
         public DrawPointFcn DrawPointFcn;
         public DrawStringFcn DrawStringFcn;
         
-        /// Bounds to use if restricting drawing to a rectangular region
+        /// World bounds to use for debug draw
         public B2AABB drawingBounds;
+        
+        /// Scale to use when drawing forces
+        public float forceScale;
+
+        /// Global scaling for joint drawing
+        public float jointScale;
 
         /// Option to draw shapes
         public bool drawShapes;
@@ -46,17 +52,17 @@ namespace Box2D.NET
         /// Option to visualize the graph coloring used for contacts and joints
         public bool drawGraphColors;
 
-        /// Option to draw contact normals
-        public bool drawContactNormals;
-
-        /// Option to draw contact normal impulses
-        public bool drawContactImpulses;
-
         /// Option to draw contact feature ids
         public bool drawContactFeatures;
 
-        /// Option to draw contact friction impulses
-        public bool drawFrictionImpulses;
+        /// Option to draw contact normals
+        public bool drawContactNormals;
+
+        /// Option to draw contact normal forces
+        public bool drawContactForces;
+
+        /// Option to draw contact friction forces
+        public bool drawFrictionForces;
 
         /// Option to draw islands as bounding boxes
         public bool drawIslands;

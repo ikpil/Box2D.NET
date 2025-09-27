@@ -24,6 +24,9 @@ namespace Box2D.NET
 {
     public static class B2Bodies
     {
+        // Length of body debug name
+        public const int B2_NAME_LENGTH = 32;
+
         // Identity body state, notice the deltaRotation is {1, 0}
         public static readonly B2BodyState b2_identityBodyState = new B2BodyState()
         {
@@ -921,6 +924,7 @@ namespace Box2D.NET
             state.angularVelocity = angularVelocity;
         }
 
+        /// Get the linear velocity of a local point attached to a body. Usually in meters per second.
         public static B2Vec2 b2Body_GetLocalPointVelocity(B2BodyId bodyId, B2Vec2 localPoint)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -939,6 +943,7 @@ namespace Box2D.NET
             return v;
         }
 
+        /// Get the linear velocity of a world point attached to a body. Usually in meters per second.
         public static B2Vec2 b2Body_GetWorldPointVelocity(B2BodyId bodyId, B2Vec2 worldPoint)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -957,6 +962,13 @@ namespace Box2D.NET
             return v;
         }
 
+        /// Apply a force at a world point. If the force is not applied at the center of mass,
+        /// it will generate a torque and affect the angular velocity. This optionally wakes up the body.
+        /// The force is ignored if the body is not awake.
+        /// @param bodyId The body id
+        /// @param force The world force vector, usually in newtons (N)
+        /// @param point The world position of the point of application
+        /// @param wake Option to wake up the body
         public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Vec2 point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -980,6 +992,11 @@ namespace Box2D.NET
             }
         }
 
+        /// Apply a force to the center of mass. This optionally wakes up the body.
+        /// The force is ignored if the body is not awake.
+        /// @param bodyId The body id
+        /// @param force the world force vector, usually in newtons (N).
+        /// @param wake also wake up the body
         public static void b2Body_ApplyForceToCenter(B2BodyId bodyId, B2Vec2 force, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1002,6 +1019,11 @@ namespace Box2D.NET
             }
         }
 
+        /// Apply a torque. This affects the angular velocity without affecting the linear velocity.
+        /// This optionally wakes the body. The torque is ignored if the body is not awake.
+        /// @param bodyId The body id
+        /// @param torque about the z-axis (out of the screen), usually in N*m.
+        /// @param wake also wake up the body
         public static void b2Body_ApplyTorque(B2BodyId bodyId, float torque, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
@@ -1023,6 +1045,20 @@ namespace Box2D.NET
                 bodySim.torque += torque;
             }
         }
+
+        /// Clear the force and torque on this body. Forces and torques are automatically cleared after each world
+        /// step. So this only needs to be called if the application wants to remove the effect of previous
+        /// calls to apply forces and torques before the world step is called.
+        /// @param bodyId The body id
+        public static void b2Body_ClearForces(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            bodySim.force = b2Vec2_zero;
+            bodySim.torque = 0.0f;
+        }
+
 
         /// Apply an impulse at a point. This immediately modifies the velocity.
         /// It also modifies the angular velocity if the point of application
@@ -1365,7 +1401,7 @@ namespace Box2D.NET
             }
             else
             {
-                body.name = "";
+                body.name = string.Empty;
             }
         }
 

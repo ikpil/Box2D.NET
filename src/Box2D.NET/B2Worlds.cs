@@ -795,6 +795,7 @@ namespace Box2D.NET
             }
 
             world.inv_h = context.inv_h;
+            world.inv_dt = context.inv_dt;
 
             // Hertz values get reduced for large time steps
             float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
@@ -1005,7 +1006,6 @@ namespace Box2D.NET
 
             B2_ASSERT(b2IsValidAABB(draw.drawingBounds));
 
-            const float k_impulseScale = 1.0f;
             const float k_axisScale = 0.3f;
             B2HexColor speculativeColor = B2HexColor.b2_colorGainsboro;
             B2HexColor addColor = B2HexColor.b2_colorGreen;
@@ -1013,39 +1013,6 @@ namespace Box2D.NET
             B2HexColor normalColor = B2HexColor.b2_colorDimGray;
             B2HexColor impulseColor = B2HexColor.b2_colorMagenta;
             B2HexColor frictionColor = B2HexColor.b2_colorYellow;
-
-            Span<B2HexColor> graphColors = stackalloc B2HexColor[B2_GRAPH_COLOR_COUNT]
-            {
-                B2HexColor.b2_colorRed,
-                B2HexColor.b2_colorOrange,
-                B2HexColor.b2_colorYellow,
-                B2HexColor.b2_colorGreen,
-
-                B2HexColor.b2_colorCyan,
-                B2HexColor.b2_colorBlue,
-                B2HexColor.b2_colorViolet,
-                B2HexColor.b2_colorPink,
-
-                B2HexColor.b2_colorChocolate,
-                B2HexColor.b2_colorGoldenRod,
-                B2HexColor.b2_colorCoral,
-                B2HexColor.b2_colorRosyBrown,
-
-                B2HexColor.b2_colorAqua,
-                B2HexColor.b2_colorPeru,
-                B2HexColor.b2_colorLime,
-                B2HexColor.b2_colorGold,
-
-                B2HexColor.b2_colorPlum,
-                B2HexColor.b2_colorSnow,
-                B2HexColor.b2_colorTeal,
-                B2HexColor.b2_colorKhaki,
-
-                B2HexColor.b2_colorSalmon,
-                B2HexColor.b2_colorPeachPuff,
-                B2HexColor.b2_colorHoneyDew,
-                B2HexColor.b2_colorBlack,
-            };
 
             int bodyCapacity = b2GetIdCapacity(world.bodyIdPool);
             b2SetBitCountAndClear(ref world.debugBodySet, bodyCapacity);
@@ -1154,7 +1121,7 @@ namespace Box2D.NET
                                     {
                                         // graph color
                                         float pointSize = contact.colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
-                                        draw.DrawPointFcn(point.point, pointSize, graphColors[contact.colorIndex], draw.context);
+                                        draw.DrawPointFcn(point.point, pointSize, b2_graphColors[contact.colorIndex], draw.context);
                                         // B2.g_draw.DrawString(point.position, "%d", point.color);
                                     }
                                     else if (point.separation > linearSlop)
@@ -1179,12 +1146,14 @@ namespace Box2D.NET
                                         B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
                                         draw.DrawSegmentFcn(p1, p2, normalColor, draw.context);
                                     }
-                                    else if (draw.drawContactImpulses)
+                                    else if (draw.drawContactForces)
                                     {
+                                        // multiply by one-half due to relax iteration
+                                        float force = 0.5f * point.totalNormalImpulse * world.inv_dt;
                                         B2Vec2 p1 = point.point;
-                                        B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.totalNormalImpulse, normal);
+                                        B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, normal);
                                         draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
-                                        buffer = $"{1000.0f * point.totalNormalImpulse:F1}";
+                                        buffer = $"{force:F1}";
                                         draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
 
@@ -1194,13 +1163,14 @@ namespace Box2D.NET
                                         draw.DrawStringFcn(point.point, buffer, B2HexColor.b2_colorOrange, draw.context);
                                     }
 
-                                    if (draw.drawFrictionImpulses)
+                                    if (draw.drawFrictionForces)
                                     {
+                                        float force = 0.5f * point.tangentImpulse * world.inv_h;
                                         B2Vec2 tangent = b2RightPerp(normal);
                                         B2Vec2 p1 = point.point;
-                                        B2Vec2 p2 = b2MulAdd(p1, k_impulseScale * point.tangentImpulse, tangent);
+                                        B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, tangent);
                                         draw.DrawSegmentFcn(p1, p2, frictionColor, draw.context);
-                                        buffer = $"{1000.0f * point.tangentImpulse:F1}";
+                                        buffer = $"{force:F1}";
                                         draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
                                 }

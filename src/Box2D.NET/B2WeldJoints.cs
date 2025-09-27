@@ -286,6 +286,11 @@ namespace Box2D.NET
                 wB += iB * b2Cross(rB, impulse);
             }
 
+            B2_ASSERT(b2IsValidVec2(vA));
+            B2_ASSERT(b2IsValidFloat(wA));
+            B2_ASSERT(b2IsValidVec2(vB));
+            B2_ASSERT(b2IsValidFloat(wB));
+
             if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
             {
                 stateA.linearVelocity = vA;
@@ -318,14 +323,14 @@ namespace Box2D.NET
         }
 #endif
 
-        public static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawSize)
+        public static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
             B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
             B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
 
-            B2Polygon box = b2MakeBox(0.25f * drawSize, 0.125f * drawSize);
+            B2Polygon box = b2MakeBox(0.25f * drawScale, 0.125f * drawScale);
 
             B2FixedArray4<B2Vec2> points = new B2FixedArray4<B2Vec2>();
 

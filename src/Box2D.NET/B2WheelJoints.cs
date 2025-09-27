@@ -536,7 +536,7 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
+        public static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 
@@ -560,8 +560,8 @@ namespace Box2D.NET
                 B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
                 B2Vec2 perp = b2LeftPerp(axisA);
                 draw.DrawSegmentFcn(lower, upper, c1, draw.context);
-                draw.DrawSegmentFcn(b2MulSub(lower, 0.1f, perp), b2MulAdd(lower, 0.1f, perp), c2, draw.context);
-                draw.DrawSegmentFcn(b2MulSub(upper, 0.1f, perp), b2MulAdd(upper, 0.1f, perp), c3, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(lower, 0.1f * drawScale, perp), b2MulAdd(lower, 0.1f * drawScale, perp), c2, draw.context);
+                draw.DrawSegmentFcn(b2MulSub(upper, 0.1f * drawScale, perp), b2MulAdd(upper, 0.1f * drawScale, perp), c3, draw.context);
             }
             else
             {
