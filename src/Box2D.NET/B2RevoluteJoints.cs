@@ -512,7 +512,7 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawSize)
+        public static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
@@ -521,7 +521,7 @@ namespace Box2D.NET
             B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
             B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
 
-            float radius = 0.25f * drawSize;
+            float radius = 0.25f * drawScale;
             draw.DrawCircleFcn(frameB.p, radius, B2HexColor.b2_colorGray, draw.context);
 
             B2Vec2 rx = new B2Vec2(radius, 0.0f);

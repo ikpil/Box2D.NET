@@ -789,21 +789,26 @@ public class SampleApp
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox("Shapes", ref _context.settings.drawShapes);
-                    ImGui.Checkbox("Joints", ref _context.settings.drawJoints);
-                    ImGui.Checkbox("Joint Extras", ref _context.settings.drawJointExtras);
-                    ImGui.Checkbox("Bounds", ref _context.settings.drawBounds);
-                    ImGui.Checkbox("Contact Points", ref _context.settings.drawContactPoints);
-                    ImGui.Checkbox("Contact Normals", ref _context.settings.drawContactNormals);
-                    ImGui.Checkbox("Contact Impulses", ref _context.settings.drawContactImpulses);
-                    ImGui.Checkbox("Contact Features", ref _context.settings.drawContactFeatures);
-                    ImGui.Checkbox("Friction Impulses", ref _context.settings.drawFrictionImpulses);
-                    ImGui.Checkbox("Mass", ref _context.settings.drawMass);
-                    ImGui.Checkbox("Body Names", ref _context.settings.drawBodyNames);
-                    ImGui.Checkbox("Graph Colors", ref _context.settings.drawGraphColors);
-                    ImGui.Checkbox("Islands", ref _context.settings.drawIslands);
-                    ImGui.Checkbox("Counters", ref _context.settings.drawCounters);
-                    ImGui.Checkbox("Profile", ref _context.settings.drawProfile);
+                    ImGui.Checkbox( "Shapes", ref _context.settings.drawShapes );
+                    ImGui.Checkbox( "Joints", ref _context.settings.drawJoints );
+                    ImGui.Checkbox( "Joint Extras", ref _context.settings.drawJointExtras );
+                    ImGui.Checkbox( "Bounds", ref _context.settings.drawBounds );
+                    ImGui.Checkbox( "Contact Points", ref _context.settings.drawContactPoints );
+                    ImGui.Checkbox( "Contact Normals", ref _context.settings.drawContactNormals );
+                    ImGui.Checkbox( "Contact Features", ref _context.settings.drawContactFeatures );
+                    ImGui.Checkbox( "Contact Forces", ref _context.settings.drawContactForces );
+                    ImGui.Checkbox( "Friction Forces", ref _context.settings.drawFrictionForces );
+                    ImGui.Checkbox( "Mass", ref _context.settings.drawMass );
+                    ImGui.Checkbox( "Body Names", ref _context.settings.drawBodyNames );
+                    ImGui.Checkbox( "Graph Colors", ref _context.settings.drawGraphColors );
+                    ImGui.Checkbox( "Islands", ref _context.settings.drawIslands );
+                    ImGui.Checkbox( "Counters", ref _context.settings.drawCounters );
+                    ImGui.Checkbox( "Profile", ref _context.settings.drawProfile );
+
+                    ImGui.PushItemWidth( 80.0f );
+                    ImGui.InputFloat( "Joint Scale", ref _context.settings.jointScale );
+                    ImGui.InputFloat( "Force Scale", ref _context.settings.forceScale );
+                    ImGui.PopItemWidth();
 
                     Vector2 button_sz = new Vector2(-1, 0);
                     if (ImGui.Button("Pause (P)", button_sz))

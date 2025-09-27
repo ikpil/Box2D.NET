@@ -136,7 +136,11 @@ namespace Box2D.NET
         public object userData;
 
         // Remember type step used for reporting forces and torques
+        // inverse sub-step
         public float inv_h;
+
+        // inverse full-step
+        public float inv_dt;
 
         public int activeTaskCount;
         public int taskCount;
@@ -241,6 +245,7 @@ namespace Box2D.NET
             userData = null;
 
             inv_h = 0.0f;
+            inv_dt = 0.0f;
 
             activeTaskCount = 0;
             taskCount = 0;

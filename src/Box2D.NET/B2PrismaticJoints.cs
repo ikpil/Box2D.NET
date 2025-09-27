@@ -679,7 +679,7 @@ namespace Box2D.NET
         }
 #endif
 
-        public static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawSize)
+        public static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
@@ -693,7 +693,7 @@ namespace Box2D.NET
 
             if (joint.enableLimit)
             {
-                float b = 0.25f * drawSize;
+                float b = 0.25f * drawScale;
                 B2Vec2 lower = b2MulAdd(frameA.p, joint.lowerTranslation, axisA);
                 B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
                 B2Vec2 perp = b2LeftPerp(axisA);
