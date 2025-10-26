@@ -44,10 +44,10 @@ public class GhostBumps : Sample
 
     public GhostBumps(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(1.5f, 16.0f);
-            m_camera.m_zoom = 25.0f * 0.8f;
+            m_camera.center = new B2Vec2(1.5f, 16.0f);
+            m_camera.zoom = 25.0f * 0.8f;
         }
 
         m_groundId = b2_nullBodyId;
@@ -273,7 +273,7 @@ public class GhostBumps : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Ghost Bumps", ImGuiWindowFlags.NoResize);

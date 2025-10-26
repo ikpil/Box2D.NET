@@ -15,6 +15,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2PrismaticJoints;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -48,10 +49,10 @@ public class SensorHits : Sample
 
     public SensorHits(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_context.camera.m_zoom = 7.5f;
+            m_context.camera.center = new B2Vec2(0.0f, 5.0f);
+            m_context.camera.zoom = 7.5f;
         }
 
         B2BodyId groundId;
@@ -173,7 +174,7 @@ public class SensorHits : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(120.0f, height));
 
         ImGui.Begin("Sensor Hit", ImGuiWindowFlags.NoResize);
@@ -241,13 +242,13 @@ public class SensorHits : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         for (int i = 0; i < m_transformCount; ++i)
         {
-            m_draw.DrawTransform(m_transforms[i]);
+            DrawTransform(m_draw, m_transforms[i], 1.0f);
         }
 
         DrawTextLine($"begin touch count = {m_beginCount}");

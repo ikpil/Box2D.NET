@@ -664,6 +664,9 @@ namespace Box2D.NET
 
             B2StepContext stepContext = context as B2StepContext;
             B2World world = stepContext.world;
+
+            B2_ASSERT((int)threadIndex < world.workerCount);
+
             bool enableSleep = world.enableSleep;
             B2BodyState[] states = stepContext.states;
             B2BodySim[] sims = stepContext.sims;

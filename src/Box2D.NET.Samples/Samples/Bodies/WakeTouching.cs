@@ -28,10 +28,10 @@ public class WakeTouching : Sample
     public WakeTouching(SampleContext context)
         : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 4.0f);
-            m_context.camera.m_zoom = 8.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 4.0f);
+            m_context.camera.zoom = 8.0f;
         }
 
         {
@@ -68,7 +68,7 @@ public class WakeTouching : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 5.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(10.0f * fontSize, height));
 
         ImGui.Begin("Wake Touching", ImGuiWindowFlags.NoResize);

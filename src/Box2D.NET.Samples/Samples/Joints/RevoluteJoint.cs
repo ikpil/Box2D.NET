@@ -38,10 +38,10 @@ public class RevoluteJoint : Sample
 
     public RevoluteJoint(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 15.5f);
-            m_camera.m_zoom = 25.0f * 0.7f;
+            m_camera.center = new B2Vec2(0.0f, 15.5f);
+            m_camera.zoom = 25.0f * 0.7f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -149,7 +149,7 @@ public class RevoluteJoint : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 8.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(8.0f * fontSize, height));
 
         ImGui.Begin("Revolute Joint", ImGuiWindowFlags.NoResize);
@@ -212,9 +212,9 @@ public class RevoluteJoint : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
         DrawTextLine($"Angle (Deg) 1 = {angle1:F1}");

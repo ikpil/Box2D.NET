@@ -21,10 +21,10 @@ public class ChainLink : Sample
 
     public ChainLink(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 25.0f * 0.5f;
         }
 
         B2Vec2[] points1 = new B2Vec2[]
@@ -91,9 +91,9 @@ public class ChainLink : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("This shows how to link together two chain shapes");
         

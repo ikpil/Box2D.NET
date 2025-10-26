@@ -161,7 +161,7 @@ namespace Box2D.NET
             draw.DrawCircleFcn = b2EmptyDrawCircle;
             draw.DrawSolidCircleFcn = b2EmptyDrawSolidCircle;
             draw.DrawSolidCapsuleFcn = b2EmptyDrawSolidCapsule;
-            draw.DrawSegmentFcn = b2EmptyDrawSegment;
+            draw.drawLineFcn = b2EmptyDrawSegment;
             draw.DrawTransformFcn = b2EmptyDrawTransform;
             draw.DrawPointFcn = b2EmptyDrawPoint;
             draw.DrawStringFcn = b2EmptyDrawString;
@@ -169,6 +169,7 @@ namespace Box2D.NET
             draw.drawingBounds.lowerBound = new B2Vec2(-float.MaxValue, -float.MaxValue);
             draw.drawingBounds.upperBound = new B2Vec2(float.MaxValue, float.MaxValue);
             draw.forceScale = 1.0f;
+            draw.jointScale = 1.0f;
             draw.drawShapes = true;
 
             return draw;

@@ -5,6 +5,7 @@
 using System;
 using System.Numerics;
 using System.Text;
+using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using ImGuiNET;
@@ -18,6 +19,8 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.Graphics.Cameras;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -62,7 +65,7 @@ public class Sample : IDisposable
         m_draw = context.draw;
 
         m_scheduler = new TaskScheduler();
-        m_scheduler.Initialize(m_context.settings.workerCount);
+        m_scheduler.Initialize(m_context.workerCount);
 
         m_tasks = new SampleTask[m_maxTasks];
         for (int i = 0; i < m_maxTasks; ++i)
@@ -72,12 +75,12 @@ public class Sample : IDisposable
 
         m_taskCount = 0;
 
-        m_threadCount = 1 + m_context.settings.workerCount;
+        m_threadCount = 1 + m_context.workerCount;
 
         m_worldId = b2_nullWorldId;
 
-        m_textLine = 30;
-        m_textIncrement = 22;
+        m_textIncrement = 26;
+        m_textLine = m_textIncrement;
         m_mouseJointId = b2_nullJointId;
 
         m_stepCount = 0;
@@ -113,11 +116,11 @@ public class Sample : IDisposable
         }
 
         B2WorldDef worldDef = b2DefaultWorldDef();
-        worldDef.workerCount = m_context.settings.workerCount;
+        worldDef.workerCount = m_context.workerCount;
         worldDef.enqueueTask = EnqueueTask;
         worldDef.finishTask = FinishTask;
         worldDef.userTaskContext = this;
-        worldDef.enableSleep = m_context.settings.enableSleep;
+        worldDef.enableSleep = m_context.enableSleep;
 
         // todo experimental
         // worldDef.enableContactSoftening = true;
@@ -155,7 +158,7 @@ public class Sample : IDisposable
 
     public virtual void UpdateGui()
     {
-        if (m_context.settings.drawProfile)
+        if (m_context.drawProfile)
         {
             B2Profile p = b2World_GetProfile(m_worldId);
 
@@ -245,12 +248,10 @@ public class Sample : IDisposable
         }
     }
 
-    public void DrawTitle(string title)
+    public void ResetText(string title)
     {
-        m_draw.DrawString(5, 5, title);
-        m_textLine = (int)26.0f;
+        m_textLine = m_textIncrement;
     }
-
 
     public bool QueryCallback(B2ShapeId shapeId, object context)
     {
@@ -354,18 +355,27 @@ public class Sample : IDisposable
 
         m_mousePoint = p;
     }
+    
+    public void DrawColoredTextLine( B2HexColor color, string text)
+    {
+        if (m_context.showUI == false)
+        {
+            return;
+        }
+
+        DrawScreenString( m_draw, 5, m_textLine, color, text);
+        m_textLine += m_textIncrement;
+    }
+
 
     public void DrawTextLine(string text)
     {
-        ImGui.Begin("Overlay",
-            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-            ImGuiWindowFlags.NoScrollbar);
-        ImGui.PushFont(m_context.draw.m_regularFont);
-        ImGui.SetCursorPos(new Vector2(5.0f, (float)m_textLine));
-        ImGui.TextColored(new Vector4(230, 153, 153, 255), text);
-        ImGui.PopFont();
-        ImGui.End();
+        if (m_context.showUI == false)
+        {
+            return;
+        }
 
+        DrawScreenString(m_draw, 5, m_textLine, B2HexColor.b2_colorWhite, text);
         m_textLine += m_textIncrement;
     }
 
@@ -378,13 +388,13 @@ public class Sample : IDisposable
 
     public virtual void Step()
     {
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
 
-        if (m_context.settings.pause)
+        if (m_context.pause)
         {
-            if (m_context.settings.singleStep)
+            if (m_context.singleStep)
             {
-                m_context.settings.singleStep = false;
+                m_context.singleStep = false;
             }
             else
             {
@@ -409,13 +419,13 @@ public class Sample : IDisposable
             b2Body_SetTargetTransform(m_mouseBodyId, new B2Transform(m_mousePoint, b2Rot_identity), timeStep);
         }
 
-        b2World_EnableSleeping(m_worldId, m_context.settings.enableSleep);
-        b2World_EnableWarmStarting(m_worldId, m_context.settings.enableWarmStarting);
-        b2World_EnableContinuous(m_worldId, m_context.settings.enableContinuous);
+        b2World_EnableSleeping(m_worldId, m_context.enableSleep);
+        b2World_EnableWarmStarting(m_worldId, m_context.enableWarmStarting);
+        b2World_EnableContinuous(m_worldId, m_context.enableContinuous);
 
         for (int i = 0; i < 1; ++i)
         {
-            b2World_Step(m_worldId, timeStep, m_context.settings.subStepCount);
+            b2World_Step(m_worldId, timeStep, m_context.subStepCount);
             m_taskCount = 0;
         }
 
@@ -475,36 +485,21 @@ public class Sample : IDisposable
         }
     }
 
-    public virtual void Draw(Settings settings)
+    public virtual void Draw()
     {
-        if (settings.pause)
+        if (m_context.pause)
         {
-            if (m_context.draw.m_showUI)
+            if (m_context.showUI)
             {
                 DrawTextLine("****PAUSED****");
             }
         }
 
-        m_context.draw.m_debugDraw.drawingBounds = m_camera.GetViewBounds();
-        m_context.draw.m_debugDraw.jointScale = settings.jointScale;
-        m_context.draw.m_debugDraw.forceScale = settings.forceScale;
-        m_context.draw.m_debugDraw.drawShapes = settings.drawShapes;
-        m_context.draw.m_debugDraw.drawJoints = settings.drawJoints;
-        m_context.draw.m_debugDraw.drawJointExtras = settings.drawJointExtras;
-        m_context.draw.m_debugDraw.drawBounds = settings.drawBounds;
-        m_context.draw.m_debugDraw.drawMass = settings.drawMass;
-        m_context.draw.m_debugDraw.drawBodyNames = settings.drawBodyNames;
-        m_context.draw.m_debugDraw.drawContacts = settings.drawContactPoints;
-        m_context.draw.m_debugDraw.drawGraphColors = settings.drawGraphColors;
-        m_context.draw.m_debugDraw.drawContactNormals = settings.drawContactNormals;
-        m_context.draw.m_debugDraw.drawContactForces = settings.drawContactForces;
-        m_context.draw.m_debugDraw.drawContactFeatures = settings.drawContactFeatures;
-        m_context.draw.m_debugDraw.drawFrictionForces = settings.drawFrictionForces;
-        m_context.draw.m_debugDraw.drawIslands = settings.drawIslands;
+        m_context.debugDraw.drawingBounds = GetViewBounds(m_context.camera);
 
-        b2World_Draw(m_worldId, m_context.draw.m_debugDraw);
+        b2World_Draw(m_worldId, m_context.debugDraw);
 
-        if (settings.drawCounters)
+        if (m_context.drawCounters)
         {
             B2Counters s = b2World_GetCounters(m_worldId);
 

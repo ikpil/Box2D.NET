@@ -11,6 +11,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -39,10 +40,10 @@ public class SensorTypes : Sample
 
     public SensorTypes(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 3.0f);
-            m_camera.m_zoom = 4.5f;
+            m_camera.center = new B2Vec2(0.0f, 3.0f);
+            m_camera.zoom = 4.5f;
         }
 
         {
@@ -188,9 +189,9 @@ public class SensorTypes : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         PrintOverlaps(m_staticSensorId, "static");
         PrintOverlaps(m_kinematicSensorId, "kinematic");
@@ -199,11 +200,11 @@ public class SensorTypes : Sample
         B2Vec2 origin = new B2Vec2(5.0f, 1.0f);
         B2Vec2 translation = new B2Vec2(-10.0f, 0.0f);
         B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, b2DefaultQueryFilter());
-        m_draw.DrawLine(origin, origin + translation, B2HexColor.b2_colorDimGray);
+        DrawLine(m_draw, origin, origin + translation, B2HexColor.b2_colorDimGray);
 
         if (result.hit)
         {
-            m_draw.DrawPoint(result.point, 10.0f, B2HexColor.b2_colorCyan);
+            DrawPoint(m_draw, result.point, 10.0f, B2HexColor.b2_colorCyan);
         }
     }
 }

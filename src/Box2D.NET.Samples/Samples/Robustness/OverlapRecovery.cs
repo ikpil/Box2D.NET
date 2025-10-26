@@ -33,10 +33,10 @@ public class OverlapRecovery : Sample
 
     public OverlapRecovery(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_camera.m_zoom = 3.75f;
+            m_camera.center = new B2Vec2(0.0f, 2.5f);
+            m_camera.zoom = 3.75f;
         }
 
         m_bodyIds = null;
@@ -107,7 +107,7 @@ public class OverlapRecovery : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 210.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
 
         ImGui.Begin("Overlap Recovery", ImGuiWindowFlags.NoResize);

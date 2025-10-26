@@ -29,10 +29,10 @@ public class Ragdoll : Sample
 
     public Ragdoll(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 12.0f);
-            m_camera.m_zoom = 16.0f;
+            m_camera.center = new B2Vec2(0.0f, 12.0f);
+            m_camera.zoom = 16.0f;
 
             // m_context.g_camera.m_center = { 0.0f, 26.0f };
             // m_context.g_camera.m_zoom = 1.0f;
@@ -67,7 +67,7 @@ public class Ragdoll : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 10.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(14.0f * fontSize, height));
 
         ImGui.Begin("Ragdoll", ImGuiWindowFlags.NoResize);

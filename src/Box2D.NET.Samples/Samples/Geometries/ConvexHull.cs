@@ -7,6 +7,7 @@ using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Geometries;
 
@@ -35,10 +36,10 @@ public class ConvexHull : Sample
 
     public ConvexHull(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.5f, 0.0f);
-            m_camera.m_zoom = 25.0f * 0.3f;
+            m_camera.center = new B2Vec2(0.5f, 0.0f);
+            m_camera.zoom = 25.0f * 0.3f;
         }
 
         m_generation = 0;
@@ -186,9 +187,9 @@ public class ConvexHull : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("Options: generate(g), auto(a), bulk(b)");
         
@@ -214,18 +215,18 @@ public class ConvexHull : Sample
 
         if (0 < m_hull.count)
         {
-            m_draw.DrawPolygon(m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
+            DrawPolygon(m_draw, m_hull.points.AsSpan(), m_hull.count, B2HexColor.b2_colorGray);
         }
 
         for (int i = 0; i < m_count; ++i)
         {
-            m_draw.DrawPoint(m_points[i], 5.0f, B2HexColor.b2_colorBlue);
-            m_draw.DrawString(b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), $"{i}");
+            DrawPoint(m_draw, m_points[i], 5.0f, B2HexColor.b2_colorBlue);
+            DrawWorldString(m_draw, m_camera, b2Add(m_points[i], new B2Vec2(0.1f, 0.1f)), B2HexColor.b2_colorWhite, $"{i}");
         }
 
         for (int i = 0; i < m_hull.count; ++i)
         {
-            m_draw.DrawPoint(m_hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
+            DrawPoint(m_draw, m_hull.points[i], 6.0f, B2HexColor.b2_colorGreen);
         }
     }
 }

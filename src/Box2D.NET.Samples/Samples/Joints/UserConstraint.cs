@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -25,10 +26,10 @@ public class UserConstraint : Sample
 
     public UserConstraint(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(3.0f, -1.0f);
-            m_camera.m_zoom = 25.0f * 0.15f;
+            m_camera.center = new B2Vec2(3.0f, -1.0f);
+            m_camera.zoom = 25.0f * 0.15f;
         }
 
         B2Polygon box = b2MakeBox(1.0f, 0.5f);
@@ -53,14 +54,14 @@ public class UserConstraint : Sample
         base.Step();
 
         B2Transform axes = b2Transform_identity;
-        m_draw.DrawTransform(axes);
+        DrawTransform(m_draw, axes, 1.0f);
 
-        if (m_context.settings.pause)
+        if (m_context.pause)
         {
             return;
         }
 
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
         if (timeStep == 0.0f)
         {
             return;
@@ -102,12 +103,12 @@ public class UserConstraint : Sample
             float C = length - slackLength;
             if (C < 0.0f || length < 0.001f)
             {
-                m_draw.DrawLine(anchorA, anchorB, B2HexColor.b2_colorLightCyan);
+                DrawLine(m_draw, anchorA, anchorB, B2HexColor.b2_colorLightCyan);
                 m_impulses[i] = 0.0f;
                 continue;
             }
 
-            m_draw.DrawLine(anchorA, anchorB, B2HexColor.b2_colorViolet);
+            DrawLine(m_draw, anchorA, anchorB, B2HexColor.b2_colorViolet);
             B2Vec2 axis = b2Normalize(deltaAnchor);
 
             B2Vec2 rB = b2Sub(anchorB, pB);
@@ -129,12 +130,11 @@ public class UserConstraint : Sample
         b2Body_SetAngularVelocity(m_bodyId, omegaB);
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        float invTimeStep = settings.hertz;
+        float invTimeStep = m_context.hertz;
         DrawTextLine($"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
-        
     }
 }

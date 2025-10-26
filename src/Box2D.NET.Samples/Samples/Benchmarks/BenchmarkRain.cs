@@ -20,21 +20,21 @@ public class BenchmarkRain : Sample
 
     public BenchmarkRain(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 110.0f);
-            m_camera.m_zoom = 125.0f;
-            m_context.settings.enableSleep = true;
+            m_camera.center = new B2Vec2(0.0f, 110.0f);
+            m_camera.zoom = 125.0f;
+            m_context.enableSleep = true;
         }
 
-        m_context.settings.drawJoints = false;
+        m_context.debugDraw.drawJoints = false;
 
         m_rainData = CreateRain(m_worldId);
     }
 
     public override void Step()
     {
-        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
+        if (m_context.pause == false || m_context.singleStep == true)
         {
             StepRain(m_rainData, m_worldId, m_stepCount);
         }

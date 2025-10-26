@@ -40,10 +40,10 @@ public class BenchmarkSensor : Sample
 
     public BenchmarkSensor(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 105.0f);
-            m_camera.m_zoom = 125.0f;
+            m_camera.center = new B2Vec2(0.0f, 105.0f);
+            m_camera.zoom = 125.0f;
         }
 
         b2World_SetCustomFilterCallback(m_worldId, FilterFcn, this);
@@ -236,9 +236,9 @@ public class BenchmarkSensor : Sample
         m_maxEndCount = b2MaxInt(events.endCount, m_maxEndCount);
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"max begin touch events = {m_maxBeginCount}");
         DrawTextLine($"max end touch events = {m_maxEndCount}");

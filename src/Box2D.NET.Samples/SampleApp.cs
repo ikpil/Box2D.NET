@@ -22,6 +22,8 @@ using static Box2D.NET.B2Buffers;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
+using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.Graphics.Cameras;
 using ErrorCode = Silk.NET.GLFW.ErrorCode;
 using Monitor = Silk.NET.GLFW.Monitor;
 using MouseButton = Silk.NET.GLFW.MouseButton;
@@ -55,11 +57,8 @@ public class SampleApp
         b2SetAllocator(AllocFcn, FreeFcn);
         b2SetAssertFcn(AssertFcn);
 
-        _context.settings.Load();
-        _context.settings.workerCount = b2MinInt(8, Environment.ProcessorCount / 2);
-
-        _context.camera.m_width = _context.settings.windowWidth;
-        _context.camera.m_height = _context.settings.windowHeight;
+        _context.Load();
+        _context.workerCount = b2MinInt(8, Environment.ProcessorCount / 2);
 
         SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
@@ -101,7 +100,7 @@ public class SampleApp
                 {
                     float uiScale = 1.0f;
                     _context.glfw.GetMonitorContentScale(primaryMonitor, out uiScale, out uiScale);
-                    _context.settings.uiScale = uiScale;
+                    _context.uiScale = uiScale;
                 }
             }
         }
@@ -115,7 +114,7 @@ public class SampleApp
         }
         else
         {
-            options.Size = new Vector2D<int>((int)(_context.camera.m_width), (int)(_context.camera.m_height));
+            options.Size = new Vector2D<int>((int)(_context.camera.width), (int)(_context.camera.height));
             //_context.g_mainWindow = _ctx.g_glfw.CreateWindow((int)(_ctx.g_camera.m_width * s_windowScale), (int)(_ctx.g_camera.m_height * s_windowScale), buffer, null, null);
         }
 
@@ -129,7 +128,7 @@ public class SampleApp
         _window.Run();
 
         _context.glfw.Terminate();
-        _context.settings.Save();
+        Settings.Save(_context);
 
         return 0;
     }
@@ -150,7 +149,7 @@ public class SampleApp
     {
         s_sample?.Dispose();
         s_sample = null;
-        _context.draw.Destroy();
+        DestroyDraw(_context.draw);
         DestroyUI();
     }
 
@@ -158,11 +157,9 @@ public class SampleApp
     {
         var width = resize.X;
         var height = resize.Y;
-        _context.settings.windowWidth = width;
-        _context.settings.windowHeight = height;
-
-        _context.camera.m_width = width;
-        _context.camera.m_height = height;
+        
+        _context.camera.width = width;
+        _context.camera.height = height;
     }
 
     private void OnWindowFrameBufferResize(Vector2D<int> resize)
@@ -226,10 +223,10 @@ public class SampleApp
             _context.glfw.SetScrollCallback(_context.window, ScrollCallback);
         }
 
-        _context.draw.Create(_context);
+        _context.draw = CreateDraw(_context);
 
-        _context.settings.sampleIndex = b2ClampInt(_context.settings.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
-        s_selection = _context.settings.sampleIndex;
+        _context.sampleIndex = b2ClampInt(_context.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
+        s_selection = _context.sampleIndex;
 
         // todo put this in _context.settings
         CreateUI(glslVersion);
@@ -262,12 +259,12 @@ public class SampleApp
         if (GlfwHelpers.GetKey(_context, Keys.Z) == InputAction.Press)
         {
             // Zoom out
-            _context.camera.m_zoom = b2MinFloat(1.005f * _context.camera.m_zoom, 100.0f);
+            _context.camera.zoom = b2MinFloat(1.005f * _context.camera.zoom, 100.0f);
         }
         else if (GlfwHelpers.GetKey(_context, Keys.X) == InputAction.Press)
         {
             // Zoom in
-            _context.camera.m_zoom = b2MaxFloat(0.995f * _context.camera.m_zoom, 0.5f);
+            _context.camera.zoom = b2MaxFloat(0.995f * _context.camera.zoom, 0.5f);
         }
 
         int bufferWidth = 0;
@@ -286,24 +283,24 @@ public class SampleApp
         // For the Tracy profiler
         //FrameMark;
 
-        if (s_selection != _context.settings.sampleIndex)
+        if (s_selection != _context.sampleIndex)
         {
-            _context.camera.ResetView();
-            _context.settings.sampleIndex = s_selection;
+            ResetView(_context.camera);
+            _context.sampleIndex = s_selection;
 
             // #todo restore all drawing settings that may have been overridden by a sample
-            _context.settings.subStepCount = 4;
-            _context.settings.drawJoints = true;
+            _context.subStepCount = 4;
+            _context.debugDraw.drawJoints = true;
 
             s_sample?.Dispose();
             s_sample = null;
-            s_sample = SampleFactory.Shared.Create(_context.settings.sampleIndex, _context);
+            s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
         }
 
         if (s_sample == null)
         {
             // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            s_sample = SampleFactory.Shared.Create(_context.settings.sampleIndex, _context);
+            s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
         }
 
         s_sample.Step();
@@ -328,8 +325,8 @@ public class SampleApp
         if (null != _imgui)
         {
             var io = ImGui.GetIO();
-            io.DisplaySize = new Vector2(_context.camera.m_width, _context.camera.m_height);
-            io.DisplayFramebufferScale = new Vector2(bufferWidth / (float)_context.camera.m_width, bufferHeight / (float)_context.camera.m_height);
+            io.DisplaySize = new Vector2(_context.camera.width, _context.camera.height);
+            io.DisplayFramebufferScale = new Vector2(bufferWidth / (float)_context.camera.width, bufferHeight / (float)_context.camera.height);
             io.DeltaTime = (float)dt;
             _imgui.Update((float)dt);
         }
@@ -352,38 +349,29 @@ public class SampleApp
         _context.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
         ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
-        ImGui.SetNextWindowSize(new Vector2(_context.camera.m_width, _context.camera.m_height));
+        ImGui.SetNextWindowSize(new Vector2(_context.camera.width, _context.camera.height));
         ImGui.SetNextWindowBgAlpha(0.0f);
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
-        if (_context.draw.m_showUI)
+        if (_context.showUI)
         {
-            var title = SampleFactory.Shared.GetTitle(_context.settings.sampleIndex);
-            s_sample.DrawTitle(title);
+            var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
+            s_sample.ResetText(title);
         }
 
-        s_sample.Draw(_context.settings);
-        _context.draw.Flush();
+        s_sample.Draw();
+        FlushDraw(_context.draw);
 
         UpdateUI();
 
         //ImGui.ShowDemoWindow();
 
-        if (_context.draw.m_showUI)
+        if (_context.showUI)
         {
             string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
-                            $"camera ({_context.camera.m_center.X:G}, {_context.camera.m_center.Y:G}, {_context.camera.m_zoom:G})";
-            // snprintf(buffer, 128, "%.1f ms - step %d - camera (%g, %g, %g)", 1000.0f * _frameTime, s_sample.m_stepCount,
-            //     _ctx.g_camera.m_center.x, _ctx.g_camera.m_center.y, _ctx.g_camera.m_zoom);
-            // snprintf( buffer, 128, "%.1f ms", 1000.0f * frameTime );
-
-            ImGui.Begin("Overlay",
-                ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-                ImGuiWindowFlags.NoScrollbar);
-            ImGui.SetCursorPos(new Vector2(5.0f, _context.camera.m_height - 20.0f));
-            ImGui.TextColored(new Vector4(153, 230, 153, 255), buffer);
-            ImGui.End();
+                            $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
+            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 10.0f, B2HexColor.b2_colorSeaGreen, buffer);
         }
 
         _imgui.Render();
@@ -442,10 +430,10 @@ public class SampleApp
     {
         s_sample?.Dispose();
         s_sample = null;
-        _context.settings.restart = true;
+        _context.restart = true;
 
-        s_sample = SampleFactory.Shared.Create(_context.settings.sampleIndex, _context);
-        _context.settings.restart = false;
+        s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
+        _context.restart = false;
     }
 
     private void CreateUI(string glslVersion)
@@ -482,23 +470,23 @@ public class SampleApp
         _imgui = new ImGuiController(_context.gl, _window, _input, imGuiFontConfig);
 
         ImGui.GetFontSize();
-        ImGui.GetStyle().ScaleAllSizes(_context.settings.uiScale);
+        ImGui.GetStyle().ScaleAllSizes(_context.uiScale);
 
         unsafe
         {
             // ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-            // fontConfig.RasterizerMultiply = _context.settings.uiScale * s_framebufferScale;
+            // fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
             //
-            // float regularSize = MathF.Floor(13.0f * _context.settings.uiScale);
-            // float mediumSize = MathF.Floor(40.0f * _context.settings.uiScale);
-            // float largeSize = MathF.Floor(64.0f * _context.settings.uiScale);
+            // float regularSize = MathF.Floor(13.0f * _context.uiScale);
+            // float mediumSize = MathF.Floor(40.0f * _context.uiScale);
+            // float largeSize = MathF.Floor(64.0f * _context.uiScale);
             //
             // var io = ImGui.GetIO();
-            //_context.draw.m_regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize, fontConfig);
-            // _context.draw.m_mediumFont = io.Fonts.AddFontFromFileTTF(fontPath, mediumSize, fontConfig);
-            // _context.draw.m_largeFont = io.Fonts.AddFontFromFileTTF(fontPath, largeSize, fontConfig);
+            //_context.regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize, fontConfig);
+            // _context.mediumFont = io.Fonts.AddFontFromFileTTF(fontPath, mediumSize, fontConfig);
+            // _context.largeFont = io.Fonts.AddFontFromFileTTF(fontPath, largeSize, fontConfig);
 
-            //io.FontDefault = _context.draw.m_regularFont;
+            //io.FontDefault = _context.regularFont;
         }
     }
 
@@ -540,7 +528,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _context.camera.m_center.X -= 0.5f;
+                        _context.camera.center.X -= 0.5f;
                     }
 
                     break;
@@ -554,7 +542,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _context.camera.m_center.X += 0.5f;
+                        _context.camera.center.X += 0.5f;
                     }
 
                     break;
@@ -568,7 +556,7 @@ public class SampleApp
                     }
                     else
                     {
-                        _context.camera.m_center.Y -= 0.5f;
+                        _context.camera.center.Y -= 0.5f;
                     }
 
                     break;
@@ -582,13 +570,13 @@ public class SampleApp
                     }
                     else
                     {
-                        _context.camera.m_center.Y += 0.5f;
+                        _context.camera.center.Y += 0.5f;
                     }
 
                     break;
 
                 case Keys.Home:
-                    _context.camera.ResetView();
+                    ResetView(_context.camera);
                     break;
 
                 case Keys.R:
@@ -596,11 +584,11 @@ public class SampleApp
                     break;
 
                 case Keys.O:
-                    _context.settings.singleStep = true;
+                    _context.singleStep = true;
                     break;
 
                 case Keys.P:
-                    _context.settings.pause = !_context.settings.pause;
+                    _context.pause = !_context.pause;
                     break;
 
                 case Keys.LeftBracket:
@@ -624,7 +612,7 @@ public class SampleApp
                     break;
 
                 case Keys.Tab:
-                    _context.draw.m_showUI = !_context.draw.m_showUI;
+                    _context.showUI = !_context.showUI;
                     break;
 
                 default:
@@ -673,7 +661,7 @@ public class SampleApp
         // Use the mouse to move things around.
         if (button == (int)MouseButton.Left)
         {
-            B2Vec2 pw = _context.camera.ConvertScreenToWorld(ps);
+            B2Vec2 pw = ConvertScreenToWorld(_context.camera, ps);
             if (action == InputAction.Press)
             {
                 s_sample.MouseDown(pw, button, modifiers);
@@ -688,7 +676,7 @@ public class SampleApp
         {
             if (action == InputAction.Press)
             {
-                s_clickPointWS = _context.camera.ConvertScreenToWorld(ps);
+                s_clickPointWS = ConvertScreenToWorld(_context.camera, ps);
                 s_rightMouseDown = true;
             }
 
@@ -716,15 +704,15 @@ public class SampleApp
 
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
 
-        B2Vec2 pw = _context.camera.ConvertScreenToWorld(ps);
+        B2Vec2 pw = ConvertScreenToWorld(_context.camera, ps);
         s_sample?.MouseMove(pw);
 
         if (s_rightMouseDown)
         {
             B2Vec2 diff = b2Sub(pw, s_clickPointWS);
-            _context.camera.m_center.X -= diff.X;
-            _context.camera.m_center.Y -= diff.Y;
-            s_clickPointWS = _context.camera.ConvertScreenToWorld(ps);
+            _context.camera.center.X -= diff.X;
+            _context.camera.center.Y -= diff.Y;
+            s_clickPointWS = ConvertScreenToWorld(_context.camera, ps);
         }
     }
 
@@ -744,11 +732,11 @@ public class SampleApp
 
         if (dy > 0)
         {
-            _context.camera.m_zoom /= 1.1f;
+            _context.camera.zoom /= 1.1f;
         }
         else
         {
-            _context.camera.m_zoom *= 1.1f;
+            _context.camera.zoom *= 1.1f;
         }
     }
 
@@ -758,24 +746,24 @@ public class SampleApp
 
         float fontSize = ImGui.GetFontSize();
         float menuWidth = 13.0f * fontSize;
-        if (_context.draw.m_showUI)
+        if (_context.showUI)
         {
-            ImGui.SetNextWindowPos(new Vector2(_context.camera.m_width - menuWidth - 0.5f * fontSize, 0.5f * fontSize));
-            ImGui.SetNextWindowSize(new Vector2(menuWidth, _context.camera.m_height - fontSize));
+            ImGui.SetNextWindowPos(new Vector2(_context.camera.width - menuWidth - 0.5f * fontSize, 0.5f * fontSize));
+            ImGui.SetNextWindowSize(new Vector2(menuWidth, _context.camera.height - fontSize));
 
-            ImGui.Begin("Tools", ref _context.draw.m_showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+            ImGui.Begin("Tools", ref _context.showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
 
             if (ImGui.BeginTabBar("ControlTabs", ImGuiTabBarFlags.None))
             {
                 if (ImGui.BeginTabItem("Controls"))
                 {
                     ImGui.PushItemWidth(100.0f);
-                    ImGui.SliderInt("Sub-steps", ref _context.settings.subStepCount, 1, 32);
-                    ImGui.SliderFloat("Hertz", ref _context.settings.hertz, 5.0f, 240.0f, "%.0f hz");
+                    ImGui.SliderInt("Sub-steps", ref _context.subStepCount, 1, 32);
+                    ImGui.SliderFloat("Hertz", ref _context.hertz, 5.0f, 240.0f, "%.0f hz");
 
-                    if (ImGui.SliderInt("Workers", ref _context.settings.workerCount, 1, maxWorkers))
+                    if (ImGui.SliderInt("Workers", ref _context.workerCount, 1, maxWorkers))
                     {
-                        _context.settings.workerCount = b2ClampInt(_context.settings.workerCount, 1, maxWorkers);
+                        _context.workerCount = b2ClampInt(_context.workerCount, 1, maxWorkers);
                         RestartSample();
                     }
 
@@ -783,42 +771,42 @@ public class SampleApp
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox("Sleep", ref _context.settings.enableSleep);
-                    ImGui.Checkbox("Warm Starting", ref _context.settings.enableWarmStarting);
-                    ImGui.Checkbox("Continuous", ref _context.settings.enableContinuous);
+                    ImGui.Checkbox("Sleep", ref _context.enableSleep);
+                    ImGui.Checkbox("Warm Starting", ref _context.enableWarmStarting);
+                    ImGui.Checkbox("Continuous", ref _context.enableContinuous);
 
                     ImGui.Separator();
 
-                    ImGui.Checkbox( "Shapes", ref _context.settings.drawShapes );
-                    ImGui.Checkbox( "Joints", ref _context.settings.drawJoints );
-                    ImGui.Checkbox( "Joint Extras", ref _context.settings.drawJointExtras );
-                    ImGui.Checkbox( "Bounds", ref _context.settings.drawBounds );
-                    ImGui.Checkbox( "Contact Points", ref _context.settings.drawContactPoints );
-                    ImGui.Checkbox( "Contact Normals", ref _context.settings.drawContactNormals );
-                    ImGui.Checkbox( "Contact Features", ref _context.settings.drawContactFeatures );
-                    ImGui.Checkbox( "Contact Forces", ref _context.settings.drawContactForces );
-                    ImGui.Checkbox( "Friction Forces", ref _context.settings.drawFrictionForces );
-                    ImGui.Checkbox( "Mass", ref _context.settings.drawMass );
-                    ImGui.Checkbox( "Body Names", ref _context.settings.drawBodyNames );
-                    ImGui.Checkbox( "Graph Colors", ref _context.settings.drawGraphColors );
-                    ImGui.Checkbox( "Islands", ref _context.settings.drawIslands );
-                    ImGui.Checkbox( "Counters", ref _context.settings.drawCounters );
-                    ImGui.Checkbox( "Profile", ref _context.settings.drawProfile );
+                    ImGui.Checkbox("Shapes", ref _context.debugDraw.drawShapes);
+                    ImGui.Checkbox("Joints", ref _context.debugDraw.drawJoints);
+                    ImGui.Checkbox("Joint Extras", ref _context.debugDraw.drawJointExtras);
+                    ImGui.Checkbox("Bounds", ref _context.debugDraw.drawBounds);
+                    ImGui.Checkbox("Contact Points", ref _context.debugDraw.drawContactPoints);
+                    ImGui.Checkbox("Contact Normals", ref _context.debugDraw.drawContactNormals);
+                    ImGui.Checkbox("Contact Features", ref _context.debugDraw.drawContactFeatures);
+                    ImGui.Checkbox("Contact Forces", ref _context.debugDraw.drawContactForces);
+                    ImGui.Checkbox("Friction Forces", ref _context.debugDraw.drawFrictionForces);
+                    ImGui.Checkbox("Mass", ref _context.debugDraw.drawMass);
+                    ImGui.Checkbox("Body Names", ref _context.debugDraw.drawBodyNames);
+                    ImGui.Checkbox("Graph Colors", ref _context.debugDraw.drawGraphColors);
+                    ImGui.Checkbox("Islands", ref _context.debugDraw.drawIslands);
+                    ImGui.Checkbox("Counters", ref _context.drawCounters);
+                    ImGui.Checkbox("Profile", ref _context.drawProfile);
 
-                    ImGui.PushItemWidth( 80.0f );
-                    ImGui.InputFloat( "Joint Scale", ref _context.settings.jointScale );
-                    ImGui.InputFloat( "Force Scale", ref _context.settings.forceScale );
+                    ImGui.PushItemWidth(80.0f);
+                    ImGui.InputFloat("Joint Scale", ref _context.debugDraw.jointScale);
+                    ImGui.InputFloat("Force Scale", ref _context.debugDraw.forceScale);
                     ImGui.PopItemWidth();
 
                     Vector2 button_sz = new Vector2(-1, 0);
                     if (ImGui.Button("Pause (P)", button_sz))
                     {
-                        _context.settings.pause = !_context.settings.pause;
+                        _context.pause = !_context.pause;
                     }
 
                     if (ImGui.Button("Single Step (O)", button_sz))
                     {
-                        _context.settings.singleStep = !_context.settings.singleStep;
+                        _context.singleStep = !_context.singleStep;
                     }
 
                     if (ImGui.Button("Dump Mem Stats", button_sz))
@@ -859,7 +847,7 @@ public class SampleApp
                     int i = 0;
                     while (i < SampleFactory.Shared.SampleCount)
                     {
-                        bool categorySelected = category == SampleFactory.Shared.GetCategory(_context.settings.sampleIndex);
+                        bool categorySelected = category == SampleFactory.Shared.GetCategory(_context.sampleIndex);
                         ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags.Selected : 0;
                         bool nodeOpen = ImGui.TreeNodeEx(category, nodeFlags | nodeSelectionFlags);
 
@@ -868,7 +856,7 @@ public class SampleApp
                             while (i < SampleFactory.Shared.SampleCount && category == SampleFactory.Shared.GetCategory(i))
                             {
                                 ImGuiTreeNodeFlags selectionFlags = 0;
-                                if (_context.settings.sampleIndex == i)
+                                if (_context.sampleIndex == i)
                                 {
                                     selectionFlags = ImGuiTreeNodeFlags.Selected;
                                 }

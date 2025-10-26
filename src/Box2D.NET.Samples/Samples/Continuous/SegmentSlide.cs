@@ -19,10 +19,10 @@ public class SegmentSlide : Sample
 
     public SegmentSlide(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 10.0f);
-            m_camera.m_zoom = 15.0f;
+            m_camera.center = new B2Vec2(0.0f, 10.0f);
+            m_camera.zoom = 15.0f;
         }
 
         // b2_toiHitCount = 0;
@@ -53,9 +53,9 @@ public class SegmentSlide : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         // DrawTextLine($"toi hits = {b2_toiHitCount}");
     }

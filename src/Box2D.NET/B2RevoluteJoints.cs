@@ -526,10 +526,10 @@ namespace Box2D.NET
 
             B2Vec2 rx = new B2Vec2(radius, 0.0f);
             B2Vec2 r = b2RotateVector(frameA.q, rx);
-            draw.DrawSegmentFcn(frameA.p, b2Add(frameA.p, r), B2HexColor.b2_colorGray, draw.context);
+            draw.drawLineFcn(frameA.p, b2Add(frameA.p, r), B2HexColor.b2_colorGray, draw.context);
 
             r = b2RotateVector(frameB.q, rx);
-            draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, r), B2HexColor.b2_colorBlue, draw.context);
+            draw.drawLineFcn(frameB.p, b2Add(frameB.p, r), B2HexColor.b2_colorBlue, draw.context);
 
             if (draw.drawJointExtras)
             {
@@ -549,21 +549,21 @@ namespace Box2D.NET
                 B2Rot rotHi = b2MulRot(frameA.q, b2MakeRot(upperAngle));
                 B2Vec2 rhi = b2RotateVector(rotHi, rx);
 
-                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, rlo), B2HexColor.b2_colorGreen, draw.context);
-                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, rhi), B2HexColor.b2_colorRed, draw.context);
+                draw.drawLineFcn(frameB.p, b2Add(frameB.p, rlo), B2HexColor.b2_colorGreen, draw.context);
+                draw.drawLineFcn(frameB.p, b2Add(frameB.p, rhi), B2HexColor.b2_colorRed, draw.context);
             }
 
             if (joint.enableSpring)
             {
                 B2Rot q = b2MulRot(frameA.q, b2MakeRot(joint.targetAngle));
                 B2Vec2 v = b2RotateVector(q, rx);
-                draw.DrawSegmentFcn(frameB.p, b2Add(frameB.p, v), B2HexColor.b2_colorViolet, draw.context);
+                draw.drawLineFcn(frameB.p, b2Add(frameB.p, v), B2HexColor.b2_colorViolet, draw.context);
             }
 
             B2HexColor color = B2HexColor.b2_colorGold;
-            draw.DrawSegmentFcn(transformA.p, frameA.p, color, draw.context);
-            draw.DrawSegmentFcn(frameA.p, frameB.p, color, draw.context);
-            draw.DrawSegmentFcn(transformB.p, frameB.p, color, draw.context);
+            draw.drawLineFcn(transformA.p, frameA.p, color, draw.context);
+            draw.drawLineFcn(frameA.p, frameB.p, color, draw.context);
+            draw.drawLineFcn(transformB.p, frameB.p, color, draw.context);
 
             // char buffer[32];
             // sprintf(buffer, "%.1f", b2Length(joint.impulse));

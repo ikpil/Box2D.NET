@@ -41,11 +41,11 @@ public class Cart : Sample
 
     public Cart(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 1.0f);
-            m_context.camera.m_zoom = 1.5f;
-            m_context.settings.subStepCount = 12;
+            m_context.camera.center = new B2Vec2(0.0f, 1.0f);
+            m_context.camera.zoom = 1.5f;
+            m_context.subStepCount = 12;
         }
 
         {
@@ -147,7 +147,7 @@ public class Cart : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(320.0f, height));
 
         ImGui.Begin("Cart", ImGuiWindowFlags.NoResize);

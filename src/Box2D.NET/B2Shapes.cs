@@ -1759,10 +1759,17 @@ namespace Box2D.NET
         // https://www.engineeringtoolbox.com/wind-load-d_1775.html
         // force = 0.5 * air_density * velocity^2 * area
         // https://en.wikipedia.org/wiki/Lift_(force)
-        public static void b2Shape_ApplyWindForce(B2ShapeId shapeId, B2Vec2 wind, float drag, float lift, bool wake)
+        
+        /// Apply a wind force to the body for this shape using the density of air. This considers
+        /// the projected area of the shape in the wind direction. This also considers
+        /// the relative velocity of the shape.
+        /// @param shapeId the shape id
+        /// @param wind the wind velocity in world space
+        /// @param drag the drag coefficient, the force that opposes the relative velocity
+        /// @param lift the lift coefficient, the force that is perpendicular to the relative velocity
+        /// @param wake should this wake the body
+        public static void b2Shape_ApplyWind(B2ShapeId shapeId, B2Vec2 wind, float drag, float lift, bool wake)
         {
-            // B2_UNUSED( wind, drag, lift );
-
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)
             {

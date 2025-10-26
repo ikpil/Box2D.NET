@@ -49,13 +49,13 @@ public class BenchmarkBarrel : Sample
 
     public BenchmarkBarrel(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(8.0f, 53.0f);
-            m_camera.m_zoom = 25.0f * 2.35f;
+            m_camera.center = new B2Vec2(8.0f, 53.0f);
+            m_camera.zoom = 25.0f * 2.35f;
         }
 
-        m_context.settings.drawJoints = false;
+        m_context.debugDraw.drawJoints = false;
 
         {
             float gridSize = 1.0f;
@@ -312,7 +312,7 @@ public class BenchmarkBarrel : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 10.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(15.0f * fontSize, height));
 
         ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);

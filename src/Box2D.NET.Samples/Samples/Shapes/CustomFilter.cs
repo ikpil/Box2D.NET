@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -27,10 +28,10 @@ public class CustomFilter : Sample
 
     public CustomFilter(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_camera.m_zoom = 10.0f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 10.0f;
         }
 
         // Register custom filter
@@ -94,9 +95,9 @@ public class CustomFilter : Sample
         return customFilter.ShouldCollide(shapeIdA, shapeIdB);
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("Custom filter disables collision between odd and even shapes");
         
@@ -104,7 +105,7 @@ public class CustomFilter : Sample
         for (int i = 0; i < e_count; ++i)
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
-            m_draw.DrawString(new B2Vec2(p.X, p.Y), $"{i}");
+            DrawWorldString(m_draw, m_camera, new B2Vec2(p.X, p.Y), B2HexColor.b2_colorWhite, $"{i}");
         }
     }
 }

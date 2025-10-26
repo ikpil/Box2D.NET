@@ -11,6 +11,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Bodies;
 
@@ -30,10 +31,10 @@ public class Weeble : Sample
 
     public Weeble(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(2.3f, 10.0f);
-            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(2.3f, 10.0f);
+            m_camera.zoom = 25.0f * 0.5f;
         }
 
         // Test friction and restitution callbacks
@@ -96,7 +97,7 @@ public class Weeble : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
         ImGui.Begin("Weeble", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
         if (ImGui.Button("Teleport"))
@@ -122,11 +123,11 @@ public class Weeble : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        m_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        DrawCircle(m_draw, m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         // This shows how to get the velocity of a point on a body
         B2Vec2 localPoint = new B2Vec2(0.0f, 2.0f);
@@ -136,7 +137,7 @@ public class Weeble : Sample
         B2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
 
         B2Vec2 offset = new B2Vec2(0.05f, 0.0f);
-        m_draw.DrawLine(worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
-        m_draw.DrawLine(worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
+        DrawLine(m_draw, worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);
+        DrawLine(m_draw, worldPoint + offset, worldPoint + v2 + offset, B2HexColor.b2_colorGreen);
     }
 }

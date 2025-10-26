@@ -44,13 +44,13 @@ public class SensorFunnel : Sample
 
     public SensorFunnel(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_camera.m_zoom = 25.0f * 1.333f;
+            m_camera.center = new B2Vec2(0.0f, 0.0f);
+            m_camera.zoom = 25.0f * 1.333f;
         }
 
-        m_context.settings.drawJoints = false;
+        m_context.debugDraw.drawJoints = false;
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -262,7 +262,7 @@ public class SensorFunnel : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 90.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Sensor Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -337,9 +337,9 @@ public class SensorFunnel : Sample
             }
         }
 
-        if (m_context.settings.hertz > 0.0f && m_context.settings.pause == false)
+        if (m_context.hertz > 0.0f && m_context.pause == false)
         {
-            m_wait -= 1.0f / m_context.settings.hertz;
+            m_wait -= 1.0f / m_context.hertz;
             if (m_wait < 0.0f)
             {
                 CreateElement();

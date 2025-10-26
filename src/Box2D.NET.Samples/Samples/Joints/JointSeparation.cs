@@ -13,6 +13,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Ids;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -36,10 +37,10 @@ public class JointSeparation : Sample
 
     public JointSeparation(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_context.camera.m_zoom = 25.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 8.0f);
+            m_context.camera.zoom = 25.0f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -179,7 +180,7 @@ public class JointSeparation : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 14.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(20.0f * fontSize, height));
 
         ImGui.Begin("Joint Separation", ImGuiWindowFlags.NoResize);
@@ -220,9 +221,9 @@ public class JointSeparation : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         for (int i = 0; i < e_count; ++i)
         {
@@ -234,7 +235,7 @@ public class JointSeparation : Sample
             float linear = b2Joint_GetLinearSeparation(m_jointIds[i]);
             float angular = b2Joint_GetAngularSeparation(m_jointIds[i]);
             B2Transform localFrame = b2Joint_GetLocalFrameA(m_jointIds[i]);
-            m_draw.DrawString(localFrame.p, $"{linear:F2} m, {180.0f * angular / B2_PI:F1} deg");
+            DrawWorldString(m_draw, m_camera, localFrame.p, B2HexColor.b2_colorWhite, $"{linear:F2} m, {180.0f * angular / B2_PI:F1} deg");
         }
     }
 }

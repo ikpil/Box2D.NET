@@ -35,10 +35,10 @@ public class PrismaticJoint : Sample
 
     public PrismaticJoint(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(0.0f, 8.0f);
+            m_camera.zoom = 25.0f * 0.5f;
         }
 
         B2BodyId groundId;
@@ -97,7 +97,7 @@ public class PrismaticJoint : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Prismatic Joint", ImGuiWindowFlags.NoResize);
@@ -159,9 +159,9 @@ public class PrismaticJoint : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
         DrawTextLine($"Motor Force = {force:4,F1}");

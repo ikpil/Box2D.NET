@@ -17,6 +17,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Characters;
 
@@ -105,13 +106,13 @@ public class Mover : Sample
 
     public Mover(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(20.0f, 9.0f);
-            m_camera.m_zoom = 10.0f;
+            m_camera.center = new B2Vec2(20.0f, 9.0f);
+            m_camera.zoom = 10.0f;
         }
 
-        m_context.settings.drawJoints = false;
+        m_context.debugDraw.drawJoints = false;
         m_transform = new B2Transform(new B2Vec2(2.0f, 8.0f), b2Rot_identity);
         m_velocity = new B2Vec2(0.0f, 0.0f);
         m_capsule = new B2Capsule(new B2Vec2(0.0f, -0.5f), new B2Vec2(0.0f, 0.5f), 0.3f);
@@ -378,19 +379,19 @@ public class Mover : Sample
             m_pogoVelocity = 0.0f;
 
             B2Vec2 delta = translation;
-            m_draw.DrawLine(origin, origin + delta, B2HexColor.b2_colorGray);
+            DrawLine(m_draw, origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
-                m_draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorGray);
+                DrawPoint(m_draw, origin + delta, 10.0f, B2HexColor.b2_colorGray);
             }
             else if (m_pogoShape == (int)PogoShape.PogoCircle)
             {
-                m_draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorGray);
+                DrawCircle(m_draw, origin + delta, circle.radius, B2HexColor.b2_colorGray);
             }
             else
             {
-                m_draw.DrawLine(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
+                DrawLine(m_draw, segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorGray);
             }
         }
         else
@@ -401,19 +402,19 @@ public class Mover : Sample
             m_pogoVelocity = b2SpringDamper(m_pogoHertz, m_pogoDampingRatio, offset, m_pogoVelocity, timeStep);
 
             B2Vec2 delta = castResult.fraction * translation;
-            m_draw.DrawLine(origin, origin + delta, B2HexColor.b2_colorGray);
+            DrawLine(m_draw, origin, origin + delta, B2HexColor.b2_colorGray);
 
             if (m_pogoShape == (int)PogoShape.PogoPoint)
             {
-                m_draw.DrawPoint(origin + delta, 10.0f, B2HexColor.b2_colorPlum);
+                DrawPoint(m_draw, origin + delta, 10.0f, B2HexColor.b2_colorPlum);
             }
             else if (m_pogoShape == (int)PogoShape.PogoCircle)
             {
-                m_draw.DrawCircle(origin + delta, circle.radius, B2HexColor.b2_colorPlum);
+                DrawCircle(m_draw, origin + delta, circle.radius, B2HexColor.b2_colorPlum);
             }
             else
             {
-                m_draw.DrawLine(segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
+                DrawLine(m_draw, segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
             }
 
             b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), castResult.point, true);
@@ -462,7 +463,7 @@ public class Mover : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 350.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 25.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 25.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(340.0f, height));
 
         ImGui.Begin("Mover", 0);
@@ -548,7 +549,7 @@ public class Mover : Sample
             B2ShapeProxy proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2QueryFilter filter = new B2QueryFilter(MoverBit, DebrisBit);
             b2World_OverlapShape(m_worldId, ref proxy, filter, Kick, this);
-            m_draw.DrawCircle(circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
+            DrawCircle(m_draw, circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
         }
 
         base.Keyboard(key);
@@ -559,12 +560,12 @@ public class Mover : Sample
         base.Step();
 
         bool pause = false;
-        if (m_context.settings.pause)
+        if (m_context.pause)
         {
-            pause = m_context.settings.singleStep != true;
+            pause = m_context.singleStep != true;
         }
 
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
         if (pause)
         {
             timeStep = 0.0f;
@@ -613,9 +614,9 @@ public class Mover : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         int count = m_planeCount;
         for (int i = 0; i < count; ++i)
@@ -623,8 +624,8 @@ public class Mover : Sample
             B2Plane plane = m_planes[i].plane;
             B2Vec2 p1 = m_transform.p + (plane.offset - m_capsule.radius) * plane.normal;
             B2Vec2 p2 = p1 + 0.1f * plane.normal;
-            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorYellow);
-            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorYellow);
+            DrawPoint(m_draw, p1, 5.0f, B2HexColor.b2_colorYellow);
+            DrawLine(m_draw, p1, p2, B2HexColor.b2_colorYellow);
         }
 
         {
@@ -632,8 +633,8 @@ public class Mover : Sample
             B2Vec2 p2 = b2TransformPoint(ref m_transform, m_capsule.center2);
 
             B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
-            m_draw.DrawSolidCapsule(p1, p2, m_capsule.radius, color);
-            m_draw.DrawLine(m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
+            DrawSolidCapsule(m_draw, p1, p2, m_capsule.radius, color);
+            DrawLine(m_draw, m_transform.p, m_transform.p + m_velocity, B2HexColor.b2_colorPurple);
         }
 
         B2Vec2 p = m_transform.p;
@@ -643,7 +644,7 @@ public class Mover : Sample
 
         if (m_lockCamera)
         {
-            m_camera.m_center.X = m_transform.p.X;
+            m_camera.center.X = m_transform.p.X;
         }
     }
 }

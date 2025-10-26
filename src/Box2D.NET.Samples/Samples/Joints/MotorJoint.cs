@@ -12,6 +12,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2MotorJoints;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -40,10 +41,10 @@ public class MotorJoint : Sample
 
     public MotorJoint(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 7.0f);
-            m_camera.m_zoom = 25.0f * 0.4f;
+            m_camera.center = new B2Vec2(0.0f, 7.0f);
+            m_camera.zoom = 25.0f * 0.4f;
         }
 
         B2BodyId groundId;
@@ -128,7 +129,7 @@ public class MotorJoint : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Motor Joint", ImGuiWindowFlags.NoResize);
@@ -158,11 +159,11 @@ public class MotorJoint : Sample
 
     public override void Step()
     {
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
 
-        if (m_context.settings.pause)
+        if (m_context.pause)
         {
-            if (m_context.settings.singleStep == false)
+            if (m_context.singleStep == false)
             {
                 timeStep = 0.0f;
             }
@@ -182,19 +183,19 @@ public class MotorJoint : Sample
             b2Body_SetTargetTransform(m_targetId, m_transform, timeStep);
         }
 
-        m_context.draw.DrawTransform(m_transform);
+        DrawTransform(m_draw, m_transform, 1.0f);
 
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
         DrawTextLine($"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
-        m_draw.DrawTransform(_transform);
+        DrawTransform(m_draw, _transform, 1.0f);
     }
 }

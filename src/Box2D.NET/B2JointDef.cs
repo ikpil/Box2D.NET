@@ -1,4 +1,8 @@
-﻿namespace Box2D.NET
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+namespace Box2D.NET
 {
     /// Base joint definition used by all joint types.
     /// The local frames are measured from the body's origin rather than the center of mass because:

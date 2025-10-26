@@ -21,10 +21,10 @@ public class SoftBody : Sample
 
     public SoftBody(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_camera.m_zoom = 25.0f * 0.25f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 25.0f * 0.25f;
         }
 
         {

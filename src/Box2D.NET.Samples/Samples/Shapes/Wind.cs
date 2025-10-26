@@ -13,6 +13,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -47,10 +48,10 @@ public class Wind : Sample
 
     public Wind(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 1.0f);
-            m_context.camera.m_zoom = 2.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 1.0f);
+            m_context.camera.zoom = 2.0f;
         }
 
         {
@@ -131,7 +132,7 @@ public class Wind : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 15.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(24.0f * fontSize, height));
 
         ImGui.Begin("Wind", ImGuiWindowFlags.NoResize);
@@ -161,7 +162,7 @@ public class Wind : Sample
 
     public override void Step()
     {
-        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
+        if (m_context.pause == false || m_context.singleStep == true)
         {
             float speed = 0.0f;
             B2Vec2 direction = b2GetLengthAndNormalize(ref speed, m_wind);
@@ -174,7 +175,7 @@ public class Wind : Sample
                 int count = b2Body_GetShapes(m_bodyIds[i], shapeIds, 1);
                 for (int j = 0; j < count; ++j)
                 {
-                    b2Shape_ApplyWindForce(shapeIds[j], wind, m_drag, m_lift, true);
+                    b2Shape_ApplyWind(shapeIds[j], wind, m_drag, m_lift, true);
                 }
             }
 
@@ -188,9 +189,9 @@ public class Wind : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
-        m_draw.DrawLine(b2Vec2_zero, b2MulSV(0.2f, m_current_wind), B2HexColor.b2_colorFuchsia);
+        base.Draw();
+        DrawLine(m_draw, b2Vec2_zero, b2MulSV(0.2f, m_current_wind), B2HexColor.b2_colorFuchsia);
     }
 }

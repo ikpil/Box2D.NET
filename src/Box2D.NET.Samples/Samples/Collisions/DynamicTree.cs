@@ -13,6 +13,7 @@ using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -75,10 +76,10 @@ public class DynamicTree : Sample
 
     public DynamicTree(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_camera.m_zoom = 25.0f * 21.0f;
+            m_camera.center = new B2Vec2(500.0f, 500.0f);
+            m_camera.zoom = 25.0f * 21.0f;
         }
 
         m_fill = 0.25f;
@@ -193,7 +194,7 @@ public class DynamicTree : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Dynamic Tree", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -316,11 +317,11 @@ public class DynamicTree : Sample
 
             if (p.queryStamp == m_timeStamp || p.rayStamp == m_timeStamp)
             {
-                m_draw.DrawBounds(p.box, qc);
+                DrawBounds(m_draw, p.box, qc);
             }
             else
             {
-                m_draw.DrawBounds(p.box, c);
+                DrawBounds(m_draw, p.box, c);
             }
 
             float moveTest = RandomFloatRange(0.0f, 1.0f);
@@ -417,9 +418,9 @@ public class DynamicTree : Sample
     }
 
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         if (m_queryDrag)
         {
@@ -430,7 +431,7 @@ public class DynamicTree : Sample
 
             b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
-            m_draw.DrawBounds(box, B2HexColor.b2_colorWhite);
+            DrawBounds(m_draw, box, B2HexColor.b2_colorWhite);
         }
 
         // m_startPoint = {-1.0f, 0.5f};
@@ -444,9 +445,9 @@ public class DynamicTree : Sample
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
             B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
 
-            m_draw.DrawLine(m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
-            m_draw.DrawPoint(m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
-            m_draw.DrawPoint(m_endPoint, 5.0f, B2HexColor.b2_colorRed);
+            DrawLine(m_draw, m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
+            DrawPoint(m_draw, m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
             DrawTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
         }

@@ -23,10 +23,10 @@ public class BadBody : Sample
 
     public BadBody(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(2.3f, 10.0f);
-            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(2.3f, 10.0f);
+            m_camera.zoom = 25.0f * 0.5f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -82,9 +82,9 @@ public class BadBody : Sample
         b2Body_ApplyForceToCenter(m_badBodyId, new B2Vec2(0.0f, 10.0f), true);
     }
 
-    public override void Draw(Settings setting)
+    public override void Draw()
     {
-        base.Draw(setting);
+        base.Draw();
 
         DrawTextLine("A bad body is a dynamic body with no mass and behaves like a kinematic body.");
 

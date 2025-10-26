@@ -17,11 +17,11 @@ public class BenchmarkLargePyramid : Sample
 
     public BenchmarkLargePyramid(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 50.0f);
-            m_camera.m_zoom = 25.0f * 2.2f;
-            m_context.settings.enableSleep = false;
+            m_camera.center = new B2Vec2(0.0f, 50.0f);
+            m_camera.zoom = 25.0f * 2.2f;
+            m_context.enableSleep = false;
         }
 
         CreateLargePyramid(m_worldId);

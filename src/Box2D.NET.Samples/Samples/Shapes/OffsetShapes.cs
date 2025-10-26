@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -21,10 +22,10 @@ public class OffsetShapes : Sample
 
     public OffsetShapes(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_zoom = 25.0f * 0.55f;
-            m_camera.m_center = new B2Vec2(2.0f, 8.0f);
+            m_camera.zoom = 25.0f * 0.55f;
+            m_camera.center = new B2Vec2(2.0f, 8.0f);
         }
 
         {
@@ -58,10 +59,10 @@ public class OffsetShapes : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        m_draw.DrawTransform(b2Transform_identity);
+        DrawTransform(m_draw, b2Transform_identity, 1.0f);
     }
 }

@@ -35,10 +35,10 @@ public class BenchmarkCreateDestroy : Sample
 
     public BenchmarkCreateDestroy(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 50.0f);
-            m_camera.m_zoom = 25.0f * 2.2f;
+            m_camera.center = new B2Vec2(0.0f, 50.0f);
+            m_camera.zoom = 25.0f * 2.2f;
         }
 
         float groundSize = 100.0f;
@@ -134,9 +134,9 @@ public class BenchmarkCreateDestroy : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"total: create = {m_createTime} ms, destroy = {m_destroyTime} ms");
 

@@ -16,7 +16,8 @@ public class Settings
 
     public int windowWidth = 1920;
     public int windowHeight = 1080;
-
+    
+    //
     public float uiScale = 1.0f;
     public float hertz = 60.0f;
     public float jointScale = 1.0f;
@@ -24,8 +25,7 @@ public class Settings
     public int subStepCount = 4;
     public int workerCount = 1;
     
-    public bool restart = false;
-    public bool pause = false;
+    //
     public bool singleStep = false;
     public bool drawJointExtras = false;
     public bool drawBounds = false;
@@ -44,58 +44,67 @@ public class Settings
     public bool enableContinuous = true;
     public bool enableSleep = true;
     
-    // These are persisted
+    //
     public int sampleIndex = 0;
     public bool drawShapes = true;
     public bool drawJoints = true;
 
-    public void Save()
+    public static void Save(SampleContext context)
     {
-        string json = JsonConvert.SerializeObject(this, Formatting.Indented);
+        var setting = CopyFrom(context);
+        
+        string json = JsonConvert.SerializeObject(setting, Formatting.Indented);
         File.WriteAllText(fileName, json, Encoding.UTF8);
     }
 
-    public void Load()
+    public static Settings Load()
     {
         if (!File.Exists(fileName))
-            return;
+        {
+            return new Settings();
+        }
 
         string json = File.ReadAllText(fileName);
-        var loaded = JsonConvert.DeserializeObject<Settings>(json);
-        CopyFrom(loaded);
+        var setting = JsonConvert.DeserializeObject<Settings>(json);
+        return setting;
     }
 
-    public void CopyFrom(Settings other)
+    public static Settings CopyFrom(SampleContext context)
     {
-        sampleIndex = other.sampleIndex;
-        windowWidth = other.windowWidth;
-        windowHeight = other.windowHeight;
+        var setting = new Settings();
+        setting.windowWidth = (int)context.camera.width;
+        setting.windowHeight = (int)context.camera.height;
+        
+        setting.sampleIndex = context.sampleIndex;
+        //
+        setting.uiScale = context.uiScale;
+        setting.hertz = context.hertz;
+        setting.subStepCount = context.subStepCount;
+        setting.workerCount = context.workerCount;
 
-        uiScale = other.uiScale;
-        hertz = other.hertz;
-        subStepCount = other.subStepCount;
-        workerCount = other.workerCount;
+        //
+        setting.drawCounters = context.drawCounters;
+        setting.drawProfile = context.drawProfile;
+        setting.enableWarmStarting = context.enableWarmStarting;
+        setting.enableContinuous = context.enableContinuous;
+        setting.enableSleep = context.enableSleep;
+        setting.singleStep = context.singleStep;
+        
+        //
+        setting.drawShapes = context.debugDraw.drawShapes;
+        setting.drawJoints = context.debugDraw.drawJoints;
+        setting.drawJointExtras = context.debugDraw.drawJointExtras;
+        setting.drawBounds = context.debugDraw.drawBounds;
+        setting.drawMass = context.debugDraw.drawMass;
+        setting.drawBodyNames = context.debugDraw.drawBodyNames;
+        setting.drawContactPoints = context.debugDraw.drawContactPoints;
+        setting.drawContactNormals = context.debugDraw.drawContactNormals;
+        setting.drawContactForces = context.debugDraw.drawContactForces;
+        setting.drawContactFeatures = context.debugDraw.drawContactFeatures;
+        setting.drawFrictionForces = context.debugDraw.drawFrictionForces;
+        setting.drawIslands = context.debugDraw.drawIslands;
+        setting.drawGraphColors = context.debugDraw.drawGraphColors;
 
-        drawShapes = other.drawShapes;
-        drawJoints = other.drawJoints;
-        drawJointExtras = other.drawJointExtras;
-        drawBounds = other.drawBounds;
-        drawMass = other.drawMass;
-        drawBodyNames = other.drawBodyNames;
-        drawContactPoints = other.drawContactPoints;
-        drawContactNormals = other.drawContactNormals;
-        drawContactForces = other.drawContactForces;
-        drawContactFeatures = other.drawContactFeatures;
-        drawFrictionForces = other.drawFrictionForces;
-        drawIslands = other.drawIslands;
-        drawGraphColors = other.drawGraphColors;
-        drawCounters = other.drawCounters;
-        drawProfile = other.drawProfile;
-        enableWarmStarting = other.enableWarmStarting;
-        enableContinuous = other.enableContinuous;
-        enableSleep = other.enableSleep;
-        pause = other.pause;
-        singleStep = other.singleStep;
-        restart = other.restart;
+        return setting;
     }
 }

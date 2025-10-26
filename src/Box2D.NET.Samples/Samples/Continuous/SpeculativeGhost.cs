@@ -22,10 +22,10 @@ public class SpeculativeGhost : Sample
 
     public SpeculativeGhost(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 1.75f);
-            m_camera.m_zoom = 2.0f;
+            m_camera.center = new B2Vec2(0.0f, 1.75f);
+            m_camera.zoom = 2.0f;
         }
 
         {
@@ -46,7 +46,7 @@ public class SpeculativeGhost : Sample
 
             // The speculative distance is 0.02 meters, so this avoid it
             bodyDef.position = new B2Vec2(0.015f, 2.515f);
-            bodyDef.linearVelocity = new B2Vec2(0.1f * 1.25f * m_context.settings.hertz, -0.1f * 1.25f * m_context.settings.hertz);
+            bodyDef.linearVelocity = new B2Vec2(0.1f * 1.25f * m_context.hertz, -0.1f * 1.25f * m_context.hertz);
             bodyDef.gravityScale = 0.0f;
             B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 

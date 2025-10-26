@@ -36,10 +36,10 @@ public class BenchmarkSleep : Sample
 
     public BenchmarkSleep(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 50.0f);
-            m_camera.m_zoom = 25.0f * 2.2f;
+            m_camera.center = new B2Vec2(0.0f, 50.0f);
+            m_camera.zoom = 25.0f * 2.2f;
         }
 
         {
@@ -123,9 +123,9 @@ public class BenchmarkSleep : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         int count = m_stepCount - 20;
         DrawTextLine($"wake ave = {m_wakeTotal / count:g} ms");

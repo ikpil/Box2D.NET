@@ -10,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -33,10 +34,10 @@ public class CompoundShapes : Sample
 
     public CompoundShapes(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 6.0f);
-            m_camera.m_zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(0.0f, 6.0f);
+            m_camera.zoom = 25.0f * 0.5f;
         }
 
         {
@@ -199,7 +200,7 @@ public class CompoundShapes : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Compound Shapes", ImGuiWindowFlags.NoResize);
@@ -214,23 +215,23 @@ public class CompoundShapes : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         if (m_drawBodyAABBs)
         {
             B2AABB aabb = b2Body_ComputeAABB(m_table1Id);
-            m_draw.DrawBounds(aabb, B2HexColor.b2_colorYellow);
+            DrawBounds(m_draw, aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_table2Id);
-            m_draw.DrawBounds(aabb, B2HexColor.b2_colorYellow);
+            DrawBounds(m_draw, aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship1Id);
-            m_draw.DrawBounds(aabb, B2HexColor.b2_colorYellow);
+            DrawBounds(m_draw, aabb, B2HexColor.b2_colorYellow);
 
             aabb = b2Body_ComputeAABB(m_ship2Id);
-            m_draw.DrawBounds(aabb, B2HexColor.b2_colorYellow);
+            DrawBounds(m_draw, aabb, B2HexColor.b2_colorYellow);
         }
     }
 }

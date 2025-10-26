@@ -16,6 +16,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Distances;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -52,11 +53,11 @@ public class BenchmarkCast : Sample
 
     public BenchmarkCast(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(500.0f, 500.0f);
-            m_camera.m_zoom = 25.0f * 21.0f;
-            // m_context.settings.drawShapes = m_context.g_sampleDebug;
+            m_camera.center = new B2Vec2(500.0f, 500.0f);
+            m_camera.zoom = 25.0f * 21.0f;
+            // m_context.drawShapes = m_context.g_sampleDebug;
         }
 
         m_queryType = QueryType.e_circleCast;
@@ -227,12 +228,12 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
-            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            DrawLine(m_draw, p1, p2, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, p1, 5.0f, B2HexColor.b2_colorGreen);
+            DrawPoint(m_draw, p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                m_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                DrawPoint(m_draw, drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_circleCast)
@@ -266,14 +267,14 @@ public class BenchmarkCast : Sample
 
             B2Vec2 p1 = m_origins[m_drawIndex];
             B2Vec2 p2 = p1 + m_translations[m_drawIndex];
-            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
-            m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
-            m_draw.DrawPoint(p2, 5.0f, B2HexColor.b2_colorRed);
+            DrawLine(m_draw, p1, p2, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, p1, 5.0f, B2HexColor.b2_colorGreen);
+            DrawPoint(m_draw, p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
                 B2Vec2 t = b2Lerp(p1, p2, drawResult.fraction);
-                m_draw.DrawCircle(t, m_radius, B2HexColor.b2_colorWhite);
-                m_draw.DrawPoint(drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                DrawCircle(m_draw, t, m_radius, B2HexColor.b2_colorWhite);
+                DrawPoint(m_draw, drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_overlap)
@@ -310,12 +311,12 @@ public class BenchmarkCast : Sample
                 B2Vec2 origin = m_origins[m_drawIndex];
                 B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
-                m_draw.DrawBounds(aabb, B2HexColor.b2_colorWhite);
+                DrawBounds(m_draw, aabb, B2HexColor.b2_colorWhite);
             }
 
             for (int i = 0; i < drawResult.count; ++i)
             {
-                m_draw.DrawPoint(drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
+                DrawPoint(m_draw, drawResult.points[i], 5.0f, B2HexColor.b2_colorHotPink);
             }
         }
     }
@@ -326,7 +327,7 @@ public class BenchmarkCast : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 17.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(13.0f * fontSize, height));
 
         ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -396,9 +397,9 @@ public class BenchmarkCast : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"build time ms = {m_buildTime:g}");
 

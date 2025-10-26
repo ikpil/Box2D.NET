@@ -30,10 +30,10 @@ public class JointEvent : Sample
 
     public JointEvent(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_context.camera.m_zoom = 25.0f * 0.7f;
+            m_context.camera.center = new B2Vec2(0.0f, 8.0f);
+            m_context.camera.zoom = 25.0f * 0.7f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();

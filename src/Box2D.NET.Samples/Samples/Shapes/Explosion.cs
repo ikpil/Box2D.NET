@@ -12,6 +12,8 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -33,10 +35,10 @@ public class Explosion : Sample
 
     public Explosion(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_camera.m_zoom = 14.0f;
+            m_camera.center = new B2Vec2(0.0f, 0.0f);
+            m_camera.zoom = 14.0f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -85,7 +87,7 @@ public class Explosion : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 160.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Explosion", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -109,9 +111,9 @@ public class Explosion : Sample
 
     public override void Step()
     {
-        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
+        if (m_context.pause == false || m_context.singleStep == true)
         {
-            m_referenceAngle += m_context.settings.hertz > 0.0f ? 60.0f * B2_PI / 180.0f / m_context.settings.hertz : 0.0f;
+            m_referenceAngle += m_context.hertz > 0.0f ? 60.0f * B2_PI / 180.0f / m_context.hertz : 0.0f;
             m_referenceAngle = b2UnwindAngle(m_referenceAngle);
 
             int count = m_jointIds.Count;
@@ -126,14 +128,13 @@ public class Explosion : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"reference angle = {m_referenceAngle:g}");
 
-
-        m_draw.DrawCircle(b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
-        m_draw.DrawCircle(b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
+        DrawCircle(m_draw, b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
+        DrawCircle(m_draw, b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
     }
 }
