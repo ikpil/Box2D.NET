@@ -11,6 +11,7 @@ public struct Font
     public float fontSize;
     public B2Array<FontVertex> vertices;
     //public stbtt_bakedchar* characters;
+    public byte[] characters;
     public uint[] textureId;
     public uint[] vaoId;
     public uint[] vboId;
