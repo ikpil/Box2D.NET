@@ -17,10 +17,10 @@ public class BenchmarkTumbler : Sample
 
     public BenchmarkTumbler(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(1.5f, 10.0f);
-            m_camera.m_zoom = 15.0f;
+            m_camera.center = new B2Vec2(1.5f, 10.0f);
+            m_camera.zoom = 15.0f;
         }
 
         CreateTumbler(m_worldId);

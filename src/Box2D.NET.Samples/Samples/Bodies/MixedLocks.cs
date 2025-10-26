@@ -21,10 +21,10 @@ public class MixedLocks : Sample
 
     public MixedLocks(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_context.camera.m_zoom = 3.5f;
+            m_context.camera.center = new B2Vec2(0.0f, 2.5f);
+            m_context.camera.zoom = 3.5f;
         }
 
         {

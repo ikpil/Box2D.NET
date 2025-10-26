@@ -1,4 +1,8 @@
-﻿using static Box2D.NET.B2Geometries;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
@@ -18,10 +22,10 @@ public class BenchmarkBarrel24 : Sample
 
     public BenchmarkBarrel24(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(8.0f, 53.0f);
-            m_context.camera.m_zoom = 25.0f * 2.35f;
+            m_context.camera.center = new B2Vec2(8.0f, 53.0f);
+            m_context.camera.zoom = 25.0f * 2.35f;
         }
 
         float groundSize = 25.0f;

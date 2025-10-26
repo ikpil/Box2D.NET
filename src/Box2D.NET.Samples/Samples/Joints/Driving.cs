@@ -36,11 +36,11 @@ public class Driving : Sample
 
     public Driving(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center.Y = 5.0f;
-            m_camera.m_zoom = 25.0f * 0.4f;
-            m_context.settings.drawJoints = false;
+            m_camera.center.Y = 5.0f;
+            m_camera.zoom = 25.0f * 0.4f;
+            m_context.debugDraw.drawJoints = false;
         }
 
         B2BodyId groundId;
@@ -217,7 +217,7 @@ public class Driving : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 10.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(16.0f * fontSize, height));
 
         ImGui.Begin("Driving", ImGuiWindowFlags.NoResize);
@@ -271,9 +271,9 @@ public class Driving : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("Keys: left = a, brake = s, right = d");
 
@@ -284,6 +284,6 @@ public class Driving : Sample
 
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
-        m_camera.m_center.X = carPosition.X;
+        m_camera.center.X = carPosition.X;
     }
 }

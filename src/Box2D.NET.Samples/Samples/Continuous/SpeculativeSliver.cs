@@ -21,10 +21,10 @@ public class SpeculativeSliver : Sample
 
     public SpeculativeSliver(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 1.75f);
-            m_camera.m_zoom = 2.5f;
+            m_camera.center = new B2Vec2(0.0f, 1.75f);
+            m_camera.zoom = 2.5f;
         }
 
         {

@@ -39,9 +39,9 @@ public class Bridge : Sample
 
     public Bridge(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_zoom = 25.0f * 2.5f;
+            m_camera.zoom = 25.0f * 2.5f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -144,7 +144,7 @@ public class Bridge : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(320.0f, height));
 
         ImGui.Begin("Bridge", ImGuiWindowFlags.NoResize);

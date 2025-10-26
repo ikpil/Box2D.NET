@@ -26,10 +26,10 @@ public class Pivot : Sample
 
     public Pivot(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.8f, 6.4f);
-            m_camera.m_zoom = 25.0f * 0.4f;
+            m_camera.center = new B2Vec2(0.8f, 6.4f);
+            m_camera.zoom = 25.0f * 0.4f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -67,9 +67,9 @@ public class Pivot : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2Vec2 v = b2Body_GetLinearVelocity(m_bodyId);
         float omega = b2Body_GetAngularVelocity(m_bodyId);

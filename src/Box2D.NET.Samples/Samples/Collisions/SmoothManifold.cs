@@ -8,6 +8,7 @@ using Silk.NET.GLFW;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Manifolds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -47,10 +48,10 @@ public class SmoothManifold : Sample
 
     public SmoothManifold(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(2.0f, 20.0f);
-            m_camera.m_zoom = 21.0f;
+            m_camera.center = new B2Vec2(2.0f, 20.0f);
+            m_camera.zoom = 21.0f;
         }
 
         m_shapeType = ShapeType.e_boxShape;
@@ -138,7 +139,7 @@ public class SmoothManifold : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 290.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(180.0f, height));
 
         ImGui.Begin("Smooth Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -230,15 +231,15 @@ public class SmoothManifold : Sample
 
             B2Vec2 p1 = mp.point;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
-            m_draw.DrawLine(p1, p2, B2HexColor.b2_colorWhite);
+            DrawLine(m_draw, p1, p2, B2HexColor.b2_colorWhite);
 
             if (m_showAnchors)
             {
-                m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+                DrawPoint(m_draw, p1, 5.0f, B2HexColor.b2_colorGreen);
             }
             else
             {
-                m_draw.DrawPoint(p1, 5.0f, B2HexColor.b2_colorGreen);
+                DrawPoint(m_draw, p1, 5.0f, B2HexColor.b2_colorGreen);
             }
 
             if (m_showIds)
@@ -246,20 +247,20 @@ public class SmoothManifold : Sample
                 // uint indexA = mp.id >> 8;
                 // uint indexB = 0xFF & mp.id;
                 B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y - 0.02f);
-                m_draw.DrawString(p, $"0x{mp.id:X4}");
+                DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, $"0x{mp.id:X4}");
             }
 
             if (m_showSeparation)
             {
                 B2Vec2 p = new B2Vec2(p1.X + 0.05f, p1.Y + 0.03f);
-                m_draw.DrawString(p, $"{mp.separation:F3}");
+                DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, $"{mp.separation:F3}");
             }
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2HexColor color1 = B2HexColor.b2_colorYellow;
         B2HexColor color2 = B2HexColor.b2_colorMagenta;
@@ -272,15 +273,15 @@ public class SmoothManifold : Sample
             ref readonly B2ChainSegment segment = ref m_segments[i];
             B2Vec2 p1 = b2TransformPoint(ref transform1, segment.segment.point1);
             B2Vec2 p2 = b2TransformPoint(ref transform1, segment.segment.point2);
-            m_draw.DrawLine(p1, p2, color1);
-            m_draw.DrawPoint(p1, 4.0f, color1);
+            DrawLine(m_draw, p1, p2, color1);
+            DrawPoint(m_draw, p1, 4.0f, color1);
         }
 
         // chain-segment vs circle
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_draw.DrawSolidCircle(ref transform2, circle.center, circle.radius, color2);
+            DrawSolidCircle(m_draw, new B2Transform(circle.center, transform2.q), circle.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {
@@ -293,7 +294,7 @@ public class SmoothManifold : Sample
         {
             float h = 0.5f - m_round;
             B2Polygon rox = b2MakeRoundedBox(h, h, m_round);
-            m_draw.DrawSolidPolygon(ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
+            DrawSolidPolygon(m_draw, ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {

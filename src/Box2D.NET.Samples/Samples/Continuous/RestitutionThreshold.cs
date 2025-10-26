@@ -25,10 +25,10 @@ public class RestitutionThreshold : Sample
 
     public RestitutionThreshold(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(7.0f, 5.0f);
-            m_camera.m_zoom = 6.0f;
+            m_camera.center = new B2Vec2(7.0f, 5.0f);
+            m_camera.zoom = 6.0f;
         }
 
         float pixelsPerMeter = 30.0f;
@@ -75,9 +75,9 @@ public class RestitutionThreshold : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);

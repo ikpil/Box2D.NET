@@ -33,10 +33,10 @@ public class SkinnyBox : Sample
 
     public SkinnyBox(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(1.0f, 5.0f);
-            m_camera.m_zoom = 25.0f * 0.25f;
+            m_camera.center = new B2Vec2(1.0f, 5.0f);
+            m_camera.zoom = 25.0f * 0.25f;
         }
 
         {
@@ -117,7 +117,7 @@ public class SkinnyBox : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 110.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Skinny Box", ImGuiWindowFlags.NoResize);

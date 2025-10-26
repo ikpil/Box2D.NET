@@ -12,6 +12,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -33,10 +34,10 @@ class ProjectileEvent : Sample
 
     public ProjectileEvent(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(-7.0f, 9.0f);
-            m_context.camera.m_zoom = 14.0f;
+            m_context.camera.center = new B2Vec2(-7.0f, 9.0f);
+            m_context.camera.zoom = 14.0f;
         }
 
         {
@@ -171,17 +172,17 @@ class ProjectileEvent : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
         
         DrawTextLine("Use Ctrl + Left Mouse to drag and shoot a projectile");
 
         if (m_dragging)
         {
-            m_draw.DrawLine(m_point1, m_point2, B2HexColor.b2_colorWhite);
-            m_draw.DrawPoint(m_point1, 5.0f, B2HexColor.b2_colorGreen);
-            m_draw.DrawPoint(m_point2, 5.0f, B2HexColor.b2_colorRed);
+            DrawLine(m_draw, m_point1, m_point2, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, m_point1, 5.0f, B2HexColor.b2_colorGreen);
+            DrawPoint(m_draw, m_point2, 5.0f, B2HexColor.b2_colorRed);
         }
     }
 }

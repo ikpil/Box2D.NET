@@ -178,7 +178,7 @@ namespace Box2D.NET
     public delegate void DrawSolidCapsuleFcn(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context);
 
     /// Draw a line segment.
-    public delegate void DrawSegmentFcn(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context);
+    public delegate void DrawLineFcn(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context);
 
     /// Draw a transform. Choose your own length scale.
     public delegate void DrawTransformFcn(B2Transform transform, object context);

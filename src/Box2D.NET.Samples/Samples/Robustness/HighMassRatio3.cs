@@ -23,10 +23,10 @@ public class HighMassRatio3 : Sample
 
     public HighMassRatio3(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 16.5f);
-            m_camera.m_zoom = 25.0f;
+            m_camera.center = new B2Vec2(0.0f, 16.5f);
+            m_camera.zoom = 25.0f;
         }
 
         {

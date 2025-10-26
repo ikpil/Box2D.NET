@@ -14,6 +14,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -40,10 +41,10 @@ public class FootSensor : Sample
 
     public FootSensor(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 6.0f);
-            m_camera.m_zoom = 7.5f;
+            m_camera.center = new B2Vec2(0.0f, 6.0f);
+            m_camera.zoom = 7.5f;
         }
 
         {
@@ -133,9 +134,9 @@ public class FootSensor : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         int capacity = b2Shape_GetSensorCapacity(m_sensorId);
         m_visitorIds.Clear();
@@ -147,7 +148,7 @@ public class FootSensor : Sample
             B2ShapeId shapeId = m_visitorIds[i];
             B2AABB aabb = b2Shape_GetAABB(shapeId);
             B2Vec2 point = b2AABB_Center(aabb);
-            m_draw.DrawPoint(point, 10.0f, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, point, 10.0f, B2HexColor.b2_colorWhite);
         }
 
         DrawTextLine($"count == {m_overlapCount}");

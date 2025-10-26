@@ -1495,7 +1495,7 @@ namespace Box2D.NET
             return massData;
         }
 
-        /// This update the mass properties to the sum of the mass properties of the shapes.
+        /// This updates the mass properties to the sum of the mass properties of the shapes.
         /// This normally does not need to be called unless you called SetMassData to override
         /// the mass and you later want to reset the mass.
         /// You may also use this when automatic mass computation has been disabled.

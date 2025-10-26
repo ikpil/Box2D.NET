@@ -22,10 +22,10 @@ public class SingleBox : Sample
 
     public SingleBox(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 2.5f);
-            m_camera.m_zoom = 3.5f;
+            m_camera.center = new B2Vec2(0.0f, 2.5f);
+            m_camera.zoom = 3.5f;
         }
 
         float extent = 1.0f;
@@ -49,9 +49,9 @@ public class SingleBox : Sample
     }
 
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 

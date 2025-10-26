@@ -30,10 +30,10 @@ public class Crash01 : Sample
 
     public Crash01(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.8f, 6.4f);
-            m_context.camera.m_zoom = 25.0f * 0.4f;
+            m_context.camera.center = new B2Vec2(0.8f, 6.4f);
+            m_context.camera.zoom = 25.0f * 0.4f;
         }
 
         m_type = B2BodyType.b2_dynamicBody;
@@ -110,7 +110,7 @@ public class Crash01 : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 11.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(9.0f * fontSize, height));
         ImGui.Begin("Crash 01", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 

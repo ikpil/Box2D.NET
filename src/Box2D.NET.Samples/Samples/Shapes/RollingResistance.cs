@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -24,10 +25,10 @@ public class RollingResistance : Sample
 
     public RollingResistance(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(5.0f, 20.0f);
-            m_camera.m_zoom = 27.5f;
+            m_camera.center = new B2Vec2(5.0f, 20.0f);
+            m_camera.zoom = 27.5f;
         }
 
         m_lift = 0.0f;
@@ -88,13 +89,13 @@ public class RollingResistance : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         for (int i = 0; i < 20; ++i)
         {
-            m_draw.DrawString(new B2Vec2(-41.5f, 2.0f * i + 1.0f), $"{m_resistScale * i:F2}");
+            DrawWorldString(m_draw, m_camera, new B2Vec2(-41.5f, 2.0f * i + 1.0f), B2HexColor.b2_colorWhite, $"{m_resistScale * i:F2}");
         }
     }
 }

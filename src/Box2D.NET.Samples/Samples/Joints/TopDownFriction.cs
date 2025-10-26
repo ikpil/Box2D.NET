@@ -12,6 +12,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -27,10 +28,10 @@ public class TopDownFriction : Sample
 
     private TopDownFriction(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 7.0f);
-            m_context.camera.m_zoom = 25.0f * 0.4f;
+            m_context.camera.center = new B2Vec2(0.0f, 7.0f);
+            m_context.camera.zoom = 25.0f * 0.4f;
         }
 
         B2BodyId groundId;
@@ -113,7 +114,7 @@ public class TopDownFriction : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Top Down Friction", ImGuiWindowFlags.NoResize);
@@ -127,7 +128,7 @@ public class TopDownFriction : Sample
             def.impulsePerLength = 10.0f;
             b2World_Explode(m_worldId, ref def);
 
-            m_draw.DrawCircle(def.position, 10.0f, B2HexColor.b2_colorWhite);
+            DrawCircle(m_draw, def.position, 10.0f, B2HexColor.b2_colorWhite);
         }
 
         ImGui.End();

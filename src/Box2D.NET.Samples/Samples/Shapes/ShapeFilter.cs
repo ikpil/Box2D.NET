@@ -8,6 +8,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -38,10 +39,10 @@ public class ShapeFilter : Sample
 
     public ShapeFilter(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_zoom = 25.0f * 0.5f;
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 25.0f * 0.5f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
         }
 
         {
@@ -93,7 +94,7 @@ public class ShapeFilter : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Filter", ImGuiWindowFlags.NoResize);
@@ -207,17 +208,17 @@ public class ShapeFilter : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2Vec2 p1 = b2Body_GetPosition(m_player1Id);
-        m_draw.DrawString(new B2Vec2(p1.X - 0.5f, p1.Y), "player 1");
+        DrawWorldString(m_draw, m_camera, new B2Vec2(p1.X - 0.5f, p1.Y), B2HexColor.b2_colorWhite, "player 1");
 
         B2Vec2 p2 = b2Body_GetPosition(m_player2Id);
-        m_draw.DrawString(new B2Vec2(p2.X - 0.5f, p2.Y), "player 2");
+        DrawWorldString(m_draw, m_camera, new B2Vec2(p2.X - 0.5f, p2.Y), B2HexColor.b2_colorWhite, "player 2");
 
         B2Vec2 p3 = b2Body_GetPosition(m_player3Id);
-        m_draw.DrawString(new B2Vec2(p3.X - 0.5f, p3.Y), "player 3");
+        DrawWorldString(m_draw, m_camera, new B2Vec2(p3.X - 0.5f, p3.Y), B2HexColor.b2_colorWhite, "player 3");
     }
 }

@@ -12,6 +12,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2RevoluteJoints;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -35,10 +36,10 @@ public class Door : Sample
 
     public Door(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_context.camera.m_zoom = 4.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 0.0f);
+            m_context.camera.zoom = 4.0f;
         }
 
         B2BodyId groundId = b2_nullBodyId;
@@ -94,7 +95,7 @@ public class Door : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Door", ImGuiWindowFlags.NoResize);
@@ -126,12 +127,12 @@ public class Door : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2Vec2 p = b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f));
-        m_draw.DrawPoint(p, 5.0f, B2HexColor.b2_colorDarkKhaki);
+        DrawPoint(m_draw, p, 5.0f, B2HexColor.b2_colorDarkKhaki);
 
         float translationError = b2Joint_GetLinearSeparation(m_jointId);
         m_translationError = b2MaxFloat(m_translationError, translationError);

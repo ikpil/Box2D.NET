@@ -28,10 +28,10 @@ public class BenchmarkSmash : Sample
 
     public BenchmarkSmash(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(60.0f, 6.0f);
-            m_camera.m_zoom = 25.0f * 1.6f;
+            m_camera.center = new B2Vec2(60.0f, 6.0f);
+            m_camera.zoom = 25.0f * 1.6f;
         }
 
         m_rowCount = m_isDebug ? 10 : 80;
@@ -59,7 +59,7 @@ public class BenchmarkSmash : Sample
         base.UpdateGui();
 
         float height = 110.0f;
-        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.m_height - height - 50.0f), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(10.0f, m_camera.height - height - 50.0f), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(220.0f, height));
         ImGui.Begin("Benchmark: Smash", ImGuiWindowFlags.NoResize);
 

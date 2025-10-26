@@ -34,12 +34,12 @@ public class Drop : Sample
 
     public Drop(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 1.5f);
-            m_camera.m_zoom = 3.0f;
-            m_context.settings.enableSleep = false;
-            m_context.settings.drawJoints = false;
+            m_camera.center = new B2Vec2(0.0f, 1.5f);
+            m_camera.zoom = 3.0f;
+            m_context.enableSleep = false;
+            m_context.debugDraw.drawJoints = false;
         }
 
 #if FALSE
@@ -331,22 +331,22 @@ public class Drop : Sample
 
         //if (m_frameCount == 165)
         //{
-        //	m_context.settings.pause = true;
+        //	m_context.pause = true;
         //	m_frameSkip = 30;
         //}
 
-        m_context.settings.enableContinuous = m_continuous;
+        m_context.enableContinuous = m_continuous;
 
-        if ((m_frameSkip == 0 || m_frameCount % m_frameSkip == 0) && m_context.settings.pause == false)
+        if ((m_frameSkip == 0 || m_frameCount % m_frameSkip == 0) && m_context.pause == false)
         {
             base.Step();
         }
         else
         {
-            bool pause = m_context.settings.pause;
-            m_context.settings.pause = true;
+            bool pause = m_context.pause;
+            m_context.pause = true;
             base.Step();
-            m_context.settings.pause = pause;
+            m_context.pause = pause;
         }
 
         m_frameCount += 1;

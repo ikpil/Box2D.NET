@@ -880,7 +880,7 @@ namespace Box2D.NET
                     ref readonly B2Segment segment = ref shape.us.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
-                    draw.DrawSegmentFcn(p1, p2, color, draw.context);
+                    draw.drawLineFcn(p1, p2, color, draw.context);
                 }
                     break;
 
@@ -889,9 +889,9 @@ namespace Box2D.NET
                     ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
                     B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
                     B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
-                    draw.DrawSegmentFcn(p1, p2, color, draw.context);
+                    draw.drawLineFcn(p1, p2, color, draw.context);
                     draw.DrawPointFcn(p2, 4.0f, color, draw.context);
-                    draw.DrawSegmentFcn(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
+                    draw.drawLineFcn(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
                 }
                     break;
 
@@ -1064,7 +1064,7 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        draw.DrawSegmentFcn(bodySim.center0, bodySim.center, B2HexColor.b2_colorWhiteSmoke, draw.context);
+                        draw.drawLineFcn(bodySim.center0, bodySim.center, B2HexColor.b2_colorWhiteSmoke, draw.context);
                         draw.DrawTransformFcn(transform, draw.context);
 
                         B2Vec2 p = b2TransformPoint(ref transform, offset);
@@ -1094,7 +1094,7 @@ namespace Box2D.NET
                     }
 
                     float linearSlop = B2_LINEAR_SLOP;
-                    if (draw.drawContacts && body.type == B2BodyType.b2_dynamicBody)
+                    if (draw.drawContactPoints && body.type == B2BodyType.b2_dynamicBody)
                     {
                         int contactKey = body.headContactKey;
                         while (contactKey != B2_NULL_INDEX)
@@ -1144,7 +1144,7 @@ namespace Box2D.NET
                                     {
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
-                                        draw.DrawSegmentFcn(p1, p2, normalColor, draw.context);
+                                        draw.drawLineFcn(p1, p2, normalColor, draw.context);
                                     }
                                     else if (draw.drawContactForces)
                                     {
@@ -1152,7 +1152,7 @@ namespace Box2D.NET
                                         float force = 0.5f * point.totalNormalImpulse * world.inv_dt;
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, normal);
-                                        draw.DrawSegmentFcn(p1, p2, impulseColor, draw.context);
+                                        draw.drawLineFcn(p1, p2, impulseColor, draw.context);
                                         buffer = $"{force:F1}";
                                         draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
@@ -1169,7 +1169,7 @@ namespace Box2D.NET
                                         B2Vec2 tangent = b2RightPerp(normal);
                                         B2Vec2 p1 = point.point;
                                         B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, tangent);
-                                        draw.DrawSegmentFcn(p1, p2, frictionColor, draw.context);
+                                        draw.drawLineFcn(p1, p2, frictionColor, draw.context);
                                         buffer = $"{force:F1}";
                                         draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }

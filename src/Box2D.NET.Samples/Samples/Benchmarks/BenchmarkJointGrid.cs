@@ -17,11 +17,11 @@ public class BenchmarkJointGrid : Sample
 
     public BenchmarkJointGrid(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(60.0f, -57.0f);
-            m_camera.m_zoom = 25.0f * 2.5f;
-            m_context.settings.enableSleep = false;
+            m_camera.center = new B2Vec2(60.0f, -57.0f);
+            m_camera.zoom = 25.0f * 2.5f;
+            m_context.enableSleep = false;
         }
 
         CreateJointGrid(m_worldId);

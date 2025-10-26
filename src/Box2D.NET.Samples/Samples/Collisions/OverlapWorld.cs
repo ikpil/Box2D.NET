@@ -18,6 +18,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -87,10 +88,10 @@ public class OverlapWorld : Sample
 
     public OverlapWorld(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 10.0f);
-            m_camera.m_zoom = 25.0f * 0.7f;
+            m_camera.center = new B2Vec2(0.0f, 10.0f);
+            m_camera.zoom = 25.0f * 0.7f;
         }
 
         m_userData = new ShapeUserData[e_maxCount];
@@ -271,7 +272,7 @@ public class OverlapWorld : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 330.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Overlap World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -348,7 +349,7 @@ public class OverlapWorld : Sample
             circle.radius = 1.0f;
             proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2Transform identity = b2Transform_identity;
-            m_draw.DrawSolidCircle(ref identity, circle.center, circle.radius, B2HexColor.b2_colorWhite);
+            DrawSolidCircle(m_draw, new B2Transform(circle.center, identity.q), circle.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_capsuleShape)
         {
@@ -357,13 +358,13 @@ public class OverlapWorld : Sample
             capsule.center2 = b2TransformPoint(ref transform, new B2Vec2(1.0f, 0.0f));
             capsule.radius = 0.5f;
             proxy = b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius);
-            m_draw.DrawSolidCapsule(capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);
+            DrawSolidCapsule(m_draw, capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);
         }
         else if (m_shapeType == e_boxShape)
         {
             B2Polygon box = b2MakeOffsetBox(2.0f, 0.5f, transform.p, transform.q);
             proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
-            m_draw.DrawPolygon(box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
+            DrawPolygon(m_draw, box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
         }
 
         b2World_OverlapShape(m_worldId, ref proxy, b2DefaultQueryFilter(), OverlapResultFcn, this);
@@ -387,9 +388,9 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("left mouse button: drag query shape");
 
@@ -400,7 +401,7 @@ public class OverlapWorld : Sample
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.X -= 0.2f;
-            m_draw.DrawString(p, "skip");
+            DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, "skip");
         }
     }
 }

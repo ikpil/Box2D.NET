@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
@@ -15,6 +16,70 @@ namespace Box2D.NET
 {
     public static class B2WeldJoints
     {
+#if B2_WELD_BLOCK_SOLVE
+        public struct B2Vec3
+        {
+            public float X;
+            public float Y;
+            public float Z;
+
+            public B2Vec3(float x, float y, float z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+        }
+
+        // A 3-by-3 matrix. Stored in column-major order.
+        public struct B2Mat33
+        {
+            public B2Vec3 cx;
+            public B2Vec3 cy;
+            public B2Vec3 cz;
+
+            public B2Mat33(B2Vec3 cx, B2Vec3 cy, B2Vec3 cz)
+            {
+                this.cx = cx;
+                this.cy = cy;
+                this.cz = cz;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float b2Dot3(B2Vec3 a, B2Vec3 b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec3 b2Cross3(B2Vec3 a, B2Vec3 b)
+        {
+            return new B2Vec3()
+            {
+                X = a.Y * b.Z - a.Z * b.Y,
+                Y = a.Z * b.X - a.X * b.Z,
+                Z = a.X * b.Y - a.Y * b.X,
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec3 b2Solve33(ref B2Mat33 m, B2Vec3 b)
+        {
+            float det = b2Dot3(m.cx, b2Cross3(m.cy, m.cz));
+            if (det != 0.0f)
+            {
+                det = 1.0f / det;
+            }
+
+            B2Vec3 x;
+            x.X = det * b2Dot3(b, b2Cross3(m.cy, m.cz));
+            x.Y = det * b2Dot3(m.cx, b2Cross3(b, m.cz));
+            x.Z = det * b2Dot3(m.cx, b2Cross3(m.cy, b));
+            return x;
+        }
+#endif
+
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
@@ -82,7 +147,7 @@ namespace Box2D.NET
         // C = p2 - p1
         // Cdot = v2 - v1
         //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-        // J = [-I -r1_skew I r2_skew ]
+        // J = [-E -r1_skew E r2_skew ]
         // Identity used:
         // w k % (rx i + ry j) = w * (-ry i + rx j)
 
@@ -91,6 +156,14 @@ namespace Box2D.NET
         // Cdot = w2 - w1
         // J = [0 0 -1 0 0 1]
         // K = invI1 + invI2
+
+        // 3x3 Block
+        // K = [J1] * invM * [J1T J2T]
+        //     [J2]
+        //   = [J1] * [invM * J1T invM * J2T]
+        //     [J2]
+        //   = [J1 * invM * J1T J1 * invM * J2T]
+        //     [J2 * invM * J1T J2 * invM * J2T]
 
         public static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
@@ -219,6 +292,98 @@ namespace Box2D.NET
             B2Vec2 vB = stateB.linearVelocity;
             float wB = stateB.angularVelocity;
 
+            // Block solve doesn't work correctly with mixed stiffness values
+#if B2_WELD_BLOCK_SOLVE
+            // J = [-I -r1_skew I r2_skew]
+            //     [ 0       -1 0       1]
+            // r_skew = [-ry; rx]
+
+            // Matlab
+            // K = [ mA+r1y^2*iA+mB+r2y^2*iB,  -r1y*iA*r1x-r2y*iB*r2x,          -r1y*iA-r2y*iB]
+            //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB,           r1x*iA+r2x*iB]
+            //     [          -r1y*iA-r2y*iB,           r1x*iA+r2x*iB,                   iA+iB]
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
+
+            B2Mat33 K;
+            K.cx.X = mA + mB + rA.Y * rA.Y * iA + rB.Y * rB.Y * iB;
+            K.cy.X = -rA.Y * rA.X * iA - rB.Y * rB.X * iB;
+            K.cz.X = -rA.Y * iA - rB.Y * iB;
+            K.cx.Y = K.cy.X;
+            K.cy.Y = mA + mB + rA.X * rA.X * iA + rB.X * rB.X * iB;
+            K.cz.Y = rA.X * iA + rB.X * iB;
+            K.cx.Z = K.cz.X;
+            K.cy.Z = K.cz.Y;
+            K.cz.Z = iA + iB;
+
+            B2Vec3 bias = new B2Vec3(0.0f, 0.0f, 0.0f);
+            float linearMassScale = 1.0f;
+            float linearImpulseScale = 0.0f;
+            if (useBias || joint.linearHertz > 0.0f)
+            {
+                // linear
+                B2Vec2 dcA = stateA.deltaPosition;
+                B2Vec2 dcB = stateB.deltaPosition;
+                B2Vec2 jointTranslation = b2Add(b2Add(b2Sub(dcB, dcA), b2Sub(rB, rA)), joint.deltaCenter);
+
+                bias.X = joint.linearSpring.biasRate * jointTranslation.X;
+                bias.Y = joint.linearSpring.biasRate * jointTranslation.Y;
+
+                linearMassScale = joint.linearSpring.massScale;
+                linearImpulseScale = joint.linearSpring.impulseScale;
+            }
+
+            float angularMassScale = 1.0f;
+            float angularImpulseScale = 0.0f;
+            if (useBias || joint.angularHertz > 0.0f)
+            {
+                // angular
+                B2Rot qA = b2MulRot(stateA.deltaRotation, joint.frameA.q);
+                B2Rot qB = b2MulRot(stateB.deltaRotation, joint.frameB.q);
+                B2Rot relQ = b2InvMulRot(qA, qB);
+                float jointAngle = b2Rot_GetAngle(relQ);
+
+                bias.Z = joint.angularSpring.biasRate * jointAngle;
+
+                angularMassScale = joint.angularSpring.massScale;
+                angularImpulseScale = joint.angularSpring.impulseScale;
+            }
+
+            B2Vec2 Cdot1 = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
+            float Cdot2 = wB - wA;
+
+            B2Vec3 Cdot = new B2Vec3(Cdot1.X + bias.X, Cdot1.Y + bias.Y, Cdot2 + bias.Z);
+
+            B2Vec3 b = b2Solve33(ref K, Cdot);
+
+            B2Vec2 linearImpulse = new B2Vec2(
+                -linearMassScale * b.X - linearImpulseScale * joint.linearImpulse.X,
+                -linearMassScale * b.Y - linearImpulseScale * joint.linearImpulse.Y
+            );
+            joint.linearImpulse = b2Add(joint.linearImpulse, linearImpulse);
+
+            float angularImpulse = -angularMassScale * b.Z - angularImpulseScale * joint.angularImpulse;
+            joint.angularImpulse += angularImpulse;
+
+            vA = b2MulSub(vA, mA, linearImpulse);
+            wA -= iA * (b2Cross(rA, linearImpulse) + angularImpulse);
+            vB = b2MulAdd(vB, mB, linearImpulse);
+            wB += iB * (b2Cross(rB, linearImpulse) + angularImpulse);
+
+            // todo debugging
+            Cdot1 = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
+            Cdot2 = wB - wA;
+
+            if (useBias == false && b2Length(Cdot1) > 0.0001f)
+            {
+                Cdot1.X += 0.0f;
+            }
+
+            if (useBias == false && b2AbsFloat(Cdot2) > 0.0001f)
+            {
+                Cdot2 += 0.0f;
+            }
+#else
             // angular constraint
             {
                 B2Rot qA = b2MulRot(stateA.deltaRotation, joint.frameA.q);
@@ -285,6 +450,7 @@ namespace Box2D.NET
                 vB = b2MulAdd(vB, mB, impulse);
                 wB += iB * b2Cross(rB, impulse);
             }
+#endif
 
             B2_ASSERT(b2IsValidVec2(vA));
             B2_ASSERT(b2IsValidFloat(wA));
@@ -307,19 +473,19 @@ namespace Box2D.NET
 #if FALSE
         public static void b2DumpWeldJoint()
         {
-            int32 indexA = m_bodyA.m_islandIndex;
-            int32 indexB = m_bodyB.m_islandIndex;
+            int32 indexA = bodyA->islandIndex;
+            int32 indexB = bodyB->islandIndex;
 
             b2Dump("  b2WeldJointDef jd;\n");
             b2Dump("  jd.bodyA = sims[%d];\n", indexA);
             b2Dump("  jd.bodyB = sims[%d];\n", indexB);
-            b2Dump("  jd.collideConnected = bool(%d);\n", m_collideConnected);
-            b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", m_localAnchorA.x, m_localAnchorA.y);
-            b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", m_localAnchorB.x, m_localAnchorB.y);
-            b2Dump("  jd.referenceAngle = %.9g;\n", m_referenceAngle);
-            b2Dump("  jd.stiffness = %.9g;\n", m_stiffness);
-            b2Dump("  jd.damping = %.9g;\n", m_damping);
-            b2Dump("  joints[%d] = m_world.CreateJoint(&jd);\n", m_index);
+            b2Dump("  jd.collideConnected = bool(%d);\n", collideConnected);
+            b2Dump("  jd.localAnchorA.Set(%.9g, %.9g);\n", localAnchorA.x, localAnchorA.y);
+            b2Dump("  jd.localAnchorB.Set(%.9g, %.9g);\n", localAnchorB.x, localAnchorB.y);
+            b2Dump("  jd.referenceAngle = %.9g;\n", referenceAngle);
+            b2Dump("  jd.stiffness = %.9g;\n", stiffness);
+            b2Dump("  jd.damping = %.9g;\n", damping);
+            b2Dump("  joints[%d] = world->CreateJoint(&jd);\n", index);        
         }
 #endif
 

@@ -1502,13 +1502,13 @@ namespace Box2D.NET
                     break;
 
                 case B2JointType.b2_filterJoint:
-                    draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
+                    draw.drawLineFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
                     break;
 
                 case B2JointType.b2_motorJoint:
                     draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
                     draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
-                    draw.DrawSegmentFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
+                    draw.drawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1528,9 +1528,9 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    draw.DrawSegmentFcn(transformA.p, pA, color, draw.context);
-                    draw.DrawSegmentFcn(pA, pB, color, draw.context);
-                    draw.DrawSegmentFcn(transformB.p, pB, color, draw.context);
+                    draw.drawLineFcn(transformA.p, pA, color, draw.context);
+                    draw.drawLineFcn(pA, pB, color, draw.context);
+                    draw.drawLineFcn(transformB.p, pB, color, draw.context);
                     break;
             }
 
@@ -1550,7 +1550,7 @@ namespace Box2D.NET
                 float torque = b2GetJointConstraintTorque(world, joint);
                 B2Vec2 p = b2Lerp(pA, pB, 0.5f);
 
-                draw.DrawSegmentFcn(p, b2MulAdd(p, 0.001f, force), B2HexColor.b2_colorAzure, draw.context);
+                draw.drawLineFcn(p, b2MulAdd(p, 0.001f, force), B2HexColor.b2_colorAzure, draw.context);
 
                 string result = $"f = [{force.X:g}, {force.Y:g}], t = {torque:g}";
                 draw.DrawStringFcn(p, result, B2HexColor.b2_colorAzure, draw.context);

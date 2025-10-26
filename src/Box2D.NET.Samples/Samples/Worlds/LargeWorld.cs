@@ -15,6 +15,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.Humans;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Worlds;
 
@@ -53,11 +54,11 @@ public class LargeWorld : Sample
 
         m_viewPosition = new B2Vec2(xStart, 15.0f);
 
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = m_viewPosition;
-            m_camera.m_zoom = 25.0f * 1.0f;
-            m_context.settings.drawJoints = false;
+            m_camera.center = m_viewPosition;
+            m_camera.zoom = 25.0f * 1.0f;
+            m_context.debugDraw.drawJoints = false;
         }
 
         {
@@ -172,7 +173,7 @@ public class LargeWorld : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 13.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(18.0f * fontSize, height));
 
         ImGui.Begin("Large World", ImGuiWindowFlags.NoResize);
@@ -193,9 +194,9 @@ public class LargeWorld : Sample
     public override void Step()
     {
         float span = 0.5f * (m_period * m_cycleCount);
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
 
-        if (m_context.settings.pause)
+        if (m_context.pause)
         {
             timeStep = 0.0f;
         }
@@ -205,12 +206,12 @@ public class LargeWorld : Sample
 
         if (m_speed != 0.0f)
         {
-            m_camera.m_center = m_viewPosition;
+            m_camera.center = m_viewPosition;
         }
 
         if (m_followCar)
         {
-            m_camera.m_center.X = b2Body_GetPosition(m_car.m_chassisId).X;
+            m_camera.center.X = b2Body_GetPosition(m_car.m_chassisId).X;
         }
 
         float radius = 2.0f;
@@ -230,7 +231,7 @@ public class LargeWorld : Sample
 
         if (m_explode)
         {
-            m_draw.DrawCircle(m_explosionPosition, radius, B2HexColor.b2_colorAzure);
+            DrawCircle(m_context.draw, m_explosionPosition, radius, B2HexColor.b2_colorAzure);
         }
 
         if (GetKey(Keys.A) == InputAction.Press)

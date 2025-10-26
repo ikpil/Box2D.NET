@@ -10,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -38,10 +39,10 @@ public class ChainShape : Sample
 
     public ChainShape(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_camera.m_zoom = 25.0f * 1.75f;
+            m_camera.center = new B2Vec2(0.0f, 0.0f);
+            m_camera.zoom = 25.0f * 1.75f;
         }
 
         m_groundId = b2_nullBodyId;
@@ -174,12 +175,12 @@ public class ChainShape : Sample
         m_stepCount = 0;
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
         
-        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
-        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
+        DrawLine(m_draw, b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
+        DrawLine(m_draw, b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }
@@ -190,7 +191,7 @@ public class ChainShape : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 155.0f;
-        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize ), ImGuiCond.Once );
+        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.height - height - 2.0f * fontSize ), ImGuiCond.Once );
         ImGui.SetNextWindowSize( new Vector2( 240.0f, height ) );
 
         ImGui.Begin("Chain Shape", ImGuiWindowFlags.NoResize);

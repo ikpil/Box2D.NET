@@ -21,10 +21,10 @@ public class BenchmarkCompound : Sample
 
     public BenchmarkCompound(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(18.0f, 115.0f);
-            m_camera.m_zoom = 25.0f * 5.5f;
+            m_camera.center = new B2Vec2(18.0f, 115.0f);
+            m_camera.zoom = 25.0f * 5.5f;
         }
 
         float grid = 1.0f;

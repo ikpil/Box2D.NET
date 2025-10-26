@@ -37,10 +37,10 @@ public class ModifyGeometry : Sample
 
     public ModifyGeometry(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_zoom = 25.0f * 0.25f;
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 25.0f * 0.25f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
         }
 
         {
@@ -114,7 +114,7 @@ public class ModifyGeometry : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 230.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Modify Geometry", ImGuiWindowFlags.NoResize);

@@ -10,6 +10,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Timers;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -37,10 +38,10 @@ public class BenchmarkShapeDistance : Sample
 
     public BenchmarkShapeDistance(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_camera.m_zoom = 3.0f;
+            m_camera.center = new B2Vec2(0.0f, 0.0f);
+            m_camera.zoom = 3.0f;
         }
 
         {
@@ -102,7 +103,7 @@ public class BenchmarkShapeDistance : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 5.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(17.0f * fontSize, height));
         ImGui.Begin("Benchmark: Shape Distance", ImGuiWindowFlags.NoResize);
 
@@ -113,7 +114,7 @@ public class BenchmarkShapeDistance : Sample
 
     public override void Step()
     {
-        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
+        if (m_context.pause == false || m_context.singleStep == true)
         {
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeProxy(m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius);
@@ -143,11 +144,11 @@ public class BenchmarkShapeDistance : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        if (m_context.settings.pause == false || m_context.settings.singleStep == true)
+        if (m_context.pause == false || m_context.singleStep == true)
         {
             DrawTextLine($"count = {m_count}");
             DrawTextLine($"min cycles = {m_minCycles}");
@@ -159,12 +160,12 @@ public class BenchmarkShapeDistance : Sample
         B2Transform xfA = m_transformAs[m_drawIndex];
         B2Transform xfB = m_transformBs[m_drawIndex];
         B2DistanceOutput output = m_outputs[m_drawIndex];
-        m_draw.DrawSolidPolygon(ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
-        m_draw.DrawSolidPolygon(ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
-        m_draw.DrawLine(output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
-        m_draw.DrawPoint(output.pointA, 10.0f, B2HexColor.b2_colorWhite);
-        m_draw.DrawPoint(output.pointB, 10.0f, B2HexColor.b2_colorWhite);
-        m_draw.DrawLine(output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+        DrawSolidPolygon(m_draw, ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
+        DrawSolidPolygon(m_draw, ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
+        DrawLine(m_draw, output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
+        DrawPoint(m_draw, output.pointA, 10.0f, B2HexColor.b2_colorWhite);
+        DrawPoint(m_draw, output.pointB, 10.0f, B2HexColor.b2_colorWhite);
+        DrawLine(m_draw, output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
         DrawTextLine($"distance = {output.distance}");
     }
 }

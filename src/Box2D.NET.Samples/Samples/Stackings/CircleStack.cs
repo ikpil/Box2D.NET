@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -34,10 +35,10 @@ public class CircleStack : Sample
 
     public CircleStack(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 5.0f);
-            m_camera.m_zoom = 6.0f;
+            m_camera.center = new B2Vec2(0.0f, 5.0f);
+            m_camera.zoom = 6.0f;
         }
 
         int shapeIndex = 0;
@@ -71,25 +72,25 @@ public class CircleStack : Sample
 
             float y = 0.75f;
 
-            for ( int i = 0; i < 10; ++i )
+            for (int i = 0; i < 10; ++i)
             {
                 bodyDef.position.Y = y;
 
-                B2BodyId bodyId = b2CreateBody( m_worldId, ref bodyDef );
+                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
 
                 shapeDef.userData = shapeIndex;
                 shapeDef.density = 1.0f + 4.0f * i;
                 shapeIndex += 1;
-                b2CreateCircleShape( bodyId, ref shapeDef, ref circle );
+                b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
                 y += 1.25f;
             }
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
         for (int i = 0; i < events.hitCount; ++i)
@@ -101,7 +102,7 @@ public class CircleStack : Sample
             int indexA = (int)userDataA;
             int indexB = (int)userDataB;
 
-            m_draw.DrawPoint(@event.point, 10.0f, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, @event.point, 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }
@@ -110,7 +111,6 @@ public class CircleStack : Sample
         for (int i = 0; i < eventCount; ++i)
         {
             DrawTextLine($"{m_events[i].indexA}, {m_events[i].indexB}");
-            
         }
     }
 }

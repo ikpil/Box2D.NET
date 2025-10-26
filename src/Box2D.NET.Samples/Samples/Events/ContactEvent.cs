@@ -18,6 +18,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -43,10 +44,10 @@ public class ContactEvent : Sample
 
     public ContactEvent(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-            m_camera.m_zoom = 25.0f * 1.75f;
+            m_camera.center = new B2Vec2(0.0f, 0.0f);
+            m_camera.zoom = 25.0f * 1.75f;
         }
 
         {
@@ -149,7 +150,7 @@ public class ContactEvent : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Contact Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -233,8 +234,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_draw.DrawLine(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
-                            m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            DrawLine(m_draw, point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
+                            DrawPoint(m_draw, point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -263,8 +264,8 @@ public class ContactEvent : Sample
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            m_draw.DrawLine(point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
-                            m_draw.DrawPoint(point.point, 10.0f, B2HexColor.b2_colorWhite);
+                            DrawLine(m_draw, point.point, point.point + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
+                            DrawPoint(m_draw, point.point, 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -419,9 +420,9 @@ public class ContactEvent : Sample
             b2Body_ApplyMassFromShapes(m_playerId);
         }
 
-        if (m_context.settings.hertz > 0.0f && m_context.settings.pause == false)
+        if (m_context.hertz > 0.0f && m_context.pause == false)
         {
-            m_wait -= 1.0f / m_context.settings.hertz;
+            m_wait -= 1.0f / m_context.hertz;
             if (m_wait < 0.0f)
             {
                 SpawnDebris();
@@ -430,9 +431,9 @@ public class ContactEvent : Sample
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("move using WASD");
     }

@@ -9,21 +9,23 @@ using static Box2D.NET.B2Joints;
 
 namespace Box2D.NET.Samples.Samples.Issues;
 
-public class UnstableJoints : Sample
+// This simulations stresses the solver by putting a light mass between two bodies on a prismatic joint with a stiff spring.
+// This can be made stable by increasing the size of the middle circle and/or increasing the number of sub-steps.
+public class UnstablePrismaticJoints : Sample
 {
     private static readonly int SamplePrismaticJointCrash = SampleFactory.Shared.RegisterSample("Issues", "Unstable Joints", Create);
 
     private static Sample Create(SampleContext context)
     {
-        return new UnstableJoints(context);
+        return new UnstablePrismaticJoints(context);
     }
 
-    public UnstableJoints(SampleContext context) : base(context)
+    public UnstablePrismaticJoints(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 1.75f);
-            m_context.camera.m_zoom = 32.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 1.75f);
+            m_context.camera.zoom = 32.0f;
         }
 
         {

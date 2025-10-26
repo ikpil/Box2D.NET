@@ -8,6 +8,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Contacts;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -24,10 +25,10 @@ public class PersistentContact : Sample
 
     public PersistentContact(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 6.0f);
-            m_context.camera.m_zoom = 7.5f;
+            m_context.camera.center = new B2Vec2(0.0f, 6.0f);
+            m_context.camera.zoom = 7.5f;
         }
 
         {
@@ -99,9 +100,9 @@ public class PersistentContact : Sample
                 ref readonly B2ManifoldPoint manifoldPoint = ref data.manifold.points[i];
                 B2Vec2 p1 = manifoldPoint.point;
                 B2Vec2 p2 = p1 + manifoldPoint.totalNormalImpulse * data.manifold.normal;
-                m_draw.DrawLine(p1, p2, B2HexColor.b2_colorCrimson);
-                m_draw.DrawPoint(p1, 6.0f, B2HexColor.b2_colorCrimson);
-                m_draw.DrawString(p1, $"{manifoldPoint.totalNormalImpulse:F2}");
+                DrawLine(m_draw, p1, p2, B2HexColor.b2_colorCrimson);
+                DrawPoint(m_draw, p1, 6.0f, B2HexColor.b2_colorCrimson);
+                DrawWorldString(m_draw, m_camera, p1, B2HexColor.b2_colorWhite, $"{manifoldPoint.totalNormalImpulse:F2}");
             }
         }
         else

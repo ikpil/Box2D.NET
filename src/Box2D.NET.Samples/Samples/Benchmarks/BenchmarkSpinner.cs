@@ -17,10 +17,10 @@ public class BenchmarkSpinner : Sample
 
     public BenchmarkSpinner(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 32.0f);
-            m_camera.m_zoom = 42.0f;
+            m_camera.center = new B2Vec2(0.0f, 32.0f);
+            m_camera.zoom = 42.0f;
         }
 
         // b2_toiCalls = 0;
@@ -38,13 +38,13 @@ public class BenchmarkSpinner : Sample
             // 0.1 : 46544, 25752
             // 0.25 : 5745, 1947
             // 0.5 : 2197, 660
-            m_context.settings.pause = true;
+            m_context.pause = true;
         }
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
         
         //DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }

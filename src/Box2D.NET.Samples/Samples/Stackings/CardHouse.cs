@@ -22,10 +22,10 @@ public class CardHouse : Sample
 
     public CardHouse(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.75f, 0.9f);
-            m_camera.m_zoom = 25.0f * 0.05f;
+            m_camera.center = new B2Vec2(0.75f, 0.9f);
+            m_camera.zoom = 25.0f * 0.05f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();

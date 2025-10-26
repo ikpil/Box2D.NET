@@ -18,6 +18,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -81,10 +82,10 @@ public class CastWorld : Sample
 
     public CastWorld(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(2.0f, 14.0f);
-            m_camera.m_zoom = 25.0f * 0.75f;
+            m_camera.center = new B2Vec2(2.0f, 14.0f);
+            m_camera.zoom = 25.0f * 0.75f;
         }
 
         // Ground body
@@ -302,7 +303,7 @@ public class CastWorld : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
         ImGui.Begin("Ray-cast World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -394,14 +395,14 @@ public class CastWorld : Sample
             if (result.hit == true && result.fraction > 0.0f)
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
-                m_draw.DrawPoint(result.point, 5.0f, color1);
-                m_draw.DrawLine(m_rayStart, c, color2);
+                DrawPoint(m_draw, result.point, 5.0f, color1);
+                DrawLine(m_draw, m_rayStart, c, color2);
                 B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
-                m_draw.DrawLine(result.point, head, color3);
+                DrawLine(m_draw, result.point, head, color3);
             }
             else
             {
-                m_draw.DrawLine(m_rayStart, m_rayEnd, color2);
+                DrawLine(m_draw, m_rayStart, m_rayEnd, color2);
             }
         }
         else
@@ -459,58 +460,58 @@ public class CastWorld : Sample
                     B2Vec2 c = b2MulAdd(m_rayStart, context.fractions[i], rayTranslation);
                     B2Vec2 p = context.points[i];
                     B2Vec2 n = context.normals[i];
-                    m_draw.DrawPoint(p, 5.0f, colors[i]);
-                    m_draw.DrawLine(m_rayStart, c, color2);
+                    DrawPoint(m_draw, p, 5.0f, colors[i]);
+                    DrawLine(m_draw, m_rayStart, c, color2);
                     B2Vec2 head = b2MulAdd(p, 1.0f, n);
-                    m_draw.DrawLine(p, head, color3);
+                    DrawLine(m_draw, p, head, color3);
 
                     B2Vec2 t = b2MulSV(context.fractions[i], rayTranslation);
                     B2Transform shiftedTransform = new B2Transform(t, b2Rot_identity);
 
                     if (m_castType == CastType.e_circleCast)
                     {
-                        m_draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorYellow);
+                        DrawSolidCircle(m_draw, new B2Transform(circle.center, shiftedTransform.q), m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_capsuleCast)
                     {
                         B2Vec2 p1 = capsule.center1 + t;
                         B2Vec2 p2 = capsule.center2 + t;
-                        m_draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                        DrawSolidCapsule(m_draw, p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        m_draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                        DrawSolidPolygon(m_draw, ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
             else
             {
-                m_context.draw.DrawLine(m_rayStart, m_rayEnd, color2);
+                DrawLine(m_draw, m_rayStart, m_rayEnd, color2);
                 B2Transform shiftedTransform = new B2Transform(rayTranslation, b2Rot_identity);
 
                 if (m_castType == CastType.e_circleCast)
                 {
-                    m_context.draw.DrawSolidCircle(ref shiftedTransform, circle.center, m_castRadius, B2HexColor.b2_colorGray);
+                    DrawSolidCircle(m_draw, new B2Transform(circle.center, shiftedTransform.q), m_castRadius, B2HexColor.b2_colorGray);
                 }
                 else if (m_castType == CastType.e_capsuleCast)
                 {
                     B2Vec2 p1 = capsule.center1 + rayTranslation;
                     B2Vec2 p2 = capsule.center2 + rayTranslation;
-                    m_context.draw.DrawSolidCapsule(p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
+                    DrawSolidCapsule(m_draw, p1, p2, m_castRadius, B2HexColor.b2_colorYellow);
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    m_context.draw.DrawSolidPolygon(ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                    DrawSolidPolygon(m_draw, ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }
 
-        m_draw.DrawPoint(m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
+        DrawPoint(m_draw, m_rayStart, 5.0f, B2HexColor.b2_colorGreen);
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine("Click left mouse button and drag to modify ray cast");
         DrawTextLine("Shape 7 is intentionally ignored by the ray");
@@ -549,7 +550,7 @@ public class CastWorld : Sample
         {
             B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
             p.X -= 0.2f;
-            m_draw.DrawString(p, "ign");
+            DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, "ign");
         }
     }
 

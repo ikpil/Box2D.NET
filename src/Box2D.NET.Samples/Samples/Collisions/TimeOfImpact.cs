@@ -5,6 +5,7 @@
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Constants;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -33,11 +34,11 @@ public class TimeOfImpact : Sample
 
     public TimeOfImpact(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.6f, 2.0f);
-            m_camera.m_center = new B2Vec2(-16, 45);
-            m_camera.m_zoom = 5.0f;
+            m_camera.center = new B2Vec2(0.6f, 2.0f);
+            m_camera.center = new B2Vec2(-16, 45);
+            m_camera.zoom = 5.0f;
         }
 
         m_countA = m_verticesA.Length;
@@ -68,9 +69,9 @@ public class TimeOfImpact : Sample
         _output = b2TimeOfImpact(ref _input);
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"toi = {_output.fraction:g}");
         
@@ -86,7 +87,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformA, m_verticesA[i]);
         }
 
-        m_draw.DrawPolygon(vertices, m_countA, B2HexColor.b2_colorGray);
+        DrawPolygon(m_draw, vertices, m_countA, B2HexColor.b2_colorGray);
 
         // Draw B at t = 0
         B2Transform transformB = b2GetSweepTransform(ref _sweepB, 0.0f);
@@ -95,7 +96,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorGreen);
+        DrawSolidCapsule(m_draw, vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorGreen);
         // m_context.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorGreen );
 
         // Draw B at t = hit_time
@@ -105,7 +106,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_draw.DrawPolygon(vertices, m_countB, B2HexColor.b2_colorOrange);
+        DrawPolygon(m_draw, vertices, m_countB, B2HexColor.b2_colorOrange);
 
         // Draw B at t = 1
         transformB = b2GetSweepTransform(ref _sweepB, 1.0f);
@@ -114,7 +115,7 @@ public class TimeOfImpact : Sample
             vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
         }
 
-        m_draw.DrawSolidCapsule(vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorRed);
+        DrawSolidCapsule(m_draw, vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorRed);
         // m_context.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorRed );
 
         if (_output.state == B2TOIState.b2_toiStateHit)

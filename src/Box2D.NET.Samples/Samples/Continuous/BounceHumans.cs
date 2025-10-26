@@ -9,6 +9,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.Humans;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -34,8 +35,8 @@ public class BounceHumans : Sample
 
     public BounceHumans(SampleContext context) : base(context)
     {
-        m_camera.m_center = new B2Vec2(0.0f, 0.0f);
-        m_camera.m_zoom = 12.0f;
+        m_camera.center = new B2Vec2(0.0f, 0.0f);
+        m_camera.zoom = 12.0f;
 
         for (int i = 0; i < m_humans.Length; ++i)
         {
@@ -103,10 +104,10 @@ public class BounceHumans : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        m_draw.DrawLine(b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
+        DrawLine(m_draw, b2Vec2_zero, new B2Vec2(3.0f * _cs1.sine, 3.0f * _cs2.cosine), B2HexColor.b2_colorWhite);
     }
 }

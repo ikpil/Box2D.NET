@@ -13,6 +13,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -33,10 +34,10 @@ public class BreakableJoint : Sample
 
     public BreakableJoint(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(0.0f, 8.0f);
-            m_camera.m_zoom = 25.0f * 0.7f;
+            m_camera.center = new B2Vec2(0.0f, 8.0f);
+            m_camera.zoom = 25.0f * 0.7f;
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -205,7 +206,7 @@ public class BreakableJoint : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Breakable Joint", ImGuiWindowFlags.NoResize);
@@ -242,9 +243,9 @@ public class BreakableJoint : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         for (int i = 0; i < e_count; ++i)
         {
@@ -257,7 +258,7 @@ public class BreakableJoint : Sample
             if (b2LengthSquared(force) <= m_breakForce * m_breakForce)
             {
                 B2Transform localFrame = b2Joint_GetLocalFrameA(m_jointIds[i]);
-                m_draw.DrawString(localFrame.p, $"({force.X:F1}, {force.Y:F1})");
+                DrawWorldString(m_draw, m_camera, localFrame.p, B2HexColor.b2_colorWhite, $"({force.X:F1}, {force.Y:F1})");
             }
         }
     }

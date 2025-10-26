@@ -10,6 +10,7 @@ using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -65,10 +66,10 @@ public class ShapeCast : Sample
 
     public ShapeCast(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(-0.0f, 0.25f);
-            m_camera.m_zoom = 3.0f;
+            m_camera.center = new B2Vec2(-0.0f, 0.25f);
+            m_camera.zoom = 3.0f;
         }
 
         m_point = b2Vec2_zero;
@@ -189,11 +190,11 @@ public class ShapeCast : Sample
                 B2Vec2 p = b2TransformPoint(ref transform, m_point);
                 if (radius > 0.0f)
                 {
-                    m_draw.DrawSolidCircle(ref transform, m_point, radius, color);
+                    DrawSolidCircle(m_draw, new B2Transform(m_point, transform.q), radius, color);
                 }
                 else
                 {
-                    m_draw.DrawPoint(p, 5.0f, color);
+                    DrawPoint(m_draw, p, 5.0f, color);
                 }
             }
                 break;
@@ -205,21 +206,21 @@ public class ShapeCast : Sample
 
                 if (radius > 0.0f)
                 {
-                    m_draw.DrawSolidCapsule(p1, p2, radius, color);
+                    DrawSolidCapsule(m_draw, p1, p2, radius, color);
                 }
                 else
                 {
-                    m_draw.DrawLine(p1, p2, color);
+                    DrawLine(m_draw, p1, p2, color);
                 }
             }
                 break;
 
             case ShapeType.e_triangle:
-                m_draw.DrawSolidPolygon(ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
+                DrawSolidPolygon(m_draw, ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
                 break;
 
             case ShapeType.e_box:
-                m_draw.DrawSolidPolygon(ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
+                DrawSolidPolygon(m_draw, ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
                 break;
 
             default:
@@ -291,7 +292,7 @@ public class ShapeCast : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 300.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -373,9 +374,9 @@ public class ShapeCast : Sample
         _distanceOutput = distanceOutput;
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
         DrawTextLine($"hit = {output.hit}, iterations = {output.iterations}, fraction = {output.fraction}, distance = {_distanceOutput.distance}");
 
@@ -391,12 +392,12 @@ public class ShapeCast : Sample
 
             if (output.fraction > 0.0f)
             {
-                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorWhite);
-                m_draw.DrawLine(output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+                DrawPoint(m_draw, output.point, 5.0f, B2HexColor.b2_colorWhite);
+                DrawLine(m_draw, output.point, output.point + 0.5f * output.normal, B2HexColor.b2_colorYellow);
             }
             else
             {
-                m_draw.DrawPoint(output.point, 5.0f, B2HexColor.b2_colorPeru);
+                DrawPoint(m_draw, output.point, 5.0f, B2HexColor.b2_colorPeru);
             }
         }
 
@@ -405,13 +406,13 @@ public class ShapeCast : Sample
             for (int i = 0; i < m_proxyA.count; ++i)
             {
                 B2Vec2 p = m_proxyA.points[i];
-                m_draw.DrawString(p, $" {i}");
+                DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, $" {i}");
             }
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
                 B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
-                m_draw.DrawString(p, $" {i}");
+                DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, $" {i}");
             }
         }
 

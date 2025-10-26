@@ -1,4 +1,8 @@
-﻿using static Box2D.NET.B2Geometries;
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-License-Identifier: MIT
+
+using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
@@ -25,13 +29,13 @@ public class BenchmarkCapacity : Sample
 
     public BenchmarkCapacity(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_context.camera.m_center = new B2Vec2(0.0f, 150.0f);
-            m_context.camera.m_zoom = 200.0f;
+            m_context.camera.center = new B2Vec2(0.0f, 150.0f);
+            m_context.camera.zoom = 200.0f;
         }
 
-        m_context.settings.enableSleep = false;
+        m_context.enableSleep = false;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position.Y = -5.0f;

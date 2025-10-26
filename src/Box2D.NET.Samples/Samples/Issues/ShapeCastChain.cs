@@ -11,6 +11,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Issues;
 
@@ -111,12 +112,12 @@ public class ShapeCastChain : Sample
         characterBox_ = b2MakeBox(0.1f, 0.1f);
         b2CreatePolygonShape(characterBodyId_, ref characterShapeDef, ref characterBox_);
 
-        context.camera.m_center = b2Vec2_zero;
+        context.camera.center = b2Vec2_zero;
     }
 
     public override void Step()
     {
-        float timeStep = m_context.settings.hertz > 0.0f ? 1.0f / m_context.settings.hertz : 0.0f;
+        float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
 
         bool noXInput = true;
         if (GetKey(Keys.A) == InputAction.Press)
@@ -202,11 +203,11 @@ public class ShapeCastChain : Sample
         base.Step();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        m_draw.DrawLine(hitPos, new B2Vec2(hitPos.X + hitNormal.X, hitPos.Y + hitNormal.Y), B2HexColor.b2_colorRed);
+        DrawLine(m_draw, hitPos, new B2Vec2(hitPos.X + hitNormal.X, hitPos.Y + hitNormal.Y), B2HexColor.b2_colorRed);
     }
 
     private bool ShapeCastSingle(ref PhysicsHitQueryResult2D outResult, B2Vec2 start, B2Vec2 end, float rotation, ref B2ShapeProxy shape)

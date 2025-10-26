@@ -14,6 +14,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -40,10 +41,10 @@ public class BodyMove : Sample
 
     public BodyMove(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(2.0f, 8.0f);
-            m_camera.m_zoom = 25.0f * 0.55f;
+            m_camera.center = new B2Vec2(2.0f, 8.0f);
+            m_camera.zoom = 25.0f * 0.55f;
         }
 
         {
@@ -126,7 +127,7 @@ public class BodyMove : Sample
 
     public override void Step()
     {
-        if (m_context.settings.pause == false && (m_stepCount & 15) == 15 && m_count < e_count)
+        if (m_context.pause == false && (m_stepCount & 15) == 15 && m_count < e_count)
         {
             CreateBodies();
         }
@@ -139,7 +140,7 @@ public class BodyMove : Sample
         {
             // draw the transform of every body that moved (not sleeping)
             ref B2BodyMoveEvent @event = ref events.moveEvents[i];
-            m_draw.DrawTransform(@event.transform);
+            DrawTransform(m_draw, @event.transform, 1.0f);
 
             B2Transform transform = b2Body_GetTransform(@event.bodyId);
             B2_ASSERT(transform.p.X == @event.transform.p.X);
@@ -175,7 +176,7 @@ public class BodyMove : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Body Move", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -195,11 +196,11 @@ public class BodyMove : Sample
         ImGui.End();
     }
 
-    public override void Draw(Settings settings)
+    public override void Draw()
     {
-        base.Draw(settings);
+        base.Draw();
 
-        m_draw.DrawCircle(m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
+        DrawCircle(m_draw, m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
         DrawTextLine($"sleep count: {m_sleepCount}");
     }

@@ -28,10 +28,10 @@ public class TangentSpeed : Sample
 
     public TangentSpeed(SampleContext context) : base(context)
     {
-        if (m_context.settings.restart == false)
+        if (m_context.restart == false)
         {
-            m_camera.m_center = new B2Vec2(60.0f, -15.0f);
-            m_camera.m_zoom = 38.0f;
+            m_camera.center = new B2Vec2(60.0f, -15.0f);
+            m_camera.zoom = 38.0f;
         }
 
         {
@@ -118,7 +118,7 @@ public class TangentSpeed : Sample
     {
         float fontSize = ImGui.GetFontSize();
         float height = 80.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.m_height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(260.0f, height));
 
         ImGui.Begin("Ball Parameters", ImGuiWindowFlags.NoResize);
@@ -139,7 +139,7 @@ public class TangentSpeed : Sample
 
     public override void Step()
     {
-        if (m_stepCount % 25 == 0 && m_bodyIds.Count < m_totalCount && m_context.settings.pause == false)
+        if (m_stepCount % 25 == 0 && m_bodyIds.Count < m_totalCount && m_context.pause == false)
         {
             B2BodyId id = DropBall();
             m_bodyIds.Add(id);

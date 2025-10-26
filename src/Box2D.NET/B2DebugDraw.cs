@@ -14,7 +14,7 @@ namespace Box2D.NET
         public DrawCircleFcn DrawCircleFcn;
         public DrawSolidCircleFcn DrawSolidCircleFcn;
         public DrawSolidCapsuleFcn DrawSolidCapsuleFcn;
-        public DrawSegmentFcn DrawSegmentFcn;
+        public DrawLineFcn drawLineFcn;
         public DrawTransformFcn DrawTransformFcn;
         public DrawPointFcn DrawPointFcn;
         public DrawStringFcn DrawStringFcn;
@@ -47,7 +47,7 @@ namespace Box2D.NET
         public bool drawBodyNames;
 
         /// Option to draw contact points
-        public bool drawContacts;
+        public bool drawContactPoints;
 
         /// Option to visualize the graph coloring used for contacts and joints
         public bool drawGraphColors;
@@ -70,4 +70,5 @@ namespace Box2D.NET
         /// User context that is passed as an argument to drawing callback functions
         public object context;
     }
+    
 }
