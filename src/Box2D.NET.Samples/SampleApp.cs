@@ -371,7 +371,7 @@ public class SampleApp
         {
             string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
                             $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
-            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 10.0f, B2HexColor.b2_colorSeaGreen, buffer);
+            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
         }
 
         _imgui.Render();
