@@ -149,7 +149,7 @@ public static class Fonts
         fontText.y = y;
         fontText.color = color;
         fontText.text = text;
-        
+
         font.texts.Add(fontText);
 
         // if (text == null)
@@ -191,12 +191,15 @@ public static class Fonts
 
     public static void FlushText(GL gl, ref Font font, Camera camera)
     {
+        if (0 >= font.texts.Count)
+            return;
+        
+        ImGui.Begin("Overlay",
+            ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
+            ImGuiWindowFlags.NoScrollbar);
+
         foreach (var text in font.texts)
         {
-            ImGui.Begin("Overlay",
-                ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize |
-                ImGuiWindowFlags.NoScrollbar);
-
             int hex = (int)text.color;
             float r = ((hex >> 16) & 0xFF) / 255.0f;
             float g = ((hex >> 8) & 0xFF) / 255.0f;
@@ -204,8 +207,9 @@ public static class Fonts
 
             ImGui.SetCursorPos(new Vector2(text.x, text.y));
             ImGui.TextColored(new Vector4(r, g, b, 1.0f), text.text);
-            ImGui.End();
         }
+
+        ImGui.End();
         font.texts.Clear();
 
         // var tempProjectionMatrix = new B2FixedArray16<float>();
