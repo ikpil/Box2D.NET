@@ -644,7 +644,7 @@ namespace Box2D.NET
             b2MakeSimplexCache(ref cache, ref simplex);
 
             // Apply radii if requested
-            if (input.useRadii && output.distance > 0.1f * B2_LINEAR_SLOP)
+            if (input.useRadii)
             {
                 float radiusA = input.proxyA.radius;
                 float radiusB = input.proxyB.radius;
