@@ -23,7 +23,6 @@ public static class Draws
     public static Draw CreateDraw(SampleContext context)
     {
         var draw = new Draw();
-        draw.camera = context.camera;
         draw.gl = context.gl;
 
         draw.background = CreateBackground(context.gl);
@@ -129,16 +128,16 @@ public static class Draws
 
 
 
-    public static void FlushDraw(Draw draw)
+    public static void FlushDraw(Draw draw, Camera camera)
     {
         // order matters
-        FlushSolidCircles(draw.gl, ref draw.circles, draw.camera);
-        FlushCapsules(draw.gl, ref draw.capsules, draw.camera);
-        FlushPolygons(draw.gl, ref draw.polygons, draw.camera);
-        FlushCircles(draw.gl, ref draw.hollowCircles, draw.camera);
-        FlushLines(draw.gl, ref draw.lines, draw.camera);
-        FlushPoints(draw.gl, ref draw.points, draw.camera);
-        FlushText(draw.gl, ref draw.font, draw.camera);
+        FlushSolidCircles(draw.gl, ref draw.circles, camera);
+        FlushCapsules(draw.gl, ref draw.capsules, camera);
+        FlushPolygons(draw.gl, ref draw.polygons, camera);
+        FlushCircles(draw.gl, ref draw.hollowCircles, camera);
+        FlushLines(draw.gl, ref draw.lines, camera);
+        FlushPoints(draw.gl, ref draw.points, camera);
+        FlushText(draw.gl, ref draw.font, camera);
         draw.gl.CheckOpenGL();
     }
 }

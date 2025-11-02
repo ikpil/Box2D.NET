@@ -354,25 +354,22 @@ public class SampleApp
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
-        if (_context.showUI)
-        {
-            var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
-            s_sample.ResetText(title);
-        }
+        s_sample.ResetText();
+        
+        var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
+        s_sample.DrawColoredTextLine(B2HexColor.b2_colorYellow, title);
+        
+        string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
+                        $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
+        DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
 
         s_sample.Draw();
-        FlushDraw(_context.draw);
+        FlushDraw(_context.draw, _context.camera);
 
         UpdateUI();
 
         //ImGui.ShowDemoWindow();
 
-        if (_context.showUI)
-        {
-            string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
-                            $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
-            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
-        }
 
         _imgui.Render();
         //ImGui_ImplOpenGL3_RenderDrawData(ImGui.GetDrawData());

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using ImGuiNET;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 
@@ -13,7 +12,6 @@ public class Draw
 {
     public Glfw glfw;
     public GL gl;
-    public Camera camera;
 
     public Background background;
     public PointRender points;

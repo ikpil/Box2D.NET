@@ -146,9 +146,9 @@ public class SampleContext
         return context;
     }
 
-    public static void DrawBackground(Draw draw)
+    public static void DrawBackground(Draw draw, Camera camera)
     {
-        RenderBackground(draw.glfw, draw.gl, ref draw.background, draw.camera);
+        RenderBackground(draw.glfw, draw.gl, ref draw.background, camera);
     }
 
     public static void DrawPolygonFcn(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context)

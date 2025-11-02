@@ -248,7 +248,7 @@ public class Sample : IDisposable
         }
     }
 
-    public void ResetText(string title)
+    public void ResetText()
     {
         m_textLine = m_textIncrement;
     }
