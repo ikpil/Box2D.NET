@@ -43,9 +43,9 @@ public class SampleContext
 
     public B2DebugDraw debugDraw;
 
-    public ImFontPtr m_regularFont;
-    public ImFontPtr m_mediumFont;
-    public ImFontPtr m_largeFont;
+    public ImFontPtr regularFont;
+    public ImFontPtr mediumFont;
+    public ImFontPtr largeFont;
 
     //
     public GL gl;
@@ -82,9 +82,9 @@ public class SampleContext
 
         debugDraw.context = this;
 
-        m_mediumFont = default;
-        m_largeFont = default;
-        m_regularFont = default;
+        mediumFont = default;
+        largeFont = default;
+        regularFont = default;
     }
 
     public void Load()
