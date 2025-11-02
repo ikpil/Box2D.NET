@@ -75,6 +75,8 @@ namespace Box2D.NET
             return def;
         }
 
+        /// Use this to initialize your joint definition
+        /// @ingroup prismatic_joint
         public static B2PrismaticJointDef b2DefaultPrismaticJointDef()
         {
             B2PrismaticJointDef def = new B2PrismaticJointDef();
