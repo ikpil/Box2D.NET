@@ -22,45 +22,43 @@ public class ShapeDistance : Sample
 
     public const int m_simplexCapacity = 20;
 
-    B2Polygon m_box;
-    B2Polygon m_triangle;
-    B2Vec2 m_point;
-    B2Segment m_segment;
+    private B2Polygon m_box;
+    private B2Polygon m_triangle;
+    private B2Vec2 m_point;
+    private B2Segment m_segment;
 
-    ShapeType m_typeA;
-    ShapeType m_typeB;
-    float m_radiusA;
-    float m_radiusB;
-    B2ShapeProxy m_proxyA;
-    B2ShapeProxy m_proxyB;
+    private ShapeType m_typeA;
+    private ShapeType m_typeB;
+    private float m_radiusA;
+    private float m_radiusB;
+    private B2ShapeProxy m_proxyA;
+    private B2ShapeProxy m_proxyB;
 
-    B2SimplexCache m_cache;
-    B2Simplex[] m_simplexes = new B2Simplex[m_simplexCapacity];
-    int m_simplexCount;
-    int m_simplexIndex;
+    private B2SimplexCache m_cache;
+    private B2Simplex[] m_simplexes = new B2Simplex[m_simplexCapacity];
+    private int m_simplexCount;
+    private int m_simplexIndex;
 
+    private B2Transform m_transform;
+    private float m_angle;
 
-    B2Transform m_transform;
-    float m_angle;
+    private B2Vec2 m_basePosition;
+    private B2Vec2 m_startPoint;
+    private float m_baseAngle;
 
-    B2Vec2 m_basePosition;
-    B2Vec2 m_startPoint;
-    float m_baseAngle;
-
-    bool m_dragging;
-    bool m_rotating;
-    bool m_showIndices;
-    bool m_useCache;
-    bool m_drawSimplex;
-
+    private bool m_dragging;
+    private bool m_rotating;
+    private bool m_showIndices;
+    private bool m_useCache;
+    private bool m_drawSimplex;
 
     // 
-    public B2Vec2 _outputPointA;
-    public B2Vec2 _outputPointB;
-    public B2Vec2 _outputNormal;
+    private B2Vec2 _outputPointA;
+    private B2Vec2 _outputPointB;
+    private B2Vec2 _outputNormal;
 
-    public float _outputDistance;
-    public int _outputIterations;
+    private float _outputDistance;
+    private int _outputIterations;
 
 
     private static Sample Create(SampleContext context)
@@ -218,9 +216,9 @@ public class ShapeDistance : Sample
         base.UpdateGui();
 
         float fontSize = ImGui.GetFontSize();
-        float height = 310.0f;
+        float height = 21.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        ImGui.SetNextWindowSize(new Vector2(19.0f * fontSize, height));
 
         ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
