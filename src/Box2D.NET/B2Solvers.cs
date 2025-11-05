@@ -43,9 +43,9 @@ namespace Box2D.NET
         public const float B2_CORE_FRACTION = 0.25f;
 
         // TODO: @ikpil. check SIMD
-        public static readonly int B2_SIMD_SHIFT = b2SIMDShift();
+        internal static readonly int B2_SIMD_SHIFT = b2SIMDShift();
 
-        public static int b2SIMDShift()
+        internal static int b2SIMDShift()
         {
             if (8 == B2_SIMD_WIDTH)
             {
@@ -99,7 +99,7 @@ namespace Box2D.NET
         }
 
 
-        public static void b2Pause()
+        internal static void b2Pause()
         {
             // TODO: @ikpil, check sleep or yield
             Task.Yield();
@@ -107,7 +107,7 @@ namespace Box2D.NET
 
 
         // Integrate velocities and apply damping
-        public static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.integrate_velocity, "IntVel", B2HexColor.b2_colorDeepPink, true);
 
@@ -188,7 +188,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.integrate_velocity);
         }
 
-        public static void b2PrepareJointsTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2PrepareJointsTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
@@ -203,7 +203,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        public static void b2WarmStartJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
+        internal static void b2WarmStartJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.warm_joints, "WarmJoints", B2HexColor.b2_colorGold, true);
 
@@ -257,7 +257,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.solve_joints);
         }
 
-        public static void b2IntegratePositionsTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2IntegratePositionsTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.integrate_positions, "IntPos", B2HexColor.b2_colorDarkSeaGreen, true);
 
@@ -294,7 +294,7 @@ namespace Box2D.NET
 
 
         // This is called from b2DynamicTree_Query for continuous collision
-        public static bool b2ContinuousQueryCallback(int proxyId, ulong userData, ref B2ContinuousContext context)
+        internal static bool b2ContinuousQueryCallback(int proxyId, ulong userData, ref B2ContinuousContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -496,7 +496,7 @@ namespace Box2D.NET
             return true;
         }
 
-        public static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext)
+        internal static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext)
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
 
@@ -658,7 +658,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.ccd);
         }
 
-        public static void b2FinalizeBodiesTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2FinalizeBodiesTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.finalize_transfprms, "Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
 
@@ -884,7 +884,7 @@ public enum b2SolverBlockType
 } b2SolverBlockType;
 */
 
-        public static void b2ExecuteBlock(B2SolverStage stage, B2StepContext context, B2SolverBlock block, int workerIndex)
+        internal static void b2ExecuteBlock(B2SolverStage stage, B2StepContext context, B2SolverBlock block, int workerIndex)
         {
             B2SolverStageType stageType = stage.type;
             B2SolverBlockType blockType = (B2SolverBlockType)block.blockType;
@@ -959,7 +959,7 @@ public enum b2SolverBlockType
             }
         }
 
-        public static int GetWorkerStartIndex(int workerIndex, int blockCount, int workerCount)
+        internal static int GetWorkerStartIndex(int workerIndex, int blockCount, int workerCount)
         {
             if (blockCount <= workerCount)
             {
@@ -971,7 +971,7 @@ public enum b2SolverBlockType
             return blocksPerWorker * workerIndex + b2MinInt(remainder, workerIndex);
         }
 
-        public static void b2ExecuteStage(B2SolverStage stage, B2StepContext context, int previousSyncIndex, int syncIndex, int workerIndex)
+        internal static void b2ExecuteStage(B2SolverStage stage, B2StepContext context, int previousSyncIndex, int syncIndex, int workerIndex)
         {
             int completedCount = 0;
             ArraySegment<B2SolverBlock> blocks = stage.blocks;
@@ -1032,7 +1032,7 @@ public enum b2SolverBlockType
             b2AtomicFetchAddInt(ref stage.completionCount, completedCount);
         }
 
-        public static void b2ExecuteMainStage(B2SolverStage stage, B2StepContext context, uint syncBits)
+        internal static void b2ExecuteMainStage(B2SolverStage stage, B2StepContext context, uint syncBits)
         {
             int blockCount = stage.blockCount;
             if (blockCount == 0)
@@ -1067,7 +1067,7 @@ public enum b2SolverBlockType
         }
 
         // This should not use the thread index because thread 0 can be called twice by enkiTS.
-        public static void b2SolverTask(int startIndex, int endIndex, uint threadIndexIgnore, object taskContext)
+        internal static void b2SolverTask(int startIndex, int endIndex, uint threadIndexIgnore, object taskContext)
         {
             B2_UNUSED(startIndex, endIndex, threadIndexIgnore);
 
@@ -1305,7 +1305,7 @@ public enum b2SolverBlockType
             }
         }
 
-        public static void b2BulletBodyTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2BulletBodyTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             B2_UNUSED(threadIndex);
 
@@ -1327,7 +1327,7 @@ public enum b2SolverBlockType
 
 
         // Solve with graph coloring
-        public static void b2Solve(B2World world, B2StepContext stepContext)
+        internal static void b2Solve(B2World world, B2StepContext stepContext)
         {
             world.stepIndex += 1;
 

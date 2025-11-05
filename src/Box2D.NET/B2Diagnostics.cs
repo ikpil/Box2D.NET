@@ -74,7 +74,7 @@ namespace Box2D.NET
             b2AssertHandler = assertFcn;
         }
 
-        public static int b2InternalAssertFcn(string condition, string fileName, int lineNumber)
+        internal static int b2InternalAssertFcn(string condition, string fileName, int lineNumber)
         {
             return b2AssertHandler(condition, fileName, lineNumber);
         }

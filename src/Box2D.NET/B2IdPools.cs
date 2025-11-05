@@ -9,17 +9,17 @@ namespace Box2D.NET
 {
     public static class B2IdPools
     {
-        public static int b2GetIdCount(B2IdPool pool)
+        internal static int b2GetIdCount(B2IdPool pool)
         {
             return pool.nextIndex - pool.freeArray.count;
         }
 
-        public static int b2GetIdCapacity(B2IdPool pool)
+        internal static int b2GetIdCapacity(B2IdPool pool)
         {
             return pool.nextIndex;
         }
 
-        public static int b2GetIdBytes(B2IdPool pool)
+        internal static int b2GetIdBytes(B2IdPool pool)
         {
             return b2Array_ByteCount(ref pool.freeArray);
         }
@@ -39,7 +39,7 @@ namespace Box2D.NET
             pool.Clear();
         }
 
-        public static int b2AllocId(B2IdPool pool)
+        internal static int b2AllocId(B2IdPool pool)
         {
             int count = pool.freeArray.count;
             if (count > 0)
@@ -53,7 +53,7 @@ namespace Box2D.NET
             return nextId;
         }
 
-        public static void b2FreeId(B2IdPool pool, int id)
+        internal static void b2FreeId(B2IdPool pool, int id)
         {
             B2_ASSERT(pool.nextIndex > 0);
             B2_ASSERT(0 <= id && id < pool.nextIndex);
@@ -61,7 +61,7 @@ namespace Box2D.NET
         }
 
 #if DEBUG
-        public static void b2ValidateFreeId(B2IdPool pool, int id)
+        internal static void b2ValidateFreeId(B2IdPool pool, int id)
         {
             int freeCount = pool.freeArray.count;
             for (int i = 0; i < freeCount; ++i)
@@ -75,7 +75,7 @@ namespace Box2D.NET
             B2_ASSERT(false);
         }
 
-        public static void b2ValidateUsedId(B2IdPool pool, int id)
+        internal static void b2ValidateUsedId(B2IdPool pool, int id)
         {
             int freeCount = pool.freeArray.count;
             for (int i = 0; i < freeCount; ++i)
@@ -88,13 +88,13 @@ namespace Box2D.NET
         }
 
 #else
-        public static void b2ValidateFreeId(B2IdPool pool, int id)
+        internal static void b2ValidateFreeId(B2IdPool pool, int id)
         {
             B2_UNUSED(pool);
             B2_UNUSED(id);
         }
 
-        public static void b2ValidateUsedId(B2IdPool pool, int id)
+        internal static void b2ValidateUsedId(B2IdPool pool, int id)
         {
             B2_UNUSED(pool);
             B2_UNUSED(id);

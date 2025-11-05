@@ -14,7 +14,7 @@ namespace Box2D.NET
             return b2AtomicFetchAddInt(ref _indices, 1);
         }
 
-        public static int Index<T>() where T : new()
+        internal static int Index<T>() where T : new()
         {
             return B2ArenaAllocatorIndexer<T>.Index;
         }
@@ -22,7 +22,7 @@ namespace Box2D.NET
 
     internal class B2ArenaAllocatorIndexer<T> where T : new()
     {
-        public static readonly int Index = B2ArenaAllocatorIndexer.Next<T>();
+        internal static readonly int Index = B2ArenaAllocatorIndexer.Next<T>();
 
         private B2ArenaAllocatorIndexer()
         {

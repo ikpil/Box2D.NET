@@ -47,7 +47,7 @@ namespace Box2D.NET
         // 2. non-touching contacts already in the awake set
         // 3. touching contacts in the sleeping set
         // This handles contact types 1 and 3. Type 2 doesn't need any action.
-        public static void b2WakeSolverSet(B2World world, int setIndex)
+        internal static void b2WakeSolverSet(B2World world, int setIndex)
         {
             B2_ASSERT(setIndex >= (int)B2SetType.b2_firstSleepingSet);
             B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
@@ -169,7 +169,7 @@ namespace Box2D.NET
             b2DestroySolverSet(world, setIndex);
         }
 
-        public static void b2TrySleepIsland(B2World world, int islandId)
+        internal static void b2TrySleepIsland(B2World world, int islandId)
         {
             B2Island island = b2Array_Get(ref world.islands, islandId);
             B2_ASSERT(island.setIndex == (int)B2SetType.b2_awakeSet);
@@ -447,7 +447,7 @@ namespace Box2D.NET
         // This is called when joints are created between sets. I want to allow the sets
         // to continue sleeping if both are asleep. Otherwise one set is waked.
         // Islands will get merge when the set is waked.
-        public static void b2MergeSolverSets(B2World world, int setId1, int setId2)
+        internal static void b2MergeSolverSets(B2World world, int setId1, int setId2)
         {
             B2_ASSERT(setId1 >= (int)B2SetType.b2_firstSleepingSet);
             B2_ASSERT(setId2 >= (int)B2SetType.b2_firstSleepingSet);
@@ -545,7 +545,7 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static void b2TransferBody(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Body body)
+        internal static void b2TransferBody(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Body body)
         {
             if (targetSet == sourceSet)
             {
@@ -591,7 +591,7 @@ namespace Box2D.NET
             body.localIndex = targetIndex;
         }
 
-        public static void b2TransferJoint(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Joint joint)
+        internal static void b2TransferJoint(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Joint joint)
         {
             if (targetSet == sourceSet)
             {

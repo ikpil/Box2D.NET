@@ -25,7 +25,7 @@ namespace Box2D.NET
     public static class B2Shapes
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2GetShapeRadius(B2Shape shape)
+        internal static float b2GetShapeRadius(B2Shape shape)
         {
             switch (shape.type)
             {
@@ -41,7 +41,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
+        internal static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
         {
             if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
             {
@@ -52,13 +52,13 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2ShouldQueryCollide(B2Filter shapeFilter, B2QueryFilter queryFilter)
+        internal static bool b2ShouldQueryCollide(B2Filter shapeFilter, B2QueryFilter queryFilter)
         {
             return (shapeFilter.categoryBits & queryFilter.maskBits) != 0 && (shapeFilter.maskBits & queryFilter.categoryBits) != 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Shape b2GetShape(B2World world, B2ShapeId shapeId)
+        internal static B2Shape b2GetShape(B2World world, B2ShapeId shapeId)
         {
             int id = shapeId.index1 - 1;
             B2Shape shape = b2Array_Get(ref world.shapes, id);
@@ -66,7 +66,7 @@ namespace Box2D.NET
             return shape;
         }
 
-        public static B2ChainShape b2GetChainShape(B2World world, B2ChainId chainId)
+        internal static B2ChainShape b2GetChainShape(B2World world, B2ChainId chainId)
         {
             int id = chainId.index1 - 1;
             B2ChainShape chain = b2Array_Get(ref world.chainShapes, id);
@@ -74,7 +74,7 @@ namespace Box2D.NET
             return chain;
         }
 
-        public static void b2UpdateShapeAABBs(B2Shape shape, B2Transform transform, B2BodyType proxyType)
+        internal static void b2UpdateShapeAABBs(B2Shape shape, B2Transform transform, B2BodyType proxyType)
         {
             // Compute a bounding box with a speculative margin
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
@@ -506,7 +506,7 @@ namespace Box2D.NET
             return id;
         }
 
-        public static void b2FreeChainData(B2ChainShape chain)
+        internal static void b2FreeChainData(B2ChainShape chain)
         {
             b2Free(chain.shapeIndices, chain.count);
             chain.shapeIndices = null;
@@ -607,7 +607,7 @@ namespace Box2D.NET
             return count;
         }
 
-        public static B2AABB b2ComputeShapeAABB(B2Shape shape, B2Transform xf)
+        internal static B2AABB b2ComputeShapeAABB(B2Shape shape, B2Transform xf)
         {
             switch (shape.type)
             {
@@ -630,7 +630,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2Vec2 b2GetShapeCentroid(B2Shape shape)
+        internal static B2Vec2 b2GetShapeCentroid(B2Shape shape)
         {
             switch (shape.type)
             {
@@ -650,7 +650,7 @@ namespace Box2D.NET
         }
 
         // todo_erin maybe compute this on shape creation
-        public static float b2GetShapePerimeter(B2Shape shape)
+        internal static float b2GetShapePerimeter(B2Shape shape)
         {
             switch (shape.type)
             {
@@ -685,7 +685,7 @@ namespace Box2D.NET
         }
 
         // This projects the shape perimeter onto an infinite line
-        public static float b2GetShapeProjectedPerimeter(B2Shape shape, B2Vec2 line)
+        internal static float b2GetShapeProjectedPerimeter(B2Shape shape, B2Vec2 line)
         {
             switch (shape.type)
             {
@@ -736,7 +736,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2MassData b2ComputeShapeMass(B2Shape shape)
+        internal static B2MassData b2ComputeShapeMass(B2Shape shape)
         {
             switch (shape.type)
             {
@@ -751,7 +751,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ShapeExtent b2ComputeShapeExtent(B2Shape shape, B2Vec2 localCenter)
+        internal static B2ShapeExtent b2ComputeShapeExtent(B2Shape shape, B2Vec2 localCenter)
         {
             B2ShapeExtent extent = new B2ShapeExtent();
 
@@ -821,7 +821,7 @@ namespace Box2D.NET
             return extent;
         }
 
-        public static B2CastOutput b2RayCastShape(ref B2RayCastInput input, B2Shape shape, B2Transform transform)
+        internal static B2CastOutput b2RayCastShape(ref B2RayCastInput input, B2Shape shape, B2Transform transform)
         {
             B2RayCastInput localInput = input;
             localInput.origin = b2InvTransformPoint(transform, input.origin);
@@ -854,7 +854,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2CastOutput b2ShapeCastShape(ref B2ShapeCastInput input, B2Shape shape, B2Transform transform)
+        internal static B2CastOutput b2ShapeCastShape(ref B2ShapeCastInput input, B2Shape shape, B2Transform transform)
         {
             B2CastOutput output = new B2CastOutput();
 
@@ -918,7 +918,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2PlaneResult b2CollideMover(ref B2Capsule mover, B2Shape shape, B2Transform transform)
+        internal static B2PlaneResult b2CollideMover(ref B2Capsule mover, B2Shape shape, B2Transform transform)
         {
             B2Capsule localMover = new B2Capsule();
             localMover.center1 = b2InvTransformPoint(transform, mover.center1);
@@ -1063,7 +1063,7 @@ namespace Box2D.NET
         }
 
         // todo_erin untested
-        public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, ref B2RayCastInput input)
+        internal static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, ref B2RayCastInput input)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1237,7 +1237,7 @@ namespace Box2D.NET
             return shape.filter;
         }
 
-        public static void b2ResetProxy(B2World world, B2Shape shape, bool wakeBodies, bool destroyProxy)
+        internal static void b2ResetProxy(B2World world, B2Shape shape, bool wakeBodies, bool destroyProxy)
         {
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
 
@@ -1353,7 +1353,7 @@ namespace Box2D.NET
             shape.enableContactEvents = flag;
         }
 
-        public static bool b2Shape_AreContactEventsEnabled(B2ShapeId shapeId)
+        internal static bool b2Shape_AreContactEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1372,7 +1372,7 @@ namespace Box2D.NET
             shape.enablePreSolveEvents = flag;
         }
 
-        public static bool b2Shape_ArePreSolveEventsEnabled(B2ShapeId shapeId)
+        internal static bool b2Shape_ArePreSolveEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1391,7 +1391,7 @@ namespace Box2D.NET
             shape.enableHitEvents = flag;
         }
 
-        public static bool b2Shape_AreHitEventsEnabled(B2ShapeId shapeId)
+        internal static bool b2Shape_AreHitEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1718,7 +1718,7 @@ namespace Box2D.NET
         }
 
         /// Compute the mass data for a shape
-        public static B2MassData b2Shape_ComputeMassData(B2ShapeId shapeId)
+        internal static B2MassData b2Shape_ComputeMassData(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)

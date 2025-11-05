@@ -214,7 +214,7 @@ namespace Box2D.NET
             return speed;
         }
 
-        public static B2Vec2 b2GetPrismaticJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetPrismaticJointForce(B2World world, B2JointSim @base)
         {
             int idA = @base.bodyIdA;
             B2Transform transformA = b2GetBodyTransform(world, idA);
@@ -233,7 +233,7 @@ namespace Box2D.NET
             return force;
         }
 
-        public static float b2GetPrismaticJointTorque(B2World world, B2JointSim @base)
+        internal static float b2GetPrismaticJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * @base.uj.prismaticJoint.impulse.Y;
         }
@@ -283,7 +283,7 @@ namespace Box2D.NET
         // s1 = cross(d + r1, u), s2 = cross(r2, u)
         // a1 = cross(d + r1, v), a2 = cross(r2, v)
 
-        public static void b2PreparePrismaticJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PreparePrismaticJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
@@ -341,7 +341,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartPrismaticJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartPrismaticJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
@@ -395,7 +395,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolvePrismaticJoint(B2JointSim @base, B2StepContext context, bool useBias)
+        internal static void b2SolvePrismaticJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
@@ -657,7 +657,7 @@ namespace Box2D.NET
         }
 
 #if FALSE
-        public static void b2PrismaticJoint::Dump()
+        internal static void b2PrismaticJoint::Dump()
         {
             int32 indexA = joint.bodyA.joint.islandIndex;
             int32 indexB = joint.bodyB.joint.islandIndex;
@@ -679,7 +679,7 @@ namespace Box2D.NET
         }
 #endif
 
-        public static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
+        internal static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 

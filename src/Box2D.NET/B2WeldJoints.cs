@@ -47,13 +47,13 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2Dot3(B2Vec3 a, B2Vec3 b)
+        internal static float b2Dot3(B2Vec3 a, B2Vec3 b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec3 b2Cross3(B2Vec3 a, B2Vec3 b)
+        internal static B2Vec3 b2Cross3(B2Vec3 a, B2Vec3 b)
         {
             return new B2Vec3()
             {
@@ -64,7 +64,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec3 b2Solve33(ref B2Mat33 m, B2Vec3 b)
+        internal static B2Vec3 b2Solve33(ref B2Mat33 m, B2Vec3 b)
         {
             float det = b2Dot3(m.cx, b2Cross3(m.cy, m.cz));
             if (det != 0.0f)
@@ -132,13 +132,13 @@ namespace Box2D.NET
             return joint.uj.weldJoint.angularDampingRatio;
         }
 
-        public static B2Vec2 b2GetWeldJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetWeldJointForce(B2World world, B2JointSim @base)
         {
             B2Vec2 force = b2MulSV(world.inv_h, @base.uj.weldJoint.linearImpulse);
             return force;
         }
 
-        public static float b2GetWeldJointTorque(B2World world, B2JointSim @base)
+        internal static float b2GetWeldJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * @base.uj.weldJoint.angularImpulse;
         }
@@ -165,7 +165,7 @@ namespace Box2D.NET
         //   = [J1 * invM * J1T J1 * invM * J2T]
         //     [J2 * invM * J1T J2 * invM * J2T]
 
-        public static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
@@ -239,7 +239,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartWeldJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartWeldJoint(B2JointSim @base, B2StepContext context)
         {
             float mA = @base.invMassA;
             float mB = @base.invMassB;
@@ -270,7 +270,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveWeldJoint(B2JointSim @base, B2StepContext context, bool useBias)
+        internal static void b2SolveWeldJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
@@ -471,7 +471,7 @@ namespace Box2D.NET
         }
 
 #if FALSE
-        public static void b2DumpWeldJoint()
+        internal static void b2DumpWeldJoint()
         {
             int32 indexA = bodyA->islandIndex;
             int32 indexB = bodyB->islandIndex;
@@ -489,7 +489,7 @@ namespace Box2D.NET
         }
 #endif
 
-        public static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
+        internal static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 

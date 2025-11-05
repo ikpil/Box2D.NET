@@ -16,14 +16,14 @@ namespace Box2D.NET
         // B2_ASSERT( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
 
         /// Validate ray cast input data (NaN, etc)
-        public static bool b2IsValidRay(ref B2RayCastInput input)
+        internal static bool b2IsValidRay(ref B2RayCastInput input)
         {
             bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) &&
                            b2IsValidFloat(input.maxFraction) && 0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
             return isValid;
         }
 
-        public static B2Vec2 b2ComputePolygonCentroid(ReadOnlySpan<B2Vec2> vertices, int count)
+        internal static B2Vec2 b2ComputePolygonCentroid(ReadOnlySpan<B2Vec2> vertices, int count)
         {
             B2Vec2 center = new B2Vec2(0.0f, 0.0f);
             float area = 0.0f;
@@ -935,7 +935,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a circle.
-        public static B2CastOutput b2ShapeCastCircle(ref B2Circle shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastCircle(ref B2Circle shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -951,7 +951,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a capsule.
-        public static B2CastOutput b2ShapeCastCapsule(ref B2Capsule shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastCapsule(ref B2Capsule shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -967,7 +967,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a line segment.
-        public static B2CastOutput b2ShapeCastSegment(ref B2Segment shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastSegment(ref B2Segment shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -983,7 +983,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a convex polygon.
-        public static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, ref B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -998,7 +998,7 @@ namespace Box2D.NET
             return output;
         }
 
-        public static B2PlaneResult b2CollideMoverAndCircle(ref B2Capsule mover, ref B2Circle shape)
+        internal static B2PlaneResult b2CollideMoverAndCircle(ref B2Capsule mover, ref B2Circle shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
@@ -1021,7 +1021,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule mover, ref B2Capsule shape)
+        internal static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule mover, ref B2Capsule shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, 0.0f);
@@ -1044,7 +1044,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndPolygon(ref B2Capsule mover, ref B2Polygon shape)
+        internal static B2PlaneResult b2CollideMoverAndPolygon(ref B2Capsule mover, ref B2Polygon shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -1067,7 +1067,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        public static B2PlaneResult b2CollideMoverAndSegment(ref B2Capsule mover, ref B2Segment shape)
+        internal static B2PlaneResult b2CollideMoverAndSegment(ref B2Capsule mover, ref B2Segment shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);

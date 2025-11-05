@@ -20,12 +20,12 @@ namespace Box2D.NET
             m.lc = null;
         }
 
-        public static void b2LockMutex(ref B2Mutex m)
+        internal static void b2LockMutex(ref B2Mutex m)
         {
             Monitor.Enter(m.lc);
         }
 
-        public static void b2UnlockMutex(ref B2Mutex m)
+        internal static void b2UnlockMutex(ref B2Mutex m)
         {
             Monitor.Exit(m.lc);
         }

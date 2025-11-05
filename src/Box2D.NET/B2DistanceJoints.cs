@@ -202,7 +202,7 @@ namespace Box2D.NET
             return joint.uj.distanceJoint.maxMotorForce;
         }
 
-        public static B2Vec2 b2GetDistanceJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetDistanceJointForce(B2World world, B2JointSim @base)
         {
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
@@ -232,7 +232,7 @@ namespace Box2D.NET
 // K = J * invM * JT
 //   = invMass1 + invI1 * cross(r1, u)^2 + invMass2 + invI2 * cross(r2, u)^2
 
-        public static void b2PrepareDistanceJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PrepareDistanceJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
@@ -297,7 +297,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartDistanceJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartDistanceJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
@@ -336,7 +336,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveDistanceJoint(B2JointSim @base, B2StepContext context, bool useBias)
+        internal static void b2SolveDistanceJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
@@ -527,7 +527,7 @@ namespace Box2D.NET
         }
 
 #if FALSE
-    public static void b2DistanceJoint::Dump()
+    internal static void b2DistanceJoint::Dump()
     {
     	int32 indexA = m_bodyA.m_islandIndex;
     	int32 indexB = m_bodyB.m_islandIndex;
@@ -547,7 +547,7 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawDistanceJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
+        internal static void b2DrawDistanceJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB)
         {
             B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 

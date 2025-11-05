@@ -87,7 +87,7 @@ namespace Box2D.NET
 
         // Contacts are always created as non-touching. They get cloned into the constraint
         // graph once they are found to be touching.
-        public static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
+        internal static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
         {
             B2_ASSERT(contactSim.manifold.pointCount > 0);
             B2_ASSERT(0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag));
@@ -215,7 +215,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2RemoveContactFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
+        internal static void b2RemoveContactFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
             ref B2ConstraintGraph graph = ref world.constraintGraph;
 
@@ -311,7 +311,7 @@ namespace Box2D.NET
             return B2_OVERFLOW_INDEX;
         }
 
-        public static ref B2JointSim b2CreateJointInGraph(B2World world, B2Joint joint)
+        internal static ref B2JointSim b2CreateJointInGraph(B2World world, B2Joint joint)
         {
             ref B2ConstraintGraph graph = ref world.constraintGraph;
 
@@ -331,14 +331,14 @@ namespace Box2D.NET
             return ref jointSim;
         }
 
-        public static void b2AddJointToGraph(B2World world, B2JointSim jointSim, B2Joint joint)
+        internal static void b2AddJointToGraph(B2World world, B2JointSim jointSim, B2Joint joint)
         {
             B2JointSim jointDst = b2CreateJointInGraph(world, joint);
             //memcpy( jointDst, jointSim, sizeof( b2JointSim ) );
             jointDst.CopyFrom(jointSim);
         }
 
-        public static void b2RemoveJointFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
+        internal static void b2RemoveJointFromGraph(B2World world, int bodyIdA, int bodyIdB, int colorIndex, int localIndex)
         {
             ref B2ConstraintGraph graph = ref world.constraintGraph;
 
@@ -366,7 +366,7 @@ namespace Box2D.NET
             }
         }
 
-        public static readonly B2HexColor[] b2_graphColors = new B2HexColor[]
+        internal static readonly B2HexColor[] b2_graphColors = new B2HexColor[]
         {
             B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen, B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue,
             B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink, B2HexColor.b2_colorChocolate, B2HexColor.b2_colorGoldenRod, B2HexColor.b2_colorCoral, B2HexColor.b2_colorRosyBrown,

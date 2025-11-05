@@ -28,7 +28,7 @@ namespace Box2D.NET
         public const int B2_NAME_LENGTH = 32;
 
         // Identity body state, notice the deltaRotation is {1, 0}
-        public static readonly B2BodyState b2_identityBodyState = new B2BodyState()
+        internal static readonly B2BodyState b2_identityBodyState = new B2BodyState()
         {
             linearVelocity = new B2Vec2(0.0f, 0.0f),
             angularVelocity = 0.0f,
@@ -119,7 +119,7 @@ namespace Box2D.NET
             island.bodyCount = 1;
         }
 
-        public static void b2RemoveBodyFromIsland(B2World world, B2Body body)
+        internal static void b2RemoveBodyFromIsland(B2World world, B2Body body)
         {
             if (body.islandId == B2_NULL_INDEX)
             {
@@ -351,7 +351,7 @@ namespace Box2D.NET
         }
 
         // careful calling this because it can invalidate body, state, joint, and contact pointers
-        public static bool b2WakeBody(B2World world, B2Body body)
+        internal static bool b2WakeBody(B2World world, B2Body body)
         {
             if (body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
             {
@@ -549,7 +549,7 @@ namespace Box2D.NET
             return aabb;
         }
 
-        public static void b2UpdateBodyMassData(B2World world, B2Body body)
+        internal static void b2UpdateBodyMassData(B2World world, B2Body body)
         {
             B2BodySim bodySim = b2GetBodySim(world, body);
 
@@ -1050,7 +1050,7 @@ namespace Box2D.NET
         /// step. So this only needs to be called if the application wants to remove the effect of previous
         /// calls to apply forces and torques before the world step is called.
         /// @param bodyId The body id
-        public static void b2Body_ClearForces(B2BodyId bodyId)
+        internal static void b2Body_ClearForces(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -2035,7 +2035,7 @@ namespace Box2D.NET
         }
 
 
-        public static bool b2ShouldBodiesCollide(B2World world, B2Body bodyA, B2Body bodyB)
+        internal static bool b2ShouldBodiesCollide(B2World world, B2Body bodyA, B2Body bodyB)
         {
             if (bodyA.type != B2BodyType.b2_dynamicBody && bodyB.type != B2BodyType.b2_dynamicBody)
             {

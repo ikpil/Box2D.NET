@@ -166,13 +166,13 @@ namespace Box2D.NET
             return joint.uj.motorJoint.maxSpringTorque;
         }
 
-        public static B2Vec2 b2GetMotorJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetMotorJointForce(B2World world, B2JointSim @base)
         {
             B2Vec2 force = b2MulSV(world.inv_h, b2Add(@base.uj.motorJoint.linearVelocityImpulse, @base.uj.motorJoint.linearSpringImpulse));
             return force;
         }
 
-        public static float b2GetMotorJointTorque(B2World world, B2JointSim @base)
+        internal static float b2GetMotorJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * (@base.uj.motorJoint.angularVelocityImpulse + @base.uj.motorJoint.angularSpringImpulse);
         }
@@ -191,7 +191,7 @@ namespace Box2D.NET
         // J = [0 0 -1 0 0 1]
         // K = invI1 + invI2
 
-        public static void b2PrepareMotorJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PrepareMotorJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_motorJoint);
 
@@ -263,7 +263,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartMotorJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartMotorJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_motorJoint);
 
@@ -299,7 +299,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveMotorJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2SolveMotorJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_motorJoint);
 
