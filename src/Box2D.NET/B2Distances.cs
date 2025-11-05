@@ -15,13 +15,13 @@ namespace Box2D.NET
     {
         // Warning: writing to these globals significantly slows multithreading performance
 #if B2_SNOOP_TOI_COUNTERS
-        public static float b2_toiTime, b2_toiMaxTime;
-        public static int b2_toiCalls, b2_toiDistanceIterations, b2_toiMaxDistanceIterations;
-        public static int b2_toiRootIterations, b2_toiMaxRootIterations;
-        public static int b2_toiFailedCount;
-        public static int b2_toiOverlappedCount;
-        public static int b2_toiHitCount;
-        public static int b2_toiSeparatedCount;
+        internal static float b2_toiTime, b2_toiMaxTime;
+        internal static int b2_toiCalls, b2_toiDistanceIterations, b2_toiMaxDistanceIterations;
+        internal static int b2_toiRootIterations, b2_toiMaxRootIterations;
+        internal static int b2_toiFailedCount;
+        internal static int b2_toiOverlappedCount;
+        internal static int b2_toiHitCount;
+        internal static int b2_toiSeparatedCount;
 #endif
 
         /// Evaluate the transform sweep at a specific time.
@@ -178,19 +178,19 @@ namespace Box2D.NET
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2Weight2(float a1, B2Vec2 w1, float a2, B2Vec2 w2)
+        internal static B2Vec2 b2Weight2(float a1, B2Vec2 w1, float a2, B2Vec2 w2)
         {
             return new B2Vec2(a1 * w1.X + a2 * w2.X, a1 * w1.Y + a2 * w2.Y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2Weight3(float a1, B2Vec2 w1, float a2, B2Vec2 w2, float a3, B2Vec2 w3)
+        internal static B2Vec2 b2Weight3(float a1, B2Vec2 w1, float a2, B2Vec2 w2, float a3, B2Vec2 w3)
         {
             return new B2Vec2(a1 * w1.X + a2 * w2.X + a3 * w3.X, a1 * w1.Y + a2 * w2.Y + a3 * w3.Y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int b2FindSupport(ref B2ShapeProxy proxy, B2Vec2 direction)
+        internal static int b2FindSupport(ref B2ShapeProxy proxy, B2Vec2 direction)
         {
             Span<B2Vec2> points = proxy.points.AsSpan();
             int count = proxy.count;
@@ -259,7 +259,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
+        internal static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
         {
             switch (s.count)
             {
@@ -313,7 +313,7 @@ namespace Box2D.NET
         // a2 = d12_2 / d12
         //
         // returns a vector that points towards the origin
-        public static B2Vec2 b2SolveSimplex2(ref B2Simplex s)
+        internal static B2Vec2 b2SolveSimplex2(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -348,7 +348,7 @@ namespace Box2D.NET
             return b2CrossSV(b2Cross(b2Add(w1, w2), e12), e12);
         }
 
-        public static B2Vec2 b2SolveSimplex3(ref B2Simplex s)
+        internal static B2Vec2 b2SolveSimplex3(ref B2Simplex s)
         {
             B2Vec2 w1 = s.v1.w;
             B2Vec2 w2 = s.v2.w;
@@ -1047,7 +1047,7 @@ namespace Box2D.NET
             }
         }
 
-        public static float b2FindMinSeparation(ref B2SeparationFunction f, ref int indexA, ref int indexB, float t)
+        internal static float b2FindMinSeparation(ref B2SeparationFunction f, ref int indexA, ref int indexB, float t)
         {
             B2Transform xfA = b2GetSweepTransform(ref f.sweepA, t);
             B2Transform xfB = b2GetSweepTransform(ref f.sweepB, t);

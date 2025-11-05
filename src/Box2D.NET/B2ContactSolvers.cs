@@ -28,7 +28,7 @@ namespace Box2D.NET
         // s(t) = s0 + dot(cB0 + dpB + rot(dqB, rB0) - cA0 - dpA - rot(dqA, rA0), normal)
         // s(t) = s0 + dot(cB0 - cA0, normal) + dot(dpB - dpA + rot(dqB, rB0) - rot(dqA, rA0), normal)
         // s_base = s0 + dot(cB0 - cA0, normal)
-        public static void b2PrepareOverflowContacts(B2StepContext context)
+        internal static void b2PrepareOverflowContacts(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_overflow_contact, "Prepare Overflow Contact", B2HexColor.b2_colorYellow, true);
 
@@ -165,7 +165,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_overflow_contact);
         }
 
-        public static void b2WarmStartOverflowContacts(B2StepContext context)
+        internal static void b2WarmStartOverflowContacts(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.warmstart_overflow_contact, "WarmStart Overflow Contact", B2HexColor.b2_colorDarkOrange, true);
 
@@ -239,7 +239,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.warmstart_overflow_contact);
         }
 
-        public static void b2SolveOverflowContacts(B2StepContext context, bool useBias)
+        internal static void b2SolveOverflowContacts(B2StepContext context, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
@@ -401,7 +401,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
         }
 
-        public static void b2ApplyOverflowRestitution(B2StepContext context)
+        internal static void b2ApplyOverflowRestitution(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.overflow_resitution, "Overflow Restitution", B2HexColor.b2_colorViolet, true);
 
@@ -506,7 +506,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.overflow_resitution);
         }
 
-        public static void b2StoreOverflowImpulses(B2StepContext context)
+        internal static void b2StoreOverflowImpulses(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
@@ -1107,7 +1107,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 #else
 
         // This is a load and transpose
-        public static B2BodyStateW b2GatherBodies(B2BodyState[] states, ReadOnlySpan<int> indices)
+        internal static B2BodyStateW b2GatherBodies(B2BodyState[] states, ReadOnlySpan<int> indices)
         {
             B2BodyState identity = b2_identityBodyState;
 
@@ -1130,7 +1130,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         }
 
         // This writes only the velocities back to the solver bodies
-        public static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
+        internal static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
             if (indices[0] != B2_NULL_INDEX && (states[indices[0]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
@@ -1168,7 +1168,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 #endif
 
         // Contacts that live within the constraint graph coloring
-        public static void b2PrepareContactsTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2PrepareContactsTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_contact, "Prepare Contact", B2HexColor.b2_colorYellow, true);
             B2World world = context.world;
@@ -1423,7 +1423,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.prepare_contact);
         }
 
-        public static void b2WarmStartContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
+        internal static void b2WarmStartContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.warm_start_contact, "Warm Start", B2HexColor.b2_colorGreen, true);
 
@@ -1481,7 +1481,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.warm_start_contact);
         }
 
-        public static void b2SolveContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias)
+        internal static void b2SolveContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
@@ -1719,7 +1719,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
         }
 
-        public static void b2ApplyRestitutionTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
+        internal static void b2ApplyRestitutionTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.restitution, "Restitution", B2HexColor.b2_colorDodgerBlue, true);
 
@@ -1834,7 +1834,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.restitution);
         }
 
-        public static void b2StoreImpulsesTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2StoreImpulsesTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 

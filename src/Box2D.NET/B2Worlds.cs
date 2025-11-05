@@ -60,7 +60,7 @@ namespace Box2D.NET
             return world;
         }
 
-        public static B2World b2GetWorld(int index)
+        internal static B2World b2GetWorld(int index)
         {
             B2_ASSERT(0 <= index && index < B2_MAX_WORLDS);
             B2World world = b2_worlds[index];
@@ -68,7 +68,7 @@ namespace Box2D.NET
             return world;
         }
 
-        public static B2World b2GetWorldLocked(int index)
+        internal static B2World b2GetWorldLocked(int index)
         {
             B2_ASSERT(0 <= index && index < B2_MAX_WORLDS);
             B2World world = b2_worlds[index];
@@ -82,25 +82,25 @@ namespace Box2D.NET
             return world;
         }
 
-        public static object b2DefaultAddTaskFcn(b2TaskCallback task, int count, int minRange, object taskContext, object userContext)
+        internal static object b2DefaultAddTaskFcn(b2TaskCallback task, int count, int minRange, object taskContext, object userContext)
         {
             B2_UNUSED(minRange, userContext);
             task(0, count, 0, taskContext);
             return null;
         }
 
-        public static void b2DefaultFinishTaskFcn(object userTask, object userContext)
+        internal static void b2DefaultFinishTaskFcn(object userTask, object userContext)
         {
             B2_UNUSED(userTask, userContext);
         }
 
-        public static float b2DefaultFrictionCallback(float frictionA, ulong materialA, float frictionB, ulong materialB)
+        internal static float b2DefaultFrictionCallback(float frictionA, ulong materialA, float frictionB, ulong materialB)
         {
             B2_UNUSED(materialA, materialB);
             return MathF.Sqrt(frictionA * frictionB);
         }
 
-        public static float b2DefaultRestitutionCallback(float restitutionA, ulong materialA, float restitutionB, ulong materialB)
+        internal static float b2DefaultRestitutionCallback(float restitutionA, ulong materialA, float restitutionB, ulong materialB)
         {
             B2_UNUSED(materialA, materialB);
             return b2MaxFloat(restitutionA, restitutionB);
@@ -381,7 +381,7 @@ namespace Box2D.NET
             world.generation = (ushort)(generation + 1);
         }
 
-        public static void b2CollideTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2CollideTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.collide_task, "Collide", B2HexColor.b2_colorDodgerBlue, true);
 
@@ -471,7 +471,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.collide_task);
         }
 
-        public static void b2UpdateTreesTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2UpdateTreesTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             B2_UNUSED(startIndex);
             B2_UNUSED(endIndex);
@@ -485,7 +485,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.tree_task);
         }
 
-        public static void b2AddNonTouchingContact(B2World world, B2Contact contact, B2ContactSim contactSim)
+        internal static void b2AddNonTouchingContact(B2World world, B2Contact contact, B2ContactSim contactSim)
         {
             B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
             B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
@@ -497,7 +497,7 @@ namespace Box2D.NET
             newContactSim.CopyFrom(contactSim);
         }
 
-        public static void b2RemoveNonTouchingContact(B2World world, int setIndex, int localIndex)
+        internal static void b2RemoveNonTouchingContact(B2World world, int setIndex, int localIndex)
         {
             B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
             int movedIndex = b2Array_RemoveSwap(ref set.contactSims, localIndex);
@@ -513,7 +513,7 @@ namespace Box2D.NET
         }
 
         // Narrow-phase collision
-        public static void b2Collide(B2StepContext context)
+        internal static void b2Collide(B2StepContext context)
         {
             B2World world = context.world;
 
@@ -847,7 +847,7 @@ namespace Box2D.NET
             world.locked = false;
         }
 
-        public static void b2DrawShape(B2DebugDraw draw, B2Shape shape, B2Transform xf, B2HexColor color)
+        internal static void b2DrawShape(B2DebugDraw draw, B2Shape shape, B2Transform xf, B2HexColor color)
         {
             switch (shape.type)
             {
@@ -900,7 +900,7 @@ namespace Box2D.NET
             }
         }
 
-        public static bool DrawQueryCallback(int proxyId, ulong userData, ref B2DrawContext context)
+        internal static bool DrawQueryCallback(int proxyId, ulong userData, ref B2DrawContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -1857,7 +1857,7 @@ namespace Box2D.NET
         }
 
 
-        public static bool TreeOverlapCallback(int proxyId, ulong userData, ref B2WorldOverlapContext context)
+        internal static bool TreeOverlapCallback(int proxyId, ulong userData, ref B2WorldOverlapContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -1926,7 +1926,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static float RayCastCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float RayCastCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2010,7 +2010,7 @@ namespace Box2D.NET
         }
 
         // This callback finds the closest hit. This is the most common callback used in games.
-        public static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+        internal static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
         {
             // Ignore initial overlap
             if (fraction == 0.0f)
@@ -2064,7 +2064,7 @@ namespace Box2D.NET
             return result;
         }
 
-        public static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2143,7 +2143,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        public static float MoverCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldMoverCastContext context)
+        internal static float MoverCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldMoverCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2212,7 +2212,7 @@ namespace Box2D.NET
             return worldContext.fraction;
         }
 
-        public static bool TreeCollideCallback(int proxyId, ulong userData, ref B2WorldMoverContext context)
+        internal static bool TreeCollideCallback(int proxyId, ulong userData, ref B2WorldMoverContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2368,7 +2368,7 @@ void b2World_Dump()
             return world.gravity;
         }
 
-        public static bool ExplosionCallback(int proxyId, ulong userData, ref B2ExplosionContext context)
+        internal static bool ExplosionCallback(int proxyId, ulong userData, ref B2ExplosionContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2498,7 +2498,7 @@ void b2World_Dump()
 
 #if DEBUG
         // This validates island graph connectivity for each body
-        public static void b2ValidateConnectivity(B2World world)
+        internal static void b2ValidateConnectivity(B2World world)
         {
             B2Body[] bodies = world.bodies.data;
             int bodyCapacity = world.bodies.count;
@@ -2585,7 +2585,7 @@ void b2World_Dump()
         }
 
         // Validates solver sets, but not island connectivity
-        public static void b2ValidateSolverSets(B2World world)
+        internal static void b2ValidateSolverSets(B2World world)
         {
             B2_ASSERT(b2GetIdCapacity(world.bodyIdPool) == world.bodies.count);
             B2_ASSERT(b2GetIdCapacity(world.contactIdPool) == world.contacts.count);
@@ -2925,7 +2925,7 @@ void b2World_Dump()
         }
 
         // Validate contact touching status.
-        public static void b2ValidateContacts(B2World world)
+        internal static void b2ValidateContacts(B2World world)
         {
             int contactCount = world.contacts.count;
             B2_ASSERT(contactCount == b2GetIdCapacity(world.contactIdPool));
@@ -2985,17 +2985,17 @@ void b2World_Dump()
         }
 
 #else
-        public static void b2ValidateConnectivity(B2World world)
+        internal static void b2ValidateConnectivity(B2World world)
         {
             B2_UNUSED(world);
         }
 
-        public static void b2ValidateSolverSets(B2World world)
+        internal static void b2ValidateSolverSets(B2World world)
         {
             B2_UNUSED(world);
         }
 
-        public static void b2ValidateContacts(B2World world)
+        internal static void b2ValidateContacts(B2World world)
         {
             B2_UNUSED(world);
         }

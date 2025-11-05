@@ -42,77 +42,77 @@ namespace Box2D.NET
         private static readonly B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
         private static bool s_initialized = false;
 
-        public static B2Manifold b2CircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2CircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideCircles(ref shapeA.us.circle, xfA, ref shapeB.us.circle, xfB);
         }
 
-        public static B2Manifold b2CapsuleAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2CapsuleAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideCapsuleAndCircle(ref shapeA.us.capsule, xfA, ref shapeB.us.circle, xfB);
         }
 
-        public static B2Manifold b2CapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2CapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideCapsules(ref shapeA.us.capsule, xfA, ref shapeB.us.capsule, xfB);
         }
 
-        public static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollidePolygonAndCircle(ref shapeA.us.polygon, xfA, ref shapeB.us.circle, xfB);
         }
 
-        public static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollidePolygonAndCapsule(ref shapeA.us.polygon, xfA, ref shapeB.us.capsule, xfB);
         }
 
-        public static B2Manifold b2PolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2PolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollidePolygons(ref shapeA.us.polygon, xfA, ref shapeB.us.polygon, xfB);
         }
 
-        public static B2Manifold b2SegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2SegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideSegmentAndCircle(ref shapeA.us.segment, xfA, ref shapeB.us.circle, xfB);
         }
 
-        public static B2Manifold b2SegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2SegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideSegmentAndCapsule(ref shapeA.us.segment, xfA, ref shapeB.us.capsule, xfB);
         }
 
-        public static B2Manifold b2SegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2SegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideSegmentAndPolygon(ref shapeA.us.segment, xfA, ref shapeB.us.polygon, xfB);
         }
 
-        public static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
             return b2CollideChainSegmentAndCircle(ref shapeA.us.chainSegment, xfA, ref shapeB.us.circle, xfB);
         }
 
-        public static B2Manifold b2ChainSegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2ChainSegmentAndCapsuleManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             return b2CollideChainSegmentAndCapsule(ref shapeA.us.chainSegment, xfA, ref shapeB.us.capsule, xfB, ref cache);
         }
 
-        public static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
+        internal static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, B2Transform xfA, B2Shape shapeB, B2Transform xfB, ref B2SimplexCache cache)
         {
             return b2CollideChainSegmentAndPolygon(ref shapeA.us.chainSegment, xfA, ref shapeB.us.polygon, xfB, ref cache);
         }
 
-        public static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
+        internal static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
         {
             B2_ASSERT(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
             B2_ASSERT(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
@@ -127,7 +127,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2InitializeContactRegisters()
+        internal static void b2InitializeContactRegisters()
         {
             if (s_initialized == false)
             {
@@ -433,7 +433,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ContactSim b2GetContactSim(B2World world, B2Contact contact)
+        internal static B2ContactSim b2GetContactSim(B2World world, B2Contact contact)
         {
             if (contact.setIndex == (int)B2SetType.b2_awakeSet && contact.colorIndex != B2_NULL_INDEX)
             {
@@ -450,7 +450,7 @@ namespace Box2D.NET
 
         // Update the contact manifold and touching status.
         // Note: do not assume the shape AABBs are overlapping or are valid.
-        public static bool b2UpdateContact(B2World world, B2ContactSim contactSim, B2Shape shapeA, B2Transform transformA, B2Vec2 centerOffsetA,
+        internal static bool b2UpdateContact(B2World world, B2ContactSim contactSim, B2Shape shapeA, B2Transform transformA, B2Vec2 centerOffsetA,
             B2Shape shapeB, B2Transform transformB, B2Vec2 centerOffsetB)
         {
             // Save old manifold
@@ -630,7 +630,7 @@ namespace Box2D.NET
             return touching;
         }
 
-        public static B2Contact b2GetContactFullId(B2World world, B2ContactId contactId)
+        internal static B2Contact b2GetContactFullId(B2World world, B2ContactId contactId)
         {
             int id = contactId.index1 - 1;
             B2Contact contact = b2Array_Get(ref world.contacts, id);

@@ -505,7 +505,7 @@ namespace Box2D.NET
             return b2AABB_Overlaps(aabbA, aabbB);
         }
 
-        public static void b2BroadPhase_RebuildTrees(B2BroadPhase bp)
+        internal static void b2BroadPhase_RebuildTrees(B2BroadPhase bp)
         {
             b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_dynamicBody], false);
             b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_kinematicBody], false);
@@ -519,7 +519,7 @@ namespace Box2D.NET
             return (int)b2DynamicTree_GetUserData(bp.trees[typeIndex], proxyId);
         }
 
-        public static void b2ValidateBroadphase(B2BroadPhase bp)
+        internal static void b2ValidateBroadphase(B2BroadPhase bp)
         {
             b2DynamicTree_Validate(bp.trees[(int)B2BodyType.b2_dynamicBody]);
             b2DynamicTree_Validate(bp.trees[(int)B2BodyType.b2_kinematicBody]);
@@ -527,7 +527,7 @@ namespace Box2D.NET
             // TODO_ERIN validate every shape AABB is contained in tree AABB
         }
 
-        public static void b2ValidateNoEnlarged(B2BroadPhase bp)
+        internal static void b2ValidateNoEnlarged(B2BroadPhase bp)
         {
 #if DEBUG
             for (int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j)

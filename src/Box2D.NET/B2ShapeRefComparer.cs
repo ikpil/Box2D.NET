@@ -8,7 +8,7 @@ namespace Box2D.NET
 {
     public class B2ShapeRefComparer : IComparer<B2Visitor>
     {
-        public static readonly B2ShapeRefComparer Shared = new B2ShapeRefComparer();
+        internal static readonly B2ShapeRefComparer Shared = new B2ShapeRefComparer();
 
         private B2ShapeRefComparer()
         {

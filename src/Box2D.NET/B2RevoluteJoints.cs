@@ -191,20 +191,20 @@ namespace Box2D.NET
             return joint.uj.revoluteJoint.maxMotorTorque;
         }
 
-        public static B2Vec2 b2GetRevoluteJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetRevoluteJointForce(B2World world, B2JointSim @base)
         {
             B2Vec2 force = b2MulSV(world.inv_h, @base.uj.revoluteJoint.linearImpulse);
             return force;
         }
 
-        public static float b2GetRevoluteJointTorque(B2World world, B2JointSim @base)
+        internal static float b2GetRevoluteJointTorque(B2World world, B2JointSim @base)
         {
             ref readonly B2RevoluteJoint revolute = ref @base.uj.revoluteJoint;
             float torque = world.inv_h * (revolute.motorImpulse + revolute.lowerImpulse - revolute.upperImpulse);
             return torque;
         }
 
-        public static void b2PrepareRevoluteJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PrepareRevoluteJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
@@ -270,7 +270,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartRevoluteJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartRevoluteJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
@@ -304,7 +304,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveRevoluteJoint(B2JointSim @base, B2StepContext context, bool useBias)
+        internal static void b2SolveRevoluteJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
@@ -512,7 +512,7 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
+        internal static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 

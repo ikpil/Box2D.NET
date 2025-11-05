@@ -25,7 +25,7 @@ namespace Box2D.NET
         }
 
         // This allows the user to change the length units at runtime
-        public static float b2_lengthUnitsPerMeter = 1.0f;
+        internal static float b2_lengthUnitsPerMeter = 1.0f;
 
         /// Box2D bases all length units on meters, but you may need different units for your game.
         /// You can set this value to use different units. This should be done at application startup
@@ -42,7 +42,7 @@ namespace Box2D.NET
         /// forces.
         /// @warning This must be modified before any calls to Box2D
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void b2SetLengthUnitsPerMeter(float lengthUnits)
+        internal static void b2SetLengthUnitsPerMeter(float lengthUnits)
         {
             B2_ASSERT(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f);
             b2_lengthUnitsPerMeter = lengthUnits;
@@ -50,73 +50,73 @@ namespace Box2D.NET
 
         /// Get the current length units per meter.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2GetLengthUnitsPerMeter()
+        internal static float b2GetLengthUnitsPerMeter()
         {
             return b2_lengthUnitsPerMeter;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2WheelJointDef def)
+        internal static void B2_CHECK_DEF(ref B2WheelJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2WeldJointDef def)
+        internal static void B2_CHECK_DEF(ref B2WeldJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2PrismaticJointDef def)
+        internal static void B2_CHECK_DEF(ref B2PrismaticJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2RevoluteJointDef def)
+        internal static void B2_CHECK_DEF(ref B2RevoluteJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref b2FilterJointDef def)
+        internal static void B2_CHECK_DEF(ref b2FilterJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2MotorJointDef def)
+        internal static void B2_CHECK_DEF(ref B2MotorJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2DistanceJointDef def)
+        internal static void B2_CHECK_DEF(ref B2DistanceJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2ChainDef def)
+        internal static void B2_CHECK_DEF(ref B2ChainDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2BodyDef def)
+        internal static void B2_CHECK_DEF(ref B2BodyDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2WorldDef def)
+        internal static void B2_CHECK_DEF(ref B2WorldDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void B2_CHECK_DEF(ref B2ShapeDef def)
+        internal static void B2_CHECK_DEF(ref B2ShapeDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }

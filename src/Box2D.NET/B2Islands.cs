@@ -94,7 +94,7 @@ namespace Box2D.NET
         }
 
 
-        public static int b2MergeIslands(B2World world, int islandIdA, int islandIdB)
+        internal static int b2MergeIslands(B2World world, int islandIdA, int islandIdB)
         {
             if (islandIdA == islandIdB)
             {
@@ -245,7 +245,7 @@ namespace Box2D.NET
             return bigId;
         }
 
-        public static void b2AddContactToIsland(B2World world, int islandId, B2Contact contact)
+        internal static void b2AddContactToIsland(B2World world, int islandId, B2Contact contact)
         {
             B2_ASSERT(contact.islandId == B2_NULL_INDEX);
             B2_ASSERT(contact.islandPrev == B2_NULL_INDEX);
@@ -273,7 +273,7 @@ namespace Box2D.NET
         }
 
         // Link a contact into an island.
-        public static void b2LinkContact(B2World world, B2Contact contact)
+        internal static void b2LinkContact(B2World world, B2Contact contact)
         {
             B2_ASSERT((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0);
 
@@ -315,7 +315,7 @@ namespace Box2D.NET
 
         // Unlink contact from the island graph when it stops having contact points
         // This is called when a contact no longer has contact points or when a contact is destroyed.
-        public static void b2UnlinkContact(B2World world, B2Contact contact)
+        internal static void b2UnlinkContact(B2World world, B2Contact contact)
         {
             B2_ASSERT(contact.islandId != B2_NULL_INDEX);
 
@@ -358,7 +358,7 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-        public static void b2AddJointToIsland(B2World world, int islandId, B2Joint joint)
+        internal static void b2AddJointToIsland(B2World world, int islandId, B2Joint joint)
         {
             B2_ASSERT(joint.islandId == B2_NULL_INDEX);
             B2_ASSERT(joint.islandPrev == B2_NULL_INDEX);
@@ -386,7 +386,7 @@ namespace Box2D.NET
         }
 
         // Link a joint into the island graph when it is created
-        public static void b2LinkJoint(B2World world, B2Joint joint)
+        internal static void b2LinkJoint(B2World world, B2Joint joint)
         {
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
@@ -415,7 +415,7 @@ namespace Box2D.NET
         }
 
         // Unlink a joint from the island graph when it is destroyed
-        public static void b2UnlinkJoint(B2World world, B2Joint joint)
+        internal static void b2UnlinkJoint(B2World world, B2Joint joint)
         {
             if (joint.islandId == B2_NULL_INDEX)
             {
@@ -464,7 +464,7 @@ namespace Box2D.NET
         // Possible optimizations:
         // 2. start from the sleepy bodies and stop processing if a sleep body is connected to a non-sleepy body
         // 3. use a sleepy flag on bodies to avoid velocity access
-        public static void b2SplitIsland(B2World world, int baseId)
+        internal static void b2SplitIsland(B2World world, int baseId)
         {
             B2Island baseIsland = b2Array_Get(ref world.islands, baseId);
             int setIndex = baseIsland.setIndex;
@@ -705,7 +705,7 @@ namespace Box2D.NET
 // Note: static bodies are never in an island
 // Note: this task interacts with some allocators without locks under the assumption that no other tasks
 // are interacting with these data structures.
-        public static void b2SplitIslandTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2SplitIslandTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.split, "Split Island", B2HexColor.b2_colorOlive, true);
 
@@ -723,7 +723,7 @@ namespace Box2D.NET
         }
 
 #if DEBUG
-        public static void b2ValidateIsland(B2World world, int islandId)
+        internal static void b2ValidateIsland(B2World world, int islandId)
         {
             if (islandId == B2_NULL_INDEX)
             {
@@ -838,7 +838,7 @@ namespace Box2D.NET
         }
 
 #else
-        public static void b2ValidateIsland(B2World world, int islandId)
+        internal static void b2ValidateIsland(B2World world, int islandId)
         {
             B2_UNUSED(world);
             B2_UNUSED(islandId);

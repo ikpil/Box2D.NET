@@ -12,7 +12,7 @@ namespace Box2D.NET
 {
     public static class B2Manifolds
     {
-        public static ushort B2_MAKE_ID(int A, int B)
+        internal static ushort B2_MAKE_ID(int A, int B)
         {
             return (ushort)((byte)(A) << 8 | (byte)(B));
         }
@@ -551,7 +551,7 @@ namespace Box2D.NET
         }
 
         // Polygon clipper used to compute contact points when there are potentially two contact points.
-        public static B2Manifold b2ClipPolygons(ref B2Polygon polyA, ref B2Polygon polyB, int edgeA, int edgeB, bool flip)
+        internal static B2Manifold b2ClipPolygons(ref B2Polygon polyA, ref B2Polygon polyB, int edgeA, int edgeB, bool flip)
         {
             B2Manifold manifold = new B2Manifold();
 
@@ -686,7 +686,7 @@ namespace Box2D.NET
         }
 
         // Find the max separation between poly1 and poly2 using edge normals from poly1.
-        public static float b2FindMaxSeparation(ref int edgeIndex, ref B2Polygon poly1, B2Polygon poly2)
+        internal static float b2FindMaxSeparation(ref int edgeIndex, ref B2Polygon poly1, B2Polygon poly2)
         {
             int count1 = poly1.count;
             int count2 = poly2.count;
@@ -1196,7 +1196,7 @@ namespace Box2D.NET
             return b2CollideChainSegmentAndPolygon(ref segmentA, xfA, ref polyB, xfB, ref cache);
         }
 
-        public static B2Manifold b2ClipSegments(B2Vec2 a1, B2Vec2 a2, B2Vec2 b1, B2Vec2 b2, B2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
+        internal static B2Manifold b2ClipSegments(B2Vec2 a1, B2Vec2 a2, B2Vec2 b1, B2Vec2 b2, B2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
         {
             B2Manifold manifold = new B2Manifold();
 
@@ -1270,7 +1270,7 @@ namespace Box2D.NET
 
         // Evaluate Gauss map
         // See https://box2d.org/posts/2020/06/ghost-collisions/
-        public static B2NormalType b2ClassifyNormal(B2ChainSegmentParams param, B2Vec2 normal)
+        internal static B2NormalType b2ClassifyNormal(B2ChainSegmentParams param, B2Vec2 normal)
         {
             const float sinTol = 0.01f;
 

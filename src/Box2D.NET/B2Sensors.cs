@@ -37,7 +37,7 @@ namespace Box2D.NET
         // Each sensor has an double buffered array of overlaps
         // These overlaps use a shape reference with index and generation
 
-        public static bool b2SensorQueryCallback(int proxyId, ulong userData, ref B2SensorQueryContext context)
+        internal static bool b2SensorQueryCallback(int proxyId, ulong userData, ref B2SensorQueryContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -115,7 +115,7 @@ namespace Box2D.NET
             return true;
         }
 
-        public static int b2CompareVisitors(ref B2Visitor a, ref B2Visitor b)
+        internal static int b2CompareVisitors(ref B2Visitor a, ref B2Visitor b)
         {
             ref readonly B2Visitor sa = ref a;
             ref readonly B2Visitor sb = ref b;
@@ -128,7 +128,7 @@ namespace Box2D.NET
             return 1;
         }
 
-        public static void b2SensorTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2SensorTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.sensor_task, "Overlap", B2HexColor.b2_colorBrown, true);
 
@@ -236,7 +236,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.sensor_task);
         }
 
-        public static void b2OverlapSensors(B2World world)
+        internal static void b2OverlapSensors(B2World world)
         {
             int sensorCount = world.sensors.count;
             if (sensorCount == 0)

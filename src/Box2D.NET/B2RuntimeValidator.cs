@@ -10,7 +10,7 @@ namespace Box2D.NET
 {
     public class B2RuntimeValidator
     {
-        public static readonly B2RuntimeValidator Shared = new B2RuntimeValidator();
+        internal static readonly B2RuntimeValidator Shared = new B2RuntimeValidator();
 
         private B2RuntimeValidator()
         {

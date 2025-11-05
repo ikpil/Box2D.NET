@@ -146,7 +146,7 @@ namespace Box2D.NET
             return joint.uj.wheelJoint.maxMotorTorque;
         }
 
-        public static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
+        internal static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
             int idA = @base.bodyIdA;
             B2Transform transformA = b2GetBodyTransform(world, idA);
@@ -164,7 +164,7 @@ namespace Box2D.NET
             return force;
         }
 
-        public static float b2GetWheelJointTorque(B2World world, B2JointSim @base)
+        internal static float b2GetWheelJointTorque(B2World world, B2JointSim @base)
         {
             return world.inv_h * @base.uj.wheelJoint.motorImpulse;
         }
@@ -185,7 +185,7 @@ namespace Box2D.NET
         // Cdot = wB - wA
         // J = [0 0 -1 0 0 1]
 
-        public static void b2PrepareWheelJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2PrepareWheelJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 
@@ -268,7 +268,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartWheelJoint(B2JointSim @base, B2StepContext context)
+        internal static void b2WarmStartWheelJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 
@@ -317,7 +317,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveWheelJoint(B2JointSim @base, B2StepContext context, bool useBias)
+        internal static void b2SolveWheelJoint(B2JointSim @base, B2StepContext context, bool useBias)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 
@@ -536,7 +536,7 @@ namespace Box2D.NET
     }
 #endif
 
-        public static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
+        internal static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 

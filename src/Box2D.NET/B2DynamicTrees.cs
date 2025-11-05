@@ -16,7 +16,7 @@ namespace Box2D.NET
     {
         public const int B2_TREE_STACK_SIZE = 1024;
 
-        public static readonly B2TreeNode b2_defaultTreeNode = new B2TreeNode()
+        internal static readonly B2TreeNode b2_defaultTreeNode = new B2TreeNode()
         {
             aabb = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f)),
             categoryBits = B2_DEFAULT_CATEGORY_BITS,
@@ -34,19 +34,19 @@ namespace Box2D.NET
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2IsLeaf(ref B2TreeNode node)
+        internal static bool b2IsLeaf(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_leafNode);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2IsAllocated(ref B2TreeNode node)
+        internal static bool b2IsAllocated(ref B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ushort b2MaxUInt16(ushort a, ushort b)
+        internal static ushort b2MaxUInt16(ushort a, ushort b)
         {
             return a > b ? a : b;
         }
@@ -96,7 +96,7 @@ namespace Box2D.NET
         }
 
         // Allocate a node from the pool. Grow the pool if necessary.
-        public static int b2AllocateNode(B2DynamicTree tree)
+        internal static int b2AllocateNode(B2DynamicTree tree)
         {
             // Expand the node pool as needed.
             if (tree.freeList == B2_NULL_INDEX)
@@ -137,7 +137,7 @@ namespace Box2D.NET
         }
 
         // Return a node to the pool.
-        public static void b2FreeNode(B2DynamicTree tree, int nodeId)
+        internal static void b2FreeNode(B2DynamicTree tree, int nodeId)
         {
             B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
             B2_ASSERT(0 < tree.nodeCount);
@@ -164,7 +164,7 @@ namespace Box2D.NET
         // Suppose B (or C) is an internal node, then the lowest cost would be one of two cases:
         // case1: D becomes a sibling of B
         // case2: D becomes a descendant of B along with a new internal node of area(D).
-        public static int b2FindBestSibling(B2DynamicTree tree, B2AABB boxD)
+        internal static int b2FindBestSibling(B2DynamicTree tree, B2AABB boxD)
         {
             B2Vec2 centerD = b2AABB_Center(boxD);
             float areaD = b2Perimeter(boxD);
@@ -307,7 +307,7 @@ namespace Box2D.NET
 
         // Perform a left or right rotation if node A is imbalanced.
         // Returns the new root index.
-        public static void b2RotateNodes(B2DynamicTree tree, int iA)
+        internal static void b2RotateNodes(B2DynamicTree tree, int iA)
         {
             B2_ASSERT(iA != B2_NULL_INDEX);
 
@@ -594,7 +594,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2InsertLeaf(B2DynamicTree tree, int leaf, bool shouldRotate)
+        internal static void b2InsertLeaf(B2DynamicTree tree, int leaf, bool shouldRotate)
         {
             if (tree.root == B2_NULL_INDEX)
             {
@@ -670,7 +670,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2RemoveLeaf(B2DynamicTree tree, int leaf)
+        internal static void b2RemoveLeaf(B2DynamicTree tree, int leaf)
         {
             if (leaf == tree.root)
             {
@@ -766,7 +766,7 @@ namespace Box2D.NET
         }
 
         /// Destroy a proxy. This asserts if the id is invalid.
-        public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
+        internal static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
@@ -929,7 +929,7 @@ namespace Box2D.NET
 
 #if DEBUG
         // Compute the height of a sub-tree.
-        public static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
+        internal static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
         {
             B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
             ref B2TreeNode node = ref tree.nodes[nodeId];
@@ -944,7 +944,7 @@ namespace Box2D.NET
             return 1 + b2MaxInt(height1, height2);
         }
 
-        public static void b2ValidateStructure(B2DynamicTree tree, int index)
+        internal static void b2ValidateStructure(B2DynamicTree tree, int index)
         {
             if (index == B2_NULL_INDEX)
             {
@@ -984,7 +984,7 @@ namespace Box2D.NET
             b2ValidateStructure(tree, child2);
         }
 
-        public static void b2ValidateMetrics(B2DynamicTree tree, int index)
+        internal static void b2ValidateMetrics(B2DynamicTree tree, int index)
         {
             if (index == B2_NULL_INDEX)
             {
@@ -1060,7 +1060,7 @@ namespace Box2D.NET
         }
 
         /// Validate this tree has no enlarged AABBs. For testing.
-        public static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
+        internal static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
         {
 #if DEBUG
             int capacity = tree.nodeCapacity;
@@ -1169,7 +1169,7 @@ namespace Box2D.NET
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// No filtering is performed.
         ///	@return performance data
-        public static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        internal static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1368,7 +1368,7 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits,
+        internal static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits,
             b2TreeShapeCastCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats stats = new B2TreeStats();
@@ -1506,7 +1506,7 @@ namespace Box2D.NET
         // #if B2_TREE_HEURISTIC == 0
 
         // Median split heuristic
-        public static int b2PartitionMid(Span<int> indices, Span<B2Vec2> centers, int count)
+        internal static int b2PartitionMid(Span<int> indices, Span<B2Vec2> centers, int count)
         {
             // Handle trivial case
             if (count <= 2)
@@ -1630,7 +1630,7 @@ namespace Box2D.NET
 
         // "On Fast Construction of SAH-based Bounding Volume Hierarchies" by Ingo Wald
         // Returns the left child count
-        public static int b2PartitionSAH(int[] indices, int[] binIndices, B2AABB[] boxes, int count)
+        internal static int b2PartitionSAH(int[] indices, int[] binIndices, B2AABB[] boxes, int count)
         {
             B2_ASSERT(count > 0);
 
@@ -1785,7 +1785,7 @@ namespace Box2D.NET
 
 
         // Returns root node index
-        public static int b2BuildTree(B2DynamicTree tree, int leafCount)
+        internal static int b2BuildTree(B2DynamicTree tree, int leafCount)
         {
             B2TreeNode[] nodes = tree.nodes;
             int[] leafIndices = tree.leafIndices;

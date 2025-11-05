@@ -119,7 +119,7 @@ namespace Box2D.NET
             return def;
         }
 
-        public static B2Joint b2GetJointFullId(B2World world, B2JointId jointId)
+        internal static B2Joint b2GetJointFullId(B2World world, B2JointId jointId)
         {
             int id = jointId.index1 - 1;
             B2Joint joint = b2Array_Get(ref world.joints, id);
@@ -127,7 +127,7 @@ namespace Box2D.NET
             return joint;
         }
 
-        public static B2JointSim b2GetJointSim(B2World world, B2Joint joint)
+        internal static B2JointSim b2GetJointSim(B2World world, B2Joint joint)
         {
             if (joint.setIndex == (int)B2SetType.b2_awakeSet)
             {
@@ -140,7 +140,7 @@ namespace Box2D.NET
             return b2Array_Get(ref set.jointSims, joint.localIndex);
         }
 
-        public static B2JointSim b2GetJointSimCheckType(B2JointId jointId, B2JointType type)
+        internal static B2JointSim b2GetJointSimCheckType(B2JointId jointId, B2JointType type)
         {
             B2_UNUSED(type);
 
@@ -911,7 +911,7 @@ namespace Box2D.NET
             b2WakeBody(world, bodyB);
         }
 
-        public static void b2GetJointReaction(B2JointSim sim, float invTimeStep, out float force, out float torque)
+        internal static void b2GetJointReaction(B2JointSim sim, float invTimeStep, out float force, out float torque)
         {
             float linearImpulse = 0.0f;
             float angularImpulse = 0.0f;
@@ -978,7 +978,7 @@ namespace Box2D.NET
             torque = angularImpulse * invTimeStep;
         }
 
-        public static B2Vec2 b2GetJointConstraintForce(B2World world, B2Joint joint)
+        internal static B2Vec2 b2GetJointConstraintForce(B2World world, B2Joint joint)
         {
             B2JointSim @base = b2GetJointSim(world, joint);
 
@@ -1012,7 +1012,7 @@ namespace Box2D.NET
         }
 
         /// Get the current constraint torque for this joint. Usually in Newton * meters.
-        public static float b2GetJointConstraintTorque(B2World world, B2Joint joint)
+        internal static float b2GetJointConstraintTorque(B2World world, B2Joint joint)
         {
             B2JointSim @base = b2GetJointSim(world, joint);
 
@@ -1311,7 +1311,7 @@ namespace Box2D.NET
             return @base.torqueThreshold;
         }
 
-        public static void b2PrepareJoint(B2JointSim joint, B2StepContext context)
+        internal static void b2PrepareJoint(B2JointSim joint, B2StepContext context)
         {
             // Clamp joint hertz based on the time step to reduce jitter.
             float hertz = b2MinFloat(joint.constraintHertz, 0.25f * context.inv_h);
@@ -1352,7 +1352,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2WarmStartJoint(B2JointSim joint, B2StepContext context)
+        internal static void b2WarmStartJoint(B2JointSim joint, B2StepContext context)
         {
             switch (joint.type)
             {
@@ -1389,7 +1389,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2SolveJoint(B2JointSim joint, B2StepContext context, bool useBias)
+        internal static void b2SolveJoint(B2JointSim joint, B2StepContext context, bool useBias)
         {
             switch (joint.type)
             {
@@ -1426,7 +1426,7 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2PrepareOverflowJoints(B2StepContext context)
+        internal static void b2PrepareOverflowJoints(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
@@ -1443,7 +1443,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        public static void b2WarmStartOverflowJoints(B2StepContext context)
+        internal static void b2WarmStartOverflowJoints(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
@@ -1460,7 +1460,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        public static void b2SolveOverflowJoints(B2StepContext context, bool useBias)
+        internal static void b2SolveOverflowJoints(B2StepContext context, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
 
@@ -1477,7 +1477,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.solve_joints);
         }
 
-        public static void b2DrawJoint(B2DebugDraw draw, B2World world, B2Joint joint)
+        internal static void b2DrawJoint(B2DebugDraw draw, B2World world, B2Joint joint)
         {
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);

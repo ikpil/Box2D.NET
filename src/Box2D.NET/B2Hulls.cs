@@ -12,7 +12,7 @@ namespace Box2D.NET
     public static class B2Hulls
     {
         // quickhull recursion
-        public static B2Hull b2RecurseHull(B2Vec2 p1, B2Vec2 p2, Span<B2Vec2> ps, int count)
+        internal static B2Hull b2RecurseHull(B2Vec2 p1, B2Vec2 p2, Span<B2Vec2> ps, int count)
         {
             B2Hull hull = new B2Hull();
             hull.count = 0;
