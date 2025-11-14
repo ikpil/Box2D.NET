@@ -87,6 +87,11 @@ namespace Box2D.NET
         public static bool B2_ID_EQUALS(B2ShapeId id1, B2ShapeId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool B2_ID_EQUALS(B2ChainId id1, B2ChainId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool B2_ID_EQUALS(B2JointId id1, B2JointId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_ID_EQUALS(B2ContactId id1, B2ContactId id2) => id1.index1 == id2.index1 && id1.world0 == id2.world0 && id1.generation == id2.generation;
 
         /// Store a world id into a uint32_t.
