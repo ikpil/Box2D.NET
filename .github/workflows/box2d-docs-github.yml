@@ -19,7 +19,7 @@ jobs:
         dotnet-version: 10.x
 
     - name: Checkout Box2D.NET
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Run Box2D.NET.CommentConverter.csproj
       run: dotnet run --project tools/Box2D.NET.CommentConverter/Box2D.NET.CommentConverter.csproj --configuration Release --framework net9.0
