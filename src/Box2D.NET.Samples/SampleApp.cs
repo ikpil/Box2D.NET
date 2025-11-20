@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Numerics;
+using System.Runtime;
 using System.Runtime.InteropServices;
 using Box2D.NET.Samples.Helpers;
 using ImGuiNET;
@@ -62,6 +64,23 @@ public class SampleApp
 
         SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
+        
+        var currentCulture = CultureInfo.CurrentCulture;
+        string bitness = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
+
+        var workingDirectory = Directory.GetCurrentDirectory();
+        Logger.Information($"Working directory - {workingDirectory}");
+        Logger.Information($"OS Version - {Environment.OSVersion} {bitness}");
+        Logger.Information($"{RuntimeInformation.OSArchitecture} {RuntimeInformation.OSDescription}");
+        Logger.Information($"{RuntimeInformation.ProcessArchitecture} {RuntimeInformation.FrameworkDescription}");
+        Logger.Information($"Dotnet - {Environment.Version.ToString()} culture({currentCulture.Name})");
+        Logger.Information($"Processor Count : {Environment.ProcessorCount}");
+
+        Logger.Information($"Server garbage collection : {(GCSettings.IsServerGC ? "Enabled" : "Disabled")}");
+        Logger.Information($"Current latency mode for garbage collection: {GCSettings.LatencyMode}");
+        Logger.Information("");
+
+        Logger.Information($"ImGui.Net - version({ImGui.GetVersion()})");
 
         Window.PrioritizeGlfw();
 
@@ -79,13 +98,13 @@ public class SampleApp
         _context.glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
         _context.glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
         _context.glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
-
+        
         // MSAA
         _context.glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
 
         B2Version version = b2GetVersion();
-        options.Title = $"Box2D.NET Version {version.major}.{version.minor}.{version.revision}";
+        options.Title = $"Box2D.NET Version {version.major}.{version.minor}.{version.revision}, {RuntimeInformation.FrameworkDescription} {RuntimeInformation.ProcessArchitecture}";
 
         unsafe
         {
