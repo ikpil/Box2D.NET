@@ -14,9 +14,9 @@ jobs:
 
     steps:
     - name: .NET SDK Setup
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
-        dotnet-version: 9.x
+        dotnet-version: 10.x
 
     - name: Checkout Box2D.NET
       uses: actions/checkout@v4
