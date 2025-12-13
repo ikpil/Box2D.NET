@@ -586,7 +586,7 @@ namespace Box2D.NET
             return chain.count;
         }
 
-        public static int b2Chain_GetSegments(B2ChainId chainId, B2ShapeId[] segmentArray, int capacity)
+        public static int b2Chain_GetSegments(B2ChainId chainId, Span<B2ShapeId> segments, int capacity)
         {
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -601,7 +601,7 @@ namespace Box2D.NET
             {
                 int shapeId = chain.shapeIndices[i];
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                segmentArray[i] = new B2ShapeId(shapeId + 1, chainId.world0, shape.generation);
+                segments[i] = new B2ShapeId(shapeId + 1, chainId.world0, shape.generation);
             }
 
             return count;
