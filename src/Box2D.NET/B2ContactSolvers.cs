@@ -1107,7 +1107,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 #else
 
         // This is a load and transpose
-        internal static B2BodyStateW b2GatherBodies(B2BodyState[] states, ReadOnlySpan<int> indices)
+        internal static B2BodyStateW b2GatherBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices)
         {
             B2BodyState identity = b2_identityBodyState;
 
@@ -1130,7 +1130,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         }
 
         // This writes only the velocities back to the solver bodies
-        internal static void b2ScatterBodies(B2BodyState[] states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
+        internal static void b2ScatterBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
             if (indices[0] != B2_NULL_INDEX && (states[indices[0]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
