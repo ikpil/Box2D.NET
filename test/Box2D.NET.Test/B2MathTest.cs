@@ -116,14 +116,14 @@ public class B2MathTest
 
         B2Transform transform = b2MulTransforms(transform2, transform1);
 
-        v = b2TransformPoint(ref transform2, b2TransformPoint(ref transform1, two));
+        v = b2TransformPoint(transform2, b2TransformPoint(transform1, two));
 
-        B2Vec2 u = b2TransformPoint(ref transform, two);
+        B2Vec2 u = b2TransformPoint(transform, two);
 
         Assert.That(u.X - v.X, Is.LessThan(10.0f * FLT_EPSILON));
         Assert.That(u.Y - v.Y, Is.LessThan(10.0f * FLT_EPSILON));
 
-        v = b2TransformPoint(ref transform1, two);
+        v = b2TransformPoint(transform1, two);
         v = b2InvTransformPoint(transform1, v);
 
         Assert.That(v.X - two.X, Is.LessThan(8.0f * FLT_EPSILON));

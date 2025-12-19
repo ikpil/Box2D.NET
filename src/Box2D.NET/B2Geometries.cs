@@ -122,7 +122,7 @@ namespace Box2D.NET
             // Copy vertices
             for (int i = 0; i < shape.count; ++i)
             {
-                shape.vertices[i] = b2TransformPoint(ref transform, hull.points[i]);
+                shape.vertices[i] = b2TransformPoint(transform, hull.points[i]);
             }
 
             // Compute normals. Ensure the edges have non-zero length.
@@ -193,10 +193,10 @@ namespace Box2D.NET
 
             B2Polygon shape = new B2Polygon();
             shape.count = 4;
-            shape.vertices[0] = b2TransformPoint(ref xf, new B2Vec2(-halfWidth, -halfHeight));
-            shape.vertices[1] = b2TransformPoint(ref xf, new B2Vec2(halfWidth, -halfHeight));
-            shape.vertices[2] = b2TransformPoint(ref xf, new B2Vec2(halfWidth, halfHeight));
-            shape.vertices[3] = b2TransformPoint(ref xf, new B2Vec2(-halfWidth, halfHeight));
+            shape.vertices[0] = b2TransformPoint(xf, new B2Vec2(-halfWidth, -halfHeight));
+            shape.vertices[1] = b2TransformPoint(xf, new B2Vec2(halfWidth, -halfHeight));
+            shape.vertices[2] = b2TransformPoint(xf, new B2Vec2(halfWidth, halfHeight));
+            shape.vertices[3] = b2TransformPoint(xf, new B2Vec2(-halfWidth, halfHeight));
             shape.normals[0] = b2RotateVector(xf.q, new B2Vec2(0.0f, -1.0f));
             shape.normals[1] = b2RotateVector(xf.q, new B2Vec2(1.0f, 0.0f));
             shape.normals[2] = b2RotateVector(xf.q, new B2Vec2(0.0f, 1.0f));
@@ -219,10 +219,10 @@ namespace Box2D.NET
 
             B2Polygon shape = new B2Polygon();
             shape.count = 4;
-            shape.vertices[0] = b2TransformPoint(ref xf, new B2Vec2(-halfWidth, -halfHeight));
-            shape.vertices[1] = b2TransformPoint(ref xf, new B2Vec2(halfWidth, -halfHeight));
-            shape.vertices[2] = b2TransformPoint(ref xf, new B2Vec2(halfWidth, halfHeight));
-            shape.vertices[3] = b2TransformPoint(ref xf, new B2Vec2(-halfWidth, halfHeight));
+            shape.vertices[0] = b2TransformPoint(xf, new B2Vec2(-halfWidth, -halfHeight));
+            shape.vertices[1] = b2TransformPoint(xf, new B2Vec2(halfWidth, -halfHeight));
+            shape.vertices[2] = b2TransformPoint(xf, new B2Vec2(halfWidth, halfHeight));
+            shape.vertices[3] = b2TransformPoint(xf, new B2Vec2(-halfWidth, halfHeight));
             shape.normals[0] = b2RotateVector(xf.q, new B2Vec2(0.0f, -1.0f));
             shape.normals[1] = b2RotateVector(xf.q, new B2Vec2(1.0f, 0.0f));
             shape.normals[2] = b2RotateVector(xf.q, new B2Vec2(0.0f, 1.0f));
@@ -239,11 +239,11 @@ namespace Box2D.NET
 
             for (int i = 0; i < p.count; ++i)
             {
-                p.vertices[i] = b2TransformPoint(ref transform, p.vertices[i]);
+                p.vertices[i] = b2TransformPoint(transform, p.vertices[i]);
                 p.normals[i] = b2RotateVector(transform.q, p.normals[i]);
             }
 
-            p.centroid = b2TransformPoint(ref transform, p.centroid);
+            p.centroid = b2TransformPoint(transform, p.centroid);
 
             return p;
         }
@@ -433,7 +433,7 @@ namespace Box2D.NET
         /// Compute the bounding box of a transformed circle
         public static B2AABB b2ComputeCircleAABB(ref B2Circle shape, B2Transform xf)
         {
-            B2Vec2 p = b2TransformPoint(ref xf, shape.center);
+            B2Vec2 p = b2TransformPoint(xf, shape.center);
             float r = shape.radius;
 
             B2AABB aabb = new B2AABB(new B2Vec2(p.X - r, p.Y - r), new B2Vec2(p.X + r, p.Y + r));
@@ -443,8 +443,8 @@ namespace Box2D.NET
         /// Compute the bounding box of a transformed capsule
         public static B2AABB b2ComputeCapsuleAABB(ref B2Capsule shape, B2Transform xf)
         {
-            B2Vec2 v1 = b2TransformPoint(ref xf, shape.center1);
-            B2Vec2 v2 = b2TransformPoint(ref xf, shape.center2);
+            B2Vec2 v1 = b2TransformPoint(xf, shape.center1);
+            B2Vec2 v2 = b2TransformPoint(xf, shape.center2);
 
             B2Vec2 r = new B2Vec2(shape.radius, shape.radius);
             B2Vec2 lower = b2Sub(b2Min(v1, v2), r);
@@ -458,12 +458,12 @@ namespace Box2D.NET
         public static B2AABB b2ComputePolygonAABB(ref B2Polygon shape, B2Transform xf)
         {
             B2_ASSERT(shape.count > 0);
-            B2Vec2 lower = b2TransformPoint(ref xf, shape.vertices[0]);
+            B2Vec2 lower = b2TransformPoint(xf, shape.vertices[0]);
             B2Vec2 upper = lower;
 
             for (int i = 1; i < shape.count; ++i)
             {
-                B2Vec2 v = b2TransformPoint(ref xf, shape.vertices[i]);
+                B2Vec2 v = b2TransformPoint(xf, shape.vertices[i]);
                 lower = b2Min(lower, v);
                 upper = b2Max(upper, v);
             }
@@ -479,8 +479,8 @@ namespace Box2D.NET
         /// Compute the bounding box of a transformed line segment
         public static B2AABB b2ComputeSegmentAABB(ref B2Segment shape, B2Transform xf)
         {
-            B2Vec2 v1 = b2TransformPoint(ref xf, shape.point1);
-            B2Vec2 v2 = b2TransformPoint(ref xf, shape.point2);
+            B2Vec2 v1 = b2TransformPoint(xf, shape.point1);
+            B2Vec2 v2 = b2TransformPoint(xf, shape.point2);
 
             B2Vec2 lower = b2Min(v1, v2);
             B2Vec2 upper = b2Max(v1, v2);

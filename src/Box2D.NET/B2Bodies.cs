@@ -654,7 +654,7 @@ namespace Box2D.NET
             // Move center of mass.
             B2Vec2 oldCenter = bodySim.center;
             bodySim.localCenter = localCenter;
-            bodySim.center = b2TransformPoint(ref bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
             bodySim.center0 = bodySim.center;
 
             // Update center of mass velocity
@@ -715,7 +715,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
-            return b2TransformPoint(ref transform, localPoint);
+            return b2TransformPoint(transform, localPoint);
         }
 
         /// Get a local vector on a body given a world vector
@@ -752,7 +752,7 @@ namespace Box2D.NET
 
             bodySim.transform.p = position;
             bodySim.transform.q = rotation;
-            bodySim.center = b2TransformPoint(ref bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
 
             bodySim.rotation0 = bodySim.transform.q;
             bodySim.center0 = bodySim.center;
@@ -892,7 +892,7 @@ namespace Box2D.NET
 
             // Compute linear velocity
             B2Vec2 center1 = sim.center;
-            B2Vec2 center2 = b2TransformPoint(ref target, sim.localCenter);
+            B2Vec2 center2 = b2TransformPoint(target, sim.localCenter);
             float invTimeStep = 1.0f / timeStep;
             B2Vec2 linearVelocity = b2MulSV(invTimeStep, b2Sub(center2, center1));
 
@@ -1478,7 +1478,7 @@ namespace Box2D.NET
             body.inertia = massData.rotationalInertia;
             bodySim.localCenter = massData.center;
 
-            B2Vec2 center = b2TransformPoint(ref bodySim.transform, massData.center);
+            B2Vec2 center = b2TransformPoint(bodySim.transform, massData.center);
             bodySim.center = center;
             bodySim.center0 = center;
 

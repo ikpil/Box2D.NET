@@ -333,7 +333,7 @@ public class Mover : Sample
 
         float pogoRestLength = 3.0f * m_capsule.radius;
         float rayLength = pogoRestLength + m_capsule.radius;
-        B2Vec2 origin = b2TransformPoint(ref m_transform, m_capsule.center1);
+        B2Vec2 origin = b2TransformPoint(m_transform, m_capsule.center1);
         B2Circle circle = new B2Circle(origin, 0.5f * m_capsule.radius);
         B2Vec2 segmentOffset = new B2Vec2(0.75f * m_capsule.radius, 0.0f);
         B2Segment segment = new B2Segment(
@@ -436,8 +436,8 @@ public class Mover : Sample
             m_planeCount = 0;
 
             B2Capsule mover;
-            mover.center1 = b2TransformPoint(ref m_transform, m_capsule.center1);
-            mover.center2 = b2TransformPoint(ref m_transform, m_capsule.center2);
+            mover.center1 = b2TransformPoint(m_transform, m_capsule.center1);
+            mover.center2 = b2TransformPoint(m_transform, m_capsule.center2);
             mover.radius = m_capsule.radius;
 
             b2World_CollideMover(m_worldId, ref mover, collideFilter, PlaneResultFcn, this);
@@ -544,7 +544,7 @@ public class Mover : Sample
     {
         if (key == Keys.K)
         {
-            B2Vec2 point = b2TransformPoint(ref m_transform, new B2Vec2(0.0f, m_capsule.center1.Y - 3.0f * m_capsule.radius));
+            B2Vec2 point = b2TransformPoint(m_transform, new B2Vec2(0.0f, m_capsule.center1.Y - 3.0f * m_capsule.radius));
             B2Circle circle = new B2Circle(point, 0.5f);
             B2ShapeProxy proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2QueryFilter filter = new B2QueryFilter(MoverBit, DebrisBit);
@@ -629,8 +629,8 @@ public class Mover : Sample
         }
 
         {
-            B2Vec2 p1 = b2TransformPoint(ref m_transform, m_capsule.center1);
-            B2Vec2 p2 = b2TransformPoint(ref m_transform, m_capsule.center2);
+            B2Vec2 p1 = b2TransformPoint(m_transform, m_capsule.center1);
+            B2Vec2 p2 = b2TransformPoint(m_transform, m_capsule.center2);
 
             B2HexColor color = m_onGround ? B2HexColor.b2_colorOrange : B2HexColor.b2_colorAquamarine;
             DrawSolidCapsule(m_draw, p1, p2, m_capsule.radius, color);

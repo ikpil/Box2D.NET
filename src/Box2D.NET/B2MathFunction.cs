@@ -476,7 +476,7 @@ namespace Box2D.NET
 
         /// Transform a point (e.g. local space to world space)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2TransformPoint(ref B2Transform t, in B2Vec2 p)
+        public static B2Vec2 b2TransformPoint(in B2Transform t, in B2Vec2 p)
         {
             float x = (t.q.c * p.X - t.q.s * p.Y) + t.p.X;
             float y = (t.q.s * p.X + t.q.c * p.Y) + t.p.Y;

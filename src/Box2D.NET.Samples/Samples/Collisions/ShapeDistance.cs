@@ -169,7 +169,7 @@ public class ShapeDistance : Sample
         {
             case ShapeType.e_point:
             {
-                B2Vec2 p = b2TransformPoint(ref transform, m_point);
+                B2Vec2 p = b2TransformPoint(transform, m_point);
                 if (radius > 0.0f)
                 {
                     DrawSolidCircle(m_draw, new B2Transform(m_point, transform.q), radius, color);
@@ -183,8 +183,8 @@ public class ShapeDistance : Sample
 
             case ShapeType.e_segment:
             {
-                B2Vec2 p1 = b2TransformPoint(ref transform, m_segment.point1);
-                B2Vec2 p2 = b2TransformPoint(ref transform, m_segment.point2);
+                B2Vec2 p1 = b2TransformPoint(transform, m_segment.point1);
+                B2Vec2 p2 = b2TransformPoint(transform, m_segment.point2);
 
                 if (radius > 0.0f)
                 {
@@ -436,7 +436,7 @@ public class ShapeDistance : Sample
 
             for (int i = 0; i < m_proxyB.count; ++i)
             {
-                B2Vec2 p = b2TransformPoint(ref m_transform, m_proxyB.points[i]);
+                B2Vec2 p = b2TransformPoint(m_transform, m_proxyB.points[i]);
                 DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, $" {i}");
             }
         }

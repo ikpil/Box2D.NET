@@ -241,7 +241,7 @@ public class RayCast : Sample
             if (localOutput.hit)
             {
                 output = localOutput;
-                output.point = b2TransformPoint(ref transform, localOutput.point);
+                output.point = b2TransformPoint(transform, localOutput.point);
                 output.normal = b2RotateVector(transform.q, localOutput.normal);
                 maxFraction = localOutput.fraction;
             }
@@ -252,8 +252,8 @@ public class RayCast : Sample
         // capsule
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            B2Vec2 v1 = b2TransformPoint(ref transform, m_capsule.center1);
-            B2Vec2 v2 = b2TransformPoint(ref transform, m_capsule.center2);
+            B2Vec2 v1 = b2TransformPoint(transform, m_capsule.center1);
+            B2Vec2 v2 = b2TransformPoint(transform, m_capsule.center2);
             DrawSolidCapsule(m_draw, v1, v2, m_capsule.radius, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
@@ -264,7 +264,7 @@ public class RayCast : Sample
             if (localOutput.hit)
             {
                 output = localOutput;
-                output.point = b2TransformPoint(ref transform, localOutput.point);
+                output.point = b2TransformPoint(transform, localOutput.point);
                 output.normal = b2RotateVector(transform.q, localOutput.normal);
                 maxFraction = localOutput.fraction;
             }
@@ -285,7 +285,7 @@ public class RayCast : Sample
             if (localOutput.hit)
             {
                 output = localOutput;
-                output.point = b2TransformPoint(ref transform, localOutput.point);
+                output.point = b2TransformPoint(transform, localOutput.point);
                 output.normal = b2RotateVector(transform.q, localOutput.normal);
                 maxFraction = localOutput.fraction;
             }
@@ -306,7 +306,7 @@ public class RayCast : Sample
             if (localOutput.hit)
             {
                 output = localOutput;
-                output.point = b2TransformPoint(ref transform, localOutput.point);
+                output.point = b2TransformPoint(transform, localOutput.point);
                 output.normal = b2RotateVector(transform.q, localOutput.normal);
                 maxFraction = localOutput.fraction;
             }
@@ -318,8 +318,8 @@ public class RayCast : Sample
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Vec2 p1 = b2TransformPoint(ref transform, m_segment.point1);
-            B2Vec2 p2 = b2TransformPoint(ref transform, m_segment.point2);
+            B2Vec2 p1 = b2TransformPoint(transform, m_segment.point1);
+            B2Vec2 p2 = b2TransformPoint(transform, m_segment.point2);
             DrawLine(m_draw, p1, p2, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
@@ -330,7 +330,7 @@ public class RayCast : Sample
             if (localOutput.hit)
             {
                 output = localOutput;
-                output.point = b2TransformPoint(ref transform, localOutput.point);
+                output.point = b2TransformPoint(transform, localOutput.point);
                 output.normal = b2RotateVector(transform.q, localOutput.normal);
                 maxFraction = localOutput.fraction;
             }

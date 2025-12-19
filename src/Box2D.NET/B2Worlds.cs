@@ -854,8 +854,8 @@ namespace Box2D.NET
                 case B2ShapeType.b2_capsuleShape:
                 {
                     ref readonly B2Capsule capsule = ref shape.us.capsule;
-                    B2Vec2 p1 = b2TransformPoint(ref xf, capsule.center1);
-                    B2Vec2 p2 = b2TransformPoint(ref xf, capsule.center2);
+                    B2Vec2 p1 = b2TransformPoint(xf, capsule.center1);
+                    B2Vec2 p2 = b2TransformPoint(xf, capsule.center2);
                     draw.DrawSolidCapsuleFcn(p1, p2, capsule.radius, color, draw.context);
                 }
                     break;
@@ -863,7 +863,7 @@ namespace Box2D.NET
                 case B2ShapeType.b2_circleShape:
                 {
                     ref readonly B2Circle circle = ref shape.us.circle;
-                    xf.p = b2TransformPoint(ref xf, circle.center);
+                    xf.p = b2TransformPoint(xf, circle.center);
                     draw.DrawSolidCircleFcn(ref xf, circle.radius, color, draw.context);
                 }
                     break;
@@ -878,8 +878,8 @@ namespace Box2D.NET
                 case B2ShapeType.b2_segmentShape:
                 {
                     ref readonly B2Segment segment = ref shape.us.segment;
-                    B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
-                    B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
+                    B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
+                    B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
                     draw.drawLineFcn(p1, p2, color, draw.context);
                 }
                     break;
@@ -887,8 +887,8 @@ namespace Box2D.NET
                 case B2ShapeType.b2_chainSegmentShape:
                 {
                     ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
-                    B2Vec2 p1 = b2TransformPoint(ref xf, segment.point1);
-                    B2Vec2 p2 = b2TransformPoint(ref xf, segment.point2);
+                    B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
+                    B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
                     draw.drawLineFcn(p1, p2, color, draw.context);
                     draw.DrawPointFcn(p2, 4.0f, color, draw.context);
                     draw.drawLineFcn(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
@@ -1054,7 +1054,7 @@ namespace Box2D.NET
                         B2BodySim bodySim = b2GetBodySim(world, body);
 
                         B2Transform transform = new B2Transform(bodySim.center, bodySim.transform.q);
-                        B2Vec2 p = b2TransformPoint(ref transform, offset);
+                        B2Vec2 p = b2TransformPoint(transform, offset);
                         draw.DrawStringFcn(p, body.name, B2HexColor.b2_colorBlueViolet, draw.context);
                     }
 
@@ -1067,7 +1067,7 @@ namespace Box2D.NET
                         draw.drawLineFcn(bodySim.center0, bodySim.center, B2HexColor.b2_colorWhiteSmoke, draw.context);
                         draw.DrawTransformFcn(transform, draw.context);
 
-                        B2Vec2 p = b2TransformPoint(ref transform, offset);
+                        B2Vec2 p = b2TransformPoint(transform, offset);
 
                         string buffer = $"{body.mass:F2}";
                         draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorWhite, draw.context);
@@ -2412,7 +2412,7 @@ void b2World_Dump()
             if (output.distance == 0.0f)
             {
                 B2Vec2 localCentroid = b2GetShapeCentroid(shape);
-                closestPoint = b2TransformPoint(ref transform, localCentroid);
+                closestPoint = b2TransformPoint(transform, localCentroid);
             }
 
             B2Vec2 direction = b2Sub(closestPoint, explosionContext.position);

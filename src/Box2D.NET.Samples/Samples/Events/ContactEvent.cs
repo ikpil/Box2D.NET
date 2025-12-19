@@ -374,7 +374,7 @@ public class ContactEvent : Sample
                 case B2ShapeType.b2_circleShape:
                 {
                     B2Circle circle = b2Shape_GetCircle(shapeId[0]);
-                    circle.center = b2TransformPoint(ref relativeTransform, circle.center);
+                    circle.center = b2TransformPoint(relativeTransform, circle.center);
 
                     b2CreateCircleShape(m_playerId, ref shapeDef, ref circle);
                 }
@@ -383,8 +383,8 @@ public class ContactEvent : Sample
                 case B2ShapeType.b2_capsuleShape:
                 {
                     B2Capsule capsule = b2Shape_GetCapsule(shapeId[0]);
-                    capsule.center1 = b2TransformPoint(ref relativeTransform, capsule.center1);
-                    capsule.center2 = b2TransformPoint(ref relativeTransform, capsule.center2);
+                    capsule.center1 = b2TransformPoint(relativeTransform, capsule.center1);
+                    capsule.center2 = b2TransformPoint(relativeTransform, capsule.center2);
 
                     b2CreateCapsuleShape(m_playerId, ref shapeDef, ref capsule);
                 }

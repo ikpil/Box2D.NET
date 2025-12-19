@@ -84,7 +84,7 @@ public class TimeOfImpact : Sample
         B2Transform transformA = b2GetSweepTransform(ref _sweepA, 0.0f);
         for (int i = 0; i < m_countA; ++i)
         {
-            vertices[i] = b2TransformPoint(ref transformA, m_verticesA[i]);
+            vertices[i] = b2TransformPoint(transformA, m_verticesA[i]);
         }
 
         DrawPolygon(m_draw, vertices, m_countA, B2HexColor.b2_colorGray);
@@ -93,7 +93,7 @@ public class TimeOfImpact : Sample
         B2Transform transformB = b2GetSweepTransform(ref _sweepB, 0.0f);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
         }
 
         DrawSolidCapsule(m_draw, vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorGreen);
@@ -103,7 +103,7 @@ public class TimeOfImpact : Sample
         transformB = b2GetSweepTransform(ref _sweepB, _output.fraction);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
         }
 
         DrawPolygon(m_draw, vertices, m_countB, B2HexColor.b2_colorOrange);
@@ -112,7 +112,7 @@ public class TimeOfImpact : Sample
         transformB = b2GetSweepTransform(ref _sweepB, 1.0f);
         for (int i = 0; i < m_countB; ++i)
         {
-            vertices[i] = b2TransformPoint(ref transformB, m_verticesB[i]);
+            vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
         }
 
         DrawSolidCapsule(m_draw, vertices[0], vertices[1], m_radiusB, B2HexColor.b2_colorRed);

@@ -260,7 +260,7 @@ public class ShapeCastChain : Sample
 
         for (int i = 0; i < proxy.count; ++i)
         {
-            ret.points[i] = b2TransformPoint(ref t, proxy.points[i]);
+            ret.points[i] = b2TransformPoint(t, proxy.points[i]);
         }
 
         return ret;

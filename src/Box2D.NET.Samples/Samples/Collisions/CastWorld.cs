@@ -425,7 +425,7 @@ public class CastWorld : Sample
 
             B2Transform transform = new B2Transform(m_rayStart, b2MakeRot(m_angle));
             B2Circle circle = new B2Circle(m_rayStart, m_castRadius);
-            B2Capsule capsule = new B2Capsule(b2TransformPoint(ref transform, new B2Vec2(-0.25f, 0.0f)), b2TransformPoint(ref transform, new B2Vec2(0.25f, 0.0f)), m_castRadius);
+            B2Capsule capsule = new B2Capsule(b2TransformPoint(transform, new B2Vec2(-0.25f, 0.0f)), b2TransformPoint(transform, new B2Vec2(0.25f, 0.0f)), m_castRadius);
             B2Polygon box = b2MakeOffsetRoundedBox(0.125f, 0.25f, transform.p, transform.q, m_castRadius);
 
             B2ShapeProxy proxy = new B2ShapeProxy();

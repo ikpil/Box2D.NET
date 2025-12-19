@@ -502,14 +502,14 @@ namespace Box2D.NET
 
             for (int i = 0; i < 4; ++i)
             {
-                points[i] = b2TransformPoint(ref frameA, box.vertices[i]);
+                points[i] = b2TransformPoint(frameA, box.vertices[i]);
             }
 
             draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkOrange, draw.context);
 
             for (int i = 0; i < 4; ++i)
             {
-                points[i] = b2TransformPoint(ref frameB, box.vertices[i]);
+                points[i] = b2TransformPoint(frameB, box.vertices[i]);
             }
 
             draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkCyan, draw.context);

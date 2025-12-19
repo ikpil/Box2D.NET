@@ -49,7 +49,7 @@ namespace Box2D.NET
             B2Transform xf = b2InvMulTransforms(xfA, xfB);
 
             B2Vec2 pointA = circleA.center;
-            B2Vec2 pointB = b2TransformPoint(ref xf, circleB.center);
+            B2Vec2 pointB = b2TransformPoint(xf, circleB.center);
 
             float distance = 0;
             B2Vec2 normal = b2GetLengthAndNormalize(ref distance, b2Sub(pointB, pointA));
@@ -87,7 +87,7 @@ namespace Box2D.NET
             B2Transform xf = b2InvMulTransforms(xfA, xfB);
 
             // Compute circle position in the frame of the capsule.
-            B2Vec2 pB = b2TransformPoint(ref xf, circleB.center);
+            B2Vec2 pB = b2TransformPoint(xf, circleB.center);
 
             // Compute closest point
             B2Vec2 p1 = capsuleA.center1;
@@ -153,7 +153,7 @@ namespace Box2D.NET
             B2Transform xf = b2InvMulTransforms(xfA, xfB);
 
             // Compute circle position in the frame of the polygon.
-            B2Vec2 center = b2TransformPoint(ref xf, circleB.center);
+            B2Vec2 center = b2TransformPoint(xf, circleB.center);
             float radiusA = polygonA.radius;
             float radiusB = circleB.radius;
             float radius = radiusA + radiusB;
@@ -280,8 +280,8 @@ namespace Box2D.NET
             B2Vec2 p1 = b2Vec2_zero;
             B2Vec2 q1 = b2Sub(capsuleA.center2, origin);
 
-            B2Vec2 p2 = b2TransformPoint(ref xf, capsuleB.center1);
-            B2Vec2 q2 = b2TransformPoint(ref xf, capsuleB.center2);
+            B2Vec2 p2 = b2TransformPoint(xf, capsuleB.center1);
+            B2Vec2 q2 = b2TransformPoint(xf, capsuleB.center2);
 
             B2Vec2 d1 = b2Sub(q1, p1);
             B2Vec2 d2 = b2Sub(q2, p2);
@@ -772,7 +772,7 @@ namespace Box2D.NET
             localPolyB.radius = polygonB.radius;
             for (int i = 0; i < localPolyB.count; ++i)
             {
-                localPolyB.vertices[i] = b2TransformPoint(ref xf, polygonB.vertices[i]);
+                localPolyB.vertices[i] = b2TransformPoint(xf, polygonB.vertices[i]);
                 localPolyB.normals[i] = b2RotateVector(xf.q, polygonB.normals[i]);
             }
 
@@ -1109,7 +1109,7 @@ namespace Box2D.NET
             B2Transform xf = b2InvMulTransforms(xfA, xfB);
 
             // Compute circle in frame of segment
-            B2Vec2 pB = b2TransformPoint(ref xf, circleB.center);
+            B2Vec2 pB = b2TransformPoint(xf, circleB.center);
 
             B2Vec2 p1 = segmentA.segment.point1;
             B2Vec2 p2 = segmentA.segment.point2;
@@ -1318,7 +1318,7 @@ namespace Box2D.NET
 
             B2Transform xf = b2InvMulTransforms(xfA, xfB);
 
-            B2Vec2 centroidB = b2TransformPoint(ref xf, polygonB.centroid);
+            B2Vec2 centroidB = b2TransformPoint(xf, polygonB.centroid);
             float radiusB = polygonB.radius;
 
             B2Vec2 p1 = segmentA.segment.point1;
@@ -1365,7 +1365,7 @@ namespace Box2D.NET
             Span<B2Vec2> normals = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             for (int i = 0; i < count; ++i)
             {
-                vertices[i] = b2TransformPoint(ref xf, polygonB.vertices[i]);
+                vertices[i] = b2TransformPoint(xf, polygonB.vertices[i]);
                 normals[i] = b2RotateVector(xf.q, polygonB.normals[i]);
             }
 

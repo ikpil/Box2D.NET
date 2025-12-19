@@ -170,8 +170,8 @@ namespace Box2D.NET
 
             B2Vec2 localAxisA = b2RotateVector(jointSim.localFrameA.q, new B2Vec2(1.0f, 0.0f));
             B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
-            B2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localFrameA.p);
-            B2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localFrameB.p);
+            B2Vec2 pA = b2TransformPoint(transformA, jointSim.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(transformB, jointSim.localFrameB.p);
             B2Vec2 d = b2Sub(pB, pA);
             float translation = b2Dot(d, axisA);
             return translation;

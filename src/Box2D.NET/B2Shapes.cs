@@ -849,7 +849,7 @@ namespace Box2D.NET
                     return output;
             }
 
-            output.point = b2TransformPoint(ref transform, output.point);
+            output.point = b2TransformPoint(transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
         }
@@ -913,7 +913,7 @@ namespace Box2D.NET
                     return output;
             }
 
-            output.point = b2TransformPoint(ref transform, output.point);
+            output.point = b2TransformPoint(transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
         }
@@ -1108,7 +1108,7 @@ namespace Box2D.NET
             {
                 // convert to world coordinates
                 output.normal = b2RotateVector(transform.q, output.normal);
-                output.point = b2TransformPoint(ref transform, output.point);
+                output.point = b2TransformPoint(transform, output.point);
             }
 
             return output;

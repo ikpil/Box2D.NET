@@ -354,8 +354,8 @@ public class OverlapWorld : Sample
         else if (m_shapeType == e_capsuleShape)
         {
             B2Capsule capsule;
-            capsule.center1 = b2TransformPoint(ref transform, new B2Vec2(-1.0f, 0.0f));
-            capsule.center2 = b2TransformPoint(ref transform, new B2Vec2(1.0f, 0.0f));
+            capsule.center1 = b2TransformPoint(transform, new B2Vec2(-1.0f, 0.0f));
+            capsule.center2 = b2TransformPoint(transform, new B2Vec2(1.0f, 0.0f));
             capsule.radius = 0.5f;
             proxy = b2MakeProxy(capsule.center1, capsule.center2, 2, capsule.radius);
             DrawSolidCapsule(m_draw, capsule.center1, capsule.center2, capsule.radius, B2HexColor.b2_colorWhite);

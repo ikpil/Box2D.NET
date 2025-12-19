@@ -1069,8 +1069,8 @@ namespace Box2D.NET
             B2Transform xfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
             B2Transform xfB = b2GetBodyTransform(world, joint.edges[1].bodyId);
 
-            B2Vec2 pA = b2TransformPoint(ref xfA, @base.localFrameA.p);
-            B2Vec2 pB = b2TransformPoint(ref xfB, @base.localFrameB.p);
+            B2Vec2 pA = b2TransformPoint(xfA, @base.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(xfB, @base.localFrameB.p);
             B2Vec2 dp = b2Sub(pB, pA);
 
             switch (joint.type)
@@ -1490,8 +1490,8 @@ namespace Box2D.NET
 
             B2Transform transformA = b2GetBodyTransformQuick(world, bodyA);
             B2Transform transformB = b2GetBodyTransformQuick(world, bodyB);
-            B2Vec2 pA = b2TransformPoint(ref transformA, jointSim.localFrameA.p);
-            B2Vec2 pB = b2TransformPoint(ref transformB, jointSim.localFrameB.p);
+            B2Vec2 pA = b2TransformPoint(transformA, jointSim.localFrameA.p);
+            B2Vec2 pB = b2TransformPoint(transformB, jointSim.localFrameB.p);
 
             B2HexColor color = B2HexColor.b2_colorDarkSeaGreen;
             

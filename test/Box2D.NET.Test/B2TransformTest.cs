@@ -46,7 +46,7 @@ public class B2TransformTest
 
         // Test transforming a point from local to world space
         var localPoint = new B2Vec2(1.0f, 0.0f);  // Point at (1,0) in local space
-        var worldPoint = b2TransformPoint(ref transform, localPoint);
+        var worldPoint = b2TransformPoint(transform, localPoint);
 
         // Expected result:
         // 1. First rotate (1,0) by 90 degrees -> (0,1)
@@ -95,7 +95,7 @@ public class B2TransformTest
 
         // Test transforming a point through the combined transform
         var localPoint = new B2Vec2(1.0f, 0.0f);
-        var worldPoint = b2TransformPoint(ref combined, localPoint);
+        var worldPoint = b2TransformPoint(combined, localPoint);
 
         // Expected result:
         // 1. First apply transform2: rotate 45 degrees and translate by (0,1)
