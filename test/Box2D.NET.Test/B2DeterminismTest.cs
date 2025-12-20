@@ -146,7 +146,7 @@ public class B2DeterminismTest
         worldDef.finishTask = tester.FinishTask;
         worldDef.workerCount = workerCount;
 
-        B2WorldId worldId = b2CreateWorld(ref worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
         FallingHingeData data = CreateFallingHinges(worldId);
 
@@ -187,7 +187,7 @@ public class B2DeterminismTest
     public void CrossPlatformTest()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
-        B2WorldId worldId = b2CreateWorld(ref worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
         FallingHingeData data = CreateFallingHinges(worldId);
 

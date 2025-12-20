@@ -106,7 +106,7 @@ namespace Box2D.NET
             return b2MaxFloat(restitutionA, restitutionB);
         }
 
-        public static B2WorldId b2CreateWorld(ref B2WorldDef def)
+        public static B2WorldId b2CreateWorld(in B2WorldDef def)
         {
             // check
             B2RuntimeValidator.Shared.ThrowIfSafeRuntimePlatform();

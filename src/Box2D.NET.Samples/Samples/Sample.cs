@@ -125,7 +125,7 @@ public class Sample : IDisposable
         // todo experimental
         // worldDef.enableContactSoftening = true;
 
-        m_worldId = b2CreateWorld(ref worldDef);
+        m_worldId = b2CreateWorld(worldDef);
     }
 
     public void TestMathCpp()

@@ -22,7 +22,7 @@ public class B2TestContext : IDisposable
         worldDef.userTaskContext = null;
         worldDef.enableSleep = true;
 
-        B2WorldId worldId = b2CreateWorld(ref worldDef);
+        B2WorldId worldId = b2CreateWorld(worldDef);
 
         return new B2TestContext(worldId);
     }
