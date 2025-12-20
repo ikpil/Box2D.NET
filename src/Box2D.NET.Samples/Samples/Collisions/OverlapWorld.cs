@@ -64,7 +64,7 @@ public class OverlapWorld : Sample
     }
 
 
-    static bool OverlapResultFcn(B2ShapeId shapeId, object context)
+    static bool OverlapResultFcn(in B2ShapeId shapeId, object context)
     {
         ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
         if (userData != null && userData.ignore)

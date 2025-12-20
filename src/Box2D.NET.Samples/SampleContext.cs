@@ -157,49 +157,49 @@ public class SampleContext
         DrawPolygon(sampleContext.draw, vertices, vertexCount, color);
     }
 
-    public static void DrawSolidPolygonFcn(ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
+    public static void DrawSolidPolygonFcn(in B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)context;
-        DrawSolidPolygon(sampleContext.draw, ref transform, vertices, vertexCount, radius, color);
+        DrawSolidPolygon(sampleContext.draw, transform, vertices, vertexCount, radius, color);
     }
 
-    public static void DrawCircleFcn(B2Vec2 center, float radius, B2HexColor color, object context)
+    public static void DrawCircleFcn(in B2Vec2 center, float radius, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)context;
         DrawCircle(sampleContext.draw, center, radius, color);
     }
 
-    public static void DrawSolidCircleFcn(ref B2Transform transform, float radius, B2HexColor color, object context)
+    public static void DrawSolidCircleFcn(in B2Transform transform, float radius, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawSolidCircle(sampleContext.draw, transform, radius, color);
     }
 
-    public static void DrawSolidCapsuleFcn(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context)
+    public static void DrawSolidCapsuleFcn(in B2Vec2 p1, in B2Vec2 p2, float radius, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawSolidCapsule(sampleContext.draw, p1, p2, radius, color);
     }
 
-    public static void DrawLineFcn(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context)
+    public static void DrawLineFcn(in B2Vec2 p1, in B2Vec2 p2, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawLine(sampleContext.draw, p1, p2, color);
     }
 
-    public static void DrawTransformFcn(B2Transform transform, object context)
+    public static void DrawTransformFcn(in B2Transform transform, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawTransform(sampleContext.draw, transform, 1.0f);
     }
 
-    public static void DrawPointFcn(B2Vec2 p, float size, B2HexColor color, object context)
+    public static void DrawPointFcn(in B2Vec2 p, float size, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawPoint(sampleContext.draw, p, size, color);
     }
 
-    public static void DrawStringFcn(B2Vec2 p, string s, B2HexColor color, object context)
+    public static void DrawStringFcn(in B2Vec2 p, string s, B2HexColor color, object context)
     {
         SampleContext sampleContext = (SampleContext)(context);
         DrawWorldString(sampleContext.draw, sampleContext.camera, p, color, s);

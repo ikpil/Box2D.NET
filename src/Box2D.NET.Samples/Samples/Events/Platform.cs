@@ -116,7 +116,7 @@ public class Platform : Sample
         m_jumping = false;
     }
 
-    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
+    private static bool PreSolveStatic(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
     {
         Platform self = context as Platform;
         return self.PreSolve(shapeIdA, shapeIdB, point, normal);
@@ -125,7 +125,7 @@ public class Platform : Sample
     // This callback must be thread-safe. It may be called multiple times simultaneously.
     // Notice how this method is constant and doesn't change any data. It also
     // does not try to access any values in the world that may be changing, such as contact data.
-    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal)
+    public bool PreSolve(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal)
     {
         B2_ASSERT(b2Shape_IsValid(shapeIdA));
         B2_ASSERT(b2Shape_IsValid(shapeIdB));

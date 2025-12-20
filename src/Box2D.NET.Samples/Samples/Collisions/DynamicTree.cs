@@ -58,7 +58,7 @@ public class DynamicTree : Sample
         return true;
     }
 
-    static float RayCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref DynamicTreeContext context)
+    static float RayCallback(in B2RayCastInput input, int proxyId, ulong userData, ref DynamicTreeContext context)
     {
         DynamicTree sample = context.tree;
         Proxy proxy = sample.m_proxies[userData];

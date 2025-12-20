@@ -353,7 +353,7 @@ public class ShapeCast : Sample
         input.maxFraction = 1.0f;
         input.canEncroach = m_encroach;
 
-        output = b2ShapeCast(ref input);
+        output = b2ShapeCast(input);
 
         B2Transform transform;
         transform.q = m_transform.q;

@@ -163,7 +163,7 @@ public class BenchmarkCast : Sample
         m_minTime = 1e6f;
     }
 
-    static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float CastCallback(in B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         CastResult result = context as CastResult;
         result.point = point;
@@ -173,7 +173,7 @@ public class BenchmarkCast : Sample
     }
 
 
-    static bool OverlapCallback(B2ShapeId shapeId, object context)
+    static bool OverlapCallback(in B2ShapeId shapeId, object context)
     {
         OverlapResult result = context as OverlapResult;
         if (result.count < 32)

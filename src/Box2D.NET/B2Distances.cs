@@ -661,7 +661,7 @@ namespace Box2D.NET
         /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
         /// Initially touching shapes are treated as a miss.
         // Shape cast using conservative advancement
-        public static B2CastOutput b2ShapeCast(ref B2ShapeCastPairInput input)
+        public static B2CastOutput b2ShapeCast(in B2ShapeCastPairInput input)
         {
             // Compute tolerance
             float linearSlop = B2_LINEAR_SLOP;

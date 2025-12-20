@@ -25,7 +25,7 @@ namespace Box2D.NET
         ///	@see b2Contact_IsValid
         public B2ContactId contactId;
 
-        public B2ContactEndTouchEvent(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2ContactId contactId)
+        public B2ContactEndTouchEvent(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, in B2ContactId contactId)
         {
             this.shapeIdA = shapeIdA;
             this.shapeIdB = shapeIdB;

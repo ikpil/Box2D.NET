@@ -109,42 +109,42 @@ namespace Box2D.NET
             B2_UNUSED((B2Vec2[])null, vertexCount, color, context);
         }
 
-        public static void b2EmptyDrawSolidPolygon(ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidPolygon(in B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(transform, (B2Vec2[])null, vertexCount, radius, color, context);
         }
 
-        public static void b2EmptyDrawCircle(B2Vec2 center, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawCircle(in B2Vec2 center, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(center, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCircle(ref B2Transform transform, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidCircle(in B2Transform transform, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(transform, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCapsule(B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidCapsule(in B2Vec2 p1, in B2Vec2 p2, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, radius, color, context);
         }
 
-        public static void b2EmptyDrawSegment(B2Vec2 p1, B2Vec2 p2, B2HexColor color, object context)
+        public static void b2EmptyDrawSegment(in B2Vec2 p1, in B2Vec2 p2, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, color, context);
         }
 
-        public static void b2EmptyDrawTransform(B2Transform transform, object context)
+        public static void b2EmptyDrawTransform(in B2Transform transform, object context)
         {
             B2_UNUSED(transform, context);
         }
 
-        public static void b2EmptyDrawPoint(B2Vec2 p, float size, B2HexColor color, object context)
+        public static void b2EmptyDrawPoint(in B2Vec2 p, float size, B2HexColor color, object context)
         {
             B2_UNUSED(p, size, color, context);
         }
 
-        public static void b2EmptyDrawString(B2Vec2 p, string s, B2HexColor color, object context)
+        public static void b2EmptyDrawString(in B2Vec2 p, string s, B2HexColor color, object context)
         {
             B2_UNUSED(p, s, color, context);
         }

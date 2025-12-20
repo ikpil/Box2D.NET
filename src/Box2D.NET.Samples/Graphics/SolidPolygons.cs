@@ -112,7 +112,7 @@ public static class SolidPolygons
         }
     }
 
-    public static void AddPolygon(ref SolidPolygonRender render, ref B2Transform transform, ReadOnlySpan<B2Vec2> points, int count, float radius, B2HexColor color)
+    public static void AddPolygon(ref SolidPolygonRender render, in B2Transform transform, ReadOnlySpan<B2Vec2> points, int count, float radius, B2HexColor color)
     {
         PolygonData data = new PolygonData();
         data.transform = transform;

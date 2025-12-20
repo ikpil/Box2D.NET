@@ -72,7 +72,7 @@ public class CustomFilter : Sample
         base.Step();
     }
 
-    bool ShouldCollide(B2ShapeId shapeIdA, B2ShapeId shapeIdB)
+    bool ShouldCollide(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB)
     {
         object userDataA = b2Shape_GetUserData(shapeIdA);
         object userDataB = b2Shape_GetUserData(shapeIdB);
@@ -88,7 +88,7 @@ public class CustomFilter : Sample
         return ((indexA & 1) + (indexB & 1)) != 1;
     }
 
-    static bool CustomFilterStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context)
+    static bool CustomFilterStatic(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, object context)
     {
         CustomFilter customFilter = context as CustomFilter;
 

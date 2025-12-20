@@ -11,7 +11,7 @@ namespace Box2D.NET
     {
         // Get surface area of an AABB (the perimeter length)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float b2Perimeter(B2AABB a)
+        public static float b2Perimeter(in B2AABB a)
         {
             float wx = a.upperBound.X - a.lowerBound.X;
             float wy = a.upperBound.Y - a.lowerBound.Y;
@@ -20,7 +20,7 @@ namespace Box2D.NET
 
         /// Enlarge a to contain b
         /// @return true if the AABB grew
-        public static bool b2EnlargeAABB(ref B2AABB a, B2AABB b)
+        public static bool b2EnlargeAABB(ref B2AABB a, in B2AABB b)
         {
             bool changed = false;
             if (b.lowerBound.X < a.lowerBound.X)
@@ -53,7 +53,7 @@ namespace Box2D.NET
 
         // Ray cast an AABB
         // From Real-time Collision Detection, p179.
-        public static B2CastOutput b2AABB_RayCast(B2AABB a, B2Vec2 p1, B2Vec2 p2)
+        public static B2CastOutput b2AABB_RayCast(in B2AABB a, in B2Vec2 p1, in B2Vec2 p2)
         {
             // Radius not handled
             B2CastOutput output = new B2CastOutput();

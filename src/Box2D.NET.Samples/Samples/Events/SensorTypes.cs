@@ -139,7 +139,7 @@ public class SensorTypes : Sample
         }
     }
 
-    void PrintOverlaps(B2ShapeId sensorShapeId, string prefix)
+    void PrintOverlaps(in B2ShapeId sensorShapeId, string prefix)
     {
         // Determine the necessary capacity
         int capacity = b2Shape_GetSensorCapacity(sensorShapeId);

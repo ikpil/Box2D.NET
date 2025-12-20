@@ -143,7 +143,7 @@ public class BenchmarkSensor : Sample
         }
     }
 
-    private bool Filter(B2ShapeId idA, B2ShapeId idB)
+    private bool Filter(in B2ShapeId idA, in B2ShapeId idB)
     {
         ShapeUserData userData = null;
         if (b2Shape_IsSensor(idA))
@@ -163,7 +163,7 @@ public class BenchmarkSensor : Sample
         return true;
     }
 
-    private static bool FilterFcn(B2ShapeId idA, B2ShapeId idB, object context)
+    private static bool FilterFcn(in B2ShapeId idA, in B2ShapeId idB, object context)
     {
         BenchmarkSensor self = context as BenchmarkSensor;
         return self.Filter(idA, idB);

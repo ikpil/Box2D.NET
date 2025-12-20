@@ -60,9 +60,9 @@ public static class Draws
         }
     }
 
-    public static void DrawSolidPolygon(Draw draw, ref B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color)
+    public static void DrawSolidPolygon(Draw draw, in B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color)
     {
-        AddPolygon(ref draw.polygons, ref transform, vertices, vertexCount, radius, color);
+        AddPolygon(ref draw.polygons, transform, vertices, vertexCount, radius, color);
     }
 
     public static void DrawTransform(Draw draw, B2Transform transform, float scale)

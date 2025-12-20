@@ -189,7 +189,7 @@ public class SensorHits : Sample
         ImGui.End();
     }
 
-    void CollectTransforms(B2ShapeId sensorShapeId)
+    void CollectTransforms(in B2ShapeId sensorShapeId)
     {
         const int capacity = 5;
         Span<B2ShapeId> visitorIds = stackalloc B2ShapeId[capacity];

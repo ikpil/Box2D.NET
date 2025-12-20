@@ -83,7 +83,7 @@ public class B2DistanceTest
         input.translationB = new B2Vec2(-2.0f, 0.0f);
         input.maxFraction = 1.0f;
 
-        B2CastOutput output = b2ShapeCast(ref input);
+        B2CastOutput output = b2ShapeCast(input);
 
         Assert.That(output.hit);
         Assert.That(output.fraction - 0.5f, Is.LessThan(0.005f));

@@ -16,7 +16,7 @@ namespace Box2D.NET
         // B2_ASSERT( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
 
         /// Validate ray cast input data (NaN, etc)
-        internal static bool b2IsValidRay(ref B2RayCastInput input)
+        internal static bool b2IsValidRay(in B2RayCastInput input)
         {
             bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) &&
                            b2IsValidFloat(input.maxFraction) && 0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
@@ -233,7 +233,7 @@ namespace Box2D.NET
         }
 
         /// Transform a polygon. This is useful for transferring a shape from one body to another.
-        public static B2Polygon b2TransformPolygon(B2Transform transform, ref B2Polygon polygon)
+        public static B2Polygon b2TransformPolygon(in B2Transform transform, ref B2Polygon polygon)
         {
             B2Polygon p = polygon;
 
@@ -543,9 +543,9 @@ namespace Box2D.NET
         /// Ray cast versus circle shape in local space.
         // Precision Improvements for Ray / Sphere Intersection - Ray Tracing Gems 2019
         // http://www.codercorner.com/blog/?p=321
-        public static B2CastOutput b2RayCastCircle(ref B2Circle shape, ref B2RayCastInput input)
+        public static B2CastOutput b2RayCastCircle(in B2Circle shape, in B2RayCastInput input)
         {
-            B2_ASSERT(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(input));
 
             B2Vec2 p = shape.center;
 
@@ -620,9 +620,9 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus capsule shape in local space.
-        public static B2CastOutput b2RayCastCapsule(ref B2Capsule shape, ref B2RayCastInput input)
+        public static B2CastOutput b2RayCastCapsule(in B2Capsule shape, in B2RayCastInput input)
         {
-            B2_ASSERT(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(input));
 
             B2CastOutput output = new B2CastOutput();
 
@@ -638,7 +638,7 @@ namespace Box2D.NET
             {
                 // Capsule is really a circle
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref circle, ref input);
+                return b2RayCastCircle(circle, input);
             }
 
             B2Vec2 p1 = input.origin;
@@ -660,14 +660,14 @@ namespace Box2D.NET
                 {
                     // start point behind capsule segment
                     B2Circle circle = new B2Circle(v1, shape.radius);
-                    return b2RayCastCircle(ref circle, ref input);
+                    return b2RayCastCircle(circle, input);
                 }
 
                 if (qa > capsuleLength)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
-                    return b2RayCastCircle(ref circle, ref input);
+                    return b2RayCastCircle(circle, input);
                 }
 
                 // ray starts inside capsule . no hit
@@ -736,13 +736,13 @@ namespace Box2D.NET
             {
                 // ray passes behind capsule segment
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(ref circle, ref input);
+                return b2RayCastCircle(circle, input);
             }
             else if (capsuleLength < s1)
             {
                 // ray passes ahead of capsule segment
                 B2Circle circle = new B2Circle(v2, shape.radius);
-                return b2RayCastCircle(ref circle, ref input);
+                return b2RayCastCircle(circle, input);
             }
             else
             {
@@ -758,7 +758,7 @@ namespace Box2D.NET
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
         // Ray vs line segment
-        public static B2CastOutput b2RayCastSegment(ref B2Segment shape, ref B2RayCastInput input, bool oneSided)
+        public static B2CastOutput b2RayCastSegment(in B2Segment shape, in B2RayCastInput input, bool oneSided)
         {
             if (oneSided)
             {
@@ -840,9 +840,9 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus polygon shape in local space.
-        public static B2CastOutput b2RayCastPolygon(ref B2Polygon shape, ref B2RayCastInput input)
+        public static B2CastOutput b2RayCastPolygon(in B2Polygon shape, in B2RayCastInput input)
         {
-            B2_ASSERT(b2IsValidRay(ref input));
+            B2_ASSERT(b2IsValidRay(input));
 
             if (shape.radius == 0.0f)
             {
@@ -931,7 +931,7 @@ namespace Box2D.NET
             castInput.translationB = input.translation;
             castInput.maxFraction = input.maxFraction;
             castInput.canEncroach = false;
-            return b2ShapeCast(ref castInput);
+            return b2ShapeCast(castInput);
         }
 
         /// Shape cast versus a circle.
@@ -946,7 +946,7 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(ref pairInput);
+            B2CastOutput output = b2ShapeCast(pairInput);
             return output;
         }
 
@@ -962,7 +962,7 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(ref pairInput);
+            B2CastOutput output = b2ShapeCast(pairInput);
             return output;
         }
 
@@ -978,7 +978,7 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(ref pairInput);
+            B2CastOutput output = b2ShapeCast(pairInput);
             return output;
         }
 
@@ -994,7 +994,7 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(ref pairInput);
+            B2CastOutput output = b2ShapeCast(pairInput);
             return output;
         }
 

@@ -12,37 +12,37 @@ namespace Box2D.NET
     {
         // Used to prevent the compiler from warning about unused variables
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1>(T1 a)
+        public static void B2_UNUSED<T1>(in T1 a)
         {
             // ...
         }
 
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1, T2>(T1 a, T2 b)
+        public static void B2_UNUSED<T1, T2>(in T1 a, in T2 b)
         {
             // ...
         }
 
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1, T2, T3>(T1 a, T2 b, T3 c)
+        public static void B2_UNUSED<T1, T2, T3>(in T1 a, in T2 b, in T3 c)
         {
             // ...
         }
 
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1, T2, T3, T4>(T1 a, T2 b, T3 c, T4 d)
+        public static void B2_UNUSED<T1, T2, T3, T4>(in T1 a, in T2 b, in T3 c, in T4 d)
         {
             // ...
         }
 
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1, T2, T3, T4, T5>(T1 a, T2 b, T3 c, T4 d, T5 e)
+        public static void B2_UNUSED<T1, T2, T3, T4, T5>(in T1 a, in T2 b, in T3 c, in T4 d, in T5 e)
         {
             // ...
         }
 
         [Conditional("DEBUG")]
-        public static void B2_UNUSED<T1, T2, T3, T4, T5, T6>(T1 a, T2 b, T3 c, T4 d, T5 e, T6 f)
+        public static void B2_UNUSED<T1, T2, T3, T4, T5, T6>(in T1 a, in T2 b, in T3 c, in T4 d, in T5 e, in T6 f)
         {
             // ...
         }

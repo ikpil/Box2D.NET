@@ -864,14 +864,14 @@ namespace Box2D.NET
                 {
                     ref readonly B2Circle circle = ref shape.us.circle;
                     xf.p = b2TransformPoint(xf, circle.center);
-                    draw.DrawSolidCircleFcn(ref xf, circle.radius, color, draw.context);
+                    draw.DrawSolidCircleFcn(xf, circle.radius, color, draw.context);
                 }
                     break;
 
                 case B2ShapeType.b2_polygonShape:
                 {
                     ref readonly B2Polygon poly = ref shape.us.polygon;
-                    draw.DrawSolidPolygonFcn(ref xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
+                    draw.DrawSolidPolygonFcn(xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;
 
@@ -1382,7 +1382,7 @@ namespace Box2D.NET
             return true;
         }
 
-        public static bool b2Shape_IsValid(B2ShapeId id)
+        public static bool b2Shape_IsValid(in B2ShapeId id)
         {
             if (B2_MAX_WORLDS <= id.world0)
             {
@@ -1926,7 +1926,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        internal static float RayCastCallback(ref B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float RayCastCallback(in B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -1944,7 +1944,7 @@ namespace Box2D.NET
 
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
-            B2CastOutput output = b2RayCastShape(ref input, shape, transform);
+            B2CastOutput output = b2RayCastShape(input, shape, transform);
 
             if (output.hit)
             {
@@ -2010,7 +2010,7 @@ namespace Box2D.NET
         }
 
         // This callback finds the closest hit. This is the most common callback used in games.
-        internal static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+        internal static float b2RayCastClosestFcn(in B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
         {
             // Ignore initial overlap
             if (fraction == 0.0f)
@@ -2064,7 +2064,7 @@ namespace Box2D.NET
             return result;
         }
 
-        internal static float ShapeCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float ShapeCastCallback(in B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2083,7 +2083,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2CastOutput output = b2ShapeCastShape(ref input, shape, transform);
+            B2CastOutput output = b2ShapeCastShape(input, shape, transform);
 
             if (output.hit)
             {
@@ -2143,7 +2143,7 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        internal static float MoverCastCallback(ref B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldMoverCastContext context)
+        internal static float MoverCastCallback(in B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldMoverCastContext context)
         {
             B2_UNUSED(proxyId);
 
@@ -2161,7 +2161,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2CastOutput output = b2ShapeCastShape(ref input, shape, transform);
+            B2CastOutput output = b2ShapeCastShape(input, shape, transform);
             if (output.fraction == 0.0f)
             {
                 // Ignore overlapping shapes
@@ -3007,7 +3007,7 @@ void b2World_Dump()
  * @{
  */
         /// Contact identifier validation. Provides validation for up to 2^32 allocations.
-        public static bool b2Contact_IsValid(B2ContactId id)
+        public static bool b2Contact_IsValid(in B2ContactId id)
         {
             if (B2_MAX_WORLDS <= id.world0)
             {

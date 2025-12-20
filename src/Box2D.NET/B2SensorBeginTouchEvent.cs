@@ -29,7 +29,7 @@ namespace Box2D.NET
         /// The id of the shape that began touching the sensor shape
         public B2ShapeId visitorShapeId;
 
-        public B2SensorBeginTouchEvent(B2ShapeId sensorShapeId, B2ShapeId visitorShapeId)
+        public B2SensorBeginTouchEvent(in B2ShapeId sensorShapeId, in B2ShapeId visitorShapeId)
         {
             this.sensorShapeId = sensorShapeId;
             this.visitorShapeId = visitorShapeId;
