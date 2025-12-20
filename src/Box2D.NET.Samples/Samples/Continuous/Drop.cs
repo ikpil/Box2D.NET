@@ -97,7 +97,7 @@ public class Drop : Sample
         m_groundIds.Clear();
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -119,7 +119,7 @@ public class Drop : Sample
         m_groundIds.Clear();
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -148,7 +148,7 @@ public class Drop : Sample
         m_groundIds.Clear();
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
@@ -173,11 +173,11 @@ public class Drop : Sample
         bodyDef.position = new B2Vec2(0.0f, 4.0f);
         bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
 
-        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.125f);
-        b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+        b2CreateCircleShape(bodyId, shapeDef, circle);
 
         m_bodyIds.Add(bodyId);
         m_frameCount = 1;
@@ -196,7 +196,7 @@ public class Drop : Sample
         bodyDef.linearVelocity = new B2Vec2(0.0f, 0.0f);
         bodyDef.angularVelocity = -0.5f;
 
-        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Polygon box = b2MakeBox(0.75f, 0.01f);
@@ -240,7 +240,7 @@ public class Drop : Sample
 
             float shift = (i % 2 == 0 ? -offset : offset);
             bodyDef.position = new B2Vec2(2.5f + shift, a + 2.0f * a * i);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             m_bodyIds.Add(bodyId);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
@@ -256,8 +256,8 @@ public class Drop : Sample
             bodyDef.linearVelocity = new B2Vec2(200.0f, 0.0f);
             bodyDef.isBullet = true;
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
             m_bodyIds.Add(bodyId);
         }
 

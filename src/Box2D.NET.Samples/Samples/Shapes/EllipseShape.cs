@@ -30,7 +30,7 @@ public class EllipseShape : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(20.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
@@ -67,7 +67,7 @@ public class EllipseShape : Sample
                 for (int j = 0; j < xCount; ++j)
                 {
                     bodyDef.position = new B2Vec2(x, y);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, ref shapeDef, ref poly);
 
                     x += 1.0f;

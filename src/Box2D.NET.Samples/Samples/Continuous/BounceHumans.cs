@@ -44,7 +44,7 @@ public class BounceHumans : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.material.restitution = 1.3f;
@@ -67,12 +67,12 @@ public class BounceHumans : Sample
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 10.0f), new B2Vec2(-10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 2.0f);
         shapeDef.material.restitution = 2.0f;
-        b2CreateCircleShape(groundId, ref shapeDef, ref circle);
+        b2CreateCircleShape(groundId, shapeDef, circle);
     }
 
 

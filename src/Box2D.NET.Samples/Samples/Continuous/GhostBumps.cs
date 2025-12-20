@@ -73,7 +73,7 @@ public class GhostBumps : Sample
         m_shapeId = b2_nullShapeId;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        m_groundId = b2CreateBody(m_worldId, ref bodyDef);
+        m_groundId = b2CreateBody(m_worldId, bodyDef);
 
         float m = 1.0f / MathF.Sqrt(2.0f);
         float mm = 2.0f * (MathF.Sqrt(2.0f) - 1.0f);
@@ -243,7 +243,7 @@ public class GhostBumps : Sample
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(-28.0f, 18.0f);
         bodyDef.linearVelocity = new B2Vec2(0.0f, 0.0f);
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
@@ -252,18 +252,18 @@ public class GhostBumps : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
+            m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            m_shapeId = b2CreateCapsuleShape(m_bodyId, ref shapeDef, ref capsule);
+            m_shapeId = b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
             float h = 0.5f - m_round;
             B2Polygon box = b2MakeRoundedBox(h, 2.0f * h, m_round);
-            m_shapeId = b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            m_shapeId = b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
     }
 

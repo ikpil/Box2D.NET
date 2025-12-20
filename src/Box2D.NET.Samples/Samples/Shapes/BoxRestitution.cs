@@ -31,7 +31,7 @@ public class BoxRestitution : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             float h = 2.0f * m_count;
             B2Segment segment = new B2Segment(new B2Vec2(-h, 0.0f), new B2Vec2(h, 0.0f));
@@ -59,13 +59,13 @@ public class BoxRestitution : Sample
 
                 bodyDef.position = new B2Vec2(x, 1.0f);
                 bodyDef.name = buffer;
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
                 bodyDef.position = new B2Vec2(x, 4.0f);
                 bodyDef.name = buffer;
-                bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 

@@ -58,7 +58,7 @@ public class ShapeCastChain : Sample
     {
         // World Body & Shape
         B2BodyDef worldBodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref worldBodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, worldBodyDef);
 
         B2Vec2[] points = new B2Vec2[]
         {
@@ -93,7 +93,7 @@ public class ShapeCastChain : Sample
         characterBodyDef.userData = null;
         characterBodyDef.type = B2BodyType.b2_kinematicBody;
 
-        characterBodyId_ = b2CreateBody(m_worldId, ref characterBodyDef);
+        characterBodyId_ = b2CreateBody(m_worldId, characterBodyDef);
 
         B2ShapeDef characterShapeDef = b2DefaultShapeDef();
 

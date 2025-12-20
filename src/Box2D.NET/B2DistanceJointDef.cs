@@ -35,10 +35,10 @@ namespace Box2D.NET
         /// Enable/disable the joint limit
         public bool enableLimit;
 
-        /// Minimum length. Clamped to a stable minimum value.
+        /// Minimum length for limit. Clamped to a stable minimum value.
         public float minLength;
 
-        /// Maximum length. Must be greater than or equal to the minimum length.
+        /// Maximum length for limit. Must be greater than or equal to the minimum length.
         public float maxLength;
 
         /// Enable/disable the joint motor

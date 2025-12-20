@@ -158,7 +158,7 @@ namespace Box2D.NET
             shape.fatAABB = new B2AABB(b2Vec2_zero, b2Vec2_zero);
             shape.generation += 1;
 
-            if (body.setIndex != (int)B2SetType.b2_disabledSet)
+            if (body.setIndex != (int)B2SolverSetType.b2_disabledSet)
             {
                 B2BodyType proxyType = body.type;
                 b2CreateShapeProxy(shape, world.broadPhase, proxyType, transform, def.invokeContactCreation || def.isSensor);
@@ -222,6 +222,10 @@ namespace Box2D.NET
             {
                 b2UpdateBodyMassData(world, body);
             }
+            else
+            {
+                body.flags |= (uint)B2BodyFlags.b2_dirtyMass;
+            }
 
             b2ValidateSolverSets(world);
 
@@ -229,30 +233,41 @@ namespace Box2D.NET
             return id;
         }
 
+        /// Create a circle shape and attach it to a body. The shape definition and geometry are fully cloned.
+        /// Contacts are not created until the next time step.
+        /// @return the shape id for accessing the shape
         public static B2ShapeId b2CreateCircleShape(B2BodyId bodyId, in B2ShapeDef def, in B2Circle circle)
         {
             return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
         }
 
+        /// Create a capsule shape and attach it to a body. The shape definition and geometry are fully cloned.
+        /// Contacts are not created until the next time step.
+        /// @return the shape id for accessing the shape, this will be b2_nullShapeId if the length is too small.
         public static B2ShapeId b2CreateCapsuleShape(B2BodyId bodyId, in B2ShapeDef def, in B2Capsule capsule)
         {
             float lengthSqr = b2DistanceSquared(capsule.center1, capsule.center2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
-                B2Circle circle = new B2Circle(b2Lerp(capsule.center1, capsule.center2, 0.5f), capsule.radius);
-                return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
+                return b2_nullShapeId;
             }
 
             return b2CreateShape(bodyId, def, capsule, B2ShapeType.b2_capsuleShape);
         }
 
+        /// Create a polygon shape and attach it to a body. The shape definition and geometry are fully cloned.
+        /// Contacts are not created until the next time step.
+        /// @return the shape id for accessing the shape
         public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, in B2ShapeDef def, in B2Polygon polygon)
         {
             B2_ASSERT(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
             return b2CreateShape(bodyId, def, polygon, B2ShapeType.b2_polygonShape);
         }
 
-        public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, ref B2ShapeDef def, ref B2Segment segment)
+        /// Create a line segment shape and attach it to a body. The shape definition and geometry are fully cloned.
+        /// Contacts are not created until the next time step.
+        /// @return the shape id for accessing the shape
+        public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, in B2ShapeDef def, in B2Segment segment)
         {
             float lengthSqr = b2DistanceSquared(segment.point1, segment.point2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
@@ -1471,6 +1486,12 @@ namespace Box2D.NET
                 return;
             }
 
+            float lengthSqr = b2DistanceSquared(capsule.center1, capsule.center2);
+            if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
+            {
+                return;
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.capsule = new B2Capsule(capsule.center1, capsule.center2, capsule.radius);
             shape.type = B2ShapeType.b2_capsuleShape;
@@ -1535,6 +1556,13 @@ namespace Box2D.NET
             return new B2ChainId();
         }
 
+
+        public static int b2Chain_GetSurfaceMaterialCount(B2ChainId chainId)
+        {
+            B2World world = b2GetWorld(chainId.world0);
+            B2ChainShape chainShape = b2GetChainShape(world, chainId);
+            return chainShape.materialCount;
+        }
 
         /// Set a chain material. If the chain has only one material, this material is applied to all
         /// segments. Otherwise it is applied to a single segment.
@@ -1759,7 +1787,7 @@ namespace Box2D.NET
         // https://www.engineeringtoolbox.com/wind-load-d_1775.html
         // force = 0.5 * air_density * velocity^2 * area
         // https://en.wikipedia.org/wiki/Lift_(force)
-        
+
         /// Apply a wind force to the body for this shape using the density of air. This considers
         /// the projected area of the shape in the wind direction. This also considers
         /// the relative velocity of the shape.
@@ -1791,20 +1819,20 @@ namespace Box2D.NET
                 return;
             }
 
-            if (body.setIndex >= (int)B2SetType.b2_firstSleepingSet && wake == false)
+            if (body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet && wake == false)
             {
                 return;
             }
 
             B2BodySim sim = b2GetBodySim(world, body);
 
-            if (body.setIndex != (int)B2SetType.b2_awakeSet)
+            if (body.setIndex != (int)B2SolverSetType.b2_awakeSet)
             {
                 // Must wake for state to exist
                 b2WakeBody(world, body);
             }
 
-            B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             B2BodyState state = b2GetBodyState(world, body);
             B2Transform transform = sim.transform;

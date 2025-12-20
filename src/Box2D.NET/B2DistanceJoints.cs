@@ -244,7 +244,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet || bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
@@ -267,8 +267,8 @@ namespace Box2D.NET
 
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
-            joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
-            joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
+            joint.indexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
+            joint.indexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
             // initial anchors in world space
             joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
@@ -397,6 +397,23 @@ namespace Box2D.NET
                     wB += iB * b2Cross(rB, P);
                 }
 
+                if (joint.enableMotor)
+                {
+                    B2Vec2 vr = b2Add(b2Sub(vB, vA), b2Sub(b2CrossSV(wB, rB), b2CrossSV(wA, rA)));
+                    float Cdot = b2Dot(axis, vr);
+                    float impulse = joint.axialMass * (joint.motorSpeed - Cdot);
+                    float oldImpulse = joint.motorImpulse;
+                    float maxImpulse = context.h * joint.maxMotorForce;
+                    joint.motorImpulse = b2ClampFloat(joint.motorImpulse + impulse, -maxImpulse, maxImpulse);
+                    impulse = joint.motorImpulse - oldImpulse;
+
+                    B2Vec2 P = b2MulSV(impulse, axis);
+                    vA = b2MulSub(vA, mA, P);
+                    wA -= iA * b2Cross(rA, P);
+                    vB = b2MulAdd(vB, mB, P);
+                    wB += iB * b2Cross(rB, P);
+                }
+
                 if (joint.enableLimit)
                 {
                     // lower limit
@@ -466,23 +483,6 @@ namespace Box2D.NET
                         vB = b2MulAdd(vB, mB, P);
                         wB += iB * b2Cross(rB, P);
                     }
-                }
-
-                if (joint.enableMotor)
-                {
-                    B2Vec2 vr = b2Add(b2Sub(vB, vA), b2Sub(b2CrossSV(wB, rB), b2CrossSV(wA, rA)));
-                    float Cdot = b2Dot(axis, vr);
-                    float impulse = joint.axialMass * (joint.motorSpeed - Cdot);
-                    float oldImpulse = joint.motorImpulse;
-                    float maxImpulse = context.h * joint.maxMotorForce;
-                    joint.motorImpulse = b2ClampFloat(joint.motorImpulse + impulse, -maxImpulse, maxImpulse);
-                    impulse = joint.motorImpulse - oldImpulse;
-
-                    B2Vec2 P = b2MulSV(impulse, axis);
-                    vA = b2MulSub(vA, mA, P);
-                    wA -= iA * b2Cross(rA, P);
-                    vB = b2MulAdd(vB, mB, P);
-                    wB += iB * b2Cross(rB, P);
                 }
             }
             else

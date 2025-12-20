@@ -33,7 +33,7 @@ public class PersistentContact : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Vec2[] points = new B2Vec2[22];
             float x = 10.0f;
@@ -60,12 +60,12 @@ public class PersistentContact : Sample
             bodyDef.position = new B2Vec2(-8.0f, 1.0f);
             bodyDef.linearVelocity = new B2Vec2(2.0f, 0.0f);
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.enableContactEvents = true;
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         m_contactId = b2_nullContactId;

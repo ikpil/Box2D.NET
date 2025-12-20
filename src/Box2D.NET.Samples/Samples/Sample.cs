@@ -3,12 +3,10 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Numerics;
 using System.Text;
 using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
-using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
@@ -307,7 +305,7 @@ public class Sample : IDisposable
                 bodyDef.type = B2BodyType.b2_kinematicBody;
                 bodyDef.position = m_mousePoint;
                 bodyDef.enableSleep = false;
-                m_mouseBodyId = b2CreateBody(m_worldId, ref bodyDef);
+                m_mouseBodyId = b2CreateBody(m_worldId, bodyDef);
 
                 B2MotorJointDef jointDef = b2DefaultMotorJointDef();
                 jointDef.@base.bodyIdA = m_mouseBodyId;
@@ -416,7 +414,8 @@ public class Sample : IDisposable
 
         if (B2_IS_NON_NULL(m_mouseBodyId) && timeStep > 0.0f)
         {
-            b2Body_SetTargetTransform(m_mouseBodyId, new B2Transform(m_mousePoint, b2Rot_identity), timeStep);
+            bool wake = true;
+            b2Body_SetTargetTransform(m_mouseBodyId, new B2Transform(m_mousePoint, b2Rot_identity), timeStep, wake);
         }
 
         b2World_EnableSleeping(m_worldId, m_context.enableSleep);

@@ -56,7 +56,7 @@ public struct Car
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
         m_chassisId = b2CreateBody(worldId, bodyDef);
-        b2CreatePolygonShape(m_chassisId, ref shapeDef, ref chassis);
+        b2CreatePolygonShape(m_chassisId, shapeDef, chassis);
 
         shapeDef.density = 2.0f / scale;
         shapeDef.material.friction = 1.5f;
@@ -65,12 +65,12 @@ public struct Car
         bodyDef.position = b2Add(new B2Vec2(-1.0f * scale, 0.35f * scale), position);
         bodyDef.allowFastRotation = true;
         m_rearWheelId = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_rearWheelId, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_rearWheelId, shapeDef, circle);
 
         bodyDef.position = b2Add(new B2Vec2(1.0f * scale, 0.4f * scale), position);
         bodyDef.allowFastRotation = true;
         m_frontWheelId = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_frontWheelId, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_frontWheelId, shapeDef, circle);
 
         B2Vec2 axis = new B2Vec2(0.0f, 1.0f);
         B2Vec2 pivot = b2Body_GetPosition(m_rearWheelId);
@@ -96,7 +96,7 @@ public struct Car
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_rearAxleId = b2CreateWheelJoint(worldId, ref jointDef);
+        m_rearAxleId = b2CreateWheelJoint(worldId, jointDef);
 
         pivot = b2Body_GetPosition(m_frontWheelId);
         jointDef.@base.bodyIdA = m_chassisId;
@@ -112,7 +112,7 @@ public struct Car
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_frontAxleId = b2CreateWheelJoint(worldId, ref jointDef);
+        m_frontAxleId = b2CreateWheelJoint(worldId, jointDef);
     }
 
     public void Despawn()

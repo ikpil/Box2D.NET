@@ -28,7 +28,7 @@ namespace Box2D.NET
 
         public static B2Island b2CreateIsland(B2World world, int setIndex)
         {
-            B2_ASSERT(setIndex == (int)B2SetType.b2_awakeSet || setIndex >= (int)B2SetType.b2_firstSleepingSet);
+            B2_ASSERT(setIndex == (int)B2SolverSetType.b2_awakeSet || setIndex >= (int)B2SolverSetType.b2_firstSleepingSet);
 
             int islandId = b2AllocId(world.islandIdPool);
 
@@ -283,17 +283,17 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
 
-            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_disabledSet && bodyB.setIndex != (int)B2SetType.b2_disabledSet);
-            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_disabledSet && bodyB.setIndex != (int)B2SolverSetType.b2_disabledSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_staticSet || bodyB.setIndex != (int)B2SolverSetType.b2_staticSet);
 
             // Wake bodyB if bodyA is awake and bodyB is sleeping
-            if (bodyA.setIndex == (int)B2SetType.b2_awakeSet && bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet && bodyB.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyB.setIndex);
             }
 
             // Wake bodyA if bodyB is awake and bodyA is sleeping
-            if (bodyB.setIndex == (int)B2SetType.b2_awakeSet && bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet && bodyA.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyA.setIndex);
             }
@@ -302,8 +302,8 @@ namespace Box2D.NET
             int islandIdB = bodyB.islandId;
 
             // Static bodies have null island indices.
-            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || islandIdA == B2_NULL_INDEX);
-            B2_ASSERT(bodyB.setIndex != (int)B2SetType.b2_staticSet || islandIdB == B2_NULL_INDEX);
+            B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_staticSet || islandIdA == B2_NULL_INDEX);
+            B2_ASSERT(bodyB.setIndex != (int)B2SolverSetType.b2_staticSet || islandIdB == B2_NULL_INDEX);
             B2_ASSERT(islandIdA != B2_NULL_INDEX || islandIdB != B2_NULL_INDEX);
 
             // Merge islands. This will destroy one of the islands.
@@ -393,11 +393,11 @@ namespace Box2D.NET
 
             B2_ASSERT(bodyA.type == B2BodyType.b2_dynamicBody || bodyB.type == B2BodyType.b2_dynamicBody);
 
-            if (bodyA.setIndex == (int)B2SetType.b2_awakeSet && bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet && bodyB.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyB.setIndex);
             }
-            else if (bodyB.setIndex == (int)B2SetType.b2_awakeSet && bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            else if (bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet && bodyA.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, bodyA.setIndex);
             }
@@ -469,7 +469,7 @@ namespace Box2D.NET
             B2Island baseIsland = b2Array_Get(ref world.islands, baseId);
             int setIndex = baseIsland.setIndex;
 
-            if (setIndex != (int)B2SetType.b2_awakeSet)
+            if (setIndex != (int)B2SolverSetType.b2_awakeSet)
             {
                 // can only split awake island
                 return;
@@ -536,7 +536,7 @@ namespace Box2D.NET
                     // Grab the next body off the stack and add it to the island.
                     int bodyId = stack[--stackCount];
                     B2Body body = bodies[bodyId];
-                    B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(body.islandId == islandId);
 
                     // Add body to island
@@ -586,7 +586,7 @@ namespace Box2D.NET
                         B2Body otherBody = bodies[otherBodyId];
 
                         // Maybe add other body to stack
-                        if (otherBody.islandId != islandId && otherBody.setIndex != (int)B2SetType.b2_staticSet)
+                        if (otherBody.islandId != islandId && otherBody.setIndex != (int)B2SolverSetType.b2_staticSet)
                         {
                             B2_ASSERT(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;
@@ -635,7 +635,7 @@ namespace Box2D.NET
                         }
 
                         // todo redundant with test below?
-                        if (joint.setIndex == (int)B2SetType.b2_disabledSet)
+                        if (joint.setIndex == (int)B2SolverSetType.b2_disabledSet)
                         {
                             continue;
                         }
@@ -645,7 +645,7 @@ namespace Box2D.NET
                         B2Body otherBody = bodies[otherBodyId];
 
                         // Don't simulate joints connected to disabled bodies.
-                        if (otherBody.setIndex == (int)B2SetType.b2_disabledSet)
+                        if (otherBody.setIndex == (int)B2SolverSetType.b2_disabledSet)
                         {
                             continue;
                         }
@@ -657,7 +657,7 @@ namespace Box2D.NET
                         }
 
                         // Maybe add other body to stack
-                        if (otherBody.islandId != islandId && otherBody.setIndex == (int)B2SetType.b2_awakeSet)
+                        if (otherBody.islandId != islandId && otherBody.setIndex == (int)B2SolverSetType.b2_awakeSet)
                         {
                             B2_ASSERT(stackCount < bodyCount);
                             stack[stackCount++] = otherBodyId;

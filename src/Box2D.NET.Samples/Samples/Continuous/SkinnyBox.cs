@@ -41,7 +41,7 @@ public class SkinnyBox : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -87,7 +87,7 @@ public class SkinnyBox : Sample
         shapeDef.density = 1.0f;
         shapeDef.material.friction = 0.9f;
 
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         if (m_capsule)
         {
@@ -106,7 +106,7 @@ public class SkinnyBox : Sample
             m_x = RandomFloatRange(-1.0f, 1.0f);
             bodyDef.position = new B2Vec2(m_x, 10.0f);
             bodyDef.linearVelocity = new B2Vec2(0.0f, -50.0f);
-            m_bulletId = b2CreateBody(m_worldId, ref bodyDef);
+            m_bulletId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bulletId, ref shapeDef, ref polygon);
         }
     }

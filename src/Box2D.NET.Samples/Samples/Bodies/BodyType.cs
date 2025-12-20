@@ -41,14 +41,14 @@ public class BodyType : Sample
             m_camera.zoom = 25.0f * 0.4f;
         }
 
-        m_type = B2BodyType.b2_dynamicBody;
+        m_type = B2BodyType.b2_staticBody;
         m_isEnabled = true;
 
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "ground";
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -61,7 +61,7 @@ public class BodyType : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-2.0f, 3.0f);
             bodyDef.name = "attach1";
-            m_attachmentId = b2CreateBody(m_worldId, ref bodyDef);
+            m_attachmentId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -76,7 +76,7 @@ public class BodyType : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(3.0f, 3.0f);
             bodyDef.name = "attach2";
-            m_secondAttachmentId = b2CreateBody(m_worldId, ref bodyDef);
+            m_secondAttachmentId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -91,7 +91,7 @@ public class BodyType : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(-4.0f, 5.0f);
             bodyDef.name = "platform";
-            m_platformId = b2CreateBody(m_worldId, ref bodyDef);
+            m_platformId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
 
@@ -142,7 +142,7 @@ public class BodyType : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-3.0f, 8.0f);
             bodyDef.name = "crate1";
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
 
@@ -159,7 +159,7 @@ public class BodyType : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(2.0f, 8.0f);
             bodyDef.name = "crate2";
-            m_secondPayloadId = b2CreateBody(m_worldId, ref bodyDef);
+            m_secondPayloadId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.75f, 0.75f);
 
@@ -176,7 +176,7 @@ public class BodyType : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(8.0f, 0.2f);
             bodyDef.name = "debris";
-            m_touchingBodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_touchingBodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.25f);
 
@@ -184,6 +184,21 @@ public class BodyType : Sample
             shapeDef.density = 2.0f;
 
             b2CreateCapsuleShape(m_touchingBodyId, ref shapeDef, ref capsule);
+        }
+
+        // Create a separate body on the ground
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_staticBody;
+            bodyDef.isEnabled = m_isEnabled;
+            bodyDef.position = new B2Vec2(8.5f, 0.2f);
+            bodyDef.name = "debris";
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+
+            B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 0.0f), 0.5f);
+
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
         }
 
         // Create a separate floating body
@@ -194,14 +209,14 @@ public class BodyType : Sample
             bodyDef.position = new B2Vec2(-8.0f, 12.0f);
             bodyDef.gravityScale = 0.0f;
             bodyDef.name = "floater";
-            m_floatingBodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_floatingBodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.5f), 0.25f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 2.0f;
 
-            b2CreateCircleShape(m_floatingBodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(m_floatingBodyId, shapeDef, circle);
         }
     }
 

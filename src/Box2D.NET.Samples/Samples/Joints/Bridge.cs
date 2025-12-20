@@ -47,7 +47,7 @@ public class Bridge : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         {
@@ -81,7 +81,7 @@ public class Bridge : Sample
                 bodyDef.position = new B2Vec2(xbase + 0.5f + 1.0f * i, 20.0f);
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.angularDamping = 0.1f;
-                m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
+                m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, ref box);
 
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * i, 20.0f);
@@ -119,7 +119,7 @@ public class Bridge : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-8.0f + 8.0f * i, 22.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref triangle);
         }
 
@@ -133,8 +133,8 @@ public class Bridge : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-6.0f + 6.0f * i, 25.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 

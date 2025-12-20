@@ -52,7 +52,7 @@ public class BenchmarkSensor : Sample
         m_activeSensor.active = true;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         {
             float gridSize = 3.0f;
@@ -137,9 +137,9 @@ public class BenchmarkSensor : Sample
             // stagger bodies to avoid bunching up events into a single update
             float yOffset = RandomFloatRange(-1.0f, 1.0f);
             bodyDef.position = new B2Vec2(shift * i - xCenter, y + yOffset);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 

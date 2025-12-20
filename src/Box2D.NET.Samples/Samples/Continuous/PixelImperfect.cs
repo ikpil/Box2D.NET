@@ -36,7 +36,7 @@ public class PixelImperfect : Sample
             B2BodyDef block4BodyDef = b2DefaultBodyDef();
             block4BodyDef.type = B2BodyType.b2_staticBody;
             block4BodyDef.position = new B2Vec2(175.0f / pixelsPerMeter, 150.0f / pixelsPerMeter);
-            B2BodyId block4BodyId = b2CreateBody(m_worldId, ref block4BodyDef);
+            B2BodyId block4BodyId = b2CreateBody(m_worldId, block4BodyDef);
             B2Polygon block4Shape = b2MakeBox(20.0f / pixelsPerMeter, 10.0f / pixelsPerMeter);
             B2ShapeDef block4ShapeDef = b2DefaultShapeDef();
             block4ShapeDef.material.friction = 0.0f;
@@ -49,7 +49,7 @@ public class PixelImperfect : Sample
             ballBodyDef.position = new B2Vec2(200.0f / pixelsPerMeter, 275.0f / pixelsPerMeter);
             ballBodyDef.gravityScale = 0.0f;
 
-            m_ballId = b2CreateBody(m_worldId, ref ballBodyDef);
+            m_ballId = b2CreateBody(m_worldId, ballBodyDef);
             // Ball shape
             //b2Polygon ballShape = b2MakeBox( 5.f / pixelsPerMeter, 5.f / pixelsPerMeter );
             B2Polygon ballShape = b2MakeRoundedBox(4.0f / pixelsPerMeter, 4.0f / pixelsPerMeter, 0.9f / pixelsPerMeter);

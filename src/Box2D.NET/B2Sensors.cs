@@ -161,7 +161,7 @@ namespace Box2D.NET
                 b2Array_Clear(ref sensor.hits);
 
                 B2Body body = b2Array_Get(ref world.bodies, sensorShape.bodyId);
-                if (body.setIndex == (int)B2SetType.b2_disabledSet || sensorShape.enableSensorEvents == false)
+                if (body.setIndex == (int)B2SolverSetType.b2_disabledSet || sensorShape.enableSensorEvents == false)
                 {
                     if (sensor.overlaps1.count != 0)
                     {

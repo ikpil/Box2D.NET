@@ -164,7 +164,7 @@ namespace Box2D.NET
         // Suppose B (or C) is an internal node, then the lowest cost would be one of two cases:
         // case1: D becomes a sibling of B
         // case2: D becomes a descendant of B along with a new internal node of area(D).
-        internal static int b2FindBestSibling(B2DynamicTree tree,in B2AABB boxD)
+        internal static int b2FindBestSibling(B2DynamicTree tree, in B2AABB boxD)
         {
             B2Vec2 centerD = b2AABB_Center(boxD);
             float areaD = b2Perimeter(boxD);
@@ -233,7 +233,7 @@ namespace Box2D.NET
 
                     // Lower bound cost of inserting under child 1. The minimum accounts for two possibilities:
                     // 1. Child1 could be the sibling with cost1 = inheritedCost + directCost1
-                    // 2. A descendent of child1 could be the sibling with the lower bound cost of
+                    // 2. A descendant of child1 could be the sibling with the lower bound cost of
                     //       cost1 = inheritedCost + (directCost1 - area1) + areaD
                     // This minimum here leads to the minimum of these two costs.
                     lowerCost1 = inheritedCost + directCost1 + b2MinFloat(areaD - area1, 0.0f);
@@ -611,38 +611,35 @@ namespace Box2D.NET
             int oldParent = tree.nodes[sibling].pn.parent;
             int newParent = b2AllocateNode(tree);
 
-            // warning: node pointer can change after allocation
+            // Warning: node pointer can change after allocation
             B2TreeNode[] nodes = tree.nodes;
             nodes[newParent].pn.parent = oldParent;
             nodes[newParent].children.userData = ulong.MaxValue;
             nodes[newParent].aabb = b2AABB_Union(leafAABB, nodes[sibling].aabb);
             nodes[newParent].categoryBits = nodes[leaf].categoryBits | nodes[sibling].categoryBits;
             nodes[newParent].height = (ushort)(nodes[sibling].height + 1);
+            nodes[newParent].children.child1 = sibling;
+            nodes[newParent].children.child2 = leaf;
+            nodes[sibling].pn.parent = newParent;
+            nodes[leaf].pn.parent = newParent;
 
+            // Fix grandparent links
             if (oldParent != B2_NULL_INDEX)
             {
-                // The sibling was not the root.
+                // The sibling was not the root
                 if (nodes[oldParent].children.child1 == sibling)
                 {
                     nodes[oldParent].children.child1 = newParent;
                 }
                 else
                 {
+                    B2_ASSERT(nodes[oldParent].children.child2 == sibling);
                     nodes[oldParent].children.child2 = newParent;
                 }
-
-                nodes[newParent].children.child1 = sibling;
-                nodes[newParent].children.child2 = leaf;
-                nodes[sibling].pn.parent = newParent;
-                nodes[leaf].pn.parent = newParent;
             }
             else
             {
-                // The sibling was the root.
-                nodes[newParent].children.child1 = sibling;
-                nodes[newParent].children.child2 = leaf;
-                nodes[sibling].pn.parent = newParent;
-                nodes[leaf].pn.parent = newParent;
+                // The sibling was the root
                 tree.root = newParent;
             }
 
@@ -741,7 +738,7 @@ namespace Box2D.NET
         /// Create a proxy. Provide an AABB and a userData value.
         // Create a proxy in the tree as a leaf node. We return the index of the node instead of a pointer so that we can grow
         // the node pool.
-        public static int b2DynamicTree_CreateProxy(B2DynamicTree tree,in B2AABB aabb, ulong categoryBits, ulong userData)
+        public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
         {
             B2_ASSERT(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
             B2_ASSERT(-B2_HUGE < aabb.lowerBound.Y && aabb.lowerBound.Y < B2_HUGE);
@@ -786,7 +783,7 @@ namespace Box2D.NET
         }
 
         /// Move a proxy to a new AABB by removing and reinserting into the tree.
-        public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId,in B2AABB aabb)
+        public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
         {
             B2_ASSERT(b2IsValidAABB(aabb));
             B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
@@ -803,7 +800,7 @@ namespace Box2D.NET
         }
 
         /// Enlarge a proxy and enlarge ancestors as necessary.
-        public static void b2DynamicTree_EnlargeProxy(B2DynamicTree tree, int proxyId,in B2AABB aabb)
+        public static void b2DynamicTree_EnlargeProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
         {
             B2TreeNode[] nodes = tree.nodes;
 
@@ -1112,7 +1109,7 @@ namespace Box2D.NET
 
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree,in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context) where T : struct
+        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1169,7 +1166,7 @@ namespace Box2D.NET
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// No filtering is performed.
         ///	@return performance data
-        internal static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree,in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        internal static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 

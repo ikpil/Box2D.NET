@@ -48,7 +48,7 @@ public class RevoluteJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(40.0f, 1.0f);
 
@@ -69,7 +69,7 @@ public class RevoluteJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-10.0f, 20.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
@@ -107,24 +107,24 @@ public class RevoluteJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(5.0f, 30.0f);
-            m_ball = b2CreateBody(m_worldId, ref bodyDef);
+            m_ball = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
 
-            b2CreateCircleShape(m_ball, ref shapeDef, ref circle);
+            b2CreateCircleShape(m_ball, shapeDef, circle);
         }
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(20.0f, 10.0f);
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            B2BodyId body = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId body = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(10.0f, 0.5f, new B2Vec2(-10.0f, 0.0f), b2Rot_identity);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(body, ref shapeDef, ref box);
+            b2CreatePolygonShape(body, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(19.0f, 10.0f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -139,7 +139,7 @@ public class RevoluteJoint : Sample
             jointDef.motorSpeed = 0.0f;
             jointDef.maxMotorTorque = m_motorTorque;
 
-            m_jointId2 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointId2 = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
     }
 

@@ -49,7 +49,7 @@ public class OverlapRecovery : Sample
         m_dampingRatio = 10.0f;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
         b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -86,7 +86,7 @@ public class OverlapRecovery : Sample
             for (int j = i; j < m_baseCount; ++j)
             {
                 bodyDef.position = new B2Vec2(x, y);
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 

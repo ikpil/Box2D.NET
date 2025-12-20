@@ -41,7 +41,7 @@ public class RestitutionThreshold : Sample
             block0BodyDef.type = B2BodyType.b2_staticBody;
             block0BodyDef.position = new B2Vec2(205.0f / pixelsPerMeter, 120.0f / pixelsPerMeter);
             block0BodyDef.rotation = b2MakeRot(70.0f * 3.14f / 180.0f);
-            B2BodyId block0BodyId = b2CreateBody(m_worldId, ref block0BodyDef);
+            B2BodyId block0BodyId = b2CreateBody(m_worldId, block0BodyDef);
             B2Polygon block0Shape = b2MakeBox(50.0f / pixelsPerMeter, 5.0f / pixelsPerMeter);
             B2ShapeDef block0ShapeDef = b2DefaultShapeDef();
             block0ShapeDef.material.friction = 0.0f;
@@ -53,14 +53,14 @@ public class RestitutionThreshold : Sample
             B2BodyDef ballBodyDef = b2DefaultBodyDef();
             ballBodyDef.type = B2BodyType.b2_dynamicBody;
             ballBodyDef.position = new B2Vec2(200.0f / pixelsPerMeter, 250.0f / pixelsPerMeter);
-            m_ballId = b2CreateBody(m_worldId, ref ballBodyDef);
+            m_ballId = b2CreateBody(m_worldId, ballBodyDef);
 
             B2Circle ballShape = new B2Circle(new B2Vec2(), 0.0f);
             ballShape.radius = 5.0f / pixelsPerMeter;
             B2ShapeDef ballShapeDef = b2DefaultShapeDef();
             ballShapeDef.material.friction = 0.0f;
             ballShapeDef.material.restitution = 1.0f;
-            b2CreateCircleShape(m_ballId, ref ballShapeDef, ref ballShape);
+            b2CreateCircleShape(m_ballId, ballShapeDef, ballShape);
 
             b2Body_SetLinearVelocity(m_ballId, new B2Vec2(0.0f, -2.9f)); // Initial velocity
             b2Body_SetMotionLocks(m_ballId, new B2MotionLocks(false, false, true)); // Do not rotate a ball

@@ -42,7 +42,7 @@ public class UserConstraint : Sample
         bodyDef.gravityScale = 1.0f;
         bodyDef.angularDamping = 0.5f;
         bodyDef.linearDamping = 0.2f;
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
         b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
 
         m_impulses[0] = 0.0f;

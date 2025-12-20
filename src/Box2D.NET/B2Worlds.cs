@@ -158,19 +158,19 @@ namespace Box2D.NET
             set = b2CreateSolverSet(world);
             set.setIndex = b2AllocId(world.solverSetIdPool);
             b2Array_Push(ref world.solverSets, set);
-            B2_ASSERT(world.solverSets.data[(int)B2SetType.b2_staticSet].setIndex == (int)B2SetType.b2_staticSet);
+            B2_ASSERT(world.solverSets.data[(int)B2SolverSetType.b2_staticSet].setIndex == (int)B2SolverSetType.b2_staticSet);
 
             // disabled set
             set = b2CreateSolverSet(world);
             set.setIndex = b2AllocId(world.solverSetIdPool);
             b2Array_Push(ref world.solverSets, set);
-            B2_ASSERT(world.solverSets.data[(int)B2SetType.b2_disabledSet].setIndex == (int)B2SetType.b2_disabledSet);
+            B2_ASSERT(world.solverSets.data[(int)B2SolverSetType.b2_disabledSet].setIndex == (int)B2SolverSetType.b2_disabledSet);
 
             // awake set
             set = b2CreateSolverSet(world);
             set.setIndex = b2AllocId(world.solverSetIdPool);
             b2Array_Push(ref world.solverSets, set);
-            B2_ASSERT(world.solverSets.data[(int)B2SetType.b2_awakeSet].setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             world.shapeIdPool = b2CreateIdPool();
             world.shapes = b2Array_Create<B2Shape>(16);
@@ -423,11 +423,11 @@ namespace Box2D.NET
                     B2BodySim bodySimB = b2GetBodySim(world, bodyB);
 
                     // avoid cache misses in b2PrepareContactsTask
-                    contactSim.bodySimIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
+                    contactSim.bodySimIndexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                     contactSim.invMassA = bodySimA.invMass;
                     contactSim.invIA = bodySimA.invInertia;
 
-                    contactSim.bodySimIndexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
+                    contactSim.bodySimIndexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
@@ -487,8 +487,8 @@ namespace Box2D.NET
 
         internal static void b2AddNonTouchingContact(B2World world, B2Contact contact, B2ContactSim contactSim)
         {
-            B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
-            B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
+            B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = set.contactSims.count;
 
@@ -536,7 +536,7 @@ namespace Box2D.NET
                 contactCount += graphColors[i].contactSims.count;
             }
 
-            int nonTouchingCount = world.solverSets.data[(int)B2SetType.b2_awakeSet].contactSims.count;
+            int nonTouchingCount = world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims.count;
             contactCount += nonTouchingCount;
 
             if (contactCount == 0)
@@ -561,7 +561,7 @@ namespace Box2D.NET
             }
 
             {
-                B2ContactSim[] @base = world.solverSets.data[(int)B2SetType.b2_awakeSet].contactSims.data;
+                B2ContactSim[] @base = world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims.data;
                 for (int i = 0; i < nonTouchingCount; ++i)
                 {
                     contactSims[contactIndex] = @base[i];
@@ -604,7 +604,7 @@ namespace Box2D.NET
                 b2InPlaceUnion(ref bitSet, ref world.taskContexts.data[i].contactStateBitSet);
             }
 
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
 
             int endEventArrayIndex = world.endEventArrayIndex;
 
@@ -621,7 +621,7 @@ namespace Box2D.NET
                     int contactId = (int)(64 * k + ctz);
 
                     B2Contact contact = b2Array_Get(ref world.contacts, contactId);
-                    B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                     int colorIndex = contact.colorIndex;
                     int localIndex = contact.localIndex;
@@ -671,7 +671,7 @@ namespace Box2D.NET
                         }
 
                         B2_ASSERT(contactSim.manifold.pointCount > 0);
-                        B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                        B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                         // Link first because this wakes colliding bodies and ensures the body sims
                         // are in the correct place.
@@ -689,7 +689,7 @@ namespace Box2D.NET
                         contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simStartedTouching;
 
                         b2AddContactToGraph(world, contactSim, contact);
-                        b2RemoveNonTouchingContact(world, (int)B2SetType.b2_awakeSet, localIndex);
+                        b2RemoveNonTouchingContact(world, (int)B2SolverSetType.b2_awakeSet, localIndex);
                         contactSim = null;
                     }
                     else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStoppedTouching))
@@ -736,6 +736,7 @@ namespace Box2D.NET
             B2_ASSERT(world.locked == false);
             if (world.locked)
             {
+                //b2TracyCFrame
                 return;
             }
 
@@ -758,6 +759,7 @@ namespace Box2D.NET
                 b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
 
                 // todo_erin would be useful to still process collision while paused
+                //b2TracyCFrame
                 return;
             }
 
@@ -845,6 +847,7 @@ namespace Box2D.NET
             b2Array_Clear(ref world.sensorEndEvents[world.endEventArrayIndex]);
             b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
             world.locked = false;
+            //b2TracyCFrame
         }
 
         internal static void b2DrawShape(B2DebugDraw draw, B2Shape shape, B2Transform xf, B2HexColor color)
@@ -931,7 +934,7 @@ namespace Box2D.NET
                     // Bad body
                     color = B2HexColor.b2_colorRed;
                 }
-                else if (body.setIndex == (int)B2SetType.b2_disabledSet)
+                else if (body.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     color = B2HexColor.b2_colorSlateGray;
                 }
@@ -943,7 +946,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorLime;
                 }
-                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SetType.b2_awakeSet)
+                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) && body.setIndex == (int)B2SolverSetType.b2_awakeSet)
                 {
                     color = B2HexColor.b2_colorTurquoise;
                 }
@@ -963,7 +966,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorRoyalBlue;
                 }
-                else if (body.setIndex == (int)B2SetType.b2_awakeSet)
+                else if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
                 {
                     color = B2HexColor.b2_colorPink;
                 }
@@ -1497,7 +1500,7 @@ namespace Box2D.NET
             if (flag == false)
             {
                 int setCount = world.solverSets.count;
-                for (int i = (int)B2SetType.b2_firstSleepingSet; i < setCount; ++i)
+                for (int i = (int)B2SolverSetType.b2_firstSleepingSet; i < setCount; ++i)
                 {
                     B2SolverSet set = b2Array_Get(ref world.solverSets, i);
                     if (set.bodySims.count > 0)
@@ -1537,7 +1540,7 @@ namespace Box2D.NET
         public static int b2World_GetAwakeBodyCount(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             return awakeSet.bodySims.count;
         }
 
@@ -2403,7 +2406,7 @@ void b2World_Dump()
 
             b2WakeBody(world, body);
 
-            if (body.setIndex != (int)B2SetType.b2_awakeSet)
+            if (body.setIndex != (int)B2SolverSetType.b2_awakeSet)
             {
                 return true;
             }
@@ -2437,7 +2440,7 @@ void b2World_Dump()
             B2Vec2 impulse = b2MulSV(magnitude, direction);
 
             int localIndex = body.localIndex;
-            B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
             B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
             state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
@@ -2531,7 +2534,7 @@ void b2World_Dump()
                     bool touching = (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0;
                     if (touching)
                     {
-                        if (bodySetIndex != (int)B2SetType.b2_staticSet)
+                        if (bodySetIndex != (int)B2SolverSetType.b2_staticSet)
                         {
                             int contactIslandId = contact.islandId;
                             B2_ASSERT(contactIslandId == bodyIslandId);
@@ -2557,14 +2560,14 @@ void b2World_Dump()
 
                     B2Body otherBody = b2Array_Get(ref world.bodies, joint.edges[otherEdgeIndex].bodyId);
 
-                    if (bodySetIndex == (int)B2SetType.b2_disabledSet || otherBody.setIndex == (int)B2SetType.b2_disabledSet)
+                    if (bodySetIndex == (int)B2SolverSetType.b2_disabledSet || otherBody.setIndex == (int)B2SolverSetType.b2_disabledSet)
                     {
                         B2_ASSERT(joint.islandId == B2_NULL_INDEX);
                     }
-                    else if (bodySetIndex == (int)B2SetType.b2_staticSet)
+                    else if (bodySetIndex == (int)B2SolverSetType.b2_staticSet)
                     {
                         // Intentional nesting
-                        if (otherBody.setIndex == (int)B2SetType.b2_staticSet)
+                        if (otherBody.setIndex == (int)B2SolverSetType.b2_staticSet)
                         {
                             B2_ASSERT(joint.islandId == B2_NULL_INDEX);
                         }
@@ -2608,18 +2611,18 @@ void b2World_Dump()
                 {
                     activeSetCount += 1;
 
-                    if (setIndex == (int)B2SetType.b2_staticSet)
+                    if (setIndex == (int)B2SolverSetType.b2_staticSet)
                     {
                         B2_ASSERT(set.contactSims.count == 0);
                         B2_ASSERT(set.islandSims.count == 0);
                         B2_ASSERT(set.bodyStates.count == 0);
                     }
-                    else if (setIndex == (int)B2SetType.b2_disabledSet)
+                    else if (setIndex == (int)B2SolverSetType.b2_disabledSet)
                     {
                         B2_ASSERT(set.islandSims.count == 0);
                         B2_ASSERT(set.bodyStates.count == 0);
                     }
-                    else if (setIndex == (int)B2SetType.b2_awakeSet)
+                    else if (setIndex == (int)B2SolverSetType.b2_awakeSet)
                     {
                         B2_ASSERT(set.bodySims.count == set.bodyStates.count);
                         B2_ASSERT(set.jointSims.count == 0);
@@ -2649,7 +2652,7 @@ void b2World_Dump()
                                 B2_ASSERT(0 != (body.flags & (uint)B2BodyFlags.b2_dynamicFlag));
                             }
 
-                            if (setIndex == (int)B2SetType.b2_disabledSet)
+                            if (setIndex == (int)B2SolverSetType.b2_disabledSet)
                             {
                                 B2_ASSERT(body.headContactKey == B2_NULL_INDEX);
                             }
@@ -2663,11 +2666,11 @@ void b2World_Dump()
                                 B2_ASSERT(shape.id == shapeId);
                                 B2_ASSERT(shape.prevShapeId == prevShapeId);
 
-                                if (setIndex == (int)B2SetType.b2_disabledSet)
+                                if (setIndex == (int)B2SolverSetType.b2_disabledSet)
                                 {
                                     B2_ASSERT(shape.proxyKey == B2_NULL_INDEX);
                                 }
-                                else if (setIndex == (int)B2SetType.b2_staticSet)
+                                else if (setIndex == (int)B2SolverSetType.b2_staticSet)
                                 {
                                     B2_ASSERT(B2_PROXY_TYPE(shape.proxyKey) == B2BodyType.b2_staticBody);
                                 }
@@ -2689,7 +2692,7 @@ void b2World_Dump()
                                 int edgeIndex = contactKey & 1;
 
                                 B2Contact contact = b2Array_Get(ref world.contacts, contactId);
-                                B2_ASSERT(contact.setIndex != (int)B2SetType.b2_staticSet);
+                                B2_ASSERT(contact.setIndex != (int)B2SolverSetType.b2_staticSet);
                                 B2_ASSERT(contact.edges[0].bodyId == bodyId || contact.edges[1].bodyId == bodyId);
                                 contactKey = contact.edges[edgeIndex].nextKey;
                             }
@@ -2707,23 +2710,23 @@ void b2World_Dump()
 
                                 B2Body otherBody = b2Array_Get(ref world.bodies, joint.edges[otherEdgeIndex].bodyId);
 
-                                if (setIndex == (int)B2SetType.b2_disabledSet || otherBody.setIndex == (int)B2SetType.b2_disabledSet)
+                                if (setIndex == (int)B2SolverSetType.b2_disabledSet || otherBody.setIndex == (int)B2SolverSetType.b2_disabledSet)
                                 {
-                                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_disabledSet);
+                                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_disabledSet);
                                 }
-                                else if (setIndex == (int)B2SetType.b2_staticSet && otherBody.setIndex == (int)B2SetType.b2_staticSet)
+                                else if (setIndex == (int)B2SolverSetType.b2_staticSet && otherBody.setIndex == (int)B2SolverSetType.b2_staticSet)
                                 {
-                                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
+                                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_staticSet);
                                 }
                                 else if (body.type != B2BodyType.b2_dynamicBody && otherBody.type != B2BodyType.b2_dynamicBody)
                                 {
-                                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
+                                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_staticSet);
                                 }
-                                else if (setIndex == (int)B2SetType.b2_awakeSet)
+                                else if (setIndex == (int)B2SolverSetType.b2_awakeSet)
                                 {
-                                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_awakeSet);
                                 }
-                                else if (setIndex >= (int)B2SetType.b2_firstSleepingSet)
+                                else if (setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
                                 {
                                     B2_ASSERT(joint.setIndex == setIndex);
                                 }
@@ -2746,7 +2749,7 @@ void b2World_Dump()
                         {
                             B2ContactSim contactSim = set.contactSims.data[i];
                             B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
-                            if (setIndex == (int)B2SetType.b2_awakeSet)
+                            if (setIndex == (int)B2SolverSetType.b2_awakeSet)
                             {
                                 // contact should be non-touching if awake
                                 // or it could be this contact hasn't been transferred yet
@@ -2821,7 +2824,7 @@ void b2World_Dump()
                     // contact should be touching in the constraint graph or awaiting transfer to non-touching
                     B2_ASSERT(contactSim.manifold.pointCount > 0 ||
                               (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
-                    B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(contact.colorIndex == colorIndex);
                     B2_ASSERT(contact.localIndex == i);
 
@@ -2848,7 +2851,7 @@ void b2World_Dump()
                 {
                     B2JointSim jointSim = color.jointSims.data[i];
                     B2Joint joint = b2Array_Get(ref world.joints, jointSim.jointId);
-                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(joint.colorIndex == colorIndex);
                     B2_ASSERT(joint.localIndex == i);
 
@@ -2947,7 +2950,7 @@ void b2World_Dump()
 
                 int setId = contact.setIndex;
 
-                if (setId == (int)B2SetType.b2_awakeSet)
+                if (setId == (int)B2SolverSetType.b2_awakeSet)
                 {
                     if (touching)
                     {
@@ -2958,7 +2961,7 @@ void b2World_Dump()
                         B2_ASSERT(contact.colorIndex == B2_NULL_INDEX);
                     }
                 }
-                else if (setId >= (int)B2SetType.b2_firstSleepingSet)
+                else if (setId >= (int)B2SolverSetType.b2_firstSleepingSet)
                 {
                     // Only touching contacts allowed in a sleeping set
                     B2_ASSERT(touching == true);
@@ -2966,7 +2969,7 @@ void b2World_Dump()
                 else
                 {
                     // Sleeping and non-touching contacts belong in the disabled set
-                    B2_ASSERT(touching == false && setId == (int)B2SetType.b2_disabledSet);
+                    B2_ASSERT(touching == false && setId == (int)B2SolverSetType.b2_disabledSet);
                 }
 
                 B2ContactSim contactSim = b2GetContactSim(world, contact);

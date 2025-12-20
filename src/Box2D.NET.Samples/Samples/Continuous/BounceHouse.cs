@@ -46,7 +46,7 @@ public class BounceHouse : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         {
@@ -99,7 +99,7 @@ public class BounceHouse : Sample
         // Circle shapes centered on the body can spin fast without risk of tunnelling.
         bodyDef.allowFastRotation = m_shapeType == ShapeType.e_circleShape;
 
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;
@@ -110,18 +110,18 @@ public class BounceHouse : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(m_bodyId, shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            b2CreateCapsuleShape(m_bodyId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
             float h = 0.1f;
             B2Polygon box = b2MakeBox(20.0f * h, h);
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
     }
 

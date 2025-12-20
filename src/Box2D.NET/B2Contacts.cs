@@ -171,20 +171,20 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, shapeA.bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, shapeB.bodyId);
 
-            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_disabledSet && bodyB.setIndex != (int)B2SetType.b2_disabledSet);
-            B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_disabledSet && bodyB.setIndex != (int)B2SolverSetType.b2_disabledSet);
+            B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_staticSet || bodyB.setIndex != (int)B2SolverSetType.b2_staticSet);
 
             int setIndex;
-            if (bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet)
+            if (bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet || bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
-                setIndex = (int)B2SetType.b2_awakeSet;
+                setIndex = (int)B2SolverSetType.b2_awakeSet;
             }
             else
             {
                 // sleeping and non-touching contacts live in the disabled set
                 // later if this set is found to be touching then the sleeping
                 // islands will be linked and the contact moved to the merged island
-                setIndex = (int)B2SetType.b2_disabledSet;
+                setIndex = (int)B2SolverSetType.b2_disabledSet;
             }
 
             B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
@@ -401,13 +401,13 @@ namespace Box2D.NET
             if (contact.colorIndex != B2_NULL_INDEX)
             {
                 // contact is an active constraint
-                B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
                 b2RemoveContactFromGraph(world, bodyIdA, bodyIdB, contact.colorIndex, contact.localIndex);
             }
             else
             {
                 // contact is non-touching or is sleeping
-                B2_ASSERT(contact.setIndex != (int)B2SetType.b2_awakeSet || (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0);
+                B2_ASSERT(contact.setIndex != (int)B2SolverSetType.b2_awakeSet || (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) == 0);
                 B2SolverSet set = b2Array_Get(ref world.solverSets, contact.setIndex);
 
                 int movedIndex = b2Array_RemoveSwap(ref set.contactSims, contact.localIndex);
@@ -435,7 +435,7 @@ namespace Box2D.NET
 
         internal static B2ContactSim b2GetContactSim(B2World world, B2Contact contact)
         {
-            if (contact.setIndex == (int)B2SetType.b2_awakeSet && contact.colorIndex != B2_NULL_INDEX)
+            if (contact.setIndex == (int)B2SolverSetType.b2_awakeSet && contact.colorIndex != B2_NULL_INDEX)
             {
                 // contact lives in constraint graph
                 B2_ASSERT(0 <= contact.colorIndex && contact.colorIndex < B2_GRAPH_COLOR_COUNT);

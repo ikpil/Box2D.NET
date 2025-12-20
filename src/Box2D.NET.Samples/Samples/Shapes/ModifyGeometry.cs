@@ -45,7 +45,7 @@ public class ModifyGeometry : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(10.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
             b2CreatePolygonShape(groundId, ref shapeDef, ref box);
@@ -55,7 +55,7 @@ public class ModifyGeometry : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(0.0f, 4.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(1.0f, 1.0f);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
@@ -69,7 +69,7 @@ public class ModifyGeometry : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             m_shapeId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle); // todo : @ikpil, fix it!!
         }

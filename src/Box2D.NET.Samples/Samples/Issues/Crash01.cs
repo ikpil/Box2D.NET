@@ -43,7 +43,7 @@ public class Crash01 : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "ground";
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -56,7 +56,7 @@ public class Crash01 : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-2.0f, 3.0f);
             bodyDef.name = "attach1";
-            m_attachmentId = b2CreateBody(m_worldId, ref bodyDef);
+            m_attachmentId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -71,7 +71,7 @@ public class Crash01 : Sample
             bodyDef.isEnabled = m_isEnabled;
             bodyDef.position = new B2Vec2(-4.0f, 5.0f);
             bodyDef.name = "platform";
-            m_platformId = b2CreateBody(m_worldId, ref bodyDef);
+            m_platformId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
 

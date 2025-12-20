@@ -95,9 +95,9 @@ namespace Box2D.NET
 
         public static B2BodyState b2GetBodyState(B2World world, B2Body body)
         {
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
                 return b2Array_Get(ref set.bodyStates, body.localIndex);
             }
 
@@ -109,7 +109,7 @@ namespace Box2D.NET
             B2_ASSERT(body.islandId == B2_NULL_INDEX);
             B2_ASSERT(body.islandPrev == B2_NULL_INDEX);
             B2_ASSERT(body.islandNext == B2_NULL_INDEX);
-            B2_ASSERT(setIndex != (int)B2SetType.b2_disabledSet);
+            B2_ASSERT(setIndex != (int)B2SolverSetType.b2_disabledSet);
 
             B2Island island = b2CreateIsland(world, setIndex);
 
@@ -224,15 +224,15 @@ namespace Box2D.NET
             if (def.isEnabled == false)
             {
                 // any body type can be disabled
-                setId = (int)B2SetType.b2_disabledSet;
+                setId = (int)B2SolverSetType.b2_disabledSet;
             }
             else if (def.type == B2BodyType.b2_staticBody)
             {
-                setId = (int)B2SetType.b2_staticSet;
+                setId = (int)B2SolverSetType.b2_staticSet;
             }
             else if (isAwake == true)
             {
-                setId = (int)B2SetType.b2_awakeSet;
+                setId = (int)B2SolverSetType.b2_awakeSet;
             }
             else
             {
@@ -282,7 +282,7 @@ namespace Box2D.NET
             bodySim.flags |= def.type == B2BodyType.b2_dynamicBody ? (uint)B2BodyFlags.b2_dynamicFlag : 0;
 
 
-            if (setId == (int)B2SetType.b2_awakeSet)
+            if (setId == (int)B2SolverSetType.b2_awakeSet)
             {
                 ref B2BodyState bodyState = ref b2Array_Add(ref set.bodyStates);
                 //B2_ASSERT( ( (uintptr_t)bodyState & 0x1F ) == 0 );
@@ -339,7 +339,7 @@ namespace Box2D.NET
             body.enableSleep = def.enableSleep;
 
             // dynamic and kinematic bodies that are enabled need a island
-            if (setId >= (int)B2SetType.b2_awakeSet)
+            if (setId >= (int)B2SolverSetType.b2_awakeSet)
             {
                 b2CreateIslandForBody(world, setId, body);
             }
@@ -353,7 +353,7 @@ namespace Box2D.NET
         // careful calling this because it can invalidate body, state, joint, and contact pointers
         internal static bool b2WakeBody(B2World world, B2Body body)
         {
-            if (body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeSolverSet(world, body.setIndex);
                 b2ValidateSolverSets(world);
@@ -444,13 +444,13 @@ namespace Box2D.NET
             }
 
             // Remove body state from awake set
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 int result = b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
                 B2_ASSERT(result == movedIndex);
                 B2_UNUSED(result);
             }
-            else if (set.setIndex >= (int)B2SetType.b2_firstSleepingSet && set.bodySims.count == 0)
+            else if (set.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet && set.bodySims.count == 0)
             {
                 // Remove solver set if it's now an orphan.
                 b2DestroySolverSet(world, set.setIndex);
@@ -551,6 +551,9 @@ namespace Box2D.NET
 
         internal static void b2UpdateBodyMassData(B2World world, B2Body body)
         {
+            // Mass is no longer dirty
+            body.flags &= ~(uint)B2BodyFlags.b2_dirtyMass;
+
             B2BodySim bodySim = b2GetBodySim(world, body);
 
             // Compute mass data from shapes. Each shape has its own density.
@@ -603,6 +606,7 @@ namespace Box2D.NET
                 if (s.density == 0.0f)
                 {
                     masses[shapeIndex] = new B2MassData();
+                    shapeIndex += 1;
                     continue;
                 }
 
@@ -871,19 +875,28 @@ namespace Box2D.NET
 
         /// Set the velocity to reach the given transform after a given time step.
         /// The result will be close but maybe not exact. This is meant for kinematic bodies.
-        /// The target is not applied if the velocity would be below the sleep threshold.
-        /// This will automatically wake the body if asleep.
-        public static void b2Body_SetTargetTransform(B2BodyId bodyId, B2Transform target, float timeStep)
+        /// The target is not applied if the velocity would be below the sleep threshold and
+        /// the body is currently asleep.
+        /// @param bodyId The body id
+        /// @param target The target transform for the body
+        /// @param timeStep The time step of the next call to b2World_Step
+        /// @param wake Option to wake the body or not
+        public static void b2Body_SetTargetTransform(B2BodyId bodyId, in B2Transform target, float timeStep, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
             if (body.type == B2BodyType.b2_staticBody || timeStep <= 0.0f)
+            {
+                return;
+            }
+
+            if (body.setIndex != (int)B2SolverSetType.b2_awakeSet && wake == false)
             {
                 return;
             }
@@ -903,7 +916,7 @@ namespace Box2D.NET
             float angularVelocity = invTimeStep * deltaAngle;
 
             // Early out if the body is asleep already and the desired movement is small
-            if (body.setIndex != (int)B2SetType.b2_awakeSet)
+            if (body.setIndex != (int)B2SolverSetType.b2_awakeSet)
             {
                 float maxVelocity = b2Length(linearVelocity) + b2AbsFloat(angularVelocity) * sim.maxExtent;
 
@@ -917,7 +930,7 @@ namespace Box2D.NET
                 b2WakeBody(world, body);
             }
 
-            B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             B2BodyState state = b2GetBodyState(world, body);
             state.linearVelocity = linearVelocity;
@@ -974,17 +987,17 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2BodySim bodySim = b2GetBodySim(world, body);
                 bodySim.force = b2Add(bodySim.force, force);
@@ -1002,17 +1015,17 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2BodySim bodySim = b2GetBodySim(world, body);
                 bodySim.force = b2Add(bodySim.force, force);
@@ -1029,17 +1042,17 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2BodySim bodySim = b2GetBodySim(world, body);
                 bodySim.torque += torque;
@@ -1075,20 +1088,20 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
                 B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
@@ -1110,20 +1123,20 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
                 B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
@@ -1145,21 +1158,21 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            if (wake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (wake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 // this will not invalidate body pointer
                 b2WakeBody(world, body);
             }
 
-            if (body.setIndex == (int)B2SetType.b2_awakeSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 int localIndex = body.localIndex;
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
                 B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.angularVelocity += bodySim.invInertia * impulse;
@@ -1212,7 +1225,7 @@ namespace Box2D.NET
             }
 
             // Stage 1: skip disabled bodies
-            if (body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 // Disabled bodies don't change solver sets or islands when they change type.
                 body.type = type;
@@ -1240,7 +1253,7 @@ namespace Box2D.NET
             b2WakeBody(world, body);
 
             // Stage 4: move joints to temporary storage
-            B2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
+            B2SolverSet staticSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_staticSet);
 
             int jointKey = body.headJointKey;
             while (jointKey != B2_NULL_INDEX)
@@ -1252,7 +1265,7 @@ namespace Box2D.NET
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 // Joint may be disabled by other body
-                if (joint.setIndex == (int)B2SetType.b2_disabledSet)
+                if (joint.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     continue;
                 }
@@ -1286,7 +1299,7 @@ namespace Box2D.NET
                 body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
             }
 
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2SolverSet sourceSet = b2Array_Get(ref world.solverSets, body.setIndex);
             B2SolverSet targetSet = type == B2BodyType.b2_staticBody ? staticSet : awakeSet;
 
@@ -1297,7 +1310,7 @@ namespace Box2D.NET
             if (originalType == B2BodyType.b2_staticBody)
             {
                 // Create island for body
-                b2CreateIslandForBody(world, (int)B2SetType.b2_awakeSet, body);
+                b2CreateIslandForBody(world, (int)B2SolverSetType.b2_awakeSet, body);
             }
             else if (type == B2BodyType.b2_staticBody)
             {
@@ -1317,18 +1330,18 @@ namespace Box2D.NET
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 // Joint may be disabled by other body
-                if (joint.setIndex == (int)B2SetType.b2_disabledSet)
+                if (joint.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     continue;
                 }
 
                 // All joints were transferred to the static set in an earlier stage
-                B2_ASSERT(joint.setIndex == (int)B2SetType.b2_staticSet);
+                B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_staticSet);
 
                 B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
                 B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
-                B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_staticSet || bodyA.setIndex == (int)B2SetType.b2_awakeSet);
-                B2_ASSERT(bodyB.setIndex == (int)B2SetType.b2_staticSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(bodyA.setIndex == (int)B2SolverSetType.b2_staticSet || bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet);
+                B2_ASSERT(bodyB.setIndex == (int)B2SolverSetType.b2_staticSet || bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                 if (bodyA.type == B2BodyType.b2_dynamicBody || bodyB.type == B2BodyType.b2_dynamicBody)
                 {
@@ -1362,7 +1375,7 @@ namespace Box2D.NET
                 int otherBodyId = joint.edges[otherEdgeIndex].bodyId;
                 B2Body otherBody = b2Array_Get(ref world.bodies, otherBodyId);
 
-                if (otherBody.setIndex == (int)B2SetType.b2_disabledSet)
+                if (otherBody.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     continue;
                 }
@@ -1588,7 +1601,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            return body.setIndex == (int)B2SetType.b2_awakeSet;
+            return body.setIndex == (int)B2SolverSetType.b2_awakeSet;
         }
 
         public static void b2Body_SetAwake(B2BodyId bodyId, bool awake)
@@ -1601,11 +1614,11 @@ namespace Box2D.NET
 
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (awake && body.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+            if (awake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
             {
                 b2WakeBody(world, body);
             }
-            else if (awake == false && body.setIndex == (int)B2SetType.b2_awakeSet)
+            else if (awake == false && body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2Island island = b2Array_Get(ref world.islands, body.islandId);
                 if (island.constraintRemoveCount > 0)
@@ -1652,7 +1665,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            return body.setIndex != (int)B2SetType.b2_disabledSet;
+            return body.setIndex != (int)B2SolverSetType.b2_disabledSet;
         }
 
         public static bool b2Body_IsSleepEnabled(B2BodyId bodyId)
@@ -1704,7 +1717,7 @@ namespace Box2D.NET
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
-            if (body.setIndex == (int)B2SetType.b2_disabledSet)
+            if (body.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
@@ -1718,7 +1731,7 @@ namespace Box2D.NET
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
 
             // Disabled bodies and connected joints are moved to the disabled set
-            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_disabledSet);
+            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_disabledSet);
 
             // Unlink joints and transfer them to the disabled set
             int jointKey = body.headJointKey;
@@ -1731,12 +1744,12 @@ namespace Box2D.NET
                 jointKey = joint.edges[edgeIndex].nextKey;
 
                 // joint may already be disabled by other body
-                if (joint.setIndex == (int)B2SetType.b2_disabledSet)
+                if (joint.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     continue;
                 }
 
-                B2_ASSERT(joint.setIndex == set.setIndex || set.setIndex == (int)B2SetType.b2_staticSet);
+                B2_ASSERT(joint.setIndex == set.setIndex || set.setIndex == (int)B2SolverSetType.b2_staticSet);
 
                 // Remove joint from island
                 b2UnlinkJoint(world, joint);
@@ -1774,13 +1787,13 @@ namespace Box2D.NET
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
-            if (body.setIndex != (int)B2SetType.b2_disabledSet)
+            if (body.setIndex != (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }
 
-            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_disabledSet);
-            int setId = body.type == B2BodyType.b2_staticBody ? (int)B2SetType.b2_staticSet : (int)B2SetType.b2_awakeSet;
+            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_disabledSet);
+            int setId = body.type == B2BodyType.b2_staticBody ? (int)B2SolverSetType.b2_staticSet : (int)B2SolverSetType.b2_awakeSet;
             B2SolverSet targetSet = b2Array_Get(ref world.solverSets, setId);
 
             b2TransferBody(world, targetSet, disabledSet, body);
@@ -1799,7 +1812,7 @@ namespace Box2D.NET
                 b2CreateShapeProxy(shape, world.broadPhase, proxyType, transform, forcePairCreation);
             }
 
-            if (setId != (int)B2SetType.b2_staticSet)
+            if (setId != (int)B2SolverSetType.b2_staticSet)
             {
                 b2CreateIslandForBody(world, setId, body);
             }
@@ -1813,7 +1826,7 @@ namespace Box2D.NET
                 int edgeIndex = jointKey & 1;
 
                 B2Joint joint = b2Array_Get(ref world.joints, jointId);
-                B2_ASSERT(joint.setIndex == (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_disabledSet);
                 B2_ASSERT(joint.islandId == B2_NULL_INDEX);
 
                 jointKey = joint.edges[edgeIndex].nextKey;
@@ -1821,7 +1834,7 @@ namespace Box2D.NET
                 B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
                 B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
 
-                if (bodyA.setIndex == (int)B2SetType.b2_disabledSet || bodyB.setIndex == (int)B2SetType.b2_disabledSet)
+                if (bodyA.setIndex == (int)B2SolverSetType.b2_disabledSet || bodyB.setIndex == (int)B2SolverSetType.b2_disabledSet)
                 {
                     // one body is still disabled
                     continue;
@@ -1829,11 +1842,11 @@ namespace Box2D.NET
 
                 // Transfer joint first
                 int jointSetId;
-                if (bodyA.setIndex == (int)B2SetType.b2_staticSet && bodyB.setIndex == (int)B2SetType.b2_staticSet)
+                if (bodyA.setIndex == (int)B2SolverSetType.b2_staticSet && bodyB.setIndex == (int)B2SolverSetType.b2_staticSet)
                 {
-                    jointSetId = (int)B2SetType.b2_staticSet;
+                    jointSetId = (int)B2SolverSetType.b2_staticSet;
                 }
-                else if (bodyA.setIndex == (int)B2SetType.b2_staticSet)
+                else if (bodyA.setIndex == (int)B2SolverSetType.b2_staticSet)
                 {
                     jointSetId = bodyB.setIndex;
                 }
@@ -1846,7 +1859,7 @@ namespace Box2D.NET
                 b2TransferJoint(world, jointSet, disabledSet, joint);
 
                 // Now that the joint is in the correct set, I can link the joint in the island.
-                if (jointSetId != (int)B2SetType.b2_staticSet)
+                if (jointSetId != (int)B2SolverSetType.b2_staticSet)
                 {
                     b2LinkJoint(world, joint);
                 }

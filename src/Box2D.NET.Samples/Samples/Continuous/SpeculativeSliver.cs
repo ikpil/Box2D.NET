@@ -29,7 +29,7 @@ public class SpeculativeSliver : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
@@ -41,7 +41,7 @@ public class SpeculativeSliver : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(0.0f, 12.0f);
             bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Vec2[] points = [new B2Vec2(-2.0f, 0.0f), new B2Vec2(-1.0f, 0.0f), new B2Vec2(2.0f, 0.5f)];

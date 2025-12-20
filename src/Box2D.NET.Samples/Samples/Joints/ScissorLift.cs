@@ -42,7 +42,7 @@ public class ScissorLift : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
@@ -74,13 +74,13 @@ public class ScissorLift : Sample
             {
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(0.15f);
-                B2BodyId bodyId1 = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId1, ref shapeDef, ref capsule);
 
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(-0.15f);
 
-                B2BodyId bodyId2 = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId2, ref shapeDef, ref capsule);
 
                 if (i == 1)
@@ -149,7 +149,7 @@ public class ScissorLift : Sample
 
             bodyDef.position = new B2Vec2(0.0f, y);
             bodyDef.rotation = b2Rot_identity;
-            B2BodyId platformId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId platformId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(3.0f, 0.2f);
             b2CreatePolygonShape(platformId, ref shapeDef, ref box);

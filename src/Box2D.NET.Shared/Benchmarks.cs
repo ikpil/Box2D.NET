@@ -185,7 +185,7 @@ namespace Box2D.NET.Shared
             for (int i = 0; i < rowCount; ++i)
             {
                 B2Segment segment = new B2Segment(new B2Vec2(-0.5f * 2.0f * groundWidth, groundY), new B2Vec2(0.5f * 2.0f * groundWidth, groundY));
-                b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+                b2CreateSegmentShape(groundId, shapeDef, segment);
                 groundY += groundDeltaY;
             }
 

@@ -49,7 +49,7 @@ public class DistanceJoint : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            m_groundId = b2CreateBody(m_worldId, ref bodyDef);
+            m_groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         m_count = 0;
@@ -114,8 +114,8 @@ public class DistanceJoint : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.angularDamping = 1.0f;
             bodyDef.position = new B2Vec2(m_length * (i + 1.0f), yOffset);
-            m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreateCircleShape(m_bodyIds[i], ref shapeDef, ref circle);
+            m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
+            b2CreateCircleShape(m_bodyIds[i], shapeDef, circle);
 
             B2Vec2 pivotA = new B2Vec2(m_length * i, yOffset);
             B2Vec2 pivotB = new B2Vec2(m_length * (i + 1.0f), yOffset);
@@ -123,7 +123,7 @@ public class DistanceJoint : Sample
             jointDef.@base.bodyIdB = m_bodyIds[i];
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivotA);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivotB);
-            m_jointIds[i] = b2CreateDistanceJoint(m_worldId, ref jointDef);
+            m_jointIds[i] = b2CreateDistanceJoint(m_worldId, jointDef);
 
             prevBodyId = m_bodyIds[i];
         }

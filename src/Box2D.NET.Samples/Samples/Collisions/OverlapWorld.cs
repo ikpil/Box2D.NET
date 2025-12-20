@@ -174,7 +174,7 @@ public class OverlapWorld : Sample
         bodyDef.position = new B2Vec2(x, y);
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
-        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];
@@ -187,19 +187,19 @@ public class OverlapWorld : Sample
 
         if (index < 4)
         {
-            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_polygons[index]);
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], shapeDef, m_polygons[index]);
         }
         else if (index == 4)
         {
-            b2CreateCircleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_circle);
+            b2CreateCircleShape(m_bodyIds[m_bodyIndex], shapeDef, m_circle);
         }
         else if (index == 5)
         {
-            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_capsule);
+            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], shapeDef, m_capsule);
         }
         else
         {
-            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_segment);
+            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], shapeDef, m_segment);
         }
 
         m_bodyIndex = (m_bodyIndex + 1) % e_maxCount;

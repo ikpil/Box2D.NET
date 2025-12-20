@@ -13,7 +13,6 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
-using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -42,7 +41,7 @@ public class Explosion : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.gravityScale = 0.0f;
@@ -64,7 +63,7 @@ public class Explosion : Sample
         {
             B2CosSin cosSin = b2ComputeCosSin(angle * B2_PI / 180.0f);
             bodyDef.position = new B2Vec2(r * cosSin.cosine, r * cosSin.sine);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);

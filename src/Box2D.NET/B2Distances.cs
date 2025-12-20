@@ -259,7 +259,7 @@ namespace Box2D.NET
             }
         }
 
-        internal static void b2ComputeSimplexWitnessPoints(ref B2Vec2 a, ref B2Vec2 b, ref B2Simplex s)
+        internal static void b2ComputeWitnessPoints(in B2Simplex s, ref B2Vec2 a, ref B2Vec2 b)
         {
             switch (s.count)
             {
@@ -547,7 +547,7 @@ namespace Box2D.NET
                 {
                     // Overlap
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
-                    b2ComputeSimplexWitnessPoints(ref localPointA, ref localPointB, ref simplex);
+                    b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
                     output.pointA = b2TransformPoint(input.transformA, localPointA);
                     output.pointB = b2TransformPoint(input.transformA, localPointB);
                     return output;
@@ -573,7 +573,7 @@ namespace Box2D.NET
 
                     // Must return overlap due to invalid normal.
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
-                    b2ComputeSimplexWitnessPoints(ref localPointA, ref localPointB, ref simplex);
+                    b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
                     output.pointA = b2TransformPoint(input.transformA, localPointA);
                     output.pointB = b2TransformPoint(input.transformA, localPointB);
                     return output;
@@ -631,7 +631,7 @@ namespace Box2D.NET
             {
                 B2Vec2 localPointA = new B2Vec2();
                 B2Vec2 localPointB = new B2Vec2();
-                b2ComputeSimplexWitnessPoints(ref localPointA, ref localPointB, ref simplex);
+                b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
                 output.normal = normal;
                 output.distance = b2Distance(localPointA, localPointB);
                 output.pointA = b2TransformPoint(input.transformA, localPointA);

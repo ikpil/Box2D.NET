@@ -39,7 +39,7 @@ public class MotionLocks : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         m_motionLocks = new B2MotionLocks(false, false, true);
 
@@ -61,7 +61,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
@@ -85,7 +85,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
@@ -106,7 +106,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
@@ -127,7 +127,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
@@ -148,7 +148,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 
@@ -173,7 +173,7 @@ public class MotionLocks : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            m_bodyIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
 

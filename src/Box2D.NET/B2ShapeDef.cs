@@ -54,6 +54,7 @@ namespace Box2D.NET
         public bool invokeContactCreation;
 
         /// Should the body update the mass properties when this shape is created. Default is true.
+        /// Warning: if this is true, you MUST call b2Body_ApplyMassFromShapes before simulating the world.
         public bool updateBodyMass;
 
         /// Used internally to detect a valid definition. DO NOT SET.

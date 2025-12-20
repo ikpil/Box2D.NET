@@ -36,7 +36,7 @@ public class TiltedStack : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(1000.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -71,7 +71,7 @@ public class TiltedStack : Sample
                     int n = j * m_rows + i;
 
                     bodyDef.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     m_bodies[n] = bodyId;
 

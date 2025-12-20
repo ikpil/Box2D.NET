@@ -46,7 +46,7 @@ public class Driving : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Vec2[] points = new B2Vec2[25];
             int count = 24;
@@ -108,7 +108,7 @@ public class Driving : Sample
             bodyDef.position = new B2Vec2(140.0f, 1.0f);
             bodyDef.angularVelocity = 1.0f;
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(10.0f, 0.25f);
@@ -140,7 +140,7 @@ public class Driving : Sample
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2(161.0f + 2.0f * i, -0.125f);
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * i, -0.125f);
@@ -180,23 +180,23 @@ public class Driving : Sample
             shapeDef.density = 0.25f;
 
             bodyDef.position = new B2Vec2(230.0f, 0.5f);
-            bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             bodyDef.position = new B2Vec2(230.0f, 1.5f);
-            bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             bodyDef.position = new B2Vec2(230.0f, 2.5f);
-            bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             bodyDef.position = new B2Vec2(230.0f, 3.5f);
-            bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             bodyDef.position = new B2Vec2(230.0f, 4.5f);
-            bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
         }
 

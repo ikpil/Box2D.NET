@@ -129,7 +129,7 @@ namespace Box2D.NET
 
         internal static B2JointSim b2GetJointSim(B2World world, B2Joint joint)
         {
-            if (joint.setIndex == (int)B2SetType.b2_awakeSet)
+            if (joint.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2_ASSERT(0 <= joint.colorIndex && joint.colorIndex < B2_GRAPH_COLOR_COUNT);
                 ref B2GraphColor color = ref world.constraintGraph.colors[joint.colorIndex];
@@ -269,11 +269,11 @@ namespace Box2D.NET
 
             B2JointSim jointSim = null;
 
-            if (bodyA.setIndex == (int)B2SetType.b2_disabledSet || bodyB.setIndex == (int)B2SetType.b2_disabledSet)
+            if (bodyA.setIndex == (int)B2SolverSetType.b2_disabledSet || bodyB.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 // if either body is disabled, create in disabled set
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_disabledSet);
-                joint.setIndex = (int)B2SetType.b2_disabledSet;
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_disabledSet);
+                joint.setIndex = (int)B2SolverSetType.b2_disabledSet;
                 joint.localIndex = set.jointSims.count;
 
                 jointSim = b2Array_Add(ref set.jointSims);
@@ -287,8 +287,8 @@ namespace Box2D.NET
             else if (bodyA.type != B2BodyType.b2_dynamicBody && bodyB.type != B2BodyType.b2_dynamicBody)
             {
                 // joint is not attached to a dynamic body
-                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_staticSet);
-                joint.setIndex = (int)B2SetType.b2_staticSet;
+                B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_staticSet);
+                joint.setIndex = (int)B2SolverSetType.b2_staticSet;
                 joint.localIndex = set.jointSims.count;
 
                 jointSim = b2Array_Add(ref set.jointSims);
@@ -299,15 +299,15 @@ namespace Box2D.NET
                 jointSim.bodyIdA = bodyIdA;
                 jointSim.bodyIdB = bodyIdB;
             }
-            else if (bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet)
+            else if (bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet || bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 // if either body is sleeping, wake it
-                if (maxSetIndex >= (int)B2SetType.b2_firstSleepingSet)
+                if (maxSetIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
                 {
                     b2WakeSolverSet(world, maxSetIndex);
                 }
 
-                joint.setIndex = (int)B2SetType.b2_awakeSet;
+                joint.setIndex = (int)B2SolverSetType.b2_awakeSet;
 
                 jointSim = b2CreateJointInGraph(world, joint);
                 jointSim.jointId = jointId;
@@ -317,8 +317,8 @@ namespace Box2D.NET
             else
             {
                 // joint connected between sleeping and/or static bodies
-                B2_ASSERT(bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet || bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet);
-                B2_ASSERT(bodyA.setIndex != (int)B2SetType.b2_staticSet || bodyB.setIndex != (int)B2SetType.b2_staticSet);
+                B2_ASSERT(bodyA.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet || bodyB.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet);
+                B2_ASSERT(bodyA.setIndex != (int)B2SolverSetType.b2_staticSet || bodyB.setIndex != (int)B2SolverSetType.b2_staticSet);
 
                 // joint should go into the sleeping set (not static set)
                 int setIndex = maxSetIndex;
@@ -336,8 +336,8 @@ namespace Box2D.NET
                 jointSim.bodyIdA = bodyIdA;
                 jointSim.bodyIdB = bodyIdB;
 
-                if (bodyA.setIndex != bodyB.setIndex && bodyA.setIndex >= (int)B2SetType.b2_firstSleepingSet &&
-                    bodyB.setIndex >= (int)B2SetType.b2_firstSleepingSet)
+                if (bodyA.setIndex != bodyB.setIndex && bodyA.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet &&
+                    bodyB.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
                 {
                     // merge sleeping sets
                     b2MergeSolverSets(world, bodyA.setIndex, bodyB.setIndex);
@@ -376,7 +376,7 @@ namespace Box2D.NET
             B2_ASSERT(jointSim.bodyIdA == bodyIdA);
             B2_ASSERT(jointSim.bodyIdB == bodyIdB);
 
-            if (joint.setIndex > (int)B2SetType.b2_disabledSet)
+            if (joint.setIndex > (int)B2SolverSetType.b2_disabledSet)
             {
                 // Add edge to island graph
                 b2LinkJoint(world, joint);
@@ -698,19 +698,19 @@ namespace Box2D.NET
 
             if (joint.islandId != B2_NULL_INDEX)
             {
-                B2_ASSERT(joint.setIndex > (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.setIndex > (int)B2SolverSetType.b2_disabledSet);
                 b2UnlinkJoint(world, joint);
             }
             else
             {
-                B2_ASSERT(joint.setIndex <= (int)B2SetType.b2_disabledSet);
+                B2_ASSERT(joint.setIndex <= (int)B2SolverSetType.b2_disabledSet);
             }
 
             // Remove joint from solver set that owns it
             int setIndex = joint.setIndex;
             int localIndex = joint.localIndex;
 
-            if (setIndex == (int)B2SetType.b2_awakeSet)
+            if (setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 b2RemoveJointFromGraph(world, joint.edges[0].bodyId, joint.edges[1].bodyId, joint.colorIndex, localIndex);
             }
@@ -1481,7 +1481,7 @@ namespace Box2D.NET
         {
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
             B2Body bodyB = b2Array_Get(ref world.bodies, joint.edges[1].bodyId);
-            if (bodyA.setIndex == (int)B2SetType.b2_disabledSet || bodyB.setIndex == (int)B2SetType.b2_disabledSet)
+            if (bodyA.setIndex == (int)B2SolverSetType.b2_disabledSet || bodyB.setIndex == (int)B2SolverSetType.b2_disabledSet)
             {
                 return;
             }

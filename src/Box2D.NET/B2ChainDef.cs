@@ -34,7 +34,8 @@ namespace Box2D.NET
         public B2SurfaceMaterial[] materials;
 
         /// The material count. Must be 1 or count. This allows you to provide one
-        /// material for all segments or a unique material per segment.
+        /// material for all segments or a unique material per segment. For open
+        /// chains, the material on the ghost segments are place holders.
         public int materialCount;
 
         /// Contact filtering data.

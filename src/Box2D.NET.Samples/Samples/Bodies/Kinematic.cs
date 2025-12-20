@@ -42,7 +42,7 @@ public class Kinematic : Sample
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position.X = 2.0f * m_amplitude;
 
-            m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.1f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -82,7 +82,8 @@ public class Kinematic : Sample
             DrawLine(m_draw, point - 0.5f * axis, point + 0.5f * axis, B2HexColor.b2_colorPlum);
             DrawPoint(m_draw, point, 10.0f, B2HexColor.b2_colorPlum);
 
-            b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep);
+            bool wake = true;
+            b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep, wake);
         }
     }
 }

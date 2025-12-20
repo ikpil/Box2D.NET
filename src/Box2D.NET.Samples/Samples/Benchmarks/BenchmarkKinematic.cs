@@ -46,7 +46,7 @@ public class BenchmarkKinematic : Sample
         // defer mass properties to avoid n-squared mass computations
         shapeDef.updateBodyMass = false;
 
-        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
         for (int i = -span; i < span; ++i)
         {
