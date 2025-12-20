@@ -81,7 +81,7 @@ public class TimeOfImpact : Sample
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
 
         // Draw A
-        B2Transform transformA = b2GetSweepTransform(ref _sweepA, 0.0f);
+        B2Transform transformA = b2GetSweepTransform(_sweepA, 0.0f);
         for (int i = 0; i < m_countA; ++i)
         {
             vertices[i] = b2TransformPoint(transformA, m_verticesA[i]);
@@ -90,7 +90,7 @@ public class TimeOfImpact : Sample
         DrawPolygon(m_draw, vertices, m_countA, B2HexColor.b2_colorGray);
 
         // Draw B at t = 0
-        B2Transform transformB = b2GetSweepTransform(ref _sweepB, 0.0f);
+        B2Transform transformB = b2GetSweepTransform(_sweepB, 0.0f);
         for (int i = 0; i < m_countB; ++i)
         {
             vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
@@ -100,7 +100,7 @@ public class TimeOfImpact : Sample
         // m_context.g_draw.DrawPolygon( vertices, m_countB, b2HexColor.b2_colorGreen );
 
         // Draw B at t = hit_time
-        transformB = b2GetSweepTransform(ref _sweepB, _output.fraction);
+        transformB = b2GetSweepTransform(_sweepB, _output.fraction);
         for (int i = 0; i < m_countB; ++i)
         {
             vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
@@ -109,7 +109,7 @@ public class TimeOfImpact : Sample
         DrawPolygon(m_draw, vertices, m_countB, B2HexColor.b2_colorOrange);
 
         // Draw B at t = 1
-        transformB = b2GetSweepTransform(ref _sweepB, 1.0f);
+        transformB = b2GetSweepTransform(_sweepB, 1.0f);
         for (int i = 0; i < m_countB; ++i)
         {
             vertices[i] = b2TransformPoint(transformB, m_verticesB[i]);
@@ -123,8 +123,8 @@ public class TimeOfImpact : Sample
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = _input.proxyA;
             distanceInput.proxyB = _input.proxyB;
-            distanceInput.transformA = b2GetSweepTransform(ref _sweepA, _output.fraction);
-            distanceInput.transformB = b2GetSweepTransform(ref _sweepB, _output.fraction);
+            distanceInput.transformA = b2GetSweepTransform(_sweepA, _output.fraction);
+            distanceInput.transformB = b2GetSweepTransform(_sweepB, _output.fraction);
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
