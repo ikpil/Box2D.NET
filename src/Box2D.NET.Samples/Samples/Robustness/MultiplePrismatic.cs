@@ -7,7 +7,6 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Geometries;
-using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Robustness;
 
@@ -33,7 +32,7 @@ public class MultiplePrismatic : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -53,7 +52,7 @@ public class MultiplePrismatic : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.6f + 1.2f * i);
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 

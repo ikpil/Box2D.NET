@@ -29,7 +29,7 @@ public class DoubleDomino : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -1.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -49,7 +49,7 @@ public class DoubleDomino : Sample
             for (int i = 0; i < count; ++i)
             {
                 bodyDef.position = new B2Vec2(x, 0.5f);
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                 if (i == 0)
                 {

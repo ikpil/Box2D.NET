@@ -198,7 +198,7 @@ namespace Box2D.NET
             B2Body bodyA = b2Array_Get(ref world.bodies, idA);
             B2Body bodyB = b2Array_Get(ref world.bodies, idB);
 
-            B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet || bodyB.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet || bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet);
             B2SolverSet setA = b2Array_Get(ref world.solverSets, bodyA.setIndex);
             B2SolverSet setB = b2Array_Get(ref world.solverSets, bodyB.setIndex);
 
@@ -220,8 +220,8 @@ namespace Box2D.NET
 
             ref B2WheelJoint joint = ref @base.uj.wheelJoint;
 
-            joint.indexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
-            joint.indexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
+            joint.indexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? localIndexA : B2_NULL_INDEX;
+            joint.indexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? localIndexB : B2_NULL_INDEX;
 
             // Compute joint anchor frames with world space rotation, relative to center of mass
             joint.frameA.q = b2MulRot(bodySimA.transform.q, @base.localFrameA.q);

@@ -43,7 +43,7 @@ class ProjectileEvent : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.enableSensorEvents = true;
@@ -78,7 +78,7 @@ class ProjectileEvent : Sample
                 float shift = (i % 2 == 0 ? -offset : offset);
                 bodyDef.position = new B2Vec2(x + shift, 0.5f + 1.0f * i);
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
             }
@@ -98,12 +98,12 @@ class ProjectileEvent : Sample
         bodyDef.linearVelocity = 4.0f * (m_point2 - m_point1);
         bodyDef.isBullet = true;
 
-        m_projectileId = b2CreateBody(m_worldId, ref bodyDef);
+        m_projectileId = b2CreateBody(m_worldId, bodyDef);
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.25f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.enableContactEvents = true;
-        m_projectileShapeId = b2CreateCircleShape(m_projectileId, ref shapeDef, ref circle);
+        m_projectileShapeId = b2CreateCircleShape(m_projectileId, shapeDef, circle);
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mod)

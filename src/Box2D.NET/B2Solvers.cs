@@ -500,7 +500,7 @@ namespace Box2D.NET
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
 
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
             B2_ASSERT(0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isFast));
 
@@ -748,6 +748,9 @@ namespace Box2D.NET
                 // reset applied force and torque
                 sim.force = b2Vec2_zero;
                 sim.torque = 0.0f;
+
+                // If you hit this then it means you deferred mass computation but never called b2Body_ApplyMassFromShapes
+                B2_ASSERT((body.flags & (uint)B2BodyFlags.b2_dirtyMass) == 0);
 
                 body.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
                 body.flags |= (sim.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
@@ -1332,7 +1335,7 @@ public enum b2SolverBlockType
             world.stepIndex += 1;
 
             // Are there any awake bodies? This scenario should not be important for profiling.
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             int awakeBodyCount = awakeSet.bodySims.count;
             if (awakeBodyCount == 0)
             {
@@ -1951,7 +1954,7 @@ public enum b2SolverBlockType
 
                             B2Joint joint = jointArray[jointId];
 
-                            B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                            B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                             B2JointEvent @event = new B2JointEvent();
                             @event.jointId = new B2JointId(jointId + 1, worldIndex0, joint.generation);
@@ -2021,6 +2024,15 @@ public enum b2SolverBlockType
 
                             @event.shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                             @event.shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
+
+                            B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
+
+                            @event.contactId = new B2ContactId(
+                                index1: contact.contactId + 1,
+                                world0: world.worldId,
+                                padding: 0,
+                                generation: contact.generation
+                            );
 
                             b2Array_Push(ref world.contactHitEvents, @event);
                         }

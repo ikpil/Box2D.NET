@@ -52,7 +52,7 @@ public class ContactEvent : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Vec2[] points = new B2Vec2[] { new B2Vec2(40.0f, -40.0f), new B2Vec2(-40.0f, -40.0f), new B2Vec2(-40.0f, 40.0f), new B2Vec2(40.0f, 40.0f) };
 
@@ -72,7 +72,7 @@ public class ContactEvent : Sample
             bodyDef.linearDamping = 0.5f;
             bodyDef.angularDamping = 0.5f;
             bodyDef.isBullet = true;
-            m_playerId = b2CreateBody(m_worldId, ref bodyDef);
+            m_playerId = b2CreateBody(m_worldId, bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -80,7 +80,7 @@ public class ContactEvent : Sample
             // Enable contact events for the player shape
             shapeDef.enableContactEvents = true;
 
-            m_coreShapeId = b2CreateCircleShape(m_playerId, ref shapeDef, ref circle);
+            m_coreShapeId = b2CreateCircleShape(m_playerId, shapeDef, circle);
         }
 
         for (int i = 0; i < e_count; ++i)
@@ -119,7 +119,7 @@ public class ContactEvent : Sample
         bodyDef.angularVelocity = RandomFloatRange(-1.0f, 1.0f);
         bodyDef.gravityScale = 0.0f;
         bodyDef.userData = m_bodyUserData[index];
-        m_debrisIds[index] = b2CreateBody(m_worldId, ref bodyDef);
+        m_debrisIds[index] = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.material.restitution = 0.8f;
@@ -130,17 +130,17 @@ public class ContactEvent : Sample
         if ((index + 1) % 3 == 0)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(m_debrisIds[index], ref shapeDef, ref circle);
+            b2CreateCircleShape(m_debrisIds[index], shapeDef, circle);
         }
         else if ((index + 1) % 2 == 0)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.25f), new B2Vec2(0.0f, 0.25f), 0.25f);
-            b2CreateCapsuleShape(m_debrisIds[index], ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_debrisIds[index], shapeDef, capsule);
         }
         else
         {
             B2Polygon box = b2MakeBox(0.4f, 0.6f);
-            b2CreatePolygonShape(m_debrisIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_debrisIds[index], shapeDef, box);
         }
     }
 
@@ -376,7 +376,7 @@ public class ContactEvent : Sample
                     B2Circle circle = b2Shape_GetCircle(shapeId[0]);
                     circle.center = b2TransformPoint(relativeTransform, circle.center);
 
-                    b2CreateCircleShape(m_playerId, ref shapeDef, ref circle);
+                    b2CreateCircleShape(m_playerId, shapeDef, circle);
                 }
                     break;
 
@@ -386,7 +386,7 @@ public class ContactEvent : Sample
                     capsule.center1 = b2TransformPoint(relativeTransform, capsule.center1);
                     capsule.center2 = b2TransformPoint(relativeTransform, capsule.center2);
 
-                    b2CreateCapsuleShape(m_playerId, ref shapeDef, ref capsule);
+                    b2CreateCapsuleShape(m_playerId, shapeDef, capsule);
                 }
                     break;
 

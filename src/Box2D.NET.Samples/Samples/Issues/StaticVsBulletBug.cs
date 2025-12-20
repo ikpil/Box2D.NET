@@ -30,7 +30,7 @@ public class StaticVsBulletBug : Sample
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody; // NOTE(bug): Changing this to b2_staticBody fixes the issue
-            B2BodyId staticBodyId = b2CreateBody(m_worldId, ref bd);
+            B2BodyId staticBodyId = b2CreateBody(m_worldId, bd);
 
             B2Vec2[] verts = new B2Vec2[]
             {
@@ -58,7 +58,7 @@ public class StaticVsBulletBug : Sample
             bd.linearVelocity = new B2Vec2(104.868881f, -281.073883f);
             bd.isBullet = true;
 
-            B2BodyId ballBodyId = b2CreateBody(m_worldId, ref bd);
+            B2BodyId ballBodyId = b2CreateBody(m_worldId, bd);
             B2Circle ball = new B2Circle(center: new B2Vec2(), radius: 0.3f);
 
             B2ShapeDef ballShape = b2DefaultShapeDef();
@@ -66,7 +66,7 @@ public class StaticVsBulletBug : Sample
             ballShape.material.friction = 0.2f;
             ballShape.material.restitution = 0.9f;
 
-            b2CreateCircleShape(ballBodyId, ref ballShape, ref ball);
+            b2CreateCircleShape(ballBodyId, ballShape, ball);
         }
     }
 }

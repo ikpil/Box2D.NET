@@ -50,7 +50,7 @@ public class MotorJoint : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -63,7 +63,7 @@ public class MotorJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = m_transform.p;
-            m_targetId = b2CreateBody(m_worldId, ref bodyDef);
+            m_targetId = b2CreateBody(m_worldId, bodyDef);
         }
 
         // Define motorized body
@@ -71,7 +71,7 @@ public class MotorJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = m_transform.p;
-            m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -98,7 +98,7 @@ public class MotorJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-2.0f, 2.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeSquare(0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -180,7 +180,8 @@ public class MotorJoint : Sample
             float angularOffset = 2.0f * m_time;
             m_transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
 
-            b2Body_SetTargetTransform(m_targetId, m_transform, timeStep);
+            bool wake = true;
+            b2Body_SetTargetTransform(m_targetId, m_transform, timeStep, wake);
         }
 
         DrawTransform(m_draw, m_transform, 1.0f);

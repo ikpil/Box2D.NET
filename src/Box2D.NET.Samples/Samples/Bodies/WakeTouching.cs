@@ -36,11 +36,11 @@ public class WakeTouching : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            m_groundId = b2CreateBody(m_worldId, ref bodyDef);
+            m_groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(m_groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(m_groundId, shapeDef, segment);
         }
 
         {
@@ -57,8 +57,8 @@ public class WakeTouching : Sample
             for (int i = 0; i < m_count; ++i)
             {
                 bodyDef.position = new B2Vec2(x, 4.0f);
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
                 x += 2.0f;
             }
         }

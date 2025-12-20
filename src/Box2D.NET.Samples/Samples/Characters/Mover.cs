@@ -121,7 +121,7 @@ public class Mover : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            groundId1 = b2CreateBody(m_worldId, ref bodyDef);
+            groundId1 = b2CreateBody(m_worldId, bodyDef);
 
             const string path =
                 "M 2.6458333,201.08333 H 293.68751 v -47.625 h -2.64584 l -10.58333,7.9375 -13.22916,7.9375 -13.24648,5.29167 "
@@ -149,7 +149,7 @@ public class Mover : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(98.0f, 0.0f);
-            groundId2 = b2CreateBody(m_worldId, ref bodyDef);
+            groundId2 = b2CreateBody(m_worldId, bodyDef);
 
             const string path =
                 "M 2.6458333,201.08333 H 293.68751 l 0,-23.8125 h -23.8125 l 21.16667,21.16667 h -23.8125 l -39.68751,-13.22917 "
@@ -197,7 +197,7 @@ public class Mover : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2(xBase + 0.5f + 1.0f * i, yBase);
                 bodyDef.angularDamping = 0.2f;
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * i, yBase);
@@ -230,7 +230,7 @@ public class Mover : Sample
 
             shapeDef.filter = new B2Filter(MoverBit, AllBits, 0);
             shapeDef.userData = m_friendlyShape;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreateCapsuleShape(bodyId, ref shapeDef, ref m_capsule);
         }
 
@@ -238,7 +238,7 @@ public class Mover : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(7.0f, 7.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter = new B2Filter(DebrisBit, AllBits, 0);
@@ -246,14 +246,14 @@ public class Mover : Sample
             shapeDef.material.rollingResistance = 0.2f;
 
             B2Circle circle = new B2Circle(b2Vec2_zero, 0.3f);
-            m_ballId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            m_ballId = b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(m_elevatorBase.X, m_elevatorBase.Y - m_elevatorAmplitude);
-            m_elevatorId = b2CreateBody(m_worldId, ref bodyDef);
+            m_elevatorId = b2CreateBody(m_worldId, bodyDef);
 
             m_elevatorShape = new ShapeUserData
             {
@@ -577,7 +577,8 @@ public class Mover : Sample
             point.X = m_elevatorBase.X;
             point.Y = m_elevatorAmplitude * MathF.Cos(1.0f * m_time + B2_PI) + m_elevatorBase.Y;
 
-            b2Body_SetTargetTransform(m_elevatorId, new B2Transform(point, b2Rot_identity), timeStep);
+            bool wake = true;
+            b2Body_SetTargetTransform(m_elevatorId, new B2Transform(point, b2Rot_identity), timeStep, wake);
         }
 
         m_time += timeStep;

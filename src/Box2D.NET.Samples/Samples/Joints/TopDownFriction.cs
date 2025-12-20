@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Numerics;
 using ImGuiNET;
 using static Box2D.NET.B2Joints;
@@ -37,7 +36,7 @@ public class TopDownFriction : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -76,7 +75,7 @@ public class TopDownFriction : Sample
                 for (int j = 0; j < n; ++j)
                 {
                     bodyDef.position = new B2Vec2(x, y);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     int remainder = (n * i + j) % 4;
                     if (remainder == 0)

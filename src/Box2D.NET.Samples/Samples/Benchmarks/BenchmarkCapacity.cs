@@ -39,7 +39,7 @@ public class BenchmarkCapacity : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position.Y = -5.0f;
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(800.0f, 5.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -95,7 +95,7 @@ public class BenchmarkCapacity : Sample
             bodyDef.position.X = x;
             bodyDef.position.Y += 0.5f;
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref m_square);
 
             x += 2.0f;

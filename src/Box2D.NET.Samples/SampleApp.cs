@@ -64,7 +64,7 @@ public class SampleApp
 
         SampleFactory.Shared.LoadSamples();
         SampleFactory.Shared.SortSamples();
-        
+
         var currentCulture = CultureInfo.CurrentCulture;
         string bitness = Environment.Is64BitOperatingSystem ? "64-bit" : "32-bit";
 
@@ -98,7 +98,7 @@ public class SampleApp
         _context.glfw.WindowHint(WindowHintInt.ContextVersionMinor, 3);
         _context.glfw.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
         _context.glfw.WindowHint(WindowHintOpenGlProfile.OpenGlProfile, OpenGlProfile.Core);
-        
+
         // MSAA
         _context.glfw.WindowHint(WindowHintInt.Samples, 4);
         options.Samples = 4;
@@ -176,7 +176,7 @@ public class SampleApp
     {
         var width = resize.X;
         var height = resize.Y;
-        
+
         _context.camera.width = width;
         _context.camera.height = height;
     }
@@ -374,10 +374,10 @@ public class SampleApp
         ImGui.End();
 
         s_sample.ResetText();
-        
+
         var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
         s_sample.DrawColoredTextLine(B2HexColor.b2_colorYellow, title);
-        
+
         string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
                         $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
         DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
@@ -422,7 +422,7 @@ public class SampleApp
         return null;
     }
 
-    private void FreeFcn(byte[] mem)
+    private void FreeFcn(byte[] mem, uint size)
     {
 // #if defined( _MSC_VER ) || defined( __MINGW32__ ) || defined( __MINGW64__ )
 //         _aligned_free( mem );

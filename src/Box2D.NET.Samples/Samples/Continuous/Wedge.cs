@@ -29,7 +29,7 @@ public class Wedge : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-4.0f, 8.0f), new B2Vec2(0.0f, 0.0f));
             b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
@@ -43,13 +43,13 @@ public class Wedge : Sample
             bodyDef.position = new B2Vec2(-0.45f, 10.75f);
             bodyDef.linearVelocity = new B2Vec2(0.0f, -200.0f);
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Circle circle = new B2Circle(new B2Vec2(), 0.0f);
             circle.radius = 0.3f;
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.material.friction = 0.2f;
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 }

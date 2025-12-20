@@ -137,13 +137,14 @@ namespace Box2D.NET
 
             b2TracyCFree(mem);
 
-            // if (b2_freeFcn != null)
-            // {
-            //     b2_freeFcn(mem);
-            // }
-            // else
-            // {
-            // }
+            if (b2_freeFcn != null)
+            {
+                //b2_freeFcn(mem, size);
+            }
+            else
+            {
+                //free(mem)
+            }
 
             b2AtomicFetchAddInt(ref b2_byteCount, -size);
         }

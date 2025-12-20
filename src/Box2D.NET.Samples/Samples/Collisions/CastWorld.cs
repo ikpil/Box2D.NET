@@ -91,7 +91,7 @@ public class CastWorld : Sample
         // Ground body
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
@@ -191,7 +191,7 @@ public class CastWorld : Sample
             bodyDef.gravityScale = 0.0f;
         }
 
-        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.userData = m_userData[m_bodyIndex];
@@ -204,23 +204,23 @@ public class CastWorld : Sample
         if (index == 0)
         {
             int polygonIndex = (m_bodyIndex & 1);
-            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_polygons[polygonIndex]);
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], shapeDef, m_polygons[polygonIndex]);
         }
         else if (index == 1)
         {
-            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_box);
+            b2CreatePolygonShape(m_bodyIds[m_bodyIndex], shapeDef, m_box);
         }
         else if (index == 2)
         {
-            b2CreateCircleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_circle);
+            b2CreateCircleShape(m_bodyIds[m_bodyIndex], shapeDef, m_circle);
         }
         else if (index == 3)
         {
-            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_capsule);
+            b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], shapeDef, m_capsule);
         }
         else if (index == 4)
         {
-            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref m_segment);
+            b2CreateSegmentShape(m_bodyIds[m_bodyIndex], shapeDef, m_segment);
         }
         else
         {

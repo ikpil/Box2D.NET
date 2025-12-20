@@ -349,6 +349,17 @@ namespace Box2D.NET
             return 1.0f - 0.0006f < qq && qq < 1.0f + 0.0006f;
         }
 
+        /// Get the inverse of a rotation
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Rot b2InvertRot(in B2Rot a)
+        {
+            return new B2Rot()
+            {
+                c = a.c,
+                s = -a.s,
+            };
+        }
+
         /// Normalized linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
         ///	https://web.archive.org/web/20170825184056/http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/

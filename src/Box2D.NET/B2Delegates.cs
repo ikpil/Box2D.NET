@@ -13,11 +13,15 @@ namespace Box2D.NET
 
     /// Prototype for user free function
     /// @param mem the memory previously allocated through `b2AllocFcn`
-    public delegate void b2FreeFcn(byte[] mem);
+    /// @param size the allocation size in bytes
+    public delegate void b2FreeFcn(byte[] mem, uint size);
 
     /// Prototype for the user assert callback. Return 0 to skip the debugger break.
     public delegate int b2AssertFcn(string condition, string fileName, int lineNumber);
 
+    /// Prototype for user log callback. Used to log warnings.
+    public delegate void b2LogFcn(in string message);
+    
     /// Task interface
     /// This is prototype for a Box2D task. Your task system is expected to invoke the Box2D task with these arguments.
     /// The task spans a range of the parallel-for: [startIndex, endIndex)

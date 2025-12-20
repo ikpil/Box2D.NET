@@ -84,7 +84,7 @@ public class LargeWorld : Sample
                 if (i % 10 == 0)
                 {
                     bodyDef.position.X = xBody;
-                    groundId = b2CreateBody(m_worldId, ref bodyDef);
+                    groundId = b2CreateBody(m_worldId, bodyDef);
                     xShape = 0.0f;
                 }
 
@@ -96,7 +96,7 @@ public class LargeWorld : Sample
                 {
                     B2Polygon square = b2MakeOffsetBox(0.4f * m_gridSize, 0.4f * m_gridSize, new B2Vec2(xShape, y), b2Rot_identity);
                     square.radius = 0.1f;
-                    b2CreatePolygonShape(groundId, ref shapeDef, ref square);
+                    b2CreatePolygonShape(groundId, shapeDef, square);
 
                     y += m_gridSize;
                 }
@@ -126,7 +126,7 @@ public class LargeWorld : Sample
                     bodyDef.position.Y = 10.0f;
                     for (int j = 0; j < 5; ++j)
                     {
-                        B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                        B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                         b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
                         bodyDef.position.Y += 0.5f;
                     }

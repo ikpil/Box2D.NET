@@ -44,7 +44,7 @@ public class BenchmarkCreateDestroy : Sample
         float groundSize = 100.0f;
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2Polygon box = b2MakeBox(groundSize, 1.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -106,7 +106,7 @@ public class BenchmarkCreateDestroy : Sample
                 bodyDef.position = new B2Vec2(x, y);
 
                 B2_ASSERT(index < e_maxBodyCount);
-                m_bodies[index] = b2CreateBody(m_worldId, ref bodyDef);
+                m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
 
                 index += 1;

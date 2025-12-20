@@ -22,16 +22,13 @@ public class SensorFunnel : Sample
 {
     private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
 
-    private enum ea
-    {
-        e_donut = 1,
-        e_human = 2,
-        e_count = 32
-    };
+    private const int e_donut = 1;
+    private const int e_human = 2;
+    private const int e_count = 32;
 
-    private Human[] m_humans = new Human[(int)ea.e_count];
-    private Donut[] m_donuts = new Donut[(int)ea.e_count];
-    private bool[] m_isSpawned = new bool[(int)ea.e_count];
+    private Human[] m_humans = new Human[(int)e_count];
+    private Donut[] m_donuts = new Donut[(int)e_count];
+    private bool[] m_isSpawned = new bool[(int)e_count];
     private int m_type;
     private float m_wait;
     private float m_side;
@@ -54,7 +51,7 @@ public class SensorFunnel : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             // B2Vec2 points[] = {
             //{42.333, 44.979},	{177.271, 44.979},	{177.271, 100.542}, {142.875, 121.708}, {177.271, 121.708},
@@ -126,7 +123,7 @@ public class SensorFunnel : Sample
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.type = B2BodyType.b2_dynamicBody;
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 B2Polygon box = b2MakeBox(6.0f, 0.5f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -163,9 +160,9 @@ public class SensorFunnel : Sample
 
         m_wait = 0.5f;
         m_side = -15.0f;
-        m_type = (int)ea.e_human;
+        m_type = (int)e_human;
 
-        for (int i = 0; i < (int)ea.e_count; ++i)
+        for (int i = 0; i < (int)e_count; ++i)
         {
             m_isSpawned[i] = false;
         }
@@ -182,7 +179,7 @@ public class SensorFunnel : Sample
     void CreateElement()
     {
         int index = -1;
-        for (int i = 0; i < (int)ea.e_count; ++i)
+        for (int i = 0; i < (int)e_count; ++i)
         {
             if (m_isSpawned[i] == false)
             {
@@ -198,7 +195,7 @@ public class SensorFunnel : Sample
 
         B2Vec2 center = new B2Vec2(m_side, 29.5f);
 
-        if (m_type == (int)ea.e_donut)
+        if (m_type == (int)e_donut)
         {
             ref Donut donut = ref m_donuts[index];
             // donut->Spawn(m_worldId, center, index + 1, donut);
@@ -222,7 +219,7 @@ public class SensorFunnel : Sample
 
     void DestroyElement(int index)
     {
-        if (m_type == (int)ea.e_donut)
+        if (m_type == (int)e_donut)
         {
             ref Donut donut = ref m_donuts[index];
             donut.Destroy();
@@ -238,11 +235,11 @@ public class SensorFunnel : Sample
 
     void Clear()
     {
-        for (int i = 0; i < (int)ea.e_count; ++i)
+        for (int i = 0; i < (int)e_count; ++i)
         {
             if (m_isSpawned[i] == true)
             {
-                if (m_type == (int)ea.e_donut)
+                if (m_type == (int)e_donut)
                 {
                     m_donuts[i].Destroy();
                 }
@@ -267,16 +264,16 @@ public class SensorFunnel : Sample
 
         ImGui.Begin("Sensor Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
-        if (ImGui.RadioButton("donut", m_type == (int)ea.e_donut))
+        if (ImGui.RadioButton("donut", m_type == (int)e_donut))
         {
             Clear();
-            m_type = (int)ea.e_donut;
+            m_type = (int)e_donut;
         }
 
-        if (ImGui.RadioButton("human", m_type == (int)ea.e_human))
+        if (ImGui.RadioButton("human", m_type == (int)e_human))
         {
             Clear();
-            m_type = (int)ea.e_human;
+            m_type = (int)e_human;
         }
 
         ImGui.End();
@@ -292,7 +289,7 @@ public class SensorFunnel : Sample
         base.Step();
 
         // Discover rings that touch the bottom sensor
-        bool[] deferredDestruction = new bool[(int)ea.e_count];
+        bool[] deferredDestruction = new bool[(int)e_count];
         B2SensorEvents sensorEvents = b2World_GetSensorEvents(m_worldId);
         for (int i = 0; i < sensorEvents.beginCount; ++i)
         {
@@ -300,13 +297,13 @@ public class SensorFunnel : Sample
             B2ShapeId visitorId = @event.visitorShapeId;
             B2BodyId bodyId = b2Shape_GetBody(visitorId);
 
-            if (m_type == (int)ea.e_donut)
+            if (m_type == (int)e_donut)
             {
                 CustomUserData<int> donut = b2Body_GetUserData(bodyId) as CustomUserData<int>;
                 if (donut != null)
                 {
                     int index = donut.Value;
-                    B2_ASSERT(0 <= index && index < (int)ea.e_count);
+                    B2_ASSERT(0 <= index && index < (int)e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                     deferredDestruction[index] = true;
@@ -318,7 +315,7 @@ public class SensorFunnel : Sample
                 if (human != null)
                 {
                     int index = human.Value;
-                    B2_ASSERT(0 <= index && index < (int)ea.e_count);
+                    B2_ASSERT(0 <= index && index < (int)e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
                     deferredDestruction[index] = true;
@@ -329,7 +326,7 @@ public class SensorFunnel : Sample
         // todo destroy mouse joint if necessary
 
         // Safely destroy rings that hit the bottom sensor
-        for (int i = 0; i < (int)ea.e_count; ++i)
+        for (int i = 0; i < (int)e_count; ++i)
         {
             if (deferredDestruction[i])
             {

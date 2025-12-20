@@ -37,7 +37,7 @@ public class Cliff : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(100.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
@@ -91,15 +91,15 @@ public class Cliff : Sample
             float offset = m_flip ? -4.0f : 0.0f;
 
             bodyDef.position = new B2Vec2(-9.0f + offset, 4.25f);
-            m_bodyIds[0] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[0] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCapsuleShape(m_bodyIds[0], ref shapeDef, ref capsule);
 
             bodyDef.position = new B2Vec2(2.0f + offset, 4.75f);
-            m_bodyIds[1] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[1] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCapsuleShape(m_bodyIds[1], ref shapeDef, ref capsule);
 
             bodyDef.position = new B2Vec2(13.0f + offset, 4.75f);
-            m_bodyIds[2] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[2] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCapsuleShape(m_bodyIds[2], ref shapeDef, ref capsule);
         }
 
@@ -109,15 +109,15 @@ public class Cliff : Sample
             bodyDef.linearVelocity = new B2Vec2(2.5f * sign, 0.0f);
 
             bodyDef.position = new B2Vec2(-11.0f, 4.5f);
-            m_bodyIds[3] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[3] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[3], ref shapeDef, ref square);
 
             bodyDef.position = new B2Vec2(0.0f, 5.0f);
-            m_bodyIds[4] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[4] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[4], ref shapeDef, ref square);
 
             bodyDef.position = new B2Vec2(11.0f, 5.0f);
-            m_bodyIds[5] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[5] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[5], ref shapeDef, ref square);
         }
 
@@ -129,15 +129,15 @@ public class Cliff : Sample
             float offset = m_flip ? 4.0f : 0.0f;
 
             bodyDef.position = new B2Vec2(-13.0f + offset, 4.5f);
-            m_bodyIds[6] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[6] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(m_bodyIds[6], ref shapeDef, ref circle);
 
             bodyDef.position = new B2Vec2(-2.0f + offset, 5.0f);
-            m_bodyIds[7] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[7] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(m_bodyIds[7], ref shapeDef, ref circle);
 
             bodyDef.position = new B2Vec2(9.0f + offset, 5.0f);
-            m_bodyIds[8] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[8] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(m_bodyIds[8], ref shapeDef, ref circle);
         }
     }

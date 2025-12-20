@@ -37,7 +37,7 @@ public class JointEvent : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
@@ -65,7 +65,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             float length = 2.0f;
@@ -92,7 +92,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
@@ -116,7 +116,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
@@ -140,7 +140,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
@@ -164,7 +164,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
@@ -190,7 +190,7 @@ public class JointEvent : Sample
             B2_ASSERT(index < e_count);
 
             bodyDef.position = position;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);

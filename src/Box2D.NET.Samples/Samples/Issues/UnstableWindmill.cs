@@ -31,7 +31,7 @@ public class UnstableWindmill : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-100.0f, -10.0f), new B2Vec2(100.0f, -10.0f));
@@ -47,9 +47,9 @@ public class UnstableWindmill : Sample
 
         // center
         bdef.position = new B2Vec2(10, 10);
-        B2BodyId center = b2CreateBody(m_worldId, ref bdef);
+        B2BodyId center = b2CreateBody(m_worldId, bdef);
         B2Circle circle = new B2Circle(new B2Vec2(0, 0), 5);
-        b2CreateCircleShape(center, ref sdef, ref circle);
+        b2CreateCircleShape(center, sdef, circle);
 
         // rotors
         B2WeldJointDef wjdef = b2DefaultWeldJointDef();
@@ -61,16 +61,16 @@ public class UnstableWindmill : Sample
         B2Polygon polygon;
 
         bdef.position = new B2Vec2(10, 0);
-        B2BodyId body = b2CreateBody(m_worldId, ref bdef);
+        B2BodyId body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(4, 5);
-        b2CreatePolygonShape(body, ref sdef, ref polygon);
+        b2CreatePolygonShape(body, sdef, polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(0, -5), b2Rot_identity);
         wjdef.@base.bodyIdB = body;
         wjdef.@base.localFrameB = new B2Transform(new B2Vec2(0, 5), b2Rot_identity);
         b2CreateWeldJoint(m_worldId, ref wjdef);
 
         bdef.position = new B2Vec2(20, 10);
-        body = b2CreateBody(m_worldId, ref bdef);
+        body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(5, 4);
         b2CreatePolygonShape(body, ref sdef, ref polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(5, 0), b2Rot_identity);
@@ -79,7 +79,7 @@ public class UnstableWindmill : Sample
         b2CreateWeldJoint(m_worldId, ref wjdef);
 
         bdef.position = new B2Vec2(10, 20);
-        body = b2CreateBody(m_worldId, ref bdef);
+        body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(4, 5);
         b2CreatePolygonShape(body, ref sdef, ref polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(0, 5), b2Rot_identity);
@@ -88,7 +88,7 @@ public class UnstableWindmill : Sample
         b2CreateWeldJoint(m_worldId, ref wjdef);
 
         bdef.position = new B2Vec2(0, 10);
-        body = b2CreateBody(m_worldId, ref bdef);
+        body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(5, 4);
         b2CreatePolygonShape(body, ref sdef, ref polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(-5, 0), b2Rot_identity);

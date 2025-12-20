@@ -49,7 +49,7 @@ public class BodyMove : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.material.friction = 0.1f;
@@ -96,27 +96,27 @@ public class BodyMove : Sample
             bodyDef.position = new B2Vec2(x, y);
             bodyDef.isBullet = (m_count % 12 == 0);
             bodyDef.userData = CustomUserData.Create(m_count);
-            m_bodyIds[m_count] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[m_count] = b2CreateBody(m_worldId, bodyDef);
             m_sleeping[m_count] = false;
 
             int remainder = m_count % 4;
             if (remainder == 0)
             {
-                b2CreateCapsuleShape(m_bodyIds[m_count], ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(m_bodyIds[m_count], shapeDef, capsule);
             }
             else if (remainder == 1)
             {
-                b2CreateCircleShape(m_bodyIds[m_count], ref shapeDef, ref circle);
+                b2CreateCircleShape(m_bodyIds[m_count], shapeDef, circle);
             }
             else if (remainder == 2)
             {
-                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, ref square);
+                b2CreatePolygonShape(m_bodyIds[m_count], shapeDef, square);
             }
             else
             {
                 B2Polygon poly = RandomPolygon(0.75f);
                 poly.radius = 0.1f;
-                b2CreatePolygonShape(m_bodyIds[m_count], ref shapeDef, ref poly);
+                b2CreatePolygonShape(m_bodyIds[m_count], shapeDef, poly);
             }
 
             m_count += 1;
@@ -138,8 +138,15 @@ public class BodyMove : Sample
         B2BodyEvents events = b2World_GetBodyEvents(m_worldId);
         for (int i = 0; i < events.moveCount; ++i)
         {
+            ref readonly B2BodyMoveEvent @event = ref events.moveEvents[i];
+            
+            if (@event.userData == null)
+            {
+                // The mouse joint body has no user data
+                continue;
+            }
+
             // draw the transform of every body that moved (not sleeping)
-            ref B2BodyMoveEvent @event = ref events.moveEvents[i];
             DrawTransform(m_draw, @event.transform, 1.0f);
 
             B2Transform transform = b2Body_GetTransform(@event.bodyId);

@@ -66,7 +66,7 @@ namespace Box2D.NET
 
         private static b2AssertFcn b2AssertHandler = b2DefaultAssertFcn;
 
-        /// Override the default assert callback
+        /// Override the default assert function
         /// @param assertFcn a non-null assert callback
         public static void b2SetAssertFcn(b2AssertFcn assertFcn)
         {
@@ -77,6 +77,26 @@ namespace Box2D.NET
         internal static int b2InternalAssertFcn(string condition, string fileName, int lineNumber)
         {
             return b2AssertHandler(condition, fileName, lineNumber);
+        }
+
+        static void b2DefaultLogFcn(in string message)
+        {
+            Console.WriteLine($"Box2D: {message}");
+        }
+
+        private static b2LogFcn b2LogHandler = b2DefaultLogFcn;
+
+        /// Override the default log function
+        /// @param logFcn a non-null log callback
+        public static void b2SetLogFcn(b2LogFcn logFcn)
+        {
+            B2_ASSERT(logFcn != null);
+            b2LogHandler = logFcn;
+        }
+
+        public static void b2Log(in string format)
+        {
+            b2LogHandler.Invoke(format);
         }
     }
 }

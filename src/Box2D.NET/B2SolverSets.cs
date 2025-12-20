@@ -49,10 +49,10 @@ namespace Box2D.NET
         // This handles contact types 1 and 3. Type 2 doesn't need any action.
         internal static void b2WakeSolverSet(B2World world, int setIndex)
         {
-            B2_ASSERT(setIndex >= (int)B2SetType.b2_firstSleepingSet);
+            B2_ASSERT(setIndex >= (int)B2SolverSetType.b2_firstSleepingSet);
             B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
-            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_disabledSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
+            B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_disabledSet);
 
             B2Body[] bodies = world.bodies.data;
 
@@ -63,7 +63,7 @@ namespace Box2D.NET
 
                 B2Body body = bodies[simSrc.bodyId];
                 B2_ASSERT(body.setIndex == setIndex);
-                body.setIndex = (int)B2SetType.b2_awakeSet;
+                body.setIndex = (int)B2SolverSetType.b2_awakeSet;
                 body.localIndex = awakeSet.bodySims.count;
 
                 // Reset sleep timer
@@ -89,9 +89,9 @@ namespace Box2D.NET
 
                     contactKey = contact.edges[edgeIndex].nextKey;
 
-                    if (contact.setIndex != (int)B2SetType.b2_disabledSet)
+                    if (contact.setIndex != (int)B2SolverSetType.b2_disabledSet)
                     {
-                        B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet || contact.setIndex == setIndex);
+                        B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet || contact.setIndex == setIndex);
                         continue;
                     }
 
@@ -100,7 +100,7 @@ namespace Box2D.NET
 
                     B2_ASSERT((contact.flags & (int)B2ContactFlags.b2_contactTouchingFlag) == 0 && contactSim.manifold.pointCount == 0);
 
-                    contact.setIndex = (int)B2SetType.b2_awakeSet;
+                    contact.setIndex = (int)B2SolverSetType.b2_awakeSet;
                     contact.localIndex = awakeSet.contactSims.count;
                     ref B2ContactSim awakeContactSim = ref b2Array_Add(ref awakeSet.contactSims);
                     //memcpy( awakeContactSim, contactSim, sizeof( b2ContactSim ) );
@@ -130,7 +130,7 @@ namespace Box2D.NET
                     B2_ASSERT(contactSim.manifold.pointCount > 0);
                     B2_ASSERT(contact.setIndex == setIndex);
                     b2AddContactToGraph(world, contactSim, contact);
-                    contact.setIndex = (int)B2SetType.b2_awakeSet;
+                    contact.setIndex = (int)B2SolverSetType.b2_awakeSet;
                 }
             }
 
@@ -143,7 +143,7 @@ namespace Box2D.NET
                     B2Joint joint = b2Array_Get(ref world.joints, jointSim.jointId);
                     B2_ASSERT(joint.setIndex == setIndex);
                     b2AddJointToGraph(world, jointSim, joint);
-                    joint.setIndex = (int)B2SetType.b2_awakeSet;
+                    joint.setIndex = (int)B2SolverSetType.b2_awakeSet;
                 }
             }
 
@@ -157,7 +157,7 @@ namespace Box2D.NET
                 {
                     B2IslandSim islandSrc = set.islandSims.data[i];
                     B2Island island = b2Array_Get(ref world.islands, islandSrc.islandId);
-                    island.setIndex = (int)B2SetType.b2_awakeSet;
+                    island.setIndex = (int)B2SolverSetType.b2_awakeSet;
                     island.localIndex = awakeSet.islandSims.count;
                     ref B2IslandSim islandDst = ref b2Array_Add(ref awakeSet.islandSims);
                     //memcpy( islandDst, islandSrc, sizeof( b2IslandSim ) );
@@ -172,7 +172,7 @@ namespace Box2D.NET
         internal static void b2TrySleepIsland(B2World world, int islandId)
         {
             B2Island island = b2Array_Get(ref world.islands, islandId);
-            B2_ASSERT(island.setIndex == (int)B2SetType.b2_awakeSet);
+            B2_ASSERT(island.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             // cannot put an island to sleep while it has a pending split
             if (island.constraintRemoveCount > 0)
@@ -199,7 +199,7 @@ namespace Box2D.NET
             sleepSet.Clear();
 
             // grab awake set after creating the sleep set because the solver set array may have been resized
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2_ASSERT(0 <= island.localIndex && island.localIndex < awakeSet.islandSims.count);
 
             sleepSet.setIndex = sleepSetId;
@@ -210,12 +210,12 @@ namespace Box2D.NET
             // move awake bodies to sleeping set
             // this shuffles around bodies in the awake set
             {
-                B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_disabledSet);
+                B2SolverSet disabledSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_disabledSet);
                 int bodyId = island.headBody;
                 while (bodyId != B2_NULL_INDEX)
                 {
                     B2Body body = b2Array_Get(ref world.bodies, bodyId);
-                    B2_ASSERT(body.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(body.islandId == islandId);
 
                     // Update the body move event to indicate this body fell asleep
@@ -265,10 +265,10 @@ namespace Box2D.NET
 
                         B2Contact contact = b2Array_Get(ref world.contacts, contactId);
 
-                        B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet || contact.setIndex == (int)B2SetType.b2_disabledSet);
+                        B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet || contact.setIndex == (int)B2SolverSetType.b2_disabledSet);
                         contactKey = contact.edges[edgeIndex].nextKey;
 
-                        if (contact.setIndex == (int)B2SetType.b2_disabledSet)
+                        if (contact.setIndex == (int)B2SolverSetType.b2_disabledSet)
                         {
                             // already moved to disabled set by another body in the island
                             continue;
@@ -286,7 +286,7 @@ namespace Box2D.NET
                         int otherEdgeIndex = edgeIndex ^ 1;
                         int otherBodyId = contact.edges[otherEdgeIndex].bodyId;
                         B2Body otherBody = b2Array_Get(ref world.bodies, otherBodyId);
-                        if (otherBody.setIndex == (int)B2SetType.b2_awakeSet)
+                        if (otherBody.setIndex == (int)B2SolverSetType.b2_awakeSet)
                         {
                             continue;
                         }
@@ -298,7 +298,7 @@ namespace Box2D.NET
                         B2_ASSERT((contact.flags & (int)B2ContactFlags.b2_contactTouchingFlag) == 0);
 
                         // move the non-touching contact to the disabled set
-                        contact.setIndex = (int)B2SetType.b2_disabledSet;
+                        contact.setIndex = (int)B2SolverSetType.b2_disabledSet;
                         contact.localIndex = disabledSet.contactSims.count;
                         ref B2ContactSim disabledContactSim = ref b2Array_Add(ref disabledSet.contactSims);
                         //memcpy( disabledContactSim, contactSim, sizeof( b2ContactSim ) );
@@ -326,7 +326,7 @@ namespace Box2D.NET
                 while (contactId != B2_NULL_INDEX)
                 {
                     B2Contact contact = b2Array_Get(ref world.contacts, contactId);
-                    B2_ASSERT(contact.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(contact.islandId == islandId);
                     int colorIndex = contact.colorIndex;
                     B2_ASSERT(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
@@ -374,7 +374,7 @@ namespace Box2D.NET
                 while (jointId != B2_NULL_INDEX)
                 {
                     B2Joint joint = b2Array_Get(ref world.joints, jointId);
-                    B2_ASSERT(joint.setIndex == (int)B2SetType.b2_awakeSet);
+                    B2_ASSERT(joint.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(joint.islandId == islandId);
                     int colorIndex = joint.colorIndex;
                     int localIndex = joint.localIndex;
@@ -418,7 +418,7 @@ namespace Box2D.NET
 
             // move island struct
             {
-                B2_ASSERT(island.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(island.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                 int islandIndex = island.localIndex;
                 ref B2IslandSim sleepIsland = ref b2Array_Add(ref sleepSet.islandSims);
@@ -449,8 +449,8 @@ namespace Box2D.NET
         // Islands will get merge when the set is waked.
         internal static void b2MergeSolverSets(B2World world, int setId1, int setId2)
         {
-            B2_ASSERT(setId1 >= (int)B2SetType.b2_firstSleepingSet);
-            B2_ASSERT(setId2 >= (int)B2SetType.b2_firstSleepingSet);
+            B2_ASSERT(setId1 >= (int)B2SolverSetType.b2_firstSleepingSet);
+            B2_ASSERT(setId2 >= (int)B2SolverSetType.b2_firstSleepingSet);
             B2SolverSet set1 = b2Array_Get(ref world.solverSets, setId1);
             B2SolverSet set2 = b2Array_Get(ref world.solverSets, setId2);
 
@@ -575,11 +575,11 @@ namespace Box2D.NET
                 movedBody.localIndex = sourceIndex;
             }
 
-            if (sourceSet.setIndex == (int)B2SetType.b2_awakeSet)
+            if (sourceSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 b2Array_RemoveSwap(ref sourceSet.bodyStates, sourceIndex);
             }
-            else if (targetSet.setIndex == (int)B2SetType.b2_awakeSet)
+            else if (targetSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 ref B2BodyState state = ref b2Array_Add(ref targetSet.bodyStates);
                 //*state = b2_identityBodyState;
@@ -603,7 +603,7 @@ namespace Box2D.NET
 
             // Retrieve source.
             B2JointSim sourceSim = null;
-            if (sourceSet.setIndex == (int)B2SetType.b2_awakeSet)
+            if (sourceSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2_ASSERT(0 <= colorIndex && colorIndex < B2_GRAPH_COLOR_COUNT);
                 ref B2GraphColor color = ref world.constraintGraph.colors[colorIndex];
@@ -617,10 +617,10 @@ namespace Box2D.NET
             }
 
             // Create target and copy. Fix joint.
-            if (targetSet.setIndex == (int)B2SetType.b2_awakeSet)
+            if (targetSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 b2AddJointToGraph(world, sourceSim, joint);
-                joint.setIndex = (int)B2SetType.b2_awakeSet;
+                joint.setIndex = (int)B2SolverSetType.b2_awakeSet;
             }
             else
             {
@@ -634,7 +634,7 @@ namespace Box2D.NET
             }
 
             // Destroy source.
-            if (sourceSet.setIndex == (int)B2SetType.b2_awakeSet)
+            if (sourceSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 b2RemoveJointFromGraph(world, joint.edges[0].bodyId, joint.edges[1].bodyId, colorIndex, localIndex);
             }

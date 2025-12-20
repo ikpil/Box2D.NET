@@ -65,11 +65,11 @@ namespace Box2D.NET
 
 #if DEBUG
                 B2Body bodyA = bodies[contactSim.bodyIdA];
-                int validIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
+                int validIndexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                 B2_ASSERT(indexA == validIndexA);
 
                 B2Body bodyB = bodies[contactSim.bodyIdB];
-                int validIndexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
+                int validIndexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
                 B2_ASSERT(indexB == validIndexB);
 #endif
 
@@ -174,7 +174,7 @@ namespace Box2D.NET
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             // This is a dummy state to represent a static body because static bodies don't have a solver body.
@@ -214,6 +214,9 @@ namespace Box2D.NET
                     B2Vec2 rB = cp.anchorB;
 
                     B2Vec2 P = b2Add(b2MulSV(cp.normalImpulse, normal), b2MulSV(cp.tangentImpulse, tangent));
+
+                    cp.totalNormalImpulse += cp.normalImpulse;
+
                     wA -= iA * b2Cross(rA, P);
                     vA = b2MulAdd(vA, -mA, P);
                     wB += iB * b2Cross(rB, P);
@@ -248,7 +251,7 @@ namespace Box2D.NET
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             float inv_h = context.inv_h;
@@ -326,7 +329,10 @@ namespace Box2D.NET
                     float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
                     impulse = newImpulse - cp.normalImpulse;
                     cp.normalImpulse = newImpulse;
-                    cp.totalNormalImpulse += newImpulse;
+                    cp.totalNormalImpulse += impulse;
+
+                    // b2Log( "vn %g impulse %g bias %g", vn, newImpulse, velocityBias );
+
                     totalNormalImpulse += newImpulse;
 
                     // apply normal impulse
@@ -410,7 +416,7 @@ namespace Box2D.NET
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
             B2World world = context.world;
-            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             float threshold = context.world.restitutionThreshold;
@@ -1203,9 +1209,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #if DEBUG
                         B2Body bodyA = bodies[contactSim.bodyIdA];
-                        int validIndexA = bodyA.setIndex == (int)B2SetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
+                        int validIndexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                         B2Body bodyB = bodies[contactSim.bodyIdB];
-                        int validIndexB = bodyB.setIndex == (int)B2SetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
+                        int validIndexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
 
                         B2_ASSERT(indexA == validIndexA);
                         B2_ASSERT(indexB == validIndexB);
@@ -1453,6 +1459,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.w = b2MulAddW(bB.w, c.invIB, b2CrossW(rB, P));
                     bB.v.X = b2MulAddW(bB.v.X, c.invMassB, P.X);
                     bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, P.Y);
+
+                    c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, c.normalImpulse1);
                 }
 
                 {
@@ -1469,6 +1477,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.w = b2MulAddW(bB.w, c.invIB, b2CrossW(rB, P));
                     bB.v.X = b2MulAddW(bB.v.X, c.invMassB, P.X);
                     bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, P.Y);
+
+                    c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, c.normalImpulse2);
                 }
 
                 bA.w = b2MulSubW(bA.w, c.invIA, c.rollingImpulse);
@@ -1555,7 +1565,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), b2ZeroW());
                     B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse1);
                     c.normalImpulse1 = newImpulse;
-                    c.totalNormalImpulse1 = b2MaxW(c.totalNormalImpulse1, newImpulse);
+                    c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, impulse);
 
                     totalNormalImpulse = b2AddW(totalNormalImpulse, newImpulse);
 
@@ -1606,7 +1616,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), b2ZeroW());
                     B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse2);
                     c.normalImpulse2 = newImpulse;
-                    c.totalNormalImpulse2 = b2MaxW(c.totalNormalImpulse2, newImpulse);
+                    c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, impulse);
 
                     totalNormalImpulse = b2AddW(totalNormalImpulse, newImpulse);
 
@@ -1770,7 +1780,6 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW deltaImpulse = b2SubW(newImpulse, c.normalImpulse1);
                     c.normalImpulse1 = newImpulse;
 
-                    // Add the incremental impulse rather than the full impulse because this is not a sub-step
                     c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, deltaImpulse);
 
                     // Apply contact impulse
@@ -1811,7 +1820,6 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW deltaImpulse = b2SubW(newImpulse, c.normalImpulse2);
                     c.normalImpulse2 = newImpulse;
 
-                    // Add the incremental impulse rather than the full impulse because this is not a sub-step
                     c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, deltaImpulse);
 
                     // Apply contact impulse

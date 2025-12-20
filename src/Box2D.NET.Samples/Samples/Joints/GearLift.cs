@@ -44,7 +44,7 @@ public class GearLift : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             string path =
                 "m 63.500002,201.08333 103.187498,0 1e-5,-37.04166 h -2.64584 l 0,34.39583 h -42.33333 v -2.64583 l "
@@ -91,13 +91,13 @@ public class GearLift : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = position;
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.material.friction = 0.1f;
             shapeDef.material.customColor = (uint)B2HexColor.b2_colorSaddleBrown;
             B2Circle circle = new B2Circle(b2Vec2_zero, gearRadius);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
 
             int count = 16;
             float deltaAngle = 2.0f * B2_PI / 16;
@@ -109,7 +109,7 @@ public class GearLift : Sample
             {
                 B2Polygon tooth = b2MakeOffsetRoundedBox(toothHalfWidth, toothHalfHeight, center, rotation, toothRadius);
                 shapeDef.material.customColor = (uint)B2HexColor.b2_colorGray;
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref tooth);
+                b2CreatePolygonShape(bodyId, shapeDef, tooth);
 
                 rotation = b2MulRot(dq, rotation);
                 center = b2RotateVector(rotation, new B2Vec2(gearRadius + toothHalfHeight, 0.0f));
@@ -128,7 +128,7 @@ public class GearLift : Sample
             revoluteDef.enableMotor = m_enableMotor;
             revoluteDef.maxMotorTorque = m_motorTorque;
             revoluteDef.motorSpeed = m_motorSpeed;
-            m_driverId = b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+            m_driverId = b2CreateRevoluteJoint(m_worldId, revoluteDef);
         }
 
         B2BodyId followerId;
@@ -139,13 +139,13 @@ public class GearLift : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = position;
 
-            followerId = b2CreateBody(m_worldId, ref bodyDef);
+            followerId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.material.friction = 0.1f;
             shapeDef.material.customColor = (uint)B2HexColor.b2_colorSaddleBrown;
             B2Circle circle = new B2Circle(b2Vec2_zero, gearRadius);
-            b2CreateCircleShape(followerId, ref shapeDef, ref circle);
+            b2CreateCircleShape(followerId, shapeDef, circle);
 
             int count = 16;
             float deltaAngle = 2.0f * B2_PI / 16;
@@ -157,7 +157,7 @@ public class GearLift : Sample
             {
                 B2Polygon tooth = b2MakeOffsetRoundedBox(toothHalfWidth, toothHalfHeight, center, rotation, toothRadius);
                 shapeDef.material.customColor = (uint)B2HexColor.b2_colorGray;
-                b2CreatePolygonShape(followerId, ref shapeDef, ref tooth);
+                b2CreatePolygonShape(followerId, shapeDef, tooth);
 
                 rotation = b2MulRot(dq, rotation);
                 center = b2RotateVector(rotation, new B2Vec2(gearRadius + toothHalfWidth, 0.0f));
@@ -200,7 +200,7 @@ public class GearLift : Sample
             {
                 bodyDef.position = position;
 
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
 
                 B2Vec2 pivot = new B2Vec2(position.X, position.Y + linkHalfLength);
@@ -223,7 +223,7 @@ public class GearLift : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = doorPosition;
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(0.15f, doorHalfHeight);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -278,7 +278,7 @@ public class GearLift : Sample
                 for (int j = 0; j < xCount; ++j)
                 {
                     bodyDef.position = new B2Vec2(x, y);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     B2Polygon poly = RandomPolygon(0.1f);
                     poly.radius = RandomFloatRange(0.01f, 0.02f);
 

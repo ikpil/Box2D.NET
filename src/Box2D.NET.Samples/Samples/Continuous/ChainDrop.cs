@@ -39,7 +39,7 @@ public class ChainDrop : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.position = new B2Vec2(0.0f, -6.0f);
-        B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+        B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2Vec2[] points = new B2Vec2[4] { new B2Vec2(-10.0f, -2.0f), new B2Vec2(10.0f, -2.0f), new B2Vec2(10.0f, 1.0f), new B2Vec2(-10.0f, 1.0f) };
 
@@ -70,12 +70,12 @@ public class ChainDrop : Sample
         bodyDef.position = new B2Vec2(0.0f, 10.0f + m_yOffset);
         bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
         bodyDef.motionLocks.angularZ = true;
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-        m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
+        m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
 
         //b2Capsule capsule = { { -0.5f, 0.0f }, { 0.5f, 0.0f }, 0.25f };
         //m_shapeId = b2CreateCapsuleShape( m_bodyId, &shapeDef, &capsule );

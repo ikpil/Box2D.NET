@@ -50,7 +50,7 @@ public class SensorTypes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "ground";
 
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             
             // Enable sensor events, but filter them out as a test
@@ -73,7 +73,7 @@ public class SensorTypes : Sample
             bodyDef.name = "static sensor";
             bodyDef.type = B2BodyType.b2_staticBody;
             bodyDef.position = new B2Vec2(-3.0f, 0.8f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
@@ -89,7 +89,7 @@ public class SensorTypes : Sample
             bodyDef.type = B2BodyType.b2_kinematicBody;
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
             bodyDef.linearVelocity = new B2Vec2(0.0f, 1.0f);
-            m_kinematicBodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_kinematicBodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
@@ -104,7 +104,7 @@ public class SensorTypes : Sample
             bodyDef.name = "dynamic sensor";
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(3.0f, 1.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = SENSOR;
@@ -127,7 +127,7 @@ public class SensorTypes : Sample
             bodyDef.position = new B2Vec2(-5.0f, 1.0f);
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter.categoryBits = DEFAULT;
@@ -135,7 +135,7 @@ public class SensorTypes : Sample
             shapeDef.enableSensorEvents = true;
             
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 

@@ -32,11 +32,11 @@ public class SetVelocity : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, -0.25f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(20.0f, 0.25f);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
@@ -46,8 +46,8 @@ public class SetVelocity : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeSquare(0.5f);
             bodyDef.position = new B2Vec2(0.0f, 0.5f);
-            m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            m_bodyId = b2CreateBody(m_worldId, bodyDef);
+            b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
     }
 

@@ -59,7 +59,7 @@ public class VerticalStack : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             //B2Polygon box = b2MakeBox(100.0f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -139,7 +139,7 @@ public class VerticalStack : Sample
                 float shift = (i % 2 == 0 ? -offset : offset);
                 bodyDef.position = new B2Vec2(x + shift, 0.5f + 1.0f * i);
                 // bodyDef.position = {x + shift, 1.0f + 1.51f * i};
-                B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 m_bodies[n] = bodyId;
 
@@ -204,7 +204,7 @@ public class VerticalStack : Sample
             bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
             bodyDef.isBullet = true;
 
-            B2BodyId bullet = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bullet = b2CreateBody(m_worldId, bodyDef);
 
             if (m_bulletType == ShapeType.e_boxShape)
             {

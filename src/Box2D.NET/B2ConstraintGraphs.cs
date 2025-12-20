@@ -107,7 +107,7 @@ namespace Box2D.NET
             B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
 #if B2_FORCE_OVERFLOW
-            if (typeA != B2BodyType.b2_staticBody && typeB != B2BodyType.b2_staticBody)
+            if (typeA == B2BodyType.b2_dynamicBody && typeB == B2BodyType.b2_dynamicBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
                 for (int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i)
@@ -118,16 +118,8 @@ namespace Box2D.NET
                         continue;
                     }
 
-                    if (typeA == B2BodyType.b2_dynamicBody)
-                    {
-                        b2SetBitGrow(ref color.bodySet, bodyIdA);
-                    }
-
-                    if (typeB == B2BodyType.b2_dynamicBody)
-                    {
-                        b2SetBitGrow(ref color.bodySet, bodyIdB);
-                    }
-
+                    b2SetBitGrow(ref color.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color.bodySet, bodyIdB);
                     colorIndex = i;
                     break;
                 }
@@ -184,8 +176,8 @@ namespace Box2D.NET
             }
             else
             {
-                B2_ASSERT(bodyA.setIndex == (int)B2SetType.b2_awakeSet);
-                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet);
+                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
 
                 int localIndex = bodyA.localIndex;
                 newContact.bodySimIndexA = localIndex;
@@ -203,8 +195,8 @@ namespace Box2D.NET
             }
             else
             {
-                B2_ASSERT(bodyB.setIndex == (int)B2SetType.b2_awakeSet);
-                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet);
+                B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
 
                 int localIndex = bodyB.localIndex;
                 newContact.bodySimIndexB = localIndex;
@@ -238,7 +230,7 @@ namespace Box2D.NET
                 // Fix moved contact
                 int movedId = movedContactSim.contactId;
                 B2Contact movedContact = b2Array_Get(ref world.contacts, movedId);
-                B2_ASSERT(movedContact.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(movedContact.setIndex == (int)B2SolverSetType.b2_awakeSet);
                 B2_ASSERT(movedContact.colorIndex == colorIndex);
                 B2_ASSERT(movedContact.localIndex == movedIndex);
                 movedContact.localIndex = localIndex;
@@ -250,7 +242,7 @@ namespace Box2D.NET
             B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
 #if B2_FORCE_OVERFLOW
-            if (typeA != B2BodyType.b2_staticBody && typeB != B2BodyType.b2_staticBody)
+            if (typeA == B2BodyType.b2_dynamicBody && typeB == B2BodyType.b2_dynamicBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
                 for (int i = 0; i < B2_DYNAMIC_COLOR_COUNT; ++i)
@@ -261,16 +253,8 @@ namespace Box2D.NET
                         continue;
                     }
 
-                    if (typeA == B2BodyType.b2_dynamicBody)
-                    {
-                        b2SetBitGrow(ref color.bodySet, bodyIdA);
-                    }
-
-                    if (typeB == B2BodyType.b2_dynamicBody)
-                    {
-                        b2SetBitGrow(ref color.bodySet, bodyIdB);
-                    }
-
+                    b2SetBitGrow(ref color.bodySet, bodyIdA);
+                    b2SetBitGrow(ref color.bodySet, bodyIdB);
                     return i;
                 }
             }
@@ -305,7 +289,7 @@ namespace Box2D.NET
                 }
             }
 #else
-            B2_UNUSED(graph, bodyIdA, bodyIdB, staticA, staticB);
+            B2_UNUSED(graph, bodyIdA, bodyIdB);
 #endif
 
             return B2_OVERFLOW_INDEX;
@@ -359,7 +343,7 @@ namespace Box2D.NET
                 B2JointSim movedJointSim = color.jointSims.data[localIndex];
                 int movedId = movedJointSim.jointId;
                 B2Joint movedJoint = b2Array_Get(ref world.joints, movedId);
-                B2_ASSERT(movedJoint.setIndex == (int)B2SetType.b2_awakeSet);
+                B2_ASSERT(movedJoint.setIndex == (int)B2SolverSetType.b2_awakeSet);
                 B2_ASSERT(movedJoint.colorIndex == colorIndex);
                 B2_ASSERT(movedJoint.localIndex == movedIndex);
                 movedJoint.localIndex = localIndex;

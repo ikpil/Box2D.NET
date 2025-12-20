@@ -44,7 +44,7 @@ public class PrismaticJoint : Sample
         B2BodyId groundId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         m_enableSpring = false;
@@ -60,7 +60,7 @@ public class PrismaticJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 10.0f);
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(0.5f, 2.0f);

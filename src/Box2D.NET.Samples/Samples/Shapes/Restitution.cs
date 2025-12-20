@@ -43,7 +43,7 @@ public class Restitution : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             float h = 1.0f * m_count;
             B2Segment segment = new B2Segment(new B2Vec2(-h, 0.0f), new B2Vec2(h, 0.0f));
@@ -86,7 +86,7 @@ public class Restitution : Sample
         for (int i = 0; i < m_count; ++i)
         {
             bodyDef.position = new B2Vec2(x, 40.0f);
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             m_bodyIds[i] = bodyId;
 

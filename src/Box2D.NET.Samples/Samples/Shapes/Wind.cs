@@ -56,7 +56,7 @@ public class Wind : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            m_groundId = b2CreateBody(m_worldId, ref bodyDef);
+            m_groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         m_shapeType = ShapeType.e_capsuleShape;
@@ -104,7 +104,7 @@ public class Wind : Sample
         for (int i = 0; i < m_count; ++i)
         {
             bodyDef.position = new B2Vec2(0.0f, 2.0f - 2.0f * radius * i);
-            m_bodyIds[i] = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
 
             if (m_shapeType == ShapeType.e_circleShape)
             {

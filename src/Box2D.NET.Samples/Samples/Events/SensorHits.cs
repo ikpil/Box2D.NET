@@ -60,7 +60,7 @@ public class SensorHits : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "ground";
 
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
@@ -76,7 +76,7 @@ public class SensorHits : Sample
             bodyDef.name = "static sensor";
             bodyDef.position = new B2Vec2(-4.0f, 1.0f);
 
-            B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
@@ -93,7 +93,7 @@ public class SensorHits : Sample
             bodyDef.position = new B2Vec2(0.0f, 1.0f);
             bodyDef.linearVelocity = new B2Vec2(0.5f, 0.0f);
 
-            m_kinematicBodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_kinematicBodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
@@ -109,7 +109,7 @@ public class SensorHits : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(4.0f, 1.0f);
 
-            m_dynamicBodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_dynamicBodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
@@ -160,14 +160,14 @@ public class SensorHits : Sample
         float speed = RandomFloatRange(200.0f, 300.0f);
         bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
         bodyDef.isBullet = m_isBullet;
-        m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+        m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.enableSensorEvents = true;
         shapeDef.material.friction = 0.8f;
         shapeDef.material.rollingResistance = 0.01f;
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.25f);
-        m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
+        m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
     }
 
     public override void UpdateGui()

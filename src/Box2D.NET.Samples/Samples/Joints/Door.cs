@@ -46,7 +46,7 @@ public class Door : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position = new B2Vec2(0.0f, 0.0f);
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
         m_enableLimit = true;
@@ -61,7 +61,7 @@ public class Door : Sample
             bodyDef.position = new B2Vec2(0.0f, 1.5f);
             bodyDef.gravityScale = 0.0f;
 
-            m_doorId = b2CreateBody(m_worldId, ref bodyDef);
+            m_doorId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1000.0f;

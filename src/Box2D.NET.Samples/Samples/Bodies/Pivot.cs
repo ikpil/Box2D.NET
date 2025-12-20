@@ -35,11 +35,11 @@ public class Pivot : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            groundId = b2CreateBody(m_worldId, ref bodyDef);
+            groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Create a separate body on the ground
@@ -52,7 +52,7 @@ public class Pivot : Sample
             bodyDef.gravityScale = 1.0f;
             bodyDef.linearVelocity = v;
 
-            m_bodyId = b2CreateBody(m_worldId, ref bodyDef);
+            m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
             m_lever = 3.0f;
             B2Vec2 r = new B2Vec2(0.0f, -m_lever);
@@ -63,7 +63,7 @@ public class Pivot : Sample
             B2Polygon box = b2MakeBox(0.1f, m_lever);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
     }
 

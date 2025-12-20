@@ -36,7 +36,7 @@ public class Confined : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Capsule capsule;
@@ -71,7 +71,7 @@ public class Confined : Sample
                     float y = 1.5f + m_row * 18.0f / m_gridCount;
 
                     bodyDef.position = new B2Vec2(x, y);
-                    B2BodyId bodyId = b2CreateBody(m_worldId, ref bodyDef);
+                    B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
 
                     m_count += 1;

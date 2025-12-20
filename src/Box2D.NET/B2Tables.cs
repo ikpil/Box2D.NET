@@ -41,9 +41,9 @@ namespace Box2D.NET
             }
 
             set.count = 0;
-            set.items = b2Alloc<B2SetItem>(capacity);
-            //memset(set.items, 0, capacity * sizeof(b2SetItem));
-            for (int i = 0; i < capacity; ++i)
+            set.items = b2Alloc<B2SetItem>(set.capacity);
+            //memset(set.items, 0, set.capacity * sizeof(b2SetItem));
+            for (int i = 0; i < set.capacity; ++i)
             {
                 set.items[i].Clear();
             }

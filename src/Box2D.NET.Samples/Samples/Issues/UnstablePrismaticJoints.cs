@@ -30,7 +30,7 @@ public class UnstablePrismaticJoints : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            B2BodyId groundId = b2CreateBody(m_worldId, ref bodyDef);
+            B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-100.0f, 0.0f), new B2Vec2(100.0f, 0.0f));
@@ -42,7 +42,7 @@ public class UnstablePrismaticJoints : Sample
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody;
             bd.position = new B2Vec2(0, 3);
-            centerId = b2CreateBody(m_worldId, ref bd);
+            centerId = b2CreateBody(m_worldId, bd);
 
             B2ShapeDef sd = b2DefaultShapeDef();
 
@@ -53,7 +53,7 @@ public class UnstablePrismaticJoints : Sample
             //circle.radius = 0.1f;
             circle.radius = 0.5f;
 
-            b2CreateCircleShape(centerId, ref sd, ref circle);
+            b2CreateCircleShape(centerId, sd, circle);
         }
 
         B2PrismaticJointDef jd = b2DefaultPrismaticJointDef();
@@ -66,26 +66,26 @@ public class UnstablePrismaticJoints : Sample
             bd.type = B2BodyType.b2_dynamicBody;
             bd.position = new B2Vec2(-3.5f, 3);
 
-            B2BodyId leftId = b2CreateBody(m_worldId, ref bd);
+            B2BodyId leftId = b2CreateBody(m_worldId, bd);
 
             B2ShapeDef sd = b2DefaultShapeDef();
 
             B2Circle circle;
             circle.center = new B2Vec2(0, 0);
             circle.radius = 2.0f;
-            b2CreateCircleShape(leftId, ref sd, ref circle);
+            b2CreateCircleShape(leftId, sd, circle);
 
             jd.@base.bodyIdA = centerId;
             jd.@base.bodyIdB = leftId;
             jd.targetTranslation = -3.0f;
-            b2CreatePrismaticJoint(m_worldId, ref jd);
+            b2CreatePrismaticJoint(m_worldId, jd);
         }
 
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody;
             bd.position = new B2Vec2(3.5f, 3);
-            B2BodyId rightId = b2CreateBody(m_worldId, ref bd);
+            B2BodyId rightId = b2CreateBody(m_worldId, bd);
 
             B2ShapeDef sd = b2DefaultShapeDef();
 
@@ -93,12 +93,12 @@ public class UnstablePrismaticJoints : Sample
             circle.center = new B2Vec2(0, 0);
             circle.radius = 2.0f;
 
-            b2CreateCircleShape(rightId, ref sd, ref circle);
+            b2CreateCircleShape(rightId, sd, circle);
 
             jd.@base.bodyIdA = centerId;
             jd.@base.bodyIdB = rightId;
             jd.targetTranslation = 3.0f;
-            b2CreatePrismaticJoint(m_worldId, ref jd);
+            b2CreatePrismaticJoint(m_worldId, jd);
         }
     }
 }
