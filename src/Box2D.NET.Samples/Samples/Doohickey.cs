@@ -42,19 +42,19 @@ public class Doohickey
         B2Capsule capsule = new B2Capsule(new B2Vec2(-3.5f * scale, 0.0f), new B2Vec2(3.5f * scale, 0.0f), 0.15f * scale);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-5.0f, 3.0f));
-        m_wheelId1 = b2CreateBody(worldId, ref bodyDef);
+        m_wheelId1 = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_wheelId1, ref shapeDef, ref circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(5.0f, 3.0f));
-        m_wheelId2 = b2CreateBody(worldId, ref bodyDef);
+        m_wheelId2 = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_wheelId2, ref shapeDef, ref circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-1.5f, 3.0f));
-        m_barId1 = b2CreateBody(worldId, ref bodyDef);
+        m_barId1 = b2CreateBody(worldId, bodyDef);
         b2CreateCapsuleShape(m_barId1, ref shapeDef, ref capsule);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(1.5f, 3.0f));
-        m_barId2 = b2CreateBody(worldId, ref bodyDef);
+        m_barId2 = b2CreateBody(worldId, bodyDef);
         b2CreateCapsuleShape(m_barId2, ref shapeDef, ref capsule);
 
         B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
@@ -65,7 +65,7 @@ public class Doohickey
         revoluteDef.@base.localFrameB.p = new B2Vec2(-3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
-        b2CreateRevoluteJoint(worldId, ref revoluteDef);
+        b2CreateRevoluteJoint(worldId, revoluteDef);
 
         revoluteDef.@base.bodyIdA = m_wheelId2;
         revoluteDef.@base.bodyIdB = m_barId2;
@@ -73,7 +73,7 @@ public class Doohickey
         revoluteDef.@base.localFrameB.p = new B2Vec2(3.5f * scale, 0.0f);
         revoluteDef.enableMotor = true;
         revoluteDef.maxMotorTorque = 2.0f * scale;
-        b2CreateRevoluteJoint(worldId, ref revoluteDef);
+        b2CreateRevoluteJoint(worldId, revoluteDef);
 
         B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
         prismaticDef.@base.bodyIdA = m_barId1;

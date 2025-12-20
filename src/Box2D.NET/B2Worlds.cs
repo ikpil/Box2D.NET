@@ -112,7 +112,7 @@ namespace Box2D.NET
             B2RuntimeValidator.Shared.ThrowIfSafeRuntimePlatform();
 
             B2_ASSERT(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
 
             int worldId = B2_NULL_INDEX;
             for (int i = 0; i < B2_MAX_WORLDS; ++i)

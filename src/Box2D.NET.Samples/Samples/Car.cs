@@ -55,7 +55,7 @@ public struct Car
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
-        m_chassisId = b2CreateBody(worldId, ref bodyDef);
+        m_chassisId = b2CreateBody(worldId, bodyDef);
         b2CreatePolygonShape(m_chassisId, ref shapeDef, ref chassis);
 
         shapeDef.density = 2.0f / scale;
@@ -64,12 +64,12 @@ public struct Car
 
         bodyDef.position = b2Add(new B2Vec2(-1.0f * scale, 0.35f * scale), position);
         bodyDef.allowFastRotation = true;
-        m_rearWheelId = b2CreateBody(worldId, ref bodyDef);
+        m_rearWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_rearWheelId, ref shapeDef, ref circle);
 
         bodyDef.position = b2Add(new B2Vec2(1.0f * scale, 0.4f * scale), position);
         bodyDef.allowFastRotation = true;
-        m_frontWheelId = b2CreateBody(worldId, ref bodyDef);
+        m_frontWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_frontWheelId, ref shapeDef, ref circle);
 
         B2Vec2 axis = new B2Vec2(0.0f, 1.0f);

@@ -17,7 +17,7 @@ public static class B2TestHelper
         bodyDef.position = position;
         bodyDef.gravityScale = 0.0f;
         bodyDef.enableSleep = true;
-        var bodyId = b2CreateBody(worldId, ref bodyDef);
+        var bodyId = b2CreateBody(worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = bodyType == B2BodyType.b2_staticBody ? 0.0f : 1.0f;

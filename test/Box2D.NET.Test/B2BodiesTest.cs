@@ -29,7 +29,7 @@ public class B2BodiesTest
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(0.0f, 0.0f);
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId));
 
         // Add a shape to the body
@@ -81,7 +81,7 @@ public class B2BodiesTest
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(0.0f, 0.0f);
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId), "Body should be valid after creation");
 
         // Test case 1: Get body with valid ID
@@ -121,7 +121,7 @@ public class B2BodiesTest
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(1.0f, 2.0f);
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         B2Body body = b2GetBodyFullId(world, bodyId);
 
         // Test case 1: Get transform for a valid body and verify initial values
@@ -160,7 +160,7 @@ public class B2BodiesTest
         // Create a dynamic body
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        B2BodyId createdBodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId createdBodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(createdBodyId), "Body should be valid after creation");
 
         // Get the body
@@ -196,7 +196,7 @@ public class B2BodiesTest
         bodyDef.position = new B2Vec2(1.0f, 2.0f);
         bodyDef.linearVelocity = new B2Vec2(3.0f, 4.0f);
         bodyDef.angularVelocity = 5.0f;
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId), "Body should be valid after creation");
 
         // Get the body
@@ -237,7 +237,7 @@ public class B2BodiesTest
         bodyDef.position = new B2Vec2(1.0f, 2.0f);
         bodyDef.linearVelocity = new B2Vec2(3.0f, 4.0f);
         bodyDef.angularVelocity = 5.0f;
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId), "Body should be valid after creation");
 
         // Get the body

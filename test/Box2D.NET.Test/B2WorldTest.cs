@@ -55,7 +55,7 @@ public class B2WorldTest
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = new B2Vec2(0.0f, 4.0f);
 
-        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
         // Define another box shape for our dynamic body.
         B2Polygon dynamicBox = b2MakeBox(1.0f, 1.0f);
@@ -147,7 +147,7 @@ public class B2WorldTest
             {
                 if (count < BODY_COUNT)
                 {
-                    bodyIds[count] = b2CreateBody(worldId, ref bodyDef);
+                    bodyIds[count] = b2CreateBody(worldId, bodyDef);
 
                     B2ShapeDef shapeDef = b2DefaultShapeDef();
                     b2CreatePolygonShape(bodyIds[count], ref shapeDef, ref square);
@@ -185,10 +185,10 @@ public class B2WorldTest
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
 
-        B2BodyId bodyId1 = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId1 = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId1), Is.EqualTo(true));
 
-        B2BodyId bodyId2 = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bodyId2 = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId2), Is.EqualTo(true));
 
         b2DestroyBody(bodyId1);
@@ -339,7 +339,7 @@ public class B2WorldTest
         bodyDef.type = B2BodyType.b2_staticBody;
         bodyDef.position.X = 1.5f;
         bodyDef.position.Y = 11.0f;
-        B2BodyId wallId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId wallId = b2CreateBody(worldId, bodyDef);
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.enableSensorEvents = true;
@@ -352,7 +352,7 @@ public class B2WorldTest
         bodyDef.gravityScale = 0.0f;
         bodyDef.position = new B2Vec2(7.39814f, 4.0f);
         bodyDef.linearVelocity = new B2Vec2(-20.0f, 0.0f);
-        B2BodyId bulletId = b2CreateBody(worldId, ref bodyDef);
+        B2BodyId bulletId = b2CreateBody(worldId, bodyDef);
         shapeDef = b2DefaultShapeDef();
         shapeDef.isSensor = true;
         shapeDef.enableSensorEvents = true;

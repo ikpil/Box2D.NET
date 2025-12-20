@@ -197,9 +197,9 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static B2BodyId b2CreateBody(B2WorldId worldId, ref B2BodyDef def)
+        public static B2BodyId b2CreateBody(B2WorldId worldId, in B2BodyDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2_ASSERT(b2IsValidVec2(def.position));
             B2_ASSERT(b2IsValidRotation(def.rotation));
             B2_ASSERT(b2IsValidVec2(def.linearVelocity));

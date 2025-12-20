@@ -198,7 +198,7 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        public static B2JointPair b2CreateJoint(B2World world, ref B2JointDef def, B2JointType type)
+        public static B2JointPair b2CreateJoint(B2World world, in B2JointDef def, B2JointType type)
         {
             B2_ASSERT(b2IsValidTransform(def.localFrameA));
             B2_ASSERT(b2IsValidTransform(def.localFrameB));
@@ -393,9 +393,9 @@ namespace Box2D.NET
             return new B2JointPair(joint, jointSim);
         }
 
-        public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, ref B2DistanceJointDef def)
+        public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, in B2DistanceJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -408,7 +408,7 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidFloat(def.length) && def.length > 0.0f);
             B2_ASSERT(def.lowerSpringForce <= def.upperSpringForce);
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_distanceJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_distanceJoint);
 
             B2JointSim joint = pair.jointSim;
 
@@ -437,9 +437,9 @@ namespace Box2D.NET
 
         /// Create a motor joint
         /// @see b2MotorJointDef for details
-        public static B2JointId b2CreateMotorJoint(B2WorldId worldId, ref B2MotorJointDef def)
+        public static B2JointId b2CreateMotorJoint(B2WorldId worldId, in B2MotorJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -449,7 +449,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_motorJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_motorJoint);
             B2JointSim joint = pair.jointSim;
 
             joint.uj.motorJoint = new B2MotorJoint();
@@ -478,9 +478,9 @@ namespace Box2D.NET
          */
         /// Create a filter joint.
         /// @see b2FilterJointDef for details
-        public static B2JointId b2CreateFilterJoint(B2WorldId worldId, ref b2FilterJointDef def)
+        public static B2JointId b2CreateFilterJoint(B2WorldId worldId, in b2FilterJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -490,7 +490,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_filterJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_filterJoint);
 
             B2JointSim joint = pair.jointSim;
 
@@ -498,9 +498,9 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, ref B2PrismaticJointDef def)
+        public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, in B2PrismaticJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -512,7 +512,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_prismaticJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_prismaticJoint);
 
             B2JointSim joint = pair.jointSim;
 
@@ -532,9 +532,9 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, ref B2RevoluteJointDef def)
+        public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, in B2RevoluteJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2_ASSERT(def.lowerAngle <= def.upperAngle);
             B2_ASSERT(def.lowerAngle >= -0.99f * B2_PI);
             B2_ASSERT(def.upperAngle <= 0.99f * B2_PI);
@@ -548,7 +548,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_revoluteJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_revoluteJoint);
 
             B2JointSim joint = pair.jointSim;
 
@@ -571,9 +571,9 @@ namespace Box2D.NET
         }
 
 
-        public static B2JointId b2CreateWeldJoint(B2WorldId worldId, ref B2WeldJointDef def)
+        public static B2JointId b2CreateWeldJoint(B2WorldId worldId, in B2WeldJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -583,7 +583,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_weldJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_weldJoint);
 
             B2JointSim joint = pair.jointSim;
 
@@ -600,9 +600,9 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static B2JointId b2CreateWheelJoint(B2WorldId worldId, ref B2WheelJointDef def)
+        public static B2JointId b2CreateWheelJoint(B2WorldId worldId, in B2WheelJointDef def)
         {
-            B2_CHECK_DEF(ref def);
+            B2_CHECK_DEF(def);
             B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -614,7 +614,7 @@ namespace Box2D.NET
                 return new B2JointId();
             }
 
-            B2JointPair pair = b2CreateJoint(world, ref def.@base, B2JointType.b2_wheelJoint);
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_wheelJoint);
 
             B2JointSim joint = pair.jointSim;
 

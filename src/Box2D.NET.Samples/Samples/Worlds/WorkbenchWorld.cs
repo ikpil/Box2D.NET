@@ -35,7 +35,7 @@ public class WorkbenchWorld : Sample
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = position;
         bodyDef.gravityScale = 0.0f;
-        var bodyIdA = b2CreateBody(worldId, ref bodyDef);
+        var bodyIdA = b2CreateBody(worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f;

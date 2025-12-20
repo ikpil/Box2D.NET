@@ -24,11 +24,11 @@ namespace Box2D.NET.Shared
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.position = new B2Vec2(0.0f, -1.0f);
-                B2BodyId groundId = b2CreateBody(worldId, ref bodyDef);
+                B2BodyId groundId = b2CreateBody(worldId, bodyDef);
 
                 B2Polygon box = b2MakeBox(20.0f, 1.0f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
             }
 
             int columnCount = 4;
@@ -81,7 +81,7 @@ namespace Box2D.NET.Shared
                         // this tests the deterministic cosine and sine functions
                         bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
 
-                        B2BodyId bodyId = b2CreateBody(worldId, ref bodyDef);
+                        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
                         if ((i & 1) == 0)
                         {
@@ -91,11 +91,11 @@ namespace Box2D.NET.Shared
                         {
                             jointDef.@base.bodyIdA = prevBodyId;
                             jointDef.@base.bodyIdB = bodyId;
-                            b2CreateRevoluteJoint(worldId, ref jointDef);
+                            b2CreateRevoluteJoint(worldId, jointDef);
                             prevBodyId = b2_nullBodyId;
                         }
 
-                        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                        b2CreatePolygonShape(bodyId, shapeDef, box);
 
                         B2_ASSERT(bodyIndex < bodyCount);
                         bodyIds[bodyIndex] = bodyId;

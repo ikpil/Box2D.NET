@@ -56,67 +56,67 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2WheelJointDef def)
+        internal static void B2_CHECK_DEF(in B2WheelJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2WeldJointDef def)
+        internal static void B2_CHECK_DEF(in B2WeldJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2PrismaticJointDef def)
+        internal static void B2_CHECK_DEF(in B2PrismaticJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2RevoluteJointDef def)
+        internal static void B2_CHECK_DEF(in B2RevoluteJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref b2FilterJointDef def)
+        internal static void B2_CHECK_DEF(in b2FilterJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2MotorJointDef def)
+        internal static void B2_CHECK_DEF(in B2MotorJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2DistanceJointDef def)
+        internal static void B2_CHECK_DEF(in B2DistanceJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2ChainDef def)
+        internal static void B2_CHECK_DEF(in B2ChainDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2BodyDef def)
+        internal static void B2_CHECK_DEF(in B2BodyDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2WorldDef def)
+        internal static void B2_CHECK_DEF(in B2WorldDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(ref B2ShapeDef def)
+        internal static void B2_CHECK_DEF(in B2ShapeDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }
