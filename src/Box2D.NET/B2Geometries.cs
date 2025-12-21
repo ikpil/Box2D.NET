@@ -840,7 +840,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus polygon shape in local space.
-        public static B2CastOutput b2RayCastPolygon(in B2Polygon shape, in B2RayCastInput input)
+        public static B2CastOutput b2RayCastPolygon(ref B2Polygon shape, in B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(input));
 

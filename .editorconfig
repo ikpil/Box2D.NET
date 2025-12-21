@@ -24,3 +24,5 @@ csharp_preserve_single_line_blocks = true
 resharper_csharp_wrap_lines = false
 resharper_csharp_space_before_trailing_comment = true
 resharper_csharp_space_after_operator_keyword = true
+
+resharper_possibly_impure_method_call_on_readonly_variable_highlighting=error

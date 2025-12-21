@@ -1065,14 +1065,9 @@ namespace Box2D.NET
             B2TreeNode[] nodes = tree.nodes;
             for (int i = 0; i < capacity; ++i)
             {
-                ref B2TreeNode node = ref nodes[i];
+                ref readonly B2TreeNode node = ref nodes[i];
                 if (0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode))
                 {
-                    if ((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) != 0)
-                    {
-                        int a = 3;
-                    }
-
                     B2_ASSERT((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
                 }
             }

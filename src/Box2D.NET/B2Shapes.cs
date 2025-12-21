@@ -852,7 +852,7 @@ namespace Box2D.NET
                     output = b2RayCastCircle(shape.us.circle, localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(shape.us.polygon, localInput);
+                    output = b2RayCastPolygon(ref shape.us.polygon, localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
                     output = b2RayCastSegment(shape.us.segment, localInput, false);
@@ -1107,7 +1107,7 @@ namespace Box2D.NET
                     break;
 
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(shape.us.polygon, localInput);
+                    output = b2RayCastPolygon(ref shape.us.polygon, localInput);
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:

@@ -281,7 +281,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(m_box, input);
+            B2CastOutput localOutput = b2RayCastPolygon(ref m_box, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -302,7 +302,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(m_triangle, input);
+            B2CastOutput localOutput = b2RayCastPolygon(ref m_triangle, input);
             if (localOutput.hit)
             {
                 output = localOutput;
