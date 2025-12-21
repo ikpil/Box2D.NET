@@ -8,6 +8,7 @@ on:
         required: true
         type: string
 
+
 jobs:
   publish-to-nuget:
     runs-on: ubuntu-latest
