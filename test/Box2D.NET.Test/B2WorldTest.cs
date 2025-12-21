@@ -40,7 +40,7 @@ public class B2WorldTest
         // Call the body factory which allocates memory for the ground body
         // from a pool and creates the ground box shape (also from a pool).
         // The body is also added to the world.
-        B2BodyId groundId = b2CreateBody(worldId, ref groundBodyDef);
+        B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
         Assert.That(b2Body_IsValid(groundId));
 
         // Define the ground box shape. The extents are the half-widths of the box.
@@ -48,7 +48,7 @@ public class B2WorldTest
 
         // Add the box shape to the ground body.
         B2ShapeDef groundShapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(groundId, ref groundShapeDef, ref groundBox);
+        b2CreatePolygonShape(groundId, groundShapeDef, groundBox);
 
         // Define the dynamic body. We set its position and call the body factory.
         B2BodyDef bodyDef = b2DefaultBodyDef();
@@ -70,7 +70,7 @@ public class B2WorldTest
         shapeDef.material.friction = 0.3f;
 
         // Add the shape to the body.
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref dynamicBox);
+        b2CreatePolygonShape(bodyId, shapeDef, dynamicBox);
 
         // Prepare for simulation. Typically we use a time step of 1/60 of a
         // second (60Hz) and 4 sub-steps. This provides a high quality simulation
@@ -150,7 +150,7 @@ public class B2WorldTest
                     bodyIds[count] = b2CreateBody(worldId, bodyDef);
 
                     B2ShapeDef shapeDef = b2DefaultShapeDef();
-                    b2CreatePolygonShape(bodyIds[count], ref shapeDef, ref square);
+                    b2CreatePolygonShape(bodyIds[count], shapeDef, square);
                     count += 1;
                 }
                 else
@@ -224,7 +224,7 @@ public class B2WorldTest
                 Assert.That(b2World_IsValid(worldIds[j]), Is.EqualTo(true), $"i({i}) j({j})");
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
-                b2CreateBody(worldIds[j], ref bodyDef);
+                b2CreateBody(worldIds[j], bodyDef);
             }
 
             for (int j = 0; j < WORLD_COUNT; ++j)
@@ -343,7 +343,7 @@ public class B2WorldTest
         B2Polygon box = b2MakeBox(0.5f, 10.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.enableSensorEvents = true;
-        b2CreatePolygonShape(wallId, ref shapeDef, ref box);
+        b2CreatePolygonShape(wallId, shapeDef, box);
 
         // Bullet fired towards the wall
         bodyDef = b2DefaultBodyDef();
@@ -357,7 +357,7 @@ public class B2WorldTest
         shapeDef.isSensor = true;
         shapeDef.enableSensorEvents = true;
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.1f);
-        b2CreateCircleShape(bulletId, ref shapeDef, ref circle);
+        b2CreateCircleShape(bulletId, shapeDef, circle);
 
         int beginCount = 0;
         int endCount = 0;

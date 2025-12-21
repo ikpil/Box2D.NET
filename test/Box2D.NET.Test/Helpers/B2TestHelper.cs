@@ -24,7 +24,7 @@ public static class B2TestHelper
         shapeDef.material.friction = 0.5f;
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), radius);
-        B2ShapeId shapeId = b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+        B2ShapeId shapeId = b2CreateCircleShape(bodyId, shapeDef, circle);
 
         return shapeId;
     }

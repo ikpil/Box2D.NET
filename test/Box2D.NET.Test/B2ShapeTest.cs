@@ -24,7 +24,7 @@ public class B2ShapeTest
     public void ShapeMassTest()
     {
         {
-            B2MassData md = b2ComputeCircleMass(ref circle, 1.0f);
+            B2MassData md = b2ComputeCircleMass(circle, 1.0f);
             Assert.That(md.mass - B2_PI, Is.LessThan(FLT_EPSILON));
             Assert.That(md.center.X, Is.EqualTo(1.0f));
             Assert.That(md.center.Y, Is.EqualTo(0.0f));
@@ -35,11 +35,11 @@ public class B2ShapeTest
             float radius = capsule.radius;
             float length = b2Distance(capsule.center1, capsule.center2);
 
-            B2MassData md = b2ComputeCapsuleMass(ref capsule, 1.0f);
+            B2MassData md = b2ComputeCapsuleMass(capsule, 1.0f);
 
             // Box that full contains capsule
             B2Polygon r = b2MakeBox(radius, radius + 0.5f * length);
-            B2MassData mdr = b2ComputePolygonMass(ref r, 1.0f);
+            B2MassData mdr = b2ComputePolygonMass(r, 1.0f);
 
             // Approximate capsule using convex hull
             B2Vec2[] points = new B2Vec2[2 * N];
@@ -81,7 +81,7 @@ public class B2ShapeTest
     public void ShapeAABBTest()
     {
         {
-            B2AABB b = b2ComputeCircleAABB(ref circle, b2Transform_identity);
+            B2AABB b = b2ComputeCircleAABB(circle, b2Transform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 2.0f, Is.LessThan(FLT_EPSILON));
@@ -89,7 +89,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputePolygonAABB(ref box, b2Transform_identity);
+            B2AABB b = b2ComputePolygonAABB(box, b2Transform_identity);
             Assert.That(b.lowerBound.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 1.0f, Is.LessThan(FLT_EPSILON));
@@ -97,7 +97,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputeSegmentAABB(ref segment, b2Transform_identity);
+            B2AABB b = b2ComputeSegmentAABB(segment, b2Transform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X, Is.LessThan(FLT_EPSILON));
@@ -113,9 +113,9 @@ public class B2ShapeTest
 
         {
             bool hit;
-            hit = b2PointInCircle(ref circle, p1);
+            hit = b2PointInCircle(circle, p1);
             Assert.That(hit, Is.EqualTo(true));
-            hit = b2PointInCircle(ref circle, p2);
+            hit = b2PointInCircle(circle, p2);
             Assert.That(hit, Is.EqualTo(false));
         }
 
@@ -134,7 +134,7 @@ public class B2ShapeTest
         B2RayCastInput input = new B2RayCastInput(new B2Vec2(-4.0f, 0.0f), new B2Vec2(8.0f, 0.0f), 1.0f);
 
         {
-            B2CastOutput output = b2RayCastCircle(circle, ref input);
+            B2CastOutput output = b2RayCastCircle(circle, input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -142,7 +142,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastPolygon(ref box, ref input);
+            B2CastOutput output = b2RayCastPolygon(box, input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -150,7 +150,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastSegment(ref segment, ref input, true);
+            B2CastOutput output = b2RayCastSegment(segment, input, true);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));

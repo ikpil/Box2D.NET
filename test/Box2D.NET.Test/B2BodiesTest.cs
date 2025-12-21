@@ -35,7 +35,7 @@ public class B2BodiesTest
         // Add a shape to the body
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+        b2CreatePolygonShape(bodyId, shapeDef, box);
 
         // Get the body state
         B2Body body = b2GetBodyFullId(world, bodyId);
