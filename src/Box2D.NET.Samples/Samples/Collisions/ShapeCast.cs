@@ -78,7 +78,7 @@ public class ShapeCast : Sample
         {
             B2Vec2[] points = [new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.0f)];
             B2Hull hull = b2ComputeHull(points, 3);
-            m_triangle = b2MakePolygon(ref hull, 0.0f);
+            m_triangle = b2MakePolygon(hull, 0.0f);
         }
 
 #if ZERO
@@ -224,11 +224,11 @@ public class ShapeCast : Sample
                 break;
 
             case ShapeType.e_triangle:
-                DrawSolidPolygon(m_draw, ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
+                DrawSolidPolygon(m_draw, transform, m_triangle.vertices.AsSpan(), m_triangle.count, radius, color);
                 break;
 
             case ShapeType.e_box:
-                DrawSolidPolygon(m_draw, ref transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
+                DrawSolidPolygon(m_draw, transform, m_box.vertices.AsSpan(), m_box.count, radius, color);
                 break;
 
             default:

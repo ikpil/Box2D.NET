@@ -32,9 +32,9 @@ public class Wedge : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-4.0f, 8.0f), new B2Vec2(0.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
             segment = new B2Segment(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 8.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {

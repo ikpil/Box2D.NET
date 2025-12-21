@@ -53,7 +53,7 @@ public class MotorJoint : Sample
             groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         m_transform = new B2Transform(new B2Vec2(0.0f, 8.0f), b2Rot_identity);
@@ -75,7 +75,7 @@ public class MotorJoint : Sample
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyId, shapeDef, box);
 
             m_maxForce = 5000.0f;
             m_maxTorque = 500.0f;
@@ -90,7 +90,7 @@ public class MotorJoint : Sample
             jointDef.maxSpringForce = m_maxForce;
             jointDef.maxSpringTorque = m_maxTorque;
 
-            m_jointId = b2CreateMotorJoint(m_worldId, ref jointDef);
+            m_jointId = b2CreateMotorJoint(m_worldId, jointDef);
         }
 
         // Define spring body
@@ -102,7 +102,7 @@ public class MotorJoint : Sample
 
             B2Polygon box = b2MakeSquare(0.5f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -116,7 +116,7 @@ public class MotorJoint : Sample
             jointDef.maxSpringForce = 500.0f;
             jointDef.maxSpringTorque = 10.0f;
 
-            b2CreateMotorJoint(m_worldId, ref jointDef);
+            b2CreateMotorJoint(m_worldId, jointDef);
         }
 
         m_speed = 1.0f;

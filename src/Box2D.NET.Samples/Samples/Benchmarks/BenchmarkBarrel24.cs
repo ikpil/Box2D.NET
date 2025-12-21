@@ -36,18 +36,18 @@ public class BenchmarkBarrel24 : Sample
 
             B2Polygon box = b2MakeBox(groundSize, 1.2f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
             bodyDef.position = new B2Vec2(groundSize, 2.0f * groundSize);
             groundId = b2CreateBody(m_worldId, bodyDef);
 
             box = b2MakeBox(2.0f * groundSize, 1.2f);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             bodyDef.position = new B2Vec2(-groundSize, 2.0f * groundSize);
             groundId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         int num = 26;
@@ -87,7 +87,7 @@ public class BenchmarkBarrel24 : Sample
                     bodyDef.position = new B2Vec2(x, y);
 
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref cuboid);
+                    b2CreatePolygonShape(bodyId, shapeDef, cuboid);
                 }
             }
         }

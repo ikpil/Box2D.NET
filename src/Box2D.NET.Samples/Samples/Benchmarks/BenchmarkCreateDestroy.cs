@@ -48,7 +48,7 @@ public class BenchmarkCreateDestroy : Sample
 
         B2Polygon box = b2MakeBox(groundSize, 1.0f);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+        b2CreatePolygonShape(groundId, shapeDef, box);
 
         for (int i = 0; i < e_maxBodyCount; ++i)
         {
@@ -107,7 +107,7 @@ public class BenchmarkCreateDestroy : Sample
 
                 B2_ASSERT(index < e_maxBodyCount);
                 m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
+                b2CreatePolygonShape(m_bodies[index], shapeDef, box);
 
                 index += 1;
             }

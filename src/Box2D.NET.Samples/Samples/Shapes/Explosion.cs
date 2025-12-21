@@ -66,12 +66,12 @@ public class Explosion : Sample
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             weldDef.@base.localFrameA.p = bodyDef.position;
             weldDef.@base.bodyIdB = bodyId;
 
-            B2JointId jointId = b2CreateWeldJoint(m_worldId, ref weldDef);
+            B2JointId jointId = b2CreateWeldJoint(m_worldId, weldDef);
             m_jointIds.Add(jointId);
         }
 

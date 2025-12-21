@@ -326,7 +326,7 @@ public class Sample : IDisposable
                     jointDef.maxVelocityTorque = 0.25f * lever * mg;
                 }
 
-                m_mouseJointId = b2CreateMotorJoint(m_worldId, ref jointDef);
+                m_mouseJointId = b2CreateMotorJoint(m_worldId, jointDef);
             }
         }
     }

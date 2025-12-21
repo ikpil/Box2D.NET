@@ -48,7 +48,7 @@ public class Restitution : Sample
             float h = 1.0f * m_count;
             B2Segment segment = new B2Segment(new B2Vec2(-h, 0.0f), new B2Vec2(h, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         m_shapeType = ShapeType.e_circleShape;
@@ -92,11 +92,11 @@ public class Restitution : Sample
 
             if (m_shapeType == ShapeType.e_circleShape)
             {
-                b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+                b2CreateCircleShape(bodyId, shapeDef, circle);
             }
             else
             {
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             shapeDef.material.restitution += dr;

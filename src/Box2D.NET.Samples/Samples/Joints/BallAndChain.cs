@@ -64,7 +64,7 @@ public class BallAndChain : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, m_count * hx);
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, m_count * hx);
                 jointDef.@base.bodyIdA = prevBodyId;
@@ -75,7 +75,7 @@ public class BallAndChain : Sample
                 jointDef.maxMotorTorque = m_frictionTorque;
                 jointDef.enableSpring = i > 0;
                 jointDef.hertz = 4.0f;
-                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = bodyId;
             }

@@ -155,18 +155,18 @@ public class ChainShape : Sample
         if (m_shapeType == ShapeType.e_circleShape)
         {
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
-            m_shapeId = b2CreateCircleShape(m_bodyId, ref shapeDef, ref circle);
+            m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
         }
         else if (m_shapeType == ShapeType.e_capsuleShape)
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
-            m_shapeId = b2CreateCapsuleShape(m_bodyId, ref shapeDef, ref capsule);
+            m_shapeId = b2CreateCapsuleShape(m_bodyId, shapeDef, capsule);
         }
         else
         {
             float h = 0.5f;
             B2Polygon box = b2MakeBox(h, h);
-            m_shapeId = b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            m_shapeId = b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
 
         // b2_toiCalls = 0;
@@ -206,13 +206,13 @@ public class ChainShape : Sample
 
         if (ImGui.SliderFloat("Friction", ref m_material.friction, 0.0f, 1.0f, "%.2f"))
         {
-            b2Shape_SetSurfaceMaterial(m_shapeId, ref m_material);
-            b2Chain_SetSurfaceMaterial(m_chainId, ref m_material, 1);
+            b2Shape_SetSurfaceMaterial(m_shapeId, m_material);
+            b2Chain_SetSurfaceMaterial(m_chainId, m_material, 1);
         }
 
         if (ImGui.SliderFloat("Restitution", ref m_material.restitution, 0.0f, 2.0f, "%.1f"))
         {
-            b2Shape_SetSurfaceMaterial(m_shapeId, ref m_material);
+            b2Shape_SetSurfaceMaterial(m_shapeId, m_material);
         }
 
         if (ImGui.Button("Launch"))

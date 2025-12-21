@@ -149,7 +149,7 @@ public class ConvexHull : Sample
                     continue;
                 }
 
-                m_valid = b2ValidateHull(ref m_hull);
+                m_valid = b2ValidateHull(m_hull);
                 if (m_valid == false || m_bulk == false)
                 {
                     m_bulk = false;
@@ -178,7 +178,7 @@ public class ConvexHull : Sample
             m_hull = b2ComputeHull(m_points, m_count);
             if (m_hull.count > 0)
             {
-                m_valid = b2ValidateHull(ref m_hull);
+                m_valid = b2ValidateHull(m_hull);
                 if (m_valid == false)
                 {
                     m_auto = false;

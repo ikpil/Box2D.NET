@@ -41,16 +41,16 @@ public class Cliff : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(100.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             B2Segment segment = new B2Segment(new B2Vec2(-14.0f, 4.0f), new B2Vec2(-8.0f, 4.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             box = b2MakeOffsetBox(3.0f, 0.5f, new B2Vec2(0.0f, 4.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(8.5f, 4.0f), new B2Vec2(13.5f, 4.0f), 0.5f);
-            b2CreateCapsuleShape(groundId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(groundId, shapeDef, capsule);
         }
 
         m_flip = false;
@@ -92,15 +92,15 @@ public class Cliff : Sample
 
             bodyDef.position = new B2Vec2(-9.0f + offset, 4.25f);
             m_bodyIds[0] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCapsuleShape(m_bodyIds[0], ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_bodyIds[0], shapeDef, capsule);
 
             bodyDef.position = new B2Vec2(2.0f + offset, 4.75f);
             m_bodyIds[1] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCapsuleShape(m_bodyIds[1], ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_bodyIds[1], shapeDef, capsule);
 
             bodyDef.position = new B2Vec2(13.0f + offset, 4.75f);
             m_bodyIds[2] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCapsuleShape(m_bodyIds[2], ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_bodyIds[2], shapeDef, capsule);
         }
 
         {
@@ -110,15 +110,15 @@ public class Cliff : Sample
 
             bodyDef.position = new B2Vec2(-11.0f, 4.5f);
             m_bodyIds[3] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[3], ref shapeDef, ref square);
+            b2CreatePolygonShape(m_bodyIds[3], shapeDef, square);
 
             bodyDef.position = new B2Vec2(0.0f, 5.0f);
             m_bodyIds[4] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[4], ref shapeDef, ref square);
+            b2CreatePolygonShape(m_bodyIds[4], shapeDef, square);
 
             bodyDef.position = new B2Vec2(11.0f, 5.0f);
             m_bodyIds[5] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[5], ref shapeDef, ref square);
+            b2CreatePolygonShape(m_bodyIds[5], shapeDef, square);
         }
 
         {
@@ -130,15 +130,15 @@ public class Cliff : Sample
 
             bodyDef.position = new B2Vec2(-13.0f + offset, 4.5f);
             m_bodyIds[6] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCircleShape(m_bodyIds[6], ref shapeDef, ref circle);
+            b2CreateCircleShape(m_bodyIds[6], shapeDef, circle);
 
             bodyDef.position = new B2Vec2(-2.0f + offset, 5.0f);
             m_bodyIds[7] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCircleShape(m_bodyIds[7], ref shapeDef, ref circle);
+            b2CreateCircleShape(m_bodyIds[7], shapeDef, circle);
 
             bodyDef.position = new B2Vec2(9.0f + offset, 5.0f);
             m_bodyIds[8] = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCircleShape(m_bodyIds[8], ref shapeDef, ref circle);
+            b2CreateCircleShape(m_bodyIds[8], shapeDef, circle);
         }
     }
 

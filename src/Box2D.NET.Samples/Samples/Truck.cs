@@ -56,7 +56,7 @@ public class Truck
         }
 
         B2Hull hull = b2ComputeHull(vertices, 5);
-        B2Polygon chassis = b2MakePolygon(ref hull, 0.15f * scale);
+        B2Polygon chassis = b2MakePolygon(hull, 0.15f * scale);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = density;
@@ -67,15 +67,15 @@ public class Truck
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
         m_chassisId = b2CreateBody(worldId, bodyDef);
-        b2CreatePolygonShape(m_chassisId, ref shapeDef, ref chassis);
+        b2CreatePolygonShape(m_chassisId, shapeDef, chassis);
 
         B2Polygon box = b2MakeOffsetBox(1.25f * scale, 0.1f * scale, new B2Vec2(-2.05f * scale, -0.275f * scale), b2Rot_identity);
         box.radius = 0.1f * scale;
-        b2CreatePolygonShape(m_chassisId, ref shapeDef, ref box);
+        b2CreatePolygonShape(m_chassisId, shapeDef, box);
 
         box = b2MakeOffsetBox(0.05f * scale, 0.35f * scale, new B2Vec2(-3.25f * scale, 0.375f * scale), b2Rot_identity);
         box.radius = 0.1f * scale;
-        b2CreatePolygonShape(m_chassisId, ref shapeDef, ref box);
+        b2CreatePolygonShape(m_chassisId, shapeDef, box);
 
         shapeDef.density = 2.0f * density;
         shapeDef.material.friction = 2.5f;
@@ -84,11 +84,11 @@ public class Truck
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
         bodyDef.position = b2Add(new B2Vec2(-2.75f * scale, 0.3f * scale), position);
         m_rearWheelId = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_rearWheelId, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_rearWheelId, shapeDef, circle);
 
         bodyDef.position = b2Add(new B2Vec2(0.8f * scale, 0.3f * scale), position);
         m_frontWheelId = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_frontWheelId, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_frontWheelId, shapeDef, circle);
 
         B2Vec2 axis = new B2Vec2(0.0f, 1.0f);
         B2Vec2 pivot = b2Body_GetPosition(m_rearWheelId);
@@ -114,7 +114,7 @@ public class Truck
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_rearAxleId = b2CreateWheelJoint(worldId, ref jointDef);
+        m_rearAxleId = b2CreateWheelJoint(worldId, jointDef);
 
         pivot = b2Body_GetPosition(m_frontWheelId);
         jointDef.@base.bodyIdA = m_chassisId;
@@ -130,7 +130,7 @@ public class Truck
         jointDef.lowerTranslation = -0.25f * scale;
         jointDef.upperTranslation = 0.25f * scale;
         jointDef.enableLimit = true;
-        m_frontAxleId = b2CreateWheelJoint(worldId, ref jointDef);
+        m_frontAxleId = b2CreateWheelJoint(worldId, jointDef);
     }
 
     public void Despawn()

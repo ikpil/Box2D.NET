@@ -160,22 +160,22 @@ public class GhostBumps : Sample
 
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x -= 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
@@ -186,20 +186,20 @@ public class GhostBumps : Sample
 
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * hx;
             }
 
@@ -209,22 +209,22 @@ public class GhostBumps : Sample
 
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }
             {
                 transform.p = new B2Vec2(x, y);
-                B2Polygon polygon = b2MakeOffsetPolygon(ref hull, transform.p, transform.q);
-                b2CreatePolygonShape(m_groundId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakeOffsetPolygon(hull, transform.p, transform.q);
+                b2CreatePolygonShape(m_groundId, shapeDef, polygon);
                 x += 2.0f * m * hx;
                 y += 2.0f * m * hx;
             }

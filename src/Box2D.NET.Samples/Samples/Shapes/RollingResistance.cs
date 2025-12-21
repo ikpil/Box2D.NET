@@ -48,7 +48,7 @@ public class RollingResistance : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 2.0f * i), new B2Vec2(40.0f, 2.0f * i + m_lift));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-39.5f, 2.0f * i + 0.75f);
@@ -57,7 +57,7 @@ public class RollingResistance : Sample
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             shapeDef.material.rollingResistance = m_resistScale * i;
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 

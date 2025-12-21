@@ -70,7 +70,7 @@ public class BenchmarkBarrel : Sample
             for (int i = 0; i < 81; ++i)
             {
                 B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
                 x += gridSize;
             }
 
@@ -79,7 +79,7 @@ public class BenchmarkBarrel : Sample
             for (int i = 0; i < 100; ++i)
             {
                 B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
                 y += gridSize;
             }
 
@@ -88,12 +88,12 @@ public class BenchmarkBarrel : Sample
             for (int i = 0; i < 100; ++i)
             {
                 B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
                 y += gridSize;
             }
 
             B2Segment segment = new B2Segment(new B2Vec2(-800.0f, -80.0f), new B2Vec2(800.0f, -80.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         for (int i = 0; i < e_maxRows * e_maxColumns; ++i)
@@ -179,20 +179,20 @@ public class BenchmarkBarrel : Sample
 
         B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.1f, -0.5f), new B2Vec2(0.1f, -0.5f), new B2Vec2(0.0f, 0.5f) };
         B2Hull wedgeHull = b2ComputeHull(points, 3);
-        B2Polygon wedge = b2MakePolygon(ref wedgeHull, 0.0f);
+        B2Polygon wedge = b2MakePolygon(wedgeHull, 0.0f);
 
         B2Vec2[] vertices = new B2Vec2[3];
         vertices[0] = new B2Vec2(-1.0f, 0.0f);
         vertices[1] = new B2Vec2(0.5f, 1.0f);
         vertices[2] = new B2Vec2(0.0f, 2.0f);
         B2Hull hull = b2ComputeHull(vertices, 3);
-        B2Polygon left = b2MakePolygon(ref hull, 0.0f);
+        B2Polygon left = b2MakePolygon(hull, 0.0f);
 
         vertices[0] = new B2Vec2(1.0f, 0.0f);
         vertices[1] = new B2Vec2(-0.5f, 1.0f);
         vertices[2] = new B2Vec2(0.0f, 2.0f);
         hull = b2ComputeHull(vertices, 3);
-        B2Polygon right = b2MakePolygon(ref hull, 0.0f);
+        B2Polygon right = b2MakePolygon(hull, 0.0f);
 
         // b2Polygon top = b2MakeOffsetBox(0.8f, 0.2f, {0.0f, 0.8f}, 0.0f);
         // b2Polygon leftLeg = b2MakeOffsetBox(0.2f, 0.5f, {-0.6f, 0.5f}, 0.0f);
@@ -245,7 +245,7 @@ public class BenchmarkBarrel : Sample
                     capsule.center1 = new B2Vec2(0.0f, -0.5f * length);
                     capsule.center2 = new B2Vec2(0.0f, 0.5f * length);
                     shapeDef.material.rollingResistance = 0.2f;
-                    b2CreateCapsuleShape(m_bodies[index], ref shapeDef, ref capsule);
+                    b2CreateCapsuleShape(m_bodies[index], shapeDef, capsule);
                 }
                 else if (m_shapeType == ShapeType.e_mixShape)
                 {
@@ -263,7 +263,7 @@ public class BenchmarkBarrel : Sample
                         float length = RandomFloatRange(0.25f, 1.0f);
                         capsule.center1 = new B2Vec2(0.0f, -0.5f * length);
                         capsule.center2 = new B2Vec2(0.0f, 0.5f * length);
-                        b2CreateCapsuleShape(m_bodies[index], ref shapeDef, ref capsule);
+                        b2CreateCapsuleShape(m_bodies[index], shapeDef, capsule);
                     }
                     else if (mod == 2)
                     {
@@ -274,20 +274,20 @@ public class BenchmarkBarrel : Sample
                         // Don't put a function call into a macro.
                         float value = RandomFloatRange(-1.0f, 1.0f);
                         box.radius = 0.25f * b2MaxFloat(0.0f, value);
-                        b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
+                        b2CreatePolygonShape(m_bodies[index], shapeDef, box);
                     }
                     else
                     {
                         wedge.radius = RandomFloatRange(0.1f, 0.25f);
-                        b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref wedge);
+                        b2CreatePolygonShape(m_bodies[index], shapeDef, wedge);
                     }
                 }
                 else if (m_shapeType == ShapeType.e_compoundShape)
                 {
                     m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
 
-                    b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref left);
-                    b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref right);
+                    b2CreatePolygonShape(m_bodies[index], shapeDef, left);
+                    b2CreatePolygonShape(m_bodies[index], shapeDef, right);
                     // b2CreatePolygonShape(m_bodies[index], &shapeDef, &top);
                     // b2CreatePolygonShape(m_bodies[index], &shapeDef, &leftLeg);
                     // b2CreatePolygonShape(m_bodies[index], &shapeDef, &rightLeg);

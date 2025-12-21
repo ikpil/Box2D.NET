@@ -66,10 +66,10 @@ public class VerticalStack : Sample
             //b2CreatePolygonShape(groundId, ref shapeDef, ref box);
 
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(-30.0f, 0.0f), new B2Vec2(30.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         for (int i = 0; i < e_maxRows * e_maxColumns; ++i)
@@ -145,11 +145,11 @@ public class VerticalStack : Sample
 
                 if (m_shapeType == ShapeType.e_circleShape)
                 {
-                    b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+                    b2CreateCircleShape(bodyId, shapeDef, circle);
                 }
                 else
                 {
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                    b2CreatePolygonShape(bodyId, shapeDef, box);
                 }
             }
         }
@@ -208,11 +208,11 @@ public class VerticalStack : Sample
 
             if (m_bulletType == ShapeType.e_boxShape)
             {
-                b2CreatePolygonShape(bullet, ref shapeDef, ref box);
+                b2CreatePolygonShape(bullet, shapeDef, box);
             }
             else
             {
-                b2CreateCircleShape(bullet, ref shapeDef, ref circle);
+                b2CreateCircleShape(bullet, shapeDef, circle);
             }
 
             B2_ASSERT(B2_IS_NULL(m_bullets[i]));

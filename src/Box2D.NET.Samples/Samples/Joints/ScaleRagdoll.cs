@@ -40,7 +40,7 @@ public class ScaleRagdoll : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Polygon box = b2MakeOffsetBox(20.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         m_scale = 1.0f;

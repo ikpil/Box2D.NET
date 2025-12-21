@@ -47,7 +47,7 @@ public class DisableCrash : Sample
 
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_attachmentId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_attachmentId, shapeDef, box);
         }
 
         // Define platform
@@ -59,7 +59,7 @@ public class DisableCrash : Sample
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_platformId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_platformId, shapeDef, box);
 
             B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
@@ -69,7 +69,7 @@ public class DisableCrash : Sample
             revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
-            b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+            b2CreateRevoluteJoint(m_worldId, revoluteDef);
         }
     }
 

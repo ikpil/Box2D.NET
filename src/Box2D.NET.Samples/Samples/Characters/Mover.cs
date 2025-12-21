@@ -198,14 +198,14 @@ public class Mover : Sample
                 bodyDef.position = new B2Vec2(xBase + 0.5f + 1.0f * i, yBase);
                 bodyDef.angularDamping = 0.2f;
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
 
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * i, yBase);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = bodyId;
             }
@@ -216,7 +216,7 @@ public class Mover : Sample
                 jointDef.@base.bodyIdB = groundId2;
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                b2CreateRevoluteJoint(m_worldId, jointDef);
             }
         }
 
@@ -231,7 +231,7 @@ public class Mover : Sample
             shapeDef.filter = new B2Filter(MoverBit, AllBits, 0);
             shapeDef.userData = m_friendlyShape;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreateCapsuleShape(bodyId, ref shapeDef, ref m_capsule);
+            b2CreateCapsuleShape(bodyId, shapeDef, m_capsule);
         }
 
         {
@@ -265,7 +265,7 @@ public class Mover : Sample
             shapeDef.userData = m_elevatorShape;
 
             B2Polygon box = b2MakeBox(2.0f, 0.1f);
-            b2CreatePolygonShape(m_elevatorId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_elevatorId, shapeDef, box);
         }
 
         m_totalIterations = 0;

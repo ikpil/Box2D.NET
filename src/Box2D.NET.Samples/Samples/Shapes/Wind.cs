@@ -108,20 +108,20 @@ public class Wind : Sample
 
             if (m_shapeType == ShapeType.e_circleShape)
             {
-                b2CreateCircleShape(m_bodyIds[i], ref shapeDef, ref circle);
+                b2CreateCircleShape(m_bodyIds[i], shapeDef, circle);
             }
             else if (m_shapeType == ShapeType.e_capsuleShape)
             {
-                b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
             }
             else
             {
-                b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, ref box);
+                b2CreatePolygonShape(m_bodyIds[i], shapeDef, box);
             }
 
             jointDef.@base.bodyIdB = m_bodyIds[i];
             jointDef.@base.localFrameB.p = new B2Vec2(0.0f, radius);
-            b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, jointDef);
 
             jointDef.@base.bodyIdA = m_bodyIds[i];
             jointDef.@base.localFrameA.p = new B2Vec2(0.0f, -radius);

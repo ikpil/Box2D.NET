@@ -52,17 +52,17 @@ public class BounceHumans : Sample
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, -10.0f), new B2Vec2(10.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, -10.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 10.0f), new B2Vec2(-10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {

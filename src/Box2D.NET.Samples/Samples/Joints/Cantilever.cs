@@ -76,7 +76,7 @@ public class Cantilever : Sample
             {
                 bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, 0.0f);
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, 0.0f);
                 jointDef.@base.bodyIdA = prevBodyId;
@@ -88,7 +88,7 @@ public class Cantilever : Sample
                 jointDef.angularHertz = m_angularHertz;
                 jointDef.angularDampingRatio = m_angularDampingRatio;
                 jointDef.@base.collideConnected = m_collideConnected;
-                m_jointIds[i] = b2CreateWeldJoint(m_worldId, ref jointDef);
+                m_jointIds[i] = b2CreateWeldJoint(m_worldId, jointDef);
 
                 // Experimental tuning
                 b2Joint_SetConstraintTuning(m_jointIds[i], 120.0f, 10.0f);

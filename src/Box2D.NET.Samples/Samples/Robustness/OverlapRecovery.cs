@@ -52,7 +52,7 @@ public class OverlapRecovery : Sample
         B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+        b2CreateSegmentShape(groundId, shapeDef, segment);
 
         CreateScene();
     }
@@ -88,7 +88,7 @@ public class OverlapRecovery : Sample
                 bodyDef.position = new B2Vec2(x, y);
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
 
                 m_bodyIds[bodyIndex++] = bodyId;
 

@@ -127,7 +127,7 @@ public class LargeWorld : Sample
                     for (int j = 0; j < 5; ++j)
                     {
                         B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                        b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                        b2CreatePolygonShape(bodyId, shapeDef, box);
                         bodyDef.position.Y += 0.5f;
                     }
 

@@ -110,7 +110,7 @@ public class ShapeCastChain : Sample
         characterShapeDef.updateBodyMass = false;
 
         characterBox_ = b2MakeBox(0.1f, 0.1f);
-        b2CreatePolygonShape(characterBodyId_, ref characterShapeDef, ref characterBox_);
+        b2CreatePolygonShape(characterBodyId_, characterShapeDef, characterBox_);
 
         context.camera.center = b2Vec2_zero;
     }

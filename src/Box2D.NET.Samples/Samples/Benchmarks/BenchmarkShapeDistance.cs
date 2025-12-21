@@ -55,7 +55,7 @@ public class BenchmarkShapeDistance : Sample
             }
 
             B2Hull hull = b2ComputeHull(points, 8);
-            m_polygonA = b2MakePolygon(ref hull, 0.0f);
+            m_polygonA = b2MakePolygon(hull, 0.0f);
         }
 
         {
@@ -69,7 +69,7 @@ public class BenchmarkShapeDistance : Sample
             }
 
             B2Hull hull = b2ComputeHull(points, 8);
-            m_polygonB = b2MakePolygon(ref hull, 0.1f);
+            m_polygonB = b2MakePolygon(hull, 0.1f);
         }
 
         m_count = m_isDebug ? 100 : 10000;
@@ -160,8 +160,8 @@ public class BenchmarkShapeDistance : Sample
         B2Transform xfA = m_transformAs[m_drawIndex];
         B2Transform xfB = m_transformBs[m_drawIndex];
         B2DistanceOutput output = m_outputs[m_drawIndex];
-        DrawSolidPolygon(m_draw, ref xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
-        DrawSolidPolygon(m_draw, ref xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
+        DrawSolidPolygon(m_draw, xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
+        DrawSolidPolygon(m_draw, xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
         DrawLine(m_draw, output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
         DrawPoint(m_draw, output.pointA, 10.0f, B2HexColor.b2_colorWhite);
         DrawPoint(m_draw, output.pointB, 10.0f, B2HexColor.b2_colorWhite);

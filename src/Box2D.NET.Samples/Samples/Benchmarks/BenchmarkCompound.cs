@@ -47,7 +47,7 @@ public class BenchmarkCompound : Sample
                 {
                     float x = grid * j;
                     B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
-                    b2CreatePolygonShape(groundId, ref shapeDef, ref square);
+                    b2CreatePolygonShape(groundId, shapeDef, square);
                 }
             }
 
@@ -58,7 +58,7 @@ public class BenchmarkCompound : Sample
                 {
                     float x = -grid * j;
                     B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
-                    b2CreatePolygonShape(groundId, ref shapeDef, ref square);
+                    b2CreatePolygonShape(groundId, shapeDef, square);
                 }
             }
         }
@@ -95,7 +95,7 @@ public class BenchmarkCompound : Sample
                         {
                             float x = j * grid;
                             B2Polygon square = b2MakeOffsetBox(0.5f * grid, 0.5f * grid, new B2Vec2(x, y), b2Rot_identity);
-                            b2CreatePolygonShape(bodyId, ref shapeDef, ref square);
+                            b2CreatePolygonShape(bodyId, shapeDef, square);
                         }
                     }
 

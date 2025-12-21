@@ -35,7 +35,7 @@ public class OffsetShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(10.0f, -2.0f), b2MakeRot(0.5f * B2_PI));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
@@ -45,7 +45,7 @@ public class OffsetShapes : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
         }
 
         {
@@ -55,7 +55,7 @@ public class OffsetShapes : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
     }
 

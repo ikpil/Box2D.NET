@@ -175,7 +175,7 @@ public class GearLift : Sample
             revoluteDef.lowerAngle = -0.3f * B2_PI;
             revoluteDef.upperAngle = 0.8f * B2_PI;
             revoluteDef.enableLimit = true;
-            b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+            b2CreateRevoluteJoint(m_worldId, revoluteDef);
         }
 
         B2BodyId lastLinkId;
@@ -201,7 +201,7 @@ public class GearLift : Sample
                 bodyDef.position = position;
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2(position.X, position.Y + linkHalfLength);
                 jointDef.@base.bodyIdA = prevBodyId;
@@ -209,7 +209,7 @@ public class GearLift : Sample
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.@base.drawScale = 0.2f;
-                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 position.Y -= 2.0f * linkHalfLength;
                 prevBodyId = bodyId;
@@ -229,7 +229,7 @@ public class GearLift : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.material.friction = 0.1f;
             shapeDef.material.customColor = (uint)B2HexColor.b2_colorDarkCyan;
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             {
                 B2Vec2 pivot = doorPosition + new B2Vec2(0.0f, doorHalfHeight);
@@ -240,7 +240,7 @@ public class GearLift : Sample
                 revoluteDef.@base.localFrameB.p = new B2Vec2(0.0f, doorHalfHeight);
                 revoluteDef.enableMotor = true;
                 revoluteDef.maxMotorTorque = 0.05f;
-                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, revoluteDef);
             }
 
             {
@@ -255,7 +255,7 @@ public class GearLift : Sample
                 jointDef.maxMotorForce = 0.2f;
                 jointDef.enableMotor = true;
                 jointDef.@base.collideConnected = true;
-                b2CreatePrismaticJoint(m_worldId, ref jointDef);
+                b2CreatePrismaticJoint(m_worldId, jointDef);
             }
         }
 
@@ -285,7 +285,7 @@ public class GearLift : Sample
                     int colorIndex = RandomIntRange(0, 4);
                     shapeDef.material.customColor = (uint)colors[colorIndex];
 
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref poly);
+                    b2CreatePolygonShape(bodyId, shapeDef, poly);
                     x += 0.2f;
                 }
 

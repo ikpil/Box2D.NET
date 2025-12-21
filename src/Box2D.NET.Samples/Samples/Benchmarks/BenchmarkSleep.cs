@@ -49,7 +49,7 @@ public class BenchmarkSleep : Sample
 
             B2Polygon box = b2MakeBox(groundSize, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         m_baseCount = m_isDebug ? 40 : 100;
@@ -85,7 +85,7 @@ public class BenchmarkSleep : Sample
 
                     B2_ASSERT(index < e_maxBodyCount);
                     m_bodies[index] = b2CreateBody(m_worldId, bodyDef);
-                    b2CreatePolygonShape(m_bodies[index], ref shapeDef, ref box);
+                    b2CreatePolygonShape(m_bodies[index], shapeDef, box);
 
                     index += 1;
                 }
@@ -106,7 +106,7 @@ public class BenchmarkSleep : Sample
             b2FilterJointDef jointDef = b2DefaultFilterJointDef();
             jointDef.@base.bodyIdA = m_bodies[0];
             jointDef.@base.bodyIdB = m_bodies[1];
-            B2JointId jointId = b2CreateFilterJoint(m_worldId, ref jointDef);
+            B2JointId jointId = b2CreateFilterJoint(m_worldId, jointDef);
 
             ulong ticks = b2GetTicks();
 

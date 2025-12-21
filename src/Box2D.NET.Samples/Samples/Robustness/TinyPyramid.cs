@@ -34,7 +34,7 @@ public class TinyPyramid : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(5.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
@@ -58,7 +58,7 @@ public class TinyPyramid : Sample
                     bodyDef.position = new B2Vec2(x, y);
 
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                    b2CreatePolygonShape(bodyId, shapeDef, box);
                 }
             }
         }

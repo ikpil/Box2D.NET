@@ -55,21 +55,21 @@ public class BodyMove : Sample
             shapeDef.material.friction = 0.1f;
 
             B2Polygon box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(-10.0f, -0.1f), b2MakeRot(-0.15f * B2_PI));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(12.0f, 0.1f, new B2Vec2(10.0f, -0.1f), b2MakeRot(0.15f * B2_PI));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             shapeDef.material.restitution = 0.8f;
 
             box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(19.9f, 10.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(0.1f, 10.0f, new B2Vec2(-19.9f, 10.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(20.0f, 0.1f, new B2Vec2(0.0f, 20.1f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         m_sleepCount = 0;

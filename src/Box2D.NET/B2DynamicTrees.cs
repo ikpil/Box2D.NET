@@ -1366,7 +1366,7 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data
-        internal static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, ref B2ShapeCastInput input, ulong maskBits,
+        internal static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, in B2ShapeCastInput input, ulong maskBits,
             b2TreeShapeCastCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats stats = new B2TreeStats();

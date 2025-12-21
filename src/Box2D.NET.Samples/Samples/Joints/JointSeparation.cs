@@ -48,7 +48,7 @@ public class JointSeparation : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+        b2CreateSegmentShape(groundId, shapeDef, segment);
 
         B2Vec2 position = new B2Vec2(-20.0f, 10.0f);
         bodyDef.type = B2BodyType.b2_dynamicBody;
@@ -64,7 +64,7 @@ public class JointSeparation : Sample
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
             float length = 2.0f;
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
@@ -76,7 +76,7 @@ public class JointSeparation : Sample
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
             jointDef.length = length;
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
         }
 
         position.X += 10.0f;
@@ -88,7 +88,7 @@ public class JointSeparation : Sample
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
@@ -97,7 +97,7 @@ public class JointSeparation : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
         position.X += 10.0f;
@@ -109,7 +109,7 @@ public class JointSeparation : Sample
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -118,7 +118,7 @@ public class JointSeparation : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         position.X += 10.0f;
@@ -130,7 +130,7 @@ public class JointSeparation : Sample
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
@@ -139,7 +139,7 @@ public class JointSeparation : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
         }
 
         position.X += 10.0f;
@@ -151,7 +151,7 @@ public class JointSeparation : Sample
 
             bodyDef.position = position;
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(m_bodyIds[index], ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
@@ -168,7 +168,7 @@ public class JointSeparation : Sample
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWheelJoint(m_worldId, jointDef);
         }
 
         m_impulse = 500.0f;

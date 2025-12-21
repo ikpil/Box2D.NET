@@ -67,7 +67,7 @@ public class Door : Sample
             shapeDef.density = 1000.0f;
 
             B2Polygon box = b2MakeBox(0.1f, 1.5f);
-            b2CreatePolygonShape(m_doorId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_doorId, shapeDef, box);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -87,7 +87,7 @@ public class Door : Sample
             jointDef.upperAngle = 0.5f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
 
-            m_jointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointId = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
     }
 

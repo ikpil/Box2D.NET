@@ -6,6 +6,7 @@
     <IsPackable>false</IsPackable>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WarningsAsErrors>$(WarningsAsErrors);CS9191</WarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>

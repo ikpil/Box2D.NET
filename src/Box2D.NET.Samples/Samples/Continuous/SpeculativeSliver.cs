@@ -33,7 +33,7 @@ public class SpeculativeSliver : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
@@ -46,8 +46,8 @@ public class SpeculativeSliver : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Vec2[] points = [new B2Vec2(-2.0f, 0.0f), new B2Vec2(-1.0f, 0.0f), new B2Vec2(2.0f, 0.5f)];
             B2Hull hull = b2ComputeHull(points, 3);
-            B2Polygon poly = b2MakePolygon(ref hull, 0.0f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref poly);
+            B2Polygon poly = b2MakePolygon(hull, 0.0f);
+            b2CreatePolygonShape(bodyId, shapeDef, poly);
         }
     }
 }

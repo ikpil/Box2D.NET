@@ -45,7 +45,7 @@ public class RestitutionThreshold : Sample
             B2Polygon block0Shape = b2MakeBox(50.0f / pixelsPerMeter, 5.0f / pixelsPerMeter);
             B2ShapeDef block0ShapeDef = b2DefaultShapeDef();
             block0ShapeDef.material.friction = 0.0f;
-            b2CreatePolygonShape(block0BodyId, ref block0ShapeDef, ref block0Shape);
+            b2CreatePolygonShape(block0BodyId, block0ShapeDef, block0Shape);
         }
 
         {

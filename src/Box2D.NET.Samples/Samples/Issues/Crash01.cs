@@ -47,7 +47,7 @@ public class Crash01 : Sample
 
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Define attachment
@@ -61,7 +61,7 @@ public class Crash01 : Sample
             B2Polygon box = b2MakeBox(0.5f, 2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;
-            b2CreatePolygonShape(m_attachmentId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_attachmentId, shapeDef, box);
         }
 
         // Define platform
@@ -77,7 +77,7 @@ public class Crash01 : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 2.0f;
-            b2CreatePolygonShape(m_platformId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_platformId, shapeDef, box);
 
             B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
@@ -87,7 +87,7 @@ public class Crash01 : Sample
             revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
-            b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+            b2CreateRevoluteJoint(m_worldId, revoluteDef);
 
             B2PrismaticJointDef prismaticDef = b2DefaultPrismaticJointDef();
             B2Vec2 anchor = new B2Vec2(0.0f, 5.0f);
@@ -102,7 +102,7 @@ public class Crash01 : Sample
             prismaticDef.upperTranslation = 10.0f;
             prismaticDef.enableLimit = true;
 
-            b2CreatePrismaticJoint(m_worldId, ref prismaticDef);
+            b2CreatePrismaticJoint(m_worldId, prismaticDef);
         }
     }
 

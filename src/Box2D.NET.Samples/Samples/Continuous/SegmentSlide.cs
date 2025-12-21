@@ -33,10 +33,10 @@ public class SegmentSlide : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(40.0f, 0.0f), new B2Vec2(40.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {

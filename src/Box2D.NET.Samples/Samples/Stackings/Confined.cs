@@ -41,13 +41,13 @@ public class Confined : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Capsule capsule;
             capsule = new B2Capsule(new B2Vec2(-10.5f, 0.0f), new B2Vec2(10.5f, 0.0f), 0.5f);
-            b2CreateCapsuleShape(groundId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(groundId, shapeDef, capsule);
             capsule = new B2Capsule(new B2Vec2(-10.5f, 0.0f), new B2Vec2(-10.5f, 20.5f), 0.5f);
-            b2CreateCapsuleShape(groundId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(groundId, shapeDef, capsule);
             capsule = new B2Capsule(new B2Vec2(10.5f, 0.0f), new B2Vec2(10.5f, 20.5f), 0.5f);
-            b2CreateCapsuleShape(groundId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(groundId, shapeDef, capsule);
             capsule = new B2Capsule(new B2Vec2(-10.5f, 20.5f), new B2Vec2(10.5f, 20.5f), 0.5f);
-            b2CreateCapsuleShape(groundId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(groundId, shapeDef, capsule);
         }
 
         m_row = 0;
@@ -72,7 +72,7 @@ public class Confined : Sample
 
                     bodyDef.position = new B2Vec2(x, y);
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                    b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+                    b2CreateCircleShape(bodyId, shapeDef, circle);
 
                     m_count += 1;
                     m_row += 1;

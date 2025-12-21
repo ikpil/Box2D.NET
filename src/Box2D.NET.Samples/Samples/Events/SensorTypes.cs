@@ -59,13 +59,13 @@ public class SensorTypes : Sample
             shapeDef.enableSensorEvents = true;
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-6.0f, 0.0f), new B2Vec2(6.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(-6.0f, 0.0f), new B2Vec2(-6.0f, 4.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(6.0f, 0.0f), new B2Vec2(6.0f, 4.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
         }
 
         {
@@ -80,7 +80,7 @@ public class SensorTypes : Sample
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_staticSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            m_staticSensorId = b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         {
@@ -96,7 +96,7 @@ public class SensorTypes : Sample
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_kinematicSensorId = b2CreatePolygonShape(m_kinematicBodyId, ref shapeDef, ref box);
+            m_kinematicSensorId = b2CreatePolygonShape(m_kinematicBodyId, shapeDef, box);
         }
 
         {
@@ -111,14 +111,14 @@ public class SensorTypes : Sample
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
             B2Polygon box = b2MakeSquare(1.0f);
-            m_dynamicSensorId = b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            m_dynamicSensorId = b2CreatePolygonShape(bodyId, shapeDef, box);
 
             // Add some real collision so the dynamic body is valid
             shapeDef.filter.categoryBits = DEFAULT;
             shapeDef.isSensor = false;
             shapeDef.enableSensorEvents = false;
             box = b2MakeSquare(0.8f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         {
