@@ -873,7 +873,7 @@ namespace Box2D.NET
 
                 case B2ShapeType.b2_polygonShape:
                 {
-                    ref readonly B2Polygon poly = ref shape.us.polygon;
+                    ref B2Polygon poly = ref shape.us.polygon;
                     draw.DrawSolidPolygonFcn(xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
                 }
                     break;

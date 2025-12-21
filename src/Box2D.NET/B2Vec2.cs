@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -10,7 +11,7 @@ namespace Box2D.NET
     /// 2D vector
     /// This can be used to represent a point or free vector
     [StructLayout(LayoutKind.Sequential)]
-    public struct B2Vec2
+    public struct B2Vec2 : IEquatable<B2Vec2>
     {
         /// coordinates
         public float X, Y;
@@ -75,6 +76,26 @@ namespace Box2D.NET
         public static bool operator !=(B2Vec2 a, B2Vec2 b)
         {
             return !(a == b);
+        }
+
+        public bool Equals(B2Vec2 other)
+        {
+            return this == other;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is B2Vec2 other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (X, Y).GetHashCode();
         }
     }
 }
