@@ -49,7 +49,7 @@ Box2D.NET is divided into multiple modules, each contained in its own folder:
 #### ▶️ Running With Command Prompt
 
 ```shell
-dotnet run --project src/Box2D.NET.Samples --framework net9.0 -c Release
+dotnet run --project src/Box2D.NET.Samples --framework net10.0 -c Release
 ```
 
 ## 🛠️ Integration
