@@ -2,7 +2,7 @@ name: Release
 on:
   push:
     tags:
-      - '[0-9].[0-9].[0-9].[0-9]+'
+      - '[0-9]\.[0-9]\.[0-9]\.[0-9]+'
 
 jobs:
   build:
@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Get all history to allow automatic versioning using MinVer
 
@@ -26,7 +26,7 @@ jobs:
         run: dotnet build -c Release --no-restore
 
       - name: publish
-        run: dotnet publish src/Box2D.NET.Samples -c Release --framework net9.0 --no-restore --no-self-contained --output working-temp
+        run: dotnet publish src/Box2D.NET.Samples -c Release --framework net10.0 --no-restore --no-self-contained --output working-temp
 
       - name: version
         id: version
@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: zip Upload
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             Box2D.NET.Samples-${{ steps.version.outputs.version}}.zip
