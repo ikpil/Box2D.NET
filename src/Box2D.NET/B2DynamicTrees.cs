@@ -4,6 +4,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Buffers;
@@ -1084,11 +1085,11 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetByteCount(B2DynamicTree tree)
         {
-            // TODO: @ikpil, check
-            // int size = sizeof( b2DynamicTree ) + sizeof( b2TreeNode ) * tree.nodeCapacity +
-            //               tree.rebuildCapacity * ( sizeof( int ) + sizeof( b2AABB ) + sizeof( B2Vec2 ) + sizeof( int ) );
-            //return (int)size;
-            return -1;
+            // int size = Marshal.SizeOf<B2DynamicTree>() + Marshal.SizeOf<B2TreeNode>() * tree.nodeCapacity +
+            //            tree.rebuildCapacity * (sizeof(int) + Marshal.SizeOf<B2AABB>() + Marshal.SizeOf<B2Vec2>() + sizeof(int));
+            int size = sizeof(int) * 6 + sizeof(ulong) * 4 + Marshal.SizeOf<B2TreeNode>() * tree.nodeCapacity +
+                       tree.rebuildCapacity * (sizeof(int) + Marshal.SizeOf<B2AABB>() + Marshal.SizeOf<B2Vec2>() + sizeof(int));
+            return (int)size;
         }
 
         /// Get proxy user data
@@ -1166,7 +1167,7 @@ namespace Box2D.NET
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// No filtering is performed.
         ///	@return performance data
-        internal static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        public static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1232,7 +1233,7 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the ray
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, ref B2RayCastInput input, ulong maskBits,
+        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, in B2RayCastInput input, ulong maskBits,
             b2TreeRayCastCallbackFcn<T> callback, ref T context) where T : struct
         {
             B2TreeStats result = new B2TreeStats();
