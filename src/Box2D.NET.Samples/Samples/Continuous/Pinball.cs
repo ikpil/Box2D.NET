@@ -78,8 +78,8 @@ public class Pinball : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
-            b2CreatePolygonShape(leftFlipperId, ref shapeDef, ref box);
-            b2CreatePolygonShape(rightFlipperId, ref shapeDef, ref box);
+            b2CreatePolygonShape(leftFlipperId, shapeDef, box);
+            b2CreatePolygonShape(rightFlipperId, shapeDef, box);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -93,14 +93,14 @@ public class Pinball : Sample
             jointDef.@base.bodyIdB = leftFlipperId;
             jointDef.lowerAngle = -30.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 5.0f * B2_PI / 180.0f;
-            m_leftJointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_leftJointId = b2CreateRevoluteJoint(m_worldId, jointDef);
 
             jointDef.motorSpeed = 0.0f;
             jointDef.@base.localFrameA.p = p2;
             jointDef.@base.bodyIdB = rightFlipperId;
             jointDef.lowerAngle = -5.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 30.0f * B2_PI / 180.0f;
-            m_rightJointId = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_rightJointId = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         // Spinners
@@ -115,8 +115,8 @@ public class Pinball : Sample
             B2Polygon box1 = b2MakeBox(1.5f, 0.125f);
             B2Polygon box2 = b2MakeBox(0.125f, 1.5f);
 
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box1);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box2);
+            b2CreatePolygonShape(bodyId, shapeDef, box1);
+            b2CreatePolygonShape(bodyId, shapeDef, box2);
 
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -125,15 +125,15 @@ public class Pinball : Sample
             jointDef.@base.localFrameB.p = b2Vec2_zero;
             jointDef.enableMotor = true;
             jointDef.maxMotorTorque = 0.1f;
-            b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, jointDef);
 
             bodyDef.position = new B2Vec2(4.0f, 8.0f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box1);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box2);
+            b2CreatePolygonShape(bodyId, shapeDef, box1);
+            b2CreatePolygonShape(bodyId, shapeDef, box2);
             jointDef.@base.localFrameA.p = bodyDef.position;
             jointDef.@base.bodyIdB = bodyId;
-            b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         // Bumpers

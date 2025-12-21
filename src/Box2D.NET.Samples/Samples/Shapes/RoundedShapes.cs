@@ -34,13 +34,13 @@ public class RoundedShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(20.0f, 1.0f, new B2Vec2(0.0f, -1.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(1.0f, 5.0f, new B2Vec2(19.0f, 5.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(1.0f, 5.0f, new B2Vec2(-19.0f, 5.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
@@ -70,7 +70,7 @@ public class RoundedShapes : Sample
 
                     B2Polygon poly = RandomPolygon(0.5f);
                     poly.radius = RandomFloatRange(0.05f, 0.25f);
-                    b2CreatePolygonShape(bodyId, ref shapeDef, ref poly);
+                    b2CreatePolygonShape(bodyId, shapeDef, poly);
 
                     x += 1.0f;
                 }

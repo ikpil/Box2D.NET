@@ -92,7 +92,7 @@ namespace Box2D.NET.Shared
             B2Hull hull = b2ComputeHull(points, count);
             if (hull.count > 0)
             {
-                return b2MakePolygon(ref hull, 0.0f);
+                return b2MakePolygon(hull, 0.0f);
             }
 
             return b2MakeSquare(extent);

@@ -68,7 +68,7 @@ public class Arch : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2Segment segment = new B2Segment(new B2Vec2(-100.0f, 0.0f), new B2Vec2(100.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
@@ -80,8 +80,8 @@ public class Arch : Sample
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 B2Vec2[] ps = new B2Vec2[4] { ps1[i], ps2[i], ps2[i + 1], ps1[i + 1] };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                b2CreatePolygonShape(bodyId, shapeDef, polygon);
             }
 
             for (int i = 0; i < 8; ++i)
@@ -95,16 +95,16 @@ public class Arch : Sample
                     new B2Vec2(-ps2[i + 1].X, ps2[i + 1].Y),
                 };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                b2CreatePolygonShape(bodyId, shapeDef, polygon);
             }
 
             {
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 B2Vec2[] ps = new B2Vec2[4] { ps1[8], ps2[8], new B2Vec2(-ps2[8].X, ps2[8].Y), new B2Vec2(-ps1[8].X, ps1[8].Y) };
                 B2Hull hull = b2ComputeHull(ps, 4);
-                B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+                B2Polygon polygon = b2MakePolygon(hull, 0.0f);
+                b2CreatePolygonShape(bodyId, shapeDef, polygon);
             }
 
             for (int i = 0; i < 4; ++i)
@@ -112,7 +112,7 @@ public class Arch : Sample
                 B2Polygon box = b2MakeBox(2.0f, 0.5f);
                 bodyDef.position = new B2Vec2(0.0f, 0.5f + ps2[8].Y + 1.0f * i);
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
         }
     }

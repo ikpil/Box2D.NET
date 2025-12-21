@@ -39,14 +39,14 @@ public class StaticVsBulletBug : Sample
             };
 
             B2Hull hull = b2ComputeHull(verts, verts.Length);
-            B2Polygon poly = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon poly = b2MakePolygon(hull, 0.0f);
 
             B2ShapeDef sd = b2DefaultShapeDef();
             sd.density = 1.0f;
             sd.material.friction = 0.5f;
             sd.material.restitution = 0.1f;
 
-            b2CreatePolygonShape(staticBodyId, ref sd, ref poly);
+            b2CreatePolygonShape(staticBodyId, sd, poly);
             b2Body_SetType(staticBodyId, B2BodyType.b2_staticBody);
         }
 

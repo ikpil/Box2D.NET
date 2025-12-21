@@ -64,10 +64,10 @@ public class SensorHits : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
         }
 
         // Static sensor
@@ -82,7 +82,7 @@ public class SensorHits : Sample
             shapeDef.enableSensorEvents = true;
 
             B2Segment segment = new B2Segment(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 10.0f));
-            m_staticSensorId = b2CreateSegmentShape(bodyId, ref shapeDef, ref segment);
+            m_staticSensorId = b2CreateSegmentShape(bodyId, shapeDef, segment);
         }
 
         // Kinematic sensor
@@ -99,7 +99,7 @@ public class SensorHits : Sample
             shapeDef.enableSensorEvents = true;
 
             B2Segment segment = new B2Segment(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 10.0f));
-            m_kinematicSensorId = b2CreateSegmentShape(m_kinematicBodyId, ref shapeDef, ref segment);
+            m_kinematicSensorId = b2CreateSegmentShape(m_kinematicBodyId, shapeDef, segment);
         }
 
         // Dynamic sensor
@@ -115,7 +115,7 @@ public class SensorHits : Sample
             shapeDef.enableSensorEvents = true;
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 1.0f), new B2Vec2(0.0f, 9.0f), 0.1f);
-            m_dynamicSensorId = b2CreateCapsuleShape(m_dynamicBodyId, ref shapeDef, ref capsule);
+            m_dynamicSensorId = b2CreateCapsuleShape(m_dynamicBodyId, shapeDef, capsule);
 
             B2Vec2 pivot = bodyDef.position + new B2Vec2(0.0f, 6.0f);
             B2Vec2 axis = new B2Vec2(1.0f, 0.0f);
@@ -130,7 +130,7 @@ public class SensorHits : Sample
             jointDef.maxMotorForce = 1000.0f;
             jointDef.motorSpeed = 0.5f;
 
-            m_jointId = b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            m_jointId = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
         m_beginCount = 0;

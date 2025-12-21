@@ -35,22 +35,22 @@ public class Friction : Sample
             shapeDef.material.friction = 0.2f;
 
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             B2Polygon box = b2MakeOffsetBox(13.0f, 0.25f, new B2Vec2(-4.0f, 22.0f), b2MakeRot(-0.25f));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(0.25f, 1.0f, new B2Vec2(10.5f, 19.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(13.0f, 0.25f, new B2Vec2(4.0f, 14.0f), b2MakeRot(0.25f));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(0.25f, 1.0f, new B2Vec2(-10.5f, 11.0f), b2Rot_identity);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
 
             box = b2MakeOffsetBox(13.0f, 0.25f, new B2Vec2(-4.0f, 6.0f), b2MakeRot(-0.25f));
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         {
@@ -69,7 +69,7 @@ public class Friction : Sample
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.material.friction = friction[i];
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
         }
     }

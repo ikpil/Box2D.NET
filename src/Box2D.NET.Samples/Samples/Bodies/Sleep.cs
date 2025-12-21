@@ -46,7 +46,7 @@ public class Sleep : Sample
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.enableSensorEvents = true;
-            m_groundShapeId = b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            m_groundShapeId = b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Sleeping body with sensors
@@ -61,12 +61,12 @@ public class Sleep : Sample
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 1.0f), new B2Vec2(1.0f, 1.0f), 0.75f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
             capsule.radius = 1.0f;
-            m_sensorIds[i] = b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+            m_sensorIds[i] = b2CreateCapsuleShape(bodyId, shapeDef, capsule);
             m_sensorTouching[i] = false;
         }
 
@@ -95,7 +95,7 @@ public class Sleep : Sample
 
             B2Polygon box = b2MakeOffsetBox(1.0f, 1.0f, new B2Vec2(0.0f, 1.0f), b2MakeRot(0.25f * B2_PI));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         // A sleeping body to test waking on collision
@@ -109,7 +109,7 @@ public class Sleep : Sample
 
             B2Polygon box = b2MakeSquare(1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         // A long pendulum
@@ -123,7 +123,7 @@ public class Sleep : Sample
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, 0.0f), new B2Vec2(90.0f, 0.0f), 0.25f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreateCapsuleShape(m_pendulumId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_pendulumId, shapeDef, capsule);
 
             B2Vec2 pivot = bodyDef.position;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -131,7 +131,7 @@ public class Sleep : Sample
             jointDef.@base.bodyIdB = m_pendulumId;
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-            b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         // A sleeping body to test waking on contact destroyed
@@ -145,7 +145,7 @@ public class Sleep : Sample
 
             B2Polygon box = b2MakeSquare(1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         m_staticBodyId = b2_nullBodyId;
@@ -162,7 +162,7 @@ public class Sleep : Sample
             B2Polygon box = b2MakeOffsetBox(2.0f, 0.1f, new B2Vec2(0.0f, 0.0f), b2MakeRot(0.25f * B2_PI));
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.invokeContactCreation = true;
-            b2CreatePolygonShape(m_staticBodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_staticBodyId, shapeDef, box);
         }
         else
         {

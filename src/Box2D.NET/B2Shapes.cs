@@ -622,20 +622,20 @@ namespace Box2D.NET
             return count;
         }
 
-        internal static B2AABB b2ComputeShapeAABB(B2Shape shape, B2Transform xf)
+        internal static B2AABB b2ComputeShapeAABB(B2Shape shape, in B2Transform xf)
         {
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2ComputeCapsuleAABB(ref shape.us.capsule, xf);
+                    return b2ComputeCapsuleAABB(shape.us.capsule, xf);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleAABB(ref shape.us.circle, xf);
+                    return b2ComputeCircleAABB(shape.us.circle, xf);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonAABB(ref shape.us.polygon, xf);
+                    return b2ComputePolygonAABB(shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
-                    return b2ComputeSegmentAABB(ref shape.us.segment, xf);
+                    return b2ComputeSegmentAABB(shape.us.segment, xf);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2ComputeSegmentAABB(ref shape.us.chainSegment.segment, xf);
+                    return b2ComputeSegmentAABB(shape.us.chainSegment.segment, xf);
                 default:
                 {
                     B2_ASSERT(false);
@@ -756,11 +756,11 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2ComputeCapsuleMass(ref shape.us.capsule, shape.density);
+                    return b2ComputeCapsuleMass(shape.us.capsule, shape.density);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleMass(ref shape.us.circle, shape.density);
+                    return b2ComputeCircleMass(shape.us.circle, shape.density);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonMass(ref shape.us.polygon, shape.density);
+                    return b2ComputePolygonMass(shape.us.polygon, shape.density);
                 default:
                     return new B2MassData();
             }
@@ -890,16 +890,16 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2ShapeCastCapsule(ref shape.us.capsule, ref localInput);
+                    output = b2ShapeCastCapsule(shape.us.capsule, localInput);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(ref shape.us.circle, ref localInput);
+                    output = b2ShapeCastCircle(shape.us.circle, localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(ref shape.us.polygon, ref localInput);
+                    output = b2ShapeCastPolygon(ref shape.us.polygon, localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(ref shape.us.segment, ref localInput);
+                    output = b2ShapeCastSegment(shape.us.segment, localInput);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
                 {
@@ -921,7 +921,7 @@ namespace Box2D.NET
                         return output;
                     }
 
-                    output = b2ShapeCastSegment(ref shape.us.chainSegment.segment, ref localInput);
+                    output = b2ShapeCastSegment(shape.us.chainSegment.segment, localInput);
                 }
                     break;
                 default:
@@ -933,7 +933,7 @@ namespace Box2D.NET
             return output;
         }
 
-        internal static B2PlaneResult b2CollideMover(ref B2Capsule mover, B2Shape shape, B2Transform transform)
+        internal static B2PlaneResult b2CollideMover(in B2Capsule mover, B2Shape shape, B2Transform transform)
         {
             B2Capsule localMover = new B2Capsule();
             localMover.center1 = b2InvTransformPoint(transform, mover.center1);
@@ -944,19 +944,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    result = b2CollideMoverAndCapsule(ref localMover, ref shape.us.capsule);
+                    result = b2CollideMoverAndCapsule(localMover, shape.us.capsule);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    result = b2CollideMoverAndCircle(ref localMover, ref shape.us.circle);
+                    result = b2CollideMoverAndCircle(localMover, shape.us.circle);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    result = b2CollideMoverAndPolygon(ref localMover, ref shape.us.polygon);
+                    result = b2CollideMoverAndPolygon(localMover, ref shape.us.polygon);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    result = b2CollideMoverAndSegment(ref localMover, ref shape.us.segment);
+                    result = b2CollideMoverAndSegment(localMover, shape.us.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    result = b2CollideMoverAndSegment(ref localMover, ref shape.us.chainSegment.segment);
+                    result = b2CollideMoverAndSegment(localMover, shape.us.chainSegment.segment);
                     break;
                 default:
                     return result;
@@ -1064,10 +1064,10 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2PointInCapsule(ref shape.us.capsule, localPoint);
+                    return b2PointInCapsule(shape.us.capsule, localPoint);
 
                 case B2ShapeType.b2_circleShape:
-                    return b2PointInCircle(ref shape.us.circle, localPoint);
+                    return b2PointInCircle(shape.us.circle, localPoint);
 
                 case B2ShapeType.b2_polygonShape:
                     return b2PointInPolygon(ref shape.us.polygon, localPoint);
@@ -1078,7 +1078,7 @@ namespace Box2D.NET
         }
 
         // todo_erin untested
-        internal static B2CastOutput b2Shape_RayCast(in B2ShapeId shapeId, ref B2RayCastInput input)
+        internal static B2CastOutput b2Shape_RayCast(in B2ShapeId shapeId, in B2RayCastInput input)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1238,7 +1238,7 @@ namespace Box2D.NET
         }
 
         /// Set the shape surface material
-        public static void b2Shape_SetSurfaceMaterial(in B2ShapeId shapeId, ref B2SurfaceMaterial surfaceMaterial)
+        public static void b2Shape_SetSurfaceMaterial(in B2ShapeId shapeId, in B2SurfaceMaterial surfaceMaterial)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1566,7 +1566,7 @@ namespace Box2D.NET
 
         /// Set a chain material. If the chain has only one material, this material is applied to all
         /// segments. Otherwise it is applied to a single segment.
-        public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, ref B2SurfaceMaterial material, int materialIndex)
+        public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, in B2SurfaceMaterial material, int materialIndex)
         {
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)

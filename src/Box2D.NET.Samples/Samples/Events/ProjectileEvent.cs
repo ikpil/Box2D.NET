@@ -49,10 +49,10 @@ class ProjectileEvent : Sample
             shapeDef.enableSensorEvents = true;
 
             B2Segment segment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(-30.0f, 0.0f), new B2Vec2(30.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         m_projectileId = new B2BodyId();
@@ -80,7 +80,7 @@ class ProjectileEvent : Sample
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
         }
     }

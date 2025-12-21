@@ -39,16 +39,16 @@ public class TopDownFriction : Sample
             groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(-10.0f, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             segment = new B2Segment(new B2Vec2(-10.0f, 20.0f), new B2Vec2(10.0f, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         B2MotorJointDef jointDef = b2DefaultMotorJointDef();
@@ -80,25 +80,25 @@ public class TopDownFriction : Sample
                     int remainder = (n * i + j) % 4;
                     if (remainder == 0)
                     {
-                        b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+                        b2CreateCapsuleShape(bodyId, shapeDef, capsule);
                     }
                     else if (remainder == 1)
                     {
-                        b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+                        b2CreateCircleShape(bodyId, shapeDef, circle);
                     }
                     else if (remainder == 2)
                     {
-                        b2CreatePolygonShape(bodyId, ref shapeDef, ref square);
+                        b2CreatePolygonShape(bodyId, shapeDef, square);
                     }
                     else
                     {
                         B2Polygon poly = RandomPolygon(0.75f);
                         poly.radius = 0.1f;
-                        b2CreatePolygonShape(bodyId, ref shapeDef, ref poly);
+                        b2CreatePolygonShape(bodyId, shapeDef, poly);
                     }
 
                     jointDef.@base.bodyIdB = bodyId;
-                    b2CreateMotorJoint(m_worldId, ref jointDef);
+                    b2CreateMotorJoint(m_worldId, jointDef);
 
                     x += 1.0f;
                 }

@@ -99,7 +99,7 @@ public class TangentSpeed : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.material.friction = m_friction;
         shapeDef.material.rollingResistance = m_rollingResistance;
-        b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+        b2CreateCircleShape(bodyId, shapeDef, circle);
         return bodyId;
     }
 

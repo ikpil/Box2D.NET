@@ -54,10 +54,10 @@ public class MultiplePrismatic : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             jointDef.@base.bodyIdB = bodyId;
-            b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            b2CreatePrismaticJoint(m_worldId, jointDef);
 
             jointDef.@base.bodyIdA = bodyId;
             jointDef.@base.localFrameA.p = new B2Vec2(0.0f, 0.6f);

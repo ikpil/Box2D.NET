@@ -85,21 +85,21 @@ public class Driving : Sample
             x += 80.0f;
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(x, 0.0f), new B2Vec2(x + 40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             // jump ramp
             x += 40.0f;
             segment = new B2Segment(new B2Vec2(x, 0.0f), new B2Vec2(x + 10.0f, 5.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             // final corner
             x += 20.0f;
             segment = new B2Segment(new B2Vec2(x, 0.0f), new B2Vec2(x + 40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
 
             x += 40.0f;
             segment = new B2Segment(new B2Vec2(x, 0.0f), new B2Vec2(x, 20.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Teeter
@@ -112,7 +112,7 @@ public class Driving : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(10.0f, 0.25f);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = bodyDef.position;
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -123,7 +123,7 @@ public class Driving : Sample
             jointDef.lowerAngle = -8.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 8.0f * B2_PI / 180.0f;
             jointDef.enableLimit = true;
-            b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         // Bridge
@@ -141,14 +141,14 @@ public class Driving : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = new B2Vec2(161.0f + 2.0f * i, -0.125f);
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * i, -0.125f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = bodyId;
             }
@@ -161,7 +161,7 @@ public class Driving : Sample
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = 50.0f;
-                b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                b2CreateRevoluteJoint(m_worldId, jointDef);
             }
         }
 
@@ -181,23 +181,23 @@ public class Driving : Sample
 
             bodyDef.position = new B2Vec2(230.0f, 0.5f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             bodyDef.position = new B2Vec2(230.0f, 1.5f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             bodyDef.position = new B2Vec2(230.0f, 2.5f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             bodyDef.position = new B2Vec2(230.0f, 3.5f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             bodyDef.position = new B2Vec2(230.0f, 4.5f);
             bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         // Car

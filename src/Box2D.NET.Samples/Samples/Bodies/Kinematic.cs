@@ -46,7 +46,7 @@ public class Kinematic : Sample
 
             B2Polygon box = b2MakeBox(0.1f, 1.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(m_bodyId, shapeDef, box);
         }
 
         m_time = 0.0f;

@@ -38,14 +38,14 @@ public class SingleBox : Sample
         //shapeDef.friction = 0.5f;
 
         B2Segment segment = new B2Segment(new B2Vec2(-0.5f * 2.0f * groundWidth, 0.0f), new B2Vec2(0.5f * 2.0f * groundWidth, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+        b2CreateSegmentShape(groundId, shapeDef, segment);
         bodyDef.type = B2BodyType.b2_dynamicBody;
 
         B2Polygon box = b2MakeBox(extent, extent);
         bodyDef.position = new B2Vec2(0.0f, 1.0f);
         bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
-        b2CreatePolygonShape(m_bodyId, ref shapeDef, ref box);
+        b2CreatePolygonShape(m_bodyId, shapeDef, box);
     }
 
 

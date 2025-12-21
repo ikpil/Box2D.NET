@@ -33,7 +33,7 @@ public class MixedLocks : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
@@ -46,7 +46,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "static";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -56,7 +56,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "free";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -66,7 +66,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "free";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -77,7 +77,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "angular z";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -88,7 +88,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "linear x";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -100,7 +100,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "lin y ang z";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
 
             {
@@ -113,7 +113,7 @@ public class MixedLocks : Sample
                 bodyDef.name = "full";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
             }
         }
     }

@@ -38,7 +38,7 @@ public class CapsuleStack : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon polygon = b2MakeBox(10.0f, 1.0f);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref polygon);
+            b2CreatePolygonShape(groundId, shapeDef, polygon);
         }
 
         {
@@ -62,7 +62,7 @@ public class CapsuleStack : Sample
                 //bodyDef.linearVelocity = { 0.0f, -10.0f };
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-                b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 y += 3.0f * a;
             }

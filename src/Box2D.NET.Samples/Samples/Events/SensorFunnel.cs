@@ -131,7 +131,7 @@ public class SensorFunnel : Sample
                 shapeDef.material.restitution = 1.0f;
                 shapeDef.density = 1.0f;
 
-                b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+                b2CreatePolygonShape(bodyId, shapeDef, box);
 
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
                 revoluteDef.@base.bodyIdA = groundId;
@@ -142,7 +142,7 @@ public class SensorFunnel : Sample
                 revoluteDef.motorSpeed = 2.0f * sign;
                 revoluteDef.enableMotor = true;
 
-                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, revoluteDef);
 
                 y -= 14.0f;
                 sign = -sign;
@@ -154,7 +154,7 @@ public class SensorFunnel : Sample
                 shapeDef.isSensor = true;
                 shapeDef.enableSensorEvents = true;
 
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
             }
         }
 

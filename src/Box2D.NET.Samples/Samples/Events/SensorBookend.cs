@@ -51,13 +51,13 @@ public class SensorBookend : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
 
             B2Segment groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(-10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             groundSegment = new B2Segment(new B2Vec2(10.0f, 0.0f), new B2Vec2(10.0f, 10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref groundSegment);
+            b2CreateSegmentShape(groundId, shapeDef, groundSegment);
 
             m_isVisiting1 = false;
             m_isVisiting2 = false;
@@ -81,7 +81,7 @@ public class SensorBookend : Sample
         shapeDef.enableSensorEvents = true;
 
         B2Polygon box = b2MakeSquare(1.0f);
-        m_sensorShapeId1 = b2CreatePolygonShape(m_sensorBodyId1, ref shapeDef, ref box);
+        m_sensorShapeId1 = b2CreatePolygonShape(m_sensorBodyId1, shapeDef, box);
     }
 
     void CreateSensor2()
@@ -96,13 +96,13 @@ public class SensorBookend : Sample
         shapeDef.enableSensorEvents = true;
 
         B2Polygon box = b2MakeRoundedBox(0.5f, 0.5f, 0.5f);
-        m_sensorShapeId2 = b2CreatePolygonShape(m_sensorBodyId2, ref shapeDef, ref box);
+        m_sensorShapeId2 = b2CreatePolygonShape(m_sensorBodyId2, shapeDef, box);
 
         // Solid middle
         shapeDef.isSensor = false;
         shapeDef.enableSensorEvents = false;
         box = b2MakeSquare(0.5f);
-        b2CreatePolygonShape(m_sensorBodyId2, ref shapeDef, ref box);
+        b2CreatePolygonShape(m_sensorBodyId2, shapeDef, box);
     }
 
     void CreateVisitor()

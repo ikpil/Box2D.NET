@@ -41,7 +41,7 @@ public class JointEvent : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+        b2CreateSegmentShape(groundId, shapeDef, segment);
 
         m_jointIds = new B2JointId[e_count];
         for (int i = 0; i < e_count; ++i)
@@ -66,7 +66,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             float length = 2.0f;
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
@@ -81,7 +81,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -93,7 +93,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -105,7 +105,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateMotorJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -117,7 +117,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
@@ -129,7 +129,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -141,7 +141,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -153,7 +153,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -165,7 +165,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
@@ -179,7 +179,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -191,7 +191,7 @@ public class JointEvent : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
@@ -211,7 +211,7 @@ public class JointEvent : Sample
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
             jointDef.@base.userData = CustomUserData.Create(index);
-            m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWheelJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;

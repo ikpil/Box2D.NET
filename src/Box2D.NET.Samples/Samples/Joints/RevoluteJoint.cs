@@ -53,7 +53,7 @@ public class RevoluteJoint : Sample
             B2Polygon box = b2MakeBox(40.0f, 1.0f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+            b2CreatePolygonShape(groundId, shapeDef, box);
         }
 
         m_enableSpring = false;
@@ -75,7 +75,7 @@ public class RevoluteJoint : Sample
             shapeDef.density = 1.0f;
 
             B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -1.0f), new B2Vec2(0.0f, 6.0f), 0.5f);
-            b2CreateCapsuleShape(bodyId, ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
             B2Vec2 pivot = new B2Vec2(-10.0f, 20.5f);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -95,7 +95,7 @@ public class RevoluteJoint : Sample
             jointDef.upperAngle = 0.05f * B2_PI;
             jointDef.enableLimit = m_enableLimit;
 
-            m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointId1 = b2CreateRevoluteJoint(m_worldId, jointDef);
 
             b2Joint_SetConstraintTuning(m_jointId1, 60.0f, 20.0f);
         }

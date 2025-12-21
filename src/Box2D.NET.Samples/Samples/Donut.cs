@@ -62,7 +62,7 @@ public struct Donut
             bodyDef.rotation = b2MakeRot(angle);
 
             m_bodyIds[i] = b2CreateBody(worldId, bodyDef);
-            b2CreateCapsuleShape(m_bodyIds[i], ref shapeDef, ref capsule);
+            b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
 
             angle += deltaAngle;
         }
@@ -83,7 +83,7 @@ public struct Donut
             B2Rot qA = b2Body_GetRotation(prevBodyId);
             B2Rot qB = b2Body_GetRotation(m_bodyIds[i]);
             weldDef.@base.localFrameA.q = b2InvMulRot(qA, qB);
-            m_jointIds[i] = b2CreateWeldJoint(worldId, ref weldDef);
+            m_jointIds[i] = b2CreateWeldJoint(worldId, weldDef);
             prevBodyId = weldDef.@base.bodyIdB;
         }
 

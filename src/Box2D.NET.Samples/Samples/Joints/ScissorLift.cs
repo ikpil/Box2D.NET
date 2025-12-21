@@ -46,7 +46,7 @@ public class ScissorLift : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-20.0f, 0.0f), new B2Vec2(20.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
 
@@ -75,13 +75,13 @@ public class ScissorLift : Sample
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(0.15f);
                 B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(bodyId1, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId1, shapeDef, capsule);
 
                 bodyDef.position = new B2Vec2(0.0f, y);
                 bodyDef.rotation = b2MakeRot(-0.15f);
 
                 B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(bodyId2, ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(bodyId2, shapeDef, capsule);
 
                 if (i == 1)
                 {
@@ -99,7 +99,7 @@ public class ScissorLift : Sample
                 revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
                 revoluteDef.@base.constraintHertz = constraintHertz;
 
-                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, revoluteDef);
 
                 // right pin
                 if (i == 0)
@@ -114,7 +114,7 @@ public class ScissorLift : Sample
                     wheelDef.@base.constraintDampingRatio = constraintDampingRatio;
                     wheelDef.@base.constraintHertz = constraintHertz;
 
-                    b2CreateWheelJoint(m_worldId, ref wheelDef);
+                    b2CreateWheelJoint(m_worldId, wheelDef);
                 }
                 else
                 {
@@ -126,7 +126,7 @@ public class ScissorLift : Sample
                     revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
                     revoluteDef.@base.constraintHertz = constraintHertz;
 
-                    b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                    b2CreateRevoluteJoint(m_worldId, revoluteDef);
                 }
 
                 // middle pin
@@ -138,7 +138,7 @@ public class ScissorLift : Sample
                 revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
                 revoluteDef.@base.constraintHertz = constraintHertz;
 
-                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, revoluteDef);
 
                 baseId1 = bodyId2;
                 baseId2 = bodyId1;
@@ -152,7 +152,7 @@ public class ScissorLift : Sample
             B2BodyId platformId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(3.0f, 0.2f);
-            b2CreatePolygonShape(platformId, ref shapeDef, ref box);
+            b2CreatePolygonShape(platformId, shapeDef, box);
 
             // left pin
             {
@@ -164,7 +164,7 @@ public class ScissorLift : Sample
                 revoluteDef.@base.collideConnected = true;
                 revoluteDef.@base.constraintDampingRatio = constraintDampingRatio;
                 revoluteDef.@base.constraintHertz = constraintHertz;
-                b2CreateRevoluteJoint(m_worldId, ref revoluteDef);
+                b2CreateRevoluteJoint(m_worldId, revoluteDef);
             }
 
             // right pin
@@ -178,7 +178,7 @@ public class ScissorLift : Sample
                 wheelDef.@base.collideConnected = true;
                 wheelDef.@base.constraintDampingRatio = constraintDampingRatio;
                 wheelDef.@base.constraintHertz = constraintHertz;
-                b2CreateWheelJoint(m_worldId, ref wheelDef);
+                b2CreateWheelJoint(m_worldId, wheelDef);
             }
 
             m_enableMotor = false;
@@ -197,7 +197,7 @@ public class ScissorLift : Sample
             distanceDef.enableMotor = m_enableMotor;
             distanceDef.motorSpeed = m_motorSpeed;
             distanceDef.maxMotorForce = m_motorForce;
-            m_liftJointId = b2CreateDistanceJoint(m_worldId, ref distanceDef);
+            m_liftJointId = b2CreateDistanceJoint(m_worldId, distanceDef);
 
             Car car = new Car();
             car.Spawn(m_worldId, new B2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, null);

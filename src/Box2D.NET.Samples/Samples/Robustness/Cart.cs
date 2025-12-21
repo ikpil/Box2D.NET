@@ -55,7 +55,7 @@ public class Cart : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon groundBox = b2MakeBox(20.0f, 1.0f);
-            b2CreatePolygonShape(groundId, ref shapeDef, ref groundBox);
+            b2CreatePolygonShape(groundId, shapeDef, groundBox);
         }
 
         b2World_SetGravity(m_worldId, new B2Vec2(0.0f, -22.0f));
@@ -105,7 +105,7 @@ public class Cart : Sample
         shapeDef.density = 1000.0f;
 
         B2Polygon box = b2MakeOffsetBox(1.0f, 0.25f, new B2Vec2(0.0f, 0.25f), b2Rot_identity);
-        b2CreatePolygonShape(m_chassisId, ref shapeDef, ref box);
+        b2CreatePolygonShape(m_chassisId, shapeDef, box);
 
         shapeDef = b2DefaultShapeDef();
         shapeDef.material.rollingResistance = 0.02f;
@@ -114,11 +114,11 @@ public class Cart : Sample
         B2Circle circle = new B2Circle(b2Vec2_zero, 0.1f);
         bodyDef.position = new B2Vec2(-0.9f, yBase - 0.15f);
         m_wheelId1 = b2CreateBody(m_worldId, bodyDef);
-        b2CreateCircleShape(m_wheelId1, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_wheelId1, shapeDef, circle);
 
         bodyDef.position = new B2Vec2(0.9f, yBase - 0.15f);
         m_wheelId2 = b2CreateBody(m_worldId, bodyDef);
-        b2CreateCircleShape(m_wheelId2, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_wheelId2, shapeDef, circle);
 
         B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
         jointDef.@base.constraintHertz = 120.0f;
@@ -129,7 +129,7 @@ public class Cart : Sample
         jointDef.@base.localFrameA.p = new B2Vec2(-0.9f, -0.15f);
         jointDef.@base.localFrameB.p = new B2Vec2(0.0f, 0.0f);
 
-        m_jointId1 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+        m_jointId1 = b2CreateRevoluteJoint(m_worldId, jointDef);
         b2Joint_SetConstraintTuning(m_jointId1, m_constraintHertz, m_constraintDampingRatio);
 
         jointDef.@base.bodyIdA = m_chassisId;
@@ -137,7 +137,7 @@ public class Cart : Sample
         jointDef.@base.localFrameA.p = new B2Vec2(0.9f, -0.15f);
         jointDef.@base.localFrameB.p = new B2Vec2(0.0f, 0.0f);
 
-        m_jointId2 = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+        m_jointId2 = b2CreateRevoluteJoint(m_worldId, jointDef);
         b2Joint_SetConstraintTuning(m_jointId2, m_constraintHertz, m_constraintDampingRatio);
     }
 

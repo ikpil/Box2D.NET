@@ -81,13 +81,13 @@ public class BenchmarkManyTumblers : Sample
 
         B2Polygon polygon;
         polygon = b2MakeOffsetBox(0.25f, 2.0f, new B2Vec2(2.0f, 0.0f), b2Rot_identity);
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+        b2CreatePolygonShape(bodyId, shapeDef, polygon);
         polygon = b2MakeOffsetBox(0.25f, 2.0f, new B2Vec2(-2.0f, 0.0f), b2Rot_identity);
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+        b2CreatePolygonShape(bodyId, shapeDef, polygon);
         polygon = b2MakeOffsetBox(2.0f, 0.25f, new B2Vec2(0.0f, 2.0f), b2Rot_identity);
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+        b2CreatePolygonShape(bodyId, shapeDef, polygon);
         polygon = b2MakeOffsetBox(2.0f, 0.25f, new B2Vec2(0.0f, -2.0f), b2Rot_identity);
-        b2CreatePolygonShape(bodyId, ref shapeDef, ref polygon);
+        b2CreatePolygonShape(bodyId, shapeDef, polygon);
     }
 
     void CreateScene()
@@ -189,7 +189,7 @@ public class BenchmarkManyTumblers : Sample
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 bodyDef.position = m_positions[i];
                 m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
-                b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], ref shapeDef, ref capsule);
+                b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], shapeDef, capsule);
 
                 m_bodyIndex += 1;
             }

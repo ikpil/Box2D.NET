@@ -443,7 +443,7 @@ public class DynamicTree : Sample
             dynamicTreeContext.tree = this;
 
             B2RayCastInput input = new B2RayCastInput(m_startPoint, b2Sub(m_endPoint, m_startPoint), 1.0f);
-            B2TreeStats result = b2DynamicTree_RayCast(m_tree, ref input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
+            B2TreeStats result = b2DynamicTree_RayCast(m_tree, input, B2_DEFAULT_MASK_BITS, RayCallback, ref dynamicTreeContext);
 
             DrawLine(m_draw, m_startPoint, m_endPoint, B2HexColor.b2_colorWhite);
             DrawPoint(m_draw, m_startPoint, 5.0f, B2HexColor.b2_colorGreen);

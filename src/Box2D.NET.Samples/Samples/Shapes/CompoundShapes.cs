@@ -45,7 +45,7 @@ public class CompoundShapes : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(50.0f, 0.0f), new B2Vec2(-50.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         // Table 1
@@ -60,9 +60,9 @@ public class CompoundShapes : Sample
             B2Polygon leftLeg = b2MakeOffsetBox(0.5f, 1.5f, new B2Vec2(-2.5f, 1.5f), b2Rot_identity);
             B2Polygon rightLeg = b2MakeOffsetBox(0.5f, 1.5f, new B2Vec2(2.5f, 1.5f), b2Rot_identity);
 
-            b2CreatePolygonShape(m_table1Id, ref shapeDef, ref top);
-            b2CreatePolygonShape(m_table1Id, ref shapeDef, ref leftLeg);
-            b2CreatePolygonShape(m_table1Id, ref shapeDef, ref rightLeg);
+            b2CreatePolygonShape(m_table1Id, shapeDef, top);
+            b2CreatePolygonShape(m_table1Id, shapeDef, leftLeg);
+            b2CreatePolygonShape(m_table1Id, shapeDef, rightLeg);
         }
 
         // Table 2
@@ -77,9 +77,9 @@ public class CompoundShapes : Sample
             B2Polygon leftLeg = b2MakeOffsetBox(0.5f, 2.0f, new B2Vec2(-2.5f, 2.0f), b2Rot_identity);
             B2Polygon rightLeg = b2MakeOffsetBox(0.5f, 2.0f, new B2Vec2(2.5f, 2.0f), b2Rot_identity);
 
-            b2CreatePolygonShape(m_table2Id, ref shapeDef, ref top);
-            b2CreatePolygonShape(m_table2Id, ref shapeDef, ref leftLeg);
-            b2CreatePolygonShape(m_table2Id, ref shapeDef, ref rightLeg);
+            b2CreatePolygonShape(m_table2Id, shapeDef, top);
+            b2CreatePolygonShape(m_table2Id, shapeDef, leftLeg);
+            b2CreatePolygonShape(m_table2Id, shapeDef, rightLeg);
         }
 
         // Spaceship 1
@@ -96,16 +96,16 @@ public class CompoundShapes : Sample
             vertices[1] = new B2Vec2(0.0f, 4.0f / 3.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon left = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon left = b2MakePolygon(hull, 0.0f);
 
             vertices[0] = new B2Vec2(2.0f, 0.0f);
             vertices[1] = new B2Vec2(0.0f, 4.0f / 3.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             hull = b2ComputeHull(vertices, 3);
-            B2Polygon right = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon right = b2MakePolygon(hull, 0.0f);
 
-            b2CreatePolygonShape(m_ship1Id, ref shapeDef, ref left);
-            b2CreatePolygonShape(m_ship1Id, ref shapeDef, ref right);
+            b2CreatePolygonShape(m_ship1Id, shapeDef, left);
+            b2CreatePolygonShape(m_ship1Id, shapeDef, right);
         }
 
         // Spaceship 2
@@ -122,16 +122,16 @@ public class CompoundShapes : Sample
             vertices[1] = new B2Vec2(1.0f, 2.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon left = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon left = b2MakePolygon(hull, 0.0f);
 
             vertices[0] = new B2Vec2(2.0f, 0.0f);
             vertices[1] = new B2Vec2(-1.0f, 2.0f);
             vertices[2] = new B2Vec2(0.0f, 4.0f);
             hull = b2ComputeHull(vertices, 3);
-            B2Polygon right = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon right = b2MakePolygon(hull, 0.0f);
 
-            b2CreatePolygonShape(m_ship2Id, ref shapeDef, ref left);
-            b2CreatePolygonShape(m_ship2Id, ref shapeDef, ref right);
+            b2CreatePolygonShape(m_ship2Id, shapeDef, left);
+            b2CreatePolygonShape(m_ship2Id, shapeDef, right);
         }
 
         m_drawBodyAABBs = false;
@@ -149,7 +149,7 @@ public class CompoundShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(4.0f, 0.1f, new B2Vec2(0.0f, 3.0f), b2Rot_identity);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         // Table 2 obstruction
@@ -162,7 +162,7 @@ public class CompoundShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeOffsetBox(4.0f, 0.1f, new B2Vec2(0.0f, 3.0f), b2Rot_identity);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
         }
 
         // Ship 1 obstruction
@@ -176,7 +176,7 @@ public class CompoundShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 2.0f), 0.5f);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         // Ship 2 obstruction
@@ -190,7 +190,7 @@ public class CompoundShapes : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 2.0f), 0.5f);
-            b2CreateCircleShape(bodyId, ref shapeDef, ref circle);
+            b2CreateCircleShape(bodyId, shapeDef, circle);
         }
     }
 

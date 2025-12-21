@@ -2131,7 +2131,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, ShapeCastCallback, ref worldContext);
+                    b2DynamicTree_ShapeCast(world.broadPhase.trees[i], input, filter.maskBits, ShapeCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2202,7 +2202,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_ShapeCast(world.broadPhase.trees[i], ref input, filter.maskBits, MoverCastCallback, ref worldContext);
+                b2DynamicTree_ShapeCast(world.broadPhase.trees[i], input, filter.maskBits, MoverCastCallback, ref worldContext);
 
                 if (worldContext.fraction == 0.0f)
                 {
@@ -2234,7 +2234,7 @@ namespace Box2D.NET
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
             B2Transform transform = b2GetBodyTransformQuick(world, body);
 
-            B2PlaneResult result = b2CollideMover(ref worldContext.mover, shape, transform);
+            B2PlaneResult result = b2CollideMover(worldContext.mover, shape, transform);
 
             // todo handle deep overlap
             if (result.hit && b2IsNormalized(result.plane.normal))

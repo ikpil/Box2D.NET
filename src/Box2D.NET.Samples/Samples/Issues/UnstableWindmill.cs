@@ -35,7 +35,7 @@ public class UnstableWindmill : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-100.0f, -10.0f), new B2Vec2(100.0f, -10.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         B2BodyDef bdef = b2DefaultBodyDef();
@@ -67,33 +67,33 @@ public class UnstableWindmill : Sample
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(0, -5), b2Rot_identity);
         wjdef.@base.bodyIdB = body;
         wjdef.@base.localFrameB = new B2Transform(new B2Vec2(0, 5), b2Rot_identity);
-        b2CreateWeldJoint(m_worldId, ref wjdef);
+        b2CreateWeldJoint(m_worldId, wjdef);
 
         bdef.position = new B2Vec2(20, 10);
         body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(5, 4);
-        b2CreatePolygonShape(body, ref sdef, ref polygon);
+        b2CreatePolygonShape(body, sdef, polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(5, 0), b2Rot_identity);
         wjdef.@base.bodyIdB = body;
         wjdef.@base.localFrameB = new B2Transform(new B2Vec2(-5, 0), b2Rot_identity);
-        b2CreateWeldJoint(m_worldId, ref wjdef);
+        b2CreateWeldJoint(m_worldId, wjdef);
 
         bdef.position = new B2Vec2(10, 20);
         body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(4, 5);
-        b2CreatePolygonShape(body, ref sdef, ref polygon);
+        b2CreatePolygonShape(body, sdef, polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(0, 5), b2Rot_identity);
         wjdef.@base.bodyIdB = body;
         wjdef.@base.localFrameB = new B2Transform(new B2Vec2(0, -5), b2Rot_identity);
-        b2CreateWeldJoint(m_worldId, ref wjdef);
+        b2CreateWeldJoint(m_worldId, wjdef);
 
         bdef.position = new B2Vec2(0, 10);
         body = b2CreateBody(m_worldId, bdef);
         polygon = b2MakeBox(5, 4);
-        b2CreatePolygonShape(body, ref sdef, ref polygon);
+        b2CreatePolygonShape(body, sdef, polygon);
         wjdef.@base.localFrameA = new B2Transform(new B2Vec2(-5, 0), b2Rot_identity);
         wjdef.@base.bodyIdB = body;
         wjdef.@base.localFrameB = new B2Transform(new B2Vec2(5, 0), b2Rot_identity);
-        b2CreateWeldJoint(m_worldId, ref wjdef);
+        b2CreateWeldJoint(m_worldId, wjdef);
     }
 }

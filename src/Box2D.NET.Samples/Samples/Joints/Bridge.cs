@@ -82,14 +82,14 @@ public class Bridge : Sample
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.angularDamping = 0.1f;
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
-                b2CreatePolygonShape(m_bodyIds[i], ref shapeDef, ref box);
+                b2CreatePolygonShape(m_bodyIds[i], shapeDef, box);
 
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * i, 20.0f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = m_bodyIds[i];
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = m_bodyIds[i];
             }
@@ -100,7 +100,7 @@ public class Bridge : Sample
                 jointDef.@base.bodyIdB = groundId;
                 jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
                 jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
-                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+                m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 B2_ASSERT(jointIndex == m_count + 1);
             }
@@ -111,7 +111,7 @@ public class Bridge : Sample
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f) };
 
             B2Hull hull = b2ComputeHull(vertices, 3);
-            B2Polygon triangle = b2MakePolygon(ref hull, 0.0f);
+            B2Polygon triangle = b2MakePolygon(hull, 0.0f);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 20.0f;
@@ -120,7 +120,7 @@ public class Bridge : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.position = new B2Vec2(-8.0f + 8.0f * i, 22.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref triangle);
+            b2CreatePolygonShape(bodyId, shapeDef, triangle);
         }
 
         for (int i = 0; i < 3; ++i)

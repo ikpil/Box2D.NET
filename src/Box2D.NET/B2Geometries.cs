@@ -59,9 +59,9 @@ namespace Box2D.NET
 
         /// Make a convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakePolygon(ref B2Hull hull, float radius)
+        public static B2Polygon b2MakePolygon(in B2Hull hull, float radius)
         {
-            B2_ASSERT(b2ValidateHull(ref hull));
+            B2_ASSERT(b2ValidateHull(hull));
 
             if (hull.count < 3)
             {
@@ -96,16 +96,16 @@ namespace Box2D.NET
 
         /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakeOffsetPolygon(ref B2Hull hull, B2Vec2 position, B2Rot rotation)
+        public static B2Polygon b2MakeOffsetPolygon(in B2Hull hull, B2Vec2 position, B2Rot rotation)
         {
-            return b2MakeOffsetRoundedPolygon(ref hull, position, rotation, 0.0f);
+            return b2MakeOffsetRoundedPolygon(hull, position, rotation, 0.0f);
         }
 
         /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
         /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-        public static B2Polygon b2MakeOffsetRoundedPolygon(ref B2Hull hull, B2Vec2 position, B2Rot rotation, float radius)
+        public static B2Polygon b2MakeOffsetRoundedPolygon(in B2Hull hull, B2Vec2 position, B2Rot rotation, float radius)
         {
-            B2_ASSERT(b2ValidateHull(ref hull));
+            B2_ASSERT(b2ValidateHull(hull));
 
             if (hull.count < 3)
             {
@@ -249,7 +249,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a circle
-        public static B2MassData b2ComputeCircleMass(ref B2Circle shape, float density)
+        public static B2MassData b2ComputeCircleMass(in B2Circle shape, float density)
         {
             float rr = shape.radius * shape.radius;
 
@@ -264,7 +264,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a capsule
-        public static B2MassData b2ComputeCapsuleMass(ref B2Capsule shape, float density)
+        public static B2MassData b2ComputeCapsuleMass(in B2Capsule shape, float density)
         {
             float radius = shape.radius;
             float rr = radius * radius;
@@ -304,7 +304,7 @@ namespace Box2D.NET
         }
 
         /// Compute mass properties of a polygon
-        public static B2MassData b2ComputePolygonMass(ref B2Polygon shape, float density)
+        public static B2MassData b2ComputePolygonMass(in B2Polygon shape, float density)
         {
             // Polygon mass, centroid, and inertia.
             // Let rho be the polygon density in mass per unit area.
@@ -335,7 +335,7 @@ namespace Box2D.NET
             if (shape.count == 1)
             {
                 B2Circle circle = new B2Circle(shape.vertices[0], shape.radius);
-                return b2ComputeCircleMass(ref circle, density);
+                return b2ComputeCircleMass(circle, density);
             }
 
             if (shape.count == 2)
@@ -344,7 +344,7 @@ namespace Box2D.NET
                 // capsule.center1 = shape.vertices[0];
                 // capsule.center2 = shape.vertices[1];
                 // capsule.radius = shape.radius;
-                return b2ComputeCapsuleMass(ref capsule, density);
+                return b2ComputeCapsuleMass(capsule, density);
             }
 
             Span<B2Vec2> vertices = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
@@ -431,7 +431,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed circle
-        public static B2AABB b2ComputeCircleAABB(ref B2Circle shape, B2Transform xf)
+        public static B2AABB b2ComputeCircleAABB(in B2Circle shape, in B2Transform xf)
         {
             B2Vec2 p = b2TransformPoint(xf, shape.center);
             float r = shape.radius;
@@ -441,7 +441,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed capsule
-        public static B2AABB b2ComputeCapsuleAABB(ref B2Capsule shape, B2Transform xf)
+        public static B2AABB b2ComputeCapsuleAABB(in B2Capsule shape, in B2Transform xf)
         {
             B2Vec2 v1 = b2TransformPoint(xf, shape.center1);
             B2Vec2 v2 = b2TransformPoint(xf, shape.center2);
@@ -455,7 +455,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed polygon
-        public static B2AABB b2ComputePolygonAABB(ref B2Polygon shape, B2Transform xf)
+        public static B2AABB b2ComputePolygonAABB(in B2Polygon shape, in B2Transform xf)
         {
             B2_ASSERT(shape.count > 0);
             B2Vec2 lower = b2TransformPoint(xf, shape.vertices[0]);
@@ -477,7 +477,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed line segment
-        public static B2AABB b2ComputeSegmentAABB(ref B2Segment shape, B2Transform xf)
+        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, B2Transform xf)
         {
             B2Vec2 v1 = b2TransformPoint(xf, shape.point1);
             B2Vec2 v2 = b2TransformPoint(xf, shape.point2);
@@ -490,14 +490,14 @@ namespace Box2D.NET
         }
 
         /// Test a point for overlap with a circle in local space
-        public static bool b2PointInCircle(ref B2Circle shape, B2Vec2 point)
+        public static bool b2PointInCircle(in B2Circle shape, B2Vec2 point)
         {
             B2Vec2 center = shape.center;
             return b2DistanceSquared(point, center) <= shape.radius * shape.radius;
         }
 
         /// Test a point for overlap with a capsule in local space
-        public static bool b2PointInCapsule(ref B2Capsule shape, B2Vec2 point)
+        public static bool b2PointInCapsule(in B2Capsule shape, B2Vec2 point)
         {
             float rr = shape.radius * shape.radius;
             B2Vec2 p1 = shape.center1;
@@ -935,7 +935,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a circle.
-        internal static B2CastOutput b2ShapeCastCircle(ref B2Circle shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastCircle(in B2Circle shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -951,7 +951,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a capsule.
-        internal static B2CastOutput b2ShapeCastCapsule(ref B2Capsule shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastCapsule(in B2Capsule shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -967,7 +967,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a line segment.
-        internal static B2CastOutput b2ShapeCastSegment(ref B2Segment shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastSegment(in B2Segment shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -983,7 +983,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a convex polygon.
-        internal static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, ref B2ShapeCastInput input)
+        internal static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -998,7 +998,7 @@ namespace Box2D.NET
             return output;
         }
 
-        internal static B2PlaneResult b2CollideMoverAndCircle(ref B2Capsule mover, ref B2Circle shape)
+        internal static B2PlaneResult b2CollideMoverAndCircle(in B2Capsule mover, in B2Circle shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
@@ -1021,7 +1021,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        internal static B2PlaneResult b2CollideMoverAndCapsule(ref B2Capsule mover, ref B2Capsule shape)
+        internal static B2PlaneResult b2CollideMoverAndCapsule(in B2Capsule mover, in B2Capsule shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, 0.0f);
@@ -1044,7 +1044,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        internal static B2PlaneResult b2CollideMoverAndPolygon(ref B2Capsule mover, ref B2Polygon shape)
+        internal static B2PlaneResult b2CollideMoverAndPolygon(in B2Capsule mover, ref B2Polygon shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
@@ -1067,7 +1067,7 @@ namespace Box2D.NET
             return new B2PlaneResult();
         }
 
-        internal static B2PlaneResult b2CollideMoverAndSegment(ref B2Capsule mover, ref B2Segment shape)
+        internal static B2PlaneResult b2CollideMoverAndSegment(in B2Capsule mover, in B2Segment shape)
         {
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);

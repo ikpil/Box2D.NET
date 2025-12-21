@@ -88,7 +88,7 @@ public class ShapeDistance : Sample
         {
             B2Vec2[] points = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.0f) };
             B2Hull hull = b2ComputeHull(points, 3);
-            m_triangle = b2MakePolygon(ref hull, 0.0f);
+            m_triangle = b2MakePolygon(hull, 0.0f);
 
             // m_triangle = b2MakeSquare( 0.4f );
         }

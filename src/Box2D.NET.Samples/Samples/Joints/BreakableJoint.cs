@@ -45,7 +45,7 @@ public class BreakableJoint : Sample
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-        b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+        b2CreateSegmentShape(groundId, shapeDef, segment);
 
         for (int i = 0; i < e_count; ++i)
         {
@@ -66,7 +66,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             float length = 2.0f;
             B2Vec2 pivot1 = new B2Vec2(position.X, position.Y + 1.0f + length);
@@ -78,7 +78,7 @@ public class BreakableJoint : Sample
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
             jointDef.length = length;
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -90,7 +90,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.@base.bodyIdA = groundId;
@@ -99,7 +99,7 @@ public class BreakableJoint : Sample
             jointDef.maxVelocityForce = 1000.0f;
             jointDef.maxVelocityTorque = 20.0f;
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateMotorJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateMotorJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -111,7 +111,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
@@ -120,7 +120,7 @@ public class BreakableJoint : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -132,7 +132,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
@@ -141,7 +141,7 @@ public class BreakableJoint : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -153,7 +153,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
@@ -162,7 +162,7 @@ public class BreakableJoint : Sample
             jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
             jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateWeldJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;
@@ -174,7 +174,7 @@ public class BreakableJoint : Sample
 
             bodyDef.position = position;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
-            b2CreatePolygonShape(bodyId, ref shapeDef, ref box);
+            b2CreatePolygonShape(bodyId, shapeDef, box);
 
             B2Vec2 pivot = new B2Vec2(position.X - 1.0f, position.Y);
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
@@ -191,7 +191,7 @@ public class BreakableJoint : Sample
             jointDef.maxMotorTorque = 10.0f;
             jointDef.motorSpeed = 1.0f;
             jointDef.@base.collideConnected = true;
-            m_jointIds[index] = b2CreateWheelJoint(m_worldId, ref jointDef);
+            m_jointIds[index] = b2CreateWheelJoint(m_worldId, jointDef);
         }
 
         position.X += 5.0f;

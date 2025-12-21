@@ -44,7 +44,7 @@ public struct Car
         }
 
         B2Hull hull = b2ComputeHull(vertices, 6);
-        B2Polygon chassis = b2MakePolygon(ref hull, 0.15f * scale);
+        B2Polygon chassis = b2MakePolygon(hull, 0.15f * scale);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         shapeDef.density = 1.0f / scale;

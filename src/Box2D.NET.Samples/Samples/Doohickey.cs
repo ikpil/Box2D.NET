@@ -43,19 +43,19 @@ public class Doohickey
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-5.0f, 3.0f));
         m_wheelId1 = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_wheelId1, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_wheelId1, shapeDef, circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(5.0f, 3.0f));
         m_wheelId2 = b2CreateBody(worldId, bodyDef);
-        b2CreateCircleShape(m_wheelId2, ref shapeDef, ref circle);
+        b2CreateCircleShape(m_wheelId2, shapeDef, circle);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(-1.5f, 3.0f));
         m_barId1 = b2CreateBody(worldId, bodyDef);
-        b2CreateCapsuleShape(m_barId1, ref shapeDef, ref capsule);
+        b2CreateCapsuleShape(m_barId1, shapeDef, capsule);
 
         bodyDef.position = b2MulAdd(position, scale, new B2Vec2(1.5f, 3.0f));
         m_barId2 = b2CreateBody(worldId, bodyDef);
-        b2CreateCapsuleShape(m_barId2, ref shapeDef, ref capsule);
+        b2CreateCapsuleShape(m_barId2, shapeDef, capsule);
 
         B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
 
@@ -88,7 +88,7 @@ public class Doohickey
         prismaticDef.enableSpring = true;
         prismaticDef.hertz = 1.0f;
         prismaticDef.dampingRatio = 0.5f;
-        b2CreatePrismaticJoint(worldId, ref prismaticDef);
+        b2CreatePrismaticJoint(worldId, prismaticDef);
     }
 
     public void Despawn()

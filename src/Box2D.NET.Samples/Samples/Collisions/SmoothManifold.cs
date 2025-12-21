@@ -294,7 +294,7 @@ public class SmoothManifold : Sample
         {
             float h = 0.5f - m_round;
             B2Polygon rox = b2MakeRoundedBox(h, h, m_round);
-            DrawSolidPolygon(m_draw, ref transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
+            DrawSolidPolygon(m_draw, transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
             for (int i = 0; i < m_count; ++i)
             {

@@ -103,13 +103,13 @@ public class OverlapWorld : Sample
         {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), new B2Vec2(0.0f, 1.5f), };
             B2Hull hull = b2ComputeHull(vertices, 3);
-            m_polygons[0] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[0] = b2MakePolygon(hull, 0.0f);
         }
 
         {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.1f, 0.0f), new B2Vec2(0.1f, 0.0f), new B2Vec2(0.0f, 1.5f) };
             B2Hull hull = b2ComputeHull(vertices, 3);
-            m_polygons[1] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[1] = b2MakePolygon(hull, 0.0f);
         }
 
         {
@@ -130,7 +130,7 @@ public class OverlapWorld : Sample
             };
 
             B2Hull hull = b2ComputeHull(vertices, 8);
-            m_polygons[2] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[2] = b2MakePolygon(hull, 0.0f);
         }
 
         m_polygons[3] = b2MakeBox(0.5f, 0.5f);

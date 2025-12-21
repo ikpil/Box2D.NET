@@ -11,6 +11,7 @@
     <RepositoryUrl>https://github.com/ikpil/Box2D.NET</RepositoryUrl>
     <PackageTags>game csharp physics game-development collision physics-engine collision-detection box2d physics-simulation physics-2d 2d-game 2d box2d-physics-engine rigid-body-dynamics</PackageTags>
     <PackageReleaseNotes>https://github.com/ikpil/Box2D.NET/blob/main/CHANGELOG.md</PackageReleaseNotes>
+    <WarningsAsErrors>$(WarningsAsErrors);CS9191</WarningsAsErrors>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

@@ -95,13 +95,13 @@ public class CastWorld : Sample
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Segment segment = new B2Segment(new B2Vec2(-40.0f, 0.0f), new B2Vec2(40.0f, 0.0f));
-            b2CreateSegmentShape(groundId, ref shapeDef, ref segment);
+            b2CreateSegmentShape(groundId, shapeDef, segment);
         }
 
         {
             B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-0.1f, 0.0f), new B2Vec2(0.1f, 0.0f), new B2Vec2(0.0f, 1.5f) };
             B2Hull hull = b2ComputeHull(vertices, 3);
-            m_polygons[0] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[0] = b2MakePolygon(hull, 0.0f);
             m_polygons[0].radius = 0.5f;
         }
 
@@ -123,7 +123,7 @@ public class CastWorld : Sample
             };
 
             B2Hull hull = b2ComputeHull(vertices, 8);
-            m_polygons[1] = b2MakePolygon(ref hull, 0.0f);
+            m_polygons[1] = b2MakePolygon(hull, 0.0f);
         }
 
         m_box = b2MakeBox(0.5f, 0.5f);
@@ -480,7 +480,7 @@ public class CastWorld : Sample
                     }
                     else if (m_castType == CastType.e_polygonCast)
                     {
-                        DrawSolidPolygon(m_draw, ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                        DrawSolidPolygon(m_draw, shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                     }
                 }
             }
@@ -501,7 +501,7 @@ public class CastWorld : Sample
                 }
                 else if (m_castType == CastType.e_polygonCast)
                 {
-                    DrawSolidPolygon(m_draw, ref shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
+                    DrawSolidPolygon(m_draw, shiftedTransform, box.vertices.AsSpan(), box.count, box.radius, B2HexColor.b2_colorYellow);
                 }
             }
         }

@@ -59,7 +59,7 @@ public class RayCast : Sample
 
         B2Vec2[] vertices = new B2Vec2[3] { new B2Vec2(-2.0f, 0.0f), new B2Vec2(2.0f, 0.0f), new B2Vec2(2.0f, 3.0f) };
         B2Hull hull = b2ComputeHull(vertices, 3);
-        m_triangle = b2MakePolygon(ref hull, 0.0f);
+        m_triangle = b2MakePolygon(hull, 0.0f);
 
         m_segment = new B2Segment(new B2Vec2(-3.0f, 0.0f), new B2Vec2(3.0f, 0.0f));
 
@@ -237,7 +237,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCircle(m_circle, ref input);
+            B2CastOutput localOutput = b2RayCastCircle(m_circle, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -260,7 +260,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCapsule(ref m_capsule, ref input);
+            B2CastOutput localOutput = b2RayCastCapsule(m_capsule, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -275,13 +275,13 @@ public class RayCast : Sample
         // box
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            DrawSolidPolygon(m_draw, ref transform, m_box.vertices.AsSpan(), m_box.count, 0.0f, color1);
+            DrawSolidPolygon(m_draw, transform, m_box.vertices.AsSpan(), m_box.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref m_box, ref input);
+            B2CastOutput localOutput = b2RayCastPolygon(m_box, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -296,13 +296,13 @@ public class RayCast : Sample
         // triangle
         {
             B2Transform transform = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
-            DrawSolidPolygon(m_draw, ref transform, m_triangle.vertices.AsSpan(), m_triangle.count, 0.0f, color1);
+            DrawSolidPolygon(m_draw, transform, m_triangle.vertices.AsSpan(), m_triangle.count, 0.0f, color1);
 
             B2Vec2 start = b2InvTransformPoint(transform, m_rayStart);
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref m_triangle, ref input);
+            B2CastOutput localOutput = b2RayCastPolygon(m_triangle, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -326,7 +326,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastSegment(ref m_segment, ref input, false);
+            B2CastOutput localOutput = b2RayCastSegment(m_segment, input, false);
             if (localOutput.hit)
             {
                 output = localOutput;

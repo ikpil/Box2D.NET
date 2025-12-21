@@ -67,7 +67,7 @@ public class BenchmarkSensor : Sample
             for (int i = 0; i < 81; ++i)
             {
                 B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
-                b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                b2CreatePolygonShape(groundId, shapeDef, box);
                 x += gridSize;
             }
         }
@@ -108,7 +108,7 @@ public class BenchmarkSensor : Sample
                 {
                     float x = i * shift - xCenter;
                     B2Polygon box = b2MakeOffsetRoundedBox(0.5f, 0.5f, new B2Vec2(x, y), b2Rot_identity, 0.1f);
-                    b2CreatePolygonShape(groundId, ref shapeDef, ref box);
+                    b2CreatePolygonShape(groundId, shapeDef, box);
                 }
             }
         }
@@ -199,7 +199,7 @@ public class BenchmarkSensor : Sample
                 // Modify color while overlapped with a sensor
                 B2SurfaceMaterial surfaceMaterial = b2Shape_GetSurfaceMaterial(@event.visitorShapeId);
                 surfaceMaterial.customColor = (uint)B2HexColor.b2_colorLime;
-                b2Shape_SetSurfaceMaterial(@event.visitorShapeId, ref surfaceMaterial);
+                b2Shape_SetSurfaceMaterial(@event.visitorShapeId, surfaceMaterial);
             }
         }
 
@@ -215,7 +215,7 @@ public class BenchmarkSensor : Sample
             // Restore color to default
             B2SurfaceMaterial surfaceMaterial = b2Shape_GetSurfaceMaterial(@event.visitorShapeId);
             surfaceMaterial.customColor = 0;
-            b2Shape_SetSurfaceMaterial(@event.visitorShapeId, ref surfaceMaterial);
+            b2Shape_SetSurfaceMaterial(@event.visitorShapeId, surfaceMaterial);
         }
 
         foreach (B2BodyId bodyId in zombies)

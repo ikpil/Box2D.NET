@@ -606,7 +606,7 @@ namespace Box2D.NET.Shared
                         B2Vec2[] points = new B2Vec2[] { p1, p2, p3, p4 };
                         B2Hull hull = b2ComputeHull(points, 4);
 
-                        B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
+                        B2Polygon polygon = b2MakePolygon(hull, 0.0f);
                         b2CreatePolygonShape(bodyId, shapeDef, polygon);
                     }
 
@@ -620,7 +620,7 @@ namespace Box2D.NET.Shared
                         B2Vec2[] points = new B2Vec2[] { p1, p2, p3, p4 };
                         B2Hull hull = b2ComputeHull(points, 4);
 
-                        B2Polygon polygon = b2MakePolygon(ref hull, 0.0f);
+                        B2Polygon polygon = b2MakePolygon(hull, 0.0f);
                         b2CreatePolygonShape(bodyId, shapeDef, polygon);
                     }
 
