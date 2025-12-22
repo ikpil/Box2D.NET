@@ -48,7 +48,7 @@ public class ChainDrop : Sample
         chainDef.count = 4;
         chainDef.isLoop = true;
 
-        b2CreateChain(groundId, ref chainDef);
+        b2CreateChain(groundId, chainDef);
 
         m_bodyId = b2_nullBodyId;
         m_yOffset = -0.1f;

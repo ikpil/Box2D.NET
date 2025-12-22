@@ -79,7 +79,7 @@ public class Driving : Sample
             chainDef.points = points;
             chainDef.count = 25;
             chainDef.isLoop = true;
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
 
             // flat after bridge
             x += 80.0f;

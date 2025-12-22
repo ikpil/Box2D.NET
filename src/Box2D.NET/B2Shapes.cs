@@ -381,7 +381,7 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ChainId b2CreateChain(B2BodyId bodyId, ref B2ChainDef def)
+        public static B2ChainId b2CreateChain(B2BodyId bodyId, in B2ChainDef def)
         {
             B2_CHECK_DEF(def);
             B2_ASSERT(def.count >= 4);
@@ -420,7 +420,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < materialCount; ++i)
             {
-                ref B2SurfaceMaterial material = ref def.materials[i];
+                ref readonly B2SurfaceMaterial material = ref def.materials[i];
                 B2_ASSERT(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
                 B2_ASSERT(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
                 B2_ASSERT(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
@@ -438,7 +438,7 @@ namespace Box2D.NET
             shapeDef.enableContactEvents = false;
             shapeDef.enableHitEvents = false;
 
-            B2Vec2[] points = def.points;
+            ref readonly B2Vec2[] points = ref def.points;
             int n = def.count;
 
             if (def.isLoop)

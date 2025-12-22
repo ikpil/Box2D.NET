@@ -49,7 +49,7 @@ public class ChainLink : Sample
             chainDef.points = points1;
             chainDef.count = count1;
             chainDef.isLoop = false;
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         {
@@ -57,7 +57,7 @@ public class ChainLink : Sample
             chainDef.points = points2;
             chainDef.count = count2;
             chainDef.isLoop = false;
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         bodyDef.type = B2BodyType.b2_dynamicBody;

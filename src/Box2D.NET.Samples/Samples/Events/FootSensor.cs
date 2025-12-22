@@ -67,7 +67,7 @@ public class FootSensor : Sample
             chainDef.isLoop = false;
             chainDef.enableSensorEvents = true;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         {

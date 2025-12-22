@@ -347,7 +347,7 @@ namespace Box2D.NET.Shared
                 chainDef.materials = new[] { material };
                 chainDef.materialCount = 1;
 
-                b2CreateChain(groundId, ref chainDef);
+                b2CreateChain(groundId, chainDef);
             }
 
             {

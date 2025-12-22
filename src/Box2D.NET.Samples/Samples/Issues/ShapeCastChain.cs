@@ -77,7 +77,7 @@ public class ShapeCastChain : Sample
         worldChainDef.filter.groupIndex = 0;
         worldChainDef.isLoop = true;
         worldChainDef.enableSensorEvents = false;
-        b2CreateChain(groundId, ref worldChainDef);
+        b2CreateChain(groundId, worldChainDef);
 
         // "Character" Body & Shape
         B2BodyDef characterBodyDef = b2DefaultBodyDef();

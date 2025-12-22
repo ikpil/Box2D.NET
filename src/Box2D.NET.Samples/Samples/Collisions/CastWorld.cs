@@ -229,7 +229,7 @@ public class CastWorld : Sample
             chainDef.points = points;
             chainDef.count = 4;
             chainDef.isLoop = true;
-            b2CreateChain(m_bodyIds[m_bodyIndex], ref chainDef);
+            b2CreateChain(m_bodyIds[m_bodyIndex], chainDef);
         }
 
         m_bodyIndex = (m_bodyIndex + 1) % e_maxCount;

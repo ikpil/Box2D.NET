@@ -134,7 +134,7 @@ public class ChainShape : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         m_groundId = b2CreateBody(m_worldId, bodyDef);
 
-        m_chainId = b2CreateChain(m_groundId, ref chainDef);
+        m_chainId = b2CreateChain(m_groundId, chainDef);
     }
 
     void Launch()

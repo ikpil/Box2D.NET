@@ -51,7 +51,7 @@ public class PersistentContact : Sample
             chainDef.count = 22;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         {

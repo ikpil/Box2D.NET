@@ -68,7 +68,7 @@ public class GearLift : Sample
             chainDef.materials = [material];
             chainDef.materialCount = 1;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         float gearRadius = 1.0f;

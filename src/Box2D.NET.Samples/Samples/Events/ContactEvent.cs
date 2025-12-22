@@ -61,7 +61,7 @@ public class ContactEvent : Sample
             chainDef.points = points;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         // Player

@@ -114,7 +114,7 @@ public class SensorFunnel : Sample
             chainDef.isLoop = true;
             chainDef.materials = [material];
             chainDef.materialCount = 1;
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
 
             float sign = 1.0f;
             float y = 14.0f;

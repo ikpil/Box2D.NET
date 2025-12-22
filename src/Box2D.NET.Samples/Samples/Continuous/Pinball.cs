@@ -57,7 +57,7 @@ public class Pinball : Sample
             chainDef.points = vs;
             chainDef.count = 5;
             chainDef.isLoop = true;
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
 
         // Flippers

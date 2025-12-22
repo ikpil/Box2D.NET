@@ -83,7 +83,7 @@ public class TangentSpeed : Sample
             m_friction = 0.6f;
             m_rollingResistance = 0.3f;
 
-            b2CreateChain(groundId, ref chainDef);
+            b2CreateChain(groundId, chainDef);
         }
     }
 

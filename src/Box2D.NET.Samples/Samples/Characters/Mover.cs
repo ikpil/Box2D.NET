@@ -142,7 +142,7 @@ public class Mover : Sample
             chainDef.count = count;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId1, ref chainDef);
+            b2CreateChain(groundId1, chainDef);
         }
 
         B2BodyId groundId2;
@@ -172,7 +172,7 @@ public class Mover : Sample
             chainDef.count = count;
             chainDef.isLoop = true;
 
-            b2CreateChain(groundId2, ref chainDef);
+            b2CreateChain(groundId2, chainDef);
         }
 
         {

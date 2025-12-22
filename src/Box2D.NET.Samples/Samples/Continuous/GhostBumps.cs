@@ -113,7 +113,7 @@ public class GhostBumps : Sample
             chainDef.materials = new[] { material };
             chainDef.materialCount = 1;
 
-            b2CreateChain(m_groundId, ref chainDef);
+            b2CreateChain(m_groundId, chainDef);
         }
         else
         {
