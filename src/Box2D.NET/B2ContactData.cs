@@ -14,7 +14,7 @@ namespace Box2D.NET
         public B2ShapeId shapeIdB;
         public B2Manifold manifold;
 
-        public B2ContactData(in B2ContactId contactId, in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, B2Manifold manifold)
+        public B2ContactData(in B2ContactId contactId, in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, in B2Manifold manifold)
         {
             this.contactId = contactId;
             this.shapeIdA = shapeIdA;
