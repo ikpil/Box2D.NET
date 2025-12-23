@@ -177,7 +177,7 @@ public class Manifold : Sample
         }
     }
 
-    void DrawManifold(ref B2Manifold manifold, B2Vec2 origin1, B2Vec2 origin2)
+    void DrawManifold(in B2Manifold manifold, B2Vec2 origin1, B2Vec2 origin2)
     {
         if (m_showCount)
         {
@@ -249,7 +249,7 @@ public class Manifold : Sample
             DrawSolidCircle(m_draw, new B2Transform(circle1.center, transform1.q), circle1.radius, color1);
             DrawSolidCircle(m_draw, new B2Transform(circle2.center, transform2.q), circle2.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -270,7 +270,7 @@ public class Manifold : Sample
 
             DrawSolidCircle(m_draw, new B2Transform(circle.center, transform2.q), circle.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -291,7 +291,7 @@ public class Manifold : Sample
 
             DrawSolidCircle(m_draw, new B2Transform(circle.center, transform2.q), circle.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -310,7 +310,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, box.vertices.AsSpan(), box.count, m_round, color1);
             DrawSolidCircle(m_draw, new B2Transform(circle.center, transform2.q), circle.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -333,7 +333,7 @@ public class Manifold : Sample
             v2 = b2TransformPoint(transform2, capsule2.center2);
             DrawSolidCapsule(m_draw, v1, v2, capsule2.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -354,7 +354,7 @@ public class Manifold : Sample
             B2Vec2 v2 = b2TransformPoint(transform2, capsule.center2);
             DrawSolidCapsule(m_draw, v1, v2, capsule.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -377,7 +377,7 @@ public class Manifold : Sample
             p2 = b2TransformPoint(transform2, capsule.center2);
             DrawSolidCapsule(m_draw, p1, p2, capsule.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -399,7 +399,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, box1.vertices.AsSpan(), box1.count, box1.radius, color1);
             DrawSolidPolygon(m_draw, transform2, box.vertices.AsSpan(), box.count, box.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -418,7 +418,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, box1.vertices.AsSpan(), box1.count, box1.radius, color1);
             DrawSolidPolygon(m_draw, transform2, box.vertices.AsSpan(), box.count, box.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -438,7 +438,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, box.vertices.AsSpan(), box.count, box.radius, color1);
             DrawSolidPolygon(m_draw, transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -458,7 +458,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, rox.vertices.AsSpan(), rox.count, rox.radius, color1);
             DrawSolidPolygon(m_draw, transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -480,7 +480,7 @@ public class Manifold : Sample
             DrawLine(m_draw, p1, p2, color1);
             DrawSolidPolygon(m_draw, transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -501,7 +501,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform2, wox.vertices.AsSpan(), wox.count, wox.radius, color2);
             DrawSolidPolygon(m_draw, transform2, wox.vertices.AsSpan(), wox.count, 0.0f, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -528,7 +528,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform2, w2.vertices.AsSpan(), w2.count, w2.radius, color2);
             DrawSolidPolygon(m_draw, transform2, w2.vertices.AsSpan(), w2.count, 0.0f, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -551,7 +551,7 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform1, box.vertices.AsSpan(), box.count, 0.0f, color1);
             DrawSolidPolygon(m_draw, transform2, tri.vertices.AsSpan(), tri.count, 0.0f, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset = b2Add(offset, increment);
         }
@@ -580,7 +580,7 @@ public class Manifold : Sample
             DrawLine(m_draw, p2, g2, B2HexColor.b2_colorLightGray);
             DrawSolidCircle(m_draw, new B2Transform(circle.center, transform2.q), circle.radius, color2);
 
-            DrawManifold(ref m, transform1.p, transform2.p);
+            DrawManifold(m, transform1.p, transform2.p);
 
             offset.X += 2.0f * increment.X;
         }
@@ -637,8 +637,8 @@ public class Manifold : Sample
             DrawSolidPolygon(m_draw, transform2, rox.vertices.AsSpan(), rox.count, rox.radius, color2);
             DrawPoint(m_draw, b2TransformPoint(transform2, rox.centroid), 5.0f, B2HexColor.b2_colorGainsboro);
 
-            DrawManifold(ref m1, transform1.p, transform2.p);
-            DrawManifold(ref m2, transform1.p, transform2.p);
+            DrawManifold(m1, transform1.p, transform2.p);
+            DrawManifold(m2, transform1.p, transform2.p);
 
             offset.X += 2.0f * increment.X;
         }
@@ -699,8 +699,8 @@ public class Manifold : Sample
                 DrawPoint(m_draw, b2Lerp(p1, p2, 0.5f), 5.0f, B2HexColor.b2_colorGainsboro);
             }
 
-            DrawManifold(ref m1, transform1.p, transform2.p);
-            DrawManifold(ref m2, transform1.p, transform2.p);
+            DrawManifold(m1, transform1.p, transform2.p);
+            DrawManifold(m2, transform1.p, transform2.p);
 
             offset.X += 2.0f * increment.X;
         }

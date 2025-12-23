@@ -223,7 +223,7 @@ public class SmoothManifold : Sample
         }
     }
 
-    void DrawManifold(ref B2Manifold manifold)
+    void DrawManifold(in B2Manifold manifold)
     {
         for (int i = 0; i < manifold.pointCount; ++i)
         {
@@ -287,7 +287,7 @@ public class SmoothManifold : Sample
             {
                 ref B2ChainSegment segment = ref m_segments[i];
                 B2Manifold m = b2CollideChainSegmentAndCircle(ref segment, transform1, ref circle, transform2);
-                DrawManifold(ref m);
+                DrawManifold(m);
             }
         }
         else if (m_shapeType == ShapeType.e_boxShape)
@@ -301,7 +301,7 @@ public class SmoothManifold : Sample
                 ref B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
                 B2Manifold m = b2CollideChainSegmentAndPolygon(ref segment, transform1, ref rox, transform2, ref cache);
-                DrawManifold(ref m);
+                DrawManifold(m);
             }
         }
     }
