@@ -35,13 +35,13 @@ namespace Box2D.NET
         };
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2IsLeaf(ref B2TreeNode node)
+        internal static bool b2IsLeaf(in B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_leafNode);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2IsAllocated(ref B2TreeNode node)
+        internal static bool b2IsAllocated(in B2TreeNode node)
         {
             return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode);
         }
@@ -767,7 +767,7 @@ namespace Box2D.NET
         internal static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
             b2FreeNode(tree, proxyId);
@@ -790,7 +790,7 @@ namespace Box2D.NET
             B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
 
             b2RemoveLeaf(tree, proxyId);
 
@@ -809,7 +809,7 @@ namespace Box2D.NET
             B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(ref tree.nodes[proxyId]));
+            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
 
             // Caller must ensure this
             B2_ASSERT(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
@@ -900,8 +900,8 @@ namespace Box2D.NET
             float totalArea = 0.0f;
             for (int i = 0; i < tree.nodeCapacity; ++i)
             {
-                ref B2TreeNode node = ref tree.nodes[i];
-                if (b2IsAllocated(ref node) == false || b2IsLeaf(ref node) || i == tree.root)
+                ref readonly B2TreeNode node = ref tree.nodes[i];
+                if (b2IsAllocated(node) == false || b2IsLeaf(node) || i == tree.root)
                 {
                     continue;
                 }
@@ -932,7 +932,7 @@ namespace Box2D.NET
             B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
             ref B2TreeNode node = ref tree.nodes[nodeId];
 
-            if (b2IsLeaf(ref node))
+            if (b2IsLeaf(node))
             {
                 return 0;
             }
@@ -958,7 +958,7 @@ namespace Box2D.NET
 
             B2_ASSERT(node.flags == 0 || (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0);
 
-            if (b2IsLeaf(ref node))
+            if (b2IsLeaf(node))
             {
                 B2_ASSERT(node.height == 0);
                 return;
@@ -991,7 +991,7 @@ namespace Box2D.NET
 
             ref B2TreeNode node = ref tree.nodes[index];
 
-            if (b2IsLeaf(ref node))
+            if (b2IsLeaf(node))
             {
                 B2_ASSERT(node.height == 0);
                 return;
@@ -1125,12 +1125,12 @@ namespace Box2D.NET
             {
                 int nodeId = stack[--stackCount];
 
-                ref B2TreeNode node = ref tree.nodes[nodeId];
+                ref readonly B2TreeNode node = ref tree.nodes[nodeId];
                 result.nodeVisits += 1;
 
                 if (b2AABB_Overlaps(node.aabb, aabb) && (node.categoryBits & maskBits) != 0)
                 {
-                    if (b2IsLeaf(ref node))
+                    if (b2IsLeaf(node))
                     {
                         // callback to user code with proxy id
                         bool proceed = callback(nodeId, node.children.userData, ref context);
@@ -1181,12 +1181,12 @@ namespace Box2D.NET
             {
                 int nodeId = stack[--stackCount];
 
-                ref B2TreeNode node = ref tree.nodes[nodeId];
+                ref readonly B2TreeNode node = ref tree.nodes[nodeId];
                 result.nodeVisits += 1;
 
                 if (b2AABB_Overlaps(node.aabb, aabb))
                 {
-                    if (b2IsLeaf(ref node))
+                    if (b2IsLeaf(node))
                     {
                         // callback to user code with proxy id
                         bool proceed = callback(nodeId, node.children.userData, ref context);
@@ -1277,7 +1277,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                ref B2TreeNode node = ref nodes[nodeId];
+                ref readonly B2TreeNode node = ref nodes[nodeId];
                 result.nodeVisits += 1;
 
                 B2AABB nodeAABB = node.aabb;
@@ -1299,7 +1299,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                if (b2IsLeaf(ref node))
+                if (b2IsLeaf(node))
                 {
                     subInput.maxFraction = maxFraction;
 
@@ -1424,7 +1424,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                ref B2TreeNode node = ref nodes[nodeId];
+                ref readonly B2TreeNode node = ref nodes[nodeId];
                 stats.nodeVisits += 1;
 
                 if ((node.categoryBits & maskBits) == 0 || b2AABB_Overlaps(node.aabb, totalAABB) == false)
@@ -1444,7 +1444,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                if (b2IsLeaf(ref node))
+                if (b2IsLeaf(node))
                 {
                     subInput.maxFraction = maxFraction;
 
@@ -1623,7 +1623,7 @@ namespace Box2D.NET
 
         // "On Fast Construction of SAH-based Bounding Volume Hierarchies" by Ingo Wald
         // Returns the left child count
-        internal static int b2PartitionSAH(int[] indices, int[] binIndices, Span<B2AABB> boxes, int count)
+        internal static int b2PartitionSAH(Span<int> indices, Span<int> binIndices, Span<B2AABB> boxes, int count)
         {
             B2_ASSERT(count > 0);
 

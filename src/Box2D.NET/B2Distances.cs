@@ -466,7 +466,7 @@ namespace Box2D.NET
         // Uses GJK for computing the distance between convex shapes.
         // https://box2d.org/files/ErinCatto_GJK_GDC2010.pdf
         // I spent time optimizing this and could find no further significant gains 3/30/2025
-        public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, B2Simplex[] simplexes, int simplexCapacity)
+        public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, Span<B2Simplex> simplexes, int simplexCapacity)
         {
             B2_UNUSED(simplexes, simplexCapacity);
             B2_ASSERT(input.proxyA.count > 0 && input.proxyB.count > 0);
