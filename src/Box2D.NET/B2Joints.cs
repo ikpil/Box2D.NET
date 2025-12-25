@@ -790,7 +790,7 @@ namespace Box2D.NET
         }
 
         /// Set the local frame on bodyA
-        public static void b2Joint_SetLocalFrameA(B2JointId jointId, B2Transform localFrame)
+        public static void b2Joint_SetLocalFrameA(B2JointId jointId, in B2Transform localFrame)
         {
             B2_ASSERT(b2IsValidTransform(localFrame));
 
@@ -810,7 +810,7 @@ namespace Box2D.NET
         }
 
         /// Set the local frame on bodyB
-        public static void b2Joint_SetLocalFrameB(B2JointId jointId, B2Transform localFrame)
+        public static void b2Joint_SetLocalFrameB(B2JointId jointId, in B2Transform localFrame)
         {
             B2_ASSERT(b2IsValidTransform(localFrame));
 

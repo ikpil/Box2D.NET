@@ -74,7 +74,7 @@ namespace Box2D.NET
             return chain;
         }
 
-        internal static void b2UpdateShapeAABBs(B2Shape shape, B2Transform transform, B2BodyType proxyType)
+        internal static void b2UpdateShapeAABBs(B2Shape shape, in B2Transform transform, B2BodyType proxyType)
         {
             // Compute a bounding box with a speculative margin
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
@@ -836,7 +836,7 @@ namespace Box2D.NET
             return extent;
         }
 
-        internal static B2CastOutput b2RayCastShape(in B2RayCastInput input, B2Shape shape, B2Transform transform)
+        internal static B2CastOutput b2RayCastShape(in B2RayCastInput input, B2Shape shape, in B2Transform transform)
         {
             B2RayCastInput localInput = input;
             localInput.origin = b2InvTransformPoint(transform, input.origin);
@@ -869,7 +869,7 @@ namespace Box2D.NET
             return output;
         }
 
-        internal static B2CastOutput b2ShapeCastShape(in B2ShapeCastInput input, B2Shape shape, B2Transform transform)
+        internal static B2CastOutput b2ShapeCastShape(in B2ShapeCastInput input, B2Shape shape, in B2Transform transform)
         {
             B2CastOutput output = new B2CastOutput();
 
@@ -933,7 +933,7 @@ namespace Box2D.NET
             return output;
         }
 
-        internal static B2PlaneResult b2CollideMover(in B2Capsule mover, B2Shape shape, B2Transform transform)
+        internal static B2PlaneResult b2CollideMover(in B2Capsule mover, B2Shape shape, in B2Transform transform)
         {
             B2Capsule localMover = new B2Capsule();
             localMover.center1 = b2InvTransformPoint(transform, mover.center1);
@@ -972,7 +972,7 @@ namespace Box2D.NET
         }
 
 
-        public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, B2Transform transform, bool forcePairCreation)
+        public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, in B2Transform transform, bool forcePairCreation)
         {
             B2_ASSERT(shape.proxyKey == B2_NULL_INDEX);
 

@@ -63,7 +63,7 @@ public static class Draws
         AddPolygon(ref draw.polygons, transform, vertices, vertexCount, radius, color);
     }
 
-    public static void DrawTransform(Draw draw, B2Transform transform, float scale)
+    public static void DrawTransform(Draw draw, in B2Transform transform, float scale)
     {
         B2Vec2 p1 = transform.p;
 
@@ -103,9 +103,9 @@ public static class Draws
         AddCircle(ref draw.hollowCircles, center, radius, color);
     }
 
-    public static void DrawSolidCircle(Draw draw, B2Transform transform, float radius, B2HexColor color)
+    public static void DrawSolidCircle(Draw draw, in B2Transform transform, float radius, B2HexColor color)
     {
-        AddSolidCircle(ref draw.circles, ref transform, radius, color);
+        AddSolidCircle(ref draw.circles, transform, radius, color);
     }
 
     public static void DrawSolidCapsule(Draw draw, B2Vec2 p1, B2Vec2 p2, float radius, B2HexColor color)

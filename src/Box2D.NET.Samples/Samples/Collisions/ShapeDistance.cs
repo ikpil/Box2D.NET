@@ -164,7 +164,7 @@ public class ShapeDistance : Sample
         return proxy;
     }
 
-    void DrawShape(ShapeType type, ref B2Transform transform, float radius, B2HexColor color)
+    void DrawShape(ShapeType type, in B2Transform transform, float radius, B2HexColor color)
     {
         switch (type)
         {
@@ -389,8 +389,8 @@ public class ShapeDistance : Sample
         base.Draw();
 
         var empty = b2Transform_identity;
-        DrawShape(m_typeA, ref empty, m_radiusA, B2HexColor.b2_colorCyan);
-        DrawShape(m_typeB, ref m_transform, m_radiusB, B2HexColor.b2_colorBisque);
+        DrawShape(m_typeA, empty, m_radiusA, B2HexColor.b2_colorCyan);
+        DrawShape(m_typeB, m_transform, m_radiusB, B2HexColor.b2_colorBisque);
 
         if (m_drawSimplex)
         {

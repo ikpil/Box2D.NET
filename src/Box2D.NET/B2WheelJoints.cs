@@ -536,7 +536,7 @@ namespace Box2D.NET
     }
 #endif
 
-        internal static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, B2Transform transformA, B2Transform transformB, float drawScale)
+        internal static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 

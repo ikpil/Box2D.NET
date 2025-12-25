@@ -96,7 +96,7 @@ public static class SolidCircles
         }
     }
 
-    public static void AddSolidCircle(ref SolidCircleRender render, ref B2Transform transform, float radius, B2HexColor color)
+    public static void AddSolidCircle(ref SolidCircleRender render, in B2Transform transform, float radius, B2HexColor color)
     {
         RGBA8 rgba = RGBA8.MakeRGBA8(color, 1.0f);
         render.circles.Add(new SolidCircleData(transform, radius, rgba));

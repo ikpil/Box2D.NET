@@ -216,7 +216,7 @@ public class ShapeCastChain : Sample
             start,
             b2MakeRot(rotation)
         );
-        B2ShapeProxy transformedShape = TransformShapeProxy(ref transform, ref shape);
+        B2ShapeProxy transformedShape = TransformShapeProxy(transform, ref shape);
 
         B2Vec2 translation = new B2Vec2(end.X - start.X, end.Y - start.Y);
         B2QueryFilter filter = new B2QueryFilter(0x1, 0x1);
@@ -252,7 +252,7 @@ public class ShapeCastChain : Sample
         return fraction;
     }
 
-    private static B2ShapeProxy TransformShapeProxy(ref B2Transform t, ref B2ShapeProxy proxy)
+    private static B2ShapeProxy TransformShapeProxy(in B2Transform t, ref B2ShapeProxy proxy)
     {
         B2ShapeProxy ret = new B2ShapeProxy();
         ret.count = proxy.count;
