@@ -22,6 +22,12 @@ namespace Box2D.NET
         {
             // ...
         }
+        
+        [Conditional("DEBUG")]
+        public static void B2_UNUSED<T1, T2>(in Span<T1> a, in T2 b)
+        {
+            // ...
+        }
 
         [Conditional("DEBUG")]
         public static void B2_UNUSED<T1, T2, T3>(in T1 a, in T2 b, in T3 c)
