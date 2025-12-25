@@ -262,7 +262,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideCapsuleAndCircle(ref capsule, transform1, ref circle, transform2);
+            B2Manifold m = b2CollideCapsuleAndCircle(capsule, transform1, ref circle, transform2);
 
             B2Vec2 v1 = b2TransformPoint(transform1, capsule.center1);
             B2Vec2 v2 = b2TransformPoint(transform1, capsule.center2);
@@ -323,7 +323,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideCapsules(ref capsule1, transform1, ref capsule2, transform2);
+            B2Manifold m = b2CollideCapsules(capsule1, transform1, capsule2, transform2);
 
             B2Vec2 v1 = b2TransformPoint(transform1, capsule1.center1);
             B2Vec2 v2 = b2TransformPoint(transform1, capsule1.center2);
@@ -346,7 +346,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollidePolygonAndCapsule(ref box, transform1, ref capsule, transform2);
+            B2Manifold m = b2CollidePolygonAndCapsule(ref box, transform1, capsule, transform2);
 
             DrawSolidPolygon(m_draw, transform1, box.vertices.AsSpan(), box.count, box.radius, color1);
 
@@ -367,7 +367,7 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m = b2CollideSegmentAndCapsule(ref segment, transform1, ref capsule, transform2);
+            B2Manifold m = b2CollideSegmentAndCapsule(ref segment, transform1, capsule, transform2);
 
             B2Vec2 p1 = b2TransformPoint(transform1, segment.point1);
             B2Vec2 p2 = b2TransformPoint(transform1, segment.point2);
@@ -666,8 +666,8 @@ public class Manifold : Sample
             B2Transform transform1 = new B2Transform(offset, b2Rot_identity);
             B2Transform transform2 = new B2Transform(b2Add(m_transform.p, offset), m_transform.q);
 
-            B2Manifold m1 = b2CollideChainSegmentAndCapsule(ref segment1, transform1, ref capsule, transform2, ref m_smgcapCache1);
-            B2Manifold m2 = b2CollideChainSegmentAndCapsule(ref segment2, transform1, ref capsule, transform2, ref m_smgcapCache2);
+            B2Manifold m1 = b2CollideChainSegmentAndCapsule(ref segment1, transform1, capsule, transform2, ref m_smgcapCache1);
+            B2Manifold m2 = b2CollideChainSegmentAndCapsule(ref segment2, transform1, capsule, transform2, ref m_smgcapCache2);
 
             {
                 B2Vec2 g2 = b2TransformPoint(transform1, segment1.ghost2);

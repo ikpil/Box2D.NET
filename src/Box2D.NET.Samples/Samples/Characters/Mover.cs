@@ -440,12 +440,12 @@ public class Mover : Sample
             mover.center2 = b2TransformPoint(m_transform, m_capsule.center2);
             mover.radius = m_capsule.radius;
 
-            b2World_CollideMover(m_worldId, ref mover, collideFilter, PlaneResultFcn, this);
+            b2World_CollideMover(m_worldId, mover, collideFilter, PlaneResultFcn, this);
             B2PlaneSolverResult result = b2SolvePlanes(target - m_transform.p, m_planes, m_planeCount);
 
             m_totalIterations += result.iterationCount;
 
-            float fraction = b2World_CastMover(m_worldId, ref mover, result.translation, castFilter);
+            float fraction = b2World_CastMover(m_worldId, mover, result.translation, castFilter);
 
             B2Vec2 delta = fraction * result.translation;
             m_transform.p += delta;
