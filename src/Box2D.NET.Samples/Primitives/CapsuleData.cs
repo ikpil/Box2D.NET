@@ -11,7 +11,7 @@ public struct CapsuleData
     public float length;
     public RGBA8 rgba;
 
-    public CapsuleData(B2Transform transform, float radius, float length, RGBA8 rgba)
+    public CapsuleData(in B2Transform transform, float radius, float length, RGBA8 rgba)
     {
         this.transform = transform;
         this.radius = radius;

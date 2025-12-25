@@ -477,7 +477,7 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed line segment
-        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, B2Transform xf)
+        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, in B2Transform xf)
         {
             B2Vec2 v1 = b2TransformPoint(xf, shape.point1);
             B2Vec2 v2 = b2TransformPoint(xf, shape.point2);

@@ -189,7 +189,7 @@ public class ShapeCast : Sample
         return proxy;
     }
 
-    private void DrawShape(ShapeType type, B2Transform transform, float radius, B2HexColor color)
+    private void DrawShape(ShapeType type, in B2Transform transform, float radius, B2HexColor color)
     {
         switch (type)
         {

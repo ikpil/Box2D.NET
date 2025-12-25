@@ -10,7 +10,7 @@ public struct SolidCircleData
     public float radius;
     public RGBA8 rgba;
 
-    public SolidCircleData(B2Transform transform, float radius, RGBA8 rgba)
+    public SolidCircleData(in B2Transform transform, float radius, RGBA8 rgba)
     {
         this.transform = transform;
         this.radius = radius;
