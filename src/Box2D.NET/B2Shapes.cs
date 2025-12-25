@@ -1478,7 +1478,7 @@ namespace Box2D.NET
             b2ResetProxy(world, shape, wakeBodies, destroyProxy);
         }
 
-        public static void b2Shape_SetCapsule(in B2ShapeId shapeId, ref B2Capsule capsule)
+        public static void b2Shape_SetCapsule(in B2ShapeId shapeId, in B2Capsule capsule)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)

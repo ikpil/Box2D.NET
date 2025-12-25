@@ -686,7 +686,7 @@ namespace Box2D.NET.Shared
                         capsule.center1 = b2MulSV(ratio, capsule.center1);
                         capsule.center2 = b2MulSV(ratio, capsule.center2);
                         capsule.radius *= ratio;
-                        b2Shape_SetCapsule(shapeIds[shapeIndex], ref capsule);
+                        b2Shape_SetCapsule(shapeIds[shapeIndex], capsule);
                     }
                     else if (type == B2ShapeType.b2_polygonShape)
                     {

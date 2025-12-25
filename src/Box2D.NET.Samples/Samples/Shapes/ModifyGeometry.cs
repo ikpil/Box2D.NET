@@ -86,7 +86,7 @@ public class ModifyGeometry : Sample
 
             case B2ShapeType.b2_capsuleShape:
                 m_us.capsule = new B2Capsule(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.0f, 0.5f * m_scale), 0.5f * m_scale);
-                b2Shape_SetCapsule(m_shapeId, ref m_us.capsule);
+                b2Shape_SetCapsule(m_shapeId, m_us.capsule);
                 break;
 
             case B2ShapeType.b2_segmentShape:

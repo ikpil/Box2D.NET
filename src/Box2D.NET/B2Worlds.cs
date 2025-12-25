@@ -2177,7 +2177,7 @@ namespace Box2D.NET
 
         /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing
         /// clipping.
-        public static float b2World_CastMover(B2WorldId worldId, ref B2Capsule mover, B2Vec2 translation, B2QueryFilter filter)
+        public static float b2World_CastMover(B2WorldId worldId, in B2Capsule mover, B2Vec2 translation, B2QueryFilter filter)
         {
             B2_ASSERT(b2IsValidVec2(translation));
             B2_ASSERT(mover.radius > 2.0f * B2_LINEAR_SLOP);
@@ -2251,7 +2251,7 @@ namespace Box2D.NET
         /// kinematic character movement
         // It is tempting to use a shape proxy for the mover, but this makes handling deep overlap difficult and the generality may
         // not be worth it.
-        public static void b2World_CollideMover(B2WorldId worldId, ref B2Capsule mover, B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
+        public static void b2World_CollideMover(B2WorldId worldId, in B2Capsule mover, B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
