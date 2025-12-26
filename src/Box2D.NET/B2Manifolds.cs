@@ -537,7 +537,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between an segment and a capsule
-        public static B2Manifold b2CollideSegmentAndCapsule(ref B2Segment segmentA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB)
+        public static B2Manifold b2CollideSegmentAndCapsule(in B2Segment segmentA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB)
         {
             B2Capsule capsuleA = new B2Capsule(segmentA.point1, segmentA.point2, 0.0f);
             return b2CollideCapsules(capsuleA, xfA, capsuleB, xfB);
@@ -1088,14 +1088,14 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between an segment and a circle
-        public static B2Manifold b2CollideSegmentAndCircle(ref B2Segment segmentA, in B2Transform xfA, ref B2Circle circleB, in B2Transform xfB)
+        public static B2Manifold b2CollideSegmentAndCircle(in B2Segment segmentA, in B2Transform xfA, ref B2Circle circleB, in B2Transform xfB)
         {
             B2Capsule capsuleA = new B2Capsule(segmentA.point1, segmentA.point2, 0.0f);
             return b2CollideCapsuleAndCircle(capsuleA, xfA, ref circleB, xfB);
         }
 
         /// Compute the contact manifold between an segment and a polygon
-        public static B2Manifold b2CollideSegmentAndPolygon(ref B2Segment segmentA, in B2Transform xfA, ref B2Polygon polygonB, in B2Transform xfB)
+        public static B2Manifold b2CollideSegmentAndPolygon(in B2Segment segmentA, in B2Transform xfA, ref B2Polygon polygonB, in B2Transform xfB)
         {
             B2Polygon polygonA = b2MakeCapsule(segmentA.point1, segmentA.point2, 0.0f);
             return b2CollidePolygons(ref polygonA, xfA, ref polygonB, xfB);

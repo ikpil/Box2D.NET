@@ -91,7 +91,7 @@ public class ModifyGeometry : Sample
 
             case B2ShapeType.b2_segmentShape:
                 m_us.segment = new B2Segment(new B2Vec2(-0.5f * m_scale, 0.0f), new B2Vec2(0.75f * m_scale, 0.0f));
-                b2Shape_SetSegment(m_shapeId, ref m_us.segment);
+                b2Shape_SetSegment(m_shapeId, m_us.segment);
                 break;
 
             case B2ShapeType.b2_polygonShape:

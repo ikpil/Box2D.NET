@@ -1502,7 +1502,7 @@ namespace Box2D.NET
             b2ResetProxy(world, shape, wakeBodies, destroyProxy);
         }
 
-        public static void b2Shape_SetSegment(in B2ShapeId shapeId, ref B2Segment segment)
+        public static void b2Shape_SetSegment(in B2ShapeId shapeId, in B2Segment segment)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
