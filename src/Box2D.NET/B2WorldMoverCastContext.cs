@@ -10,7 +10,7 @@ namespace Box2D.NET
         public B2QueryFilter filter;
         public float fraction;
 
-        public B2WorldMoverCastContext(B2World world, B2QueryFilter filter, float fraction)
+        public B2WorldMoverCastContext(B2World world, in B2QueryFilter filter, float fraction)
         {
             this.world = world;
             this.filter = filter;

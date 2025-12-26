@@ -12,7 +12,7 @@ namespace Box2D.NET
         public B2ShapeProxy proxy;
         public object userContext;
 
-        public B2WorldOverlapContext(B2World world, b2OverlapResultFcn fcn, B2QueryFilter filter, B2ShapeProxy proxy, object userContext)
+        public B2WorldOverlapContext(B2World world, b2OverlapResultFcn fcn, in B2QueryFilter filter, B2ShapeProxy proxy, object userContext)
         {
             this.world = world;
             this.fcn = fcn;
