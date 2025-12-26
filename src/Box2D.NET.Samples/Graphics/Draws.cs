@@ -74,7 +74,7 @@ public static class Draws
         AddLine(ref draw.lines, p1, p2, B2HexColor.b2_colorGreen);
     }
 
-    public static void DrawBounds(Draw draw, B2AABB aabb, B2HexColor c)
+    public static void DrawBounds(Draw draw, in B2AABB aabb, B2HexColor c)
     {
         B2Vec2 p1 = aabb.lowerBound;
         B2Vec2 p2 = new B2Vec2(aabb.upperBound.X, aabb.lowerBound.Y);

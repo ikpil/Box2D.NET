@@ -1832,7 +1832,7 @@ namespace Box2D.NET
             return result;
         }
 
-        public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, B2AABB aabb, B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
+        public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, in B2AABB aabb, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 

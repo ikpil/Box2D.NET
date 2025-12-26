@@ -130,7 +130,7 @@ namespace Box2D.NET
             }
         }
 
-        public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
+        public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, in B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
         {
             B2_ASSERT(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
             int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex);
@@ -155,7 +155,7 @@ namespace Box2D.NET
             b2DynamicTree_DestroyProxy(bp.trees[(int)proxyType], proxyId);
         }
 
-        public static void b2BroadPhase_MoveProxy(B2BroadPhase bp, int proxyKey, B2AABB aabb)
+        public static void b2BroadPhase_MoveProxy(B2BroadPhase bp, int proxyKey, in B2AABB aabb)
         {
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
@@ -164,7 +164,7 @@ namespace Box2D.NET
             b2BufferMove(bp, proxyKey);
         }
 
-        public static void b2BroadPhase_EnlargeProxy(B2BroadPhase bp, int proxyKey, B2AABB aabb)
+        public static void b2BroadPhase_EnlargeProxy(B2BroadPhase bp, int proxyKey, in B2AABB aabb)
         {
             B2_ASSERT(proxyKey != B2_NULL_INDEX);
             B2BodyType typeIndex = B2_PROXY_TYPE(proxyKey);
