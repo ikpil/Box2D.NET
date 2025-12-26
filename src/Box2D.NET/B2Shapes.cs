@@ -52,7 +52,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2ShouldQueryCollide(B2Filter shapeFilter, B2QueryFilter queryFilter)
+        internal static bool b2ShouldQueryCollide(B2Filter shapeFilter, in B2QueryFilter queryFilter)
         {
             return (shapeFilter.categoryBits & queryFilter.maskBits) != 0 && (shapeFilter.maskBits & queryFilter.categoryBits) != 0;
         }

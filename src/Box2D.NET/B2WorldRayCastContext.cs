@@ -12,7 +12,7 @@ namespace Box2D.NET
         public float fraction;
         public object userContext;
 
-        public B2WorldRayCastContext(B2World world, b2CastResultFcn fcn, B2QueryFilter filter, float fraction, object userContext)
+        public B2WorldRayCastContext(B2World world, b2CastResultFcn fcn, in B2QueryFilter filter, float fraction, object userContext)
         {
             this.world = world;
             this.fcn = fcn;

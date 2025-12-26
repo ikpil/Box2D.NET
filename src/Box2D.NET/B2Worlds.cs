@@ -1901,7 +1901,7 @@ namespace Box2D.NET
         }
 
         /// Overlap test for all shapes that overlap the provided shape proxy.
-        public static B2TreeStats b2World_OverlapShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
+        public static B2TreeStats b2World_OverlapShape(B2WorldId worldId, ref B2ShapeProxy proxy, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -1976,7 +1976,7 @@ namespace Box2D.NET
         /// @param fcn A user implemented callback function
         /// @param context A user context that is passed along to the callback function
         ///	@return traversal performance counters
-        public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter, b2CastResultFcn fcn, object context)
+        public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2032,7 +2032,7 @@ namespace Box2D.NET
 
         /// Cast a ray into the world to collect the closest hit. This is a convenience function. Ignores initial overlap.
         /// This is less general than b2World_CastRay() and does not allow for custom filtering.
-        public static B2RayResult b2World_CastRayClosest(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, B2QueryFilter filter)
+        public static B2RayResult b2World_CastRayClosest(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, in B2QueryFilter filter)
         {
             B2RayResult result = new B2RayResult();
 
@@ -2107,7 +2107,7 @@ namespace Box2D.NET
 
         /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
         ///	@see b2World_CastRay
-        public static B2TreeStats b2World_CastShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2Vec2 translation, B2QueryFilter filter,
+        public static B2TreeStats b2World_CastShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2Vec2 translation, in B2QueryFilter filter,
             b2CastResultFcn fcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
@@ -2177,7 +2177,7 @@ namespace Box2D.NET
 
         /// Cast a capsule mover through the world. This is a special shape cast that handles sliding along other shapes while reducing
         /// clipping.
-        public static float b2World_CastMover(B2WorldId worldId, in B2Capsule mover, B2Vec2 translation, B2QueryFilter filter)
+        public static float b2World_CastMover(B2WorldId worldId, in B2Capsule mover, B2Vec2 translation, in B2QueryFilter filter)
         {
             B2_ASSERT(b2IsValidVec2(translation));
             B2_ASSERT(mover.radius > 2.0f * B2_LINEAR_SLOP);
@@ -2251,7 +2251,7 @@ namespace Box2D.NET
         /// kinematic character movement
         // It is tempting to use a shape proxy for the mover, but this makes handling deep overlap difficult and the generality may
         // not be worth it.
-        public static void b2World_CollideMover(B2WorldId worldId, in B2Capsule mover, B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
+        public static void b2World_CollideMover(B2WorldId worldId, in B2Capsule mover, in B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
