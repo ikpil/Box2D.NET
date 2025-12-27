@@ -285,8 +285,8 @@ public class SmoothManifold : Sample
 
             for (int i = 0; i < m_count; ++i)
             {
-                ref B2ChainSegment segment = ref m_segments[i];
-                B2Manifold m = b2CollideChainSegmentAndCircle(ref segment, transform1, ref circle, transform2);
+                ref readonly B2ChainSegment segment = ref m_segments[i];
+                B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, ref circle, transform2);
                 DrawManifold(m);
             }
         }
@@ -298,9 +298,9 @@ public class SmoothManifold : Sample
 
             for (int i = 0; i < m_count; ++i)
             {
-                ref B2ChainSegment segment = ref m_segments[i];
+                ref readonly B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(ref segment, transform1, ref rox, transform2, ref cache);
+                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, ref rox, transform2, ref cache);
                 DrawManifold(m);
             }
         }

@@ -99,17 +99,17 @@ namespace Box2D.NET
         internal static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideChainSegmentAndCircle(ref shapeA.us.chainSegment, xfA, ref shapeB.us.circle, xfB);
+            return b2CollideChainSegmentAndCircle(shapeA.us.chainSegment, xfA, ref shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2ChainSegmentAndCapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
-            return b2CollideChainSegmentAndCapsule(ref shapeA.us.chainSegment, xfA, shapeB.us.capsule, xfB, ref cache);
+            return b2CollideChainSegmentAndCapsule(shapeA.us.chainSegment, xfA, shapeB.us.capsule, xfB, ref cache);
         }
 
         internal static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
-            return b2CollideChainSegmentAndPolygon(ref shapeA.us.chainSegment, xfA, ref shapeB.us.polygon, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, xfA, ref shapeB.us.polygon, xfB, ref cache);
         }
 
         internal static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
