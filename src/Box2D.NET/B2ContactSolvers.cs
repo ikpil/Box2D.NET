@@ -648,37 +648,37 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2AddW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2AddW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SubW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2SubW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2MulW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulAddW(B2FloatW a, B2FloatW b, B2FloatW c)
+        public static B2FloatW b2MulAddW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
         {
             return new B2FloatW(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulSubW(B2FloatW a, B2FloatW b, B2FloatW c)
+        public static B2FloatW b2MulSubW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
         {
             return new B2FloatW(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MinW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2MinW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(
                 a.X <= b.X ? a.X : b.X,
@@ -689,7 +689,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MaxW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2MaxW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(
                 a.X >= b.X ? a.X : b.X,
@@ -700,7 +700,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SymClampW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
         {
             // a = clamp(a, -b, b)
             return new B2FloatW(
@@ -712,7 +712,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2OrW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2OrW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(
                 a.X != 0.0f || b.X != 0.0f ? 1.0f : 0.0f,
@@ -723,7 +723,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2GreaterThanW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2GreaterThanW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(
                 a.X > b.X ? 1.0f : 0.0f,
@@ -734,7 +734,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2EqualsW(B2FloatW a, B2FloatW b)
+        public static B2FloatW b2EqualsW(in B2FloatW a, in B2FloatW b)
         {
             // TODO: @ikpil check float equal
             return new B2FloatW(
@@ -746,13 +746,13 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2AllZeroW(B2FloatW a)
+        public static bool b2AllZeroW(in B2FloatW a)
         {
             return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2BlendW(B2FloatW a, B2FloatW b, B2FloatW mask)
+        public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
         {
             // component-wise returns mask ? b : a
             return new B2FloatW()
@@ -765,19 +765,19 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2DotW(B2Vec2W a, B2Vec2W b)
+        public static B2FloatW b2DotW(in B2Vec2W a, in B2Vec2W b)
         {
             return b2AddW(b2MulW(a.X, b.X), b2MulW(a.Y, b.Y));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2CrossW(B2Vec2W a, B2Vec2W b)
+        public static B2FloatW b2CrossW(in B2Vec2W a, in B2Vec2W b)
         {
             return b2SubW(b2MulW(a.X, b.Y), b2MulW(a.Y, b.X));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2W b2RotateVectorW(B2RotW q, B2Vec2W v)
+        public static B2Vec2W b2RotateVectorW(in B2RotW q, in B2Vec2W v)
         {
             return new B2Vec2W(b2SubW(b2MulW(q.C, v.X), b2MulW(q.S, v.Y)), b2AddW(b2MulW(q.S, v.X), b2MulW(q.C, v.Y)));
         }
