@@ -210,7 +210,7 @@ namespace Box2D.NET
             return bestIndex;
         }
 
-        public static B2Simplex b2MakeSimplexFromCache(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2ShapeProxy proxyB)
+        public static B2Simplex b2MakeSimplexFromCache(in B2SimplexCache cache, in B2ShapeProxy proxyA, in B2ShapeProxy proxyB)
         {
             B2_ASSERT(cache.count <= 3);
             B2Simplex s = new B2Simplex();
@@ -491,7 +491,7 @@ namespace Box2D.NET
             }
 
             // Initialize the simplex.
-            B2Simplex simplex = b2MakeSimplexFromCache(ref cache, ref proxyA, ref localProxyB);
+            B2Simplex simplex = b2MakeSimplexFromCache(cache, proxyA, localProxyB);
 
             int simplexIndex = 0;
             if (simplexes != null && simplexIndex < simplexCapacity)
