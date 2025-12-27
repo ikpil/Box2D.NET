@@ -66,7 +66,7 @@ public class TimeOfImpact : Sample
         _input.sweepB = _sweepB;
         _input.maxFraction = 1.0f;
 
-        _output = b2TimeOfImpact(ref _input);
+        _output = b2TimeOfImpact(_input);
     }
 
     public override void Draw()

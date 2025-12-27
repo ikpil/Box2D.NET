@@ -434,7 +434,7 @@ namespace Box2D.NET
             input.sweepB = continuousContext.sweep;
             input.maxFraction = continuousContext.fraction;
 
-            B2TOIOutput output = b2TimeOfImpact(ref input);
+            B2TOIOutput output = b2TimeOfImpact(input);
             if (isSensor)
             {
                 // Only accept a sensor hit that is sooner than the current solid hit.
@@ -469,7 +469,7 @@ namespace Box2D.NET
                     B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
                     float radius = B2_CORE_FRACTION * extent.minExtent;
                     input.proxyB = b2MakeProxy(centroid, 1, radius);
-                    output = b2TimeOfImpact(ref input);
+                    output = b2TimeOfImpact(input);
                     if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                     {
                         hitFraction = output.fraction;

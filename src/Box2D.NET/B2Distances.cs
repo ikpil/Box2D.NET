@@ -967,7 +967,7 @@ namespace Box2D.NET
         }
 #endif
 
-        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, ref B2ShapeProxy proxyA, ref B2Sweep sweepA, ref B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
+        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, in B2ShapeProxy proxyA, ref B2Sweep sweepA, in B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
         {
             B2SeparationFunction f = new B2SeparationFunction();
 
@@ -1170,7 +1170,7 @@ namespace Box2D.NET
         /// again.
         // CCD via the local separating axis method. This seeks progression
         // by computing the largest time at which separation is maintained.
-        public static B2TOIOutput b2TimeOfImpact(ref B2TOIInput input)
+        public static B2TOIOutput b2TimeOfImpact(in B2TOIInput input)
         {
 #if B2_SNOOP_TOI_COUNTERS
             ulong ticks = b2GetTicks();
@@ -1190,8 +1190,8 @@ namespace Box2D.NET
             // c1 can be at the origin yet the points are far away
             // B2Vec2 origin = b2Add(sweepA.c1, input.proxyA.points[0]);
 
-            ref B2ShapeProxy proxyA = ref input.proxyA;
-            ref B2ShapeProxy proxyB = ref input.proxyB;
+            ref readonly B2ShapeProxy proxyA = ref input.proxyA;
+            ref readonly B2ShapeProxy proxyB = ref input.proxyB;
 
             float tMax = input.maxFraction;
 
@@ -1273,7 +1273,7 @@ namespace Box2D.NET
                 }
 
                 // Initialize the separating axis.
-                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, ref proxyA, ref sweepA, ref proxyB, ref sweepB, t1);
+                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, proxyA, ref sweepA, proxyB, ref sweepB, t1);
 #if FALSE
                     // Dump the curve seen by the root finder
                     {
