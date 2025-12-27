@@ -41,7 +41,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2ShouldShapesCollide(B2Filter filterA, B2Filter filterB)
+        internal static bool b2ShouldShapesCollide(in B2Filter filterA, in B2Filter filterB)
         {
             if (filterA.groupIndex == filterB.groupIndex && filterA.groupIndex != 0)
             {
@@ -52,7 +52,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2ShouldQueryCollide(B2Filter shapeFilter, in B2QueryFilter queryFilter)
+        internal static bool b2ShouldQueryCollide(in B2Filter shapeFilter, in B2QueryFilter queryFilter)
         {
             return (shapeFilter.categoryBits & queryFilter.maskBits) != 0 && (shapeFilter.maskBits & queryFilter.categoryBits) != 0;
         }
@@ -1306,7 +1306,7 @@ namespace Box2D.NET
         /// contacts to be immediately destroyed. However contacts are not created until the next world step.
         /// Sensor overlap state is also not updated until the next world step.
         /// @see b2ShapeDef::filter
-        public static void b2Shape_SetFilter(in B2ShapeId shapeId, B2Filter filter)
+        public static void b2Shape_SetFilter(in B2ShapeId shapeId, in B2Filter filter)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
