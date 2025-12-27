@@ -224,7 +224,7 @@ public class LargeWorld : Sample
             def.radius = radius;
             def.falloff = 0.1f;
             def.impulsePerLength = 1.0f;
-            b2World_Explode(m_worldId, ref def);
+            b2World_Explode(m_worldId, def);
 
             m_cycleIndex = (m_cycleIndex + 1) % m_cycleCount;
         }

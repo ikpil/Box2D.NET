@@ -125,7 +125,7 @@ public class TopDownFriction : Sample
             def.radius = 10.0f;
             def.falloff = 5.0f;
             def.impulsePerLength = 10.0f;
-            b2World_Explode(m_worldId, ref def);
+            b2World_Explode(m_worldId, def);
 
             DrawCircle(m_draw, def.position, 10.0f, B2HexColor.b2_colorWhite);
         }
