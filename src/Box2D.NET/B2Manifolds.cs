@@ -1102,7 +1102,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a circle
-        public static B2Manifold b2CollideChainSegmentAndCircle(ref B2ChainSegment segmentA, in B2Transform xfA, ref B2Circle circleB, in B2Transform xfB)
+        public static B2Manifold b2CollideChainSegmentAndCircle(in B2ChainSegment segmentA, in B2Transform xfA, ref B2Circle circleB, in B2Transform xfB)
         {
             B2Manifold manifold = new B2Manifold();
 
@@ -1190,10 +1190,10 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a capsule
-        public static B2Manifold b2CollideChainSegmentAndCapsule(ref B2ChainSegment segmentA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB, ref B2SimplexCache cache)
+        public static B2Manifold b2CollideChainSegmentAndCapsule(in B2ChainSegment segmentA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollideChainSegmentAndPolygon(ref segmentA, xfA, ref polyB, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(segmentA, xfA, ref polyB, xfB, ref cache);
         }
 
         internal static B2Manifold b2ClipSegments(B2Vec2 a1, B2Vec2 a2, B2Vec2 b1, B2Vec2 b2, B2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
@@ -1311,7 +1311,7 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a chain segment and a rounded polygon
-        public static B2Manifold b2CollideChainSegmentAndPolygon(ref B2ChainSegment segmentA, in B2Transform xfA, ref B2Polygon polygonB,
+        public static B2Manifold b2CollideChainSegmentAndPolygon(in B2ChainSegment segmentA, in B2Transform xfA, ref B2Polygon polygonB,
             B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Manifold manifold = new B2Manifold();
