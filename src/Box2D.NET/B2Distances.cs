@@ -967,7 +967,7 @@ namespace Box2D.NET
         }
 #endif
 
-        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, in B2ShapeProxy proxyA, ref B2Sweep sweepA, in B2ShapeProxy proxyB, ref B2Sweep sweepB, float t1)
+        public static B2SeparationFunction b2MakeSeparationFunction(ref B2SimplexCache cache, in B2ShapeProxy proxyA, in B2Sweep sweepA, in B2ShapeProxy proxyB, in B2Sweep sweepB, float t1)
         {
             B2SeparationFunction f = new B2SeparationFunction();
 
@@ -1181,8 +1181,8 @@ namespace Box2D.NET
             output.state = B2TOIState.b2_toiStateUnknown;
             output.fraction = input.maxFraction;
 
-            B2Sweep sweepA = input.sweepA;
-            B2Sweep sweepB = input.sweepB;
+            ref readonly B2Sweep sweepA = ref input.sweepA;
+            ref readonly B2Sweep sweepB = ref input.sweepB;
             B2_ASSERT(b2IsNormalizedRot(sweepA.q1) && b2IsNormalizedRot(sweepA.q2));
             B2_ASSERT(b2IsNormalizedRot(sweepB.q1) && b2IsNormalizedRot(sweepB.q2));
 
@@ -1273,7 +1273,7 @@ namespace Box2D.NET
                 }
 
                 // Initialize the separating axis.
-                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, proxyA, ref sweepA, proxyB, ref sweepB, t1);
+                B2SeparationFunction fcn = b2MakeSeparationFunction(ref cache, proxyA, sweepA, proxyB, sweepB, t1);
 #if FALSE
                     // Dump the curve seen by the root finder
                     {
