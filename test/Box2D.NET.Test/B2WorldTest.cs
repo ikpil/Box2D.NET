@@ -304,7 +304,7 @@ public class B2WorldTest
         Assert.That(v.Y, Is.EqualTo(g.Y));
 
         B2ExplosionDef explosionDef = b2DefaultExplosionDef();
-        b2World_Explode(worldId, ref explosionDef);
+        b2World_Explode(worldId, explosionDef);
 
         b2World_SetContactTuning(worldId, 10.0f, 2.0f, 4.0f);
 

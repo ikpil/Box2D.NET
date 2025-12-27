@@ -160,7 +160,7 @@ class ProjectileEvent : Sample
                         explosionDef.position = data.manifold.points[0].point;
                         explosionDef.radius = 1.0f;
                         explosionDef.impulsePerLength = 20.0f;
-                        b2World_Explode(m_worldId, ref explosionDef);
+                        b2World_Explode(m_worldId, explosionDef);
 
                         b2DestroyBody(m_projectileId);
                         m_projectileId = b2_nullBodyId;
