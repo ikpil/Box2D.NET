@@ -764,7 +764,7 @@ namespace Box2D.NET
         }
 
         /// Destroy a proxy. This asserts if the id is invalid.
-        internal static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
+        public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
