@@ -68,7 +68,7 @@ namespace Box2D.NET
         public object userTaskContext;
 
         /// User data
-        public object userData;
+        public B2UserData userData;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;

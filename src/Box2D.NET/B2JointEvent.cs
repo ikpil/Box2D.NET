@@ -12,6 +12,6 @@ namespace Box2D.NET
         public B2JointId jointId;
 
         /// The user data from the joint for convenience
-        public object userData;
+        public B2UserData userData;
     }
 }

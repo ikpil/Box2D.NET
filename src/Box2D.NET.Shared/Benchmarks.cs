@@ -270,7 +270,7 @@ namespace Box2D.NET.Shared
             for (int i = 0; i < (int)RainConstants.RAIN_GROUP_SIZE; ++i)
             {
                 ref Human human = ref rainData.groups[groupIndex].humans[i];
-                CreateHuman(ref human, worldId, position, scale, jointFriction, jointHertz, jointDamping, i + 1, null, false);
+                CreateHuman(ref human, worldId, position, scale, jointFriction, jointHertz, jointDamping, i + 1, B2UserData.Empty, false);
                 position.X += 0.5f;
             }
         }

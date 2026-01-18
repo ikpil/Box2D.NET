@@ -60,7 +60,7 @@ public class BenchmarkSensor : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.isSensor = true;
             shapeDef.enableSensorEvents = true;
-            shapeDef.userData = m_activeSensor;
+            shapeDef.userData = B2UserData.Ref(m_activeSensor);
 
             float y = 0.0f;
             float x = -40.0f * gridSize;
@@ -90,7 +90,7 @@ public class BenchmarkSensor : Sample
                 m_passiveSensors[j] = new ShapeUserData();
                 m_passiveSensors[j].row = j;
                 m_passiveSensors[j].active = false;
-                shapeDef.userData = m_passiveSensors[j];
+                shapeDef.userData = B2UserData.Ref(m_passiveSensors[j]);
 
                 if (j == m_filterRow)
                 {
@@ -148,11 +148,11 @@ public class BenchmarkSensor : Sample
         ShapeUserData userData = null;
         if (b2Shape_IsSensor(idA))
         {
-            userData = b2Shape_GetUserData(idA) as ShapeUserData;
+            userData = b2Shape_GetUserData(idA).GetRef<ShapeUserData>();
         }
         else if (b2Shape_IsSensor(idB))
         {
-            userData = b2Shape_GetUserData(idB) as ShapeUserData;
+            userData = b2Shape_GetUserData(idB).GetRef<ShapeUserData>();
         }
 
         if (userData != null)
@@ -186,7 +186,7 @@ public class BenchmarkSensor : Sample
             ref B2SensorBeginTouchEvent @event = ref events.beginEvents[i];
 
             // shapes on begin touch are always valid
-            ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(@event.sensorShapeId);
+            ShapeUserData userData = b2Shape_GetUserData(@event.sensorShapeId).GetRef<ShapeUserData>();
             if (userData.active)
             {
                 zombies.Add(b2Shape_GetBody(@event.visitorShapeId));

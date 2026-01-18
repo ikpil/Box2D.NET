@@ -1667,13 +1667,13 @@ namespace Box2D.NET
             return s;
         }
 
-        public static void b2World_SetUserData(B2WorldId worldId, object userData)
+        public static void b2World_SetUserData(B2WorldId worldId, B2UserData userData)
         {
             B2World world = b2GetWorldFromId(worldId);
             world.userData = userData;
         }
 
-        public static object b2World_GetUserData(B2WorldId worldId)
+        public static B2UserData b2World_GetUserData(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
             return world.userData;

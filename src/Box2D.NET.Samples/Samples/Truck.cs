@@ -28,7 +28,7 @@ public class Truck
     {
     }
 
-    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, float density, object userData)
+    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, float density, B2UserData userData)
     {
         B2_ASSERT(m_isSpawned == false);
 

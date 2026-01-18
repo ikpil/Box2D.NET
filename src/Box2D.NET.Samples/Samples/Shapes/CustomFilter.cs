@@ -14,7 +14,8 @@ namespace Box2D.NET.Samples.Samples.Shapes;
 // This shows how to use custom filtering
 public class CustomFilter : Sample
 {
-    private static readonly int SampleCustomFilter = SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
+    private static readonly int SampleCustomFilter =
+        SampleFactory.Shared.RegisterSample("Shapes", "Custom Filter", Create);
 
     public const int e_count = 10;
 
@@ -60,7 +61,7 @@ public class CustomFilter : Sample
                 bodyDef.position = new B2Vec2(x, 5.0f);
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
 
-                shapeDef.userData = i + 1;
+                shapeDef.userData = B2UserData.Signed(i + 1);
                 m_shapeIds[i] = b2CreatePolygonShape(m_bodyIds[i], shapeDef, box);
                 x += 2.0f;
             }
@@ -74,16 +75,16 @@ public class CustomFilter : Sample
 
     bool ShouldCollide(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB)
     {
-        object userDataA = b2Shape_GetUserData(shapeIdA);
-        object userDataB = b2Shape_GetUserData(shapeIdB);
+        var userDataA = b2Shape_GetUserData(shapeIdA);
+        var userDataB = b2Shape_GetUserData(shapeIdB);
 
-        if (userDataA == null || userDataB == null)
+        if (userDataA.IsEmpty() || userDataB.IsEmpty())
         {
             return true;
         }
 
-        int indexA = (int)userDataA;
-        int indexB = (int)userDataB;
+        int indexA = (int)userDataA.GetSigned(-1);
+        int indexB = (int)userDataB.GetSigned(-1);
 
         return ((indexA & 1) + (indexB & 1)) != 1;
     }
@@ -100,7 +101,7 @@ public class CustomFilter : Sample
         base.Draw();
 
         DrawTextLine("Custom filter disables collision between odd and even shapes");
-        
+
 
         for (int i = 0; i < e_count; ++i)
         {

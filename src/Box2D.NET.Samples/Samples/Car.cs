@@ -24,7 +24,7 @@ public struct Car
     public B2JointId m_frontAxleId;
     public bool m_isSpawned;
 
-    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, object userData)
+    public void Spawn(B2WorldId worldId, B2Vec2 position, float scale, float hertz, float dampingRatio, float torque, B2UserData userData)
     {
         B2_ASSERT(m_isSpawned == false);
 

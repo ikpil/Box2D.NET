@@ -216,7 +216,7 @@ public class Drop : Sample
         float jointHertz = 1.0f;
         float jointDampingRatio = 0.5f;
 
-        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 40.0f), 1.0f, jointFrictionTorque, jointHertz, jointDampingRatio, 1, null, true);
+        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 40.0f), 1.0f, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, true);
 
         m_frameCount = 1;
     }

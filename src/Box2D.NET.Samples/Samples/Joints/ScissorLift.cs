@@ -200,7 +200,7 @@ public class ScissorLift : Sample
             m_liftJointId = b2CreateDistanceJoint(m_worldId, distanceDef);
 
             Car car = new Car();
-            car.Spawn(m_worldId, new B2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, null);
+            car.Spawn(m_worldId, new B2Vec2(0.0f, y + 2.0f), 1.0f, 3.0f, 0.7f, 0.0f, B2UserData.Empty);
         }
     }
 

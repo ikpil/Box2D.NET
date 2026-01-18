@@ -36,6 +36,6 @@ public class SoftBody : Sample
         }
 
         m_donut = new();
-        m_donut.Create(m_worldId, new B2Vec2(0.0f, 10.0f), 2.0f, 0, false, null);
+        m_donut.Create(m_worldId, new B2Vec2(0.0f, 10.0f), 2.0f, 0, false, B2UserData.Empty);
     }
 }

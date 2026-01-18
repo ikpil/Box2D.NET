@@ -12,7 +12,7 @@ namespace Box2D.NET
     public struct B2ShapeDef
     {
         /// Use this to store application specific shape data.
-        public object userData;
+        public B2UserData userData;
 
         /// The surface material for this shape.
         public B2SurfaceMaterial material;

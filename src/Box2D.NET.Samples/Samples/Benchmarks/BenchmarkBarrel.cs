@@ -298,7 +298,7 @@ public class BenchmarkBarrel : Sample
                     float jointFriction = 0.05f;
                     float jointHertz = 5.0f;
                     float jointDamping = 0.5f;
-                    CreateHuman(ref m_humans[index], m_worldId, bodyDef.position, scale, jointFriction, jointHertz, jointDamping, index + 1, null, false);
+                    CreateHuman(ref m_humans[index], m_worldId, bodyDef.position, scale, jointFriction, jointHertz, jointDamping, index + 1, B2UserData.Empty, false);
                 }
 
                 index += 1;

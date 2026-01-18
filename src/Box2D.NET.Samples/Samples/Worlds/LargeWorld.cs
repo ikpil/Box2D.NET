@@ -140,7 +140,7 @@ public class LargeWorld : Sample
                 for (int i = 0; i < 5; ++i)
                 {
                     Human human = new Human();
-                    CreateHuman(ref human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, null, false);
+                    CreateHuman(ref human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, B2UserData.Empty, false);
                     humanIndex += 1;
                     position.X += 1.0f;
                 }
@@ -152,13 +152,13 @@ public class LargeWorld : Sample
                 for (int i = 0; i < 5; ++i)
                 {
                     Donut donut = new Donut();
-                    donut.Create(m_worldId, position, 0.75f, 0, false, null);
+                    donut.Create(m_worldId, position, 0.75f, 0, false, B2UserData.Empty);
                     position.X += 2.0f;
                 }
             }
         }
 
-        m_car.Spawn(m_worldId, new B2Vec2(xStart + 20.0f, 40.0f), 10.0f, 2.0f, 0.7f, 2000.0f, null);
+        m_car.Spawn(m_worldId, new B2Vec2(xStart + 20.0f, 40.0f), 10.0f, 2.0f, 0.7f, 2000.0f, B2UserData.Empty);
 
         m_cycleIndex = 0;
         m_speed = 0.0f;
