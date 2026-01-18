@@ -9,7 +9,7 @@ namespace Box2D.NET
     {
         public string name;
 
-        public object userData;
+        public B2UserData userData;
 
         // index of solver set stored in b2World
         // may be B2_NULL_INDEX

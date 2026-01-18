@@ -194,7 +194,7 @@ public class CastWorld : Sample
         m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.userData = m_userData[m_bodyIndex];
+        shapeDef.userData = B2UserData.Ref(m_userData[m_bodyIndex]);
         m_userData[m_bodyIndex].ignore = false;
         if (m_bodyIndex == m_ignoreIndex)
         {
@@ -560,7 +560,7 @@ public class CastWorld : Sample
     {
         CastContext rayContext = (CastContext)context;
 
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
         // Ignore a specific shape. Also ignore initial overlap.
         if ((userData != null && userData.ignore) || fraction == 0.0f)
@@ -588,7 +588,7 @@ public class CastWorld : Sample
     {
         CastContext rayContext = (CastContext)context;
 
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
         // Ignore a specific shape. Also ignore initial overlap.
         if ((userData != null && userData.ignore) || fraction == 0.0f)
@@ -618,7 +618,7 @@ public class CastWorld : Sample
     {
         CastContext rayContext = (CastContext)context;
 
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
         // Ignore a specific shape. Also ignore initial overlap.
         if ((userData != null && userData.ignore) || fraction == 0.0f)
@@ -652,7 +652,7 @@ public class CastWorld : Sample
     {
         CastContext rayContext = (CastContext)context;
 
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
         // Ignore a specific shape. Also ignore initial overlap.
         if ((userData != null && userData.ignore) || fraction == 0.0f)

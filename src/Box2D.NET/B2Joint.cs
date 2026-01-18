@@ -7,7 +7,7 @@ namespace Box2D.NET
     // Map from b2JointId to b2Joint in the solver sets
     public class B2Joint
     {
-        public object userData;
+        public B2UserData userData;
 
         // index of simulation set stored in b2World
         // B2_NULL_INDEX when slot is free

@@ -57,7 +57,7 @@ public class Ragdoll : Sample
 
     void Spawn()
     {
-        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, null, false);
+        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, B2UserData.Empty, false);
         //Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
     }
 

@@ -319,9 +319,9 @@ public class B2WorldTest
         int count = b2World_GetAwakeBodyCount(worldId);
         Assert.That(count, Is.EqualTo(0));
 
-        b2World_SetUserData(worldId, value);
-        object userData = b2World_GetUserData(worldId);
-        Assert.That((float)userData, Is.EqualTo(value));
+        b2World_SetUserData(worldId, B2UserData.Double(value));
+        var userData = b2World_GetUserData(worldId);
+        Assert.That((float)userData.GetDouble(), Is.EqualTo(value));
 
         b2World_Step(worldId, 1.0f, 1);
 

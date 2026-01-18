@@ -48,7 +48,7 @@ public class CircleStack : Sample
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
-            shapeDef.userData = shapeIndex;
+            shapeDef.userData = B2UserData.Signed(shapeIndex);
             shapeIndex += 1;
 
             B2Segment segment = new B2Segment(new B2Vec2(-10.0f, 0.0f), new B2Vec2(10.0f, 0.0f));
@@ -78,7 +78,7 @@ public class CircleStack : Sample
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
-                shapeDef.userData = shapeIndex;
+                shapeDef.userData = B2UserData.Signed(shapeIndex);
                 shapeDef.density = 1.0f + 4.0f * i;
                 shapeIndex += 1;
                 b2CreateCircleShape(bodyId, shapeDef, circle);
@@ -97,10 +97,10 @@ public class CircleStack : Sample
         {
             ref B2ContactHitEvent @event = ref events.hitEvents[i];
 
-            object userDataA = b2Shape_GetUserData(@event.shapeIdA);
-            object userDataB = b2Shape_GetUserData(@event.shapeIdB);
-            int indexA = (int)userDataA;
-            int indexB = (int)userDataB;
+            var userDataA = b2Shape_GetUserData(@event.shapeIdA);
+            var userDataB = b2Shape_GetUserData(@event.shapeIdB);
+            int indexA = (int)userDataA.GetSigned(-1);
+            int indexB = (int)userDataB.GetSigned(-1);
 
             DrawPoint(m_draw, @event.point, 10.0f, B2HexColor.b2_colorWhite);
 

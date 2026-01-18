@@ -51,7 +51,7 @@ namespace Box2D.NET
         public string name;
 
         /// Use this to store application specific body data.
-        public object userData;
+        public B2UserData userData;
         
         /// Motions locks to restrict linear and angular movement.
         /// Caution: may lead to softer constraints along the locked direction

@@ -80,7 +80,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
         }
 
@@ -104,7 +104,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreateMotorJoint(m_worldId, jointDef);
         }
 
@@ -128,7 +128,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
@@ -152,7 +152,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
@@ -178,7 +178,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
         }
 
@@ -210,7 +210,7 @@ public class JointEvent : Sample
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
-            jointDef.@base.userData = CustomUserData.Create(index);
+            jointDef.@base.userData = B2UserData.Signed(index);
             m_jointIds[index] = b2CreateWheelJoint(m_worldId, jointDef);
         }
 
@@ -231,8 +231,8 @@ public class JointEvent : Sample
 
             if (b2Joint_IsValid(@event.jointId))
             {
-                CustomUserData<int> userData = @event.userData as CustomUserData<int>;
-                int index = userData?.Value ?? -1;
+                var userData = @event.userData.GetSigned(-1);
+                var index = userData;
                 B2_ASSERT(0 <= index && index < e_count);
                 b2DestroyJoint(@event.jointId, true);
                 m_jointIds[index] = b2_nullJointId;

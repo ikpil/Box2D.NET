@@ -66,7 +66,7 @@ public class OverlapWorld : Sample
 
     static bool OverlapResultFcn(in B2ShapeId shapeId, object context)
     {
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
         if (userData != null && userData.ignore)
         {
             // continue the query
@@ -177,7 +177,7 @@ public class OverlapWorld : Sample
         m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
-        shapeDef.userData = m_userData[m_bodyIndex];
+        shapeDef.userData = B2UserData.Ref(m_userData[m_bodyIndex]);
         m_userData[m_bodyIndex].index = m_bodyIndex;
         m_userData[m_bodyIndex].ignore = false;
         if (m_bodyIndex == m_ignoreIndex)
@@ -373,7 +373,7 @@ public class OverlapWorld : Sample
         for (int i = 0; i < m_doomCount; ++i)
         {
             B2ShapeId shapeId = m_doomIds[i];
-            ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+            ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
             if (userData == null)
             {
                 continue;

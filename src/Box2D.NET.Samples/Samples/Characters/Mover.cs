@@ -229,7 +229,7 @@ public class Mover : Sample
             m_friendlyShape.clipVelocity = false;
 
             shapeDef.filter = new B2Filter(MoverBit, AllBits, 0);
-            shapeDef.userData = m_friendlyShape;
+            shapeDef.userData = B2UserData.Ref(m_friendlyShape);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreateCapsuleShape(bodyId, shapeDef, m_capsule);
         }
@@ -262,7 +262,7 @@ public class Mover : Sample
             };
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.filter = new B2Filter(DynamicBit, AllBits, 0);
-            shapeDef.userData = m_elevatorShape;
+            shapeDef.userData = B2UserData.Ref(m_elevatorShape);
 
             B2Polygon box = b2MakeBox(2.0f, 0.1f);
             b2CreatePolygonShape(m_elevatorId, shapeDef, box);
@@ -504,7 +504,7 @@ public class Mover : Sample
         Mover self = (Mover)context;
         float maxPush = float.MaxValue;
         bool clipVelocity = true;
-        ShapeUserData userData = (ShapeUserData)b2Shape_GetUserData(shapeId);
+        ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
         if (userData != null)
         {
             maxPush = userData.maxPush;

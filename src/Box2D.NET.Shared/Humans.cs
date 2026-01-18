@@ -20,7 +20,7 @@ namespace Box2D.NET.Shared
     public static class Humans
     {
         public static void CreateHuman(ref Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
-            int groupIndex, object userData, bool colorize)
+            int groupIndex, B2UserData userData, bool colorize)
         {
             B2_ASSERT(human.isSpawned == false);
 

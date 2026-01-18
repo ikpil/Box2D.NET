@@ -208,7 +208,7 @@ public class Driving : Sample
         m_hertz = 5.0f;
         m_dampingRatio = 0.7f;
 
-        m_car.Spawn(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f, m_hertz, m_dampingRatio, m_torque, null);
+        m_car.Spawn(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f, m_hertz, m_dampingRatio, m_torque, B2UserData.Empty);
     }
 
     public override void UpdateGui()

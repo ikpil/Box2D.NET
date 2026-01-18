@@ -27,7 +27,7 @@ public struct Donut
         B2_ASSERT(m_sides == B2FixedArray7<B2JointId>.Size);
     }
 
-    public void Create(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, bool enableSensorEvents, object userData)
+    public void Create(B2WorldId worldId, B2Vec2 position, float scale, int groupIndex, bool enableSensorEvents, B2UserData userData)
     {
         B2_ASSERT(m_isSpawned == false);
 

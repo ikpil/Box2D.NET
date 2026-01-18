@@ -20,7 +20,8 @@ namespace Box2D.NET.Samples.Samples.Events;
 
 public class SensorFunnel : Sample
 {
-    private static readonly int SampleSensorBeginEvent = SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
+    private static readonly int SampleSensorBeginEvent =
+        SampleFactory.Shared.RegisterSample("Events", "Sensor Funnel", Create);
 
     private const int e_donut = 1;
     private const int e_human = 2;
@@ -62,12 +63,18 @@ public class SensorFunnel : Sample
 
             B2Vec2[] points = new B2Vec2[]
             {
-                new B2Vec2(-16.8672504f, 31.088623f), new B2Vec2(16.8672485f, 31.088623f), new B2Vec2(16.8672485f, 17.1978741f),
-                new B2Vec2(8.26824951f, 11.906374f), new B2Vec2(16.8672485f, 11.906374f), new B2Vec2(16.8672485f, -0.661376953f),
-                new B2Vec2(8.26824951f, -5.953125f), new B2Vec2(16.8672485f, -5.953125f), new B2Vec2(16.8672485f, -13.229126f),
-                new B2Vec2(3.63799858f, -23.151123f), new B2Vec2(3.63799858f, -31.088623f), new B2Vec2(-3.63800049f, -31.088623f),
-                new B2Vec2(-3.63800049f, -23.151123f), new B2Vec2(-16.8672504f, -13.229126f), new B2Vec2(-16.8672504f, -5.953125f),
-                new B2Vec2(-8.26825142f, -5.953125f), new B2Vec2(-16.8672504f, -0.661376953f), new B2Vec2(-16.8672504f, 11.906374f),
+                new B2Vec2(-16.8672504f, 31.088623f), new B2Vec2(16.8672485f, 31.088623f),
+                new B2Vec2(16.8672485f, 17.1978741f),
+                new B2Vec2(8.26824951f, 11.906374f), new B2Vec2(16.8672485f, 11.906374f),
+                new B2Vec2(16.8672485f, -0.661376953f),
+                new B2Vec2(8.26824951f, -5.953125f), new B2Vec2(16.8672485f, -5.953125f),
+                new B2Vec2(16.8672485f, -13.229126f),
+                new B2Vec2(3.63799858f, -23.151123f), new B2Vec2(3.63799858f, -31.088623f),
+                new B2Vec2(-3.63800049f, -31.088623f),
+                new B2Vec2(-3.63800049f, -23.151123f), new B2Vec2(-16.8672504f, -13.229126f),
+                new B2Vec2(-16.8672504f, -5.953125f),
+                new B2Vec2(-8.26825142f, -5.953125f), new B2Vec2(-16.8672504f, -0.661376953f),
+                new B2Vec2(-16.8672504f, 11.906374f),
                 new B2Vec2(-8.26825142f, 11.906374f), new B2Vec2(-16.8672504f, 17.1978741f),
             };
 
@@ -199,7 +206,7 @@ public class SensorFunnel : Sample
         {
             ref Donut donut = ref m_donuts[index];
             // donut->Spawn(m_worldId, center, index + 1, donut);
-            donut.Create(m_worldId, center, 1.0f, 0, true, CustomUserData.Create(index));
+            donut.Create(m_worldId, center, 1.0f, 0, true, B2UserData.Signed(index));
         }
         else
         {
@@ -209,7 +216,8 @@ public class SensorFunnel : Sample
             float jointHertz = 6.0f;
             float jointDamping = 0.5f;
             bool colorize = true;
-            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping, index + 1, CustomUserData.Create(index), colorize);
+            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping,
+                index + 1, B2UserData.Signed(index), colorize);
             Human_EnableSensorEvents(ref human, true);
         }
 
@@ -259,7 +267,8 @@ public class SensorFunnel : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 90.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize),
+            ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(140.0f, height));
 
         ImGui.Begin("Sensor Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
@@ -299,10 +308,10 @@ public class SensorFunnel : Sample
 
             if (m_type == (int)e_donut)
             {
-                CustomUserData<int> donut = b2Body_GetUserData(bodyId) as CustomUserData<int>;
-                if (donut != null)
+                var donut = b2Body_GetUserData(bodyId);
+                if (!donut.IsEmpty())
                 {
-                    int index = donut.Value;
+                    var index = donut.GetSigned(-1);
                     B2_ASSERT(0 <= index && index < (int)e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)
@@ -311,10 +320,10 @@ public class SensorFunnel : Sample
             }
             else
             {
-                CustomUserData<int> human = b2Body_GetUserData(bodyId) as CustomUserData<int>;
-                if (human != null)
+                var human = b2Body_GetUserData(bodyId);
+                if (!human.IsEmpty())
                 {
-                    int index = human.Value;
+                    var index = human.GetSigned(-1);
                     B2_ASSERT(0 <= index && index < (int)e_count);
 
                     // Defer destruction to avoid double destruction and event invalidation (orphaned shape ids)

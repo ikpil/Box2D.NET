@@ -22,7 +22,7 @@ namespace Box2D.NET
         public int proxyKey;
 
         public B2Filter filter;
-        public object userData;
+        public B2UserData userData;
 
         // TODO: @ikpil, check union
         public B2ShapeUnion us;

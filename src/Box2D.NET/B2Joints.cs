@@ -881,14 +881,14 @@ namespace Box2D.NET
             return joint.collideConnected;
         }
 
-        public static void b2Joint_SetUserData(B2JointId jointId, object userData)
+        public static void b2Joint_SetUserData(B2JointId jointId, B2UserData userData)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             joint.userData = userData;
         }
 
-        public static object b2Joint_GetUserData(B2JointId jointId)
+        public static B2UserData b2Joint_GetUserData(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);

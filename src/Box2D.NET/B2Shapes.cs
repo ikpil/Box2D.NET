@@ -1029,14 +1029,14 @@ namespace Box2D.NET
             return new B2WorldId((ushort)(shapeId.world0 + 1), world.generation);
         }
 
-        public static void b2Shape_SetUserData(in B2ShapeId shapeId, object userData)
+        public static void b2Shape_SetUserData(in B2ShapeId shapeId, B2UserData userData)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             shape.userData = userData;
         }
 
-        public static object b2Shape_GetUserData(in B2ShapeId shapeId)
+        public static B2UserData b2Shape_GetUserData(in B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);

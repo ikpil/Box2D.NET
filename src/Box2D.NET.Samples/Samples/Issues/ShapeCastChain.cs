@@ -69,7 +69,7 @@ public class ShapeCastChain : Sample
         };
 
         B2ChainDef worldChainDef = b2DefaultChainDef();
-        worldChainDef.userData = null;
+        worldChainDef.userData = B2UserData.Empty;
         worldChainDef.points = points;
         worldChainDef.count = 4;
         worldChainDef.filter.categoryBits = 0x1;
@@ -90,14 +90,14 @@ public class ShapeCastChain : Sample
         characterBodyDef.isAwake = false;
         characterBodyDef.motionLocks.angularZ = true;
         characterBodyDef.isEnabled = true;
-        characterBodyDef.userData = null;
+        characterBodyDef.userData = B2UserData.Empty;
         characterBodyDef.type = B2BodyType.b2_kinematicBody;
 
         characterBodyId_ = b2CreateBody(m_worldId, characterBodyDef);
 
         B2ShapeDef characterShapeDef = b2DefaultShapeDef();
 
-        characterShapeDef.userData = null;
+        characterShapeDef.userData = B2UserData.Empty;
         characterShapeDef.filter.categoryBits = 0x1;
         characterShapeDef.filter.maskBits = 0x1;
         characterShapeDef.filter.groupIndex = 0;

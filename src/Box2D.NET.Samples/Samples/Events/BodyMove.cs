@@ -95,7 +95,7 @@ public class BodyMove : Sample
         {
             bodyDef.position = new B2Vec2(x, y);
             bodyDef.isBullet = (m_count % 12 == 0);
-            bodyDef.userData = CustomUserData.Create(m_count);
+            bodyDef.userData = B2UserData.Signed(m_count);
             m_bodyIds[m_count] = b2CreateBody(m_worldId, bodyDef);
             m_sleeping[m_count] = false;
 
@@ -140,7 +140,7 @@ public class BodyMove : Sample
         {
             ref readonly B2BodyMoveEvent @event = ref events.moveEvents[i];
             
-            if (@event.userData == null)
+            if (@event.userData.IsEmpty())
             {
                 // The mouse joint body has no user data
                 continue;
@@ -157,9 +157,9 @@ public class BodyMove : Sample
 
             // this shows a somewhat contrived way to track body sleeping
             //B2BodyId bodyId = (B2BodyId)@event.userData; // todo: @ikpil check struct casting
-            var diff = (CustomUserData<int>)@event.userData;
+            var diff = @event.userData.GetSigned(-1);
             //ptrdiff_t diff = bodyId - m_bodyIds;
-            ref bool sleeping = ref m_sleeping[diff.Value];
+            ref bool sleeping = ref m_sleeping[diff];
 
             if (@event.fellAsleep)
             {

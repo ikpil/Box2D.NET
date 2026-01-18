@@ -22,7 +22,7 @@ namespace Box2D.NET
     public struct B2ChainDef
     {
         /// Use this to store application specific shape data.
-        public object userData;
+        public B2UserData userData;
 
         /// An array of at least 4 points. These are cloned and may be temporary.
         public B2Vec2[] points;

@@ -1427,7 +1427,7 @@ namespace Box2D.NET
         }
 
         /// Set the user data for a body
-        public static void b2Body_SetUserData(B2BodyId bodyId, object userData)
+        public static void b2Body_SetUserData(B2BodyId bodyId, B2UserData userData)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1435,7 +1435,7 @@ namespace Box2D.NET
         }
 
         /// Get the user data stored in a body
-        public static object b2Body_GetUserData(B2BodyId bodyId)
+        public static B2UserData b2Body_GetUserData(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);

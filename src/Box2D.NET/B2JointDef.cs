@@ -11,7 +11,7 @@ namespace Box2D.NET
     public struct B2JointDef
     {
         /// User data pointer
-        public object userData;
+        public B2UserData userData;
 
         /// The first attached body
         public B2BodyId bodyIdA;

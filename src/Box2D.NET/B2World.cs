@@ -133,7 +133,7 @@ namespace Box2D.NET
         public object userTaskContext;
         public object userTreeTask;
 
-        public object userData;
+        public B2UserData userData;
 
         // Remember type step used for reporting forces and torques
         // inverse sub-step
@@ -242,7 +242,7 @@ namespace Box2D.NET
             userTaskContext = null;
             userTreeTask = null;
 
-            userData = null;
+            userData = B2UserData.Empty;
 
             inv_h = 0.0f;
             inv_dt = 0.0f;
