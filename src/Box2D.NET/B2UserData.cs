@@ -81,7 +81,7 @@ namespace Box2D.NET
             return new B2UserData(i);
         }
 
-        public static B2UserData Unsinged(ulong u)
+        public static B2UserData Unsigned(ulong u)
         {
             return new B2UserData(u);
         }
