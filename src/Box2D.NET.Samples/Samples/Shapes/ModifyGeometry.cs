@@ -81,7 +81,7 @@ public class ModifyGeometry : Sample
         {
             case B2ShapeType.b2_circleShape:
                 m_us.circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f * m_scale);
-                b2Shape_SetCircle(m_shapeId, ref m_us.circle);
+                b2Shape_SetCircle(m_shapeId, m_us.circle);
                 break;
 
             case B2ShapeType.b2_capsuleShape:

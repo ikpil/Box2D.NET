@@ -45,13 +45,13 @@ namespace Box2D.NET
         internal static B2Manifold b2CircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideCircles(ref shapeA.us.circle, xfA, ref shapeB.us.circle, xfB);
+            return b2CollideCircles(shapeA.us.circle, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2CapsuleAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideCapsuleAndCircle(shapeA.us.capsule, xfA, ref shapeB.us.circle, xfB);
+            return b2CollideCapsuleAndCircle(shapeA.us.capsule, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2CapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
@@ -63,7 +63,7 @@ namespace Box2D.NET
         internal static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCircle(ref shapeA.us.polygon, xfA, ref shapeB.us.circle, xfB);
+            return b2CollidePolygonAndCircle(ref shapeA.us.polygon, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
@@ -81,7 +81,7 @@ namespace Box2D.NET
         internal static B2Manifold b2SegmentAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideSegmentAndCircle(shapeA.us.segment, xfA, ref shapeB.us.circle, xfB);
+            return b2CollideSegmentAndCircle(shapeA.us.segment, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2SegmentAndCapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
@@ -99,7 +99,7 @@ namespace Box2D.NET
         internal static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideChainSegmentAndCircle(shapeA.us.chainSegment, xfA, ref shapeB.us.circle, xfB);
+            return b2CollideChainSegmentAndCircle(shapeA.us.chainSegment, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2ChainSegmentAndCapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
