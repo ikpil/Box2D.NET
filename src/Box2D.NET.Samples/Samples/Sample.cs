@@ -251,7 +251,7 @@ public class Sample : IDisposable
         m_textLine = m_textIncrement;
     }
 
-    public bool QueryCallback(in B2ShapeId shapeId, object context)
+    public bool QueryCallback(B2ShapeId shapeId, object context)
     {
         QueryContext queryContext = context as QueryContext;
 

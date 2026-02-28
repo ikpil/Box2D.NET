@@ -17,7 +17,7 @@ namespace Box2D.NET
         /// Used b2Contact_IsValid before using this id.
         public B2ContactId contactId;
 
-        public B2ContactBeginTouchEvent(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, in B2ContactId contactId)
+        public B2ContactBeginTouchEvent(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2ContactId contactId)
         {
             this.shapeIdA = shapeIdA;
             this.shapeIdB = shapeIdB;

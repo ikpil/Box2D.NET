@@ -630,7 +630,7 @@ namespace Box2D.NET
             return touching;
         }
 
-        internal static B2Contact b2GetContactFullId(B2World world, in B2ContactId contactId)
+        internal static B2Contact b2GetContactFullId(B2World world, B2ContactId contactId)
         {
             int id = contactId.index1 - 1;
             B2Contact contact = b2Array_Get(ref world.contacts, id);
@@ -640,7 +640,7 @@ namespace Box2D.NET
 
 
         /// Get the data for a contact. The manifold may have no points if the contact is not touching.
-        public static B2ContactData b2Contact_GetData(in B2ContactId contactId)
+        public static B2ContactData b2Contact_GetData(B2ContactId contactId)
         {
             B2World world = b2GetWorld(contactId.world0);
             B2Contact contact = b2GetContactFullId(world, contactId);
