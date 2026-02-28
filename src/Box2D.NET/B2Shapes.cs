@@ -1460,7 +1460,7 @@ namespace Box2D.NET
             return shape.us.polygon;
         }
 
-        public static void b2Shape_SetCircle(in B2ShapeId shapeId, ref B2Circle circle)
+        public static void b2Shape_SetCircle(in B2ShapeId shapeId, in B2Circle circle)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
