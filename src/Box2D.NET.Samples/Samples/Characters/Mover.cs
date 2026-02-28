@@ -93,7 +93,7 @@ public class Mover : Sample
         return new Mover(context);
     }
 
-    private static float CastCallback(in B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    private static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
     {
         CastResult result = (CastResult)context;
         result.point = point;
@@ -497,7 +497,7 @@ public class Mover : Sample
         ImGui.End();
     }
 
-    static bool PlaneResultFcn(in B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
+    static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
     {
         B2_ASSERT(planeResult.hit == true);
 
@@ -521,7 +521,7 @@ public class Mover : Sample
         return true;
     }
 
-    static bool Kick(in B2ShapeId shapeId, object context)
+    static bool Kick(B2ShapeId shapeId, object context)
     {
         Mover self = (Mover)context;
         B2BodyId bodyId = b2Shape_GetBody(shapeId);

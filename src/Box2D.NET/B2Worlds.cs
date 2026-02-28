@@ -1385,7 +1385,7 @@ namespace Box2D.NET
             return true;
         }
 
-        public static bool b2Shape_IsValid(in B2ShapeId id)
+        public static bool b2Shape_IsValid(B2ShapeId id)
         {
             if (B2_MAX_WORLDS <= id.world0)
             {
@@ -2013,7 +2013,7 @@ namespace Box2D.NET
         }
 
         // This callback finds the closest hit. This is the most common callback used in games.
-        internal static float b2RayCastClosestFcn(in B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+        internal static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
         {
             // Ignore initial overlap
             if (fraction == 0.0f)
@@ -3010,7 +3010,7 @@ void b2World_Dump()
  * @{
  */
         /// Contact identifier validation. Provides validation for up to 2^32 allocations.
-        public static bool b2Contact_IsValid(in B2ContactId id)
+        public static bool b2Contact_IsValid(B2ContactId id)
         {
             if (B2_MAX_WORLDS <= id.world0)
             {

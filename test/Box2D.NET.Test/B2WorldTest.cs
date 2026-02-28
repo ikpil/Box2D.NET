@@ -247,7 +247,7 @@ public class B2WorldTest
         }
     }
 
-    public static bool CustomFilter(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, object context)
+    public static bool CustomFilter(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
@@ -255,7 +255,7 @@ public class B2WorldTest
         return true;
     }
 
-    public static bool PreSolveStatic(in B2ShapeId shapeIdA, in B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
+    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);

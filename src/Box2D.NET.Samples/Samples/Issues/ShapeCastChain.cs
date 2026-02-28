@@ -234,7 +234,7 @@ public class ShapeCastChain : Sample
         return false;
     }
 
-    private static float b2CastResult_Closest(in B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object c)
+    private static float b2CastResult_Closest(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object c)
     {
         CastContext_Single context = c as CastContext_Single;
 

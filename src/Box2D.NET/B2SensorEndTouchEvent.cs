@@ -20,7 +20,7 @@ namespace Box2D.NET
         ///	@see b2Shape_IsValid
         public B2ShapeId visitorShapeId;
 
-        public B2SensorEndTouchEvent(in B2ShapeId sensorShapeId, in B2ShapeId visitorShapeId)
+        public B2SensorEndTouchEvent(B2ShapeId sensorShapeId, B2ShapeId visitorShapeId)
         {
             this.sensorShapeId = sensorShapeId;
             this.visitorShapeId = visitorShapeId;
