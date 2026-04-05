@@ -182,7 +182,7 @@ public class B2DeterminismTest
         for (int workerCount = 1; workerCount < 6; ++workerCount)
         {
             int result = SingleMultithreadingTest(workerCount);
-            Assert.That(result == 0);
+            Assert.That(result, Is.EqualTo(0));
         }
     }
 
@@ -207,8 +207,8 @@ public class B2DeterminismTest
             done = UpdateFallingHinges(worldId, ref data);
         }
 
-        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
-        Assert.That(data.hash == EXPECTED_HASH);
+        Assert.That(data.sleepStep, Is.EqualTo(EXPECTED_SLEEP_STEP));
+        Assert.That(data.hash, Is.EqualTo(EXPECTED_HASH));
 
         DestroyFallingHinges(ref data);
 
