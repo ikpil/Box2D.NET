@@ -26,13 +26,13 @@ namespace Box2D.NET.Shared
                 bodyDef.position = new B2Vec2(0.0f, -1.0f);
                 B2BodyId groundId = b2CreateBody(worldId, bodyDef);
 
-                B2Polygon box = b2MakeBox(20.0f, 1.0f);
+                B2Polygon box = b2MakeBox(40.0f, 1.0f);
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 b2CreatePolygonShape(groundId, shapeDef, box);
             }
 
             int columnCount = 4;
-            int rowCount = 30;
+            int rowCount = 20;
             int bodyCount = rowCount * columnCount;
 
             B2BodyId[] bodyIds = new B2BodyId[bodyCount];
@@ -41,32 +41,34 @@ namespace Box2D.NET.Shared
                 float h = 0.25f;
                 float r = 0.1f * h;
                 B2Polygon box = b2MakeRoundedBox(h - r, h - r, r);
+                box = b2MakeSquare(h);
 
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
-                shapeDef.material.friction = 0.3f;
-
-                float offset = 0.4f * h;
-                float dx = 10.0f * h;
-                float xroot = -0.5f * dx * (columnCount - 1.0f);
+                //shapeDef.material.friction = 0.3f;
 
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.enableLimit = true;
                 jointDef.lowerAngle = -0.1f * B2_PI;
                 jointDef.upperAngle = 0.2f * B2_PI;
                 jointDef.enableSpring = true;
-                jointDef.hertz = 0.5f;
-                jointDef.dampingRatio = 0.5f;
-                jointDef.@base.localFrameA.p = new B2Vec2(h, h);
-                jointDef.@base.localFrameB.p = new B2Vec2(offset, -h);
+                jointDef.hertz = 1.0f;
+                jointDef.dampingRatio = 1.0f;
+                jointDef.enableMotor = true;
+                jointDef.maxMotorTorque = 0.25f;
+                jointDef.@base.localFrameA.p = new B2Vec2(-h, h);
+                jointDef.@base.localFrameB.p = new B2Vec2(-h, -h);
                 jointDef.@base.constraintHertz = 60.0f;
                 jointDef.@base.constraintDampingRatio = 0.0f;
                 jointDef.@base.drawScale = 0.5f;
 
                 int bodyIndex = 0;
+                float offset = 0.4f * h;
+                float dx = 10.0f * h;
+                float xBase = -0.5f * dx * (columnCount - 1.0f);
 
                 for (int j = 0; j < columnCount; ++j)
                 {
-                    float x = xroot + j * dx;
+                    float x = xBase + j * dx;
 
                     B2BodyId prevBodyId = b2_nullBodyId;
 
@@ -79,7 +81,8 @@ namespace Box2D.NET.Shared
                         bodyDef.position.Y = h + 2.0f * h * i;
 
                         // this tests the deterministic cosine and sine functions
-                        bodyDef.rotation = b2MakeRot(0.1f * i - 1.0f);
+                        float angle = (i & 1) == 0 ? -0.1f : 0.1f;
+                        bodyDef.rotation = b2MakeRot(angle);
 
                         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 

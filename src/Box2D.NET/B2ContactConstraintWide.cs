@@ -8,7 +8,7 @@ namespace Box2D.NET
     // Uses fixed anchors for Jacobians for better behavior on rolling shapes (circles & capsules)
     // http://mmacklin.com/smallsteps.pdf
     // https://box2d.org/files/ErinCatto_SoftConstraints_GDC2011.pdf
-    public struct B2ContactConstraintSIMD
+    public struct B2ContactConstraintWide
     {
         public B2FixedArray4<int> indexA; // = new int[B2_SIMD_WIDTH];
         public B2FixedArray4<int> indexB; // = new int[B2_SIMD_WIDTH];

@@ -28,7 +28,7 @@ namespace Box2D.NET
         solve_joints,
         integrate_positions,
         ccd,
-        finalize_transfprms,
+        finalize_transforms,
         bullet_body_task,
         merge,
         prepare_stages,

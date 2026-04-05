@@ -790,6 +790,7 @@ public class SampleApp
                     ImGui.Checkbox("Sleep", ref _context.enableSleep);
                     ImGui.Checkbox("Warm Starting", ref _context.enableWarmStarting);
                     ImGui.Checkbox("Continuous", ref _context.enableContinuous);
+                    ImGui.Checkbox("Contact Recycling", ref _context.enableRecycling);
 
                     ImGui.Separator();
 
@@ -797,17 +798,34 @@ public class SampleApp
                     ImGui.Checkbox("Joints", ref _context.debugDraw.drawJoints);
                     ImGui.Checkbox("Joint Extras", ref _context.debugDraw.drawJointExtras);
                     ImGui.Checkbox("Bounds", ref _context.debugDraw.drawBounds);
-                    ImGui.Checkbox("Contact Points", ref _context.debugDraw.drawContactPoints);
-                    ImGui.Checkbox("Contact Normals", ref _context.debugDraw.drawContactNormals);
-                    ImGui.Checkbox("Contact Features", ref _context.debugDraw.drawContactFeatures);
-                    ImGui.Checkbox("Contact Forces", ref _context.debugDraw.drawContactForces);
-                    ImGui.Checkbox("Friction Forces", ref _context.debugDraw.drawFrictionForces);
                     ImGui.Checkbox("Mass", ref _context.debugDraw.drawMass);
                     ImGui.Checkbox("Body Names", ref _context.debugDraw.drawBodyNames);
                     ImGui.Checkbox("Graph Colors", ref _context.debugDraw.drawGraphColors);
                     ImGui.Checkbox("Islands", ref _context.debugDraw.drawIslands);
                     ImGui.Checkbox("Counters", ref _context.drawCounters);
                     ImGui.Checkbox("Profile", ref _context.drawProfile);
+                    ImGui.Separator();
+
+                    ImGui.Separator();
+
+                    {
+                        bool changed = false;
+                        string[] drawTypes =
+                        [
+                            "None", "Clip", "AnchorA", "AnchorB", "Average"
+                        ];
+                        int drawType = (int)_context.debugDraw.contactDrawType;
+                        changed = changed || ImGui.Combo("Contact", ref drawType, drawTypes, drawTypes.Length);
+                        _context.debugDraw.contactDrawType = (B2ContactDrawType)drawType;
+                    }
+
+                    ImGui.Checkbox("Contact Normals", ref _context.debugDraw.drawContactNormals);
+                    ImGui.Checkbox("Contact Features", ref _context.debugDraw.drawContactFeatures);
+                    ImGui.Checkbox("Contact Forces", ref _context.debugDraw.drawContactForces);
+                    ImGui.Checkbox("Friction Forces", ref _context.debugDraw.drawFrictionForces);
+
+                    ImGui.Separator();
+
 
                     ImGui.PushItemWidth(80.0f);
                     ImGui.InputFloat("Joint Scale", ref _context.debugDraw.jointScale);

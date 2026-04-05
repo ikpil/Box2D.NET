@@ -25,7 +25,7 @@ public class VerticalStack : Sample
     private static readonly int SampleVerticalStack = SampleFactory.Shared.RegisterSample("Stacking", "Vertical Stack", Create);
 
     public const int e_maxColumns = 10;
-    public const int e_maxRows = 15;
+    public const int e_maxRows = 80;
     public const int e_maxBullets = 8;
 
     enum ShapeType
@@ -220,18 +220,40 @@ public class VerticalStack : Sample
         }
     }
 
+    public override void Keyboard(Keys key)
+    {
+        bool consumed = false;
+
+        switch (key)
+        {
+            case Keys.B:
+                FireBullets();
+                consumed = true;
+                break;
+
+            default:
+                break;
+        }
+
+        if (consumed == false)
+        {
+            base.Keyboard(key);
+        }
+    }
+
+
     public override void UpdateGui()
     {
         base.UpdateGui();
 
         float fontSize = ImGui.GetFontSize();
-        float height = 230.0f;
+        float height = 16.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
+        ImGui.SetNextWindowSize(new Vector2(20.0f * fontSize, height));
 
         ImGui.Begin("Vertical Stack", ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(120.0f);
+        
+        ImGui.PushItemWidth(13.0f * fontSize);
 
         bool changed = false;
         string[] shapeTypes = ["Circle", "Box"];
@@ -251,7 +273,7 @@ public class VerticalStack : Sample
 
         ImGui.PopItemWidth();
 
-        if (ImGui.Button("Fire Bullets") || GetKey(Keys.B) == InputAction.Press)
+        if (ImGui.Button("Fire Bullets"))
         {
             DestroyBullets();
             FireBullets();

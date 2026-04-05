@@ -15,6 +15,7 @@ namespace Box2D.NET
         public B2ShapeType type;
         public B2SurfaceMaterial material;
         public float density;
+        public float aabbMargin;
 
         public B2AABB aabb;
         public B2AABB fatAABB;

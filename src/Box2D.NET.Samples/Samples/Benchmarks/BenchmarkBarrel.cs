@@ -69,7 +69,7 @@ public class BenchmarkBarrel : Sample
             float x = -40.0f * gridSize;
             for (int i = 0; i < 81; ++i)
             {
-                B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                B2Polygon box = b2MakeOffsetBox(0.55f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
                 b2CreatePolygonShape(groundId, shapeDef, box);
                 x += gridSize;
             }
@@ -78,7 +78,7 @@ public class BenchmarkBarrel : Sample
             x = -40.0f * gridSize;
             for (int i = 0; i < 100; ++i)
             {
-                B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
                 b2CreatePolygonShape(groundId, shapeDef, box);
                 y += gridSize;
             }
@@ -87,7 +87,7 @@ public class BenchmarkBarrel : Sample
             x = 40.0f * gridSize;
             for (int i = 0; i < 100; ++i)
             {
-                B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
                 b2CreatePolygonShape(groundId, shapeDef, box);
                 y += gridSize;
             }

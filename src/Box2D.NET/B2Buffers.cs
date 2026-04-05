@@ -36,6 +36,20 @@ namespace Box2D.NET
             return newMem;
         }
 
+        public static T[] b2GrowAllocZeroInit<T>(T[] oldMem, int oldSize, int newSize) where T : new()
+        {
+            B2_ASSERT(newSize > oldSize);
+            T[] newMem = b2Alloc<T>(newSize);
+            if (oldSize > 0)
+            {
+                Array.Copy(oldMem, newMem, oldSize);
+                b2Free(oldMem, oldSize);
+            }
+
+            //memset((char*)newMem + oldSize, 0, newSize - oldSize);
+            return newMem;
+        }
+
 
         // public static void memset<T>(Span<T> array, T value, int count)
         // {
@@ -126,6 +140,13 @@ namespace Box2D.NET
             // }
 
             b2AtomicFetchAddInt(ref b2_byteCount, -size);
+        }
+
+        public static T[] b2AllocZeroInit<T>(int size) where T : new()
+        {
+            T[] memory = b2Alloc<T>(size);
+            //memset(memory, 0, size);
+            return memory;
         }
 
         public static void b2Free<T>(T mem, int size)

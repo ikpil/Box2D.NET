@@ -131,8 +131,8 @@ public class b2TaskTester : IDisposable
 
 public class B2DeterminismTest
 {
-    private const int EXPECTED_SLEEP_STEP = 300;
-    private const uint EXPECTED_HASH = 0xD4F49FD3;
+    private const int EXPECTED_SLEEP_STEP = 293;
+    private const uint EXPECTED_HASH = 0x2FF98AC6;
 
     private const int e_maxTasks = 128;
 
@@ -151,20 +151,24 @@ public class B2DeterminismTest
         FallingHingeData data = CreateFallingHinges(worldId);
 
         float timeStep = 1.0f / 60.0f;
-        bool done = false;
-        while (done == false)
+        int stepLimit = 1000;
+        for ( int i = 0; i < stepLimit; ++i )
         {
             int subStepCount = 4;
             b2World_Step(worldId, timeStep, subStepCount);
             TracyCFrameMark();
 
-            done = UpdateFallingHinges(worldId, ref data);
+            bool done = UpdateFallingHinges(worldId, ref data);
+            if (done)
+            {
+                break;
+            }
         }
 
         b2DestroyWorld(worldId);
 
-        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
-        Assert.That(data.hash == EXPECTED_HASH);
+        Assert.That(data.sleepStep, Is.EqualTo(EXPECTED_SLEEP_STEP));
+        Assert.That(data.hash, Is.EqualTo(EXPECTED_HASH));
 
         DestroyFallingHinges(ref data);
 
@@ -178,7 +182,7 @@ public class B2DeterminismTest
         for (int workerCount = 1; workerCount < 6; ++workerCount)
         {
             int result = SingleMultithreadingTest(workerCount);
-            Assert.That(result == 0);
+            Assert.That(result, Is.EqualTo(0));
         }
     }
 
@@ -203,8 +207,8 @@ public class B2DeterminismTest
             done = UpdateFallingHinges(worldId, ref data);
         }
 
-        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
-        Assert.That(data.hash == EXPECTED_HASH);
+        Assert.That(data.sleepStep, Is.EqualTo(EXPECTED_SLEEP_STEP));
+        Assert.That(data.hash, Is.EqualTo(EXPECTED_HASH));
 
         DestroyFallingHinges(ref data);
 

@@ -4,8 +4,8 @@
 
 namespace Box2D.NET
 {
-    // todo externalize this to visualize internal nodes and speed up FindPairs
     // A node in the dynamic tree.
+    // todo externalize this to visualize internal nodes and speed up FindPairs
     public struct B2TreeNode
     {
         // The node bounding box

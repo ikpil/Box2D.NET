@@ -6,6 +6,7 @@ namespace Box2D.NET
 {
     public struct B2ContactConstraint
     {
+        // base-1, 0 for null
         public int indexA;
         public int indexB;
         public B2FixedArray2<B2ContactConstraintPoint> points;

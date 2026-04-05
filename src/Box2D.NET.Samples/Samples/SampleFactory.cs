@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Samples;
 
 public class SampleFactory
 {
-    private static readonly ILogger Logger = Log.ForContext<FallingHinges>();
+    private static readonly ILogger Logger = Log.ForContext<SampleFactory>();
 
     public static readonly SampleFactory Shared = new SampleFactory();
 
