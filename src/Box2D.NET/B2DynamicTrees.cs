@@ -56,6 +56,11 @@ namespace Box2D.NET
         public static B2DynamicTree b2DynamicTree_Create()
         {
             B2DynamicTree tree = new B2DynamicTree();
+            tree.Clear();
+            
+            // memset needed for deterministic serialization
+            // memset( &tree, 0, sizeof( b2DynamicTree ) );
+
             tree.root = B2_NULL_INDEX;
 
             tree.nodeCapacity = 16;
