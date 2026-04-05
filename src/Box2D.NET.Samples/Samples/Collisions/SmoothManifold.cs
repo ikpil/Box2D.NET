@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -300,7 +300,7 @@ public class SmoothManifold : Sample
             {
                 ref readonly B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, ref rox, transform2, ref cache);
+                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, in rox, transform2, ref cache);
                 DrawManifold(m);
             }
         }
