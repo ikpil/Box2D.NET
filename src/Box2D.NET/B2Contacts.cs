@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -63,19 +63,19 @@ namespace Box2D.NET
         internal static B2Manifold b2PolygonAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCircle(ref shapeA.us.polygon, xfA, shapeB.us.circle, xfB);
+            return b2CollidePolygonAndCircle(in shapeA.us.polygon, xfA, shapeB.us.circle, xfB);
         }
 
         internal static B2Manifold b2PolygonAndCapsuleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygonAndCapsule(ref shapeA.us.polygon, xfA, shapeB.us.capsule, xfB);
+            return b2CollidePolygonAndCapsule(in shapeA.us.polygon, xfA, shapeB.us.capsule, xfB);
         }
 
         internal static B2Manifold b2PolygonManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollidePolygons(ref shapeA.us.polygon, xfA, ref shapeB.us.polygon, xfB);
+            return b2CollidePolygons(in shapeA.us.polygon, xfA, in shapeB.us.polygon, xfB);
         }
 
         internal static B2Manifold b2SegmentAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
@@ -93,7 +93,7 @@ namespace Box2D.NET
         internal static B2Manifold b2SegmentAndPolygonManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
-            return b2CollideSegmentAndPolygon(shapeA.us.segment, xfA, ref shapeB.us.polygon, xfB);
+            return b2CollideSegmentAndPolygon(shapeA.us.segment, xfA, in shapeB.us.polygon, xfB);
         }
 
         internal static B2Manifold b2ChainSegmentAndCircleManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
@@ -109,7 +109,7 @@ namespace Box2D.NET
 
         internal static B2Manifold b2ChainSegmentAndPolygonManifold(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache)
         {
-            return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, xfA, ref shapeB.us.polygon, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, xfA, in shapeB.us.polygon, xfB, ref cache);
         }
 
         internal static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
