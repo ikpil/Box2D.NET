@@ -27,6 +27,9 @@ namespace Box2D.NET
 
         /// Global scaling for joint drawing
         public float jointScale;
+        
+        /// Option to draw contact points
+        public B2ContactDrawType contactDrawType;
 
         /// Option to draw shapes
         public bool drawShapes;
@@ -45,9 +48,6 @@ namespace Box2D.NET
 
         /// Option to draw body names
         public bool drawBodyNames;
-
-        /// Option to draw contact points
-        public bool drawContactPoints;
 
         /// Option to visualize the graph coloring used for contacts and joints
         public bool drawGraphColors;

@@ -29,6 +29,8 @@ namespace Box2D.NET
         private static B2TreeStats b2_staticStats = new B2TreeStats();
 #endif
 
+        private static B2AtomicInt once = new B2AtomicInt();
+
         // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyType B2_PROXY_TYPE(int KEY)
@@ -234,7 +236,8 @@ namespace Box2D.NET
             }
 
             ulong pairKey = B2_SHAPE_PAIR_KEY(shapeId, queryContext.queryShapeIndex);
-            if (b2ContainsKey(ref broadPhase.pairSet, pairKey))
+            bool pairExists = b2ContainsKey(ref broadPhase.pairSet, pairKey);
+            if (pairExists)
             {
                 // contact exists
                 return true;
@@ -277,6 +280,13 @@ namespace Box2D.NET
                 return true;
             }
 
+
+            if (b2CanCollide(shapeA.type, shapeB.type) == false)
+            {
+                // For example, no segment vs segment collision
+                return true;
+            }
+
             // Does a joint override collision?
             B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
             B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
@@ -301,7 +311,6 @@ namespace Box2D.NET
                 }
             }
 
-            // todo per thread to eliminate atomic?
             int pairIndex = b2AtomicFetchAddInt(ref broadPhase.movePairIndex, 1);
 
             B2MovePair pair;
@@ -312,8 +321,12 @@ namespace Box2D.NET
             }
             else
             {
-                // TODO: @ikpil, check
-                //pair = b2Alloc<b2MovePair>(1);( sizeof(  ) );
+                if (!b2AtomicCompareExchangeInt(ref once, 0, 1))
+                {
+                    // This means you have too many overlapping objects.
+                    b2Log($"Pair buffer capacity of {broadPhase.movePairCapacity} exceeded, too many overlaps");
+                }
+
                 pair = new B2MovePair();
                 pair.heap = true;
             }
@@ -393,6 +406,20 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.pair_task);
         }
 
+        public static void b2UpdateTreesTask(int startIndex, int endIndex, uint threadIndex, object context)
+        {
+            B2_UNUSED(startIndex);
+            B2_UNUSED(endIndex);
+            B2_UNUSED(threadIndex);
+
+            b2TracyCZoneNC(B2TracyCZone.tree_task, "Rebuild BVH", B2HexColor.b2_colorFireBrick, true);
+
+            B2World world = (B2World)context;
+            b2BroadPhase_RebuildTrees(world.broadPhase);
+
+            b2TracyCZoneEnd(B2TracyCZone.tree_task);
+        }
+
         public static void b2UpdateBroadPhasePairs(B2World world)
         {
             B2BroadPhase bp = world.broadPhase;
@@ -411,7 +438,10 @@ namespace Box2D.NET
 
             // todo these could be in the step context
             bp.moveResults = b2AllocateArenaItem<B2MoveResult>(alloc, moveCount, "move results");
-            bp.movePairCapacity = 16 * moveCount;
+
+            // This capacity can be exceeded if there are many overlapping pairs (e.g. all shapes at the origin)
+            bp.movePairCapacity = 8 * moveCount;
+
             bp.movePairs = b2AllocateArenaItem<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
 
@@ -428,13 +458,18 @@ namespace Box2D.NET
                 world.taskCount += 1;
             }
 
-            // todo_erin could start tree rebuild here
+            // Task that can be done in parallel with the narrow-phase
+            // - rebuild the collision tree for dynamic and kinematic bodies to keep their query performance good
+            world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, 1, 1, world, world.userTaskContext);
+            world.taskCount += 1;
+            world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
 
             b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
 
             // Single-threaded work
             // - Clear move flags
             // - Create contacts in deterministic order
+            // This is deterministic because the results follow the order of b2BroadPhase::moveArray.
             for (int i = 0; i < moveCount; ++i)
             {
                 B2MoveResult result = bp.moveResults[i];
@@ -456,6 +491,10 @@ namespace Box2D.NET
 
                     if (pair.heap)
                     {
+                        // Note: I tried adding to the pair set in parallel with contact creation
+                        // but that didn't work with with pair heap allocation. I could make it
+                        // work with a task context bump allocator with heap fallback. The perf
+                        // gain was small or zero.
                         B2MovePair temp = pair;
                         pair = pair.next;
                         b2Free(temp, 1);

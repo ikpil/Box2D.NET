@@ -764,7 +764,6 @@ namespace Box2D.NET
             B2BroadPhase broadPhase = world.broadPhase;
 
             B2Transform transform = bodySim.transform;
-            float margin = B2_AABB_MARGIN;
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
 
             int shapeId = body.headShapeId;
@@ -780,6 +779,7 @@ namespace Box2D.NET
 
                 if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                 {
+                    float margin = shape.aabbMargin;
                     B2AABB fatAABB;
                     fatAABB.lowerBound.X = aabb.lowerBound.X - margin;
                     fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;

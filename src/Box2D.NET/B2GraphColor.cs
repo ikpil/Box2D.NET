@@ -26,7 +26,7 @@ namespace Box2D.NET
         // transient
         // union
         //{
-        public ArraySegment<B2ContactConstraintSIMD> simdConstraints;
+        public ArraySegment<B2ContactConstraintWide> wideConstraints;
         public ArraySegment<B2ContactConstraint> overflowConstraints;
         //};
     }

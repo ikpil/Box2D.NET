@@ -157,7 +157,7 @@ class ProjectileEvent : Sample
                     if (data.manifold.pointCount > 0)
                     {
                         B2ExplosionDef explosionDef = b2DefaultExplosionDef();
-                        explosionDef.position = data.manifold.points[0].point;
+                        explosionDef.position = data.manifold.points[0].clipPoint;
                         explosionDef.radius = 1.0f;
                         explosionDef.impulsePerLength = 20.0f;
                         b2World_Explode(m_worldId, explosionDef);

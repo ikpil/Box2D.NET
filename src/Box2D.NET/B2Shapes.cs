@@ -74,11 +74,65 @@ namespace Box2D.NET
             return chain;
         }
 
+        internal static float b2ComputeShapeMargin(B2Shape shape)
+        {
+            float margin = 0.0f;
+
+            switch (shape.type)
+            {
+                case B2ShapeType.b2_capsuleShape:
+                {
+                    margin = 0.5f * b2Distance(shape.us.capsule.center2, shape.us.capsule.center1) + shape.us.capsule.radius;
+                }
+                    break;
+
+                case B2ShapeType.b2_circleShape:
+                {
+                    margin = shape.us.circle.radius;
+                }
+                    break;
+
+                case B2ShapeType.b2_polygonShape:
+                {
+                    ref readonly B2Polygon poly = ref shape.us.polygon;
+                    float maxExtentSqr = 0.0f;
+                    int count = poly.count;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        float distanceSqr = b2DistanceSquared(poly.vertices[i], poly.centroid);
+                        maxExtentSqr = b2MaxFloat(maxExtentSqr, distanceSqr);
+                    }
+
+                    margin = MathF.Sqrt(maxExtentSqr);
+                }
+                    break;
+
+                case B2ShapeType.b2_segmentShape:
+                {
+                    margin = 0.5f * b2Distance(shape.us.segment.point1, shape.us.segment.point2);
+                }
+                    break;
+
+                case B2ShapeType.b2_chainSegmentShape:
+                {
+                    margin = 0.5f * b2Distance(shape.us.chainSegment.segment.point1, shape.us.chainSegment.segment.point2);
+                }
+                    break;
+
+                default:
+                    B2_VALIDATE(false);
+                    return B2_MAX_AABB_MARGIN;
+            }
+
+            return b2MinFloat(B2_MAX_AABB_MARGIN, B2_AABB_MARGIN_FRACTION * margin);
+        }
+
+
         internal static void b2UpdateShapeAABBs(B2Shape shape, in B2Transform transform, B2BodyType proxyType)
         {
             // Compute a bounding box with a speculative margin
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-            float aabbMargin = B2_AABB_MARGIN;
+            float aabbMargin = shape.aabbMargin;
 
             B2AABB aabb = b2ComputeShapeAABB(shape, transform);
             aabb.lowerBound.X -= speculativeDistance;
@@ -154,6 +208,7 @@ namespace Box2D.NET
             shape.enablePreSolveEvents = def.enablePreSolveEvents;
             shape.proxyKey = B2_NULL_INDEX;
             shape.localCentroid = b2GetShapeCentroid(shape);
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
             shape.aabb = new B2AABB(b2Vec2_zero, b2Vec2_zero);
             shape.fatAABB = new B2AABB(b2Vec2_zero, b2Vec2_zero);
             shape.generation += 1;
@@ -1471,6 +1526,7 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.circle = new B2Circle(circle.center, circle.radius);
             shape.type = B2ShapeType.b2_circleShape;
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
 
             // need to wake bodies so they can react to the shape change
             bool wakeBodies = true;
@@ -1495,6 +1551,7 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.capsule = new B2Capsule(capsule.center1, capsule.center2, capsule.radius);
             shape.type = B2ShapeType.b2_capsuleShape;
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
 
             // need to wake bodies so they can react to the shape change
             bool wakeBodies = true;
@@ -1513,6 +1570,7 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.segment = new B2Segment(segment.point1, segment.point2);
             shape.type = B2ShapeType.b2_segmentShape;
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
 
             // need to wake bodies so they can react to the shape change
             bool wakeBodies = true;
@@ -1531,6 +1589,7 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.polygon = polygon;
             shape.type = B2ShapeType.b2_polygonShape;
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
 
             // need to wake bodies so they can react to the shape change
             bool wakeBodies = true;
@@ -1675,6 +1734,10 @@ namespace Box2D.NET
             return index;
         }
 
+        /// Get the maximum capacity required for retrieving all the overlapped shapes on a sensor shape.
+        /// This returns 0 if the provided shape is not a sensor.
+        /// @param shapeId the id of a sensor shape
+        /// @returns the required capacity to get all the overlaps in b2Shape_GetSensorData
         public static int b2Shape_GetSensorCapacity(B2ShapeId shapeId)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
@@ -1693,7 +1756,7 @@ namespace Box2D.NET
             return sensor.overlaps2.count;
         }
 
-        /// Get the overlap data for a sensor shape.
+        /// Get the overlap data for a sensor shape computed the previous world step.
         /// @param shapeId the id of a sensor shape
         /// @param visitorIds a user allocated array that is filled with the overlapping shapes (visitors)
         /// @param capacity the capacity of overlappedShapes
@@ -1837,7 +1900,7 @@ namespace Box2D.NET
             B2BodyState state = b2GetBodyState(world, body);
             B2Transform transform = sim.transform;
 
-            float lengthUnits = b2_lengthUnitsPerMeter;
+            float lengthUnits = b2GetLengthUnitsPerMeter();
             float volumeUnits = lengthUnits * lengthUnits * lengthUnits;
 
             // In 2D I'm assuming unit depth

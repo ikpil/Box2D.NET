@@ -22,7 +22,7 @@ public class SampleContext
     public readonly Glfw glfw;
     public readonly Camera camera;
     public Draw draw;
-    
+
     public float uiScale = 1.0f;
     public float hertz = 60.0f;
     public int subStepCount = 4;
@@ -34,12 +34,13 @@ public class SampleContext
     public bool drawProfile = false;
     public bool enableWarmStarting = true;
     public bool enableContinuous = true;
+    public bool enableRecycling = true;
     public bool enableSleep = true;
     public bool showUI = true;
-    
+
     // These are persisted
     public int sampleIndex = 0;
- 
+
 
     public B2DebugDraw debugDraw;
 
@@ -90,7 +91,7 @@ public class SampleContext
     public void Load()
     {
         var settings = Settings.Load();
-        
+
         //
         camera.width = settings.windowWidth;
         camera.height = settings.windowHeight;
@@ -105,21 +106,21 @@ public class SampleContext
         sampleIndex = settings.sampleIndex;
         debugDraw.drawShapes = settings.drawShapes;
         debugDraw.drawJoints = settings.drawJoints;
-        
+
         //
+        debugDraw.contactDrawType = settings.contactDrawType;
         debugDraw.drawShapes = settings.drawShapes;
         debugDraw.drawJoints = settings.drawJoints;
         debugDraw.drawJointExtras = settings.drawJointExtras;
         debugDraw.drawBounds = settings.drawBounds;
         debugDraw.drawMass = settings.drawMass;
-        debugDraw.drawContactPoints = settings.drawContactPoints;
         debugDraw.drawGraphColors = settings.drawGraphColors;
         debugDraw.drawContactNormals = settings.drawContactNormals;
         debugDraw.drawContactForces = settings.drawContactForces;
         debugDraw.drawContactFeatures = settings.drawContactFeatures;
         debugDraw.drawFrictionForces = settings.drawFrictionForces;
         debugDraw.drawIslands = settings.drawIslands;
-        
+
         //
         debugDraw.jointScale = settings.jointScale;
         debugDraw.forceScale = settings.forceScale;

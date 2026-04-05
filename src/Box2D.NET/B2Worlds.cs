@@ -211,6 +211,8 @@ namespace Box2D.NET
             world.contactSpeed = def.contactSpeed;
             world.contactHertz = def.contactHertz;
             world.contactDampingRatio = def.contactDampingRatio;
+            world.contactRecycleDistance = B2_CONTACT_RECYCLE_DISTANCE;
+
 
             if (def.frictionCallback == null)
             {
@@ -395,6 +397,10 @@ namespace Box2D.NET
 
             B2_ASSERT(startIndex < endIndex);
 
+            float recycleDistance = world.contactRecycleDistance;
+            float speculativeDistance = B2_SPECULATIVE_DISTANCE;
+            float recycleDistanceNonTouching = b2MinFloat(recycleDistance, speculativeDistance);
+
             for (int contactIndex = startIndex; contactIndex < endIndex; ++contactIndex)
             {
                 B2ContactSim contactSim = contactSims[contactIndex];
@@ -421,8 +427,10 @@ namespace Box2D.NET
                     B2Body bodyB = bodies[shapeB.bodyId];
                     B2BodySim bodySimA = b2GetBodySim(world, bodyA);
                     B2BodySim bodySimB = b2GetBodySim(world, bodyB);
+                    B2Transform transformA = bodySimA.transform;
+                    B2Transform transformB = bodySimB.transform;
 
-                    // avoid cache misses in b2PrepareContactsTask
+                    // These may not be skipped by relative transform check below
                     contactSim.bodySimIndexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                     contactSim.invMassA = bodySimA.invMass;
                     contactSim.invIA = bodySimA.invInertia;
@@ -431,8 +439,50 @@ namespace Box2D.NET
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
-                    B2Transform transformA = bodySimA.transform;
-                    B2Transform transformB = bodySimB.transform;
+                    // Contact recycling optimization. Please cite this code if you use this optimization.
+                    // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
+                    // However, this allows larger relative motion and has fewer tuning parameters (just one).
+                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simRelativeTransformValid))
+                    {
+                        B2Transform xf = b2InvMulTransforms(transformA, transformB);
+                        B2Transform xfc = b2InvMulTransforms(contactSim.cachedTransformA, contactSim.cachedTransformB);
+                        float maxExtentA = bodyA.type == B2BodyType.b2_staticBody ? 0.0f : bodySimA.maxExtent;
+                        float maxExtentB = bodyB.type == B2BodyType.b2_staticBody ? 0.0f : bodySimB.maxExtent;
+                        float maxExtent = b2MaxFloat(maxExtentA, maxExtentB);
+                        float distance = b2Distance(xf.p, xfc.p);
+                        B2Rot qr = b2InvMulRot(xf.q, xfc.q);
+
+                        // This metric is used for fast bodies and sleeping. It comes from conservative advancement.
+                        // Note that qr.s == sin(theta) ~= theta for small angles.
+                        // Need a tighter tolerance for non-touching shapes so that contacts are not missed.
+                        float tolerance = wasTouching ? recycleDistance : recycleDistanceNonTouching;
+                        if (distance + maxExtent * b2AbsFloat(qr.s) < tolerance)
+                        {
+                            B2Rot dqA = b2MulRot(transformA.q, b2InvertRot(contactSim.cachedTransformA.q));
+                            B2Rot dqB = b2MulRot(transformB.q, b2InvertRot(contactSim.cachedTransformB.q));
+                            B2Vec2 normal = contactSim.manifold.normal;
+
+                            // Minimize round-off
+                            B2Vec2 dc = b2Sub(bodySimB.center, bodySimA.center);
+
+                            for (int i = 0; i < contactSim.manifold.pointCount; ++i)
+                            {
+                                // Keep anchors but update separation, same as sub-stepping. This eliminates jitter.
+                                ref B2ManifoldPoint mp = ref contactSim.manifold.points[i];
+                                B2Vec2 rA = b2RotateVector(dqA, mp.anchorA);
+                                B2Vec2 rB = b2RotateVector(dqB, mp.anchorB);
+                                B2Vec2 dp = b2Add(dc, b2Sub(rB, rA));
+                                mp.separation = mp.baseSeparation + b2Dot(dp, normal);
+                                mp.persisted = true;
+                            }
+
+                            // Contact is recycled. This also skips updating other aspects of the contact
+                            // such as material parameters.
+                            continue;
+                        }
+                    }
+
+                    contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simRelativeTransformValid;
 
                     B2Vec2 centerOffsetA = b2RotateVector(transformA.q, bodySimA.localCenter);
                     B2Vec2 centerOffsetB = b2RotateVector(transformB.q, bodySimB.localCenter);
@@ -453,6 +503,15 @@ namespace Box2D.NET
                         b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
 
+                    // Caching for contact recycling. Requires 40 bytes.
+                    contactSim.cachedTransformA = transformA;
+                    contactSim.cachedTransformB = transformB;
+                    for (int i = 0; i < contactSim.manifold.pointCount; ++i)
+                    {
+                        ref B2ManifoldPoint mp = ref contactSim.manifold.points[i];
+                        mp.baseSeparation = mp.separation;
+                    }
+
                     // To make this work, the time of impact code needs to adjust the target
                     // distance based on the number of TOI events for a body.
                     // if (touching && bodySimB.isFast)
@@ -469,20 +528,6 @@ namespace Box2D.NET
             }
 
             b2TracyCZoneEnd(B2TracyCZone.collide_task);
-        }
-
-        internal static void b2UpdateTreesTask(int startIndex, int endIndex, uint threadIndex, object context)
-        {
-            B2_UNUSED(startIndex);
-            B2_UNUSED(endIndex);
-            B2_UNUSED(threadIndex);
-
-            b2TracyCZoneNC(B2TracyCZone.tree_task, "Rebuild BVH", B2HexColor.b2_colorFireBrick, true);
-
-            B2World world = context as B2World;
-            b2BroadPhase_RebuildTrees(world.broadPhase);
-
-            b2TracyCZoneEnd(B2TracyCZone.tree_task);
         }
 
         internal static void b2AddNonTouchingContact(B2World world, B2Contact contact, B2ContactSim contactSim)
@@ -520,13 +565,6 @@ namespace Box2D.NET
             B2_ASSERT(world.workerCount > 0);
 
             b2TracyCZoneNC(B2TracyCZone.collide, "Narrow Phase", B2HexColor.b2_colorDodgerBlue, true);
-
-            // Task that can be done in parallel with the narrow-phase
-            // - rebuild the collision tree for dynamic and kinematic bodies to keep their query performance good
-            // todo_erin move this to start when contacts are being created
-            world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, 1, 1, world, world.userTaskContext);
-            world.taskCount += 1;
-            world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
 
             // gather contacts into a single array for easier parallel-for
             int contactCount = 0;
@@ -688,7 +726,10 @@ namespace Box2D.NET
 
                         contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simStartedTouching;
 
+                        // Add first for memcpy
                         b2AddContactToGraph(world, contactSim, contact);
+
+                        // This destroys the contact sim
                         b2RemoveNonTouchingContact(world, (int)B2SolverSetType.b2_awakeSet, localIndex);
                         contactSim = null;
                     }
@@ -709,6 +750,7 @@ namespace Box2D.NET
                         int bodyIdA = contact.edges[0].bodyId;
                         int bodyIdB = contact.edges[1].bodyId;
 
+                        // Add first for memcpy
                         b2AddNonTouchingContact(world, contact, contactSim);
                         b2RemoveContactFromGraph(world, bodyIdA, bodyIdB, colorIndex, localIndex);
                         contact = null;
@@ -816,7 +858,7 @@ namespace Box2D.NET
             }
 
             // Integrate velocities, solve velocity constraints, and integrate positions.
-            if (context.dt > 0.0f)
+            if (timeStep > 0.0f)
             {
                 ulong solveTicks = b2GetTicks();
                 b2Solve(world, context);
@@ -1097,7 +1139,7 @@ namespace Box2D.NET
                     }
 
                     float linearSlop = B2_LINEAR_SLOP;
-                    if (draw.drawContactPoints && body.type == B2BodyType.b2_dynamicBody)
+                    if (draw.contactDrawType != B2ContactDrawType.b2_drawContacts_None && body.type == B2BodyType.b2_dynamicBody)
                     {
                         int contactKey = body.headContactKey;
                         while (contactKey != B2_NULL_INDEX)
@@ -1111,6 +1153,10 @@ namespace Box2D.NET
                             if (b2GetBit(ref world.debugContactSet, contactId) == false)
                             {
                                 B2ContactSim contactSim = b2GetContactSim(world, contact);
+                                B2Body bodyA = b2Array_Get(ref world.bodies, contact.edges[0].bodyId);
+                                B2BodySim bodySimA = b2GetBodySim(world, bodyA);
+                                B2Body bodyB = b2Array_Get(ref world.bodies, contact.edges[1].bodyId);
+                                B2BodySim bodySimB = b2GetBodySim(world, bodyB);
 
                                 int pointCount = contactSim.manifold.pointCount;
                                 B2Vec2 normal = contactSim.manifold.normal;
@@ -1118,42 +1164,62 @@ namespace Box2D.NET
 
                                 for (int j = 0; j < pointCount; ++j)
                                 {
-                                    ref B2ManifoldPoint point = ref contactSim.manifold.points[j];
+                                    ref B2ManifoldPoint mp = ref contactSim.manifold.points[j];
+
+                                    B2Vec2 p = mp.clipPoint;
+                                    if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_AnchorA)
+                                    {
+                                        p = b2Add(bodySimA.center, mp.anchorA);
+                                    }
+                                    else if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_AnchorB)
+                                    {
+                                        p = b2Add(bodySimB.center, mp.anchorB);
+                                    }
+                                    else if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_Average)
+                                    {
+                                        B2Vec2 pA = b2Add(bodySimA.center, mp.anchorA);
+                                        B2Vec2 pB = b2Add(bodySimB.center, mp.anchorB);
+                                        p = b2Lerp(pA, pB, 0.5f);
+                                    }
 
                                     if (draw.drawGraphColors && contact.colorIndex != B2_NULL_INDEX)
                                     {
                                         // graph color
                                         float pointSize = contact.colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
-                                        draw.DrawPointFcn(point.point, pointSize, b2_graphColors[contact.colorIndex], draw.context);
+                                        draw.DrawPointFcn(p, pointSize, b2_graphColors[contact.colorIndex], draw.context);
                                         // B2.g_draw.DrawString(point.position, "%d", point.color);
                                     }
-                                    else if (point.separation > linearSlop)
+                                    else if (mp.separation > linearSlop)
                                     {
                                         // Speculative
-                                        draw.DrawPointFcn(point.point, 5.0f, speculativeColor, draw.context);
+                                        draw.DrawPointFcn(p, 5.0f, speculativeColor, draw.context);
                                     }
-                                    else if (point.persisted == false)
+                                    else if (mp.persisted == false)
                                     {
                                         // Add
-                                        draw.DrawPointFcn(point.point, 10.0f, addColor, draw.context);
+                                        draw.DrawPointFcn(p, 10.0f, addColor, draw.context);
                                     }
-                                    else if (point.persisted == true)
+                                    else if (mp.persisted == true)
                                     {
                                         // Persist
-                                        draw.DrawPointFcn(point.point, 5.0f, persistColor, draw.context);
+                                        draw.DrawPointFcn(p, 5.0f, persistColor, draw.context);
                                     }
 
                                     if (draw.drawContactNormals)
                                     {
-                                        B2Vec2 p1 = point.point;
+                                        B2Vec2 p1 = p;
                                         B2Vec2 p2 = b2MulAdd(p1, k_axisScale, normal);
                                         draw.drawLineFcn(p1, p2, normalColor, draw.context);
+
+                                        buffer = $" {mp.separation:F2}";
+                                        draw.DrawStringFcn(p1, buffer, B2HexColor.b2_colorWhite, draw.context);
                                     }
                                     else if (draw.drawContactForces)
                                     {
+                                        // todo validate
                                         // multiply by one-half due to relax iteration
-                                        float force = 0.5f * point.totalNormalImpulse * world.inv_dt;
-                                        B2Vec2 p1 = point.point;
+                                        float force = 0.5f * mp.totalNormalImpulse * world.inv_dt;
+                                        B2Vec2 p1 = p;
                                         B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, normal);
                                         draw.drawLineFcn(p1, p2, impulseColor, draw.context);
                                         buffer = $"{force:F1}";
@@ -1162,15 +1228,15 @@ namespace Box2D.NET
 
                                     if (draw.drawContactFeatures)
                                     {
-                                        buffer = "" + point.id;
-                                        draw.DrawStringFcn(point.point, buffer, B2HexColor.b2_colorOrange, draw.context);
+                                        buffer = "" + mp.id;
+                                        draw.DrawStringFcn(p, buffer, B2HexColor.b2_colorOrange, draw.context);
                                     }
 
                                     if (draw.drawFrictionForces)
                                     {
-                                        float force = 0.5f * point.tangentImpulse * world.inv_h;
+                                        float force = 0.5f * mp.tangentImpulse * world.inv_h;
                                         B2Vec2 tangent = b2RightPerp(normal);
-                                        B2Vec2 p1 = point.point;
+                                        B2Vec2 p1 = p;
                                         B2Vec2 p2 = b2MulAdd(p1, draw.forceScale * force, tangent);
                                         draw.drawLineFcn(p1, p2, frictionColor, draw.context);
                                         buffer = $"{force:F1}";
@@ -1610,6 +1676,27 @@ namespace Box2D.NET
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
             world.contactSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
+        }
+
+        /// Set the contact point recycling distance. Setting this to zero disables contact point recycling.
+        /// Usually in meters.
+        public static void b2World_SetContactRecycleDistance(B2WorldId worldId, float recycleDistance)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+
+            world.contactRecycleDistance = b2ClampFloat(recycleDistance, 0.0f, float.MaxValue);
+        }
+
+        /// Get the contact point recycling distance. Usually in meters.
+        public static float b2World_GetContactRecycleDistance(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            return world.contactRecycleDistance;
         }
 
         public static void b2World_SetMaximumLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
@@ -2646,7 +2733,7 @@ void b2World_Dump()
                             B2Body body = bodies[bodyId];
                             B2_ASSERT(body.setIndex == setIndex);
                             B2_ASSERT(body.localIndex == i);
-                            
+
                             if (body.type == B2BodyType.b2_dynamicBody)
                             {
                                 B2_ASSERT(0 != (body.flags & (uint)B2BodyFlags.b2_dynamicFlag));

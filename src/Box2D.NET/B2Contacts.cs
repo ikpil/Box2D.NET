@@ -147,6 +147,12 @@ namespace Box2D.NET
             }
         }
 
+        internal static bool b2CanCollide(B2ShapeType typeA, B2ShapeType typeB)
+        {
+            return s_registers[(int)typeA, (int)typeB].fcn != null;
+        }
+
+
         public static void b2CreateContact(B2World world, B2Shape shapeA, B2Shape shapeB)
         {
             B2ShapeType type1 = shapeA.type;
@@ -256,7 +262,7 @@ namespace Box2D.NET
                 bodyB.contactCount += 1;
             }
 
-            // Add to pair set for fast lookup
+            // Add to pair set for fast lookup.
             ulong pairKey = B2_SHAPE_PAIR_KEY(shapeIdA, shapeIdB);
             b2AddKey(ref world.broadPhase.pairSet, pairKey);
 
@@ -281,7 +287,7 @@ namespace Box2D.NET
             contactSim.cache = b2_emptySimplexCache;
             contactSim.manifold = new B2Manifold();
 
-            // These also get updated in the narrow phase
+            // These get updated in the narrow phase, but these are needed for first touch
             contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
                 shapeB.material.friction, shapeB.material.userMaterialId);
             contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
@@ -491,7 +497,7 @@ namespace Box2D.NET
 
                 ref B2Manifold manifold = ref contactSim.manifold;
                 float bestSeparation = manifold.points[0].separation;
-                B2Vec2 bestPoint = manifold.points[0].point;
+                B2Vec2 bestPoint = manifold.points[0].clipPoint;
 
                 // Get deepest point
                 for (int i = 1; i < manifold.pointCount; ++i)
@@ -500,7 +506,7 @@ namespace Box2D.NET
                     if (separation < bestSeparation)
                     {
                         bestSeparation = separation;
-                        bestPoint = manifold.points[i].point;
+                        bestPoint = manifold.points[i].clipPoint;
                     }
                 }
 
