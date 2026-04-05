@@ -167,8 +167,8 @@ public class B2DeterminismTest
 
         b2DestroyWorld(worldId);
 
-        Assert.That(data.sleepStep == EXPECTED_SLEEP_STEP);
-        Assert.That(data.hash == EXPECTED_HASH);
+        Assert.That(data.sleepStep, Is.EqualTo(EXPECTED_SLEEP_STEP));
+        Assert.That(data.hash, Is.EqualTo(EXPECTED_HASH));
 
         DestroyFallingHinges(ref data);
 
