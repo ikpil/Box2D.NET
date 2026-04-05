@@ -36,7 +36,7 @@ namespace Box2D.NET
 {
     public static class B2Solvers
     {
-        // todo testing
+        // these are useful for solver testing
         public const int ITERATIONS = 1;
         public const int RELAX_ITERATIONS = 1;
 
@@ -560,7 +560,6 @@ namespace Box2D.NET
             }
 
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-            float aabbMargin = B2_AABB_MARGIN;
 
             if (context.fraction < 1.0f)
             {
@@ -598,11 +597,12 @@ namespace Box2D.NET
 
                     if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                     {
+                        float margin = shape.aabbMargin;
                         B2AABB fatAABB;
-                        fatAABB.lowerBound.X = aabb.lowerBound.X - aabbMargin;
-                        fatAABB.lowerBound.Y = aabb.lowerBound.Y - aabbMargin;
-                        fatAABB.upperBound.X = aabb.upperBound.X + aabbMargin;
-                        fatAABB.upperBound.Y = aabb.upperBound.Y + aabbMargin;
+                        fatAABB.lowerBound.X = aabb.lowerBound.X - margin;
+                        fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
+                        fatAABB.upperBound.X = aabb.upperBound.X + margin;
+                        fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
@@ -630,11 +630,12 @@ namespace Box2D.NET
 
                     if (b2AABB_Contains(shape.fatAABB, shape.aabb) == false)
                     {
+                        float margin = shape.aabbMargin;
                         B2AABB fatAABB;
-                        fatAABB.lowerBound.X = shape.aabb.lowerBound.X - aabbMargin;
-                        fatAABB.lowerBound.Y = shape.aabb.lowerBound.Y - aabbMargin;
-                        fatAABB.upperBound.X = shape.aabb.upperBound.X + aabbMargin;
-                        fatAABB.upperBound.Y = shape.aabb.upperBound.Y + aabbMargin;
+                        fatAABB.lowerBound.X = shape.aabb.lowerBound.X - margin;
+                        fatAABB.lowerBound.Y = shape.aabb.lowerBound.Y - margin;
+                        fatAABB.upperBound.X = shape.aabb.upperBound.X + margin;
+                        fatAABB.upperBound.Y = shape.aabb.upperBound.Y + margin;
                         shape.fatAABB = fatAABB;
 
                         shape.enlargedAABB = true;
@@ -660,7 +661,7 @@ namespace Box2D.NET
 
         internal static void b2FinalizeBodiesTask(int startIndex, int endIndex, uint threadIndex, object context)
         {
-            b2TracyCZoneNC(B2TracyCZone.finalize_transfprms, "Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
+            b2TracyCZoneNC(B2TracyCZone.finalize_transforms, "Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
 
             B2StepContext stepContext = context as B2StepContext;
             B2World world = stepContext.world;
@@ -687,7 +688,6 @@ namespace Box2D.NET
             bool enableContinuous = world.enableContinuous;
 
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-            float aabbMargin = B2_AABB_MARGIN;
 
             B2_ASSERT(startIndex <= endIndex);
 
@@ -713,6 +713,12 @@ namespace Box2D.NET
 
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
+
+                if (b2IsValidVec2(v) == false)
+                {
+                    B2Body debugBody = bodies[sim.bodyId];
+                    b2Log($"bad body: {debugBody.name}\n");
+                }
 
                 B2_ASSERT(b2IsValidVec2(v));
                 B2_ASSERT(b2IsValidFloat(w));
@@ -842,11 +848,12 @@ namespace Box2D.NET
 
                         if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                         {
+                            float margin = shape.aabbMargin;
                             B2AABB fatAABB;
-                            fatAABB.lowerBound.X = aabb.lowerBound.X - aabbMargin;
-                            fatAABB.lowerBound.Y = aabb.lowerBound.Y - aabbMargin;
-                            fatAABB.upperBound.X = aabb.upperBound.X + aabbMargin;
-                            fatAABB.upperBound.Y = aabb.upperBound.Y + aabbMargin;
+                            fatAABB.lowerBound.X = aabb.lowerBound.X - margin;
+                            fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
+                            fatAABB.upperBound.X = aabb.upperBound.X + margin;
+                            fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
                             shape.fatAABB = fatAABB;
 
                             shape.enlargedAABB = true;
@@ -860,7 +867,7 @@ namespace Box2D.NET
                 }
             }
 
-            b2TracyCZoneEnd(B2TracyCZone.finalize_transfprms);
+            b2TracyCZoneEnd(B2TracyCZone.finalize_transforms);
         }
 
 /*
@@ -923,11 +930,13 @@ public enum b2SolverBlockType
                 case B2SolverStageType.b2_stageSolve:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, true);
+                        bool useBias = true;
+                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, useBias);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, true, workerIndex);
+                        bool useBias = true;
+                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, useBias, workerIndex);
                     }
 
                     break;
@@ -939,11 +948,13 @@ public enum b2SolverBlockType
                 case B2SolverStageType.b2_stageRelax:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, false);
+                        bool useBias = false;
+                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, useBias);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, false, workerIndex);
+                        bool useBias = false;
+                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, useBias, workerIndex);
                     }
 
                     break;
@@ -1127,23 +1138,24 @@ public enum b2SolverBlockType
                 int graphSyncIndex = 1;
 
                 // Single-threaded overflow work. These constraints don't fit in the graph coloring.
+                // todo these could be prepared in parallel
                 b2PrepareOverflowJoints(context);
                 b2PrepareOverflowContacts(context);
 
                 profile.prepareConstraints += b2GetMillisecondsAndReset(ref ticks);
 
                 int subStepCount = context.subStepCount;
-                for (int i = 0; i < subStepCount; ++i)
+                for (int subStepIndex = 0; subStepIndex < subStepCount; ++subStepIndex)
                 {
                     // stage index restarted each iteration
                     // syncBits still increases monotonically because the upper bits increase each iteration
-                    int iterStageIndex = stageIndex;
+                    int iterationStageIndex = stageIndex;
 
                     // integrate velocities
-                    syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
-                    B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
-                    b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                    iterStageIndex += 1;
+                    syncBits = (uint)((bodySyncIndex << 16) | iterationStageIndex);
+                    B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
+                    b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                    iterationStageIndex += 1;
                     bodySyncIndex += 1;
 
                     profile.integrateVelocities += b2GetMillisecondsAndReset(ref ticks);
@@ -1154,10 +1166,10 @@ public enum b2SolverBlockType
 
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
-                        syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageWarmStart);
-                        b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                        iterStageIndex += 1;
+                        syncBits = (uint)((graphSyncIndex << 16) | iterationStageIndex);
+                        B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageWarmStart);
+                        b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                        iterationStageIndex += 1;
                     }
 
                     graphSyncIndex += 1;
@@ -1175,10 +1187,10 @@ public enum b2SolverBlockType
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
-                            syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                            B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageSolve);
-                            b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                            iterStageIndex += 1;
+                            syncBits = (uint)((graphSyncIndex << 16) | iterationStageIndex);
+                            B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageSolve);
+                            b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                            iterationStageIndex += 1;
                         }
 
                         graphSyncIndex += 1;
@@ -1187,10 +1199,10 @@ public enum b2SolverBlockType
                     profile.solveImpulses += b2GetMillisecondsAndReset(ref ticks);
 
                     // integrate positions
-                    B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
-                    syncBits = (uint)((bodySyncIndex << 16) | iterStageIndex);
-                    b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                    iterStageIndex += 1;
+                    B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
+                    syncBits = (uint)((bodySyncIndex << 16) | iterationStageIndex);
+                    b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                    iterationStageIndex += 1;
                     bodySyncIndex += 1;
 
                     profile.integratePositions += b2GetMillisecondsAndReset(ref ticks);
@@ -1204,10 +1216,10 @@ public enum b2SolverBlockType
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
-                            syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                            B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRelax);
-                            b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                            iterStageIndex += 1;
+                            syncBits = (uint)((graphSyncIndex << 16) | iterationStageIndex);
+                            B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageRelax);
+                            b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                            iterationStageIndex += 1;
                         }
 
                         graphSyncIndex += 1;
@@ -1514,10 +1526,10 @@ public enum b2SolverBlockType
                 ArraySegment<B2JointSim> joints =
                     b2AllocateArenaItem<B2JointSim>(world.arena, awakeJointCount, "joint pointers");
 
-                B2_ASSERT(B2FixedArray4<B2ContactConstraintSIMD>.Size == B2_SIMD_WIDTH);
+                B2_ASSERT(B2FixedArray4<B2ContactConstraintWide>.Size == B2_SIMD_WIDTH);
                 int simdConstraintSize = b2GetContactConstraintSIMDByteCount();
-                ArraySegment<B2ContactConstraintSIMD> simdContactConstraints =
-                    b2AllocateArenaItem<B2ContactConstraintSIMD>(world.arena, simdContactCount /** simdConstraintSize */, "contact constraint");
+                ArraySegment<B2ContactConstraintWide> wideContactConstraints =
+                    b2AllocateArenaItem<B2ContactConstraintWide>(world.arena, simdContactCount /** simdConstraintSize */, "contact constraint");
 
                 int overflowContactCount = colors[B2_OVERFLOW_INDEX].contactSims.count;
                 ArraySegment<B2ContactConstraint> overflowContactConstraints = b2AllocateArenaItem<B2ContactConstraint>(
@@ -1538,12 +1550,12 @@ public enum b2SolverBlockType
 
                         if (colorContactCount == 0)
                         {
-                            color.simdConstraints = null;
+                            color.wideConstraints = null;
                         }
                         else
                         {
                             //color.simdConstraints = (b2ContactConstraintSIMD*)( (byte*)simdContactConstraints + contactBase * simdConstraintSize );
-                            color.simdConstraints = simdContactConstraints.Slice(contactBase);
+                            color.wideConstraints = wideContactConstraints.Slice(contactBase);
 
                             for (int k = 0; k < colorContactCount; ++k)
                             {
@@ -1836,7 +1848,7 @@ public enum b2SolverBlockType
                 stepContext.graph = graph;
                 stepContext.joints = joints;
                 stepContext.contacts = contacts;
-                stepContext.simdContactConstraints = simdContactConstraints;
+                stepContext.wideContactConstraints = wideContactConstraints;
                 stepContext.activeColorCount = activeColorCount;
                 stepContext.workerCount = workerCount;
                 stepContext.stageCount = stageCount;
@@ -1915,7 +1927,7 @@ public enum b2SolverBlockType
                 b2FreeArenaItem(world.arena, bodyBlocks);
                 b2FreeArenaItem(world.arena, stages);
                 b2FreeArenaItem(world.arena, overflowContactConstraints);
-                b2FreeArenaItem(world.arena, simdContactConstraints);
+                b2FreeArenaItem(world.arena, wideContactConstraints);
                 b2FreeArenaItem(world.arena, joints);
                 b2FreeArenaItem(world.arena, contacts);
 
@@ -2010,7 +2022,7 @@ public enum b2SolverBlockType
                             if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
                             {
                                 @event.approachSpeed = approachSpeed;
-                                @event.point = mp.point;
+                                @event.point = mp.clipPoint;
                                 hit = true;
                             }
                         }

@@ -27,5 +27,8 @@ namespace Box2D.NET
 
         // This contact wants pre-solve events
         b2_simEnablePreSolveEvents = 0x00200000,
+        
+        // This contact has a cached relative transform
+        b2_simRelativeTransformValid = 0x00400000,
     }
 }

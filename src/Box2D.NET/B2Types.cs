@@ -16,17 +16,18 @@ namespace Box2D.NET
         /// @ingroup world
         public static B2WorldDef b2DefaultWorldDef()
         {
+            float lengthUnits = b2GetLengthUnitsPerMeter();
             B2WorldDef def = new B2WorldDef();
             def.gravity.X = 0.0f;
             def.gravity.Y = -10.0f;
-            def.hitEventThreshold = 1.0f * b2_lengthUnitsPerMeter;
-            def.restitutionThreshold = 1.0f * b2_lengthUnitsPerMeter;
-            def.contactSpeed = 3.0f * b2_lengthUnitsPerMeter;
+            def.hitEventThreshold = 1.0f * lengthUnits;
+            def.restitutionThreshold = 1.0f * lengthUnits;
+            def.contactSpeed = 3.0f * lengthUnits;
             def.contactHertz = 30.0f;
             def.contactDampingRatio = 10.0f;
 
             // 400 meters per second, faster than the speed of sound
-            def.maximumLinearSpeed = 400.0f * b2_lengthUnitsPerMeter;
+            def.maximumLinearSpeed = 400.0f * lengthUnits;
             def.enableSleep = true;
             def.enableContinuous = true;
             def.internalValue = B2_SECRET_COOKIE;
@@ -40,7 +41,7 @@ namespace Box2D.NET
             B2BodyDef def = new B2BodyDef();
             def.type = B2BodyType.b2_staticBody;
             def.rotation = b2Rot_identity;
-            def.sleepThreshold = 0.05f * b2_lengthUnitsPerMeter;
+            def.sleepThreshold = 0.05f * b2GetLengthUnitsPerMeter();
             def.gravityScale = 1.0f;
             def.enableSleep = true;
             def.isAwake = true;

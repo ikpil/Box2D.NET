@@ -131,8 +131,8 @@ public class b2TaskTester : IDisposable
 
 public class B2DeterminismTest
 {
-    private const int EXPECTED_SLEEP_STEP = 300;
-    private const uint EXPECTED_HASH = 0xD4F49FD3;
+    private const int EXPECTED_SLEEP_STEP = 293;
+    private const uint EXPECTED_HASH = 0x2FF98AC6;
 
     private const int e_maxTasks = 128;
 
@@ -151,14 +151,18 @@ public class B2DeterminismTest
         FallingHingeData data = CreateFallingHinges(worldId);
 
         float timeStep = 1.0f / 60.0f;
-        bool done = false;
-        while (done == false)
+        int stepLimit = 1000;
+        for ( int i = 0; i < stepLimit; ++i )
         {
             int subStepCount = 4;
             b2World_Step(worldId, timeStep, subStepCount);
             TracyCFrameMark();
 
-            done = UpdateFallingHinges(worldId, ref data);
+            bool done = UpdateFallingHinges(worldId, ref data);
+            if (done)
+            {
+                break;
+            }
         }
 
         b2DestroyWorld(worldId);

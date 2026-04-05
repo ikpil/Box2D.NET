@@ -562,7 +562,7 @@ namespace Box2D.NET
             {
                 B2Vec2 pMin = b2MulAdd(pA, joint.minLength, axis);
                 B2Vec2 pMax = b2MulAdd(pA, joint.maxLength, axis);
-                B2Vec2 offset = b2MulSV(0.05f * b2_lengthUnitsPerMeter, b2RightPerp(axis));
+                B2Vec2 offset = b2MulSV(0.05f * b2GetLengthUnitsPerMeter(), b2RightPerp(axis));
 
                 if (joint.minLength > B2_LINEAR_SLOP)
                 {

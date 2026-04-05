@@ -71,7 +71,7 @@ namespace Box2D.NET
             ref B2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-            mp.point = b2Add(mp.anchorA, xfA.p);
+            mp.clipPoint = b2Add(mp.anchorA, xfA.p);
             mp.separation = separation;
             mp.id = 0;
             manifold.pointCount = 1;
@@ -137,7 +137,7 @@ namespace Box2D.NET
             ref B2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-            mp.point = b2Add(xfA.p, mp.anchorA);
+            mp.clipPoint = b2Add(xfA.p, mp.anchorA);
             mp.separation = separation;
             mp.id = 0;
             manifold.pointCount = 1;
@@ -208,7 +208,7 @@ namespace Box2D.NET
                 ref B2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-                mp.point = b2Add(xfA.p, mp.anchorA);
+                mp.clipPoint = b2Add(xfA.p, mp.anchorA);
                 mp.separation = b2Dot(b2Sub(cB, cA), normal);
                 mp.id = 0;
                 manifold.pointCount = 1;
@@ -231,7 +231,7 @@ namespace Box2D.NET
                 ref B2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-                mp.point = b2Add(xfA.p, mp.anchorA);
+                mp.clipPoint = b2Add(xfA.p, mp.anchorA);
                 mp.separation = b2Dot(b2Sub(cB, cA), normal);
                 mp.id = 0;
                 manifold.pointCount = 1;
@@ -254,7 +254,7 @@ namespace Box2D.NET
                 ref B2ManifoldPoint mp = ref manifold.points[0];
                 mp.anchorA = b2RotateVector(xfA.q, contactPointA);
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-                mp.point = b2Add(xfA.p, mp.anchorA);
+                mp.clipPoint = b2Add(xfA.p, mp.anchorA);
                 mp.separation = separation - radius;
                 mp.id = 0;
                 manifold.pointCount = 1;
@@ -530,7 +530,7 @@ namespace Box2D.NET
                 // anchor points relative to shape origin in world space
                 mp.anchorA = b2RotateVector(xfA.q, b2Add(mp.anchorA, origin));
                 mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-                mp.point = b2Add(xfA.p, mp.anchorA);
+                mp.clipPoint = b2Add(xfA.p, mp.anchorA);
             }
 
             return manifold;
@@ -1080,7 +1080,7 @@ namespace Box2D.NET
                     // anchor points relative to shape origin in world space
                     mp.anchorA = b2RotateVector(xfA.q, b2Add(mp.anchorA, origin));
                     mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-                    mp.point = b2Add(xfA.p, mp.anchorA);
+                    mp.clipPoint = b2Add(xfA.p, mp.anchorA);
                 }
             }
 
@@ -1182,7 +1182,7 @@ namespace Box2D.NET
             ref B2ManifoldPoint mp = ref manifold.points[0];
             mp.anchorA = b2RotateVector(xfA.q, contactPointA);
             mp.anchorB = b2Add(mp.anchorA, b2Sub(xfA.p, xfB.p));
-            mp.point = b2Add(xfA.p, mp.anchorA);
+            mp.clipPoint = b2Add(xfA.p, mp.anchorA);
             mp.separation = separation;
             mp.id = 0;
             manifold.pointCount = 1;
@@ -1417,7 +1417,7 @@ namespace Box2D.NET
                         ref B2ManifoldPoint cp = ref manifold.points[0];
                         cp.anchorA = b2RotateVector(xfA.q, pA);
                         cp.anchorB = b2Add(cp.anchorA, b2Sub(xfA.p, xfB.p));
-                        cp.point = b2Add(xfA.p, cp.anchorA);
+                        cp.clipPoint = b2Add(xfA.p, cp.anchorA);
                         cp.separation = output.distance - radiusB;
                         cp.id = B2_MAKE_ID(cache.indexA[0], cache.indexB[0]);
                         manifold.pointCount = 1;
@@ -1500,8 +1500,8 @@ namespace Box2D.NET
                                 B2Vec2 pxfAB = b2Sub(xfA.p, xfB.p);
                                 manifold.points[0].anchorB = b2Add(manifold.points[0].anchorA, pxfAB);
                                 manifold.points[1].anchorB = b2Add(manifold.points[1].anchorA, pxfAB);
-                                manifold.points[0].point = b2Add(xfA.p, manifold.points[0].anchorA);
-                                manifold.points[1].point = b2Add(xfA.p, manifold.points[1].anchorA);
+                                manifold.points[0].clipPoint = b2Add(xfA.p, manifold.points[0].anchorA);
+                                manifold.points[1].clipPoint = b2Add(xfA.p, manifold.points[1].anchorA);
                             }
 
                             return manifold;
@@ -1649,8 +1649,8 @@ namespace Box2D.NET
                         B2Vec2 pxfAB = b2Sub(xfA.p, xfB.p);
                         manifold.points[0].anchorB = b2Add(manifold.points[0].anchorA, pxfAB);
                         manifold.points[1].anchorB = b2Add(manifold.points[1].anchorA, pxfAB);
-                        manifold.points[0].point = b2Add(xfA.p, manifold.points[0].anchorA);
-                        manifold.points[1].point = b2Add(xfA.p, manifold.points[1].anchorA);
+                        manifold.points[0].clipPoint = b2Add(xfA.p, manifold.points[0].anchorA);
+                        manifold.points[1].clipPoint = b2Add(xfA.p, manifold.points[1].anchorA);
                     }
 
                     return manifold;
@@ -1712,8 +1712,8 @@ namespace Box2D.NET
                 B2Vec2 pAB = b2Sub(xfA.p, xfB.p);
                 manifold.points[0].anchorB = b2Add(manifold.points[0].anchorA, pAB);
                 manifold.points[1].anchorB = b2Add(manifold.points[1].anchorA, pAB);
-                manifold.points[0].point = b2Add(xfA.p, manifold.points[0].anchorA);
-                manifold.points[1].point = b2Add(xfA.p, manifold.points[1].anchorA);
+                manifold.points[0].clipPoint = b2Add(xfA.p, manifold.points[0].anchorA);
+                manifold.points[1].clipPoint = b2Add(xfA.p, manifold.points[1].anchorA);
             }
 
             return manifold;

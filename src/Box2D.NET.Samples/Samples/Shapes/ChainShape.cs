@@ -178,7 +178,7 @@ public class ChainShape : Sample
     public override void Draw()
     {
         base.Draw();
-        
+
         DrawLine(m_draw, b2Vec2_zero, new B2Vec2(0.5f, 0.0f), B2HexColor.b2_colorRed);
         DrawLine(m_draw, b2Vec2_zero, new B2Vec2(0.0f, 0.5f), B2HexColor.b2_colorGreen);
 
@@ -191,8 +191,8 @@ public class ChainShape : Sample
 
         float fontSize = ImGui.GetFontSize();
         float height = 155.0f;
-        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.height - height - 2.0f * fontSize ), ImGuiCond.Once );
-        ImGui.SetNextWindowSize( new Vector2( 240.0f, height ) );
+        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
+        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
         ImGui.Begin("Chain Shape", ImGuiWindowFlags.NoResize);
 
@@ -207,7 +207,7 @@ public class ChainShape : Sample
         if (ImGui.SliderFloat("Friction", ref m_material.friction, 0.0f, 1.0f, "%.2f"))
         {
             b2Shape_SetSurfaceMaterial(m_shapeId, m_material);
-            b2Chain_SetSurfaceMaterial(m_chainId, m_material, 1);
+            b2Chain_SetSurfaceMaterial(m_chainId, m_material, 0);
         }
 
         if (ImGui.SliderFloat("Restitution", ref m_material.restitution, 0.0f, 2.0f, "%.1f"))

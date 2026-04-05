@@ -39,7 +39,7 @@ namespace Box2D.NET
             def.torqueThreshold = float.MaxValue;
             def.constraintHertz = 60.0f;
             def.constraintDampingRatio = 2.0f;
-            def.drawScale = b2_lengthUnitsPerMeter;
+            def.drawScale = b2GetLengthUnitsPerMeter();
             return def;
         }
 
@@ -1462,7 +1462,7 @@ namespace Box2D.NET
 
         internal static void b2SolveOverflowJoints(B2StepContext context, bool useBias)
         {
-            b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
+            b2TracyCZoneNC(B2TracyCZone.solve_joints, "Solve Overflow Joints", B2HexColor.b2_colorLemonChiffon, true);
 
             ref B2ConstraintGraph graph = ref context.graph;
             B2JointSim[] joints = graph.colors[B2_OVERFLOW_INDEX].jointSims.data;

@@ -19,6 +19,7 @@ using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Samples.Graphics.Draws;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -353,15 +354,15 @@ public class Sample : IDisposable
 
         m_mousePoint = p;
     }
-    
-    public void DrawColoredTextLine( B2HexColor color, string text)
+
+    public void DrawColoredTextLine(B2HexColor color, string text)
     {
         if (m_context.showUI == false)
         {
             return;
         }
 
-        DrawScreenString( m_draw, 5, m_textLine, color, text);
+        DrawScreenString(m_draw, 5, m_textLine, color, text);
         m_textLine += m_textIncrement;
     }
 
@@ -421,6 +422,15 @@ public class Sample : IDisposable
         b2World_EnableSleeping(m_worldId, m_context.enableSleep);
         b2World_EnableWarmStarting(m_worldId, m_context.enableWarmStarting);
         b2World_EnableContinuous(m_worldId, m_context.enableContinuous);
+
+        if (m_context.enableRecycling)
+        {
+            b2World_SetContactRecycleDistance(m_worldId, B2_CONTACT_RECYCLE_DISTANCE);
+        }
+        else
+        {
+            b2World_SetContactRecycleDistance(m_worldId, 0.0f);
+        }
 
         for (int i = 0; i < 1; ++i)
         {

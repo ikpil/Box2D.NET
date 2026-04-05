@@ -10,7 +10,7 @@ namespace Box2D.NET
     {
         // Used to detect bad values. Positions greater than about 16km will have precision
         // problems, so 100km as a limit should be fine in all cases.
-        internal static float B2_HUGE => (100000.0f * b2_lengthUnitsPerMeter);
+        internal static float B2_HUGE => (100000.0f * b2GetLengthUnitsPerMeter());
 
         // Maximum parallel workers. Used to size some static arrays.
         public const int B2_MAX_WORKERS = 64;
@@ -24,7 +24,7 @@ namespace Box2D.NET
         // chosen to be numerically significant, but visually insignificant. In meters.
         // Normally this is 0.5cm.
         // @warning modifying this can have a significant impact on stability
-        internal static float B2_LINEAR_SLOP => (0.005f * b2_lengthUnitsPerMeter);
+        internal static float B2_LINEAR_SLOP => (0.005f * b2GetLengthUnitsPerMeter());
 
         // Maximum number of simultaneous worlds that can be allocated
         public const int B2_MAX_WORLDS = 128;
@@ -37,13 +37,20 @@ namespace Box2D.NET
         // Box2D uses limited speculative collision. This reduces jitter.
         // Normally this is 2cm.
         // @warning modifying this can have a significant impact on performance and stability
-        internal static readonly float B2_SPECULATIVE_DISTANCE = (4.0f * B2_LINEAR_SLOP);
+        public static readonly float B2_SPECULATIVE_DISTANCE = (4.0f * B2_LINEAR_SLOP);
+        
+        // The default contact recycling distance.
+        public static readonly float B2_CONTACT_RECYCLE_DISTANCE = (10.0f * B2_LINEAR_SLOP);
 
         // This is used to fatten AABBs in the dynamic tree. This allows proxies
         // to move by a small amount without triggering a tree adjustment. This is in meters.
         // Normally this is 5cm.
         // @warning modifying this can have a significant impact on performance
-        internal static float B2_AABB_MARGIN => (0.05f * b2_lengthUnitsPerMeter);
+        internal static float B2_MAX_AABB_MARGIN => (0.05f * b2GetLengthUnitsPerMeter());
+        
+        // For small objects the margin is limited to this fraction times the maximum extent
+        internal static readonly float B2_AABB_MARGIN_FRACTION = 0.125f;
+
 
         // The time that a body must be still before it will go to sleep. In seconds.
         public const float B2_TIME_TO_SLEEP = 0.5f;

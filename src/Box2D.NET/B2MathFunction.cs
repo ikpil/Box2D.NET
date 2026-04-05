@@ -58,6 +58,14 @@ namespace Box2D.NET
             return a < lower ? lower : (a > upper ? upper : a);
         }
 
+        // https://en.wikipedia.org/wiki/Floor_and_ceiling_functions
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2CeilingInt(int numerator, int denominator)
+        {
+            B2_VALIDATE(denominator > 0 && numerator >= 0);
+            return (numerator + denominator - 1) / denominator;
+        }
+
         /// @return the minimum of two floats
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float b2MinFloat(float a, float b)
@@ -353,11 +361,7 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Rot b2InvertRot(in B2Rot a)
         {
-            return new B2Rot()
-            {
-                c = a.c,
-                s = -a.s,
-            };
+            return new B2Rot(a.c, -a.s);
         }
 
         /// Normalized linear interpolation

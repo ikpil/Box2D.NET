@@ -169,6 +169,8 @@ namespace Box2D.NET
             b2DestroySolverSet(world, setIndex);
         }
 
+        // Islands need to have a deterministic order because data is moved to a sleeping set according
+        // to island order.
         internal static void b2TrySleepIsland(B2World world, int islandId)
         {
             B2Island island = b2Array_Get(ref world.islands, islandId);

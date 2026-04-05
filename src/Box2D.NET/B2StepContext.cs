@@ -54,7 +54,7 @@ namespace Box2D.NET
         // to constraint graph colors
         public ArraySegment<B2ContactSim> contacts;
 
-        public ArraySegment<B2ContactConstraintSIMD> simdContactConstraints;
+        public ArraySegment<B2ContactConstraintWide> wideContactConstraints;
         public int activeColorCount;
         public int workerCount;
 

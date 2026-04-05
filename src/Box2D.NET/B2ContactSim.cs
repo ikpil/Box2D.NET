@@ -11,6 +11,9 @@ namespace Box2D.NET
     {
         public int contactId;
 
+        public B2Transform cachedTransformA;
+        public B2Transform cachedTransformB;
+
 #if DEBUG
         public int bodyIdA;
         public int bodyIdB;

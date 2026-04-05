@@ -35,13 +35,16 @@ namespace Box2D.NET
         /// @see enableSensorEvents
         public bool isSensor;
 
-        /// Enable sensor events for this shape. This applies to sensors and non-sensors. False by default, even for sensors.
+        /// Enable sensor events for this shape. This applies to sensors and non-sensors. Both shapes involved must have this flag set to true.
+        /// False by default, even for sensors.
         public bool enableSensorEvents;
 
-        /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
+        /// Enable contact events for this shape. Only applies to kinematic and dynamic bodies. Only one shape involved needs this flag set to true.
+        /// Ignored for sensors. False by default.
         public bool enableContactEvents;
 
-        /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Ignored for sensors. False by default.
+        /// Enable hit events for this shape. Only applies to kinematic and dynamic bodies. Only one shape involved needs this flag set to true.
+        /// Ignored for sensors. False by default.
         public bool enableHitEvents;
 
         /// Enable pre-solve contact events for this shape. Only applies to dynamic bodies. These are expensive

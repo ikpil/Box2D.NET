@@ -12,6 +12,7 @@ namespace Box2D.NET
     public class B2SolverBlock
     {
         public int startIndex;
+        // todo make this uint16_t
         public short count;
 
         public short blockType; // b2SolverBlockType

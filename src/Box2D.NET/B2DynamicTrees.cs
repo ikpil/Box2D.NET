@@ -66,9 +66,12 @@ namespace Box2D.NET
             tree.nodeCapacity = 16;
             tree.nodeCount = 0;
             tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
+            
+            // todo eliminate this memset
             //memset( tree.nodes, 0, tree.nodeCapacity * sizeof( b2TreeNode ) );
 
             // Build a linked list for the free list.
+            // todo use a bump allocation scheme to avoid this work
             for (int i = 0; i < tree.nodeCapacity - 1; ++i)
             {
                 tree.nodes[i].pn.next = i + 1;
@@ -118,12 +121,13 @@ namespace Box2D.NET
                 //memcpy( tree.nodes, oldNodes, tree.nodeCount * sizeof( b2TreeNode ) );
                 Array.Copy(oldNodes, 0, tree.nodes, 0, oldCapacity);
 
+                // todo eliminate this memset
                 //memset( tree.nodes + tree.nodeCount, 0, ( tree.nodeCapacity - tree.nodeCount ) * sizeof( b2TreeNode ) );
 
                 b2Free(oldNodes, oldCapacity);
 
                 // Build a linked list for the free list. The parent pointer becomes the "next" pointer.
-                // todo avoid building freelist?
+                // todo avoid building freelist using bump allocator
                 for (int i = tree.nodeCount; i < tree.nodeCapacity - 1; ++i)
                 {
                     tree.nodes[i].pn.next = i + 1;
@@ -791,9 +795,9 @@ namespace Box2D.NET
         /// Move a proxy to a new AABB by removing and reinserting into the tree.
         public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
         {
-            B2_ASSERT(b2IsValidAABB(aabb));
-            B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
-            B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
+            B2_VALIDATE(b2IsValidAABB(aabb));
+            B2_VALIDATE(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            B2_VALIDATE(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
 
@@ -810,14 +814,14 @@ namespace Box2D.NET
         {
             B2TreeNode[] nodes = tree.nodes;
 
-            B2_ASSERT(b2IsValidAABB(aabb));
-            B2_ASSERT(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
-            B2_ASSERT(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
+            B2_VALIDATE(b2IsValidAABB(aabb));
+            B2_VALIDATE(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
+            B2_VALIDATE(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
             B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
             B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
 
             // Caller must ensure this
-            B2_ASSERT(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
+            B2_VALIDATE(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
 
             nodes[proxyId].aabb = aabb;
 

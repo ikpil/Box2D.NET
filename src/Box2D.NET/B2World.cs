@@ -113,6 +113,7 @@ namespace Box2D.NET
         public float contactSpeed;
         public float contactHertz;
         public float contactDampingRatio;
+        public float contactRecycleDistance;
 
         public b2FrictionCallback frictionCallback;
         public b2RestitutionCallback restitutionCallback;
@@ -222,6 +223,7 @@ namespace Box2D.NET
             contactSpeed = 0.0f;
             contactHertz = 0.0f;
             contactDampingRatio = 0.0f;
+            contactRecycleDistance = 0.0f; 
 
             frictionCallback = null;
             restitutionCallback = null;

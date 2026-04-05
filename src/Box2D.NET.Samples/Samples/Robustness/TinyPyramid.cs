@@ -10,6 +10,9 @@ using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples.Robustness;
 
+// A pyramid of 5cm squares. Stacking tiny objects is challenging for physics engines due to rotational effects.
+// This is also challenging for Box2D because of the AABB margin and linear slop are close to the shape size. This
+// leads to many collision pairs and some shape overlap.
 public class TinyPyramid : Sample
 {
     private static readonly int SampleTinyPyramid = SampleFactory.Shared.RegisterSample("Robustness", "Tiny Pyramid", Create);

@@ -105,7 +105,8 @@ public class ShapeCast : Sample
         }
 #endif
 
-        m_box = b2MakeOffsetBox(0.5f, 0.5f, new B2Vec2(0.0f, 0.0f), b2Rot_identity);
+        //m_box = b2MakeOffsetBox(0.5f, 0.5f, new B2Vec2(0.0f, 0.0f), b2Rot_identity);
+        m_box = b2MakeBox( 8.984375f, 0.5f );
 
 #if ZERO
         {

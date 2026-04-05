@@ -85,7 +85,7 @@ namespace Box2D.NET
             }
         }
 
-        // Contacts are always created as non-touching. They get cloned into the constraint
+        // Contacts are always created as non-touching. They get moved into the constraint
         // graph once they are found to be touching.
         internal static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
         {
@@ -237,6 +237,8 @@ namespace Box2D.NET
             }
         }
 
+        // Contacts are always created as non-touching. They get moved into the constraint
+        // graph once they are found to be touching.
         static int b2AssignJointColor(ref B2ConstraintGraph graph, int bodyIdA, int bodyIdB, B2BodyType typeA, B2BodyType typeB)
         {
             B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);

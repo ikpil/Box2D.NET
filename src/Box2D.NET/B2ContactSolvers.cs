@@ -74,8 +74,10 @@ namespace Box2D.NET
 #endif
 
                 ref B2ContactConstraint constraint = ref constraints[i];
-                constraint.indexA = indexA;
-                constraint.indexB = indexB;
+
+                // 0 is null
+                constraint.indexA = indexA + 1;
+                constraint.indexB = indexB + 1;
                 constraint.normal = manifold.normal;
                 constraint.friction = contactSim.friction;
                 constraint.restitution = contactSim.restitution;
@@ -184,8 +186,8 @@ namespace Box2D.NET
             {
                 ref B2ContactConstraint constraint = ref constraints[i];
 
-                int indexA = constraint.indexA;
-                int indexB = constraint.indexB;
+                int indexA = constraint.indexA - 1;
+                int indexB = constraint.indexB - 1;
 
                 B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
                 B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
@@ -244,7 +246,7 @@ namespace Box2D.NET
 
         internal static void b2SolveOverflowContacts(B2StepContext context, bool useBias)
         {
-            b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
+            b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Overflow Contact", B2HexColor.b2_colorAliceBlue, true);
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
@@ -268,12 +270,15 @@ namespace Box2D.NET
                 float mB = constraint.invMassB;
                 float iB = constraint.invIB;
 
-                B2BodyState stateA = constraint.indexA == B2_NULL_INDEX ? dummyState : states[constraint.indexA];
+                int indexA = constraint.indexA - 1;
+                int indexB = constraint.indexB - 1;
+
+                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
                 B2Vec2 vA = stateA.linearVelocity;
                 float wA = stateA.angularVelocity;
                 B2Rot dqA = stateA.deltaRotation;
 
-                B2BodyState stateB = constraint.indexB == B2_NULL_INDEX ? dummyState : states[constraint.indexB];
+                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
                 B2Vec2 vB = stateB.linearVelocity;
                 float wB = stateB.angularVelocity;
                 B2Rot dqB = stateB.deltaRotation;
@@ -439,11 +444,14 @@ namespace Box2D.NET
                 float mB = constraint.invMassB;
                 float iB = constraint.invIB;
 
-                B2BodyState stateA = constraint.indexA == B2_NULL_INDEX ? dummyState : states[constraint.indexA];
+                int indexA = constraint.indexA - 1;
+                int indexB = constraint.indexB - 1;
+
+                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
                 B2Vec2 vA = stateA.linearVelocity;
                 float wA = stateA.angularVelocity;
 
-                B2BodyState stateB = constraint.indexB == B2_NULL_INDEX ? dummyState : states[constraint.indexB];
+                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
                 B2Vec2 vB = stateB.linearVelocity;
                 float wB = stateB.angularVelocity;
 
@@ -483,8 +491,6 @@ namespace Box2D.NET
                         float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
                         impulse = newImpulse - cp.normalImpulse;
                         cp.normalImpulse = newImpulse;
-
-                        // Add the incremental impulse rather than the full impulse because this is not a sub-step
                         cp.totalNormalImpulse += impulse;
 
                         // apply contact impulse
@@ -797,16 +803,27 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 {
 	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
 	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
+
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+	int i5 = indices[4] - 1;
+	int i6 = indices[5] - 1;
+	int i7 = indices[6] - 1;
+	int i8 = indices[7] - 1;
+
 	// b2BodyState b2_identityBodyState = {{0.0f, 0.0f}, 0.0f, 0, {0.0f, 0.0f}, {1.0f, 0.0f}};
 	b2FloatW identity = _mm256_setr_ps( 0.0f, 0.0f, 0.0f, 0, 0.0f, 0.0f, 1.0f, 0.0f );
-	b2FloatW b0 = indices[0] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[0] ) );
-	b2FloatW b1 = indices[1] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[1] ) );
-	b2FloatW b2 = indices[2] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[2] ) );
-	b2FloatW b3 = indices[3] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[3] ) );
-	b2FloatW b4 = indices[4] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[4] ) );
-	b2FloatW b5 = indices[5] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[5] ) );
-	b2FloatW b6 = indices[6] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[6] ) );
-	b2FloatW b7 = indices[7] == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + indices[7] ) );
+	b2FloatW b0 = i1 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i1 ) );
+	b2FloatW b1 = i2 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i2 ) );
+	b2FloatW b2 = i3 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i3 ) );
+	b2FloatW b3 = i4 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i4 ) );
+	b2FloatW b4 = i5 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i5 ) );
+	b2FloatW b5 = i6 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i6 ) );
+	b2FloatW b6 = i7 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i7 ) );
+	b2FloatW b7 = i8 == B2_NULL_INDEX ? identity : _mm256_load_ps( (float*)( states + i8 ) );
 
 	b2FloatW t0 = _mm256_unpacklo_ps( b0, b1 );
 	b2FloatW t1 = _mm256_unpackhi_ps( b0, b1 );
@@ -861,24 +878,33 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 	// I don't use any dummy body in the body array because this will lead to multithreaded sharing and the
 	// associated cache flushing.
-    // todo could add a check for kinematic bodies here
 
-	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[0] ), _mm256_permute2f128_ps( tt0, tt4, 0x20 ) );
-	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[1] ), _mm256_permute2f128_ps( tt1, tt5, 0x20 ) );
-	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[2] ), _mm256_permute2f128_ps( tt2, tt6, 0x20 ) );
-	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[3] ), _mm256_permute2f128_ps( tt3, tt7, 0x20 ) );
-	if ( indices[4] != B2_NULL_INDEX && ( states[indices[4]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[4] ), _mm256_permute2f128_ps( tt0, tt4, 0x31 ) );
-	if ( indices[5] != B2_NULL_INDEX && ( states[indices[5]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[5] ), _mm256_permute2f128_ps( tt1, tt5, 0x31 ) );
-	if ( indices[6] != B2_NULL_INDEX && ( states[indices[6]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[6] ), _mm256_permute2f128_ps( tt2, tt6, 0x31 ) );
-	if ( indices[7] != B2_NULL_INDEX && ( states[indices[7]].flags & b2_dynamicFlag ) != 0 )
-		_mm256_store_ps( (float*)( states + indices[7] ), _mm256_permute2f128_ps( tt3, tt7, 0x31 ) );
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+	int i5 = indices[4] - 1;
+	int i6 = indices[5] - 1;
+	int i7 = indices[6] - 1;
+	int i8 = indices[7] - 1;
+
+	if ( i1 != B2_NULL_INDEX && ( states[i1].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i1 ), _mm256_permute2f128_ps( tt0, tt4, 0x20 ) );
+	if ( i2 != B2_NULL_INDEX && ( states[i2].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i2 ), _mm256_permute2f128_ps( tt1, tt5, 0x20 ) );
+	if ( i3 != B2_NULL_INDEX && ( states[i3].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i3 ), _mm256_permute2f128_ps( tt2, tt6, 0x20 ) );
+	if ( i4 != B2_NULL_INDEX && ( states[i4].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i4 ), _mm256_permute2f128_ps( tt3, tt7, 0x20 ) );
+	if ( i5 != B2_NULL_INDEX && ( states[i5].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i5 ), _mm256_permute2f128_ps( tt0, tt4, 0x31 ) );
+	if ( i6 != B2_NULL_INDEX && ( states[i6].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i6 ), _mm256_permute2f128_ps( tt1, tt5, 0x31 ) );
+	if ( i7 != B2_NULL_INDEX && ( states[i7].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i7 ), _mm256_permute2f128_ps( tt2, tt6, 0x31 ) );
+	if ( i8 != B2_NULL_INDEX && ( states[i8].flags & b2_dynamicFlag ) != 0 )
+		_mm256_store_ps( (float*)( states + i8 ), _mm256_permute2f128_ps( tt3, tt7, 0x31 ) );
 }
 
 #elif B2_SIMD_NEON
@@ -895,14 +921,20 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 
 	b2FloatW identityB = b2SetW( 0.0f, 0.0f, 1.0f, 0.0f );
 
-	b2FloatW b1a = indices[0] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[0] ) + 0 );
-	b2FloatW b1b = indices[0] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[0] ) + 4 );
-	b2FloatW b2a = indices[1] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[1] ) + 0 );
-	b2FloatW b2b = indices[1] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[1] ) + 4 );
-	b2FloatW b3a = indices[2] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[2] ) + 0 );
-	b2FloatW b3b = indices[2] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[2] ) + 4 );
-	b2FloatW b4a = indices[3] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[3] ) + 0 );
-	b2FloatW b4b = indices[3] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[3] ) + 4 );
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+
+	b2FloatW b1a = i1 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i1 ) + 0 );
+	b2FloatW b1b = i1 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i1 ) + 4 );
+	b2FloatW b2a = i2 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i2 ) + 0 );
+	b2FloatW b2b = i2 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i2 ) + 4 );
+	b2FloatW b3a = i3 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i3 ) + 0 );
+	b2FloatW b3b = i3 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i3 ) + 4 );
+	b2FloatW b4a = i4 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i4 ) + 0 );
+	b2FloatW b4b = i4 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i4 ) + 4 );
 
 	// [vx1 vx3 vy1 vy3]
 	b2FloatW t1a = b2UnpackLoW( b1a, b3a );
@@ -959,30 +991,36 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 	float32x4x2_t r1 = vtrnq_f32( simdBody.v.X, simdBody.v.Y );
 	float32x4x2_t r2 = vtrnq_f32( simdBody.w, simdBody.flags );
 
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+
 	// I don't use any dummy body in the body array because this will lead to multithreaded sharing and the
 	// associated cache flushing.
-	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
+	if ( i1 != B2_NULL_INDEX && ( states[i1].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body1 = vcombine_f32( vget_low_f32( r1.val[0] ), vget_low_f32( r2.val[0] ) );
-		b2StoreW( (float*)( states + indices[0] ), body1 );
+		b2StoreW( (float*)( states + i1 ), body1 );
 	}
 
-	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
+	if ( i2 != B2_NULL_INDEX && ( states[i2].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body2 = vcombine_f32( vget_low_f32( r1.val[1] ), vget_low_f32( r2.val[1] ) );
-		b2StoreW( (float*)( states + indices[1] ), body2 );
+		b2StoreW( (float*)( states + i2 ), body2 );
 	}
 
-	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
+	if ( i3 != B2_NULL_INDEX && ( states[i3].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body3 = vcombine_f32( vget_high_f32( r1.val[0] ), vget_high_f32( r2.val[0] ) );
-		b2StoreW( (float*)( states + indices[2] ), body3 );
+		b2StoreW( (float*)( states + i3 ), body3 );
 	}
 
-	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
+	if ( i4 != B2_NULL_INDEX && ( states[i4].flags & b2_dynamicFlag ) != 0 )
 	{
 		float32x4_t body4 = vcombine_f32( vget_high_f32( r1.val[1] ), vget_high_f32( r2.val[1] ) );
-		b2StoreW( (float*)( states + indices[3] ), body4 );
+		b2StoreW( (float*)( states + i4 ), body4 );
 	}
 }
 
@@ -999,14 +1037,20 @@ static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
 	// [dpx dpy dqc dqs]
 	b2FloatW identityB = b2SetW( 0.0f, 0.0f, 1.0f, 0.0f );
 
-	b2FloatW b1a = indices[0] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[0] ) + 0 );
-	b2FloatW b1b = indices[0] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[0] ) + 4 );
-	b2FloatW b2a = indices[1] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[1] ) + 0 );
-	b2FloatW b2b = indices[1] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[1] ) + 4 );
-	b2FloatW b3a = indices[2] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[2] ) + 0 );
-	b2FloatW b3b = indices[2] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[2] ) + 4 );
-	b2FloatW b4a = indices[3] == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + indices[3] ) + 0 );
-	b2FloatW b4b = indices[3] == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + indices[3] ) + 4 );
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+
+	b2FloatW b1a = i1 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i1 ) + 0 );
+	b2FloatW b1b = i1 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i1 ) + 4 );
+	b2FloatW b2a = i2 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i2 ) + 0 );
+	b2FloatW b2b = i2 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i2 ) + 4 );
+	b2FloatW b3a = i3 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i3 ) + 0 );
+	b2FloatW b3b = i3 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i3 ) + 4 );
+	b2FloatW b4a = i4 == B2_NULL_INDEX ? identityA : b2LoadW( (float*)( states + i4 ) + 0 );
+	b2FloatW b4b = i4 == B2_NULL_INDEX ? identityB : b2LoadW( (float*)( states + i4 ) + 4 );
 
 	// [vx1 vx3 vy1 vy3]
 	b2FloatW t1a = b2UnpackLoW( b1a, b3a );
@@ -1044,6 +1088,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 {
 	B2_ASSERT( sizeof( b2BodyState ) == 32, "b2BodyState not 32 bytes" );
 	B2_ASSERT( ( (uintptr_t)states & 0x1F ) == 0 );
+	B2_VALIDATE( indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0 );
 
 	// [vx1 vy1 vx2 vy2]
 	b2FloatW t1 = b2UnpackLoW( simdBody.v.X, simdBody.v.Y );
@@ -1054,58 +1099,64 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 	// [w3 f3 w4 f4]
 	b2FloatW t4 = b2UnpackHiW( simdBody.w, simdBody.flags );
 
+	// zero means null
+	int i1 = indices[0] - 1;
+	int i2 = indices[1] - 1;
+	int i3 = indices[2] - 1;
+	int i4 = indices[3] - 1;
+
 #if ENABLED
 	// I don't use any dummy body in the body array because this will lead to multithreaded cache coherence problems.
-	if ( indices[0] != B2_NULL_INDEX && ( states[indices[0]].flags & b2_dynamicFlag ) != 0 )
+	if ( i1 != B2_NULL_INDEX && ( states[i1].flags & b2_dynamicFlag ) != 0 )
 	{
 		// [t1.x t1.y t3.x t3.y]
-		b2StoreW( (float*)( states + indices[0] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+		b2StoreW( (float*)( states + i1 ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
 	}
 
-	if ( indices[1] != B2_NULL_INDEX && ( states[indices[1]].flags & b2_dynamicFlag ) != 0 )
+	if ( i2 != B2_NULL_INDEX && ( states[i2].flags & b2_dynamicFlag ) != 0 )
 	{
 		// [t1.z t1.w t3.z t3.w]
-		b2StoreW( (float*)( states + indices[1] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+		b2StoreW( (float*)( states + i2 ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
 	}
 
-	if ( indices[2] != B2_NULL_INDEX && ( states[indices[2]].flags & b2_dynamicFlag ) != 0 )
+	if ( i3 != B2_NULL_INDEX && ( states[i3].flags & b2_dynamicFlag ) != 0 )
 	{
 		// [t2.x t2.y t4.x t4.y]
-		b2StoreW( (float*)( states + indices[2] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+		b2StoreW( (float*)( states + i3 ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
 	}
 
-	if ( indices[3] != B2_NULL_INDEX && ( states[indices[3]].flags & b2_dynamicFlag ) != 0 )
+	if ( i4 != B2_NULL_INDEX && ( states[i4].flags & b2_dynamicFlag ) != 0 )
 	{
 		// [t2.z t2.w t4.z t4.w]
-		b2StoreW( (float*)( states + indices[3] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+		b2StoreW( (float*)( states + i4 ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
 	}
 
 #else
 
-	// I don't use any dummy body in the body array because this will lead to multithreaded sharing and the
-	// associated cache flushing.
-	if ( indices[0] != B2_NULL_INDEX )
+	// todo_testing this is here to test the impact of unsafe writes
+
+	if ( i1 != B2_NULL_INDEX )
 	{
 		// [t1.x t1.y t3.x t3.y]
-		b2StoreW( (float*)( states + indices[0] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+		b2StoreW( (float*)( states + i1 ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
 	}
 
-	if ( indices[1] != B2_NULL_INDEX )
+	if ( i2 != B2_NULL_INDEX )
 	{
 		// [t1.z t1.w t3.z t3.w]
-		b2StoreW( (float*)( states + indices[1] ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+		b2StoreW( (float*)( states + i2 ), _mm_shuffle_ps( t1, t3, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
 	}
 
-	if ( indices[2] != B2_NULL_INDEX )
+	if ( i3 != B2_NULL_INDEX )
 	{
 		// [t2.x t2.y t4.x t4.y]
-		b2StoreW( (float*)( states + indices[2] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
+		b2StoreW( (float*)( states + i3 ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 1, 0, 1, 0 ) ) );
 	}
 
-	if ( indices[3] != B2_NULL_INDEX )
+	if ( i4 != B2_NULL_INDEX )
 	{
 		// [t2.z t2.w t4.z t4.w]
-		b2StoreW( (float*)( states + indices[3] ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
+		b2StoreW( (float*)( states + i4 ), _mm_shuffle_ps( t2, t4, _MM_SHUFFLE( 3, 2, 3, 2 ) ) );
 	}
 #endif
 }
@@ -1115,12 +1166,20 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         // This is a load and transpose
         internal static B2BodyStateW b2GatherBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices)
         {
+            B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
+
             B2BodyState identity = b2_identityBodyState;
 
-            B2BodyState s1 = indices[0] == B2_NULL_INDEX ? identity : states[indices[0]];
-            B2BodyState s2 = indices[1] == B2_NULL_INDEX ? identity : states[indices[1]];
-            B2BodyState s3 = indices[2] == B2_NULL_INDEX ? identity : states[indices[2]];
-            B2BodyState s4 = indices[3] == B2_NULL_INDEX ? identity : states[indices[3]];
+            // zero means null
+            int i1 = indices[0] - 1;
+            int i2 = indices[1] - 1;
+            int i3 = indices[2] - 1;
+            int i4 = indices[3] - 1;
+
+            B2BodyState s1 = i1 == B2_NULL_INDEX ? identity : states[i1];
+            B2BodyState s2 = i2 == B2_NULL_INDEX ? identity : states[i2];
+            B2BodyState s3 = i3 == B2_NULL_INDEX ? identity : states[i3];
+            B2BodyState s4 = i4 == B2_NULL_INDEX ? identity : states[i4];
 
             B2BodyStateW simdBody = new B2BodyStateW();
             simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
@@ -1138,33 +1197,41 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         // This writes only the velocities back to the solver bodies
         internal static void b2ScatterBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
-            if (indices[0] != B2_NULL_INDEX && (states[indices[0]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
+            B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
+
+            // zero means null
+            int i1 = indices[0] - 1;
+            int i2 = indices[1] - 1;
+            int i3 = indices[2] - 1;
+            int i4 = indices[3] - 1;
+
+            if (i1 != B2_NULL_INDEX && (states[i1].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[indices[0]];
+                B2BodyState state = states[i1];
                 state.linearVelocity.X = simdBody.v.X.X;
                 state.linearVelocity.Y = simdBody.v.Y.X;
                 state.angularVelocity = simdBody.w.X;
             }
 
-            if (indices[1] != B2_NULL_INDEX && (states[indices[1]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
+            if (i2 != B2_NULL_INDEX && (states[i2].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[indices[1]];
+                B2BodyState state = states[i2];
                 state.linearVelocity.X = simdBody.v.X.Y;
                 state.linearVelocity.Y = simdBody.v.Y.Y;
                 state.angularVelocity = simdBody.w.Y;
             }
 
-            if (indices[2] != B2_NULL_INDEX && (states[indices[2]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
+            if (i3 != B2_NULL_INDEX && (states[i3].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[indices[2]];
+                B2BodyState state = states[i3];
                 state.linearVelocity.X = simdBody.v.X.Z;
                 state.linearVelocity.Y = simdBody.v.Y.Z;
                 state.angularVelocity = simdBody.w.Z;
             }
 
-            if (indices[3] != B2_NULL_INDEX && (states[indices[3]].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
+            if (i4 != B2_NULL_INDEX && (states[i4].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[indices[3]];
+                B2BodyState state = states[i4];
                 state.linearVelocity.X = simdBody.v.X.W;
                 state.linearVelocity.Y = simdBody.v.Y.W;
                 state.angularVelocity = simdBody.w.W;
@@ -1173,13 +1240,14 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #endif
 
-        // Contacts that live within the constraint graph coloring
+        // Note: Dirk suggested preparing contacts in the narrow phase. I tried this but it made Box2D slower.
+        // The contact preparation is extremely fast in Box2D due to the data layout (b2ContactSim).
         internal static void b2PrepareContactsTask(int startIndex, int endIndex, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_contact, "Prepare Contact", B2HexColor.b2_colorYellow, true);
             B2World world = context.world;
             Span<B2ContactSim> contacts = context.contacts;
-            Span<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
+            Span<B2ContactConstraintWide> constraints = context.wideContactConstraints;
             B2BodyState[] awakeStates = context.states;
 #if DEBUG
             B2Body[] bodies = world.bodies.data;
@@ -1194,7 +1262,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                ref B2ContactConstraintSIMD constraint = ref constraints[i];
+                ref B2ContactConstraintWide constraint = ref constraints[i];
 
                 for (int j = 0; j < B2_SIMD_WIDTH; ++j)
                 {
@@ -1216,8 +1284,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         B2_ASSERT(indexA == validIndexA);
                         B2_ASSERT(indexB == validIndexB);
 #endif
-                        constraint.indexA[j] = indexA;
-                        constraint.indexB[j] = indexB;
+                        // 0 for null
+                        constraint.indexA[j] = indexA + 1;
+                        constraint.indexB[j] = indexB + 1;
 
                         B2Vec2 vA = b2Vec2_zero;
                         float wA = 0.0f;
@@ -1377,9 +1446,12 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     }
                     else
                     {
-                        // SIMD remainder
-                        constraint.indexA[j] = B2_NULL_INDEX;
-                        constraint.indexB[j] = B2_NULL_INDEX;
+                        // Wide remainder
+                        // todo set to zero with memset
+
+                        // Zero for null
+                        constraint.indexA[j] = 0;
+                        constraint.indexB[j] = 0;
 
                         constraint.invMassA[j] = 0.0f;
                         constraint.invMassB[j] = 0.0f;
@@ -1434,11 +1506,11 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.warm_start_contact, "Warm Start", B2HexColor.b2_colorGreen, true);
 
             B2BodyState[] states = context.states;
-            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                ref B2ContactConstraintSIMD c = ref constraints[i];
+                ref B2ContactConstraintWide c = ref constraints[i];
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
@@ -1496,14 +1568,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
             B2BodyState[] states = context.states;
-            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            ref readonly B2GraphColor color = ref context.graph.colors[colorIndex];
+            Span<B2ContactConstraintWide> constraints = color.wideConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
             B2FloatW contactSpeed = b2SplatW(-context.world.contactSpeed);
             B2FloatW oneW = b2SplatW(1.0f);
 
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int wideIndex = startIndex; wideIndex < endIndex; ++wideIndex)
             {
-                ref B2ContactConstraintSIMD c = ref constraints[i];
+                ref B2ContactConstraintWide c = ref constraints[wideIndex];
 
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
@@ -1734,13 +1807,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.restitution, "Restitution", B2HexColor.b2_colorDodgerBlue, true);
 
             B2BodyState[] states = context.states;
-            Span<B2ContactConstraintSIMD> constraints = context.graph.colors[colorIndex].simdConstraints;
+            Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
             B2FloatW threshold = b2SplatW(context.world.restitutionThreshold);
             B2FloatW zero = b2ZeroW();
 
             for (int i = startIndex; i < endIndex; ++i)
             {
-                ref B2ContactConstraintSIMD c = ref constraints[i];
+                ref B2ContactConstraintWide c = ref constraints[i];
 
                 if (b2AllZeroW(c.restitution))
                 {
@@ -1847,13 +1920,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
             Span<B2ContactSim> contacts = context.contacts;
-            Span<B2ContactConstraintSIMD> constraints = context.simdContactConstraints;
+            Span<B2ContactConstraintWide> constraints = context.wideContactConstraints;
 
             B2Manifold dummy = new B2Manifold();
 
             for (int constraintIndex = startIndex; constraintIndex < endIndex; ++constraintIndex)
             {
-                ref B2ContactConstraintSIMD c = ref constraints[constraintIndex];
+                ref B2ContactConstraintWide c = ref constraints[constraintIndex];
                 ref B2FloatW rollingImpulse = ref c.rollingImpulse;
                 ref B2FloatW normalImpulse1 = ref c.normalImpulse1;
                 ref B2FloatW normalImpulse2 = ref c.normalImpulse2;

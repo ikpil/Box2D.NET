@@ -189,7 +189,7 @@ public class Manifold : Sample
         {
             ref B2ManifoldPoint mp = ref manifold.points[i];
 
-            B2Vec2 p1 = mp.point;
+            B2Vec2 p1 = mp.clipPoint;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
             DrawLine(m_draw, p1, p2, B2HexColor.b2_colorViolet);
 

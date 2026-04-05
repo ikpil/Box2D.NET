@@ -501,7 +501,7 @@ namespace Box2D.NET
                         if (C > 0.0f)
                         {
                             // speculation
-                            float safe = b2_lengthUnitsPerMeter;
+                            float safe = b2GetLengthUnitsPerMeter();
                             bias = b2MinFloat(C, safe) * context.inv_h;
                         }
                         else if (useBias)
@@ -548,7 +548,7 @@ namespace Box2D.NET
                         if (C > 0.0f)
                         {
                             // speculation
-                            float safe = b2_lengthUnitsPerMeter;
+                            float safe = b2GetLengthUnitsPerMeter();
                             bias = b2MinFloat(C, safe) * context.inv_h;
                         }
                         else if (useBias)
