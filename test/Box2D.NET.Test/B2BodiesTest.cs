@@ -96,7 +96,7 @@ public class B2BodiesTest
         {
             b2DestroyBody(bodyId);
 #if DEBUG
-            Assert.Throws<InvalidOperationException>(() => b2GetBodyFullId(world, bodyId), "Destroyed body access should throw.");
+            Assert.Throws<InvalidOperationException>((Action)(() => b2GetBodyFullId(world, bodyId)), "Destroyed body access should throw.");
 #endif
         }
 
@@ -104,7 +104,7 @@ public class B2BodiesTest
         {
             B2BodyId invalidId = b2_nullBodyId;
 #if DEBUG
-            Assert.Throws<InvalidOperationException>(() => b2GetBodyFullId(world, invalidId), "invalid body access should throw.");
+            Assert.Throws<InvalidOperationException>((Action)(() => b2GetBodyFullId(world, invalidId)), "invalid body access should throw.");
 #endif
         }
     }
@@ -145,7 +145,7 @@ public class B2BodiesTest
         // Test case 2: Get transform after body destruction
         {
             b2DestroyBody(bodyId);
-            Assert.Throws<IndexOutOfRangeException>(() => b2GetBodyTransformQuick(world, body), "Getting transform of destroyed body should throw IndexOutOfRangeException");
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2GetBodyTransformQuick(world, body)), "Getting transform of destroyed body should throw IndexOutOfRangeException");
         }
     }
 
@@ -177,8 +177,8 @@ public class B2BodiesTest
 
         // Test case 2: Create body ID with invalid index
         {
-            Assert.Throws<IndexOutOfRangeException>(() => b2MakeBodyId(world, -1), "Should throw IndexOutOfRangeException for negative index");
-            Assert.Throws<IndexOutOfRangeException>(() => b2MakeBodyId(world, world.bodies.count), "Should throw IndexOutOfRangeException for index beyond array bounds");
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2MakeBodyId(world, -1)), "Should throw IndexOutOfRangeException for negative index");
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2MakeBodyId(world, world.bodies.count)), "Should throw IndexOutOfRangeException for index beyond array bounds");
         }
     }
 
@@ -219,7 +219,7 @@ public class B2BodiesTest
         // Test case 2: Get simulation state after body destruction
         {
             b2DestroyBody(bodyId);
-            Assert.Throws<IndexOutOfRangeException>(() => b2GetBodySim(world, body), "Getting simulation state of destroyed body should throw IndexOutOfRangeException");
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2GetBodySim(world, body)), "Getting simulation state of destroyed body should throw IndexOutOfRangeException");
         }
     }
 

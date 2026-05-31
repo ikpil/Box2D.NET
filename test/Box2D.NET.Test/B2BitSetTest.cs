@@ -237,15 +237,15 @@ public class B2BitSetTest
         Assert.That(b2GetBit(ref bitSet, 65), Is.True);
 
         // Trying to grow with a smaller or equal block count should trigger Debug.Assert
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOperationException>((Action)(() =>
         {
             b2GrowBitSet(ref bitSet, bitSet.blockCount); // equal
-        });
+        }));
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOperationException>((Action)(() =>
         {
             b2GrowBitSet(ref bitSet, bitSet.blockCount - 1); // smaller
-        });
+        }));
 
         b2DestroyBitSet(ref bitSet);
     }
@@ -279,9 +279,9 @@ public class B2BitSetTest
         var setMismatch = b2CreateBitSet(256); // 4 blocks
         b2SetBitCountAndClear(ref setMismatch, 256);
 
-        Assert.Throws<InvalidOperationException>(() =>
+        Assert.Throws<InvalidOperationException>((Action)(() =>
         {
             b2InPlaceUnion(ref setA, ref setMismatch);
-        });
+        }));
     }
 }

@@ -215,7 +215,7 @@ public class B2BroadPhasesTests
 
 #if DEBUG
         // Case 3: Destroy a non-existent proxy
-        Assert.Throws<InvalidOperationException>(() => b2BroadPhase_DestroyProxy(bp, proxyKeyB), "Destroying a non-existent proxy should throw an exception");
+        Assert.Throws<InvalidOperationException>((Action)(() => b2BroadPhase_DestroyProxy(bp, proxyKeyB)), "Destroying a non-existent proxy should throw an exception");
 #endif
     }
 
@@ -258,7 +258,7 @@ public class B2BroadPhasesTests
         {
             // move invalid (nonexistent) proxy
             int invalidProxyKey = B2_PROXY_KEY(9999, B2BodyType.b2_dynamicBody);
-            Assert.Throws<InvalidOperationException>(() => b2BroadPhase_MoveProxy(bp, invalidProxyKey, aabb2));
+            Assert.Throws<InvalidOperationException>((Action)(() => b2BroadPhase_MoveProxy(bp, invalidProxyKey, aabb2)));
         }
 #endif
     }
@@ -303,11 +303,11 @@ public class B2BroadPhasesTests
 #if DEBUG
         {
             // enlarge invalid proxy (null index)
-            Assert.That(() => b2BroadPhase_EnlargeProxy(bp, B2_NULL_INDEX, aabb2), Throws.Exception, "Enlarging with null proxyKey should throw");
+            Assert.That((Action)(() => b2BroadPhase_EnlargeProxy(bp, B2_NULL_INDEX, aabb2)), Throws.Exception, "Enlarging with null proxyKey should throw");
 
             // enlarge static body
             int staticProxyKey = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb1, 0x0001, 124, true);
-            Assert.That(() => b2BroadPhase_EnlargeProxy(bp, staticProxyKey, aabb2), Throws.Exception, "Enlarging staticBody proxyKey should throw");
+            Assert.That((Action)(() => b2BroadPhase_EnlargeProxy(bp, staticProxyKey, aabb2)), Throws.Exception, "Enlarging staticBody proxyKey should throw");
         }
 #endif
     }
@@ -619,7 +619,7 @@ public class B2BroadPhasesTests
         // Test 5: Invalid proxy keys
         // Purpose: Verify that invalid proxy keys are handled gracefully
         int invalidProxyKey = B2_PROXY_KEY(9999, B2BodyType.b2_dynamicBody);
-        Assert.Throws<InvalidOperationException>(() => b2BroadPhase_TestOverlap(bp, proxyKey1, invalidProxyKey),
+        Assert.Throws<InvalidOperationException>((Action)(() => b2BroadPhase_TestOverlap(bp, proxyKey1, invalidProxyKey)),
             "Testing overlap with invalid proxy key should throw exception");
 #endif
 

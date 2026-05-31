@@ -307,7 +307,7 @@ public class B2ArrayTests
             array.data[2] = 30;
 
             // Invalid index (out of range)
-            Assert.Throws<IndexOutOfRangeException>(() => b2Array_Get(ref array, 5));
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 5)));
         }
     }
 
@@ -366,7 +366,7 @@ public class B2ArrayTests
             Assert.That(array.data[2], Is.EqualTo(3));
 
             // Validate that data beyond the resized count is not accessible (should be out of bounds)
-            Assert.Throws<IndexOutOfRangeException>(() => b2Array_Get(ref array, 3));
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 3)));
         }
 
         // Test Resize when setting the count to 0
@@ -382,7 +382,7 @@ public class B2ArrayTests
             Assert.That(array.count, Is.EqualTo(0)); // After resizing, count should be 0
 
             // Validate that the array data is not accessible
-            Assert.Throws<IndexOutOfRangeException>(() => b2Array_Get(ref array, 0));
+            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 0)));
         }
     }
 
@@ -402,10 +402,10 @@ public class B2ArrayTests
         Assert.That(array.data[1], Is.EqualTo(expectedValue)); // Verify that value at index 1 is updated to 99
 
         // Test invalid index (negative index)
-        Assert.Throws<IndexOutOfRangeException>(() => b2Array_Set(ref array, -1, expectedValue));
+        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Set(ref array, -1, expectedValue)));
 
         // Test invalid index (out of bounds)
-        Assert.Throws<IndexOutOfRangeException>(() => b2Array_Set(ref array, 5, expectedValue));
+        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Set(ref array, 5, expectedValue)));
     }
     
     [Test]
@@ -432,10 +432,10 @@ public class B2ArrayTests
         Assert.That(array.count, Is.EqualTo(3)); // The count should decrease by 1
 
         // Test invalid index (negative index)
-        Assert.Throws<IndexOutOfRangeException>(() => b2Array_RemoveSwap(ref array, -1));
+        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_RemoveSwap(ref array, -1)));
 
         // Test invalid index (out of bounds)
-        Assert.Throws<IndexOutOfRangeException>(() => b2Array_RemoveSwap(ref array, 5));
+        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_RemoveSwap(ref array, 5)));
     }
     
     [Test]
@@ -458,6 +458,6 @@ public class B2ArrayTests
         var emptyArray = b2Array_Create<int>(5);
         emptyArray.count = 0;
 
-        Assert.Throws<IndexOutOfRangeException>(() => b2Array_Pop(ref emptyArray));
+        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Pop(ref emptyArray)));
     }
 }
