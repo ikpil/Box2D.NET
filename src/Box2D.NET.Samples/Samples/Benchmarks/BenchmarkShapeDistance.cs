@@ -26,7 +26,6 @@ public class BenchmarkShapeDistance : Sample
     private B2Polygon m_polygonB;
     private float m_minMilliseconds;
     private int m_drawIndex;
-    private int m_minCycles;
 
     // for draw
     private int totalIterations = 0;
@@ -87,7 +86,6 @@ public class BenchmarkShapeDistance : Sample
         }
 
         m_drawIndex = 0;
-        m_minCycles = int.MaxValue;
         m_minMilliseconds = float.MaxValue;
     }
 
@@ -123,7 +121,6 @@ public class BenchmarkShapeDistance : Sample
             totalIterations = 0;
 
             ulong start = b2GetTicks();
-            ulong startCycles = b2GetTicks();
             for (int i = 0; i < m_count; ++i)
             {
                 B2SimplexCache cache = new B2SimplexCache();
@@ -133,10 +130,7 @@ public class BenchmarkShapeDistance : Sample
                 totalIterations += m_outputs[i].iterations;
             }
 
-            ulong endCycles = b2GetTicks();
-
             float ms = b2GetMilliseconds(start);
-            m_minCycles = b2MinInt(m_minCycles, (int)endCycles - (int)startCycles);
             m_minMilliseconds = b2MinFloat(m_minMilliseconds, ms);
         }
 
@@ -151,8 +145,6 @@ public class BenchmarkShapeDistance : Sample
         if (m_context.pause == false || m_context.singleStep == true)
         {
             DrawTextLine($"count = {m_count}");
-            DrawTextLine($"min cycles = {m_minCycles}");
-            DrawTextLine($"ave cycles = {(float)m_minCycles / m_count}");
             DrawTextLine($"min ms = {m_minMilliseconds}, ave us = {1000.0f * m_minMilliseconds / (float)m_count}");
             DrawTextLine($"average iterations = {totalIterations / (float)m_count}");
         }

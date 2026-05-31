@@ -68,15 +68,19 @@ namespace Box2D.NET
             // assume island is empty
             B2Island island = b2Array_Get(ref world.islands, islandId);
             B2SolverSet set = b2Array_Get(ref world.solverSets, island.setIndex);
-            int movedIndex = b2Array_RemoveSwap(ref set.islandSims, island.localIndex);
-            if (movedIndex != B2_NULL_INDEX)
             {
-                // Fix index on moved element
-                B2IslandSim movedElement = set.islandSims.data[island.localIndex];
-                int movedId = movedElement.islandId;
-                B2Island movedIsland = b2Array_Get(ref world.islands, movedId);
-                B2_ASSERT(movedIsland.localIndex == movedIndex);
-                movedIsland.localIndex = island.localIndex;
+                int localIndex = island.localIndex;
+                int lastIndex = set.islandSims.count - 1;
+                B2_ASSERT(0 <= localIndex && localIndex <= lastIndex);
+                int moveIslandId = set.islandSims.data[lastIndex].islandId;
+                set.islandSims.data[localIndex].CopyFrom(set.islandSims.data[lastIndex]);
+                world.islands.data[moveIslandId].localIndex = localIndex;
+                if (localIndex != lastIndex)
+                {
+                    set.islandSims.data[lastIndex] = new B2IslandSim();
+                }
+
+                set.islandSims.count -= 1;
             }
 
             // Free island and id (preserve island revision)
@@ -84,9 +88,11 @@ namespace Box2D.NET
             b2Array_Destroy(ref island.contacts);
             b2Array_Destroy(ref island.joints);
             island.constraintRemoveCount = 0;
+            island.localIndex = B2_NULL_INDEX;
             island.islandId = B2_NULL_INDEX;
             island.setIndex = B2_NULL_INDEX;
-            island.localIndex = B2_NULL_INDEX;
+
+            B2_VALIDATE(island.localIndex == B2_NULL_INDEX);
 
             b2FreeId(world.islandIdPool, islandId);
         }
@@ -268,10 +274,9 @@ namespace Box2D.NET
                 movedContact.islandIndex = removeIndex;
             }
 
-            island.constraintRemoveCount += 1;
-
             contact.islandId = B2_NULL_INDEX;
             contact.islandIndex = B2_NULL_INDEX;
+            island.constraintRemoveCount += 1;
 
             b2ValidateIsland(world, islandId);
         }
@@ -350,10 +355,9 @@ namespace Box2D.NET
                 movedJoint.islandIndex = removeIndex;
             }
 
-            island.constraintRemoveCount += 1;
-
             joint.islandId = B2_NULL_INDEX;
             joint.islandIndex = B2_NULL_INDEX;
+            island.constraintRemoveCount += 1;
 
             b2ValidateIsland(world, islandId);
         }

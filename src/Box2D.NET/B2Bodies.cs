@@ -57,6 +57,22 @@ namespace Box2D.NET
             }
         }
 
+        public static void b2RemoveBodySim(ref B2Array<B2BodySim> bodySims, ref B2Array<B2Body> bodies, int localIndex)
+        {
+            B2_ASSERT(0 <= localIndex && localIndex < bodySims.count);
+            int lastIndex = bodySims.count - 1;
+            bodySims.data[localIndex].CopyFrom(bodySims.data[lastIndex]);
+            B2Body movedBody = b2Array_Get(ref bodies, bodySims.data[localIndex].bodyId);
+            B2_ASSERT(movedBody.localIndex == lastIndex);
+            movedBody.localIndex = localIndex;
+            if (localIndex != lastIndex)
+            {
+                bodySims.data[lastIndex] = new B2BodySim();
+            }
+
+            bodySims.count -= 1;
+        }
+
         // Get a validated body from a world using an id.
         public static B2Body b2GetBodyFullId(B2World world, B2BodyId bodyId)
         {
@@ -127,8 +143,14 @@ namespace Box2D.NET
 
             int islandId = body.islandId;
             B2Island island = b2Array_Get(ref world.islands, islandId);
-
-            b2RemoveUpdate(ref island.bodies, ref world.bodies, body.id, x => x.islandIndex, (x, idx) => x.islandIndex = idx);
+            {
+                int localIndex = body.islandIndex;
+                int movedBodyId = island.bodies.data[island.bodies.count - 1];
+                island.bodies.data[localIndex] = movedBodyId;
+                B2_VALIDATE(world.bodies.data[movedBodyId].islandIndex == island.bodies.count - 1);
+                world.bodies.data[movedBodyId].islandIndex = localIndex;
+                island.bodies.count -= 1;
+            }
 
             if (island.bodies.count == 0)
             {
@@ -399,27 +421,16 @@ namespace Box2D.NET
 
             // Remove body sim from solver set that owns it
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
-            int movedIndex = b2Array_RemoveSwap(ref set.bodySims, body.localIndex);
-            if (movedIndex != B2_NULL_INDEX)
-            {
-                // Fix moved body index
-                B2BodySim movedSim = set.bodySims.data[body.localIndex];
-                int movedId = movedSim.bodyId;
-                B2Body movedBody = b2Array_Get(ref world.bodies, movedId);
-                B2_ASSERT(movedBody.localIndex == movedIndex);
-                movedBody.localIndex = body.localIndex;
-            }
+            b2RemoveBodySim(ref set.bodySims, ref world.bodies, body.localIndex);
 
             // Remove body state from awake set
             if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
-                int result = b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
-                B2_ASSERT(result == movedIndex);
-                B2_UNUSED(result);
+                b2Array_RemoveSwap(ref set.bodyStates, body.localIndex);
             }
             else if (set.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet && set.bodySims.count == 0)
             {
-                // Remove solver set if it's now an orphan.
+                // Remove solver set if it is empty
                 b2DestroySolverSet(world, set.setIndex);
             }
 

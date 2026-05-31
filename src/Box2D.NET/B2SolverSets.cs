@@ -241,16 +241,7 @@ namespace Box2D.NET
                     //memcpy( sleepBodySim, awakeSim, sizeof( b2BodySim ) );
                     sleepBodySim.CopyFrom(awakeSim);
 
-                    int movedIndex = b2Array_RemoveSwap(ref awakeSet.bodySims, awakeBodyIndex);
-                    if (movedIndex != B2_NULL_INDEX)
-                    {
-                        // fix local index on moved element
-                        B2BodySim movedSim = awakeSet.bodySims.data[awakeBodyIndex];
-                        int movedId = movedSim.bodyId;
-                        B2Body movedBody = b2Array_Get(ref world.bodies, movedId);
-                        B2_ASSERT(movedBody.localIndex == movedIndex);
-                        movedBody.localIndex = awakeBodyIndex;
-                    }
+                    b2RemoveBodySim(ref awakeSet.bodySims, ref world.bodies, awakeBodyIndex);
 
                     // destroy state, no need to clone
                     b2Array_RemoveSwap(ref awakeSet.bodyStates, awakeBodyIndex);
@@ -568,16 +559,7 @@ namespace Box2D.NET
             targetSim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
 
             // Remove body sim from solver set that owns it
-            int movedIndex = b2Array_RemoveSwap(ref sourceSet.bodySims, sourceIndex);
-            if (movedIndex != B2_NULL_INDEX)
-            {
-                // Fix moved body index
-                B2BodySim movedSim = sourceSet.bodySims.data[sourceIndex];
-                int movedId = movedSim.bodyId;
-                B2Body movedBody = b2Array_Get(ref world.bodies, movedId);
-                B2_ASSERT(movedBody.localIndex == movedIndex);
-                movedBody.localIndex = sourceIndex;
-            }
+            b2RemoveBodySim(ref sourceSet.bodySims, ref world.bodies, sourceIndex);
 
             if (sourceSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
