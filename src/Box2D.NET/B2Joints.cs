@@ -228,8 +228,7 @@ namespace Box2D.NET
             joint.colorIndex = B2_NULL_INDEX;
             joint.localIndex = B2_NULL_INDEX;
             joint.islandId = B2_NULL_INDEX;
-            joint.islandPrev = B2_NULL_INDEX;
-            joint.islandNext = B2_NULL_INDEX;
+            joint.islandIndex = B2_NULL_INDEX;
             joint.drawScale = def.drawScale;
             joint.type = type;
             joint.collideConnected = def.collideConnected;
@@ -1494,8 +1493,8 @@ namespace Box2D.NET
             B2Vec2 pB = b2TransformPoint(transformB, jointSim.localFrameB.p);
 
             B2HexColor color = B2HexColor.b2_colorDarkSeaGreen;
-            
-            float scale = b2MaxFloat( 0.0001f, draw.jointScale * joint.drawScale );
+
+            float scale = b2MaxFloat(0.0001f, draw.jointScale * joint.drawScale);
 
             switch (joint.type)
             {

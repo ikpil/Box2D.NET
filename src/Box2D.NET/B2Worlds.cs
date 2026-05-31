@@ -348,6 +348,14 @@ namespace Box2D.NET
             b2Array_Destroy(ref world.chainShapes);
             b2Array_Destroy(ref world.contacts);
             b2Array_Destroy(ref world.joints);
+
+            for (int i = 0; i < world.islands.count; ++i)
+            {
+                b2Array_Destroy(ref world.islands.data[i].bodies);
+                b2Array_Destroy(ref world.islands.data[i].contacts);
+                b2Array_Destroy(ref world.islands.data[i].joints);
+            }
+
             b2Array_Destroy(ref world.islands);
 
             // Destroy solver sets
@@ -1268,9 +1276,9 @@ namespace Box2D.NET
                                 upperBound: new B2Vec2(-float.MaxValue, -float.MaxValue)
                             );
 
-                            int islandBodyId = island.headBody;
-                            while (islandBodyId != B2_NULL_INDEX)
+                            for (int bodyIndex = 0; bodyIndex < island.bodies.count; ++bodyIndex)
                             {
+                                int islandBodyId = island.bodies.data[bodyIndex];
                                 B2Body islandBody = b2Array_Get(ref world.bodies, islandBodyId);
                                 int shapeId = islandBody.headShapeId;
                                 while (shapeId != B2_NULL_INDEX)
@@ -1280,8 +1288,6 @@ namespace Box2D.NET
                                     shapeCount += 1;
                                     shapeId = shape.nextShapeId;
                                 }
-
-                                islandBodyId = islandBody.islandNext;
                             }
 
                             if (shapeCount > 0)
@@ -1825,6 +1831,7 @@ namespace Box2D.NET
             writer.Write("solver sets: {0}\n", b2Array_ByteCount(ref world.solverSets));
             writer.Write("joints: {0}\n", b2Array_ByteCount(ref world.joints));
             writer.Write("contacts: {0}\n", b2Array_ByteCount(ref world.contacts));
+            // todo account for body/contact/joint arrays in island
             writer.Write("islands: {0}\n", b2Array_ByteCount(ref world.islands));
             writer.Write("shapes: {0}\n", b2Array_ByteCount(ref world.shapes));
             writer.Write("chains: {0}\n", b2Array_ByteCount(ref world.chainShapes));

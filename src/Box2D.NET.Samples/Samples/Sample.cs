@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Numerics;
 using System.Text;
 using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
+using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Ids;
@@ -28,6 +30,7 @@ public class Sample : IDisposable
     public const int k_maxContactPoints = 12 * 2048;
     public const int m_maxTasks = 64;
     public const int m_maxThreads = 64;
+    public const int m_profileCapacity = 512;
 
 #if DEBUG
     public const bool m_isDebug = true;
@@ -46,16 +49,29 @@ public class Sample : IDisposable
 
     private B2BodyId m_mouseBodyId;
 
+    //
     public B2WorldId m_worldId;
     private B2JointId m_mouseJointId;
     private B2Vec2 m_mousePoint;
     protected float m_mouseForceScale;
     public int m_stepCount;
-    private B2Profile m_maxProfile;
-    private B2Profile m_totalProfile;
-
     private int m_textLine;
     private int m_textIncrement;
+    
+    //
+    private readonly B2Profile[] m_profiles;
+    private int m_currentProfileIndex;
+    private ulong m_profileReadIndex;
+    private ulong m_profileWriteIndex;
+    
+    //
+    private B2Profile m_maxProfile;
+    private B2Profile m_totalProfile;
+    
+    //
+    private bool m_didStep;
+
+    private readonly float[] m_frameTimes;
 
     public Sample(SampleContext context)
     {
@@ -83,10 +99,18 @@ public class Sample : IDisposable
         m_mouseJointId = b2_nullJointId;
 
         m_stepCount = 0;
+        m_didStep = false;
 
         m_mouseBodyId = b2_nullBodyId;
         m_mousePoint = new B2Vec2();
         m_mouseForceScale = 100.0f;
+
+        m_frameTimes = new float[m_profileCapacity];
+
+        m_profiles = new B2Profile[m_profileCapacity];
+        m_currentProfileIndex = 0;
+        m_profileReadIndex = 0;
+        m_profileWriteIndex = 0;
 
         m_maxProfile = new B2Profile();
         m_totalProfile = new B2Profile();
@@ -157,10 +181,13 @@ public class Sample : IDisposable
 
     public virtual void UpdateGui()
     {
+        if (m_context.frameTime)
+        {
+            UpdateFrameTimeGui();
+        }
+
         if (m_context.drawProfile)
         {
-            B2Profile p = b2World_GetProfile(m_worldId);
-
             B2Profile aveProfile = new B2Profile();
             if (m_stepCount > 0)
             {
@@ -189,6 +216,8 @@ public class Sample : IDisposable
                 aveProfile.sensors = scale * m_totalProfile.sensors;
             }
 
+            ref readonly B2Profile p = ref m_profiles[m_currentProfileIndex];
+            DrawTextLine($"step [ave] (max) = {p.step,5:F2} [{aveProfile.step,6:F2}] ({m_maxProfile.step,6:F2})");
             DrawTextLine($"pairs [ave] (max) = {p.pairs,5:F2} [{aveProfile.pairs,6:F2}] ({m_maxProfile.pairs,6:F2})");
             DrawTextLine($"collide [ave] (max) = {p.collide,5:F2} [{aveProfile.collide,6:F2}] ({m_maxProfile.collide,6:F2})");
             DrawTextLine($"solve [ave] (max) = {p.solve,5:F2} [{aveProfile.solve,6:F2}] ({m_maxProfile.solve,6:F2})");
@@ -210,6 +239,105 @@ public class Sample : IDisposable
             DrawTextLine($"> sleep islands [ave] (max) = {p.sleepIslands,5:F2} [{aveProfile.sleepIslands,6:F2}] ({m_maxProfile.sleepIslands,6:F2})");
             DrawTextLine($"> bullets [ave] (max) = {p.bullets,5:F2} [{aveProfile.bullets,6:F2}] ({m_maxProfile.bullets,6:F2})");
             DrawTextLine($"sensors [ave] (max) = {p.sensors,5:F2} [{aveProfile.sensors,6:F2}] ({m_maxProfile.sensors,6:F2})");
+        }
+    }
+
+    private void UpdateFrameTimeGui()
+    {
+        const float frameTimeHeight = 400.0f;
+        const float frameTimeWidth = 800.0f;
+
+        ImGui.SetNextWindowPos(new Vector2(30.0f, 30.0f), ImGuiCond.FirstUseEver);
+        ImGui.SetNextWindowSize(new Vector2(frameTimeWidth, frameTimeHeight), ImGuiCond.FirstUseEver);
+
+        ImGui.Begin("Frame Time", ref m_context.frameTime, ImGuiWindowFlags.NoCollapse);
+        ImGui.PushItemWidth(ImGui.GetWindowWidth() - 20.0f);
+
+        int count = (int)(m_profileWriteIndex - m_profileReadIndex);
+        float maxValue = 0.0f;
+        for (int i = 0; i < count; ++i)
+        {
+            int index = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
+            m_frameTimes[i] = i / 60.0f;
+            maxValue = b2MaxFloat(maxValue, m_profiles[index].step);
+        }
+
+        // This is the pixel size, not the range.
+        Vector2 plotSize = new Vector2(-1.0f, 22.0f * ImGui.GetTextLineHeight());
+        DrawProfilePlot("Profile", count, maxValue, plotSize);
+
+        ImGui.PopItemWidth();
+        ImGui.End();
+    }
+
+    private void DrawProfilePlot(string label, int count, float maxValue, Vector2 size)
+    {
+        if (count == 0)
+        {
+            ImGui.TextUnformatted("No frame data");
+            return;
+        }
+
+        maxValue = b2MaxFloat(maxValue, 0.001f);
+        Vector2 canvasPos = ImGui.GetCursorScreenPos();
+        Vector2 canvasSize = size;
+        if (canvasSize.X < 0.0f)
+        {
+            canvasSize.X = ImGui.GetContentRegionAvail().X;
+        }
+
+        canvasSize.X = MathF.Max(canvasSize.X, 120.0f);
+        canvasSize.Y = MathF.Max(canvasSize.Y, 120.0f);
+
+        ImGui.InvisibleButton(label, canvasSize);
+
+        Vector2 min = canvasPos;
+        Vector2 max = canvasPos + canvasSize;
+        ImDrawListPtr drawList = ImGui.GetWindowDrawList();
+        uint borderColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.35f, 0.35f, 0.35f, 1.0f));
+        uint gridColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.20f, 0.20f, 1.0f));
+        uint textColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.85f, 0.85f, 1.0f));
+
+        drawList.AddRect(min, max, borderColor);
+        for (int i = 1; i < 4; ++i)
+        {
+            float y = min.Y + canvasSize.Y * i / 4.0f;
+            drawList.AddLine(new Vector2(min.X, y), new Vector2(max.X, y), gridColor);
+        }
+
+        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.step, new Vector4(0.20f, 0.70f, 1.00f, 1.0f));
+        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.collide, new Vector4(0.95f, 0.65f, 0.20f, 1.0f));
+        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.solve, new Vector4(0.30f, 0.85f, 0.45f, 1.0f));
+
+        drawList.AddText(min + new Vector2(8.0f, 6.0f), textColor, $"step / collide / solve    max {maxValue:F2} ms");
+        drawList.AddText(new Vector2(min.X + 8.0f, max.Y - 22.0f), textColor, $"0s .. {m_frameTimes[count - 1]:F1}s");
+    }
+
+    private void DrawProfileSeries(ImDrawListPtr drawList, Vector2 origin, Vector2 size, int count, float maxValue, Func<B2Profile, float> selector, Vector4 color)
+    {
+        if (count < 2)
+        {
+            return;
+        }
+
+        uint lineColor = ImGui.ColorConvertFloat4ToU32(color);
+        Vector2 previous = default;
+        float invCount = 1.0f / (count - 1);
+
+        for (int i = 0; i < count; ++i)
+        {
+            int index = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
+            float value = selector(m_profiles[index]);
+            float x = origin.X + size.X * i * invCount;
+            float y = origin.Y + size.Y * (1.0f - b2ClampFloat(value / maxValue, 0.0f, 1.0f));
+            Vector2 current = new Vector2(x, y);
+
+            if (i > 0)
+            {
+                drawList.AddLine(previous, current, lineColor, 1.5f);
+            }
+
+            previous = current;
         }
     }
 
@@ -383,10 +511,15 @@ public class Sample : IDisposable
         m_totalProfile = new B2Profile();
         m_maxProfile = new B2Profile();
         m_stepCount = 0;
+        m_currentProfileIndex = 0;
+        m_profileReadIndex = 0;
+        m_profileWriteIndex = 0;
     }
 
     public virtual void Step()
     {
+        m_didStep = false;
+
         float timeStep = m_context.hertz > 0.0f ? 1.0f / m_context.hertz : 0.0f;
 
         if (m_context.pause)
@@ -440,12 +573,23 @@ public class Sample : IDisposable
 
         if (timeStep > 0.0f)
         {
-            ++m_stepCount;
+            m_stepCount += 1;
+            m_didStep = true;
+
+            if (m_profileWriteIndex == m_profileCapacity + m_profileReadIndex)
+            {
+                m_profileReadIndex += 1;
+            }
+
+            m_currentProfileIndex = (int)(m_profileWriteIndex & (m_profileCapacity - 1));
+            m_profiles[m_currentProfileIndex] = b2World_GetProfile(m_worldId);
+            m_profileWriteIndex += 1;
         }
 
         // Track maximum profile times
+        if (m_didStep)
         {
-            B2Profile p = b2World_GetProfile(m_worldId);
+            B2Profile p = m_profiles[m_currentProfileIndex];
             m_maxProfile.step = b2MaxFloat(m_maxProfile.step, p.step);
             m_maxProfile.pairs = b2MaxFloat(m_maxProfile.pairs, p.pairs);
             m_maxProfile.collide = b2MaxFloat(m_maxProfile.collide, p.collide);

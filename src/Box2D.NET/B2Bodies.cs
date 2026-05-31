@@ -107,77 +107,45 @@ namespace Box2D.NET
         public static void b2CreateIslandForBody(B2World world, int setIndex, B2Body body)
         {
             B2_ASSERT(body.islandId == B2_NULL_INDEX);
-            B2_ASSERT(body.islandPrev == B2_NULL_INDEX);
-            B2_ASSERT(body.islandNext == B2_NULL_INDEX);
             B2_ASSERT(setIndex != (int)B2SolverSetType.b2_disabledSet);
 
             B2Island island = b2CreateIsland(world, setIndex);
-
+            b2Array_Push(ref island.bodies, body.id);
             body.islandId = island.islandId;
-            island.headBody = body.id;
-            island.tailBody = body.id;
-            island.bodyCount = 1;
+            body.islandIndex = 0;
+
+            b2ValidateIsland(world, island.islandId);
         }
 
         internal static void b2RemoveBodyFromIsland(B2World world, B2Body body)
         {
             if (body.islandId == B2_NULL_INDEX)
             {
-                B2_ASSERT(body.islandPrev == B2_NULL_INDEX);
-                B2_ASSERT(body.islandNext == B2_NULL_INDEX);
+                B2_ASSERT(body.islandIndex == B2_NULL_INDEX);
                 return;
             }
 
             int islandId = body.islandId;
             B2Island island = b2Array_Get(ref world.islands, islandId);
 
-            // Fix the island's linked list of sims
-            if (body.islandPrev != B2_NULL_INDEX)
+            b2RemoveUpdate(ref island.bodies, ref world.bodies, body.id, x => x.islandIndex, (x, idx) => x.islandIndex = idx);
+
+            if (island.bodies.count == 0)
             {
-                B2Body prevBody = b2Array_Get(ref world.bodies, body.islandPrev);
-                prevBody.islandNext = body.islandNext;
+                // Destroy empty island
+                B2_ASSERT(island.contacts.count == 0);
+                B2_ASSERT(island.joints.count == 0);
+
+                // Free the island
+                b2DestroyIsland(world, island.islandId);
             }
-
-            if (body.islandNext != B2_NULL_INDEX)
-            {
-                B2Body nextBody = b2Array_Get(ref world.bodies, body.islandNext);
-                nextBody.islandPrev = body.islandPrev;
-            }
-
-            B2_ASSERT(island.bodyCount > 0);
-            island.bodyCount -= 1;
-            bool islandDestroyed = false;
-
-            if (island.headBody == body.id)
-            {
-                island.headBody = body.islandNext;
-
-                if (island.headBody == B2_NULL_INDEX)
-                {
-                    // Destroy empty island
-                    B2_ASSERT(island.tailBody == body.id);
-                    B2_ASSERT(island.bodyCount == 0);
-                    B2_ASSERT(island.contactCount == 0);
-                    B2_ASSERT(island.jointCount == 0);
-
-                    // Free the island
-                    b2DestroyIsland(world, island.islandId);
-                    islandDestroyed = true;
-                }
-            }
-            else if (island.tailBody == body.id)
-            {
-                island.tailBody = body.islandPrev;
-            }
-
-            if (islandDestroyed == false)
+            else
             {
                 b2ValidateIsland(world, islandId);
             }
 
             body.islandId = B2_NULL_INDEX;
-            body.islandPrev = B2_NULL_INDEX;
-            body.islandNext = B2_NULL_INDEX;
+            body.islandIndex = B2_NULL_INDEX;
         }
 
         public static void b2DestroyBodyContacts(B2World world, B2Body body, bool wakeBodies)
@@ -326,8 +294,7 @@ namespace Box2D.NET
             body.headJointKey = B2_NULL_INDEX;
             body.jointCount = 0;
             body.islandId = B2_NULL_INDEX;
-            body.islandPrev = B2_NULL_INDEX;
-            body.islandNext = B2_NULL_INDEX;
+            body.islandIndex = B2_NULL_INDEX;
             body.bodyMoveIndex = B2_NULL_INDEX;
             body.id = bodyId;
             body.mass = 0.0f;

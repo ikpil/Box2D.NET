@@ -50,7 +50,7 @@ namespace Box2D.NET
         // Used to create stable ids for islands
         public B2IdPool islandIdPool;
 
-        // This is a sparse array that maps island ids to the island data stored in the solver sets.
+        // Persistent islands
         public B2Array<B2Island> islands;
 
         public B2IdPool shapeIdPool;
@@ -214,7 +214,7 @@ namespace Box2D.NET
 
             stepIndex = 0;
 
-            splitIslandId = 0;
+            splitIslandId = B2_NULL_INDEX;
 
             gravity = new B2Vec2();
             hitEventThreshold = 0.0f;

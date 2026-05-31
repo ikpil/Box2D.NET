@@ -35,7 +35,6 @@ public class BenchmarkCapacity : Sample
             m_context.camera.zoom = 200.0f;
         }
 
-        m_context.enableSleep = false;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.position.Y = -5.0f;
