@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Buffers;
+using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET
 {
@@ -181,6 +182,26 @@ namespace Box2D.NET
 
             return a;
         }
+
+        // Remove an element from an int arrayA by swapping with the last element. This updates the index contained
+        // in the moved element in arrayB. Assumes the integers in arrayA index into arrayB. Assumes
+        // the elements of arrayB have an indexName member that is the index in arrayA.
+        public static void b2RemoveUpdate<T>(ref B2Array<int> arrayA, ref B2Array<T> arrayB, int indexB, Func<T, int> getIndexName, Action<T, int> setIndexName)
+        {
+            int lastIndex = (arrayA).count - 1;
+            B2_ASSERT(0 <= (indexB) && (indexB) < (arrayB).count);
+            int indexA = getIndexName.Invoke((arrayB).data[indexB]);
+            B2_ASSERT(0 <= indexA && indexA < (arrayA).count);
+            if (indexA != lastIndex)
+            {
+                int movedIndex = (arrayA).data[lastIndex];
+                (arrayA).data[indexA] = movedIndex;
+                setIndexName.Invoke((arrayB).data[movedIndex], indexA);
+            }
+
+            (arrayA).count -= 1;
+        }
+
 
         /* Reserve */
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

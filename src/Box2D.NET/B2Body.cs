@@ -36,9 +36,8 @@ namespace Box2D.NET
         // All enabled dynamic and kinematic bodies are in an island.
         public int islandId;
 
-        // doubly-linked island list
-        public int islandPrev;
-        public int islandNext;
+        // Need this island index for faster union-find
+        public int islandIndex;
 
         public float mass;
 

@@ -8,6 +8,15 @@ namespace Box2D.NET
     // connectivity.
     public class B2Contact
     {
+        public B2FixedArray2<B2ContactEdge> edges;
+        
+        // A contact only belongs to an island if touching, otherwise B2_NULL_INDEX.
+        public int islandId;
+        
+        // Index into the island's contacts array for O(1) swap-removal.
+        // B2_NULL_INDEX when not in an island.
+        public int islandIndex;
+        
         // index of simulation set stored in b2World
         // B2_NULL_INDEX when slot is free
         public int setIndex;
@@ -24,12 +33,6 @@ namespace Box2D.NET
         public int shapeIdA;
         public int shapeIdB;
         public int contactId;
-
-        // A contact only belongs to an island if touching, otherwise B2_NULL_INDEX.
-        public B2FixedArray2<B2ContactEdge> edges;
-        public int islandPrev;
-        public int islandNext;
-        public int islandId;
 
         // b2ContactFlags
         public uint flags;

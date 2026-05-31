@@ -40,6 +40,7 @@ public class Settings
     public bool drawGraphColors = false;
     public bool drawCounters = false;
     public bool drawProfile = false;
+    public bool frameTime = false;
     public bool enableWarmStarting = true;
     public bool enableContinuous = true;
     public bool enableSleep = true;
@@ -85,6 +86,7 @@ public class Settings
         //
         setting.drawCounters = context.drawCounters;
         setting.drawProfile = context.drawProfile;
+        setting.frameTime = context.frameTime;
         setting.enableWarmStarting = context.enableWarmStarting;
         setting.enableContinuous = context.enableContinuous;
         setting.enableSleep = context.enableSleep;

@@ -37,6 +37,7 @@ public class SampleContext
     public bool enableRecycling = true;
     public bool enableSleep = true;
     public bool showUI = true;
+    public bool frameTime = false;
 
     // These are persisted
     public int sampleIndex = 0;
@@ -120,6 +121,12 @@ public class SampleContext
         debugDraw.drawContactFeatures = settings.drawContactFeatures;
         debugDraw.drawFrictionForces = settings.drawFrictionForces;
         debugDraw.drawIslands = settings.drawIslands;
+        drawCounters = settings.drawCounters;
+        drawProfile = settings.drawProfile;
+        frameTime = settings.frameTime;
+        enableWarmStarting = settings.enableWarmStarting;
+        enableContinuous = settings.enableContinuous;
+        enableSleep = settings.enableSleep;
 
         //
         debugDraw.jointScale = settings.jointScale;

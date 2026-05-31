@@ -25,8 +25,10 @@ namespace Box2D.NET
 
         public int jointId;
         public int islandId;
-        public int islandPrev;
-        public int islandNext;
+
+        // Index into the island's joints array for O(1) swap-removal.
+        // B2_NULL_INDEX when not in an island.
+        public int islandIndex;
 
         public float drawScale;
 

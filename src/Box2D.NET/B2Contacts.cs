@@ -212,8 +212,7 @@ namespace Box2D.NET
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = set.contactSims.count;
             contact.islandId = B2_NULL_INDEX;
-            contact.islandPrev = B2_NULL_INDEX;
-            contact.islandNext = B2_NULL_INDEX;
+            contact.islandIndex = B2_NULL_INDEX;
             contact.shapeIdA = shapeIdA;
             contact.shapeIdB = shapeIdB;
             //contact.isMarked = false;

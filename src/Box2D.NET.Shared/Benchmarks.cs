@@ -670,5 +670,113 @@ namespace Box2D.NET.Shared
                 }
             }
         }
+
+        public static JunkyardData CreateJunkyard(B2WorldId worldId)
+        {
+            var junkyardData = new JunkyardData();
+
+            {
+                float gridSize = 1.0f;
+
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+
+                B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                float y = 0.0f;
+                float x = -80.0f * gridSize;
+                for (int i = 0; i < 161; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.55f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, shapeDef, box);
+                    x += gridSize;
+                }
+
+                y = gridSize;
+                x = -80.0f * gridSize;
+                for (int i = 0; i < 50; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, shapeDef, box);
+                    y += gridSize;
+                }
+
+                y = gridSize;
+                x = 80.0f * gridSize;
+                for (int i = 0; i < 50; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, shapeDef, box);
+                    y += gridSize;
+                }
+            }
+
+            int columnCount = 200;
+            int rowCount = BENCHMARK_DEBUG ? 2 : 40;
+
+            float radius = 0.25f;
+            B2Polygon polygon;
+            {
+                // Fibonacci sphere algorithm
+                float phi = B2_PI * (MathF.Sqrt(5.0f) - 1.0f);
+                B2Vec2[] points = new B2Vec2[5];
+
+                for (int i = 0; i < 5; ++i)
+                {
+                    float theta = phi * i;
+                    B2CosSin cs = b2ComputeCosSin(theta);
+                    points[i].X = radius * cs.cosine;
+                    points[i].Y = radius * cs.sine;
+                }
+
+                B2Hull hull = b2ComputeHull(points, 5);
+                polygon = b2MakePolygon(hull, 0.0f);
+            }
+
+            {
+                B2BodyDef bodyDef = b2DefaultBodyDef();
+                bodyDef.type = B2BodyType.b2_dynamicBody;
+                B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+                float side = -0.1f;
+                float yStart = 15.0f;
+
+                for (int i = 0; i < columnCount; ++i)
+                {
+                    float x = 1.5f * (2.0f * i - columnCount) * radius;
+
+                    for (int j = 0; j < rowCount; ++j)
+                    {
+                        float y = 4.0f * j * radius + yStart;
+
+                        bodyDef.position = new B2Vec2(x + side, y);
+                        side = -side;
+
+                        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+                        b2CreatePolygonShape(bodyId, shapeDef, polygon);
+                    }
+                }
+
+                bodyDef.type = B2BodyType.b2_kinematicBody;
+                bodyDef.position = b2Vec2_zero;
+                junkyardData.pusherId = b2CreateBody(worldId, bodyDef);
+                B2Polygon pusherBox = b2MakeOffsetBox(2.0f, 4.0f, new B2Vec2(0.0f, 4.0f), b2Rot_identity);
+                b2CreatePolygonShape(junkyardData.pusherId, shapeDef, pusherBox);
+            }
+
+            return junkyardData;
+        }
+
+        public static float StepJunkyard(JunkyardData junkyardData, B2WorldId worldId, int stepCount)
+        {
+            B2_UNUSED(worldId);
+
+            float timeStep = 1.0f / 60.0f;
+            float time = timeStep * stepCount;
+            B2CosSin cs = b2ComputeCosSin(0.2f * time);
+            B2Transform target = new B2Transform(new B2Vec2(60.0f * cs.sine, 0.0f), b2Rot_identity);
+            b2Body_SetTargetTransform(junkyardData.pusherId, target, timeStep, true);
+            return 0.0f;
+        }
     }
 }

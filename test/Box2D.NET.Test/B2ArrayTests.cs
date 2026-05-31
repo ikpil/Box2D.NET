@@ -5,6 +5,7 @@
 using System;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
+using Box2D.NET.Test.Primitives;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 
@@ -12,34 +13,6 @@ namespace Box2D.NET.Test;
 
 public class B2ArrayTests
 {
-    public class DummyObject<T>
-    {
-        public T Value;
-
-        public DummyObject()
-        {
-            Value = default(T);
-        }
-
-        public DummyObject(T value)
-        {
-            Value = value;
-        }
-    }
-
-    public struct DummyStruct
-    {
-        public int Key;
-        public float Value;
-
-        public DummyStruct(int key, float value)
-        {
-            Key = key;
-            Value = value;
-        }
-    }
-
-
     [Test]
     public void Test_b2Array_Destroy_Should_ClearDataAndResetCountAndCapacity()
     {
@@ -397,7 +370,7 @@ public class B2ArrayTests
         array.data[2] = new DummyObject<int>(3);
 
         var expectedValue = new DummyObject<int>(99);
-        
+
         b2Array_Set(ref array, 1, expectedValue);
         Assert.That(array.data[1], Is.EqualTo(expectedValue)); // Verify that value at index 1 is updated to 99
 
@@ -407,7 +380,7 @@ public class B2ArrayTests
         // Test invalid index (out of bounds)
         Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Set(ref array, 5, expectedValue)));
     }
-    
+
     [Test]
     public void Test_b2Array_RemoveSwap()
     {
@@ -437,7 +410,7 @@ public class B2ArrayTests
         // Test invalid index (out of bounds)
         Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_RemoveSwap(ref array, 5)));
     }
-    
+
     [Test]
     public void Test_b2Array_Pop()
     {

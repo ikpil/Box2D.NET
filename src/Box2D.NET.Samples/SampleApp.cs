@@ -804,7 +804,7 @@ public class SampleApp
                     ImGui.Checkbox("Islands", ref _context.debugDraw.drawIslands);
                     ImGui.Checkbox("Counters", ref _context.drawCounters);
                     ImGui.Checkbox("Profile", ref _context.drawProfile);
-                    ImGui.Separator();
+                    ImGui.Checkbox("Frame Time", ref _context.frameTime);
 
                     ImGui.Separator();
 
