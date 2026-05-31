@@ -13,6 +13,7 @@ using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Shared.Benchmarks;
 
 namespace Box2D.NET.Test;
 
@@ -393,5 +394,45 @@ public class B2WorldTest
 
         Assert.That(beginCount, Is.EqualTo(1));
         Assert.That(endCount, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void TestSetWorkerCount()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.workerCount = 1;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+        Assert.That(b2World_IsValid(worldId));
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(1));
+
+        var junkyardData = CreateJunkyard(worldId);
+        StepJunkyard(junkyardData, worldId, 1);
+
+        b2World_SetWorkerCount(worldId, 4);
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(4));
+
+        StepJunkyard(junkyardData, worldId, 2);
+
+        b2World_SetWorkerCount(worldId, 4);
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(4));
+
+        StepJunkyard(junkyardData, worldId, 3);
+
+        b2World_SetWorkerCount(worldId, 0);
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(1));
+
+        StepJunkyard(junkyardData, worldId, 4);
+
+        b2World_SetWorkerCount(worldId, -5);
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(1));
+
+        StepJunkyard(junkyardData, worldId, 5);
+
+        b2World_SetWorkerCount(worldId, B2_MAX_WORKERS + 10);
+        Assert.That(b2World_GetWorkerCount(worldId), Is.EqualTo(B2_MAX_WORKERS));
+
+        StepJunkyard(junkyardData, worldId, 2);
+
+        b2DestroyWorld(worldId);
     }
 }

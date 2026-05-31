@@ -678,11 +678,9 @@ namespace Box2D.NET
         // Note: static bodies are never in an island
         // Note: this task interacts with some allocators without locks under the assumption that no other tasks
         // are interacting with these data structures.
-        public static void b2SplitIslandTask(int startIndex, int endIndex, uint threadIndex, object context)
+        public static void b2SplitIslandTask(object context)
         {
             b2TracyCZoneNC(B2TracyCZone.split, "Split Island", B2HexColor.b2_colorOlive, true);
-
-            B2_UNUSED(startIndex, endIndex, threadIndex);
 
             ulong ticks = b2GetTicks();
             B2World world = (B2World)context;

@@ -15,6 +15,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2BitSets;
 using static Box2D.NET.B2CTZs;
+using static Box2D.NET.B2ParallelFors;
 
 
 namespace Box2D.NET
@@ -128,12 +129,11 @@ namespace Box2D.NET
             return 1;
         }
 
-        internal static void b2SensorTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2SensorTask(int startIndex, int endIndex, int threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.sensor_task, "Overlap", B2HexColor.b2_colorBrown, true);
 
             B2World world = context as B2World;
-            B2_ASSERT((int)threadIndex < world.workerCount);
             B2SensorTaskContext taskContext = world.sensorTaskContexts.data[threadIndex];
 
             B2_ASSERT(startIndex < endIndex);
@@ -255,12 +255,7 @@ namespace Box2D.NET
 
             // Parallel-for sensors overlaps
             int minRange = 16;
-            object userSensorTask = world.enqueueTaskFcn(b2SensorTask, sensorCount, minRange, world, world.userTaskContext);
-            world.taskCount += 1;
-            if (userSensorTask != null)
-            {
-                world.finishTaskFcn(userSensorTask, world.userTaskContext);
-            }
+            b2ParallelFor(world, b2SensorTask, sensorCount, minRange, world);
 
             b2TracyCZoneNC(B2TracyCZone.sensor_state, "Events", B2HexColor.b2_colorLightSlateGray, true);
 

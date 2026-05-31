@@ -42,10 +42,10 @@ public class B2TestContext : IDisposable
     }
 
 
-    private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
+    private static object EnqueueTask(b2TaskCallback task, object taskContext, object userContext)
     {
         // Execute the task immediately for testing purposes
-        task(0, itemCount, 0, taskContext);
+        task(taskContext);
         return null;
     }
 

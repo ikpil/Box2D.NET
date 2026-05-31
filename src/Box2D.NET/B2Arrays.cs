@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Buffers;
-using static Box2D.NET.B2Diagnostics;
 
 namespace Box2D.NET
 {
@@ -204,6 +202,13 @@ namespace Box2D.NET
             a.data = null;
             a.count = 0;
             a.capacity = 0;
+        }
+
+        public static void b2Array_ResizeAndSetZero<T>(ref B2Array<T> a, int n) where T : new()
+        {
+            b2Array_Reserve(ref a, n);
+            // memset(0, ...)
+            a.count = n;
         }
     }
 }

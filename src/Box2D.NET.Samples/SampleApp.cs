@@ -19,6 +19,7 @@ using Silk.NET.OpenGL;
 using Silk.NET.OpenGL.Extensions.ImGui;
 using Silk.NET.Windowing;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Buffers;
 using static Box2D.NET.B2MathFunction;
@@ -758,7 +759,7 @@ public class SampleApp
 
     private void UpdateUI()
     {
-        int maxWorkers = (int)(Environment.ProcessorCount * 1.5f);
+        int maxWorkers = B2_MAX_WORKERS;
 
         float fontSize = ImGui.GetFontSize();
         float menuWidth = 13.0f * fontSize;

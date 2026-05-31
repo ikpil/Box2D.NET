@@ -17,6 +17,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2ParallelFors;
 
 namespace Box2D.NET
 {
@@ -341,12 +342,11 @@ namespace Box2D.NET
         }
 
 
-        public static void b2FindPairsTask(int startIndex, int endIndex, uint threadIndex, object context)
+        public static void b2FindPairsTask(int startIndex, int endIndex, int workerIndex, object context)
         {
+            B2_UNUSED(workerIndex);
+
             b2TracyCZoneNC(B2TracyCZone.pair_task, "Pair", B2HexColor.b2_colorMediumSlateBlue, true);
-
-            B2_UNUSED(threadIndex);
-
             B2World world = context as B2World;
             B2BroadPhase bp = world.broadPhase;
 
@@ -406,12 +406,8 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.pair_task);
         }
 
-        public static void b2UpdateTreesTask(int startIndex, int endIndex, uint threadIndex, object context)
+        public static void b2UpdateTreesTask(object context)
         {
-            B2_UNUSED(startIndex);
-            B2_UNUSED(endIndex);
-            B2_UNUSED(threadIndex);
-
             b2TracyCZoneNC(B2TracyCZone.tree_task, "Rebuild BVH", B2HexColor.b2_colorFireBrick, true);
 
             B2World world = (B2World)context;
@@ -440,7 +436,7 @@ namespace Box2D.NET
             bp.moveResults = b2AllocateArenaItem<B2MoveResult>(alloc, moveCount, "move results");
 
             // This capacity can be exceeded if there are many overlapping pairs (e.g. all shapes at the origin)
-            bp.movePairCapacity = 8 * moveCount;
+            bp.movePairCapacity = 32 * moveCount;
 
             bp.movePairs = b2AllocateArenaItem<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
@@ -451,20 +447,23 @@ namespace Box2D.NET
 #endif
 
             int minRange = 64;
-            object userPairTask = world.enqueueTaskFcn(b2FindPairsTask, moveCount, minRange, world, world.userTaskContext);
-            if (userPairTask != null)
-            {
-                world.finishTaskFcn(userPairTask, world.userTaskContext);
-                world.taskCount += 1;
-            }
+            b2ParallelFor(world, b2FindPairsTask, moveCount, minRange, world);
+
+            b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
 
             // Task that can be done in parallel with the narrow-phase
             // - rebuild the collision tree for dynamic and kinematic bodies to keep their query performance good
-            world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, 1, 1, world, world.userTaskContext);
-            world.taskCount += 1;
-            world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
-
-            b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
+            if (world.taskCount < B2_MAX_TASKS)
+            {
+                world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, world, world.userTaskContext);
+                world.taskCount += 1;
+                world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
+            }
+            else
+            {
+                world.userTreeTask = null;
+                b2UpdateTreesTask(world);
+            }
 
             // Single-threaded work
             // - Clear move flags
