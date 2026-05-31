@@ -30,6 +30,8 @@ using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Sensors;
+using static Box2D.NET.B2ParallelFors;
+using static Box2D.NET.B2Schedulers;
 
 namespace Box2D.NET
 {
@@ -50,6 +52,22 @@ namespace Box2D.NET
             return worlds;
         }
 
+        public static B2World b3GetUnlockedWorldFromId(B2WorldId id)
+        {
+            B2_ASSERT(1 <= id.index1 && id.index1 <= B2_MAX_WORLDS);
+            B2World world = b2_worlds[(id.index1 - 1)];
+            B2_ASSERT(id.index1 == world.worldId + 1);
+            B2_ASSERT(id.generation == world.generation);
+
+            // A world accessed from an id should not be locked
+            if (world.locked)
+            {
+                B2_ASSERT(false);
+                return null;
+            }
+
+            return world;
+        }
 
         public static B2World b2GetWorldFromId(B2WorldId id)
         {
@@ -82,10 +100,10 @@ namespace Box2D.NET
             return world;
         }
 
-        internal static object b2DefaultAddTaskFcn(b2TaskCallback task, int count, int minRange, object taskContext, object userContext)
+        internal static object b2DefaultAddTaskFcn(b2TaskCallback task, object taskContext, object userContext)
         {
-            B2_UNUSED(minRange, userContext);
-            task(0, count, 0, taskContext);
+            B2_UNUSED(userContext);
+            task(taskContext);
             return null;
         }
 
@@ -104,6 +122,72 @@ namespace Box2D.NET
         {
             B2_UNUSED(materialA, materialB);
             return b2MaxFloat(restitutionA, restitutionB);
+        }
+
+        private static void b2CreateWorkerContexts(B2World world)
+        {
+            world.taskContexts = b2Array_Create<B2TaskContext>(world.workerCount);
+            b2Array_ResizeAndSetZero(ref world.taskContexts, world.workerCount);
+
+            world.sensorTaskContexts = b2Array_Create<B2SensorTaskContext>(world.workerCount);
+            b2Array_ResizeAndSetZero(ref world.sensorTaskContexts, world.workerCount);
+
+            for (int i = 0; i < world.workerCount; ++i)
+            {
+                world.taskContexts.data[i].sensorHits = b2Array_Create<B2SensorHit>(8);
+                world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
+                world.taskContexts.data[i].jointStateBitSet = b2CreateBitSet(1024);
+                world.taskContexts.data[i].enlargedSimBitSet = b2CreateBitSet(256);
+                world.taskContexts.data[i].awakeIslandBitSet = b2CreateBitSet(256);
+                world.taskContexts.data[i].splitIslandId = B2_NULL_INDEX;
+
+                world.sensorTaskContexts.data[i].eventBits = b2CreateBitSet(128);
+            }
+        }
+
+        private static void b2DestroyWorkerContexts(B2World world)
+        {
+            for (int i = 0; i < world.workerCount; ++i)
+            {
+                b2Array_Destroy(ref world.taskContexts.data[i].sensorHits);
+                b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].awakeIslandBitSet);
+
+                b2DestroyBitSet(ref world.sensorTaskContexts.data[i].eventBits);
+            }
+
+            b2Array_Destroy(ref world.taskContexts);
+            b2Array_Destroy(ref world.sensorTaskContexts);
+        }
+
+        private static void b2UseSerialTaskSystem(B2World world)
+        {
+            if (world.scheduler != null)
+            {
+                b2DestroyScheduler(world.scheduler);
+            }
+
+            world.workerCount = 1;
+            world.enqueueTaskFcn = b2DefaultAddTaskFcn;
+            world.finishTaskFcn = b2DefaultFinishTaskFcn;
+            world.userTaskContext = null;
+            world.scheduler = null;
+        }
+
+        private static void b2UseBuiltInScheduler(B2World world, int workerCount)
+        {
+            if (world.scheduler != null)
+            {
+                b2DestroyScheduler(world.scheduler);
+            }
+
+            world.workerCount = b2MinInt(workerCount, B2_MAX_WORKERS);
+            world.scheduler = b2CreateScheduler(world.workerCount);
+            world.enqueueTaskFcn = b2SchedulerEnqueueTask;
+            world.finishTaskFcn = b2SchedulerFinishTask;
+            world.userTaskContext = world.scheduler;
         }
 
         public static B2WorldId b2CreateWorld(in B2WorldDef def)
@@ -246,35 +330,33 @@ namespace Box2D.NET
 
             if (def.workerCount > 0 && def.enqueueTask != null && def.finishTask != null)
             {
+                // External task system
                 world.workerCount = b2MinInt(def.workerCount, B2_MAX_WORKERS);
                 world.enqueueTaskFcn = def.enqueueTask;
                 world.finishTaskFcn = def.finishTask;
                 world.userTaskContext = def.userTaskContext;
+                world.scheduler = null;
+            }
+            else if (def.workerCount > 1)
+            {
+                // Built-in scheduler
+                world.workerCount = b2MinInt(def.workerCount, B2_MAX_WORKERS);
+                world.scheduler = b2CreateScheduler(world.workerCount);
+                world.enqueueTaskFcn = b2SchedulerEnqueueTask;
+                world.finishTaskFcn = b2SchedulerFinishTask;
+                world.userTaskContext = world.scheduler;
             }
             else
             {
+                // Serial fallback
                 world.workerCount = 1;
                 world.enqueueTaskFcn = b2DefaultAddTaskFcn;
                 world.finishTaskFcn = b2DefaultFinishTaskFcn;
                 world.userTaskContext = null;
+                world.scheduler = null;
             }
 
-            world.taskContexts = b2Array_Create<B2TaskContext>(world.workerCount);
-            b2Array_Resize(ref world.taskContexts, world.workerCount);
-
-            world.sensorTaskContexts = b2Array_Create<B2SensorTaskContext>(world.workerCount);
-            b2Array_Resize(ref world.sensorTaskContexts, world.workerCount);
-
-            for (int i = 0; i < world.workerCount; ++i)
-            {
-                world.taskContexts.data[i].sensorHits = b2Array_Create<B2SensorHit>(8);
-                world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
-                world.taskContexts.data[i].jointStateBitSet = b2CreateBitSet(1024);
-                world.taskContexts.data[i].enlargedSimBitSet = b2CreateBitSet(256);
-                world.taskContexts.data[i].awakeIslandBitSet = b2CreateBitSet(256);
-
-                world.sensorTaskContexts.data[i].eventBits = b2CreateBitSet(128);
-            }
+            b2CreateWorkerContexts(world);
 
             world.debugBodySet = b2CreateBitSet(256);
             world.debugJointSet = b2CreateBitSet(256);
@@ -289,24 +371,18 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorldFromId(worldId);
 
+            if (world.scheduler != null)
+            {
+                b2DestroyScheduler(world.scheduler);
+                world.scheduler = null;
+            }
+
             b2DestroyBitSet(ref world.debugBodySet);
             b2DestroyBitSet(ref world.debugJointSet);
             b2DestroyBitSet(ref world.debugContactSet);
             b2DestroyBitSet(ref world.debugIslandSet);
 
-            for (int i = 0; i < world.workerCount; ++i)
-            {
-                b2Array_Destroy(ref world.taskContexts.data[i].sensorHits);
-                b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
-                b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
-                b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
-                b2DestroyBitSet(ref world.taskContexts.data[i].awakeIslandBitSet);
-
-                b2DestroyBitSet(ref world.sensorTaskContexts.data[i].eventBits);
-            }
-
-            b2Array_Destroy(ref world.taskContexts);
-            b2Array_Destroy(ref world.sensorTaskContexts);
+            b2DestroyWorkerContexts(world);
 
             b2Array_Destroy(ref world.bodyMoveEvents);
             b2Array_Destroy(ref world.sensorBeginEvents);
@@ -391,13 +467,12 @@ namespace Box2D.NET
             world.generation = (ushort)(generation + 1);
         }
 
-        internal static void b2CollideTask(int startIndex, int endIndex, uint threadIndex, object context)
+        internal static void b2CollideTask(int startIndex, int endIndex, int threadIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.collide_task, "Collide", B2HexColor.b2_colorDodgerBlue, true);
 
             B2StepContext stepContext = context as B2StepContext;
             B2World world = stepContext.world;
-            B2_ASSERT((int)threadIndex < world.workerCount);
             B2TaskContext taskContext = world.taskContexts.data[threadIndex];
             ArraySegment<B2ContactSim> contactSims = stepContext.contacts;
             B2Shape[] shapes = world.shapes.data;
@@ -628,12 +703,7 @@ namespace Box2D.NET
 
             // Task should take at least 40us on a 4GHz CPU (10K cycles)
             int minRange = 64;
-            object userCollideTask = world.enqueueTaskFcn(b2CollideTask, contactCount, minRange, context, world.userTaskContext);
-            world.taskCount += 1;
-            if (userCollideTask != null)
-            {
-                world.finishTaskFcn(userCollideTask, world.userTaskContext);
-            }
+            b2ParallelFor(world, b2CollideTask, contactCount, minRange, context);
 
             b2FreeArenaItem(world.arena, contactSims);
             context.contacts = null;
@@ -818,6 +888,11 @@ namespace Box2D.NET
             world.locked = true;
             world.activeTaskCount = 0;
             world.taskCount = 0;
+
+            if (world.scheduler != null)
+            {
+                b2ResetScheduler(world.scheduler);
+            }
 
             ulong stepTicks = b2GetTicks();
 
@@ -1729,6 +1804,37 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorldFromId(worldId);
             return world.profile;
+        }
+
+        /// Set the worker count. Must be between in the range [1, B2_MAX_WORKERS]
+        public static void b2World_SetWorkerCount(B2WorldId worldId, int count)
+        {
+            B2World world = b3GetUnlockedWorldFromId(worldId);
+            if (world == null)
+            {
+                return;
+            }
+
+            if (count == world.workerCount)
+            {
+                return;
+            }
+
+            b2DestroyWorkerContexts(world);
+            world.workerCount = b2ClampInt(count, 1, B2_MAX_WORKERS);
+            b2CreateWorkerContexts(world);
+        }
+
+        /// Get the worker count.
+        public static int b2World_GetWorkerCount(B2WorldId worldId)
+        {
+            B2World world = b3GetUnlockedWorldFromId(worldId);
+            if (world == null)
+            {
+                return 0;
+            }
+
+            return world.workerCount;
         }
 
         public static B2Counters b2World_GetCounters(B2WorldId worldId)

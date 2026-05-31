@@ -789,10 +789,11 @@ namespace Box2D.NET
         }
 
 
-        public static int b2GetContactConstraintSIMDByteCount()
+        // This function allows hiding SIMD intrinsics in the source file to improve compilation performance.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetWideContactConstraintByteCount()
         {
-            //return sizeof( b2ContactConstraintSIMD );
-            return -1;
+            return B2SizeOf<B2ContactConstraintWide>.Size;
         }
 
 

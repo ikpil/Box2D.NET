@@ -27,8 +27,7 @@ namespace Box2D.NET.Samples.Samples;
 
 public class Sample : IDisposable
 {
-    public const int k_maxContactPoints = 12 * 2048;
-    public const int m_maxTasks = 64;
+    public const int m_maxTasks = 512;
     public const int m_maxThreads = 64;
     public const int m_profileCapacity = 512;
 
@@ -41,11 +40,6 @@ public class Sample : IDisposable
     protected SampleContext m_context;
     protected Camera m_camera;
     protected Draw m_draw;
-
-    private TaskScheduler m_scheduler;
-    private SampleTask[] m_tasks;
-    private int m_taskCount;
-    protected int m_threadCount;
 
     private B2BodyId m_mouseBodyId;
 
@@ -78,19 +72,6 @@ public class Sample : IDisposable
         m_context = context;
         m_camera = context.camera;
         m_draw = context.draw;
-
-        m_scheduler = new TaskScheduler();
-        m_scheduler.Initialize(m_context.workerCount);
-
-        m_tasks = new SampleTask[m_maxTasks];
-        for (int i = 0; i < m_maxTasks; ++i)
-        {
-            m_tasks[i] = new SampleTask();
-        }
-
-        m_taskCount = 0;
-
-        m_threadCount = 1 + m_context.workerCount;
 
         m_worldId = b2_nullWorldId;
 
@@ -125,9 +106,7 @@ public class Sample : IDisposable
     {
         // By deleting the world, we delete the bomb, mouse joint, etc.
         b2DestroyWorld(m_worldId);
-
-        // delete m_scheduler;
-        // delete[] m_tasks;
+        
     }
 
     public void CreateWorld()
@@ -140,8 +119,8 @@ public class Sample : IDisposable
 
         B2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.workerCount = m_context.workerCount;
-        worldDef.enqueueTask = EnqueueTask;
-        worldDef.finishTask = FinishTask;
+        // worldDef.enqueueTask = EnqueueTask;
+        // worldDef.finishTask = FinishTask;
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_context.enableSleep;
 
@@ -340,41 +319,6 @@ public class Sample : IDisposable
             previous = current;
         }
     }
-
-
-    private static object EnqueueTask(b2TaskCallback task, int itemCount, int minRange, object taskContext, object userContext)
-    {
-        Sample sample = userContext as Sample;
-        if (sample.m_taskCount < m_maxTasks)
-        {
-            SampleTask sampleTask = sample.m_tasks[sample.m_taskCount];
-            sampleTask.m_SetSize = itemCount;
-            sampleTask.m_MinRange = minRange;
-            sampleTask.m_task = task;
-            sampleTask.m_taskContext = taskContext;
-            sample.m_scheduler.AddTaskSetToPipe(sampleTask);
-            ++sample.m_taskCount;
-            return sampleTask;
-        }
-        else
-        {
-            // This is not fatal but the maxTasks should be increased
-            B2_ASSERT(false);
-            task(0, itemCount, 0, taskContext);
-            return null;
-        }
-    }
-
-    private static void FinishTask(object taskPtr, object userContext)
-    {
-        if (taskPtr != null)
-        {
-            SampleTask sampleTask = taskPtr as SampleTask;
-            Sample sample = userContext as Sample;
-            sample.m_scheduler.WaitforTask(sampleTask);
-        }
-    }
-
     public void ResetText()
     {
         m_textLine = m_textIncrement;
@@ -568,7 +512,7 @@ public class Sample : IDisposable
         for (int i = 0; i < 1; ++i)
         {
             b2World_Step(m_worldId, timeStep, m_context.subStepCount);
-            m_taskCount = 0;
+            // m_taskCount = 0;
         }
 
         if (timeStep > 0.0f)

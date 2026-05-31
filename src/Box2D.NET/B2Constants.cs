@@ -12,8 +12,14 @@ namespace Box2D.NET
         // problems, so 100km as a limit should be fine in all cases.
         public static float B2_HUGE => (100000.0f * b2GetLengthUnitsPerMeter());
 
-        // Maximum parallel workers. Used to size some static arrays.
-        public const int B2_MAX_WORKERS = 64;
+        // Maximum parallel workers. Used for some fixed size arrays.
+        public const int B2_MAX_WORKERS = 32;
+
+        // Maximum number of tasks queued per world step. b2EnqueueTaskCallback will never be called
+        // more than this per world step. This is related to B2_MAX_WORKERS. With 32 workers,
+        // the maximum observed task count is 130. This allows an external task system to use a fixed
+        // size array for Box2D task, which may help with creating stable user task pointers.
+        public const int B2_MAX_TASKS = 256;
 
         // Maximum number of colors in the constraint graph. Constraints that cannot
         // find a color are added to the overflow set which are solved single-threaded.

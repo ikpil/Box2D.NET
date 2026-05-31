@@ -133,6 +133,8 @@ namespace Box2D.NET
         public b2FinishTaskCallback finishTaskFcn;
         public object userTaskContext;
         public object userTreeTask;
+        
+        public B2Scheduler scheduler;
 
         public B2UserData userData;
 
@@ -243,6 +245,7 @@ namespace Box2D.NET
             finishTaskFcn = null;
             userTaskContext = null;
             userTreeTask = null;
+            scheduler = null;
 
             userData = B2UserData.Empty;
 
