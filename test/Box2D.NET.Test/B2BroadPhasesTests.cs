@@ -5,7 +5,7 @@
 using System;
 using Box2D.NET.Test.Helpers;
 using NUnit.Framework;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
@@ -13,7 +13,7 @@ using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Test;
 
-public class B2BoardPhasesTests
+public class B2BroadPhasesTests
 {
     [Test]
     public void Test_B2BoardPhases_B2_PROXY_ID_TYPE_KEY()

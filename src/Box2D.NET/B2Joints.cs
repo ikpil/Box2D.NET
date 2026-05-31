@@ -22,7 +22,7 @@ using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2SolverSets;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2Islands;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Ids;
 

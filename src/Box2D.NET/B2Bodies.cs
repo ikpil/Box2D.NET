@@ -17,7 +17,7 @@ using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2Sensors;
 using static Box2D.NET.B2SolverSets;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2ArenaAllocators;
 
 namespace Box2D.NET

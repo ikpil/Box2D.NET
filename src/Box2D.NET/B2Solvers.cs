@@ -25,7 +25,7 @@ using static Box2D.NET.B2BitSets;
 using static Box2D.NET.B2ContactSolvers;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Islands;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2CTZs;

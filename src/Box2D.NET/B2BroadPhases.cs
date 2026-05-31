@@ -20,7 +20,7 @@ using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET
 {
-    public static class B2BoardPhases
+    public static class B2BroadPhases
     {
         // Warning: writing to these globals significantly slows multithreading performance
 #if B2_SNOOP_PAIR_COUNTERS

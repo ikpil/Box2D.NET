@@ -20,7 +20,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2ArenaAllocators;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2BitSets;

@@ -17,7 +17,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2Geometries;
-using static Box2D.NET.B2BoardPhases;
+using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Distances;
 
 namespace Box2D.NET
