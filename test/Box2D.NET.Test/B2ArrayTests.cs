@@ -1,11 +1,8 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
-// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
+// SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System;
-using System.Runtime.InteropServices;
 using NUnit.Framework;
-using Box2D.NET.Test.Primitives;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
 
@@ -13,424 +10,499 @@ namespace Box2D.NET.Test;
 
 public class B2ArrayTests
 {
-    [Test]
-    public void Test_b2Array_Destroy_Should_ClearDataAndResetCountAndCapacity()
+    private struct Foo
     {
-        // Create array
-        var array = b2Array_Create<int>(10);
-        array.count = 5; // simulate added elements
+        public int a;
+        public float b;
+    }
 
-        // Destroy it
-        b2Array_Destroy(ref array);
+    private struct Bar
+    {
+        public B2Array<int> a;
+    }
 
-        // Validate reset
-        Assert.That(array.data, Is.Null);
-        Assert.That(array.count, Is.EqualTo(0));
-        Assert.That(array.capacity, Is.EqualTo(0));
+    private struct Owner
+    {
+        public int index;
+    }
+
+    private struct Entity
+    {
+        public int bodyIndex;
+        public int id;
+    }
+
+    private struct Body
+    {
+        public int entityIndex;
+        public float mass;
     }
 
     [Test]
-    public void Test_b2Array_Create_Should_InitializeArrayCorrectly_ForAllTypes()
+    public void TestCreateDestroy()
     {
-        // Test with value type (int)
-        var intArray = b2Array_Create<int>(5);
-        Assert.That(intArray.capacity, Is.EqualTo(5));
-        Assert.That(intArray.count, Is.EqualTo(0));
-        Assert.That(intArray.data, Is.Not.Null);
+        B2Array<int> a = b2Array_Create<int>();
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestAccess()
+    {
+        B2Array<int> a = b2Array_Create<int>();
+        b2Array_Push(ref a, 42);
+        ref int element = ref b2Array_Get(ref a, 0);
+        Assert.That(element, Is.EqualTo(42));
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestIteration()
+    {
+        B2Array<int> a = new B2Array<int>();
+        b2Array_Push(ref a, 1);
+        b2Array_Push(ref a, 2);
+        b2Array_Push(ref a, 3);
+
+        int sum = 0;
+        for (int i = 0; i < a.count; ++i)
+        {
+            sum += a.data[i];
+        }
+
+        Assert.That(sum, Is.EqualTo(6));
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestArrayOfStruct()
+    {
+        B2Array<Foo> a = b2Array_Create<Foo>();
+        b2Array_Push(ref a, new Foo { a = 1, b = 5.0f });
+        b2Array_Push(ref a, new Foo { a = 2, b = 6.0f });
+        b2Array_Push(ref a, new Foo { a = 3, b = 7.0f });
+
+        int sum1 = 0;
+        float sum2 = 0.0f;
+        for (int i = 0; i < a.count; ++i)
+        {
+            sum1 += a.data[i].a;
+            sum2 += a.data[i].b;
+        }
+
+        Assert.That(sum1, Is.EqualTo(6));
+        Assert.That(sum2, Is.EqualTo(18.0f));
+
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestStructWithArray()
+    {
+        Bar a = new Bar();
+        a.a = b2Array_Create<int>();
+        b2Array_Push(ref a.a, 1);
+        b2Array_Push(ref a.a, 2);
+        b2Array_Push(ref a.a, 3);
+
+        int sum1 = 0;
+        for (int i = 0; i < a.a.count; ++i)
+        {
+            sum1 += a.a.data[i];
+        }
+
+        Assert.That(sum1, Is.EqualTo(6));
+
+        b2Array_Destroy(ref a.a);
+    }
+
+    [Test]
+    public void TestArrayEmplace()
+    {
+        B2Array<ulong> a = new B2Array<ulong>();
+
+        for (int i = 0; i < 100; ++i)
+        {
+            ref ulong j = ref b2Array_Add(ref a);
+            j = (ulong)i;
+        }
+
+        ulong sum = 0;
+        for (int i = 0; i < a.count; ++i)
+        {
+            sum += a.data[i];
+        }
+
+        Assert.That(sum, Is.EqualTo(100ul * 99ul / 2ul));
+
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestArrayRemove()
+    {
+        B2Array<short> a = new B2Array<short>();
+
+        int n = 10;
+        b2Array_Reserve(ref a, n);
+        Assert.That(a.capacity == n && a.count == 0, Is.True);
+
+        for (short i = 0; i < n; ++i)
+        {
+            b2Array_Push(ref a, i);
+        }
+
+        Assert.That(a.count, Is.EqualTo(n));
+
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            int temp = b2Array_RemoveSwap(ref a, 0);
+            sum += temp;
+        }
+
+        Assert.That(sum, Is.EqualTo(n * (n - 1) / 2 - 1));
+
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestArrayPop()
+    {
+        B2Array<byte> a = new B2Array<byte>();
+
+        int n = 100;
+        b2Array_Resize(ref a, n);
+        Assert.That(a.capacity == n && a.count == n, Is.True);
+
+        for (byte i = 0; i < n; ++i)
+        {
+            b2Array_Push(ref a, i);
+        }
+
+        int sum = 0;
+        for (int i = 0; i < n; ++i)
+        {
+            sum += b2Array_Pop(ref a);
+        }
+
+        Assert.That(sum, Is.EqualTo(100 * 99 / 2));
+
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestEmptyArrayProperties()
+    {
+        B2Array<int> a = b2Array_Create<int>();
+        Assert.That(a.count, Is.EqualTo(0));
+        b2Array_Destroy(ref a);
+        Assert.That(a.count, Is.EqualTo(0));
+        Assert.That(a.capacity, Is.EqualTo(0));
+        Assert.That(a.data, Is.Null);
+    }
+
+    [Test]
+    public void TestArrayReserveNoop()
+    {
+        B2Array<int> a = new B2Array<int>();
+        b2Array_Reserve(ref a, 16);
+        Assert.That(a.capacity, Is.GreaterThanOrEqualTo(16));
+        int oldCapacity = a.capacity;
+        // Reserve with smaller or equal capacity should be a no-op
+        b2Array_Reserve(ref a, 8);
+        Assert.That(a.capacity, Is.EqualTo(oldCapacity));
+        b2Array_Reserve(ref a, oldCapacity);
+        Assert.That(a.capacity, Is.EqualTo(oldCapacity));
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestArrayResizeDown()
+    {
+        B2Array<int> a = new B2Array<int>();
+        for (int i = 0; i < 10; ++i)
+        {
+            b2Array_Push(ref a, i * 10);
+        }
+
+        Assert.That(a.count, Is.EqualTo(10));
+
+        b2Array_Resize(ref a, 5);
+        Assert.That(a.count, Is.EqualTo(5));
+
+        // First 5 elements should be unchanged
         for (int i = 0; i < 5; ++i)
         {
-            Assert.That(intArray.data[i], Is.EqualTo(0)); // default(int)
+            Assert.That(b2Array_Get(ref a, i), Is.EqualTo(i * 10));
         }
 
-        // Test with reference type (DummyObject)
-        var objArray = b2Array_Create<DummyObject<int>>(3);
-        Assert.That(objArray.capacity, Is.EqualTo(3));
-        Assert.That(objArray.count, Is.EqualTo(0));
-        Assert.That(objArray.data, Is.Not.Null);
-        for (int i = 0; i < 3; ++i)
-        {
-            Assert.That(objArray.data[i], Is.Not.Null); // should be new DummyObject()
-            Assert.That(objArray.data[i].Value, Is.EqualTo(0));
-        }
-
-        // Test with zero capacity
-        var emptyArray = b2Array_Create<float>(0);
-        Assert.That(emptyArray.capacity, Is.EqualTo(0));
-        Assert.That(emptyArray.count, Is.EqualTo(0));
-        Assert.That(emptyArray.data, Is.Null); // should remain null
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Reserve_Should_ExpandOnlyIfNewCapacityIsGreater()
+    public void TestArrayResizeUp()
     {
-        // Create array with initial capacity
-        var array = b2Array_Create<int>(8);
-        array.count = 5;
-        var originalData = array.data;
+        B2Array<int> a = new B2Array<int>();
 
-        // Reserve with smaller value — should do nothing
-        b2Array_Reserve(ref array, 4);
+        b2Array_Resize(ref a, 10);
+        Assert.That(a.count, Is.EqualTo(10));
+        Assert.That(a.capacity, Is.GreaterThanOrEqualTo(10));
 
-        // Validate that nothing changed
-        Assert.That(array.capacity, Is.EqualTo(8));
-        Assert.That(array.count, Is.EqualTo(5));
-        Assert.That(array.data, Is.SameAs(originalData));
+        // Write values into resized slots
+        for (int i = 0; i < 10; ++i)
+        {
+            a.data[i] = i + 1;
+        }
 
-        // Reserve with larger value — should grow
-        b2Array_Reserve(ref array, 16);
+        // Resize larger, original values preserved
+        b2Array_Resize(ref a, 20);
+        Assert.That(a.count, Is.EqualTo(20));
+        for (int i = 0; i < 10; ++i)
+        {
+            Assert.That(a.data[i], Is.EqualTo(i + 1));
+        }
 
-        // Validate updated capacity and data
-        Assert.That(array.capacity, Is.EqualTo(16));
-        Assert.That(array.count, Is.EqualTo(5));
-        Assert.That(array.data, Is.Not.Null);
-        Assert.That(array.data.Length, Is.GreaterThanOrEqualTo(16));
-        Assert.That(array.data, Is.Not.SameAs(originalData));
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Clear_Should_ResetCountWithoutTouchingDataOrCapacity()
+    public void TestArrayPopOrder()
     {
-        // Create and simulate filled array
-        var array = b2Array_Create<int>(6);
-        array.count = 4;
-        array.data[0] = 1;
-        array.data[1] = 2;
+        B2Array<int> a = new B2Array<int>();
+        b2Array_Push(ref a, 10);
+        b2Array_Push(ref a, 20);
+        b2Array_Push(ref a, 30);
 
-        var originalData = array.data;
+        // Pop returns the last element (LIFO)
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(30));
+        Assert.That(a.count, Is.EqualTo(2));
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(20));
+        Assert.That(a.count, Is.EqualTo(1));
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(10));
+        Assert.That(a.count, Is.EqualTo(0));
 
-        // Clear it
-        b2Array_Clear(ref array);
-
-        // Validate
-        Assert.That(array.count, Is.EqualTo(0));
-        Assert.That(array.capacity, Is.EqualTo(6));
-        Assert.That(array.data, Is.SameAs(originalData));
-        Assert.That(array.data[0], Is.EqualTo(1)); // data not zeroed
-        Assert.That(array.data[1], Is.EqualTo(2));
-    }
-
-
-    [Test]
-    public void Test_b2Array_ByteCount()
-    {
-        // Test for ValueType (struct)
-        {
-            // Create array of value type (KeyValuePair<int, float>)
-            var array = b2Array_Create<DummyStruct>(5);
-
-            // Validate byte count
-            int byteCount = b2Array_ByteCount(ref array);
-            Assert.That(byteCount, Is.EqualTo(8 * 5));
-        }
-
-        // Test for ReferenceType (object)
-        {
-            // Create array of reference type (object)
-            var array = b2Array_Create<object>(3);
-
-            // For reference type, the byte count should return -1
-            int byteCount = b2Array_ByteCount(ref array);
-
-            // Validate that byte count returns -1 for reference types
-            Assert.That(byteCount, Is.EqualTo(-1));
-        }
-
-        // Test for PrimitiveType (int)
-        {
-            // Create array of primitive type (int)
-            var array = b2Array_Create<int>(10);
-
-            // Size of int is 4 bytes
-            int expectedByteCount = 10 * Marshal.SizeOf<int>();
-
-            // Validate byte count
-            int byteCount = b2Array_ByteCount(ref array);
-            Assert.That(byteCount, Is.EqualTo(expectedByteCount));
-        }
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Push()
+    public void TestArrayRemoveSwapContents()
     {
-        // Test for pushing a value when the array has sufficient capacity
-        {
-            // Create array of int with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 3; // set count to 3 (some values are already added)
+        B2Array<int> a = new B2Array<int>();
+        b2Array_Push(ref a, 100);
+        b2Array_Push(ref a, 200);
+        b2Array_Push(ref a, 300);
+        b2Array_Push(ref a, 400);
 
-            // Push a new value into the array
-            b2Array_Push(ref array, 10);
+        // Remove middle element: last element swaps into its place
+        b2Array_RemoveSwap(ref a, 1);
+        Assert.That(a.count, Is.EqualTo(3));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(100));
+        Assert.That(b2Array_Get(ref a, 1), Is.EqualTo(400)); // swapped from end
+        Assert.That(b2Array_Get(ref a, 2), Is.EqualTo(300));
 
-            // Validate that the new value was added
-            Assert.That(array.data[array.count - 1], Is.EqualTo(10));
-            Assert.That(array.count, Is.EqualTo(4)); // count should have increased by 1
-        }
+        // Remove last element: no swap needed
+        b2Array_RemoveSwap(ref a, 2);
+        Assert.That(a.count, Is.EqualTo(2));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(100));
+        Assert.That(b2Array_Get(ref a, 1), Is.EqualTo(400));
 
-        // Test for pushing a value when the array needs to expand capacity
-        {
-            // Create array of int with initial capacity of 2 (small capacity)
-            var array = b2Array_Create<int>(2);
-            array.count = 2; // set count to 2 (array is full)
+        // Remove first element
+        b2Array_RemoveSwap(ref a, 0);
+        Assert.That(a.count, Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(400));
 
-            // Push a new value, which should trigger a resize of the array
-            b2Array_Push(ref array, 20);
+        // Remove sole element
+        b2Array_RemoveSwap(ref a, 0);
+        Assert.That(a.count, Is.EqualTo(0));
 
-            // Validate that the new value was added and the capacity increased
-            Assert.That(array.data[array.count - 1], Is.EqualTo(20));
-            Assert.That(array.count, Is.EqualTo(3)); // count should have increased by 1
-            Assert.That(array.capacity, Is.GreaterThan(2)); // capacity should be larger than before
-        }
-
-        // Test for pushing a value into an empty array
-        {
-            // Create an empty array of int with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 0; // no elements in the array yet
-
-            // Push a new value into the array
-            b2Array_Push(ref array, 30);
-
-            // Validate that the new value was added
-            Assert.That(array.data[array.count - 1], Is.EqualTo(30));
-            Assert.That(array.count, Is.EqualTo(1)); // count should be 1 after pushing the value
-        }
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Add()
+    public void TestArrayRemoveSwapAllFromEnd()
     {
-        // Test when the array has sufficient capacity
-        {
-            // Create array of int with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 3; // set count to 3 (some values are already added)
+        B2Array<int> a = new B2Array<int>();
+        b2Array_Push(ref a, 1);
+        b2Array_Push(ref a, 2);
+        b2Array_Push(ref a, 3);
 
-            // Add a new value to the array
-            ref var addedValue = ref b2Array_Add(ref array);
-            addedValue = 10;
+        // Always remove the last element (no swap path)
+        b2Array_RemoveSwap(ref a, a.count - 1);
+        Assert.That(a.count, Is.EqualTo(2));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref a, 1), Is.EqualTo(2));
 
-            // Validate that the new value was added
-            Assert.That(array.data[array.count - 1], Is.EqualTo(10));
-            Assert.That(array.count, Is.EqualTo(4)); // count should have increased by 1
-        }
+        b2Array_RemoveSwap(ref a, a.count - 1);
+        Assert.That(a.count, Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(1));
 
-        // Test when the array needs to expand capacity
-        {
-            // Create array of int with initial capacity of 2 (small capacity)
-            var array = b2Array_Create<int>(2);
-            array.count = 2; // set count to 2 (array is full)
+        b2Array_RemoveSwap(ref a, a.count - 1);
+        Assert.That(a.count, Is.EqualTo(0));
 
-            // Add a new value, which should trigger a resize of the array
-            ref var addedValue = ref b2Array_Add(ref array);
-            addedValue = 20;
-
-            // Validate that the new value was added and the capacity increased
-            Assert.That(array.data[array.count - 1], Is.EqualTo(20));
-            Assert.That(array.count, Is.EqualTo(3)); // count should have increased by 1
-            Assert.That(array.capacity, Is.GreaterThan(2)); // capacity should be larger than before
-        }
-
-        // Test when adding to an empty array
-        {
-            // Create an empty array of int with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 0; // no elements in the array yet
-
-            // Add a new value to the array
-            ref var addedValue = ref b2Array_Add(ref array);
-            addedValue = 30;
-
-            // Validate that the new value was added
-            Assert.That(array.data[array.count - 1], Is.EqualTo(30));
-            Assert.That(array.count, Is.EqualTo(1)); // count should be 1 after adding the value
-            Assert.That(array.capacity, Is.EqualTo(5));
-        }
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Get()
+    public void TestArrayGrowthIntegrity()
     {
-        // Test for valid index within the array's range
+        B2Array<int> a = new B2Array<int>();
+
+        // Push many elements to trigger multiple reallocations
+        for (int i = 0; i < 1000; ++i)
         {
-            // Create an array with initial capacity of 5 and set count to 3
-            var array = b2Array_Create<int>(5);
-            array.count = 3;
-
-            // Set some values
-            array.data[0] = 1;
-            array.data[1] = 2;
-            array.data[2] = 3;
-
-            // Get value at index 1 (valid index)
-            ref var value = ref b2Array_Get(ref array, 1);
-
-            // Validate that the value is correct
-            Assert.That(value, Is.EqualTo(2)); // The value at index 1 should be 2
+            b2Array_Push(ref a, i);
         }
 
-        // Test for invalid index (out of range) - Expect IndexOutOfRangeException
+        Assert.That(a.count, Is.EqualTo(1000));
+        Assert.That(a.capacity, Is.GreaterThanOrEqualTo(1000));
+
+        // Verify every element survived the reallocations
+        for (int i = 0; i < 1000; ++i)
         {
-            // Create an array with initial capacity of 3 and set count to 3
-            var array = b2Array_Create<int>(3);
-            array.count = 3;
-
-            // Set some values
-            array.data[0] = 10;
-            array.data[1] = 20;
-            array.data[2] = 30;
-
-            // Invalid index (out of range)
-            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 5)));
+            Assert.That(b2Array_Get(ref a, i), Is.EqualTo(i));
         }
+
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Resize()
+    public void TestArrayInterleavedPushPop()
     {
-        // Test Resize when increasing the array size
-        {
-            // Create an array with initial capacity of 3
-            var array = b2Array_Create<int>(3);
-            array.count = 3;
+        B2Array<int> a = new B2Array<int>();
 
-            // Set some values
-            array.data[0] = 1;
-            array.data[1] = 2;
-            array.data[2] = 3;
+        b2Array_Push(ref a, 1);
+        b2Array_Push(ref a, 2);
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(2));
+        Assert.That(a.count, Is.EqualTo(1));
 
-            // Resize the array to a larger size (5)
-            b2Array_Resize(ref array, 5);
+        b2Array_Push(ref a, 3);
+        b2Array_Push(ref a, 4);
+        Assert.That(a.count, Is.EqualTo(3));
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(4));
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(3));
+        Assert.That(b2Array_Pop(ref a), Is.EqualTo(1));
+        Assert.That(a.count, Is.EqualTo(0));
 
-            // Validate that the new count is correct
-            Assert.That(array.count, Is.EqualTo(5)); // After resizing, count should be 5
+        // Re-use after emptying
+        b2Array_Push(ref a, 99);
+        Assert.That(a.count, Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref a, 0), Is.EqualTo(99));
 
-            // Validate that the previous data is still intact
-            Assert.That(array.data[0], Is.EqualTo(1));
-            Assert.That(array.data[1], Is.EqualTo(2));
-            Assert.That(array.data[2], Is.EqualTo(3));
-
-            // Validate that new slots are initialized
-            Assert.That(array.data[3], Is.EqualTo(0)); // New slots should be default (0 for int)
-            Assert.That(array.data[4], Is.EqualTo(0));
-        }
-
-        // Test Resize when decreasing the array size
-        {
-            // Create an array with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 5;
-
-            // Set some values
-            array.data[0] = 1;
-            array.data[1] = 2;
-            array.data[2] = 3;
-            array.data[3] = 4;
-            array.data[4] = 5;
-
-            // Resize the array to a smaller size (3)
-            b2Array_Resize(ref array, 3);
-
-            // Validate that the new count is correct
-            Assert.That(array.count, Is.EqualTo(3)); // After resizing, count should be 3
-
-            // Validate that the previous data is still intact
-            Assert.That(array.data[0], Is.EqualTo(1));
-            Assert.That(array.data[1], Is.EqualTo(2));
-            Assert.That(array.data[2], Is.EqualTo(3));
-
-            // Validate that data beyond the resized count is not accessible (should be out of bounds)
-            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 3)));
-        }
-
-        // Test Resize when setting the count to 0
-        {
-            // Create an array with initial capacity of 5
-            var array = b2Array_Create<int>(5);
-            array.count = 3;
-
-            // Resize the array to 0
-            b2Array_Resize(ref array, 0);
-
-            // Validate that the count is set to 0
-            Assert.That(array.count, Is.EqualTo(0)); // After resizing, count should be 0
-
-            // Validate that the array data is not accessible
-            Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Get(ref array, 0)));
-        }
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Set()
+    public void TestArrayEmplaceStruct()
     {
-        // Test setting a valid index
-        var array = b2Array_Create<DummyObject<int>>(5);
-        array.count = 3;
-        array.data[0] = new DummyObject<int>(1);
-        array.data[1] = new DummyObject<int>(2);
-        array.data[2] = new DummyObject<int>(3);
+        B2Array<Foo> a = new B2Array<Foo>();
 
-        var expectedValue = new DummyObject<int>(99);
+        for (int i = 0; i < 50; ++i)
+        {
+            ref Foo f = ref b2Array_Add(ref a);
+            f.a = i;
+            f.b = (float)i * 2.0f;
+        }
 
-        b2Array_Set(ref array, 1, expectedValue);
-        Assert.That(array.data[1], Is.EqualTo(expectedValue)); // Verify that value at index 1 is updated to 99
+        Assert.That(a.count, Is.EqualTo(50));
 
-        // Test invalid index (negative index)
-        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Set(ref array, -1, expectedValue)));
+        for (int i = 0; i < 50; ++i)
+        {
+            ref Foo f = ref b2Array_Get(ref a, i);
+            Assert.That(f.a, Is.EqualTo(i));
+            Assert.That(f.b, Is.EqualTo((float)i * 2.0f));
+        }
 
-        // Test invalid index (out of bounds)
-        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Set(ref array, 5, expectedValue)));
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_RemoveSwap()
+    public void TestArrayPushAfterReserve()
     {
-        // Test valid removal and swap
-        var array = b2Array_Create<int>(5);
-        array.count = 5;
-        array.data[0] = 1;
-        array.data[1] = 2;
-        array.data[2] = 3;
-        array.data[3] = 4;
-        array.data[4] = 5;
+        B2Array<int> a = new B2Array<int>();
 
-        int movedIndex = b2Array_RemoveSwap(ref array, 2);
+        // Reserve doesn't change count
+        b2Array_Reserve(ref a, 50);
+        Assert.That(a.count, Is.EqualTo(0));
+        Assert.That(a.capacity, Is.GreaterThanOrEqualTo(50));
 
-        Assert.That(movedIndex, Is.EqualTo(4)); // The moved index should be the last element's index (4)
-        Assert.That(array.data[2], Is.EqualTo(5)); // The value at index 2 should now be 5 (swapped with last element)
-        Assert.That(array.count, Is.EqualTo(4)); // The count should decrease by 1
+        // Push within reserved capacity (no reallocation expected)
+        for (int i = 0; i < 50; ++i)
+        {
+            b2Array_Push(ref a, i * 3);
+        }
 
-        // Test removing from the last index
-        movedIndex = b2Array_RemoveSwap(ref array, 3);
-        Assert.That(movedIndex, Is.EqualTo(B2_NULL_INDEX)); // No swap should occur when removing the last element
-        Assert.That(array.count, Is.EqualTo(3)); // The count should decrease by 1
+        Assert.That(a.count, Is.EqualTo(50));
+        for (int i = 0; i < 50; ++i)
+        {
+            Assert.That(b2Array_Get(ref a, i), Is.EqualTo(i * 3));
+        }
 
-        // Test invalid index (negative index)
-        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_RemoveSwap(ref array, -1)));
-
-        // Test invalid index (out of bounds)
-        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_RemoveSwap(ref array, 5)));
+        b2Array_Destroy(ref a);
     }
 
     [Test]
-    public void Test_b2Array_Pop()
+    public void TestArraySingleElement()
     {
-        // Test popping an element from a non-empty array
-        var array = b2Array_Create<DummyObject<int>>(5);
-        array.count = 3;
-        array.data[0] = new DummyObject<int>(1);
-        array.data[1] = new DummyObject<int>(2);
-        array.data[2] = new DummyObject<int>(3);
+        B2Array<Foo> a = new B2Array<Foo>();
 
-        DummyObject<int> poppedValue = b2Array_Pop(ref array);
+        ref Foo f = ref b2Array_Add(ref a);
+        f.a = 7;
+        f.b = 3.14f;
 
-        Assert.That(poppedValue.Value, Is.EqualTo(3)); // The popped value should be 3 (last element)
-        Assert.That(array.count, Is.EqualTo(2)); // The count should decrease by 1
-        Assert.That(array.data[2].Value, Is.EqualTo(0)); // The last element should be reset to default (0 for int)
+        Assert.That(a.count, Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref a, 0).a, Is.EqualTo(7));
+        Assert.That(b2Array_Get(ref a, 0).b, Is.EqualTo(3.14f));
 
-        // Test popping from an empty array (should throw an exception)
-        var emptyArray = b2Array_Create<int>(5);
-        emptyArray.count = 0;
+        Foo popped = b2Array_Pop(ref a);
+        Assert.That(popped.a, Is.EqualTo(7));
+        Assert.That(popped.b, Is.EqualTo(3.14f));
+        Assert.That(a.count, Is.EqualTo(0));
 
-        Assert.Throws<IndexOutOfRangeException>((Action)(() => b2Array_Pop(ref emptyArray)));
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestArrayCreateN()
+    {
+        B2Array<int> a = b2Array_Create<int>(16);
+        Assert.That(a.count, Is.EqualTo(0));
+        Assert.That(a.capacity, Is.EqualTo(16));
+        Assert.That(a.data, Is.Not.Null);
+
+        // Verify it behaves like a normal array after creation
+        for (int i = 0; i < 16; ++i)
+        {
+            b2Array_Push(ref a, i * 5);
+        }
+
+        Assert.That(a.count, Is.EqualTo(16));
+        for (int i = 0; i < 16; ++i)
+        {
+            Assert.That(b2Array_Get(ref a, i), Is.EqualTo(i * 5));
+        }
+
+        b2Array_Destroy(ref a);
+    }
+
+    [Test]
+    public void TestDeclaredArrayTypes()
+    {
+        B2Array<Owner> owners = b2Array_Create<Owner>();
+        B2Array<Entity> entities = b2Array_Create<Entity>();
+        B2Array<Body> bodies = b2Array_Create<Body>();
+
+        b2Array_Push(ref owners, new Owner { index = 1 });
+        b2Array_Push(ref entities, new Entity { bodyIndex = 2, id = 3 });
+        b2Array_Push(ref bodies, new Body { entityIndex = 4, mass = 5.0f });
+
+        Assert.That(b2Array_Get(ref owners, 0).index, Is.EqualTo(1));
+        Assert.That(b2Array_Get(ref entities, 0).bodyIndex, Is.EqualTo(2));
+        Assert.That(b2Array_Get(ref entities, 0).id, Is.EqualTo(3));
+        Assert.That(b2Array_Get(ref bodies, 0).entityIndex, Is.EqualTo(4));
+        Assert.That(b2Array_Get(ref bodies, 0).mass, Is.EqualTo(5.0f));
+
+        b2Array_Destroy(ref owners);
+        b2Array_Destroy(ref entities);
+        b2Array_Destroy(ref bodies);
     }
 }
