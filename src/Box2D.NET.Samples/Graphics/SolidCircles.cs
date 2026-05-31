@@ -59,11 +59,11 @@ public static class SolidCircles
 
         // Circle buffer
         gl.BindBuffer(GLEnum.ArrayBuffer, render.vboIds[1]);
-        gl.BufferData<SolidCircleData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<SolidCircleData>.Size, null, GLEnum.DynamicDraw);
+        gl.BufferData<SolidCircleData>(GLEnum.ArrayBuffer, e_batchSize * (uint)B2SizeOf<SolidCircleData>.Size, null, GLEnum.DynamicDraw);
 
-        gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, false, SizeOf<SolidCircleData>.Size, IntPtr.Zero);
-        gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, SizeOf<SolidCircleData>.Size, IntPtr.Zero + 16);
-        gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<SolidCircleData>.Size, IntPtr.Zero + 20);
+        gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<SolidCircleData>.Size, IntPtr.Zero);
+        gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, (uint)B2SizeOf<SolidCircleData>.Size, IntPtr.Zero + 16);
+        gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<SolidCircleData>.Size, IntPtr.Zero + 20);
 
         gl.VertexAttribDivisor(transformInstance, 1);
         gl.VertexAttribDivisor(radiusInstance, 1);

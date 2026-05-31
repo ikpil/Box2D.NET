@@ -154,7 +154,7 @@ namespace Box2D.NET
         {
             if (typeof(T).IsValueType)
             {
-                return a.capacity * Marshal.SizeOf<T>();
+                return a.capacity * B2SizeOf<T>.Size;
             }
 
             return -1;

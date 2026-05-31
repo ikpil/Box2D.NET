@@ -58,7 +58,7 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2GetBitSetBytes(ref B2BitSet bitSet)
         {
-            return bitSet.blockCapacity * sizeof(ulong);
+            return bitSet.blockCapacity * B2SizeOf<ulong>.Size;
         }
 
         public static B2BitSet b2CreateBitSet(int bitCapacity)
@@ -71,7 +71,7 @@ namespace Box2D.NET
         // fix
         public static void b2CreateBitSet(ref B2BitSet bitSet, int bitCapacity)
         {
-            bitSet.blockCapacity = (bitCapacity + sizeof(ulong) * 8 - 1) / (sizeof(ulong) * 8);
+            bitSet.blockCapacity = (bitCapacity + B2SizeOf<ulong>.Size * 8 - 1) / (B2SizeOf<ulong>.Size * 8);
             bitSet.blockCount = 0;
             bitSet.bits = b2Alloc<ulong>(bitSet.blockCapacity);
             //memset( bitSet.bits, 0, bitSet.blockCapacity * sizeof( ulong ) );
@@ -88,7 +88,7 @@ namespace Box2D.NET
 
         public static void b2SetBitCountAndClear(ref B2BitSet bitSet, int bitCount)
         {
-            int blockCount = (bitCount + sizeof(ulong) * 8 - 1) / (sizeof(ulong) * 8);
+            int blockCount = (bitCount + B2SizeOf<ulong>.Size * 8 - 1) / (B2SizeOf<ulong>.Size * 8);
             if (bitSet.blockCapacity < blockCount)
             {
                 b2DestroyBitSet(ref bitSet);

@@ -1089,10 +1089,10 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetByteCount(B2DynamicTree tree)
         {
-            // int size = Marshal.SizeOf<B2DynamicTree>() + Marshal.SizeOf<B2TreeNode>() * tree.nodeCapacity +
-            //            tree.rebuildCapacity * (sizeof(int) + Marshal.SizeOf<B2AABB>() + Marshal.SizeOf<B2Vec2>() + sizeof(int));
-            int size = sizeof(int) * 6 + sizeof(ulong) * 4 + Marshal.SizeOf<B2TreeNode>() * tree.nodeCapacity +
-                       tree.rebuildCapacity * (sizeof(int) + Marshal.SizeOf<B2AABB>() + Marshal.SizeOf<B2Vec2>() + sizeof(int));
+            // int size = B2SizeOf<B2DynamicTree>.Size + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
+            //            tree.rebuildCapacity * (B2SizeOf<int>.Size + B2SizeOf<B2AABB>.Size + B2SizeOf<B2Vec2>.Size + B2SizeOf<int>.Size);
+            int size = B2SizeOf<int>.Size * 6 + B2SizeOf<ulong>.Size * 4 + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
+                       tree.rebuildCapacity * (B2SizeOf<int>.Size + B2SizeOf<B2AABB>.Size + B2SizeOf<B2Vec2>.Size + B2SizeOf<int>.Size);
             return (int)size;
         }
 

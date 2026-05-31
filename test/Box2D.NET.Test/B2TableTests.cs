@@ -13,7 +13,7 @@ public class B2TableTests
     [Test]
     public void Test_B2Tables_b2GetHashSetBytes()
     {
-        int size = Marshal.SizeOf<B2SetItem>();
+        int size = B2SizeOf<B2SetItem>.Size;
         const int capacity = 1024;
         
         B2HashSet set = b2CreateSet(capacity);

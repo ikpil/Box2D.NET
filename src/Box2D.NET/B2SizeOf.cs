@@ -4,10 +4,10 @@
 
 using System.Runtime.InteropServices;
 
-namespace Box2D.NET.Samples.Helpers;
-
-public readonly struct SizeOf<T> where T : unmanaged
+namespace Box2D.NET
 {
-    public static readonly uint Size = (uint)Marshal.SizeOf<T>();
+    public readonly struct B2SizeOf<T>
+    {
+        public static readonly int Size = Marshal.SizeOf<T>();
+    }
 }
-

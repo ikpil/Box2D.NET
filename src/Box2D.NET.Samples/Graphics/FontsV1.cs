@@ -60,14 +60,14 @@ public static class FontsV1
             //FontDescription description = FontDescription.LoadDescription(trueTypeFile);
             font.vertices = b2Array_Create<FontVertex>(FONT_BATCH_SIZE);
             font.fontSize = fontSize;
-            font.characters = new byte[FONT_CHARACTER_COUNT * SizeOf<stbtt_bakedchar>.Size];
+            font.characters = new byte[FONT_CHARACTER_COUNT * B2SizeOf<stbtt_bakedchar>.Size];
         
             int fileBufferCapacity = 1 << 20;
             byte[] fileBuffer = File.ReadAllBytes(trueTypeFile);
         
             int pw = FONT_ATLAS_WIDTH;
             int ph = FONT_ATLAS_HEIGHT;
-            byte[] tempBitmap = new byte[pw * ph * sizeof(byte)];
+            byte[] tempBitmap = new byte[pw * ph * B2SizeOf<byte>.Size];
             // stbtt_BakeFontBitmap(fileBuffer, 0, font.fontSize, tempBitmap, pw, ph, FONT_FIRST_CHARACTER, FONT_CHARACTER_COUNT,
             //     font.characters);
         
@@ -96,21 +96,21 @@ public static class FontsV1
         // Setting up the VAO and VBO
         gl.GenBuffers(1, font.vboId);
         gl.BindBuffer(GLEnum.ArrayBuffer, font.vboId[0]);
-        gl.BufferData<FontVertex>(GLEnum.ArrayBuffer, FONT_BATCH_SIZE * SizeOf<FontVertex>.Size, null, GLEnum.DynamicDraw);
+        gl.BufferData<FontVertex>(GLEnum.ArrayBuffer, FONT_BATCH_SIZE * (uint)B2SizeOf<FontVertex>.Size, null, GLEnum.DynamicDraw);
         
         gl.GenVertexArrays(1, font.vaoId);
         gl.BindVertexArray(font.vaoId[0]);
         
         // position attribute
-        gl.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, SizeOf<FontVertex>.Size, IntPtr.Zero); // position
+        gl.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, (uint)B2SizeOf<FontVertex>.Size, IntPtr.Zero); // position
         gl.EnableVertexAttribArray(0);
         
         // uv attribute
-        gl.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, SizeOf<FontVertex>.Size, IntPtr.Zero + 8); // uv
+        gl.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, (uint)B2SizeOf<FontVertex>.Size, IntPtr.Zero + 8); // uv
         gl.EnableVertexAttribArray(1);
         
         // color attribute will be expanded to floats using normalization
-        gl.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<FontVertex>.Size, IntPtr.Zero + 16); // color
+        gl.VertexAttribPointer(2, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<FontVertex>.Size, IntPtr.Zero + 16); // color
         gl.EnableVertexAttribArray(2);
         
         gl.BindVertexArray(0);

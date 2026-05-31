@@ -131,7 +131,7 @@ namespace Box2D.NET.Shared
                     B2_ASSERT(awakeCount == 0);
 
                     data.hash = B2_HASH_INIT;
-                    Span<byte> bxf = stackalloc byte[sizeof(float) * 4];
+                    Span<byte> bxf = stackalloc byte[B2SizeOf<float>.Size * 4];
                     for (int i = 0; i < data.bodyCount; ++i)
                     {
                         B2Transform xf = b2Body_GetTransform(data.bodyIds[i]);

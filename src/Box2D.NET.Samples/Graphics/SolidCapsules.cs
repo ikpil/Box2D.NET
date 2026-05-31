@@ -62,12 +62,12 @@ public static class SolidCapsules
 
         // Capsule buffer
         gl.BindBuffer(GLEnum.ArrayBuffer, render.vboIds[1]);
-        gl.BufferData<CapsuleData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<CapsuleData>.Size, null, GLEnum.DynamicDraw);
+        gl.BufferData<CapsuleData>(GLEnum.ArrayBuffer, e_batchSize * (uint)B2SizeOf<CapsuleData>.Size, null, GLEnum.DynamicDraw);
 
-        gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, false, SizeOf<CapsuleData>.Size, IntPtr.Zero);
-        gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, SizeOf<CapsuleData>.Size, IntPtr.Zero + 16);
-        gl.VertexAttribPointer(lengthInstance, 1, VertexAttribPointerType.Float, false, SizeOf<CapsuleData>.Size, IntPtr.Zero + 20);
-        gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<CapsuleData>.Size, IntPtr.Zero + 24);
+        gl.VertexAttribPointer(transformInstance, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<CapsuleData>.Size, IntPtr.Zero);
+        gl.VertexAttribPointer(radiusInstance, 1, VertexAttribPointerType.Float, false, (uint)B2SizeOf<CapsuleData>.Size, IntPtr.Zero + 16);
+        gl.VertexAttribPointer(lengthInstance, 1, VertexAttribPointerType.Float, false, (uint)B2SizeOf<CapsuleData>.Size, IntPtr.Zero + 20);
+        gl.VertexAttribPointer(colorInstance, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<CapsuleData>.Size, IntPtr.Zero + 24);
 
         gl.VertexAttribDivisor(transformInstance, 1);
         gl.VertexAttribDivisor(radiusInstance, 1);

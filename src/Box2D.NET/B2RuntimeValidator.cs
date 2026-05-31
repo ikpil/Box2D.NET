@@ -124,14 +124,14 @@ namespace Box2D.NET
         {
             // joint union
             {
-                int unionSize = Marshal.SizeOf<B2JointUnion>();
+                int unionSize = B2SizeOf<B2JointUnion>.Size;
 
-                int distanceJointSize = Marshal.SizeOf<B2DistanceJoint>();
-                int motorJointSize = Marshal.SizeOf<B2MotorJoint>();
-                int revoluteJointSize = Marshal.SizeOf<B2RevoluteJoint>();
-                int prismaticJointSize = Marshal.SizeOf<B2PrismaticJoint>();
-                int weldJointSize = Marshal.SizeOf<B2WeldJoint>();
-                int wheelJointSize = Marshal.SizeOf<B2WheelJoint>();
+                int distanceJointSize = B2SizeOf<B2DistanceJoint>.Size;
+                int motorJointSize = B2SizeOf<B2MotorJoint>.Size;
+                int revoluteJointSize = B2SizeOf<B2RevoluteJoint>.Size;
+                int prismaticJointSize = B2SizeOf<B2PrismaticJoint>.Size;
+                int weldJointSize = B2SizeOf<B2WeldJoint>.Size;
+                int wheelJointSize = B2SizeOf<B2WheelJoint>.Size;
 
                 int maxSize = 0;
                 maxSize = Math.Max(maxSize, distanceJointSize);
@@ -146,13 +146,13 @@ namespace Box2D.NET
 
             // shape union
             {
-                int unionSize = Marshal.SizeOf<B2ShapeUnion>();
+                int unionSize = B2SizeOf<B2ShapeUnion>.Size;
 
-                int capsuleSize = Marshal.SizeOf<B2Capsule>();
-                int circleSize = Marshal.SizeOf<B2Circle>();
-                int polygonSize = Marshal.SizeOf<B2Polygon>();
-                int segmentSize = Marshal.SizeOf<B2Segment>();
-                int chainSegmentSize = Marshal.SizeOf<B2ChainSegment>();
+                int capsuleSize = B2SizeOf<B2Capsule>.Size;
+                int circleSize = B2SizeOf<B2Circle>.Size;
+                int polygonSize = B2SizeOf<B2Polygon>.Size;
+                int segmentSize = B2SizeOf<B2Segment>.Size;
+                int chainSegmentSize = B2SizeOf<B2ChainSegment>.Size;
 
                 int maxSize = 0;
                 maxSize = Math.Max(maxSize, capsuleSize);
@@ -166,10 +166,10 @@ namespace Box2D.NET
 
             // B2TreeNodeConnectionUnion
             {
-                int unionSize = Marshal.SizeOf<B2TreeNodeConnectionUnion>();
+                int unionSize = B2SizeOf<B2TreeNodeConnectionUnion>.Size;
 
-                int parentSize = Marshal.SizeOf<int>();
-                int nextSize = Marshal.SizeOf<int>();
+                int parentSize = B2SizeOf<int>.Size;
+                int nextSize = B2SizeOf<int>.Size;
 
                 int maxSize = 0;
                 maxSize = Math.Max(maxSize, parentSize);
@@ -180,10 +180,10 @@ namespace Box2D.NET
 
             // B2TreeNodeDataUnion
             {
-                var unionSize = Marshal.SizeOf<B2TreeNodeDataUnion>();
-                int child1Size = Marshal.SizeOf<int>();
-                int child2Size = Marshal.SizeOf<int>();
-                int userDataSize = Marshal.SizeOf<ulong>();
+                var unionSize = B2SizeOf<B2TreeNodeDataUnion>.Size;
+                int child1Size = B2SizeOf<int>.Size;
+                int child2Size = B2SizeOf<int>.Size;
+                int userDataSize = B2SizeOf<ulong>.Size;
 
                 int maxSize = 0;
                 maxSize = Math.Max(maxSize, child1Size + child2Size);

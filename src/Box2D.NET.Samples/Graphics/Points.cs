@@ -36,12 +36,12 @@ public static class Points
 
         // Vertex buffer
         gl.BindBuffer(GLEnum.ArrayBuffer, render.vboId[0]);
-        gl.BufferData<PointData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<PointData>.Size, null, GLEnum.DynamicDraw);
+        gl.BufferData<PointData>(GLEnum.ArrayBuffer, e_batchSize * (uint)B2SizeOf<PointData>.Size, null, GLEnum.DynamicDraw);
 
-        gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero);
-        gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, false, SizeOf<PointData>.Size, IntPtr.Zero + 8);
+        gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PointData>.Size, IntPtr.Zero);
+        gl.VertexAttribPointer(sizeAttribute, 1, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PointData>.Size, IntPtr.Zero + 8);
         // save bandwidth by expanding color to floats in the shader
-        gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PointData>.Size, IntPtr.Zero + 12);
+        gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<PointData>.Size, IntPtr.Zero + 12);
 
         gl.CheckOpenGL();
 

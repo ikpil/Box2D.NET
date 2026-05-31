@@ -38,11 +38,11 @@ public static class Lines
 
         // Vertex buffer
         gl.BindBuffer(GLEnum.ArrayBuffer, render.m_vboId[0]);
-        gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
+        gl.BufferData<VertexData>(GLEnum.ArrayBuffer, e_batchSize * (uint)B2SizeOf<VertexData>.Size, null, GLEnum.DynamicDraw);
 
-        gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, SizeOf<VertexData>.Size, IntPtr.Zero);
+        gl.VertexAttribPointer(vertexAttribute, 2, VertexAttribPointerType.Float, false, (uint)B2SizeOf<VertexData>.Size, IntPtr.Zero);
         // save bandwidth by expanding color to floats in the shader
-        gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<VertexData>.Size, IntPtr.Zero + 8);
+        gl.VertexAttribPointer(colorAttribute, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<VertexData>.Size, IntPtr.Zero + 8);
 
         gl.CheckOpenGL();
 

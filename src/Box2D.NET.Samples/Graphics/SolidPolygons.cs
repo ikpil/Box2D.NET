@@ -66,16 +66,16 @@ public static class SolidPolygons
 
         // Polygon buffer
         gl.BindBuffer(GLEnum.ArrayBuffer, render.vboIds[1]);
-        gl.BufferData<PolygonData>(GLEnum.ArrayBuffer, e_batchSize * SizeOf<PolygonData>.Size, null, GLEnum.DynamicDraw);
-        gl.VertexAttribPointer(instanceTransform, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero);
-        gl.VertexAttribPointer(instancePoint12, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 16);
-        gl.VertexAttribPointer(instancePoint34, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 32);
-        gl.VertexAttribPointer(instancePoint56, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 48);
-        gl.VertexAttribPointer(instancePoint78, 4, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 64);
-        gl.VertexAttribIPointer(instancePointCount, 1, VertexAttribIType.Int, SizeOf<PolygonData>.Size, IntPtr.Zero + 80);
-        gl.VertexAttribPointer(instanceRadius, 1, VertexAttribPointerType.Float, false, SizeOf<PolygonData>.Size, IntPtr.Zero + 84);
+        gl.BufferData<PolygonData>(GLEnum.ArrayBuffer, e_batchSize * (uint)B2SizeOf<PolygonData>.Size, null, GLEnum.DynamicDraw);
+        gl.VertexAttribPointer(instanceTransform, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero);
+        gl.VertexAttribPointer(instancePoint12, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 16);
+        gl.VertexAttribPointer(instancePoint34, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 32);
+        gl.VertexAttribPointer(instancePoint56, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 48);
+        gl.VertexAttribPointer(instancePoint78, 4, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 64);
+        gl.VertexAttribIPointer(instancePointCount, 1, VertexAttribIType.Int, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 80);
+        gl.VertexAttribPointer(instanceRadius, 1, VertexAttribPointerType.Float, false, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 84);
         // color will get automatically expanded to floats in the shader
-        gl.VertexAttribPointer(instanceColor, 4, VertexAttribPointerType.UnsignedByte, true, SizeOf<PolygonData>.Size, IntPtr.Zero + 88);
+        gl.VertexAttribPointer(instanceColor, 4, VertexAttribPointerType.UnsignedByte, true, (uint)B2SizeOf<PolygonData>.Size, IntPtr.Zero + 88);
 
         // These divisors tell glsl how to distribute per instance data
         gl.VertexAttribDivisor(instanceTransform, 1);

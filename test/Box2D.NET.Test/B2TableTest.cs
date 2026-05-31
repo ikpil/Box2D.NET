@@ -311,7 +311,7 @@ public class B2TableTest
         B2HashSet set = b2CreateSet(32);
 
         int bytes = b2GetHashSetBytes(ref set);
-        int expectedBytes = 32 * Marshal.SizeOf<B2SetItem>();
+        int expectedBytes = 32 * B2SizeOf<B2SetItem>.Size;
         Assert.That(bytes, Is.EqualTo(expectedBytes));
 
         // Add some items and verify bytes calculation doesn't change
