@@ -44,17 +44,21 @@ namespace Box2D.NET
         public ArraySegment<int> bulletBodies;
         public B2AtomicInt bulletBodyCount;
 
-        // joint pointers for simplified parallel-for access.
-        public ArraySegment<B2JointSim> joints;
-
         // contact pointers for simplified parallel-for access.
-        // - parallel-for collide with no gaps
-        // - parallel-for prepare and store contacts with NULL gaps for SIMD remainders
-        // despite being an array of pointers, these are contiguous sub-arrays corresponding
-        // to constraint graph colors
-        public ArraySegment<B2ContactSim> contacts;
+        // - parallel-for collide with no gaps, includes touching and non-touching
+        public ArraySegment<B2ContactSim> contactSims;
 
+        // Flat view of the wide contact constraint array used by prepare and store.
+        // prepareSpans has activeColorCount + 1 entries, the last being a sentinel
+        // at wideContactCount. wideContactConstraints is the contiguous base
+        // pointer; per-color slices live at colors[i].wideConstraints.
         public ArraySegment<B2ContactConstraintWide> wideContactConstraints;
+        public B2ContactPrepareSpan[] contactPrepareSpans;
+        public int wideContactCount;
+
+        public B2JointPrepareSpan[] jointPrepareSpans;
+        public int jointCount;
+
         public int activeColorCount;
         public int workerCount;
 
@@ -62,12 +66,27 @@ namespace Box2D.NET
         public int stageCount;
         public bool enableWarmStarting;
 
-        // todo padding to prevent false sharing
-        public B2FixedArray64<byte> dummy1;
+        // padding to prevent false sharing
+        public B2FixedArray64<byte> padding1;
 
+        // This atomic is central to multi-threaded solver task synchronization.
+        // It prevents ABA problems by monotonically growing as the solver advances.
+        // This means a delayed worker thread will catch up without repeating already completed
+        // work (causing a race condition).
         // sync index (16-bits) | stage type (16-bits)
         public B2AtomicU32 atomicSyncBits;
 
-        public B2FixedArray64<byte> dummy2;
+        // padding to prevent false sharing
+        public B2FixedArray64<byte> padding2;
+
+        // Race flag claimed by whichever runner reaches b2SolverTask with workerIndex 0 first.
+        // The calling thread of b2World_Step also races for this slot so the orchestrator can
+        // always make progress, regardless of how the user's task system schedules tasks (out
+        // of order, fewer threads than workers, or synchronously inside enqueueTaskFcn). The
+        // loser of the race no-ops as workerIndex 0.
+        public B2AtomicInt mainClaimed;
+
+        // padding to prevent false sharing
+        public B2FixedArray64<byte> padding3;
     }
 }

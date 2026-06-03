@@ -80,7 +80,7 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void B2_CHECK_DEF(in b2FilterJointDef def)
+        internal static void B2_CHECK_DEF(in B2FilterJointDef def)
         {
             B2_ASSERT(def.internalValue == B2_SECRET_COOKIE);
         }

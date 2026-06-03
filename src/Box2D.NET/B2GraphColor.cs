@@ -22,12 +22,14 @@ namespace Box2D.NET
         public B2Array<B2ContactSim> contactSims;
         public B2Array<B2JointSim> jointSims;
 
-        // TODO: @ikpil, check union
         // transient
+        // TODO: @ikpil, check union
         // union
         //{
         public ArraySegment<B2ContactConstraintWide> wideConstraints;
         public ArraySegment<B2ContactConstraint> overflowConstraints;
         //};
+
+        public int wideConstraintCount;
     }
 }

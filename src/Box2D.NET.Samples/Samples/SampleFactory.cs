@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Box2D.NET.Samples.Primitives;
 using Serilog;
+using static Box2D.NET.B2Types;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -28,7 +29,15 @@ public class SampleFactory
     public int RegisterSample(string category, string name, Func<SampleContext, Sample> fcn)
     {
         int index = _sampleEntries.Count;
-        var entry = new SampleEntry(category, name, fcn);
+        var entry = new SampleEntry(category, name, fcn, null);
+        _sampleEntries.Add(entry);
+        return index;
+    }
+
+    public int RegisterSampleWithCapacity(string category, string name, Func<SampleContext, Sample> fcn, Func<B2Capacity> capacityFcn)
+    {
+        int index = _sampleEntries.Count;
+        var entry = new SampleEntry(category, name, fcn, capacityFcn);
         _sampleEntries.Add(entry);
         return index;
     }
@@ -36,6 +45,7 @@ public class SampleFactory
     public Sample Create(int index, SampleContext context)
     {
         var entry = GetInternal(index);
+        context.capacity = entry.CapacityFcn != null ? entry.CapacityFcn.Invoke() : b2DefaultWorldDef().capacity;
         var sample = entry.CreateFcn.Invoke(context);
         return sample;
     }

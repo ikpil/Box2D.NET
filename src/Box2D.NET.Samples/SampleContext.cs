@@ -41,6 +41,7 @@ public class SampleContext
 
     // These are persisted
     public int sampleIndex = 0;
+    public B2Capacity capacity;
 
 
     public B2DebugDraw debugDraw;
@@ -75,7 +76,7 @@ public class SampleContext
         debugDraw.DrawCircleFcn = DrawCircleFcn;
         debugDraw.DrawSolidCircleFcn = DrawSolidCircleFcn;
         debugDraw.DrawSolidCapsuleFcn = DrawSolidCapsuleFcn;
-        debugDraw.drawLineFcn = DrawLineFcn;
+        debugDraw.DrawLineFcn = DrawLineFcn;
         debugDraw.DrawTransformFcn = DrawTransformFcn;
         debugDraw.DrawPointFcn = DrawPointFcn;
         debugDraw.DrawStringFcn = DrawStringFcn;

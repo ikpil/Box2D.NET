@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using static Box2D.NET.Shared.Benchmarks;
+using static Box2D.NET.B2Worlds;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -24,5 +25,13 @@ public class BenchmarkWasher : Sample
         }
 
         CreateWasher(m_worldId);
+    }
+
+    public override void Step()
+    {
+        base.Step();
+
+        B2ContactEvents events = b2World_GetContactEvents(m_worldId);
+        DrawTextLine($"hits = {events.hitCount}");
     }
 }

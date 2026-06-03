@@ -52,7 +52,7 @@ namespace Box2D.NET
             island.joints = b2Array_Create<B2JointLink>();
             island.constraintRemoveCount = 0;
 
-            ref B2IslandSim islandSim = ref b2Array_Add(ref set.islandSims);
+            ref B2IslandSim islandSim = ref b2Array_Emplace(ref set.islandSims);
             islandSim.islandId = islandId;
 
             return island;
@@ -430,14 +430,14 @@ namespace Box2D.NET
             B2JointLink[] baseJoints = baseIsland.joints.data;
             int baseJointCapacity = baseIsland.joints.capacity;
 
-            B2ArenaAllocator alloc = world.arena;
+            B2StackAllocator alloc = world.stack;
 
             // No lock is needed because I ensure the allocator is not used while this task is active.
             // Allocate contactCounts and jointCounts before ranks so ranks can be freed first (LIFO arena).
-            ArraySegment<int> parents = b2AllocateArenaItem<int>(alloc, baseBodyCount, "parents");
-            ArraySegment<int> contactCounts = b2AllocateArenaItem<int>(alloc, baseBodyCount, "contact counts");
-            ArraySegment<int> jointCounts = b2AllocateArenaItem<int>(alloc, baseBodyCount, "joint counts");
-            ArraySegment<int> ranks = b2AllocateArenaItem<int>(alloc, baseBodyCount, "ranks");
+            ArraySegment<int> parents = b2StackAlloc<int>(alloc, baseBodyCount, "parents");
+            ArraySegment<int> contactCounts = b2StackAlloc<int>(alloc, baseBodyCount, "contact counts");
+            ArraySegment<int> jointCounts = b2StackAlloc<int>(alloc, baseBodyCount, "joint counts");
+            ArraySegment<int> ranks = b2StackAlloc<int>(alloc, baseBodyCount, "ranks");
             for (int i = 0; i < baseBodyCount; ++i)
             {
                 parents[i] = i;
@@ -507,7 +507,7 @@ namespace Box2D.NET
             }
 
             // Done with ranks
-            b2FreeArenaItem(alloc, ranks);
+            b2StackFree(alloc, ranks);
             ranks = null;
 
             // Flatten all parent indices and count connected components.
@@ -525,9 +525,9 @@ namespace Box2D.NET
             if (componentCount == 1)
             {
                 baseIsland.constraintRemoveCount = 0;
-                b2FreeArenaItem(alloc, jointCounts);
-                b2FreeArenaItem(alloc, contactCounts);
-                b2FreeArenaItem(alloc, parents);
+                b2StackFree(alloc, jointCounts);
+                b2StackFree(alloc, contactCounts);
+                b2StackFree(alloc, parents);
                 return;
             }
 
@@ -548,15 +548,15 @@ namespace Box2D.NET
             baseIsland = null;
 
             // Map from body index to new island index. Only set for root bodies.
-            ArraySegment<int> rootMap = b2AllocateArenaItem<int>(alloc, baseBodyCount, "root map");
+            ArraySegment<int> rootMap = b2StackAlloc<int>(alloc, baseBodyCount, "root map");
             for (int i = 0; i < baseBodyCount; ++i)
             {
                 rootMap[i] = B2_NULL_INDEX;
             }
 
-            ArraySegment<int> componentBodyCounts = b2AllocateArenaItem<int>(alloc, componentCount, "component body counts");
-            ArraySegment<int> componentContactCounts = b2AllocateArenaItem<int>(alloc, componentCount, "component contact counts");
-            ArraySegment<int> componentJointCounts = b2AllocateArenaItem<int>(alloc, componentCount, "component joint counts");
+            ArraySegment<int> componentBodyCounts = b2StackAlloc<int>(alloc, componentCount, "component body counts");
+            ArraySegment<int> componentContactCounts = b2StackAlloc<int>(alloc, componentCount, "component contact counts");
+            ArraySegment<int> componentJointCounts = b2StackAlloc<int>(alloc, componentCount, "component joint counts");
             int islandCount = 0;
 
             // Find the root body for each body and create islands as needed.
@@ -579,7 +579,7 @@ namespace Box2D.NET
             B2_ASSERT(islandCount == componentCount);
 
             // Map from new island index to island id
-            ArraySegment<int> islandIds = b2AllocateArenaItem<int>(alloc, islandCount, "island ids");
+            ArraySegment<int> islandIds = b2StackAlloc<int>(alloc, islandCount, "island ids");
 
             // Create new islands and reserve body/contact/joint arrays
             for (int i = 0; i < islandCount; ++i)
@@ -661,14 +661,14 @@ namespace Box2D.NET
             b2Free(baseJoints, baseJointCapacity);
 
             // Free arena items in LIFO order
-            b2FreeArenaItem(alloc, islandIds);
-            b2FreeArenaItem(alloc, componentJointCounts);
-            b2FreeArenaItem(alloc, componentContactCounts);
-            b2FreeArenaItem(alloc, componentBodyCounts);
-            b2FreeArenaItem(alloc, rootMap);
-            b2FreeArenaItem(alloc, jointCounts);
-            b2FreeArenaItem(alloc, contactCounts);
-            b2FreeArenaItem(alloc, parents);
+            b2StackFree(alloc, islandIds);
+            b2StackFree(alloc, componentJointCounts);
+            b2StackFree(alloc, componentContactCounts);
+            b2StackFree(alloc, componentBodyCounts);
+            b2StackFree(alloc, rootMap);
+            b2StackFree(alloc, jointCounts);
+            b2StackFree(alloc, contactCounts);
+            b2StackFree(alloc, parents);
         }
 
         // Split an island because some contacts and/or joints have been removed.

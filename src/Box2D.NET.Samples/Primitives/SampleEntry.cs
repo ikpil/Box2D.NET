@@ -13,12 +13,14 @@ public class SampleEntry
     public readonly string Name;
     public readonly string Title;
     public readonly Func<SampleContext, Sample> CreateFcn;
+    public readonly Func<B2Capacity> CapacityFcn;
 
-    public SampleEntry(string category, string name, Func<SampleContext, Sample> createFcn)
+    public SampleEntry(string category, string name, Func<SampleContext, Sample> createFcn, Func<B2Capacity> capacityFcn)
     {
         Category = category;
         Name = name;
         Title = $"{Category} : {Name}";
         CreateFcn = createFcn;
+        CapacityFcn = capacityFcn;
     }
 }

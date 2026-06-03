@@ -31,7 +31,7 @@ namespace Box2D.NET
         finalize_transforms,
         bullet_body_task,
         merge,
-        prepare_stages,
+        solver_setup,
         solve_constraints,
         update_transforms,
         joint_events,

@@ -52,7 +52,7 @@ public class FilterJoint : Sample
             B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId2, shapeDef, box);
 
-            b2FilterJointDef jointDef = b2DefaultFilterJointDef();
+            B2FilterJointDef jointDef = b2DefaultFilterJointDef();
             jointDef.@base.bodyIdA = bodyId1;
             jointDef.@base.bodyIdB = bodyId2;
 

@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// A filter joint is used to disable collision between two specific bodies.
     ///
     /// @ingroup filter_joint
-    public struct b2FilterJointDef
+    public struct B2FilterJointDef
     {
         /// Base joint definition
         public B2JointDef @base;

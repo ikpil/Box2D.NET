@@ -22,7 +22,7 @@ public class B2DynamicTreeTest
             upperBound: new B2Vec2(2.0f, 2.0f)
         );
 
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
         b2DynamicTree_CreateProxy(tree, a, 1, 0);
 
         Assert.That(tree.nodeCount > 0);
@@ -49,7 +49,7 @@ public class B2DynamicTreeTest
     {
         // Test AABB centered at origin with bounds [-1, -1] to [1, 1]
         B2AABB a = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
         int proxyId = b2DynamicTree_CreateProxy(tree, a, 1, 0);
 
         B2RayCastInput input = new B2RayCastInput();
@@ -249,7 +249,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeMultipleProxiesTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         B2AABB a1 = new B2AABB(lowerBound: new B2Vec2(-5.0f, -1.0f), upperBound: new B2Vec2(-3.0f, 1.0f));
         B2AABB a2 = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
@@ -275,7 +275,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeQueryTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         B2AABB a1 = new B2AABB(lowerBound: new B2Vec2(-5.0f, -1.0f), upperBound: new B2Vec2(-3.0f, 1.0f));
         B2AABB a2 = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
@@ -307,7 +307,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeMoveAndEnlargeTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         B2AABB a = new B2AABB(lowerBound: new B2Vec2(0.0f, 0.0f), upperBound: new B2Vec2(1.0f, 1.0f));
         int id = b2DynamicTree_CreateProxy(tree, a, 0x1ul, 100);
@@ -336,7 +336,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeRebuildAndValidateTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         // Create a number of proxies to make rebuild meaningful
         for (int i = 0; i < 12; ++i)
@@ -358,7 +358,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeRowHeightTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         int columnCount = 200;
         for (int i = 0; i < columnCount; ++i)
@@ -378,7 +378,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeGridHeightTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         int columnCount = 20;
         int rowCount = 20;
@@ -403,7 +403,7 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeGridMovementTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create();
+        B2DynamicTree tree = b2DynamicTree_Create(16);
 
         int[] proxyIds = new int[GRID_COUNT * GRID_COUNT];
         int index = 0;

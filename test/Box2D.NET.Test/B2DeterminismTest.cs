@@ -14,8 +14,8 @@ namespace Box2D.NET.Test;
 
 public class B2DeterminismTest
 {
-    private const int EXPECTED_SLEEP_STEP = 293;
-    private const uint EXPECTED_HASH = 0x2FF98AC6;
+    private const int EXPECTED_SLEEP_STEP = 262;
+    private const uint EXPECTED_HASH = 0x3841BB81;
 
     // todo_erin move this to shared
     public static int SingleMultithreadingTest(int workerCount)
@@ -28,7 +28,7 @@ public class B2DeterminismTest
         FallingHingeData data = CreateFallingHinges(worldId);
 
         float timeStep = 1.0f / 60.0f;
-        int stepLimit = 1000;
+        int stepLimit = 500;
         for ( int i = 0; i < stepLimit; ++i )
         {
             int subStepCount = 4;

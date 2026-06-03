@@ -10,11 +10,11 @@ using static Box2D.NET.B2Arrays;
 namespace Box2D.NET
 {
     // This is a stack-like arena allocator used for fast per step allocations.
-    // You must nest allocate/free pairs. The code will Debug.Assert
+    // You must nest allocate/free pairs. The code will B2_ASSERT
     // if you try to interleave multiple allocate/free pairs.
     // This allocator uses the heap if space is insufficient.
     // I could remove the need to free entries individually.
-    public class B2ArenaAllocatorTyped<T> : IB2ArenaAllocatable where T : new()
+    public class B2Stack<T> : IB2ArenaAllocatable where T : new()
     {
         public ArraySegment<T> data;
         public int capacity { get; set; }
@@ -22,7 +22,7 @@ namespace Box2D.NET
         public int allocation { get; set; }
         public int maxAllocation { get; set; }
 
-        public B2Array<B2ArenaEntry<T>> entries;
+        public B2Array<B2StackEntry<T>> entries;
 
         public int Grow()
         {

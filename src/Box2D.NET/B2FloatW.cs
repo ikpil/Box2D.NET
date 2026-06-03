@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D.NET
@@ -25,11 +26,13 @@ namespace Box2D.NET
             W = w;
         }
 
-        public ref float this[int index] => ref MemoryMarshal.CreateSpan(ref X, 4)[index];
+        // readonly so an "in" or "ref readonly" receiver does not force a defensive
+        // copy. This matches Span<T>.this[int], which is also a readonly ref T indexer.
+        public readonly ref float this[int index] => ref MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in X), 4)[index];
 
-        public Span<float> AsSpan()
+        public readonly Span<float> AsSpan()
         {
-            return MemoryMarshal.CreateSpan(ref X, 4);
+            return MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in X), 4);
         }
     }
 }

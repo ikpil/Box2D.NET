@@ -2,10 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-// Compare to SDL_CPUPauseInstruction
-
 using System;
-using System.Threading.Tasks;
+using System.Threading;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Atomics;
@@ -102,27 +100,27 @@ namespace Box2D.NET
 
         internal static void b2Pause()
         {
-            // TODO: @ikpil, check sleep or yield
-            Task.Yield();
+            // C uses _mm_pause() / __yield(). Thread.SpinWait(1) emits the same
+            // pause/yield hint on x86 and ARM. Task.Yield() was a no-op here because
+            // the returned awaitable was never awaited.
+            Thread.SpinWait(1);
         }
 
 
         // Integrate velocities and apply damping
-        internal static void b2IntegrateVelocitiesTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2IntegrateVelocitiesTask(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.integrate_velocity, "IntVel", B2HexColor.b2_colorDeepPink, true);
 
             B2BodyState[] states = context.states;
             B2BodySim[] sims = context.sims;
 
+            B2_VALIDATE(block.startIndex + block.count <= context.world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].bodyStates.count);
+
             B2Vec2 gravity = context.world.gravity;
             float h = context.h;
-            float maxLinearSpeed = context.maxLinearVelocity;
-            float maxAngularSpeed = B2_MAX_ROTATION * context.inv_dt;
-            float maxLinearSpeedSquared = maxLinearSpeed * maxLinearSpeed;
-            float maxAngularSpeedSquared = maxAngularSpeed * maxAngularSpeed;
 
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
                 B2BodySim sim = sims[i];
                 B2BodyState state = states[i];
@@ -151,37 +149,6 @@ namespace Box2D.NET
                 v = b2MulAdd(linearVelocityDelta, linearDamping, v);
                 w = angularVelocityDelta + angularDamping * w;
 
-                // Clamp to max linear speed
-                if (b2Dot(v, v) > maxLinearSpeedSquared)
-                {
-                    float ratio = maxLinearSpeed / b2Length(v);
-                    v = b2MulSV(ratio, v);
-                    sim.flags |= (int)B2BodyFlags.b2_isSpeedCapped;
-                }
-
-                // Clamp to max angular speed
-                if (w * w > maxAngularSpeedSquared && (sim.flags & (uint)B2BodyFlags.b2_allowFastRotation) == 0)
-                {
-                    float ratio = maxAngularSpeed / b2AbsFloat(w);
-                    w *= ratio;
-                    sim.flags |= (uint)B2BodyFlags.b2_isSpeedCapped;
-                }
-
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
-                {
-                    v.X = 0.0f;
-                }
-
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
-                {
-                    v.Y = 0.0f;
-                }
-
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
-                {
-                    w = 0.0f;
-                }
-
                 state.linearVelocity = v;
                 state.angularVelocity = w;
             }
@@ -189,103 +156,49 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.integrate_velocity);
         }
 
-        internal static void b2PrepareJointsTask(int startIndex, int endIndex, B2StepContext context)
-        {
-            b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
-
-            ArraySegment<B2JointSim> joints = context.joints;
-
-            for (int i = startIndex; i < endIndex; ++i)
-            {
-                B2JointSim joint = joints[i];
-                b2PrepareJoint(joint, context);
-            }
-
-            b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
-        }
-
-        internal static void b2WarmStartJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
-        {
-            b2TracyCZoneNC(B2TracyCZone.warm_joints, "WarmJoints", B2HexColor.b2_colorGold, true);
-
-            ref B2GraphColor color = ref context.graph.colors[colorIndex];
-            B2JointSim[] joints = color.jointSims.data;
-            B2_ASSERT(0 <= startIndex && startIndex < color.jointSims.count);
-            B2_ASSERT(startIndex <= endIndex && endIndex <= color.jointSims.count);
-
-            for (int i = startIndex; i < endIndex; ++i)
-            {
-                B2JointSim joint = joints[i];
-                b2WarmStartJoint(joint, context);
-            }
-
-            b2TracyCZoneEnd(B2TracyCZone.warm_joints);
-        }
-
-        static void b2SolveJointsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias,
-            int workerIndex)
-        {
-            b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
-
-            ref B2GraphColor color = ref context.graph.colors[colorIndex];
-            B2JointSim[] joints = color.jointSims.data;
-            B2_ASSERT(0 <= startIndex && startIndex < color.jointSims.count);
-            B2_ASSERT(startIndex <= endIndex && endIndex <= color.jointSims.count);
-
-            ref B2BitSet jointStateBitSet = ref context.world.taskContexts.data[workerIndex].jointStateBitSet;
-
-            for (int i = startIndex; i < endIndex; ++i)
-            {
-                B2JointSim joint = joints[i];
-                b2SolveJoint(joint, context, useBias);
-
-                if (useBias &&
-                    (joint.forceThreshold < float.MaxValue || joint.torqueThreshold < float.MaxValue) &&
-                    b2GetBit(ref jointStateBitSet, joint.jointId) == false)
-                {
-                    float force, torque;
-                    b2GetJointReaction(joint, context.inv_h, out force, out torque);
-
-                    // Check thresholds. A zero threshold means all awake joints get reported.
-                    if (force >= joint.forceThreshold || torque >= joint.torqueThreshold)
-                    {
-                        // Flag this joint for processing.
-                        b2SetBit(ref jointStateBitSet, joint.jointId);
-                    }
-                }
-            }
-
-            b2TracyCZoneEnd(B2TracyCZone.solve_joints);
-        }
-
-        internal static void b2IntegratePositionsTask(int startIndex, int endIndex, B2StepContext context)
+        internal static void b2IntegratePositionsTask(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.integrate_positions, "IntPos", B2HexColor.b2_colorDarkSeaGreen, true);
 
+            B2_VALIDATE(block.startIndex + block.count <= context.world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].bodyStates.count);
+
             B2BodyState[] states = context.states;
             float h = context.h;
+            float maxLinearSpeed = context.maxLinearVelocity;
+            float maxAngularSpeed = B2_MAX_ROTATION * context.inv_dt;
+            float maxLinearSpeedSquared = maxLinearSpeed * maxLinearSpeed;
+            float maxAngularSpeedSquared = maxAngularSpeed * maxAngularSpeed;
 
-            B2_ASSERT(startIndex <= endIndex);
-
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
                 B2BodyState state = states[i];
 
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
+                B2Vec2 v = state.linearVelocity;
+                float w = state.angularVelocity;
+
+                // Motion locks - these can be viewed as a constraint that comes last
+                v.X = 0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX) ? 0.0f : v.X;
+                v.Y = 0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY) ? 0.0f : v.Y;
+                w = 0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ) ? 0.0f : w;
+
+                // Clamp to max linear speed
+                if (b2Dot(v, v) > maxLinearSpeedSquared)
                 {
-                    state.linearVelocity.X = 0.0f;
+                    float ratio = maxLinearSpeed / b2Length(v);
+                    v = b2MulSV(ratio, v);
+                    state.flags |= (uint)B2BodyFlags.b2_isSpeedCapped;
                 }
 
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
+                // Clamp to max angular speed
+                if (w * w > maxAngularSpeedSquared && (state.flags & (uint)B2BodyFlags.b2_allowFastRotation) == 0)
                 {
-                    state.linearVelocity.Y = 0.0f;
+                    float ratio = maxAngularSpeed / b2AbsFloat(w);
+                    w *= ratio;
+                    state.flags |= (uint)B2BodyFlags.b2_isSpeedCapped;
                 }
 
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
-                {
-                    state.angularVelocity = 0.0f;
-                }
-
+                state.linearVelocity = v;
+                state.angularVelocity = w;
                 state.deltaPosition = b2MulAdd(state.deltaPosition, h, state.linearVelocity);
                 state.deltaRotation = b2IntegrateRotation(state.deltaRotation, h * state.angularVelocity);
             }
@@ -323,9 +236,8 @@ namespace Box2D.NET
                 return true;
             }
 
-            bool isSensor = shape.sensorIndex != B2_NULL_INDEX;
-
             // Skip sensors unless the shapes want sensor events
+            bool isSensor = shape.sensorIndex != B2_NULL_INDEX;
             if (isSensor && (shape.enableSensorEvents == false || fastShape.enableSensorEvents == false))
             {
                 return true;
@@ -480,7 +392,6 @@ namespace Box2D.NET
 
                 if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preSolveFcn != null)
                 {
-                    // Pre-solve is expensive because I need to compute a temporary manifold
                     B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                     B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
                     didHit = world.preSolveFcn(shapeIdA, shapeIdB, output.point, output.normal, world.preSolveContext);
@@ -497,6 +408,7 @@ namespace Box2D.NET
             return true;
         }
 
+        // Continuous collision of dynamic versus static
         internal static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext)
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
@@ -660,63 +572,46 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.ccd);
         }
 
-        internal static void b2FinalizeBodiesTask(int startIndex, int endIndex, int threadIndex, object context)
+        // Implements b2ParallelForCallback
+        internal static void b2FinalizeBodiesTask(int startIndex, int endIndex, int workerIndex, object context)
         {
-            b2TracyCZoneNC(B2TracyCZone.finalize_transforms, "Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
+            b2TracyCZoneNC(B2TracyCZone.finalize_transforms, "Finalize", B2HexColor.b2_colorMediumSeaGreen, true);
 
             B2StepContext stepContext = context as B2StepContext;
             B2World world = stepContext.world;
-
-            bool enableSleep = world.enableSleep;
+            B2Body[] bodies = world.bodies.data;
             B2BodyState[] states = stepContext.states;
             B2BodySim[] sims = stepContext.sims;
-            B2Body[] bodies = world.bodies.data;
+
+            B2_ASSERT(endIndex <= world.bodyMoveEvents.count);
+
+            bool enableSleep = world.enableSleep;
+            bool enableContinuous = world.enableContinuous;
             float timeStep = stepContext.dt;
             float invTimeStep = stepContext.inv_dt;
-
             ushort worldId = world.worldId;
 
             // The body move event array should already have the correct size
-            B2_ASSERT(endIndex <= world.bodyMoveEvents.count);
             B2BodyMoveEvent[] moveEvents = world.bodyMoveEvents.data;
 
-            B2TaskContext taskContext = world.taskContexts.data[threadIndex];
+            B2TaskContext taskContext = world.taskContexts.data[workerIndex];
             ref B2BitSet enlargedSimBitSet = ref taskContext.enlargedSimBitSet;
             ref B2BitSet awakeIslandBitSet = ref taskContext.awakeIslandBitSet;
 
-            bool enableContinuous = world.enableContinuous;
-
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-
-            B2_ASSERT(startIndex <= endIndex);
 
             for (int simIndex = startIndex; simIndex < endIndex; ++simIndex)
             {
                 B2BodyState state = states[simIndex];
                 B2BodySim sim = sims[simIndex];
 
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearX))
-                {
-                    state.linearVelocity.X = 0.0f;
-                }
-
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockLinearY))
-                {
-                    state.linearVelocity.Y = 0.0f;
-                }
-
-                if (0 != (state.flags & (uint)B2BodyFlags.b2_lockAngularZ))
-                {
-                    state.angularVelocity = 0.0f;
-                }
-
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
 
-                if (b2IsValidVec2(v) == false)
+                if (b2IsValidVec2(v) == false || b2IsValidFloat(w) == false)
                 {
                     B2Body debugBody = bodies[sim.bodyId];
-                    b2Log($"bad body: {debugBody.name}\n");
+                    b2Log($"unstable: {debugBody.name}\n");
                 }
 
                 B2_ASSERT(b2IsValidVec2(v));
@@ -733,7 +628,6 @@ namespace Box2D.NET
 
                 // Position correction is not as important for sleep as true velocity.
                 float positionSleepFactor = 0.5f;
-
                 float sleepVelocity = b2MaxFloat(maxVelocity, positionSleepFactor * invTimeStep * maxDeltaPosition);
 
                 // reset state deltas
@@ -759,14 +653,18 @@ namespace Box2D.NET
 
                 body.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
                 body.flags |= (sim.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
+                body.flags |= (state.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
                 sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
+                state.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
 
                 if (enableSleep == false || body.enableSleep == false || sleepVelocity > body.sleepThreshold)
                 {
                     // Body is not sleepy
                     body.sleepTime = 0.0f;
 
-                    if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxVelocity * timeStep > 0.5f * sim.minExtent)
+                    const float safetyFactor = 0.5f;
+                    float maxMotion = b2MaxFloat(maxDeltaPosition, maxVelocity * timeStep);
+                    if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxMotion > safetyFactor * sim.minExtent)
                     {
                         // This flag is only retained for debug draw
                         sim.flags |= (uint)B2BodyFlags.b2_isFast;
@@ -869,83 +767,74 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.finalize_transforms);
         }
 
-/*
- public enum b2SolverStageType
-{
-    b2_stagePrepareJoints,
-    b2_stagePrepareContacts,
-    b2_stageIntegrateVelocities,
-    b2_stageWarmStart,
-    b2_stageSolve,
-    b2_stageIntegratePositions,
-    b2_stageRelax,
-    b2_stageRestitution,
-    b2_stageStoreImpulses
-} b2SolverStageType;
-
-public enum b2SolverBlockType
-{
-    b2_bodyBlock,
-    b2_jointBlock,
-    b2_contactBlock,
-    b2_graphJointBlock,
-    b2_graphContactBlock
-} b2SolverBlockType;
-*/
-
-        // Compute the number of work blocks needed given an item count and desired block size.
-        // If there are too many blocks for the worker count, the block size is enlarged.
-        internal static int b2ComputeBlockCount(int itemCount, int defaultBlockSize, int maxBlockCount)
+        // A block is a range of tasks, a start index and count as a sub-array. Each worker receives at
+        // most M blocks of work. The workers may receive less blocks if there is not sufficient work.
+        // Each block of work has a minimum number of elements (block size). This in turn may limit the
+        // number of blocks. If there are many elements then the block size is increased so there are
+        // still at most M blocks of work per worker. M is a tunable number that has two goals:
+        // 1. keep M small to reduce overhead
+        // 2. keep M large enough for other workers to be able to steal work
+        // The block size is a power of two to make math efficient.
+        internal static B2BlockDim b2ComputeBlockCount(int itemCount, int minSize, int maxBlockCount)
         {
+            B2BlockDim dim = new B2BlockDim();
             if (itemCount == 0)
             {
-                return 0;
+                return dim;
             }
 
-            if (itemCount > defaultBlockSize * maxBlockCount)
+            if (itemCount <= minSize * maxBlockCount)
             {
-                return maxBlockCount;
+                dim.size = minSize;
+            }
+            else
+            {
+                dim.size = (itemCount + maxBlockCount - 1) / maxBlockCount;
             }
 
-            return ((itemCount - 1) / defaultBlockSize) + 1;
+            dim.count = (itemCount + dim.size - 1) / dim.size;
+
+            B2_ASSERT(dim.count >= 1);
+            B2_ASSERT(dim.size * dim.count >= itemCount);
+
+            return dim;
         }
 
         // Initialize solver blocks for a contiguous range of items. Computes block size internally
-        // from the same parameters used by b2ComputeBlockCount.
-        internal static void b2InitBlocks(ArraySegment<B2SolverBlock> blocks, int blockCount, int itemCount, int defaultBlockSize, int maxBlockCount, B2SolverBlockType blockType)
+        // from the same parameters used by b2ComputeBlockCount. The atomic claim counter is zeroed
+        // so workers can CAS (0, 1) on the first stage that owns these blocks.
+        internal static void b2InitBlocks(ArraySegment<B2SyncBlock> blocks, B2BlockDim dim, int itemCount, B2SolverBlockType blockType, byte colorIndex)
         {
-            if (blockCount == 0)
+            if (dim.count == 0)
             {
                 return;
             }
 
+            B2_ASSERT(itemCount >= dim.count);
+
             // Compute the number of elements per block
-            int blockSize;
-            if (itemCount > defaultBlockSize * maxBlockCount)
-            {
-                blockSize = itemCount / maxBlockCount;
-            }
-            else
-            {
-                blockSize = defaultBlockSize;
-            }
+            int blockSize = dim.size;
 
             // Simulation too big
             B2_ASSERT(blockSize <= ushort.MaxValue);
 
-            for (int i = 0; i < blockCount; ++i)
+            for (int i = 0; i < dim.count; ++i)
             {
-                blocks[i].startIndex = i * blockSize;
-                blocks[i].count = (ushort)blockSize;
-                blocks[i].blockType = (short)blockType;
+                blocks[i].block.startIndex = i * blockSize;
+                blocks[i].block.count = (ushort)blockSize;
+                blocks[i].block.blockType = (byte)blockType;
+                blocks[i].block.colorIndex = colorIndex;
                 b2AtomicStoreInt(ref blocks[i].syncIndex, 0);
             }
 
             // The last block may not be full
-            blocks[blockCount - 1].count = (ushort)(itemCount - (blockCount - 1) * blockSize);
+            blocks[dim.count - 1].block.count = (ushort)(itemCount - (dim.count - 1) * blockSize);
+
+            B2_VALIDATE(blocks[dim.count - 1].block.count <= blockSize);
+            B2_VALIDATE((dim.count - 1) * dim.size + blocks[dim.count - 1].block.count == itemCount);
         }
 
-        internal static int b2InitStage(int stageIndex, ArraySegment<B2SolverStage> stages, B2SolverStageType type, ArraySegment<B2SolverBlock> blocks, int blockCount, int colorIndex)
+        internal static int b2InitStage(int stageIndex, ArraySegment<B2SolverStage> stages, B2SolverStageType type, ArraySegment<B2SyncBlock> blocks, int blockCount, byte colorIndex)
         {
             B2SolverStage stage = stages[stageIndex];
             stage.type = type;
@@ -957,15 +846,17 @@ public enum b2SolverBlockType
         }
 
         // Initialize one stage per color for each iteration. Used for warm start, solve, relax, and restitution.
+        // All iterations of a given color share the same b2SyncBlock array so the per-block syncIndex
+        // grows monotonically across stages within that color.
         internal static int b2InitColorStages(int stageIndex, ArraySegment<B2SolverStage> stages, B2SolverStageType type, int iterations,
-            int activeColorCount, ArraySegment<B2SolverBlock>[] graphColorBlocks, ReadOnlySpan<int> colorBlockCounts,
+            int activeColorCount, ArraySegment<B2SyncBlock>[] colorBlocks, ReadOnlySpan<int> colorBlockCounts,
             ReadOnlySpan<int> activeColorIndices)
         {
             for (int j = 0; j < iterations; ++j)
             {
                 for (int i = 0; i < activeColorCount; ++i)
                 {
-                    stageIndex = b2InitStage(stageIndex, stages, type, graphColorBlocks[i], colorBlockCounts[i], activeColorIndices[i]);
+                    stageIndex = b2InitStage(stageIndex, stages, type, colorBlocks[i], colorBlockCounts[i], (byte)activeColorIndices[i]);
                 }
             }
 
@@ -976,31 +867,29 @@ public enum b2SolverBlockType
         {
             B2SolverStageType stageType = stage.type;
             B2SolverBlockType blockType = (B2SolverBlockType)block.blockType;
-            int startIndex = block.startIndex;
-            int endIndex = startIndex + block.count;
 
             switch (stageType)
             {
                 case B2SolverStageType.b2_stagePrepareJoints:
-                    b2PrepareJointsTask(startIndex, endIndex, context);
+                    b2PrepareJointsTask(block, context);
                     break;
 
                 case B2SolverStageType.b2_stagePrepareContacts:
-                    b2PrepareContactsTask(startIndex, endIndex, context);
+                    b2PrepareContactsTask(block, context);
                     break;
 
                 case B2SolverStageType.b2_stageIntegrateVelocities:
-                    b2IntegrateVelocitiesTask(startIndex, endIndex, context);
+                    b2IntegrateVelocitiesTask(block, context);
                     break;
 
                 case B2SolverStageType.b2_stageWarmStart:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        b2WarmStartContactsTask(startIndex, endIndex, context, stage.colorIndex);
+                        b2WarmStartContactsTask(block, context);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
-                        b2WarmStartJointsTask(startIndex, endIndex, context, stage.colorIndex);
+                        b2WarmStartJointsTask(block, context);
                     }
 
                     break;
@@ -1009,30 +898,30 @@ public enum b2SolverBlockType
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
                         bool useBias = true;
-                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, useBias);
+                        b2SolveContactsTask(block, context, useBias);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
                         bool useBias = true;
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, useBias, workerIndex);
+                        b2SolveJointsTask(block, context, useBias, workerIndex);
                     }
 
                     break;
 
                 case B2SolverStageType.b2_stageIntegratePositions:
-                    b2IntegratePositionsTask(startIndex, endIndex, context);
+                    b2IntegratePositionsTask(block, context);
                     break;
 
                 case B2SolverStageType.b2_stageRelax:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
                         bool useBias = false;
-                        b2SolveContactsTask(startIndex, endIndex, context, stage.colorIndex, useBias);
+                        b2SolveContactsTask(block, context, useBias);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
                         bool useBias = false;
-                        b2SolveJointsTask(startIndex, endIndex, context, stage.colorIndex, useBias, workerIndex);
+                        b2SolveJointsTask(block, context, useBias, workerIndex);
                     }
 
                     break;
@@ -1040,17 +929,18 @@ public enum b2SolverBlockType
                 case B2SolverStageType.b2_stageRestitution:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        b2ApplyRestitutionTask(startIndex, endIndex, context, stage.colorIndex);
+                        b2ApplyRestitutionTask(block, context);
                     }
 
                     break;
 
                 case B2SolverStageType.b2_stageStoreImpulses:
-                    b2StoreImpulsesTask(startIndex, endIndex, context);
+                    b2StoreImpulsesTask(block, context, workerIndex);
                     break;
             }
         }
 
+        // This staggers the worker start indices so they avoid touching the same solver blocks
         internal static int GetWorkerStartIndex(int workerIndex, int blockCount, int workerCount)
         {
             if (blockCount <= workerCount)
@@ -1063,13 +953,13 @@ public enum b2SolverBlockType
             return blocksPerWorker * workerIndex + b2MinInt(remainder, workerIndex);
         }
 
+        // Execute a stage, which is an array of solver blocks, each controlled with an atomic sync index.
+        // Each worker starts at its home index and sweeps the ring, CAS-claiming any unclaimed blocks.
         internal static void b2ExecuteStage(B2SolverStage stage, B2StepContext context, int previousSyncIndex, int syncIndex, int workerIndex)
         {
             int completedCount = 0;
-            ArraySegment<B2SolverBlock> blocks = stage.blocks;
+            ArraySegment<B2SyncBlock> blocks = stage.blocks;
             int blockCount = stage.blockCount;
-
-            int expectedSyncIndex = previousSyncIndex;
 
             int startIndex = GetWorkerStartIndex(workerIndex, blockCount, context.workerCount);
             if (startIndex == B2_NULL_INDEX)
@@ -1080,50 +970,30 @@ public enum b2SolverBlockType
             B2_ASSERT(0 <= startIndex && startIndex < blockCount);
 
             int blockIndex = startIndex;
-
-            while (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, expectedSyncIndex, syncIndex) == true)
+            for (int i = 0; i < blockCount; ++i)
             {
-                B2_ASSERT(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
+                if (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, previousSyncIndex, syncIndex))
+                {
+                    B2_ASSERT(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
+                    B2_ASSERT(completedCount < blockCount);
 
-                B2_ASSERT(completedCount < blockCount);
+                    // Pass the descriptor by value -- the wrapping b2SyncBlock holds the atomic
+                    // syncIndex but we only copy .block, so the struct copy never aliases the CAS target.
+                    b2ExecuteBlock(stage, context, blocks[blockIndex].block, workerIndex);
+                    completedCount += 1;
+                }
 
-                b2ExecuteBlock(stage, context, blocks[blockIndex], workerIndex);
-
-                completedCount += 1;
                 blockIndex += 1;
                 if (blockIndex >= blockCount)
                 {
-                    // Keep looking for work
                     blockIndex = 0;
                 }
-
-                expectedSyncIndex = previousSyncIndex;
-            }
-
-            // Search backwards for blocks
-            blockIndex = startIndex - 1;
-            while (true)
-            {
-                if (blockIndex < 0)
-                {
-                    blockIndex = blockCount - 1;
-                }
-
-                expectedSyncIndex = previousSyncIndex;
-
-                if (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, expectedSyncIndex, syncIndex) == false)
-                {
-                    break;
-                }
-
-                b2ExecuteBlock(stage, context, blocks[blockIndex], workerIndex);
-                completedCount += 1;
-                blockIndex -= 1;
             }
 
             b2AtomicFetchAddInt(ref stage.completionCount, completedCount);
         }
 
+        // Execute a stage on worker 0 (main thread).
         internal static void b2ExecuteMainStage(B2SolverStage stage, B2StepContext context, uint syncBits)
         {
             int blockCount = stage.blockCount;
@@ -1136,7 +1006,7 @@ public enum b2SolverBlockType
 
             if (blockCount == 1)
             {
-                b2ExecuteBlock(stage, context, stage.blocks[0], workerIndex);
+                b2ExecuteBlock(stage, context, stage.blocks[0].block, workerIndex);
             }
             else
             {
@@ -1148,7 +1018,7 @@ public enum b2SolverBlockType
 
                 b2ExecuteStage(stage, context, previousSyncIndex, syncIndex, workerIndex);
 
-                // todo consider using the cycle counter as well
+                // Spin waiting for thieves to finish
                 while (b2AtomicLoadInt(ref stage.completionCount) != blockCount)
                 {
                     b2Pause();
@@ -1158,6 +1028,7 @@ public enum b2SolverBlockType
             }
         }
 
+        // Parallel solver task
         internal static void b2SolverTask(object taskContext)
         {
             B2WorkerContext workerContext = taskContext as B2WorkerContext;
@@ -1169,15 +1040,29 @@ public enum b2SolverBlockType
 
             if (workerIndex == 0)
             {
+                // The orchestrator slot is a race. The calling thread of b2World_Step also enters here
+                // as worker 0, so progress is guaranteed even if the user's task system schedules tasks
+                // out of order, has fewer threads than workerCount, or runs the task synchronously
+                // inside enqueueTaskFcn. Whoever wins the CAS becomes the orchestrator; the loser
+                // returns and lets the spinner-only path handle workers >0.
+                if (b2AtomicCompareExchangeInt(ref context.mainClaimed, 0, 1) == false)
+                {
+                    return;
+                }
+
                 // Main thread synchronizes the workers and does work itself.
                 //
-                // Stages are re-used by loops so that I don't need more stages for large iteration counts.
+                // This single task is able to fully complete all work even if all other workers are
+                // blocked, so a fully serial task system still drives the simulation forward.
+
+                // Stages are re-used by loops so that I don't need more stages for large substep counts.
                 // The sync indices grow monotonically for the body/graph/constraint groupings because they share solver blocks.
                 // The stage index and sync indices are combined in to sync bits for atomic synchronization.
                 // The workers need to compute the previous sync index for a given stage so that CAS works correctly. This
                 // setup makes this easy to do.
 
                 /*
+                Stage sequence
                 b2_stagePrepareJoints,
                 b2_stagePrepareContacts,
                 b2_stageIntegrateVelocities,
@@ -1194,7 +1079,7 @@ public enum b2SolverBlockType
                 int bodySyncIndex = 1;
                 int stageIndex = 0;
 
-                // This stage loops over all awake joints
+                // Prepare joint constraints
                 uint jointSyncIndex = 1;
                 uint syncBits = (jointSyncIndex << 16) | (uint)stageIndex;
                 B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareJoints);
@@ -1202,7 +1087,7 @@ public enum b2SolverBlockType
                 stageIndex += 1;
                 jointSyncIndex += 1;
 
-                // This stage loops over all contact constraints
+                // Prepare contact constraints
                 uint contactSyncIndex = 1;
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
                 B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stagePrepareContacts);
@@ -1210,15 +1095,13 @@ public enum b2SolverBlockType
                 stageIndex += 1;
                 contactSyncIndex += 1;
 
-                int graphSyncIndex = 1;
-
                 // Single-threaded overflow work. These constraints don't fit in the graph coloring.
-                // todo these could be prepared in parallel
-                b2PrepareOverflowJoints(context);
-                b2PrepareOverflowContacts(context);
+                b2PrepareJoints_Overflow(context);
+                b2PrepareContacts_Overflow(context);
 
                 profile.prepareConstraints += b2GetMillisecondsAndReset(ref ticks);
 
+                int graphSyncIndex = 1;
                 int subStepCount = context.subStepCount;
                 for (int subStepIndex = 0; subStepIndex < subStepCount; ++subStepIndex)
                 {
@@ -1226,7 +1109,7 @@ public enum b2SolverBlockType
                     // syncBits still increases monotonically because the upper bits increase each iteration
                     int iterationStageIndex = stageIndex;
 
-                    // integrate velocities
+                    // Integrate velocities
                     syncBits = (uint)((bodySyncIndex << 16) | iterationStageIndex);
                     B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageIntegrateVelocities);
                     b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
@@ -1235,9 +1118,9 @@ public enum b2SolverBlockType
 
                     profile.integrateVelocities += b2GetMillisecondsAndReset(ref ticks);
 
-                    // warm start constraints
-                    b2WarmStartOverflowJoints(context);
-                    b2WarmStartOverflowContacts(context);
+                    // Warm start constraints
+                    b2WarmStartJoints_Overflow(context);
+                    b2WarmStartContacts_Overflow(context);
 
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                     {
@@ -1251,14 +1134,13 @@ public enum b2SolverBlockType
 
                     profile.warmStart += b2GetMillisecondsAndReset(ref ticks);
 
-                    // solve constraints
+                    // Solve constraints
                     bool useBias = true;
-
                     for (int j = 0; j < ITERATIONS; ++j)
                     {
-                        // Overflow constraints have lower priority
-                        b2SolveOverflowJoints(context, useBias);
-                        b2SolveOverflowContacts(context, useBias);
+                        // Overflow constraints have lower priority. Typically these are dynamic-vs-dynamic.
+                        b2SolveJoints_Overflow(context, useBias);
+                        b2SolveContacts_Overflow(context, useBias);
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
@@ -1273,7 +1155,7 @@ public enum b2SolverBlockType
 
                     profile.solveImpulses += b2GetMillisecondsAndReset(ref ticks);
 
-                    // integrate positions
+                    // Integrate positions
                     B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageIntegratePositions);
                     syncBits = (uint)((bodySyncIndex << 16) | iterationStageIndex);
                     b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
@@ -1282,12 +1164,12 @@ public enum b2SolverBlockType
 
                     profile.integratePositions += b2GetMillisecondsAndReset(ref ticks);
 
-                    // relax constraints
+                    // Relax constraints
                     useBias = false;
                     for (int j = 0; j < RELAX_ITERATIONS; ++j)
                     {
-                        b2SolveOverflowJoints(context, useBias);
-                        b2SolveOverflowContacts(context, useBias);
+                        b2SolveJoints_Overflow(context, useBias);
+                        b2SolveContacts_Overflow(context, useBias);
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
@@ -1303,13 +1185,13 @@ public enum b2SolverBlockType
                     profile.relaxImpulses += b2GetMillisecondsAndReset(ref ticks);
                 }
 
-                // advance the stage according to the sub-stepping tasks just completed
+                // Advance the stage according to the sub-stepping tasks just completed
                 // integrate velocities / warm start / solve / integrate positions / relax
                 stageIndex += 1 + activeColorCount + ITERATIONS * activeColorCount + 1 + RELAX_ITERATIONS * activeColorCount;
 
                 // Restitution
                 {
-                    b2ApplyOverflowRestitution(context);
+                    b2ApplyRestitution_Overflow(context);
 
                     int iterStageIndex = stageIndex;
                     for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
@@ -1326,7 +1208,8 @@ public enum b2SolverBlockType
 
                 profile.applyRestitution += b2GetMillisecondsAndReset(ref ticks);
 
-                b2StoreOverflowImpulses(context);
+                // Store impulses
+                b2StoreImpulses_Overflow(context);
 
                 syncBits = (contactSyncIndex << 16) | (uint)stageIndex;
                 B2_ASSERT(stages[stageIndex].type == B2SolverStageType.b2_stageStoreImpulses);
@@ -1348,6 +1231,7 @@ public enum b2SolverBlockType
             {
                 // Spin until main thread bumps changes the sync bits. This can waste significant time overall, but it is necessary for
                 // parallel simulation with graph coloring.
+                // todo improve this spinner
                 uint syncBits;
                 int spinCount = 0;
                 while ((syncBits = b2AtomicLoadU32(ref context.atomicSyncBits)) == lastSyncBits)
@@ -1395,12 +1279,12 @@ public enum b2SolverBlockType
             }
         }
 
-        internal static void b2BulletBodyTask(int startIndex, int endIndex, int threadIndex, object context)
+        internal static void b2BulletBodyTask(int startIndex, int endIndex, int workerIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.bullet_body_task, "Bullet", B2HexColor.b2_colorLightSkyBlue, true);
 
             B2StepContext stepContext = context as B2StepContext;
-            B2TaskContext taskContext = b2Array_Get(ref stepContext.world.taskContexts, threadIndex);
+            B2TaskContext taskContext = b2Array_Get(ref stepContext.world.taskContexts, workerIndex);
 
             B2_ASSERT(startIndex <= endIndex);
 
@@ -1417,6 +1301,7 @@ public enum b2SolverBlockType
         // Solve with graph coloring
         internal static void b2Solve(B2World world, B2StepContext stepContext)
         {
+            // Only count steps that advance the simulation
             world.stepIndex += 1;
 
             // Are there any awake bodies? This scenario should not be important for profiling.
@@ -1424,26 +1309,18 @@ public enum b2SolverBlockType
             int awakeBodyCount = awakeSet.bodySims.count;
             if (awakeBodyCount == 0)
             {
-                // Nothing to simulate, however the tree rebuild must be finished.
-                if (world.userTreeTask != null)
-                {
-                    world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
-                    world.userTreeTask = null;
-                    world.activeTaskCount -= 1;
-                }
-
                 b2ValidateNoEnlarged(world.broadPhase);
                 return;
             }
 
             // Solve constraints using graph coloring
             {
+                b2TracyCZoneNC(B2TracyCZone.solver_setup, "Solver Setup", B2HexColor.b2_colorDarkOrange, true);
+                ulong setupTicks = b2GetTicks();
+
                 // Prepare buffers for bullets
                 b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
-                stepContext.bulletBodies = b2AllocateArenaItem<int>(world.arena, awakeBodyCount, "bullet bodies");
-
-                b2TracyCZoneNC(B2TracyCZone.prepare_stages, "Prepare Stages", B2HexColor.b2_colorDarkOrange, true);
-                ulong prepareTicks = b2GetTicks();
+                stepContext.bulletBodies = b2StackAlloc<int>(world.stack, awakeBodyCount, "bullet bodies");
 
                 ref B2ConstraintGraph graph = ref world.constraintGraph;
                 B2GraphColor[] colors = graph.colors;
@@ -1452,7 +1329,6 @@ public enum b2SolverBlockType
                 stepContext.states = awakeSet.bodyStates.data;
 
                 // count contacts, joints, and colors
-                int awakeJointCount = 0;
                 int activeColorCount = 0;
                 for (int i = 0; i < B2_GRAPH_COLOR_COUNT - 1; ++i)
                 {
@@ -1460,7 +1336,6 @@ public enum b2SolverBlockType
                     int perColorJointCount = colors[i].jointSims.count;
                     int occupancyCount = perColorContactCount + perColorJointCount;
                     activeColorCount += occupancyCount > 0 ? 1 : 0;
-                    awakeJointCount += perColorJointCount;
                 }
 
                 // prepare for move events
@@ -1468,12 +1343,15 @@ public enum b2SolverBlockType
 
                 int workerCount = world.workerCount;
 
-                // 4 is a small power of two that allows for meaningful work stealing
-                const int blocksPerWorker = 4;
-                int maxBlockCount = blocksPerWorker * workerCount;
+                // Target 4 blocks per worker to allow work stealing
+                int maxBlockCount = 4 * workerCount;
 
-                // Configure blocks for tasks that parallel-for bodies
-                int bodyBlockCount = b2ComputeBlockCount(awakeBodyCount, 1 << 5, maxBlockCount);
+                // Body blocks are for parallel iteration over bodies directly (integration, update transforms)
+                int minBodiesPerBlock = 32;
+                B2BlockDim bodyDim = b2ComputeBlockCount(awakeBodyCount, minBodiesPerBlock, maxBlockCount);
+
+                const int minContactsPerBlock = 4;
+                const int minJointsPerBlock = 4;
 
                 B2_ASSERT(B2FixedArray24<int>.Size == B2_GRAPH_COLOR_COUNT);
 
@@ -1482,65 +1360,76 @@ public enum b2SolverBlockType
                 B2FixedArray24<int> arrayActiveColorIndices = new B2FixedArray24<int>();
                 B2FixedArray24<int> arrayColorContactCounts = new B2FixedArray24<int>();
                 B2FixedArray24<int> arrayColorJointCounts = new B2FixedArray24<int>();
-                B2FixedArray24<int> arrayColorBlockCounts = new B2FixedArray24<int>();
+                B2FixedArray24<B2BlockDim> arrayGraphContactDims = new B2FixedArray24<B2BlockDim>();
+                B2FixedArray24<B2BlockDim> arrayGraphJointDims = new B2FixedArray24<B2BlockDim>();
 
                 Span<int> activeColorIndices = arrayActiveColorIndices.AsSpan();
                 Span<int> colorContactCounts = arrayColorContactCounts.AsSpan();
                 Span<int> colorJointCounts = arrayColorJointCounts.AsSpan();
-                Span<int> colorBlockCounts = arrayColorBlockCounts.AsSpan();
+                Span<B2BlockDim> graphContactDims = arrayGraphContactDims.AsSpan();
+                Span<B2BlockDim> graphJointDims = arrayGraphJointDims.AsSpan();
                 int graphBlockCount = 0;
 
                 // c is the active color index
                 int wideContactCount = 0;
+                int jointCount = 0;
                 int c = 0;
                 for (int i = 0; i < B2_GRAPH_COLOR_COUNT - 1; ++i)
                 {
                     int colorContactCount = colors[i].contactSims.count;
                     int colorJointCount = colors[i].jointSims.count;
 
-                    if (colorContactCount + colorJointCount > 0)
+                    if (colorContactCount + colorJointCount == 0)
                     {
-                        activeColorIndices[c] = i;
-
-                        // Ceiling for wide constraint count
-                        int colorContactCountW = colorContactCount > 0 ? ((colorContactCount - 1) >> B2_SIMD_SHIFT) + 1 : 0;
-                        colorContactCounts[c] = colorContactCountW;
-                        colorJointCounts[c] = colorJointCount;
-
-                        int colorContactBlockCount = b2ComputeBlockCount(colorContactCountW, blocksPerWorker, maxBlockCount);
-                        int colorJointBlockCount = b2ComputeBlockCount(colorJointCount, blocksPerWorker, maxBlockCount);
-                        colorBlockCounts[c] = colorContactBlockCount + colorJointBlockCount;
-
-                        graphBlockCount += colorBlockCounts[c];
-                        wideContactCount += colorContactCountW;
-                        c += 1;
+                        continue;
                     }
+
+                    activeColorIndices[c] = i;
+
+                    // Ceiling for wide constraint count
+                    int colorContactCountW = colorContactCount > 0 ? ((colorContactCount - 1) >> B2_SIMD_SHIFT) + 1 : 0;
+                    wideContactCount += colorContactCountW;
+                    colorContactCounts[c] = colorContactCountW;
+
+                    colorJointCounts[c] = colorJointCount;
+                    jointCount += colorJointCount;
+
+                    // Graph solver block dimensions
+                    graphContactDims[c] = b2ComputeBlockCount(colorContactCountW, minContactsPerBlock, maxBlockCount);
+                    graphJointDims[c] = b2ComputeBlockCount(colorJointCount, minJointsPerBlock, maxBlockCount);
+                    graphBlockCount += graphContactDims[c].count + graphJointDims[c].count;
+
+                    c += 1;
                 }
 
                 activeColorCount = c;
 
-                // Gather contact pointers for easy parallel-for traversal. Some may be NULL due to SIMD remainders.
-                ArraySegment<B2ContactSim> contacts =
-                    b2AllocateArenaItem<B2ContactSim>(world.arena, B2_SIMD_WIDTH * wideContactCount, "contact pointers");
-
-                // Gather joint pointers for easy parallel-for traversal.
-                ArraySegment<B2JointSim> joints =
-                    b2AllocateArenaItem<B2JointSim>(world.arena, awakeJointCount, "joint pointers");
+                // Prepare and store run as one flat parallel-for over the entire wide constraint range,
+                // partitioned into uniformly sized blocks. Color info is consulted inside the task via
+                // a small span array, so blocks do not need to honor color boundaries here.
+                B2BlockDim contactPrepareDim = b2ComputeBlockCount(wideContactCount, minContactsPerBlock, maxBlockCount);
+                B2BlockDim jointPrepareDim = b2ComputeBlockCount(jointCount, minJointsPerBlock, maxBlockCount);
 
                 B2_ASSERT(B2FixedArray4<B2ContactConstraintWide>.Size == B2_SIMD_WIDTH);
                 int wideContactConstraintByteCount = b2GetWideContactConstraintByteCount();
                 ArraySegment<B2ContactConstraintWide> wideContactConstraints =
-                    b2AllocateArenaItem<B2ContactConstraintWide>(world.arena, wideContactCount /** wideContactConstraintByteCount */, "contact constraint");
+                    b2StackAlloc<B2ContactConstraintWide>(world.stack, wideContactCount /** wideContactConstraintByteCount */, "contact constraint");
 
-                int overflowContactCount = colors[B2_OVERFLOW_INDEX].contactSims.count;
-                ArraySegment<B2ContactConstraint> overflowContactConstraints = b2AllocateArenaItem<B2ContactConstraint>(
-                    world.arena, overflowContactCount, "overflow contact constraint");
+                ref B2GraphColor overflow = ref colors[B2_OVERFLOW_INDEX];
+                int overflowCount = overflow.contactSims.count;
+                ArraySegment<B2ContactConstraint> overflowContacts =
+                    b2StackAlloc<B2ContactConstraint>(world.stack, overflowCount, "overflow contact constraint");
+                overflow.overflowConstraints = overflowContacts;
 
-                graph.colors[B2_OVERFLOW_INDEX].overflowConstraints = overflowContactConstraints;
+                // Build the span table for the flat prepare/store parallel-for while I slice the
+                // wide constraint buffer across colors. One entry per active color plus a sentinel
+                // at wideContactCount.
+                B2ContactPrepareSpan[] contactPrepareSpans = new B2ContactPrepareSpan[B2_GRAPH_COLOR_COUNT + 1];
+                B2JointPrepareSpan[] jointPrepareSpans = new B2JointPrepareSpan[B2_GRAPH_COLOR_COUNT + 1];
 
-                // Distribute transient constraints to each graph color and build flat arrays of contact and joint pointers
+                // Distribute transient constraints to each graph color and prepare spans
                 {
-                    int contactBase = 0;
+                    int wideBase = 0;
                     int jointBase = 0;
                     for (int i = 0; i < activeColorCount; ++i)
                     {
@@ -1548,50 +1437,49 @@ public enum b2SolverBlockType
                         ref B2GraphColor color = ref colors[j];
 
                         int colorContactCount = color.contactSims.count;
+                        contactPrepareSpans[i].start = wideBase;
+                        contactPrepareSpans[i].count = colorContactCount;
+                        contactPrepareSpans[i].contacts = color.contactSims.data;
 
                         if (colorContactCount == 0)
                         {
                             color.wideConstraints = null;
+                            color.wideConstraintCount = 0;
                         }
                         else
                         {
-                            color.wideConstraints = wideContactConstraints.Slice(contactBase);
+                            color.wideConstraints = wideContactConstraints.Slice(wideBase);
 
-                            // Flat array of contacts
-                            for (int k = 0; k < colorContactCount; ++k)
-                            {
-                                contacts[B2_SIMD_WIDTH * contactBase + k] = color.contactSims.data[k];
-                            }
-
-                            // remainder
                             int colorContactCountW = ((colorContactCount - 1) >> B2_SIMD_SHIFT) + 1;
-                            for (int k = colorContactCount; k < B2_SIMD_WIDTH * colorContactCountW; ++k)
+                            color.wideConstraintCount = colorContactCountW;
+
+                            // Zero remainder lanes in the tail wide slot so prepare workers don't need to
+                            // initialize them.
+                            if ((colorContactCount & (B2_SIMD_WIDTH - 1)) != 0)
                             {
-                                contacts[B2_SIMD_WIDTH * contactBase + k] = null;
+                                color.wideConstraints[colorContactCountW - 1] = new B2ContactConstraintWide();
                             }
 
-                            contactBase += colorContactCountW;
+                            wideBase += colorContactCountW;
                         }
 
-                        // Flat array of joints
-                        int colorJointCount = color.jointSims.count;
-                        for (int k = 0; k < colorJointCount; ++k)
-                        {
-                            joints[jointBase + k] = color.jointSims.data[k];
-                        }
-
-                        jointBase += colorJointCount;
+                        jointPrepareSpans[i].start = jointBase;
+                        jointPrepareSpans[i].count = color.jointSims.count;
+                        jointPrepareSpans[i].joints = color.jointSims.data;
+                        jointBase += color.jointSims.count;
                     }
 
-                    B2_ASSERT(contactBase == wideContactCount);
-                    B2_ASSERT(jointBase == awakeJointCount);
+                    // Sentinel
+                    contactPrepareSpans[activeColorCount].start = wideContactCount;
+                    contactPrepareSpans[activeColorCount].count = 0;
+                    contactPrepareSpans[activeColorCount].contacts = null;
+                    B2_ASSERT(wideBase == wideContactCount);
+
+                    jointPrepareSpans[activeColorCount].start = jointCount;
+                    jointPrepareSpans[activeColorCount].count = 0;
+                    jointPrepareSpans[activeColorCount].joints = null;
+                    B2_ASSERT(jointBase == jointCount);
                 }
-
-                // Define work blocks for preparing contacts and storing contact impulses
-                int contactBlockCount = b2ComputeBlockCount(wideContactCount, blocksPerWorker, maxBlockCount);
-
-                // Define work blocks for preparing joints
-                int jointBlockCount = b2ComputeBlockCount(awakeJointCount, blocksPerWorker, maxBlockCount);
 
                 int stageCount = 0;
 
@@ -1614,11 +1502,11 @@ public enum b2SolverBlockType
                 // b2_stageStoreImpulses
                 stageCount += 1;
 
-                ArraySegment<B2SolverStage> stages = b2AllocateArenaItem<B2SolverStage>(world.arena, stageCount, "stages");
-                ArraySegment<B2SolverBlock> bodyBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, bodyBlockCount, "body blocks");
-                ArraySegment<B2SolverBlock> contactBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, contactBlockCount, "contact blocks");
-                ArraySegment<B2SolverBlock> jointBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, jointBlockCount, "joint blocks");
-                ArraySegment<B2SolverBlock> graphBlocks = b2AllocateArenaItem<B2SolverBlock>(world.arena, graphBlockCount, "graph blocks");
+                ArraySegment<B2SolverStage> stages = b2StackAlloc<B2SolverStage>(world.stack, stageCount, "stages");
+                ArraySegment<B2SyncBlock> bodyBlocks = b2StackAlloc<B2SyncBlock>(world.stack, bodyDim.count, "body blocks");
+                ArraySegment<B2SyncBlock> contactBlocks = b2StackAlloc<B2SyncBlock>(world.stack, contactPrepareDim.count, "contact blocks");
+                ArraySegment<B2SyncBlock> jointBlocks = b2StackAlloc<B2SyncBlock>(world.stack, jointPrepareDim.count, "joint blocks");
+                ArraySegment<B2SyncBlock> graphBlocks = b2StackAlloc<B2SyncBlock>(world.stack, graphBlockCount, "graph blocks");
 
                 // Split an awake island. This modifies:
                 // - stack allocator
@@ -1641,48 +1529,50 @@ public enum b2SolverBlockType
                     }
                 }
 
-                // Prepare body, joint, and contact work blocks
-                b2InitBlocks(bodyBlocks, bodyBlockCount, awakeBodyCount, 1 << 5, maxBlockCount, B2SolverBlockType.b2_bodyBlock);
-                b2InitBlocks(jointBlocks, jointBlockCount, awakeJointCount, blocksPerWorker, maxBlockCount, B2SolverBlockType.b2_jointBlock);
-                b2InitBlocks(contactBlocks, contactBlockCount, wideContactCount, blocksPerWorker, maxBlockCount, B2SolverBlockType.b2_contactBlock);
+                // Prepare body blocks
+                b2InitBlocks(bodyBlocks, bodyDim, awakeBodyCount, B2SolverBlockType.b2_bodyBlock, byte.MaxValue);
+
+                // Prepare blocks as a single flat parallel-for over the whole constraint range.
+                // The task walks spans to decode flat slot indices back to per-color arrays.
+                b2InitBlocks(contactBlocks, contactPrepareDim, wideContactCount, B2SolverBlockType.b2_contactBlock, byte.MaxValue);
+                b2InitBlocks(jointBlocks, jointPrepareDim, jointCount, B2SolverBlockType.b2_jointBlock, byte.MaxValue);
 
                 // Prepare graph work blocks. Each color gets joint blocks followed by contact blocks.
-                ArraySegment<B2SolverBlock>[] graphColorBlocks = new ArraySegment<B2SolverBlock>[B2_GRAPH_COLOR_COUNT];
-                ArraySegment<B2SolverBlock> baseGraphBlock = graphBlocks;
-
+                ArraySegment<B2SyncBlock>[] graphColorBlocks = new ArraySegment<B2SyncBlock>[B2_GRAPH_COLOR_COUNT];
+                ArraySegment<B2SyncBlock> baseGraphBlock = graphBlocks;
+                B2FixedArray24<int> arrayGraphBlockCounts = new B2FixedArray24<int>();
+                Span<int> graphBlockCounts = arrayGraphBlockCounts.AsSpan();
                 for (int i = 0; i < activeColorCount; ++i)
                 {
                     graphColorBlocks[i] = baseGraphBlock;
 
-                    int count;
-                    count = b2ComputeBlockCount(colorJointCounts[i], blocksPerWorker, maxBlockCount);
-                    b2InitBlocks(baseGraphBlock, count, colorJointCounts[i], blocksPerWorker, maxBlockCount, B2SolverBlockType.b2_graphJointBlock);
-                    baseGraphBlock = baseGraphBlock.Slice(count);
+                    byte colorIndex = (byte)activeColorIndices[i];
+                    b2InitBlocks(baseGraphBlock, graphJointDims[i], colorJointCounts[i], B2SolverBlockType.b2_graphJointBlock, colorIndex);
+                    baseGraphBlock = baseGraphBlock.Slice(graphJointDims[i].count);
 
-                    count = b2ComputeBlockCount(colorContactCounts[i], blocksPerWorker, maxBlockCount);
-                    b2InitBlocks(baseGraphBlock, count, colorContactCounts[i], blocksPerWorker, maxBlockCount, B2SolverBlockType.b2_graphContactBlock);
-                    baseGraphBlock = baseGraphBlock.Slice(count);
+                    b2InitBlocks(baseGraphBlock, graphContactDims[i], colorContactCounts[i], B2SolverBlockType.b2_graphContactBlock, colorIndex);
+                    baseGraphBlock = baseGraphBlock.Slice(graphContactDims[i].count);
+
+                    graphBlockCounts[i] = graphJointDims[i].count + graphContactDims[i].count;
                 }
 
                 B2_ASSERT((baseGraphBlock.Offset - graphBlocks.Offset) == graphBlockCount);
 
                 int stageIdx = 0;
-                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stagePrepareJoints, jointBlocks, jointBlockCount, -1);
-                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stagePrepareContacts, contactBlocks, contactBlockCount, -1);
-                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegrateVelocities, bodyBlocks, bodyBlockCount, -1);
+                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stagePrepareJoints, jointBlocks, jointPrepareDim.count, byte.MaxValue);
+                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stagePrepareContacts, contactBlocks, contactPrepareDim.count, byte.MaxValue);
+                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegrateVelocities, bodyBlocks, bodyDim.count, byte.MaxValue);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageWarmStart, 1, activeColorCount, graphColorBlocks,
-                    colorBlockCounts, activeColorIndices);
+                    graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageSolve, ITERATIONS, activeColorCount, graphColorBlocks,
-                    colorBlockCounts, activeColorIndices);
-                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegratePositions, bodyBlocks, bodyBlockCount, -1);
+                    graphBlockCounts, activeColorIndices);
+                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegratePositions, bodyBlocks, bodyDim.count, byte.MaxValue);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRelax, RELAX_ITERATIONS, activeColorCount, graphColorBlocks,
-                    colorBlockCounts, activeColorIndices);
-                // Note: joint blocks mixed in, could have joint limit restitution
+                    graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRestitution, 1, activeColorCount, graphColorBlocks,
-                    colorBlockCounts, activeColorIndices);
-                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageStoreImpulses, contactBlocks, contactBlockCount, -1);
+                    graphBlockCounts, activeColorIndices);
+                stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageStoreImpulses, contactBlocks, contactPrepareDim.count, byte.MaxValue);
 
-                //B2_ASSERT( (int)( stage - stages ) == stageCount );
                 B2_ASSERT((int)(stageIdx) == stageCount);
 
                 B2_ASSERT(workerCount <= B2_MAX_WORKERS);
@@ -1695,27 +1585,31 @@ public enum b2SolverBlockType
                 }
 
                 stepContext.graph = graph;
-                stepContext.joints = joints;
-                stepContext.contacts = contacts;
-                stepContext.wideContactConstraints = wideContactConstraints;
                 stepContext.activeColorCount = activeColorCount;
                 stepContext.workerCount = workerCount;
                 stepContext.stageCount = stageCount;
                 stepContext.stages = stages;
+                stepContext.wideContactConstraints = wideContactConstraints;
+                stepContext.contactPrepareSpans = contactPrepareSpans;
+                stepContext.wideContactCount = wideContactCount;
+                stepContext.jointPrepareSpans = jointPrepareSpans;
                 b2AtomicStoreU32(ref stepContext.atomicSyncBits, 0);
+                b2AtomicStoreInt(ref stepContext.mainClaimed, 0);
 
-                world.profile.prepareStages = b2GetMillisecondsAndReset(ref prepareTicks);
-                b2TracyCZoneEnd(B2TracyCZone.prepare_stages);
+                world.profile.solverSetup = b2GetMillisecondsAndReset(ref setupTicks);
+                b2TracyCZoneEnd(B2TracyCZone.solver_setup);
 
                 b2TracyCZoneNC(B2TracyCZone.solve_constraints, "Solve Constraints", B2HexColor.b2_colorIndigo, true);
                 ulong constraintTicks = b2GetTicks();
 
-                // Must use worker index because thread 0 can be assigned multiple tasks
                 int jointIdCapacity = b2GetIdCapacity(world.jointIdPool);
+                int contactIdCapacity = b2GetIdCapacity(world.contactIdPool);
                 for (int i = 0; i < workerCount; ++i)
                 {
                     B2TaskContext taskContext = b2Array_Get(ref world.taskContexts, i);
                     b2SetBitCountAndClear(ref taskContext.jointStateBitSet, jointIdCapacity);
+                    b2SetBitCountAndClear(ref taskContext.hitEventBitSet, contactIdCapacity);
+                    taskContext.hasHitEvents = false;
 
                     workerContext[i].context = stepContext;
                     workerContext[i].workerIndex = i;
@@ -1733,14 +1627,16 @@ public enum b2SolverBlockType
                     }
                 }
 
-                // Finish island split
-                if (splitIslandTask != null)
-                {
-                    world.finishTaskFcn(splitIslandTask, world.userTaskContext);
-                    world.activeTaskCount -= 1;
-                }
-
-                world.splitIslandId = B2_NULL_INDEX;
+                // The calling thread of b2World_Step also enters b2SolverTask as worker 0 and races for the
+                // orchestrator slot via the CAS inside. This guarantees progress even when the user's task
+                // system can't run the queued worker 0 promptly: it might schedule out of order, have fewer
+                // threads than workerCount, or invert priority by parking the calling thread in finishTaskFcn.
+                // Whoever wins the CAS becomes the orchestrator; the loser returns and lets the spinner-only
+                // path handle workers >0.
+                B2WorkerContext callerContext = new B2WorkerContext();
+                callerContext.context = stepContext;
+                callerContext.workerIndex = 0;
+                b2SolverTask(callerContext);
 
                 // Finish constraint solve
                 for (int i = 0; i < workerCount; ++i)
@@ -1752,7 +1648,16 @@ public enum b2SolverBlockType
                     }
                 }
 
-                world.profile.solveConstraints = b2GetMillisecondsAndReset(ref constraintTicks);
+                // Finish island split
+                if (splitIslandTask != null)
+                {
+                    world.finishTaskFcn(splitIslandTask, world.userTaskContext);
+                    world.activeTaskCount -= 1;
+                }
+
+                world.splitIslandId = B2_NULL_INDEX;
+
+                world.profile.constraints = b2GetMillisecondsAndReset(ref constraintTicks);
                 b2TracyCZoneEnd(B2TracyCZone.solve_constraints);
 
                 b2TracyCZoneNC(B2TracyCZone.update_transforms, "Update Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
@@ -1773,15 +1678,13 @@ public enum b2SolverBlockType
                 // Finalize bodies. Must happen after the constraint solver and after island splitting.
                 b2ParallelFor(world, b2FinalizeBodiesTask, awakeBodyCount, 64, stepContext);
 
-                b2FreeArenaItem(world.arena, graphBlocks);
-                b2FreeArenaItem(world.arena, jointBlocks);
-                b2FreeArenaItem(world.arena, contactBlocks);
-                b2FreeArenaItem(world.arena, bodyBlocks);
-                b2FreeArenaItem(world.arena, stages);
-                b2FreeArenaItem(world.arena, overflowContactConstraints);
-                b2FreeArenaItem(world.arena, wideContactConstraints);
-                b2FreeArenaItem(world.arena, joints);
-                b2FreeArenaItem(world.arena, contacts);
+                b2StackFree(world.stack, graphBlocks);
+                b2StackFree(world.stack, jointBlocks);
+                b2StackFree(world.stack, contactBlocks);
+                b2StackFree(world.stack, bodyBlocks);
+                b2StackFree(world.stack, stages);
+                b2StackFree(world.stack, overflowContacts);
+                b2StackFree(world.stack, wideContactConstraints);
 
                 world.profile.transforms = b2GetMilliseconds(transformTicks);
                 b2TracyCZoneEnd(B2TracyCZone.update_transforms);
@@ -1837,68 +1740,105 @@ public enum b2SolverBlockType
             }
 
             // Report hit events
-            // todo_erin perhaps optimize this with a bitset
-            // todo_erin perhaps do this in parallel with other work below
             {
                 b2TracyCZoneNC(B2TracyCZone.hit_events, "Hit Events", B2HexColor.b2_colorRosyBrown, true);
                 ulong hitTicks = b2GetTicks();
 
                 B2_ASSERT(world.contactHitEvents.count == 0);
 
-                float threshold = world.hitEventThreshold;
-                B2GraphColor[] colors = world.constraintGraph.colors;
-                for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
+                // Fast path: if no worker flagged any hit-event candidates during b2StoreImpulsesTask, skip entirely.
+                bool anyHitEvents = false;
+                for (int i = 0; i < world.workerCount; ++i)
                 {
-                    ref B2GraphColor color = ref colors[i];
-                    int contactCount = color.contactSims.count;
-                    B2ContactSim[] contactSims = color.contactSims.data;
-                    for (int j = 0; j < contactCount; ++j)
+                    if (world.taskContexts.data[i].hasHitEvents)
                     {
-                        B2ContactSim contactSim = contactSims[j];
-                        if ((contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnableHitEvent) == 0)
+                        anyHitEvents = true;
+                        break;
+                    }
+                }
+
+                if (anyHitEvents)
+                {
+                    // Union per-worker bits into worker 0's bit set.
+                    ref B2BitSet hitEventBitSet = ref world.taskContexts.data[0].hitEventBitSet;
+                    for (int i = 1; i < world.workerCount; ++i)
+                    {
+                        if (world.taskContexts.data[i].hasHitEvents)
                         {
-                            continue;
+                            b2InPlaceUnion(ref hitEventBitSet, ref world.taskContexts.data[i].hitEventBitSet);
                         }
+                    }
 
-                        B2ContactHitEvent @event = new B2ContactHitEvent();
-                        @event.approachSpeed = threshold;
+                    float threshold = world.hitEventThreshold;
+                    B2GraphColor[] colors = world.constraintGraph.colors;
+                    B2Contact[] contactArray = world.contacts.data;
+                    B2Shape[] shapeArray = world.shapes.data;
+                    ushort worldId = world.worldId;
 
-                        bool hit = false;
-                        int pointCount = contactSim.manifold.pointCount;
-                        for (int k = 0; k < pointCount; ++k)
+                    uint wordCount = (uint)hitEventBitSet.blockCount;
+                    ulong[] bits = hitEventBitSet.bits;
+                    for (uint k = 0; k < wordCount; ++k)
+                    {
+                        ulong word = bits[k];
+                        while (word != 0)
                         {
-                            ref B2ManifoldPoint mp = ref contactSim.manifold.points[k];
-                            float approachSpeed = -mp.normalVelocity;
+                            uint ctz = b2CTZ64(word);
+                            int contactId = (int)(64 * k + ctz);
 
-                            // Need to check total impulse because the point may be speculative and not colliding
-                            if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
+                            B2_ASSERT(contactId < world.contacts.capacity);
+
+                            B2Contact contact = contactArray[contactId];
+
+                            B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
+                            B2_ASSERT(contact.colorIndex != B2_NULL_INDEX);
+                            B2_ASSERT(contact.localIndex != B2_NULL_INDEX);
+
+                            B2ContactSim contactSim = colors[contact.colorIndex].contactSims.data[contact.localIndex];
+
+                            B2ContactHitEvent @event = new B2ContactHitEvent();
+                            @event.approachSpeed = threshold;
+
+                            bool hit = false;
+                            int pointCount = contactSim.manifold.pointCount;
+                            for (int j = 0; j < pointCount; ++j)
                             {
-                                @event.approachSpeed = approachSpeed;
-                                @event.point = mp.clipPoint;
-                                hit = true;
+                                ref B2ManifoldPoint mp = ref contactSim.manifold.points[j];
+                                float approachSpeed = -mp.normalVelocity;
+
+                                // Need to check total impulse because the point may be speculative and not colliding
+                                if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
+                                {
+                                    @event.approachSpeed = approachSpeed;
+                                    // Using the clip point here is somewhat questionable
+                                    @event.point = mp.clipPoint;
+                                    hit = true;
+                                }
                             }
-                        }
 
-                        if (hit == true)
-                        {
-                            @event.normal = contactSim.manifold.normal;
+                            B2_VALIDATE(hit);
 
-                            B2Shape shapeA = b2Array_Get(ref world.shapes, contactSim.shapeIdA);
-                            B2Shape shapeB = b2Array_Get(ref world.shapes, contactSim.shapeIdB);
+                            if (hit == true)
+                            {
+                                @event.normal = contactSim.manifold.normal;
 
-                            @event.shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
-                            @event.shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
+                                B2Shape shapeA = shapeArray[contactSim.shapeIdA];
+                                B2Shape shapeB = shapeArray[contactSim.shapeIdB];
 
-                            B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
+                                @event.shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
+                                @event.shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
 
-                            @event.contactId = new B2ContactId(
-                                index1: contact.contactId + 1,
-                                world0: world.worldId,
-                                padding: 0,
-                                generation: contact.generation
-                            );
+                                @event.contactId = new B2ContactId(
+                                    index1: contact.contactId + 1,
+                                    world0: worldId,
+                                    padding: 0,
+                                    generation: contact.generation
+                                );
 
-                            b2Array_Push(ref world.contactHitEvents, @event);
+                                b2Array_Push(ref world.contactHitEvents, @event);
+                            }
+
+                            // Clear the smallest set bit
+                            word = word & (word - 1);
                         }
                     }
                 }
@@ -2072,7 +2012,7 @@ public enum b2SolverBlockType
             }
 
             // Need to free this even if no bullets got processed.
-            b2FreeArenaItem(world.arena, stepContext.bulletBodies);
+            b2StackFree(world.stack, stepContext.bulletBodies);
             stepContext.bulletBodies = null;
             b2AtomicStoreInt(ref stepContext.bulletBodyCount, 0);
 

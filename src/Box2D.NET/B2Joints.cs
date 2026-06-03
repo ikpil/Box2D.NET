@@ -25,6 +25,7 @@ using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2BitSets;
 
 namespace Box2D.NET
 {
@@ -68,9 +69,9 @@ namespace Box2D.NET
 
         /// Use this to initialize your joint definition
         /// @ingroup filter_joint
-        public static b2FilterJointDef b2DefaultFilterJointDef()
+        public static B2FilterJointDef b2DefaultFilterJointDef()
         {
-            b2FilterJointDef def = new b2FilterJointDef();
+            B2FilterJointDef def = new B2FilterJointDef();
             def.@base = b2DefaultJointDef();
             def.internalValue = B2_SECRET_COOKIE;
             return def;
@@ -280,7 +281,7 @@ namespace Box2D.NET
                 joint.setIndex = (int)B2SolverSetType.b2_disabledSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
@@ -295,7 +296,7 @@ namespace Box2D.NET
                 joint.setIndex = (int)B2SolverSetType.b2_staticSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
@@ -331,7 +332,7 @@ namespace Box2D.NET
                 joint.setIndex = setIndex;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
@@ -482,8 +483,8 @@ namespace Box2D.NET
          * @{
          */
         /// Create a filter joint.
-        /// @see b2FilterJointDef for details
-        public static B2JointId b2CreateFilterJoint(B2WorldId worldId, in b2FilterJointDef def)
+        /// @see B2FilterJointDef for details
+        public static B2JointId b2CreateFilterJoint(B2WorldId worldId, in B2FilterJointDef def)
         {
             B2_CHECK_DEF(def);
             B2World world = b2GetWorldFromId(worldId);
@@ -1434,7 +1435,7 @@ namespace Box2D.NET
             }
         }
 
-        internal static void b2PrepareOverflowJoints(B2StepContext context)
+        internal static void b2PrepareJoints_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
@@ -1451,7 +1452,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        internal static void b2WarmStartOverflowJoints(B2StepContext context)
+        internal static void b2WarmStartJoints_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
 
@@ -1468,7 +1469,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
         }
 
-        internal static void b2SolveOverflowJoints(B2StepContext context, bool useBias)
+        internal static void b2SolveJoints_Overflow(B2StepContext context, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_joints, "Solve Overflow Joints", B2HexColor.b2_colorLemonChiffon, true);
 
@@ -1480,6 +1481,94 @@ namespace Box2D.NET
             {
                 B2JointSim joint = joints[i];
                 b2SolveJoint(joint, context, useBias);
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.solve_joints);
+        }
+
+        internal static void b2PrepareJointsTask(B2SolverBlock block, B2StepContext context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.prepare_joints, "PrepJoints", B2HexColor.b2_colorOldLace, true);
+
+            B2JointPrepareSpan[] spans = context.jointPrepareSpans;
+
+            int index = block.startIndex;
+            int endIndex = block.startIndex + block.count;
+
+            // Find color for start index. Linear search but fast.
+            int colorIndex = 0;
+            while (spans[colorIndex + 1].start <= index)
+            {
+                colorIndex += 1;
+            }
+
+            // Loop over block
+            while (index < endIndex)
+            {
+                int colorStart = spans[colorIndex].start;
+                int colorEndIndex = b2MinInt(spans[colorIndex + 1].start, endIndex);
+                B2JointSim[] joints = spans[colorIndex].joints;
+
+                // Loop over color
+                for (; index < colorEndIndex; ++index)
+                {
+                    B2_ASSERT(0 <= index - colorStart && index - colorStart < spans[colorIndex].count);
+                    B2JointSim joint = joints[index - colorStart];
+                    b2PrepareJoint(joint, context);
+                }
+
+                // Advance to next color
+                colorIndex += 1;
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.prepare_joints);
+        }
+
+        internal static void b2WarmStartJointsTask(B2SolverBlock block, B2StepContext context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.warm_joints, "WarmJoints", B2HexColor.b2_colorGold, true);
+
+            ref B2GraphColor color = ref context.graph.colors[block.colorIndex];
+            B2JointSim[] joints = color.jointSims.data;
+
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
+            {
+                B2JointSim joint = joints[i];
+                b2WarmStartJoint(joint, context);
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.warm_joints);
+        }
+
+        internal static void b2SolveJointsTask(B2SolverBlock block, B2StepContext context, bool useBias, int workerIndex)
+        {
+            b2TracyCZoneNC(B2TracyCZone.solve_joints, "SolveJoints", B2HexColor.b2_colorLemonChiffon, true);
+
+            ref B2GraphColor color = ref context.graph.colors[block.colorIndex];
+            B2JointSim[] joints = color.jointSims.data;
+
+            B2_ASSERT(0 <= block.startIndex && block.startIndex + block.count <= color.jointSims.count);
+
+            ref B2BitSet jointStateBitSet = ref context.world.taskContexts.data[workerIndex].jointStateBitSet;
+
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
+            {
+                B2JointSim joint = joints[i];
+                b2SolveJoint(joint, context, useBias);
+
+                if (useBias && (joint.forceThreshold < float.MaxValue || joint.torqueThreshold < float.MaxValue) &&
+                    b2GetBit(ref jointStateBitSet, joint.jointId) == false)
+                {
+                    float force, torque;
+                    b2GetJointReaction(joint, context.inv_h, out force, out torque);
+
+                    // Check thresholds. A zero threshold means all awake joints get reported.
+                    if (force >= joint.forceThreshold || torque >= joint.torqueThreshold)
+                    {
+                        // Flag this joint for processing.
+                        b2SetBit(ref jointStateBitSet, joint.jointId);
+                    }
+                }
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_joints);
@@ -1512,13 +1601,13 @@ namespace Box2D.NET
                     break;
 
                 case B2JointType.b2_filterJoint:
-                    draw.drawLineFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
+                    draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
                     break;
 
                 case B2JointType.b2_motorJoint:
                     draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
                     draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
-                    draw.drawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
+                    draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1538,9 +1627,9 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    draw.drawLineFcn(transformA.p, pA, color, draw.context);
-                    draw.drawLineFcn(pA, pB, color, draw.context);
-                    draw.drawLineFcn(transformB.p, pB, color, draw.context);
+                    draw.DrawLineFcn(transformA.p, pA, color, draw.context);
+                    draw.DrawLineFcn(pA, pB, color, draw.context);
+                    draw.DrawLineFcn(transformB.p, pB, color, draw.context);
                     break;
             }
 
@@ -1550,7 +1639,7 @@ namespace Box2D.NET
                 if (colorIndex != B2_NULL_INDEX)
                 {
                     B2Vec2 p = b2Lerp(pA, pB, 0.5f);
-                    draw.DrawPointFcn(p, 5.0f, b2_graphColors[colorIndex], draw.context);
+                    draw.DrawPointFcn(p, 5.0f, b2GetGraphColor(colorIndex), draw.context);
                 }
             }
 
@@ -1560,7 +1649,7 @@ namespace Box2D.NET
                 float torque = b2GetJointConstraintTorque(world, joint);
                 B2Vec2 p = b2Lerp(pA, pB, 0.5f);
 
-                draw.drawLineFcn(p, b2MulAdd(p, 0.001f, force), B2HexColor.b2_colorAzure, draw.context);
+                draw.DrawLineFcn(p, b2MulAdd(p, 0.001f, force), B2HexColor.b2_colorAzure, draw.context);
 
                 string result = $"f = [{force.X:g}, {force.Y:g}], t = {torque:g}";
                 draw.DrawStringFcn(p, result, B2HexColor.b2_colorAzure, draw.context);

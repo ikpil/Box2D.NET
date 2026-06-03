@@ -122,7 +122,7 @@ public class B2ArrayTests
 
         for (int i = 0; i < 100; ++i)
         {
-            ref ulong j = ref b2Array_Add(ref a);
+            ref ulong j = ref b2Array_Emplace(ref a);
             j = (ulong)i;
         }
 
@@ -398,7 +398,7 @@ public class B2ArrayTests
 
         for (int i = 0; i < 50; ++i)
         {
-            ref Foo f = ref b2Array_Add(ref a);
+            ref Foo f = ref b2Array_Emplace(ref a);
             f.a = i;
             f.b = (float)i * 2.0f;
         }
@@ -445,7 +445,7 @@ public class B2ArrayTests
     {
         B2Array<Foo> a = new B2Array<Foo>();
 
-        ref Foo f = ref b2Array_Add(ref a);
+        ref Foo f = ref b2Array_Emplace(ref a);
         f.a = 7;
         f.b = 3.14f;
 

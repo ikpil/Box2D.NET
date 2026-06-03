@@ -157,13 +157,13 @@ namespace Box2D.NET
         // J = [0 0 -1 0 0 1]
         // K = invI1 + invI2
 
-        // Point-to-point constraint
-        // C = p2 - p1
-        // Cdot = v2 - v1
-        //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-        // J = [-E -r1_skew E r2_skew ]
-        // Identity used:
-        // w k % (rx i + ry j) = w * (-ry i + rx j)
+        // 3x3 Block
+        // K = [J1] * invM * [J1T J2T]
+        //     [J2]
+        //   = [J1] * [invM * J1T invM * J2T]
+        //     [J2]
+        //   = [J1 * invM * J1T J1 * invM * J2T]
+        //     [J2 * invM * J1T J2 * invM * J2T]
         internal static void b2PrepareWeldJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
