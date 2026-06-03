@@ -18,7 +18,7 @@ namespace Box2D.NET.Samples.Samples.Stackings;
 
 public class CircleImpulse : Sample
 {
-    private static readonly int SampleCircleImpulse = SampleFactory.Shared.RegisterSample("Stacking", "Circle Impulse", Create);
+    private static readonly int SampleCircleImpulse = SampleFactory.Shared.RegisterSample("Events", "Circle Impulse", Create);
 
     public struct Event
     {

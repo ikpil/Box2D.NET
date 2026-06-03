@@ -280,7 +280,7 @@ namespace Box2D.NET
                 joint.setIndex = (int)B2SolverSetType.b2_disabledSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
@@ -295,7 +295,7 @@ namespace Box2D.NET
                 joint.setIndex = (int)B2SolverSetType.b2_staticSet;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 
@@ -331,7 +331,7 @@ namespace Box2D.NET
                 joint.setIndex = setIndex;
                 joint.localIndex = set.jointSims.count;
 
-                jointSim = b2Array_Add(ref set.jointSims);
+                jointSim = b2Array_Emplace(ref set.jointSims);
                 //memset( jointSim, 0, sizeof( b2JointSim ) );
                 jointSim.Clear();
 

@@ -12,8 +12,8 @@ namespace Box2D.NET
         public float pairs;
         public float collide;
         public float solve;
-        public float prepareStages;
-        public float solveConstraints;
+        public float solverSetup;
+        public float constraints;
         public float prepareConstraints;
         public float integrateVelocities;
         public float warmStart;

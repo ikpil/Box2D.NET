@@ -4,7 +4,6 @@
 
 using System;
 using System.Numerics;
-using System.Text;
 using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
@@ -17,6 +16,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Samples.Graphics.Draws;
@@ -59,8 +59,9 @@ public class Sample : IDisposable
     private ulong m_profileWriteIndex;
     
     //
-    private B2Profile m_maxProfile;
     private B2Profile m_totalProfile;
+    private static bool s_showProfilePlots;
+    private static readonly bool[] s_profileRowOpen = new bool[22];
     
     //
     private bool m_didStep;
@@ -93,7 +94,6 @@ public class Sample : IDisposable
         m_profileReadIndex = 0;
         m_profileWriteIndex = 0;
 
-        m_maxProfile = new B2Profile();
         m_totalProfile = new B2Profile();
 
         g_randomSeed = RAND_SEED;
@@ -119,13 +119,9 @@ public class Sample : IDisposable
 
         B2WorldDef worldDef = b2DefaultWorldDef();
         worldDef.workerCount = m_context.workerCount;
-        // worldDef.enqueueTask = EnqueueTask;
-        // worldDef.finishTask = FinishTask;
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_context.enableSleep;
-
-        // todo experimental
-        // worldDef.enableContactSoftening = true;
+        worldDef.capacity = m_context.capacity;
 
         m_worldId = b2CreateWorld(worldDef);
     }
@@ -160,77 +156,337 @@ public class Sample : IDisposable
 
     public virtual void UpdateGui()
     {
-        if (m_context.frameTime)
-        {
-            UpdateFrameTimeGui();
-        }
+        float fontSize = ImGui.GetFontSize();
 
         if (m_context.drawProfile)
         {
-            B2Profile aveProfile = new B2Profile();
+            ImGui.SetNextWindowPos(new Vector2(fontSize, 8.0f * fontSize), ImGuiCond.FirstUseEver);
+            ImGui.Begin("Profile (ms)", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize);
+
+            int count = (int)(m_profileWriteIndex - m_profileReadIndex);
+
+            const int rowCount = 22;
+            float[][] histories = new float[rowCount][];
+            for (int row = 0; row < rowCount; ++row)
+            {
+                histories[row] = new float[m_profileCapacity];
+            }
+
+            for (int i = 0; i < count; ++i)
+            {
+                int index = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
+                B2Profile profile = m_profiles[index];
+                for (int row = 0; row < rowCount; ++row)
+                {
+                    histories[row][i] = GetProfileValue(profile, row);
+                }
+            }
+
+            float[] avg = new float[rowCount];
             if (m_stepCount > 0)
             {
                 float scale = 1.0f / m_stepCount;
-                aveProfile.step = scale * m_totalProfile.step;
-                aveProfile.pairs = scale * m_totalProfile.pairs;
-                aveProfile.collide = scale * m_totalProfile.collide;
-                aveProfile.solve = scale * m_totalProfile.solve;
-                aveProfile.prepareStages = scale * m_totalProfile.prepareStages;
-                aveProfile.solveConstraints = scale * m_totalProfile.solveConstraints;
-                aveProfile.prepareConstraints = scale * m_totalProfile.prepareConstraints;
-                aveProfile.integrateVelocities = scale * m_totalProfile.integrateVelocities;
-                aveProfile.warmStart = scale * m_totalProfile.warmStart;
-                aveProfile.solveImpulses = scale * m_totalProfile.solveImpulses;
-                aveProfile.integratePositions = scale * m_totalProfile.integratePositions;
-                aveProfile.relaxImpulses = scale * m_totalProfile.relaxImpulses;
-                aveProfile.applyRestitution = scale * m_totalProfile.applyRestitution;
-                aveProfile.storeImpulses = scale * m_totalProfile.storeImpulses;
-                aveProfile.transforms = scale * m_totalProfile.transforms;
-                aveProfile.splitIslands = scale * m_totalProfile.splitIslands;
-                aveProfile.jointEvents = scale * m_totalProfile.jointEvents;
-                aveProfile.hitEvents = scale * m_totalProfile.hitEvents;
-                aveProfile.refit = scale * m_totalProfile.refit;
-                aveProfile.bullets = scale * m_totalProfile.bullets;
-                aveProfile.sleepIslands = scale * m_totalProfile.sleepIslands;
-                aveProfile.sensors = scale * m_totalProfile.sensors;
+                for (int row = 0; row < rowCount; ++row)
+                {
+                    avg[row] = scale * GetProfileValue(m_totalProfile, row);
+                }
             }
 
-            ref readonly B2Profile p = ref m_profiles[m_currentProfileIndex];
-            DrawTextLine($"step [ave] (max) = {p.step,5:F2} [{aveProfile.step,6:F2}] ({m_maxProfile.step,6:F2})");
-            DrawTextLine($"pairs [ave] (max) = {p.pairs,5:F2} [{aveProfile.pairs,6:F2}] ({m_maxProfile.pairs,6:F2})");
-            DrawTextLine($"collide [ave] (max) = {p.collide,5:F2} [{aveProfile.collide,6:F2}] ({m_maxProfile.collide,6:F2})");
-            DrawTextLine($"solve [ave] (max) = {p.solve,5:F2} [{aveProfile.solve,6:F2}] ({m_maxProfile.solve,6:F2})");
-            DrawTextLine($"> prepare tasks [ave] (max) = {p.prepareStages,5:F2} [{aveProfile.prepareStages,6:F2}] ({m_maxProfile.prepareStages,6:F2})");
-            DrawTextLine($"> solve constraints [ave] (max) = {p.solveConstraints,5:F2} [{aveProfile.solveConstraints,6:F2}] ({m_maxProfile.solveConstraints,6:F2})");
-            DrawTextLine($">> prepare constraints [ave] (max) = {p.prepareConstraints,5:F2} [{aveProfile.prepareConstraints,6:F2}] ({m_maxProfile.prepareConstraints,6:F2})");
-            DrawTextLine($">> integrate velocities [ave] (max) = {p.integrateVelocities,5:F2} [{aveProfile.integrateVelocities,6:F2}] ({m_maxProfile.integrateVelocities,6:F2})");
-            DrawTextLine($">> warm start [ave] (max) = {p.warmStart,5:F2} [{aveProfile.warmStart,6:F2}] ({m_maxProfile.warmStart,6:F2})");
-            DrawTextLine($">> solve impulses [ave] (max) = {p.solveImpulses,5:F2} [{aveProfile.solveImpulses,6:F2}] ({m_maxProfile.solveImpulses,6:F2})");
-            DrawTextLine($">> integrate positions [ave] (max) = {p.integratePositions,5:F2} [{aveProfile.integratePositions,6:F2}] ({m_maxProfile.integratePositions,6:F2})");
-            DrawTextLine($">> relax impulses [ave] (max) = {p.relaxImpulses,5:F2} [{aveProfile.relaxImpulses,6:F2}] ({m_maxProfile.relaxImpulses,6:F2})");
-            DrawTextLine($">> apply restitution [ave] (max) = {p.applyRestitution,5:F2} [{aveProfile.applyRestitution,6:F2}] ({m_maxProfile.applyRestitution,6:F2})");
-            DrawTextLine($">> store impulses [ave] (max) = {p.storeImpulses,5:F2} [{aveProfile.storeImpulses,6:F2}] ({m_maxProfile.storeImpulses,6:F2})");
-            DrawTextLine($">> split islands [ave] (max) = {p.splitIslands,5:F2} [{aveProfile.splitIslands,6:F2}] ({m_maxProfile.splitIslands,6:F2})");
-            DrawTextLine($"> update transforms [ave] (max) = {p.transforms,5:F2} [{aveProfile.transforms,6:F2}] ({m_maxProfile.transforms,6:F2})");
-            DrawTextLine($"> joint events [ave] (max) = {p.jointEvents,5:F2} [{aveProfile.jointEvents,6:F2}] ({m_maxProfile.jointEvents})");
-            DrawTextLine($"> hit events [ave] (max) = {p.hitEvents,5:F2} [{aveProfile.hitEvents,6:F2}] ({m_maxProfile.hitEvents,6:F2})");
-            DrawTextLine($"> refit BVH [ave] (max) = {p.refit,5:F2} [{aveProfile.refit,6:F2}] ({m_maxProfile.refit,6:F2})");
-            DrawTextLine($"> sleep islands [ave] (max) = {p.sleepIslands,5:F2} [{aveProfile.sleepIslands,6:F2}] ({m_maxProfile.sleepIslands,6:F2})");
-            DrawTextLine($"> bullets [ave] (max) = {p.bullets,5:F2} [{aveProfile.bullets,6:F2}] ({m_maxProfile.bullets,6:F2})");
-            DrawTextLine($"sensors [ave] (max) = {p.sensors,5:F2} [{aveProfile.sensors,6:F2}] ({m_maxProfile.sensors,6:F2})");
+            ref readonly B2Profile current = ref m_profiles[m_currentProfileIndex];
+            string[] names =
+            [
+                "step", "pairs", "collide", "solve", "setup", "constraints", "prepare",
+                "velocities", "warm start", "bias", "positions", "relax",
+                "restitution", "store", "split islands", "transforms", "joint events",
+                "hit events", "refit BVH", "sleep", "bullets", "sensors"
+            ];
+            int[] indents = [0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0];
+            int[] parents = new int[rowCount];
+            bool[] hasChildren = new bool[rowCount];
+            int[] stack = new int[8];
+            int stackSize = 0;
+            for (int i = 0; i < rowCount; ++i)
+            {
+                while (stackSize > 0 && indents[stack[stackSize - 1]] >= indents[i])
+                {
+                    stackSize -= 1;
+                }
+
+                parents[i] = stackSize > 0 ? stack[stackSize - 1] : -1;
+                stack[stackSize] = i;
+                stackSize += 1;
+
+                if (parents[i] >= 0)
+                {
+                    hasChildren[parents[i]] = true;
+                }
+            }
+
+            Vector4 colorStep = new Vector4(102.0f / 255.0f, 153.0f / 255.0f, 1.0f, 1.0f);
+            Vector4 colorCollide = new Vector4(1.0f, 140.0f / 255.0f, 51.0f / 255.0f, 1.0f);
+            Vector4 colorSolve = new Vector4(102.0f / 255.0f, 204.0f / 255.0f, 102.0f / 255.0f, 1.0f);
+            Vector4 colorDefault = new Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+
+            Vector4[] colors =
+            [
+                colorStep, colorDefault, colorCollide, colorSolve, colorDefault, colorDefault,
+                colorDefault, colorDefault, colorDefault, colorDefault, colorDefault, colorDefault,
+                colorDefault, colorDefault, colorDefault, colorDefault, colorDefault, colorDefault,
+                colorDefault, colorDefault, colorDefault, colorDefault
+            ];
+            float[] now =
+            [
+                current.step, current.pairs, current.collide, current.solve, current.solverSetup,
+                current.constraints, current.prepareConstraints, current.integrateVelocities, current.warmStart,
+                current.solveImpulses, current.integratePositions, current.relaxImpulses, current.applyRestitution,
+                current.storeImpulses, current.splitIslands, current.transforms, current.jointEvents,
+                current.hitEvents, current.refit, current.sleepIslands, current.bullets, current.sensors
+            ];
+
+            if (ImGui.Button("Reset"))
+            {
+                ResetProfile();
+            }
+
+            ImGui.SameLine();
+            ImGui.Checkbox("Show plots", ref s_showProfilePlots);
+
+            ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit;
+            int columnCount = s_showProfilePlots ? 6 : 5;
+            if (ImGui.BeginTable("profile", columnCount, tableFlags))
+            {
+                ImGui.TableSetupColumn("section", ImGuiTableColumnFlags.WidthFixed, 8.0f * fontSize);
+                ImGui.TableSetupColumn("now", ImGuiTableColumnFlags.WidthFixed, 3.0f * fontSize);
+                ImGui.TableSetupColumn("avg", ImGuiTableColumnFlags.WidthFixed, 3.0f * fontSize);
+                ImGui.TableSetupColumn("max", ImGuiTableColumnFlags.WidthFixed, 3.0f * fontSize);
+                ImGui.TableSetupColumn("% step", ImGuiTableColumnFlags.WidthFixed, 8.0f * fontSize);
+                if (s_showProfilePlots)
+                {
+                    ImGui.TableSetupColumn("history", ImGuiTableColumnFlags.WidthFixed, 16.0f * fontSize);
+                }
+                ImGui.TableHeadersRow();
+
+                float rowHeight = 1.5f * fontSize;
+                float stepNow = b2MaxFloat(current.step, 0.001f);
+
+                for (int row = 0; row < rowCount; ++row)
+                {
+                    bool visible = true;
+                    for (int parent = parents[row]; parent >= 0; parent = parents[parent])
+                    {
+                        if (s_profileRowOpen[parent] == false)
+                        {
+                            visible = false;
+                            break;
+                        }
+                    }
+
+                    if (visible == false)
+                    {
+                        continue;
+                    }
+
+                    float[] history = histories[row];
+                    float rollingMax = 0.0f;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        rollingMax = b2MaxFloat(rollingMax, history[i]);
+                    }
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    if (indents[row] > 0)
+                    {
+                        ImGui.Indent(indents[row] * fontSize);
+                    }
+                    if (hasChildren[row])
+                    {
+                        ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick |
+                                                   ImGuiTreeNodeFlags.NoTreePushOnOpen;
+                        ImGui.PushStyleColor(ImGuiCol.Text, colors[row]);
+                        s_profileRowOpen[row] = ImGui.TreeNodeEx(names[row], flags);
+                        ImGui.PopStyleColor();
+                    }
+                    else
+                    {
+                        float leafIndent = ImGui.GetTreeNodeToLabelSpacing();
+                        ImGui.Indent(leafIndent);
+                        ImGui.PushStyleColor(ImGuiCol.Text, colors[row]);
+                        ImGui.TextUnformatted(names[row]);
+                        ImGui.PopStyleColor();
+                        ImGui.Unindent(leafIndent);
+                    }
+                    if (indents[row] > 0)
+                    {
+                        ImGui.Unindent(indents[row] * fontSize);
+                    }
+
+                    ImGui.TableNextColumn();
+                    ImGui.Text($"{now[row],6:F2}");
+                    ImGui.TableNextColumn();
+                    ImGui.Text($"{avg[row],6:F2}");
+                    ImGui.TableNextColumn();
+                    ImGui.Text($"{rollingMax,6:F2}");
+
+                    ImGui.TableNextColumn();
+                    float frac = b2ClampFloat(now[row] / stepNow, 0.0f, 1.0f);
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, colors[row]);
+                    ImGui.ProgressBar(frac, new Vector2(-float.Epsilon, 0.0f), "");
+                    ImGui.PopStyleColor();
+
+                    if (s_showProfilePlots)
+                    {
+                        ImGui.TableNextColumn();
+                        if (count > 1)
+                        {
+                            ImGui.PushStyleColor(ImGuiCol.PlotLines, colors[row]);
+                            ImGui.PlotLines($"##h{row}", ref history[0], count, 0, null, 0.0f, rollingMax * 1.05f + 0.001f, new Vector2(-float.Epsilon, rowHeight));
+                            ImGui.PopStyleColor();
+                        }
+                    }
+                }
+
+                ImGui.EndTable();
+            }
+
+            ImGui.End();
+        }
+
+        if (m_context.drawCounters)
+        {
+            B2Counters s = b2World_GetCounters(m_worldId);
+            int colorCount = s.colorCounts.Length;
+            int overflowIndex = colorCount - 1;
+            int totalCount = 0;
+            int maxCount = 1;
+            for (int i = 0; i < colorCount; ++i)
+            {
+                totalCount += s.colorCounts[i];
+                if (i != overflowIndex && s.colorCounts[i] > maxCount)
+                {
+                    maxCount = s.colorCounts[i];
+                }
+            }
+
+            ImGui.SetNextWindowPos(new Vector2(fontSize, 8.0f * fontSize), ImGuiCond.FirstUseEver);
+            ImGui.Begin("Counters", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.AlwaysAutoResize);
+            ImGui.Text($"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
+
+            float recycledFraction = s.awakeContactCount > 0
+                ? b2ClampFloat((float)s.recycledContactCount / s.awakeContactCount, 0.0f, 1.0f)
+                : 0.0f;
+            ImGui.TextUnformatted("recycled contacts");
+            ImGui.SameLine();
+            ImGui.ProgressBar(recycledFraction, new Vector2(-float.Epsilon, 0.0f), $"{s.recycledContactCount} / {s.awakeContactCount}");
+
+            ImGui.Text($"islands/tasks = {s.islandCount}/{s.taskCount}");
+            ImGui.Text($"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
+            ImGui.Text($"stack allocator size = {s.stackUsed / 1024} K");
+            ImGui.Text($"total allocation = {s.byteCount / 1024} K");
+
+            ImGui.Separator();
+            B2Capacity capacity = b2World_GetMaxCapacity(m_worldId);
+            ImGui.TextUnformatted("max capacities");
+            ImGui.BulletText($"static shapes/bodies = {capacity.staticShapeCount}/{capacity.staticBodyCount}");
+            ImGui.BulletText($"dynamic shapes/bodies = {capacity.dynamicShapeCount}/{capacity.dynamicBodyCount}");
+            ImGui.BulletText($"contacts = {capacity.contactCount}");
+
+            ImGui.Separator();
+            ImGui.Text($"{totalCount} constraints across {colorCount} colors");
+
+            ImGuiTableFlags tableFlags = ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.RowBg | ImGuiTableFlags.SizingFixedFit;
+            if (ImGui.BeginTable("graphColors", 3, tableFlags))
+            {
+                ImGui.TableSetupColumn("color", ImGuiTableColumnFlags.WidthFixed, 3.5f * fontSize);
+                ImGui.TableSetupColumn("count", ImGuiTableColumnFlags.WidthFixed, 5.0f * fontSize);
+                ImGui.TableSetupColumn("share", ImGuiTableColumnFlags.WidthFixed, 16.0f * fontSize);
+                ImGui.TableHeadersRow();
+
+                float invMax = 1.0f / maxCount;
+                for (int i = 0; i < colorCount; ++i)
+                {
+                    int count = s.colorCounts[i];
+                    bool isOverflow = i == overflowIndex;
+                    if (count == 0 && isOverflow == false)
+                    {
+                        continue;
+                    }
+
+                    Vector4 color = isOverflow ? new Vector4(0.86f, 0.24f, 0.24f, 1.0f) : HexToColor(b2GetGraphColor(i));
+
+                    ImGui.TableNextRow();
+                    ImGui.TableNextColumn();
+                    ImGui.PushStyleColor(ImGuiCol.Text, color);
+                    ImGui.TextUnformatted(isOverflow ? "over" : i.ToString());
+                    ImGui.PopStyleColor();
+
+                    ImGui.TableNextColumn();
+                    ImGui.Text(count.ToString());
+
+                    ImGui.TableNextColumn();
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, color);
+                    ImGui.ProgressBar(b2ClampFloat(count * invMax, 0.0f, 1.0f), new Vector2(-float.Epsilon, 0.0f), "");
+                    ImGui.PopStyleColor();
+                }
+
+                ImGui.EndTable();
+            }
+
+            ImGui.End();
+        }
+
+        if (m_context.frameTime)
+        {
+            UpdateFrameTimeGui(fontSize);
         }
     }
 
-    private void UpdateFrameTimeGui()
+    private static float GetProfileValue(in B2Profile profile, int row)
     {
-        const float frameTimeHeight = 400.0f;
-        const float frameTimeWidth = 800.0f;
+        return row switch
+        {
+            0 => profile.step,
+            1 => profile.pairs,
+            2 => profile.collide,
+            3 => profile.solve,
+            4 => profile.solverSetup,
+            5 => profile.constraints,
+            6 => profile.prepareConstraints,
+            7 => profile.integrateVelocities,
+            8 => profile.warmStart,
+            9 => profile.solveImpulses,
+            10 => profile.integratePositions,
+            11 => profile.relaxImpulses,
+            12 => profile.applyRestitution,
+            13 => profile.storeImpulses,
+            14 => profile.splitIslands,
+            15 => profile.transforms,
+            16 => profile.jointEvents,
+            17 => profile.hitEvents,
+            18 => profile.refit,
+            19 => profile.sleepIslands,
+            20 => profile.bullets,
+            21 => profile.sensors,
+            _ => 0.0f,
+        };
+    }
 
-        ImGui.SetNextWindowPos(new Vector2(30.0f, 30.0f), ImGuiCond.FirstUseEver);
+    private static Vector4 HexToColor(B2HexColor color)
+    {
+        uint hex = (uint)color;
+        return new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
+    }
+
+    private void UpdateFrameTimeGui(float fontSize)
+    {
+        float frameTimeHeight = 30.0f * fontSize;
+        float frameTimeWidth = 50.0f * fontSize;
+
+        ImGui.SetNextWindowPos(new Vector2(3.0f * fontSize, 3.0f * fontSize), ImGuiCond.FirstUseEver);
         ImGui.SetNextWindowSize(new Vector2(frameTimeWidth, frameTimeHeight), ImGuiCond.FirstUseEver);
 
         ImGui.Begin("Frame Time", ref m_context.frameTime, ImGuiWindowFlags.NoCollapse);
-        ImGui.PushItemWidth(ImGui.GetWindowWidth() - 20.0f);
+        ImGui.PushItemWidth(ImGui.GetWindowWidth() - 2.0f * fontSize);
 
         int count = (int)(m_profileWriteIndex - m_profileReadIndex);
         float maxValue = 0.0f;
@@ -242,7 +498,7 @@ public class Sample : IDisposable
         }
 
         // This is the pixel size, not the range.
-        Vector2 plotSize = new Vector2(-1.0f, 22.0f * ImGui.GetTextLineHeight());
+        Vector2 plotSize = new Vector2(-1.0f, 22.0f * fontSize);
         DrawProfilePlot("Profile", count, maxValue, plotSize);
 
         ImGui.PopItemWidth();
@@ -453,7 +709,6 @@ public class Sample : IDisposable
     public void ResetProfile()
     {
         m_totalProfile = new B2Profile();
-        m_maxProfile = new B2Profile();
         m_stepCount = 0;
         m_currentProfileIndex = 0;
         m_profileReadIndex = 0;
@@ -530,39 +785,16 @@ public class Sample : IDisposable
             m_profileWriteIndex += 1;
         }
 
-        // Track maximum profile times
+        // Accumulate profile averages
         if (m_didStep)
         {
             B2Profile p = m_profiles[m_currentProfileIndex];
-            m_maxProfile.step = b2MaxFloat(m_maxProfile.step, p.step);
-            m_maxProfile.pairs = b2MaxFloat(m_maxProfile.pairs, p.pairs);
-            m_maxProfile.collide = b2MaxFloat(m_maxProfile.collide, p.collide);
-            m_maxProfile.solve = b2MaxFloat(m_maxProfile.solve, p.solve);
-            m_maxProfile.prepareStages = b2MaxFloat(m_maxProfile.prepareStages, p.prepareStages);
-            m_maxProfile.solveConstraints = b2MaxFloat(m_maxProfile.solveConstraints, p.solveConstraints);
-            m_maxProfile.prepareConstraints = b2MaxFloat(m_maxProfile.prepareConstraints, p.prepareConstraints);
-            m_maxProfile.integrateVelocities = b2MaxFloat(m_maxProfile.integrateVelocities, p.integrateVelocities);
-            m_maxProfile.warmStart = b2MaxFloat(m_maxProfile.warmStart, p.warmStart);
-            m_maxProfile.solveImpulses = b2MaxFloat(m_maxProfile.solveImpulses, p.solveImpulses);
-            m_maxProfile.integratePositions = b2MaxFloat(m_maxProfile.integratePositions, p.integratePositions);
-            m_maxProfile.relaxImpulses = b2MaxFloat(m_maxProfile.relaxImpulses, p.relaxImpulses);
-            m_maxProfile.applyRestitution = b2MaxFloat(m_maxProfile.applyRestitution, p.applyRestitution);
-            m_maxProfile.storeImpulses = b2MaxFloat(m_maxProfile.storeImpulses, p.storeImpulses);
-            m_maxProfile.transforms = b2MaxFloat(m_maxProfile.transforms, p.transforms);
-            m_maxProfile.splitIslands = b2MaxFloat(m_maxProfile.splitIslands, p.splitIslands);
-            m_maxProfile.jointEvents = b2MaxFloat(m_maxProfile.jointEvents, p.jointEvents);
-            m_maxProfile.hitEvents = b2MaxFloat(m_maxProfile.hitEvents, p.hitEvents);
-            m_maxProfile.refit = b2MaxFloat(m_maxProfile.refit, p.refit);
-            m_maxProfile.bullets = b2MaxFloat(m_maxProfile.bullets, p.bullets);
-            m_maxProfile.sleepIslands = b2MaxFloat(m_maxProfile.sleepIslands, p.sleepIslands);
-            m_maxProfile.sensors = b2MaxFloat(m_maxProfile.sensors, p.sensors);
-
             m_totalProfile.step += p.step;
             m_totalProfile.pairs += p.pairs;
             m_totalProfile.collide += p.collide;
             m_totalProfile.solve += p.solve;
-            m_totalProfile.prepareStages += p.prepareStages;
-            m_totalProfile.solveConstraints += p.solveConstraints;
+            m_totalProfile.solverSetup += p.solverSetup;
+            m_totalProfile.constraints += p.constraints;
             m_totalProfile.prepareConstraints += p.prepareConstraints;
             m_totalProfile.integrateVelocities += p.integrateVelocities;
             m_totalProfile.warmStart += p.warmStart;
@@ -596,31 +828,6 @@ public class Sample : IDisposable
 
         b2World_Draw(m_worldId, m_context.debugDraw);
 
-        if (m_context.drawCounters)
-        {
-            B2Counters s = b2World_GetCounters(m_worldId);
-
-            DrawTextLine($"bodies/shapes/contacts/joints = {s.bodyCount}/{s.shapeCount}/{s.contactCount}/{s.jointCount}");
-            DrawTextLine($"islands/tasks = {s.islandCount}/{s.taskCount}");
-            DrawTextLine($"tree height static/movable = {s.staticTreeHeight}/{s.treeHeight}");
-
-            int totalCount = 0;
-            var buffer = new StringBuilder();
-            B2_ASSERT(s.colorCounts.Length == 24);
-
-            // todo fix this
-            buffer.Append("colors: ");
-            for (int i = 0; i < s.colorCounts.Length; ++i)
-            {
-                buffer.Append($"{s.colorCounts[i]}/");
-                totalCount += s.colorCounts[i];
-            }
-
-            buffer.Append($"[{totalCount}]");
-            DrawTextLine(buffer.ToString());
-            DrawTextLine($"stack allocator size = {s.stackUsed / 1024} K");
-            DrawTextLine($"total allocation = {s.byteCount / 1024} K");
-        }
     }
 
     public void ShiftOrigin(B2Vec2 newOrigin)

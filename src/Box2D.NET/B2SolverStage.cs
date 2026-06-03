@@ -14,7 +14,7 @@ namespace Box2D.NET
         public ArraySegment<B2SolverBlock> blocks;
         public int blockCount;
 
-        public int colorIndex;
+        public byte colorIndex;
 
         // todo consider false sharing of this atomic
         public B2AtomicInt completionCount;

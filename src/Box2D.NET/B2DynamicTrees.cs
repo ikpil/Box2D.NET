@@ -53,8 +53,10 @@ namespace Box2D.NET
         }
 
         /// Constructing the tree initializes the node pool.
-        public static B2DynamicTree b2DynamicTree_Create()
+        public static B2DynamicTree b2DynamicTree_Create(int proxyCapacity = 16)
         {
+            int capacity = b2MaxInt(proxyCapacity, 16);
+
             B2DynamicTree tree = new B2DynamicTree();
             tree.Clear();
             
@@ -63,7 +65,8 @@ namespace Box2D.NET
 
             tree.root = B2_NULL_INDEX;
 
-            tree.nodeCapacity = 16;
+            // maximum node count for a full binary tree is 2 * leafCount - 1
+            tree.nodeCapacity = 2 * capacity - 1;
             tree.nodeCount = 0;
             tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
             

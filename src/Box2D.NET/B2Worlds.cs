@@ -136,6 +136,8 @@ namespace Box2D.NET
             {
                 world.taskContexts.data[i].sensorHits = b2Array_Create<B2SensorHit>(8);
                 world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
+                world.taskContexts.data[i].hitEventBitSet = b2CreateBitSet(1024);
+                world.taskContexts.data[i].hasHitEvents = false;
                 world.taskContexts.data[i].jointStateBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].enlargedSimBitSet = b2CreateBitSet(256);
                 world.taskContexts.data[i].awakeIslandBitSet = b2CreateBitSet(256);
@@ -151,6 +153,7 @@ namespace Box2D.NET
             {
                 b2Array_Destroy(ref world.taskContexts.data[i].sensorHits);
                 b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
+                b2DestroyBitSet(ref world.taskContexts.data[i].hitEventBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].enlargedSimBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].awakeIslandBitSet);
@@ -227,13 +230,14 @@ namespace Box2D.NET
             world.generation = generation;
             world.inUse = true;
 
-            world.arena = b2CreateArenaAllocator(256);
-            b2CreateBroadPhase(ref world.broadPhase);
-            b2CreateGraph(ref world.constraintGraph, 16);
+            world.stack = b2CreateStackAllocator(2048);
+            b2CreateBroadPhase(ref world.broadPhase, def.capacity);
+            b2CreateGraph(ref world.constraintGraph, def.capacity);
 
             // pools
             world.bodyIdPool = b2CreateIdPool();
-            world.bodies = b2Array_Create<B2Body>(16);
+            int bodyCapacity = b2MaxInt(16, def.capacity.staticBodyCount + def.capacity.dynamicBodyCount);
+            world.bodies = b2Array_Create<B2Body>(bodyCapacity);
             world.solverSets = b2Array_Create<B2SolverSet>(8);
 
             // add empty static, active, and disabled body sets
@@ -244,6 +248,7 @@ namespace Box2D.NET
             set = b2CreateSolverSet(world);
             set.setIndex = b2AllocId(world.solverSetIdPool);
             b2Array_Push(ref world.solverSets, set);
+            b2Array_Reserve(ref world.solverSets.data[(int)B2SolverSetType.b2_staticSet].bodySims, b2MaxInt(16, def.capacity.staticBodyCount));
             B2_ASSERT(world.solverSets.data[(int)B2SolverSetType.b2_staticSet].setIndex == (int)B2SolverSetType.b2_staticSet);
 
             // disabled set
@@ -256,22 +261,26 @@ namespace Box2D.NET
             set = b2CreateSolverSet(world);
             set.setIndex = b2AllocId(world.solverSetIdPool);
             b2Array_Push(ref world.solverSets, set);
+            b2Array_Reserve(ref world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].bodySims, b2MaxInt(16, def.capacity.dynamicBodyCount));
+            b2Array_Reserve(ref world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].bodyStates, b2MaxInt(16, def.capacity.dynamicBodyCount));
+            b2Array_Reserve(ref world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims, b2MaxInt(16, def.capacity.contactCount));
             B2_ASSERT(world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             world.shapeIdPool = b2CreateIdPool();
-            world.shapes = b2Array_Create<B2Shape>(16);
+            int shapeCapacity = b2MaxInt(16, def.capacity.staticShapeCount + def.capacity.dynamicShapeCount);
+            world.shapes = b2Array_Create<B2Shape>(shapeCapacity);
 
             world.chainIdPool = b2CreateIdPool();
             world.chainShapes = b2Array_Create<B2ChainShape>(4);
 
             world.contactIdPool = b2CreateIdPool();
-            world.contacts = b2Array_Create<B2Contact>(16);
+            world.contacts = b2Array_Create<B2Contact>(b2MaxInt(16, def.capacity.contactCount));
 
             world.jointIdPool = b2CreateIdPool();
             world.joints = b2Array_Create<B2Joint>(16);
 
             world.islandIdPool = b2CreateIdPool();
-            world.islands = b2Array_Create<B2Island>(8);
+            world.islands = b2Array_Create<B2Island>(b2MaxInt(16, def.capacity.dynamicBodyCount));
 
             world.sensors = b2Array_Create<B2Sensor>(4);
 
@@ -460,7 +469,7 @@ namespace Box2D.NET
             b2DestroyIdPool(ref world.islandIdPool);
             b2DestroyIdPool(ref world.solverSetIdPool);
 
-            b2DestroyArenaAllocator(world.arena);
+            b2DestroyStackAllocator(world.stack);
 
             // Wipe world but preserve generation
             ushort generation = world.generation;
@@ -561,12 +570,17 @@ namespace Box2D.NET
                                 mp.persisted = true;
                             }
 
+                            taskContext.recycledContactCount += 1;
+
                             // Contact is recycled. This also skips updating other aspects of the contact
                             // such as material parameters.
                             continue;
                         }
                     }
 
+                    // Caching for contact recycling.
+                    contactSim.cachedTransformA = transformA;
+                    contactSim.cachedTransformB = transformB;
                     contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simRelativeTransformValid;
 
                     B2Vec2 centerOffsetA = b2RotateVector(transformA.q, bodySimA.localCenter);
@@ -588,9 +602,6 @@ namespace Box2D.NET
                         b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
 
-                    // Caching for contact recycling. Requires 40 bytes.
-                    contactSim.cachedTransformA = transformA;
-                    contactSim.cachedTransformB = transformB;
                     for (int i = 0; i < contactSim.manifold.pointCount; ++i)
                     {
                         ref B2ManifoldPoint mp = ref contactSim.manifold.points[i];
@@ -622,7 +633,7 @@ namespace Box2D.NET
             contact.colorIndex = B2_NULL_INDEX;
             contact.localIndex = set.contactSims.count;
 
-            ref B2ContactSim newContactSim = ref b2Array_Add(ref set.contactSims);
+            ref B2ContactSim newContactSim = ref b2Array_Emplace(ref set.contactSims);
             //memcpy( newContactSim, contactSim, sizeof( b2ContactSim ) );
             newContactSim.CopyFrom(contactSim);
         }
@@ -668,7 +679,7 @@ namespace Box2D.NET
                 return;
             }
 
-            ArraySegment<B2ContactSim> contactSims = b2AllocateArenaItem<B2ContactSim>(world.arena, contactCount, "contacts");
+            ArraySegment<B2ContactSim> contactSims = b2StackAlloc<B2ContactSim>(world.stack, contactCount, "contacts");
 
             int contactIndex = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
@@ -701,13 +712,14 @@ namespace Box2D.NET
             for (int i = 0; i < world.workerCount; ++i)
             {
                 b2SetBitCountAndClear(ref world.taskContexts.data[i].contactStateBitSet, contactIdCapacity);
+                world.taskContexts.data[i].recycledContactCount = 0;
             }
 
             // Task should take at least 40us on a 4GHz CPU (10K cycles)
             int minRange = 64;
             b2ParallelFor(world, b2CollideTask, contactCount, minRange, context);
 
-            b2FreeArenaItem(world.arena, contactSims);
+            b2StackFree(world.stack, contactSims);
             context.contacts = null;
             contactSims = null;
 
@@ -876,18 +888,6 @@ namespace Box2D.NET
             // world.profile = ( b2Profile ){ 0 };
             world.profile = new B2Profile();
 
-            if (timeStep == 0.0f)
-            {
-                // Swap end event array buffers
-                world.endEventArrayIndex = 1 - world.endEventArrayIndex;
-                b2Array_Clear(ref world.sensorEndEvents[world.endEventArrayIndex]);
-                b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
-
-                // todo_erin would be useful to still process collision while paused
-                //b2TracyCFrame
-                return;
-            }
-
             b2TracyCZoneNC(B2TracyCZone.world_step, "Step", B2HexColor.b2_colorBox2DGreen, true);
 
             world.locked = true;
@@ -900,6 +900,22 @@ namespace Box2D.NET
             }
 
             ulong stepTicks = b2GetTicks();
+
+            {
+                ref B2Capacity c = ref world.maxCapacity;
+                c.staticShapeCount = b2MaxInt(c.staticShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_staticBody].proxyCount);
+                c.dynamicShapeCount = b2MaxInt(c.dynamicShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody].proxyCount);
+
+                int staticBodyCount = world.solverSets.data[(int)B2SolverSetType.b2_staticSet].bodySims.count;
+                c.staticBodyCount = b2MaxInt(c.staticBodyCount, staticBodyCount);
+
+                // this includes kinematic bodies
+                int totalBodyCount = b2GetIdCount(world.bodyIdPool);
+                c.dynamicBodyCount = b2MaxInt(c.dynamicBodyCount, totalBodyCount - staticBodyCount);
+
+                int totalContactCount = b2GetIdCount(world.contactIdPool);
+                c.contactCount = b2MaxInt(c.contactCount, totalContactCount);
+            }
 
             // Update collision pairs and create contacts
             {
@@ -938,7 +954,7 @@ namespace Box2D.NET
             context.maxLinearVelocity = world.maxLinearSpeed;
             context.enableWarmStarting = world.enableWarmStarting;
 
-            // Update contacts
+            // Narrow phase : update contacts
             {
                 ulong collideTicks = b2GetTicks();
                 b2Collide(context);
@@ -953,6 +969,14 @@ namespace Box2D.NET
                 world.profile.solve = b2GetMilliseconds(solveTicks);
             }
 
+            // Finish the tree task in case b2Solve didn't finish it
+            if (world.userTreeTask != null)
+            {
+                world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
+                world.userTreeTask = null;
+                world.activeTaskCount -= 1;
+            }
+
             // Update sensors
             {
                 ulong sensorTicks = b2GetTicks();
@@ -962,10 +986,10 @@ namespace Box2D.NET
 
             world.profile.step = b2GetMilliseconds(stepTicks);
 
-            B2_ASSERT(b2GetArenaAllocation(world.arena) == 0);
+            B2_ASSERT(b2GetStackAllocation(world.stack) == 0);
 
             // Ensure stack is large enough
-            b2GrowArena(world.arena);
+            b2GrowStack(world.stack);
 
             // Make sure all tasks that were started were also finished
             B2_ASSERT(world.activeTaskCount == 0);
@@ -1874,17 +1898,35 @@ namespace Box2D.NET
             B2DynamicTree kinematicTree = world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody];
             s.treeHeight = b2MaxInt(b2DynamicTree_GetHeight(dynamicTree), b2DynamicTree_GetHeight(kinematicTree));
 
-            s.stackUsed = b2GetMaxArenaAllocation(world.arena);
+            s.stackUsed = b2GetMaxStackAllocation(world.stack);
             s.byteCount = b2GetByteCount();
             s.taskCount = world.taskCount;
 
+            s.recycledContactCount = 0;
+            for (int i = 0; i < world.workerCount; ++i)
+            {
+                s.recycledContactCount += world.taskContexts.data[i].recycledContactCount;
+            }
+
+            s.awakeContactCount = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
-                s.colorCounts[i] = world.constraintGraph.colors[i].contactSims.count + world.constraintGraph.colors[i].jointSims.count;
+                ref B2GraphColor color = ref world.constraintGraph.colors[i];
+                s.colorCounts[i] = color.contactSims.count + color.jointSims.count;
+                s.awakeContactCount += color.contactSims.count;
             }
+
+            s.awakeContactCount += world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims.count;
 
             return s;
         }
+
+        public static B2Capacity b2World_GetMaxCapacity(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            return world.maxCapacity;
+        }
+
         /// Set the user data pointer.
         public static void b2World_SetUserData(B2WorldId worldId, B2UserData userData)
         {
@@ -2024,7 +2066,7 @@ namespace Box2D.NET
             writer.Write("\n");
 
             // stack allocator
-            writer.Write("stack allocator: {0}\n\n", b2GetArenaCapacity(world.arena));
+            writer.Write("stack allocator: {0}\n\n", b2GetStackCapacity(world.stack));
 
             // chain shapes
             // todo

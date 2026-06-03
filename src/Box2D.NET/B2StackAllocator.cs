@@ -11,7 +11,7 @@ namespace Box2D.NET
     // if you try to interleave multiple allocate/free pairs.
     // This allocator uses the heap if space is insufficient.
     // I could remove the need to free entries individually.
-    public class B2ArenaAllocator
+    public class B2StackAllocator
     {
         private readonly object _lock;
 
@@ -21,7 +21,7 @@ namespace Box2D.NET
 
         public int Count => _allocators.Length;
 
-        public B2ArenaAllocator(int capacity)
+        public B2StackAllocator(int capacity)
         {
             _lock = new object();
             _capacity = capacity;
@@ -29,7 +29,7 @@ namespace Box2D.NET
             _allocators = Array.Empty<IB2ArenaAllocatable>();
         }
 
-        public B2ArenaAllocatorTyped<T> GetOrCreateFor<T>() where T : new()
+        public B2Stack<T> GetOrCreateFor<T>() where T : new()
         {
             var index = B2ArenaAllocatorIndexer.Index<T>();
             if (_lookup.Length <= index || null == _lookup[index])
@@ -45,7 +45,7 @@ namespace Box2D.NET
                     // new 
                     if (null == _lookup[index])
                     {
-                        var newAllocator = B2ArenaAllocators.b2CreateArenaAllocator<T>(_capacity);
+                        var newAllocator = B2ArenaAllocators.b2CreateStack<T>(_capacity);
                         _lookup[index] = newAllocator;
 
                         //
@@ -56,7 +56,7 @@ namespace Box2D.NET
                 }
             }
 
-            return _lookup[index] as B2ArenaAllocatorTyped<T>;
+            return _lookup[index] as B2Stack<T>;
         }
 
         private static IB2ArenaAllocatable[] Resize(IB2ArenaAllocatable[] source, int count)

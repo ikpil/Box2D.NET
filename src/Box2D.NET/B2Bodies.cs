@@ -258,7 +258,7 @@ namespace Box2D.NET
 
 
             B2SolverSet set = b2Array_Get(ref world.solverSets, setId);
-            ref B2BodySim bodySim = ref b2Array_Add(ref set.bodySims);
+            ref B2BodySim bodySim = ref b2Array_Emplace(ref set.bodySims);
             //*bodySim = ( b2BodySim ){ 0 };
             bodySim.Clear();
             bodySim.transform.p = def.position;
@@ -280,7 +280,7 @@ namespace Box2D.NET
 
             if (setId == (int)B2SolverSetType.b2_awakeSet)
             {
-                ref B2BodyState bodyState = ref b2Array_Add(ref set.bodyStates);
+                ref B2BodyState bodyState = ref b2Array_Emplace(ref set.bodyStates);
                 //B2_ASSERT( ( (uintptr_t)bodyState & 0x1F ) == 0 );
                 //*bodyState = ( b2BodyState ){ 0 }; 
                 bodyState.Clear();
@@ -581,7 +581,7 @@ namespace Box2D.NET
             }
 
             int shapeCount = body.shapeCount;
-            ArraySegment<B2MassData> masses = b2AllocateArenaItem<B2MassData>(world.arena, shapeCount, "mass data");
+            ArraySegment<B2MassData> masses = b2StackAlloc<B2MassData>(world.stack, shapeCount, "mass data");
 
             // Accumulate mass over all shapes.
             B2Vec2 localCenter = b2Vec2_zero;
@@ -629,7 +629,7 @@ namespace Box2D.NET
                 body.inertia += inertia;
             }
 
-            b2FreeArenaItem(world.arena, masses);
+            b2StackFree(world.stack, masses);
             masses = null;
 
             B2_ASSERT(body.inertia >= 0.0f);

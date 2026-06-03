@@ -12,7 +12,7 @@ public class B2ArenaAllocatorTypedTests
     [Test]
     public void Constructor_InitializesCorrectly()
     {
-        B2ArenaAllocatorTyped<int> alloc = b2CreateArenaAllocator<int>(10);
+        B2Stack<int> alloc = b2CreateStack<int>(10);
         Assert.That(alloc.capacity, Is.EqualTo(10));
         Assert.That(alloc.data.Array, Is.Not.Null);
         Assert.That(alloc.data.Count, Is.EqualTo(10));
@@ -27,7 +27,7 @@ public class B2ArenaAllocatorTypedTests
     [Test]
     public void Grow_IncreasesCapacityWhenMaxAllocationExceedsCurrent()
     {
-        B2ArenaAllocatorTyped<int> alloc = b2CreateArenaAllocator<int>(10);
+        B2Stack<int> alloc = b2CreateStack<int>(10);
 
         alloc.maxAllocation = 15;
         int oldCapacity = alloc.capacity;
@@ -42,7 +42,7 @@ public class B2ArenaAllocatorTypedTests
     [Test]
     public void Grow_DoesNotIncreaseCapacityWhenMaxAllocationIsWithinCurrent()
     {
-        B2ArenaAllocatorTyped<int> alloc = b2CreateArenaAllocator<int>(10);
+        B2Stack<int> alloc = b2CreateStack<int>(10);
 
         alloc.maxAllocation = 5;
         int oldCapacity = alloc.capacity;
@@ -56,7 +56,7 @@ public class B2ArenaAllocatorTypedTests
     [Test]
     public void Destroy_ReleasesResourcesAndResetsProperties()
     {
-        B2ArenaAllocatorTyped<int> alloc = b2CreateArenaAllocator<int>(10);
+        B2Stack<int> alloc = b2CreateStack<int>(10);
 
         alloc.Destroy();
 

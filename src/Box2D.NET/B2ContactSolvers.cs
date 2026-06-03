@@ -14,6 +14,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Solvers;
+using static Box2D.NET.B2BitSets;
 
 namespace Box2D.NET
 {
@@ -27,7 +28,7 @@ namespace Box2D.NET
         // s(t) = s0 + dot(cB0 + dpB + rot(dqB, rB0) - cA0 - dpA - rot(dqA, rA0), normal)
         // s(t) = s0 + dot(cB0 - cA0, normal) + dot(dpB - dpA + rot(dqB, rB0) - rot(dqA, rA0), normal)
         // s_base = s0 + dot(cB0 - cA0, normal)
-        internal static void b2PrepareOverflowContacts(B2StepContext context)
+        internal static void b2PrepareContacts_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_overflow_contact, "Prepare Overflow Contact", B2HexColor.b2_colorYellow, true);
 
@@ -166,7 +167,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.prepare_overflow_contact);
         }
 
-        internal static void b2WarmStartOverflowContacts(B2StepContext context)
+        internal static void b2WarmStartContacts_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.warmstart_overflow_contact, "WarmStart Overflow Contact", B2HexColor.b2_colorDarkOrange, true);
 
@@ -243,7 +244,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.warmstart_overflow_contact);
         }
 
-        internal static void b2SolveOverflowContacts(B2StepContext context, bool useBias)
+        internal static void b2SolveContacts_Overflow(B2StepContext context, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Overflow Contact", B2HexColor.b2_colorAliceBlue, true);
 
@@ -348,51 +349,54 @@ namespace Box2D.NET
                     wB += iB * b2Cross(rB, P);
                 }
 
-                // Friction
-                for (int j = 0; j < pointCount; ++j)
+                if (useBias == false)
                 {
-                    ref B2ContactConstraintPoint cp = ref constraint.points[j];
+                    // Friction
+                    for (int j = 0; j < pointCount; ++j)
+                    {
+                        ref B2ContactConstraintPoint cp = ref constraint.points[j];
 
-                    // fixed anchor points
-                    B2Vec2 rA = cp.anchorA;
-                    B2Vec2 rB = cp.anchorB;
+                        // fixed anchor points
+                        B2Vec2 rA = cp.anchorA;
+                        B2Vec2 rB = cp.anchorB;
 
-                    // relative tangent velocity at contact
-                    B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
-                    B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
+                        // relative tangent velocity at contact
+                        B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
+                        B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
 
-                    // vt = dot(vrB - sB * tangent - (vrA + sA * tangent), tangent)
-                    //    = dot(vrB - vrA, tangent) - (sA + sB)
+                        // vt = dot(vrB - sB * tangent - (vrA + sA * tangent), tangent)
+                        //    = dot(vrB - vrA, tangent) - (sA + sB)
 
-                    float vt = b2Dot(b2Sub(vrB, vrA), tangent) - constraint.tangentSpeed;
+                        float vt = b2Dot(b2Sub(vrB, vrA), tangent) - constraint.tangentSpeed;
 
-                    // incremental tangent impulse
-                    float impulse = cp.tangentMass * (-vt);
+                        // incremental tangent impulse
+                        float impulse = cp.tangentMass * (-vt);
 
-                    // clamp the accumulated force
-                    float maxFriction = friction * cp.normalImpulse;
-                    float newImpulse = b2ClampFloat(cp.tangentImpulse + impulse, -maxFriction, maxFriction);
-                    impulse = newImpulse - cp.tangentImpulse;
-                    cp.tangentImpulse = newImpulse;
+                        // clamp the accumulated force
+                        float maxFriction = friction * cp.normalImpulse;
+                        float newImpulse = b2ClampFloat(cp.tangentImpulse + impulse, -maxFriction, maxFriction);
+                        impulse = newImpulse - cp.tangentImpulse;
+                        cp.tangentImpulse = newImpulse;
 
-                    // apply tangent impulse
-                    B2Vec2 P = b2MulSV(impulse, tangent);
-                    vA = b2MulSub(vA, mA, P);
-                    wA -= iA * b2Cross(rA, P);
-                    vB = b2MulAdd(vB, mB, P);
-                    wB += iB * b2Cross(rB, P);
-                }
+                        // apply tangent impulse
+                        B2Vec2 P = b2MulSV(impulse, tangent);
+                        vA = b2MulSub(vA, mA, P);
+                        wA -= iA * b2Cross(rA, P);
+                        vB = b2MulAdd(vB, mB, P);
+                        wB += iB * b2Cross(rB, P);
+                    }
 
-                // Rolling resistance
-                {
-                    float deltaLambda = -constraint.rollingMass * (wB - wA);
-                    float lambda = constraint.rollingImpulse;
-                    float maxLambda = constraint.rollingResistance * totalNormalImpulse;
-                    constraint.rollingImpulse = b2ClampFloat(lambda + deltaLambda, -maxLambda, maxLambda);
-                    deltaLambda = constraint.rollingImpulse - lambda;
+                    // Rolling resistance
+                    {
+                        float deltaLambda = -constraint.rollingMass * (wB - wA);
+                        float lambda = constraint.rollingImpulse;
+                        float maxLambda = constraint.rollingResistance * totalNormalImpulse;
+                        constraint.rollingImpulse = b2ClampFloat(lambda + deltaLambda, -maxLambda, maxLambda);
+                        deltaLambda = constraint.rollingImpulse - lambda;
 
-                    wA -= iA * deltaLambda;
-                    wB += iB * deltaLambda;
+                        wA -= iA * deltaLambda;
+                        wB += iB * deltaLambda;
+                    }
                 }
 
                 if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
@@ -411,7 +415,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
         }
 
-        internal static void b2ApplyOverflowRestitution(B2StepContext context)
+        internal static void b2ApplyRestitution_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.overflow_resitution, "Overflow Restitution", B2HexColor.b2_colorViolet, true);
 
@@ -517,7 +521,7 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.overflow_resitution);
         }
 
-        internal static void b2StoreOverflowImpulses(B2StepContext context)
+        internal static void b2StoreImpulses_Overflow(B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
@@ -589,6 +593,7 @@ namespace Box2D.NET
         {
             return Vector.Max(a, b);
         }
+
         // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> b2SymClampW(Vector<float> a, Vector<float> b)
@@ -624,6 +629,7 @@ namespace Box2D.NET
             var mask = Vector.Equals(a, b);
             return Vector.ConditionalSelect(mask, Vector<float>.One, Vector<float>.Zero);
         }
+
         // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> b2BlendW(Vector<float> a, Vector<float> b, Vector<float> mask)
@@ -703,6 +709,7 @@ namespace Box2D.NET
                 a.W >= b.W ? a.W : b.W
             );
         }
+
         // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
@@ -755,6 +762,7 @@ namespace Box2D.NET
         {
             return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
         }
+
         // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
@@ -1243,16 +1251,22 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
         // Note: Dirk suggested preparing contacts in the narrow phase. I tried this but it made Box2D slower.
         // The contact preparation is extremely fast in Box2D due to the data layout (b2ContactSim).
-        internal static void b2PrepareContactsTask(int startIndex, int endIndex, B2StepContext context)
+        //
+        // Runs as a flat parallel-for over the whole wide constraint range. Per-color contact sims
+        // are looked up through the prepareSpans cursor rather than the block's colorIndex, so
+        // blocks can be uniformly sized without honoring color boundaries. Dead lanes in each
+        // color's tail wide slot were all zeroed in solver setup.
+        internal static void b2PrepareContactsTask(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_contact, "Prepare Contact", B2HexColor.b2_colorYellow, true);
             B2World world = context.world;
-            Span<B2ContactSim> contacts = context.contacts;
-            Span<B2ContactConstraintWide> constraints = context.wideContactConstraints;
-            B2BodyState[] awakeStates = context.states;
+            B2BodyState[] states = context.states;
 #if DEBUG
             B2Body[] bodies = world.bodies.data;
 #endif
+
+            B2ContactPrepareSpan[] spans = context.contactPrepareSpans;
+            Span<B2ContactConstraintWide> wideBase = context.wideContactConstraints;
 
             // Stiffer for static contacts to avoid bodies getting pushed through the ground
             B2Softness contactSoftness = context.contactSoftness;
@@ -1261,17 +1275,46 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             float warmStartScale = world.enableWarmStarting ? 1.0f : 0.0f;
 
-            for (int i = startIndex; i < endIndex; ++i)
+            int wideIndex = block.startIndex;
+            int endWideIndex = block.startIndex + block.count;
+
+            // Find color for start index. Linear search but fast.
+            int colorIndex = 0;
+            while (spans[colorIndex + 1].start <= wideIndex)
             {
-                ref B2ContactConstraintWide constraint = ref constraints[i];
+                colorIndex += 1;
+            }
 
-                for (int j = 0; j < B2_SIMD_WIDTH; ++j)
+            // Loop over block
+            while (wideIndex < endWideIndex)
+            {
+                int colorWideStart = spans[colorIndex].start;
+                int colorWideEndIndex = b2MinInt(spans[colorIndex + 1].start, endWideIndex);
+                int colorContactCount = spans[colorIndex].count;
+                B2ContactSim[] contacts = spans[colorIndex].contacts;
+
+#if DEBUG
+                int expectedWide = colorContactCount > 0 ? ((colorContactCount - 1) >> B2_SIMD_SHIFT) + 1 : 0;
+                B2_ASSERT(spans[colorIndex + 1].start - spans[colorIndex].start == expectedWide);
+#endif
+
+                // Loop over color
+                for (; wideIndex < colorWideEndIndex; ++wideIndex)
                 {
-                    B2ContactSim contactSim = contacts[B2_SIMD_WIDTH * i + j];
+                    ref readonly B2ContactConstraintWide constraint = ref wideBase[wideIndex];
+                    int localWideIndex = wideIndex - colorWideStart;
 
-                    if (contactSim != null)
+                    for (int lane = 0; lane < B2_SIMD_WIDTH; ++lane)
                     {
-                        ref B2Manifold manifold = ref contactSim.manifold;
+                        int contactIndex = B2_SIMD_WIDTH * localWideIndex + lane;
+                        if (contactIndex >= colorContactCount)
+                        {
+                            // Remainder lanes were zeroed in solver setup.
+                            break;
+                        }
+
+                        B2ContactSim contactSim = contacts[contactIndex];
+                        ref readonly B2Manifold manifold = ref contactSim.manifold;
 
                         int indexA = contactSim.bodySimIndexA;
                         int indexB = contactSim.bodySimIndexB;
@@ -1286,8 +1329,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         B2_ASSERT(indexB == validIndexB);
 #endif
                         // 0 for null
-                        constraint.indexA[j] = indexA + 1;
-                        constraint.indexB[j] = indexB + 1;
+                        constraint.indexA[lane] = indexA + 1;
+                        constraint.indexB[lane] = indexB + 1;
 
                         B2Vec2 vA = b2Vec2_zero;
                         float wA = 0.0f;
@@ -1295,7 +1338,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         float iA = contactSim.invIA;
                         if (indexA != B2_NULL_INDEX)
                         {
-                            B2BodyState stateA = awakeStates[indexA];
+                            B2BodyState stateA = states[indexA];
                             vA = stateA.linearVelocity;
                             wA = stateA.angularVelocity;
                         }
@@ -1306,20 +1349,19 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         float iB = contactSim.invIB;
                         if (indexB != B2_NULL_INDEX)
                         {
-                            B2BodyState stateB = awakeStates[indexB];
+                            B2BodyState stateB = states[indexB];
                             vB = stateB.linearVelocity;
                             wB = stateB.angularVelocity;
                         }
 
-                        // TODO: @ikpil, check
-                        constraint.invMassA[j] = mA;
-                        constraint.invMassB[j] = mB;
-                        constraint.invIA[j] = iA;
-                        constraint.invIB[j] = iB;
+                        constraint.invMassA[lane] = mA;
+                        constraint.invMassB[lane] = mB;
+                        constraint.invIA[lane] = iA;
+                        constraint.invIB[lane] = iB;
 
                         {
                             float k = iA + iB;
-                            constraint.rollingMass[j] = k > 0.0f ? 1.0f / k : 0.0f;
+                            constraint.rollingMass[lane] = k > 0.0f ? 1.0f / k : 0.0f;
                         }
 
                         B2Softness soft = contactSoftness;
@@ -1345,18 +1387,18 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         }
 
                         B2Vec2 normal = manifold.normal;
-                        constraint.normal.X[j] = normal.X;
-                        constraint.normal.Y[j] = normal.Y;
+                        constraint.normal.X[lane] = normal.X;
+                        constraint.normal.Y[lane] = normal.Y;
 
-                        constraint.friction[j] = contactSim.friction;
-                        constraint.tangentSpeed[j] = contactSim.tangentSpeed;
-                        constraint.restitution[j] = contactSim.restitution;
-                        constraint.rollingResistance[j] = contactSim.rollingResistance;
-                        constraint.rollingImpulse[j] = warmStartScale * manifold.rollingImpulse;
+                        constraint.friction[lane] = contactSim.friction;
+                        constraint.tangentSpeed[lane] = contactSim.tangentSpeed;
+                        constraint.restitution[lane] = contactSim.restitution;
+                        constraint.rollingResistance[lane] = contactSim.rollingResistance;
+                        constraint.rollingImpulse[lane] = warmStartScale * manifold.rollingImpulse;
 
-                        constraint.biasRate[j] = soft.biasRate;
-                        constraint.massScale[j] = soft.massScale;
-                        constraint.impulseScale[j] = soft.impulseScale;
+                        constraint.biasRate[lane] = soft.biasRate;
+                        constraint.massScale[lane] = soft.massScale;
+                        constraint.impulseScale[lane] = soft.impulseScale;
 
                         B2Vec2 tangent = b2RightPerp(normal);
 
@@ -1366,31 +1408,31 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2 rA = mp.anchorA;
                             B2Vec2 rB = mp.anchorB;
 
-                            constraint.anchorA1.X[j] = rA.X;
-                            constraint.anchorA1.Y[j] = rA.Y;
-                            constraint.anchorB1.X[j] = rB.X;
-                            constraint.anchorB1.Y[j] = rB.Y;
+                            constraint.anchorA1.X[lane] = rA.X;
+                            constraint.anchorA1.Y[lane] = rA.Y;
+                            constraint.anchorB1.X[lane] = rB.X;
+                            constraint.anchorB1.Y[lane] = rB.Y;
 
-                            constraint.baseSeparation1[j] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
+                            constraint.baseSeparation1[lane] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
 
-                            constraint.normalImpulse1[j] = warmStartScale * mp.normalImpulse;
-                            constraint.tangentImpulse1[j] = warmStartScale * mp.tangentImpulse;
-                            constraint.totalNormalImpulse1[j] = 0.0f;
+                            constraint.normalImpulse1[lane] = warmStartScale * mp.normalImpulse;
+                            constraint.tangentImpulse1[lane] = warmStartScale * mp.tangentImpulse;
+                            constraint.totalNormalImpulse1[lane] = 0.0f;
 
                             float rnA = b2Cross(rA, normal);
                             float rnB = b2Cross(rB, normal);
                             float kNormal = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
-                            constraint.normalMass1[j] = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
+                            constraint.normalMass1[lane] = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
 
                             float rtA = b2Cross(rA, tangent);
                             float rtB = b2Cross(rB, tangent);
                             float kTangent = mA + mB + iA * rtA * rtA + iB * rtB * rtB;
-                            constraint.tangentMass1[j] = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
+                            constraint.tangentMass1[lane] = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
 
                             // relative velocity for restitution
                             B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
                             B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
-                            constraint.relativeVelocity1[j] = b2Dot(normal, b2Sub(vrB, vrA));
+                            constraint.relativeVelocity1[lane] = b2Dot(normal, b2Sub(vrB, vrA));
                         }
 
                         int pointCount = manifold.pointCount;
@@ -1403,113 +1445,65 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2 rA = mp.anchorA;
                             B2Vec2 rB = mp.anchorB;
 
-                            constraint.anchorA2.X[j] = rA.X;
-                            constraint.anchorA2.Y[j] = rA.Y;
-                            constraint.anchorB2.X[j] = rB.X;
-                            constraint.anchorB2.Y[j] = rB.Y;
+                            constraint.anchorA2.X[lane] = rA.X;
+                            constraint.anchorA2.Y[lane] = rA.Y;
+                            constraint.anchorB2.X[lane] = rB.X;
+                            constraint.anchorB2.Y[lane] = rB.Y;
 
-                            constraint.baseSeparation2[j] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
+                            constraint.baseSeparation2[lane] = mp.separation - b2Dot(b2Sub(rB, rA), normal);
 
-                            constraint.normalImpulse2[j] = warmStartScale * mp.normalImpulse;
-                            constraint.tangentImpulse2[j] = warmStartScale * mp.tangentImpulse;
-                            constraint.totalNormalImpulse2[j] = 0.0f;
+                            constraint.normalImpulse2[lane] = warmStartScale * mp.normalImpulse;
+                            constraint.tangentImpulse2[lane] = warmStartScale * mp.tangentImpulse;
+                            constraint.totalNormalImpulse2[lane] = 0.0f;
 
                             float rnA = b2Cross(rA, normal);
                             float rnB = b2Cross(rB, normal);
                             float kNormal = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
-                            constraint.normalMass2[j] = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
+                            constraint.normalMass2[lane] = kNormal > 0.0f ? 1.0f / kNormal : 0.0f;
 
                             float rtA = b2Cross(rA, tangent);
                             float rtB = b2Cross(rB, tangent);
                             float kTangent = mA + mB + iA * rtA * rtA + iB * rtB * rtB;
-                            constraint.tangentMass2[j] = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
+                            constraint.tangentMass2[lane] = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
 
                             // relative velocity for restitution
                             B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
                             B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
-                            constraint.relativeVelocity2[j] = b2Dot(normal, b2Sub(vrB, vrA));
+                            constraint.relativeVelocity2[lane] = b2Dot(normal, b2Sub(vrB, vrA));
                         }
                         else
                         {
                             // dummy data that has no effect
-                            constraint.baseSeparation2[j] = 0.0f;
-                            constraint.normalImpulse2[j] = 0.0f;
-                            constraint.tangentImpulse2[j] = 0.0f;
-                            constraint.totalNormalImpulse2[j] = 0.0f;
-                            constraint.anchorA2.X[j] = 0.0f;
-                            constraint.anchorA2.Y[j] = 0.0f;
-                            constraint.anchorB2.X[j] = 0.0f;
-                            constraint.anchorB2.Y[j] = 0.0f;
-                            constraint.normalMass2[j] = 0.0f;
-                            constraint.tangentMass2[j] = 0.0f;
-                            constraint.relativeVelocity2[j] = 0.0f;
+                            constraint.baseSeparation2[lane] = 0.0f;
+                            constraint.normalImpulse2[lane] = 0.0f;
+                            constraint.tangentImpulse2[lane] = 0.0f;
+                            constraint.totalNormalImpulse2[lane] = 0.0f;
+                            constraint.anchorA2.X[lane] = 0.0f;
+                            constraint.anchorA2.Y[lane] = 0.0f;
+                            constraint.anchorB2.X[lane] = 0.0f;
+                            constraint.anchorB2.Y[lane] = 0.0f;
+                            constraint.normalMass2[lane] = 0.0f;
+                            constraint.tangentMass2[lane] = 0.0f;
+                            constraint.relativeVelocity2[lane] = 0.0f;
                         }
                     }
-                    else
-                    {
-                        // Wide remainder
-                        // todo set to zero with memset
-
-                        // Zero for null
-                        constraint.indexA[j] = 0;
-                        constraint.indexB[j] = 0;
-
-                        constraint.invMassA[j] = 0.0f;
-                        constraint.invMassB[j] = 0.0f;
-                        constraint.invIA[j] = 0.0f;
-                        constraint.invIB[j] = 0.0f;
-
-                        constraint.normal.X[j] = 0.0f;
-                        constraint.normal.Y[j] = 0.0f;
-                        constraint.friction[j] = 0.0f;
-                        constraint.tangentSpeed[j] = 0.0f;
-                        constraint.rollingResistance[j] = 0.0f;
-                        constraint.rollingMass[j] = 0.0f;
-                        constraint.rollingImpulse[j] = 0.0f;
-                        constraint.biasRate[j] = 0.0f;
-                        constraint.massScale[j] = 0.0f;
-                        constraint.impulseScale[j] = 0.0f;
-
-                        constraint.anchorA1.X[j] = 0.0f;
-                        constraint.anchorA1.Y[j] = 0.0f;
-                        constraint.anchorB1.X[j] = 0.0f;
-                        constraint.anchorB1.Y[j] = 0.0f;
-                        constraint.baseSeparation1[j] = 0.0f;
-                        constraint.normalImpulse1[j] = 0.0f;
-                        constraint.tangentImpulse1[j] = 0.0f;
-                        constraint.totalNormalImpulse1[j] = 0.0f;
-                        constraint.normalMass1[j] = 0.0f;
-                        constraint.tangentMass1[j] = 0.0f;
-
-                        constraint.anchorA2.X[j] = 0.0f;
-                        constraint.anchorA2.Y[j] = 0.0f;
-                        constraint.anchorB2.X[j] = 0.0f;
-                        constraint.anchorB2.Y[j] = 0.0f;
-                        constraint.baseSeparation2[j] = 0.0f;
-                        constraint.normalImpulse2[j] = 0.0f;
-                        constraint.tangentImpulse2[j] = 0.0f;
-                        constraint.totalNormalImpulse2[j] = 0.0f;
-                        constraint.normalMass2[j] = 0.0f;
-                        constraint.tangentMass2[j] = 0.0f;
-
-                        constraint.restitution[j] = 0.0f;
-                        constraint.relativeVelocity1[j] = 0.0f;
-                        constraint.relativeVelocity2[j] = 0.0f;
-                    }
                 }
+
+                colorIndex += 1;
             }
 
             b2TracyCZoneEnd(B2TracyCZone.prepare_contact);
         }
 
-        internal static void b2WarmStartContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
+        internal static void b2WarmStartContactsTask(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.warm_start_contact, "Warm Start", B2HexColor.b2_colorGreen, true);
 
             B2BodyState[] states = context.states;
+            int colorIndex = block.colorIndex;
             Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
 
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
                 ref B2ContactConstraintWide c = ref constraints[i];
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
@@ -1564,18 +1558,19 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.warm_start_contact);
         }
 
-        internal static void b2SolveContactsTask(int startIndex, int endIndex, B2StepContext context, int colorIndex, bool useBias)
+        internal static void b2SolveContactsTask(B2SolverBlock block, B2StepContext context, bool useBias)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
 
             B2BodyState[] states = context.states;
+            int colorIndex = block.colorIndex;
             ref readonly B2GraphColor color = ref context.graph.colors[colorIndex];
             Span<B2ContactConstraintWide> constraints = color.wideConstraints;
             B2FloatW inv_h = b2SplatW(context.inv_h);
             B2FloatW contactSpeed = b2SplatW(-context.world.contactSpeed);
             B2FloatW oneW = b2SplatW(1.0f);
 
-            for (int wideIndex = startIndex; wideIndex < endIndex; ++wideIndex)
+            for (int wideIndex = block.startIndex; wideIndex < block.startIndex + block.count; ++wideIndex)
             {
                 ref B2ContactConstraintWide c = ref constraints[wideIndex];
 
@@ -1707,93 +1702,97 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
                 }
 
-                B2FloatW tangentX = c.normal.Y;
-                B2FloatW tangentY = b2SubW(b2ZeroW(), c.normal.X);
-
-                // point 1 friction constraint
+                if (useBias == false)
                 {
-                    // fixed anchors for Jacobians
-                    B2Vec2W rA = c.anchorA1;
-                    B2Vec2W rB = c.anchorB1;
+                    // Rolling resistance
+                    if (b2AllZeroW(c.rollingResistance) == false)
+                    {
+                        B2FloatW deltaLambda = b2MulW(c.rollingMass, b2SubW(bA.w, bB.w));
+                        B2FloatW lambda = c.rollingImpulse;
+                        B2FloatW maxLambda = b2MulW(c.rollingResistance, totalNormalImpulse);
+                        c.rollingImpulse = b2SymClampW(b2AddW(lambda, deltaLambda), maxLambda);
+                        deltaLambda = b2SubW(c.rollingImpulse, lambda);
 
-                    // Relative velocity at contact
-                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                    B2FloatW vt = b2AddW(b2MulW(dvx, tangentX), b2MulW(dvy, tangentY));
+                        bA.w = b2MulSubW(bA.w, c.invIA, deltaLambda);
+                        bB.w = b2MulAddW(bB.w, c.invIB, deltaLambda);
+                    }
 
-                    // Tangent speed (conveyor belt)
-                    vt = b2SubW(vt, c.tangentSpeed);
+                    B2FloatW tangentX = c.normal.Y;
+                    B2FloatW tangentY = b2SubW(b2ZeroW(), c.normal.X);
 
-                    // Compute tangent force
-                    B2FloatW negImpulse = b2MulW(c.tangentMass1, vt);
+                    // point 1 friction constraint
+                    {
+                        // Fixed anchor points for applying impulses
+                        B2Vec2W rA = c.anchorA1;
+                        B2Vec2W rB = c.anchorB1;
 
-                    // Clamp the accumulated force
-                    B2FloatW maxFriction = b2MulW(c.friction, c.normalImpulse1);
-                    B2FloatW newImpulse = b2SubW(c.tangentImpulse1, negImpulse);
-                    newImpulse = b2MaxW(b2SubW(b2ZeroW(), maxFriction), b2MinW(newImpulse, maxFriction));
-                    B2FloatW impulse = b2SubW(newImpulse, c.tangentImpulse1);
-                    c.tangentImpulse1 = newImpulse;
+                        // Relative velocity at contact
+                        B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                        B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                        B2FloatW vt = b2AddW(b2MulW(dvx, tangentX), b2MulW(dvy, tangentY));
 
-                    // Apply contact impulse
-                    B2FloatW Px = b2MulW(impulse, tangentX);
-                    B2FloatW Py = b2MulW(impulse, tangentY);
+                        // Tangent speed (conveyor belt)
+                        vt = b2SubW(vt, c.tangentSpeed);
 
-                    bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
-                    bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
-                    bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
+                        // Compute tangent force
+                        B2FloatW negImpulse = b2MulW(c.tangentMass1, vt);
 
-                    bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
-                    bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
-                    bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
-                }
+                        // Clamp the accumulated force
+                        B2FloatW maxFriction = b2MulW(c.friction, c.normalImpulse1);
+                        B2FloatW newImpulse = b2SubW(c.tangentImpulse1, negImpulse);
+                        newImpulse = b2MaxW(b2SubW(b2ZeroW(), maxFriction), b2MinW(newImpulse, maxFriction));
+                        B2FloatW impulse = b2SubW(newImpulse, c.tangentImpulse1);
+                        c.tangentImpulse1 = newImpulse;
 
-                // second point friction constraint
-                {
-                    // fixed anchors for Jacobians
-                    B2Vec2W rA = c.anchorA2;
-                    B2Vec2W rB = c.anchorB2;
+                        // Apply contact impulse
+                        B2FloatW Px = b2MulW(impulse, tangentX);
+                        B2FloatW Py = b2MulW(impulse, tangentY);
 
-                    // Relative velocity at contact
-                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                    B2FloatW vt = b2AddW(b2MulW(dvx, tangentX), b2MulW(dvy, tangentY));
+                        bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
+                        bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
+                        bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
 
-                    // Tangent speed (conveyor belt)
-                    vt = b2SubW(vt, c.tangentSpeed);
+                        bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
+                        bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
+                        bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
+                    }
 
-                    // Compute tangent force
-                    B2FloatW negImpulse = b2MulW(c.tangentMass2, vt);
+                    // second point friction constraint
+                    {
+                        // fixed anchors for Jacobians
+                        B2Vec2W rA = c.anchorA2;
+                        B2Vec2W rB = c.anchorB2;
 
-                    // Clamp the accumulated force
-                    B2FloatW maxFriction = b2MulW(c.friction, c.normalImpulse2);
-                    B2FloatW newImpulse = b2SubW(c.tangentImpulse2, negImpulse);
-                    newImpulse = b2MaxW(b2SubW(b2ZeroW(), maxFriction), b2MinW(newImpulse, maxFriction));
-                    B2FloatW impulse = b2SubW(newImpulse, c.tangentImpulse2);
-                    c.tangentImpulse2 = newImpulse;
+                        // Relative velocity at contact
+                        B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                        B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                        B2FloatW vt = b2AddW(b2MulW(dvx, tangentX), b2MulW(dvy, tangentY));
 
-                    // Apply contact impulse
-                    B2FloatW Px = b2MulW(impulse, tangentX);
-                    B2FloatW Py = b2MulW(impulse, tangentY);
+                        // Tangent speed (conveyor belt)
+                        vt = b2SubW(vt, c.tangentSpeed);
 
-                    bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
-                    bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
-                    bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
+                        // Compute tangent force
+                        B2FloatW negImpulse = b2MulW(c.tangentMass2, vt);
 
-                    bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
-                    bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
-                    bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
-                }
+                        // Clamp the accumulated force
+                        B2FloatW maxFriction = b2MulW(c.friction, c.normalImpulse2);
+                        B2FloatW newImpulse = b2SubW(c.tangentImpulse2, negImpulse);
+                        newImpulse = b2MaxW(b2SubW(b2ZeroW(), maxFriction), b2MinW(newImpulse, maxFriction));
+                        B2FloatW impulse = b2SubW(newImpulse, c.tangentImpulse2);
+                        c.tangentImpulse2 = newImpulse;
 
-                // Rolling resistance
-                {
-                    B2FloatW deltaLambda = b2MulW(c.rollingMass, b2SubW(bA.w, bB.w));
-                    B2FloatW lambda = c.rollingImpulse;
-                    B2FloatW maxLambda = b2MulW(c.rollingResistance, totalNormalImpulse);
-                    c.rollingImpulse = b2SymClampW(b2AddW(lambda, deltaLambda), maxLambda);
-                    deltaLambda = b2SubW(c.rollingImpulse, lambda);
+                        // Apply contact impulse
+                        B2FloatW Px = b2MulW(impulse, tangentX);
+                        B2FloatW Py = b2MulW(impulse, tangentY);
 
-                    bA.w = b2MulSubW(bA.w, c.invIA, deltaLambda);
-                    bB.w = b2MulAddW(bB.w, c.invIB, deltaLambda);
+                        bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
+                        bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
+                        bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
+
+                        bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
+                        bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
+                        bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
+                    }
                 }
 
                 b2ScatterBodies(states, c.indexA.AsSpan(), ref bA);
@@ -1803,16 +1802,17 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
         }
 
-        internal static void b2ApplyRestitutionTask(int startIndex, int endIndex, B2StepContext context, int colorIndex)
+        internal static void b2ApplyRestitutionTask(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.restitution, "Restitution", B2HexColor.b2_colorDodgerBlue, true);
 
             B2BodyState[] states = context.states;
+            int colorIndex = block.colorIndex;
             Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
             B2FloatW threshold = b2SplatW(context.world.restitutionThreshold);
             B2FloatW zero = b2ZeroW();
 
-            for (int i = startIndex; i < endIndex; ++i)
+            for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
                 ref B2ContactConstraintWide c = ref constraints[i];
 
@@ -1837,7 +1837,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW mask = b2OrW(b2OrW(mask1, mask2), restitutionMask);
                     B2FloatW mass = b2BlendW(c.normalMass1, zero, mask);
 
-                    // fixed anchors for Jacobians
+                    // Fixed anchors for impulses
                     B2Vec2W rA = c.anchorA1;
                     B2Vec2W rB = c.anchorB1;
 
@@ -1916,46 +1916,107 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.restitution);
         }
 
-        internal static void b2StoreImpulsesTask(int startIndex, int endIndex, B2StepContext context)
+        // I tried adding this to the last relax iterations but it was slower.
+        //
+        // Runs as a flat parallel-for over the whole wide constraint range. Per-color
+        // contact sims are looked up through the prepareSpans cursor rather than the
+        // block's colorIndex, matching the layout of b2PrepareContactsTask.
+        //
+        // Note: I could store the manifold pointer in the b2ContactConstraintWide to simplify
+        // this.
+        internal static void b2StoreImpulsesTask(B2SolverBlock block, B2StepContext context, int workerIndex)
         {
             b2TracyCZoneNC(B2TracyCZone.store_impulses, "Store", B2HexColor.b2_colorFireBrick, true);
 
-            Span<B2ContactSim> contacts = context.contacts;
-            Span<B2ContactConstraintWide> constraints = context.wideContactConstraints;
+            B2World world = context.world;
+            ReadOnlySpan<B2ContactPrepareSpan> spans = context.contactPrepareSpans;
+            ReadOnlySpan<B2ContactConstraintWide> wideBase = context.wideContactConstraints;
+            B2TaskContext taskContext = world.taskContexts.data[workerIndex];
+            ref B2BitSet hitEventBitSet = ref taskContext.hitEventBitSet;
+            bool hasHitEvents = taskContext.hasHitEvents;
+            float negHitThreshold = -world.hitEventThreshold;
 
-            B2Manifold dummy = new B2Manifold();
+            int wideIndex = block.startIndex;
+            int endWideIndex = block.startIndex + block.count;
 
-            for (int constraintIndex = startIndex; constraintIndex < endIndex; ++constraintIndex)
+            // Find color for start index
+            int colorIndex = 0;
+            while (spans[colorIndex + 1].start <= wideIndex)
             {
-                ref B2ContactConstraintWide c = ref constraints[constraintIndex];
-                ref B2FloatW rollingImpulse = ref c.rollingImpulse;
-                ref B2FloatW normalImpulse1 = ref c.normalImpulse1;
-                ref B2FloatW normalImpulse2 = ref c.normalImpulse2;
-                ref B2FloatW tangentImpulse1 = ref c.tangentImpulse1;
-                ref B2FloatW tangentImpulse2 = ref c.tangentImpulse2;
-                ref B2FloatW totalNormalImpulse1 = ref c.totalNormalImpulse1;
-                ref B2FloatW totalNormalImpulse2 = ref c.totalNormalImpulse2;
-                ref B2FloatW normalVelocity1 = ref c.relativeVelocity1;
-                ref B2FloatW normalVelocity2 = ref c.relativeVelocity2;
-
-                int baseIndex = B2_SIMD_WIDTH * constraintIndex;
-
-                for (int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex)
-                {
-                    ref B2Manifold m = ref contacts[baseIndex + laneIndex] == null ? ref dummy : ref contacts[baseIndex + laneIndex].manifold;
-                    m.rollingImpulse = rollingImpulse[laneIndex];
-
-                    m.points[0].normalImpulse = normalImpulse1[laneIndex];
-                    m.points[0].tangentImpulse = tangentImpulse1[laneIndex];
-                    m.points[0].totalNormalImpulse = totalNormalImpulse1[laneIndex];
-                    m.points[0].normalVelocity = normalVelocity1[laneIndex];
-
-                    m.points[1].normalImpulse = normalImpulse2[laneIndex];
-                    m.points[1].tangentImpulse = tangentImpulse2[laneIndex];
-                    m.points[1].totalNormalImpulse = totalNormalImpulse2[laneIndex];
-                    m.points[1].normalVelocity = normalVelocity2[laneIndex];
-                }
+                colorIndex += 1;
             }
+
+            // Loop over block
+            while (wideIndex < endWideIndex)
+            {
+                int colorWideEndIndex = b2MinInt( spans[colorIndex + 1].start, endWideIndex );
+                int colorWideStart = spans[colorIndex].start;
+                int colorContactCount = spans[colorIndex].count;
+                Span<B2ContactSim> contactSims = spans[colorIndex].contacts;
+
+
+                // Loop over color
+                for ( ; wideIndex < colorWideEndIndex; ++wideIndex )
+                {
+                    ref readonly B2ContactConstraintWide c = ref wideBase[wideIndex];
+                    ref readonly B2FloatW rollingImpulse = ref c.rollingImpulse;
+                    ref readonly B2FloatW normalImpulse1 = ref c.normalImpulse1;
+                    ref readonly B2FloatW normalImpulse2 = ref c.normalImpulse2;
+                    ref readonly B2FloatW tangentImpulse1 = ref c.tangentImpulse1;
+                    ref readonly B2FloatW tangentImpulse2 = ref c.tangentImpulse2;
+                    ref readonly B2FloatW totalNormalImpulse1 = ref c.totalNormalImpulse1;
+                    ref readonly B2FloatW totalNormalImpulse2 = ref c.totalNormalImpulse2;
+                    ref readonly B2FloatW normalVelocity1 = ref c.relativeVelocity1;
+                    ref readonly B2FloatW normalVelocity2 = ref c.relativeVelocity2;
+                    
+                    int localWideIndex = wideIndex - colorWideStart;
+                    int baseIndex = B2_SIMD_WIDTH * localWideIndex;
+
+                    for ( int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex )
+                    {
+                        int contactIndex = baseIndex + laneIndex;
+                        if ( contactIndex >= colorContactCount )
+                        {
+                            break;
+                        }
+
+                        B2ContactSim contactSim = contactSims[contactIndex];
+                        ref B2Manifold m = ref contactSim.manifold;
+                        m.rollingImpulse = rollingImpulse[laneIndex];
+
+                        m.points[0].normalImpulse = normalImpulse1[laneIndex];
+                        m.points[0].tangentImpulse = tangentImpulse1[laneIndex];
+                        m.points[0].totalNormalImpulse = totalNormalImpulse1[laneIndex];
+                        m.points[0].normalVelocity = normalVelocity1[laneIndex];
+
+                        m.points[1].normalImpulse = normalImpulse2[laneIndex];
+                        m.points[1].tangentImpulse = tangentImpulse2[laneIndex];
+                        m.points[1].totalNormalImpulse = totalNormalImpulse2[laneIndex];
+                        m.points[1].normalVelocity = normalVelocity2[laneIndex];
+
+                        // Check for hit events to speed up serial processing later in the step
+                        if ((contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnableHitEvent) != 0)
+                        {
+                            for (int k = 0; k < contactSim.manifold.pointCount; ++k)
+                            {
+                                ref B2ManifoldPoint mp = ref m.points[k];
+
+                                // Need to check total impulse because the point may be speculative and not colliding
+                                if (mp.normalVelocity < negHitThreshold && mp.totalNormalImpulse > 0.0f)
+                                {
+                                    b2SetBit(ref hitEventBitSet, contactSim.contactId);
+                                    hasHitEvents = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                colorIndex += 1;
+            }
+
+            taskContext.hasHitEvents = hasHitEvents;
 
             b2TracyCZoneEnd(B2TracyCZone.store_impulses);
         }

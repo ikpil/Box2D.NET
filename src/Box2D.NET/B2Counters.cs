@@ -18,5 +18,11 @@ namespace Box2D.NET
         public int byteCount;
         public int taskCount;
         public B2FixedArray24<int> colorCounts;
+
+        // Number of contacts touched by the collide pass (graph contacts + awake-set non-touching).
+        public int awakeContactCount;
+
+        // Number of contacts recycled in the most recent step.
+        public int recycledContactCount;
     }
 }

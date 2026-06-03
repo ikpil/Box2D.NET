@@ -29,5 +29,7 @@ namespace Box2D.NET
         public ArraySegment<B2ContactConstraintWide> wideConstraints;
         public ArraySegment<B2ContactConstraint> overflowConstraints;
         //};
+
+        public int wideConstraintCount;
     }
 }

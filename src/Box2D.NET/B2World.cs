@@ -11,7 +11,7 @@ namespace Box2D.NET
     // The world also contains efficient memory management facilities.
     public class B2World
     {
-        public B2ArenaAllocator arena;
+        public B2StackAllocator stack;
         public B2BroadPhase broadPhase;
         public B2ConstraintGraph constraintGraph;
 
@@ -129,6 +129,8 @@ namespace Box2D.NET
 
         public B2Profile profile;
 
+        public B2Capacity maxCapacity;
+
         public b2PreSolveFcn preSolveFcn;
         public object preSolveContext;
 
@@ -170,7 +172,7 @@ namespace Box2D.NET
 
         public void Clear()
         {
-            arena = null;
+            stack = null;
             broadPhase = null;
 
             bodyIdPool = null;

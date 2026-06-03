@@ -1046,7 +1046,7 @@ public enum b2SolverBlockType
                     break;
 
                 case B2SolverStageType.b2_stageStoreImpulses:
-                    b2StoreImpulsesTask(startIndex, endIndex, context);
+                    b2StoreImpulsesTask(startIndex, endIndex, context, workerIndex);
                     break;
             }
         }
@@ -1169,6 +1169,11 @@ public enum b2SolverBlockType
 
             if (workerIndex == 0)
             {
+                if (b2AtomicCompareExchangeInt(ref context.mainClaimed, 0, 1) == false)
+                {
+                    return;
+                }
+
                 // Main thread synchronizes the workers and does work itself.
                 //
                 // Stages are re-used by loops so that I don't need more stages for large iteration counts.
@@ -1702,20 +1707,24 @@ public enum b2SolverBlockType
                 stepContext.workerCount = workerCount;
                 stepContext.stageCount = stageCount;
                 stepContext.stages = stages;
+                stepContext.wideContactCount = wideContactCount;
                 b2AtomicStoreU32(ref stepContext.atomicSyncBits, 0);
+                b2AtomicStoreInt(ref stepContext.mainClaimed, 0);
 
-                world.profile.prepareStages = b2GetMillisecondsAndReset(ref prepareTicks);
+                world.profile.solverSetup = b2GetMillisecondsAndReset(ref prepareTicks);
                 b2TracyCZoneEnd(B2TracyCZone.prepare_stages);
 
                 b2TracyCZoneNC(B2TracyCZone.solve_constraints, "Solve Constraints", B2HexColor.b2_colorIndigo, true);
                 ulong constraintTicks = b2GetTicks();
 
-                // Must use worker index because thread 0 can be assigned multiple tasks
                 int jointIdCapacity = b2GetIdCapacity(world.jointIdPool);
+                int contactIdCapacity = b2GetIdCapacity(world.contactIdPool);
                 for (int i = 0; i < workerCount; ++i)
                 {
                     B2TaskContext taskContext = b2Array_Get(ref world.taskContexts, i);
                     b2SetBitCountAndClear(ref taskContext.jointStateBitSet, jointIdCapacity);
+                    b2SetBitCountAndClear(ref taskContext.hitEventBitSet, contactIdCapacity);
+                    taskContext.hasHitEvents = false;
 
                     workerContext[i].context = stepContext;
                     workerContext[i].workerIndex = i;
@@ -1733,14 +1742,16 @@ public enum b2SolverBlockType
                     }
                 }
 
-                // Finish island split
-                if (splitIslandTask != null)
-                {
-                    world.finishTaskFcn(splitIslandTask, world.userTaskContext);
-                    world.activeTaskCount -= 1;
-                }
-
-                world.splitIslandId = B2_NULL_INDEX;
+                // The calling thread of b2World_Step also enters b2SolverTask as worker 0 and races for the
+                // orchestrator slot via the CAS inside. This guarantees progress even when the user's task
+                // system can't run the queued worker 0 promptly: it might schedule out of order, have fewer
+                // threads than workerCount, or invert priority by parking the calling thread in finishTaskFcn.
+                // Whoever wins the CAS becomes the orchestrator; the loser returns and lets the spinner-only
+                // path handle workers >0.
+                B2WorkerContext callerContext = new B2WorkerContext();
+                callerContext.context = stepContext;
+                callerContext.workerIndex = 0;
+                b2SolverTask(callerContext);
 
                 // Finish constraint solve
                 for (int i = 0; i < workerCount; ++i)
@@ -1752,7 +1763,16 @@ public enum b2SolverBlockType
                     }
                 }
 
-                world.profile.solveConstraints = b2GetMillisecondsAndReset(ref constraintTicks);
+                // Finish island split
+                if (splitIslandTask != null)
+                {
+                    world.finishTaskFcn(splitIslandTask, world.userTaskContext);
+                    world.activeTaskCount -= 1;
+                }
+
+                world.splitIslandId = B2_NULL_INDEX;
+
+                world.profile.constraints = b2GetMillisecondsAndReset(ref constraintTicks);
                 b2TracyCZoneEnd(B2TracyCZone.solve_constraints);
 
                 b2TracyCZoneNC(B2TracyCZone.update_transforms, "Update Transforms", B2HexColor.b2_colorMediumSeaGreen, true);
@@ -1837,68 +1857,102 @@ public enum b2SolverBlockType
             }
 
             // Report hit events
-            // todo_erin perhaps optimize this with a bitset
-            // todo_erin perhaps do this in parallel with other work below
             {
                 b2TracyCZoneNC(B2TracyCZone.hit_events, "Hit Events", B2HexColor.b2_colorRosyBrown, true);
                 ulong hitTicks = b2GetTicks();
 
                 B2_ASSERT(world.contactHitEvents.count == 0);
 
-                float threshold = world.hitEventThreshold;
-                B2GraphColor[] colors = world.constraintGraph.colors;
-                for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
+                // Fast path: if no worker flagged any hit-event candidates during b2StoreImpulsesTask, skip entirely.
+                bool anyHitEvents = false;
+                for (int i = 0; i < world.workerCount; ++i)
                 {
-                    ref B2GraphColor color = ref colors[i];
-                    int contactCount = color.contactSims.count;
-                    B2ContactSim[] contactSims = color.contactSims.data;
-                    for (int j = 0; j < contactCount; ++j)
+                    if (world.taskContexts.data[i].hasHitEvents)
                     {
-                        B2ContactSim contactSim = contactSims[j];
-                        if ((contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnableHitEvent) == 0)
+                        anyHitEvents = true;
+                        break;
+                    }
+                }
+
+                if (anyHitEvents)
+                {
+                    // Union per-worker bits into worker 0's bit set.
+                    ref B2BitSet hitEventBitSet = ref world.taskContexts.data[0].hitEventBitSet;
+                    for (int i = 1; i < world.workerCount; ++i)
+                    {
+                        if (world.taskContexts.data[i].hasHitEvents)
                         {
-                            continue;
+                            b2InPlaceUnion(ref hitEventBitSet, ref world.taskContexts.data[i].hitEventBitSet);
                         }
+                    }
 
-                        B2ContactHitEvent @event = new B2ContactHitEvent();
-                        @event.approachSpeed = threshold;
+                    float threshold = world.hitEventThreshold;
+                    B2GraphColor[] colors = world.constraintGraph.colors;
+                    B2Contact[] contactArray = world.contacts.data;
+                    B2Shape[] shapeArray = world.shapes.data;
+                    ushort worldId = world.worldId;
 
-                        bool hit = false;
-                        int pointCount = contactSim.manifold.pointCount;
-                        for (int k = 0; k < pointCount; ++k)
+                    uint wordCount = (uint)hitEventBitSet.blockCount;
+                    ulong[] bits = hitEventBitSet.bits;
+                    for (uint k = 0; k < wordCount; ++k)
+                    {
+                        ulong word = bits[k];
+                        while (word != 0)
                         {
-                            ref B2ManifoldPoint mp = ref contactSim.manifold.points[k];
-                            float approachSpeed = -mp.normalVelocity;
+                            uint ctz = b2CTZ64(word);
+                            int contactId = (int)(64 * k + ctz);
 
-                            // Need to check total impulse because the point may be speculative and not colliding
-                            if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
+                            B2_ASSERT(contactId < world.contacts.capacity);
+
+                            B2Contact contact = contactArray[contactId];
+
+                            B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
+                            B2_ASSERT(contact.colorIndex != B2_NULL_INDEX);
+                            B2_ASSERT(contact.localIndex != B2_NULL_INDEX);
+
+                            B2ContactSim contactSim = colors[contact.colorIndex].contactSims.data[contact.localIndex];
+
+                            B2ContactHitEvent @event = new B2ContactHitEvent();
+                            @event.approachSpeed = threshold;
+
+                            bool hit = false;
+                            int pointCount = contactSim.manifold.pointCount;
+                            for (int j = 0; j < pointCount; ++j)
                             {
-                                @event.approachSpeed = approachSpeed;
-                                @event.point = mp.clipPoint;
-                                hit = true;
+                                ref B2ManifoldPoint mp = ref contactSim.manifold.points[j];
+                                float approachSpeed = -mp.normalVelocity;
+
+                                // Need to check total impulse because the point may be speculative and not colliding
+                                if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
+                                {
+                                    @event.approachSpeed = approachSpeed;
+                                    @event.point = mp.clipPoint;
+                                    hit = true;
+                                }
                             }
-                        }
 
-                        if (hit == true)
-                        {
-                            @event.normal = contactSim.manifold.normal;
+                            if (hit == true)
+                            {
+                                @event.normal = contactSim.manifold.normal;
 
-                            B2Shape shapeA = b2Array_Get(ref world.shapes, contactSim.shapeIdA);
-                            B2Shape shapeB = b2Array_Get(ref world.shapes, contactSim.shapeIdB);
+                                B2Shape shapeA = shapeArray[contactSim.shapeIdA];
+                                B2Shape shapeB = shapeArray[contactSim.shapeIdB];
 
-                            @event.shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
-                            @event.shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
+                                @event.shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
+                                @event.shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
 
-                            B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
+                                @event.contactId = new B2ContactId(
+                                    index1: contact.contactId + 1,
+                                    world0: worldId,
+                                    padding: 0,
+                                    generation: contact.generation
+                                );
 
-                            @event.contactId = new B2ContactId(
-                                index1: contact.contactId + 1,
-                                world0: world.worldId,
-                                padding: 0,
-                                generation: contact.generation
-                            );
+                                b2Array_Push(ref world.contactHitEvents, @event);
+                            }
 
-                            b2Array_Push(ref world.contactHitEvents, @event);
+                            // Clear the smallest set bit
+                            word = word & (word - 1);
                         }
                     }
                 }

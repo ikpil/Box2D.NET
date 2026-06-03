@@ -41,6 +41,7 @@ public class SampleContext
 
     // These are persisted
     public int sampleIndex = 0;
+    public B2Capacity capacity;
 
 
     public B2DebugDraw debugDraw;

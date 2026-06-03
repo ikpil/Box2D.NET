@@ -11,13 +11,13 @@ namespace Box2D.NET
 {
     public static class B2ArenaAllocators
     {
-        public static B2ArenaAllocator b2CreateArenaAllocator(int capacity)
+        public static B2StackAllocator b2CreateStackAllocator(int capacity)
         {
-            var allocator = new B2ArenaAllocator(capacity);
+            var allocator = new B2StackAllocator(capacity);
             return allocator;
         }
 
-        public static void b2DestroyArenaAllocator(B2ArenaAllocator allocator)
+        public static void b2DestroyStackAllocator(B2StackAllocator allocator)
         {
             var allocs = allocator.AsSpan();
             for (int i = 0; i < allocs.Length; ++i)
@@ -26,26 +26,26 @@ namespace Box2D.NET
             }
         }
 
-        public static B2ArenaAllocatorTyped<T> b2CreateArenaAllocator<T>(int capacity) where T : new()
+        public static B2Stack<T> b2CreateStack<T>(int capacity) where T : new()
         {
             B2_ASSERT(capacity >= 0);
-            B2ArenaAllocatorTyped<T> allocatorImpl = new B2ArenaAllocatorTyped<T>();
+            B2Stack<T> allocatorImpl = new B2Stack<T>();
             allocatorImpl.capacity = capacity;
             allocatorImpl.data = b2Alloc<T>(capacity);
             allocatorImpl.allocation = 0;
             allocatorImpl.maxAllocation = 0;
             allocatorImpl.index = 0;
-            allocatorImpl.entries = b2Array_Create<B2ArenaEntry<T>>(capacity);
+            allocatorImpl.entries = b2Array_Create<B2StackEntry<T>>(capacity);
             return allocatorImpl;
         }
 
-        public static ArraySegment<T> b2AllocateArenaItem<T>(B2ArenaAllocator allocator, int size, string name) where T : new()
+        public static ArraySegment<T> b2StackAlloc<T>(B2StackAllocator allocator, int size, string name) where T : new()
         {
             var alloc = allocator.GetOrCreateFor<T>();
             // ensure allocation is 32 byte aligned to support 256-bit SIMD
             int size32 = ((size - 1) | 0x1F) + 1;
 
-            B2ArenaEntry<T> entry = new B2ArenaEntry<T>();
+            B2StackEntry<T> entry = new B2StackEntry<T>();
             entry.size = size32;
             entry.name = name;
             if (alloc.index + size32 > alloc.capacity)
@@ -75,12 +75,12 @@ namespace Box2D.NET
             return entry.data;
         }
 
-        public static void b2FreeArenaItem<T>(B2ArenaAllocator allocator, ArraySegment<T> mem) where T : new()
+        public static void b2StackFree<T>(B2StackAllocator allocator, ArraySegment<T> mem) where T : new()
         {
             var alloc = allocator.GetOrCreateFor<T>();
             int entryCount = alloc.entries.count;
             B2_ASSERT(entryCount > 0);
-            ref B2ArenaEntry<T> entry = ref alloc.entries.data[entryCount - 1];
+            ref B2StackEntry<T> entry = ref alloc.entries.data[entryCount - 1];
             B2_ASSERT(mem == entry.data);
             if (entry.usedMalloc)
             {
@@ -94,8 +94,8 @@ namespace Box2D.NET
             alloc.allocation -= entry.size;
             b2Array_Pop(ref alloc.entries);
         }
-        // Grow the arena based on usage
-        public static void b2GrowArena(B2ArenaAllocator allocator)
+        // Grow the stack based on usage
+        public static void b2GrowStack(B2StackAllocator allocator)
         {
             var allocSpan = allocator.AsSpan();
 
@@ -106,8 +106,8 @@ namespace Box2D.NET
             }
         }
 
-        // Grow the arena based on usage
-        public static int b2GetArenaCapacity(B2ArenaAllocator allocator)
+        // Grow the stack based on usage
+        public static int b2GetStackCapacity(B2StackAllocator allocator)
         {
             int capacity = 0;
             var allocSpan = allocator.AsSpan();
@@ -119,7 +119,7 @@ namespace Box2D.NET
             return capacity;
         }
 
-        public static int b2GetArenaAllocation(B2ArenaAllocator allocator)
+        public static int b2GetStackAllocation(B2StackAllocator allocator)
         {
             int allocation = 0;
             var allocSpan = allocator.AsSpan();
@@ -131,7 +131,7 @@ namespace Box2D.NET
             return allocation;
         }
 
-        public static int b2GetMaxArenaAllocation(B2ArenaAllocator allocator)
+        public static int b2GetMaxStackAllocation(B2StackAllocator allocator)
         {
             int maxAllocation = 0;
             var allocSpan = allocator.AsSpan();

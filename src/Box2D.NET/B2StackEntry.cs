@@ -6,7 +6,7 @@ using System;
 
 namespace Box2D.NET
 {
-    public struct B2ArenaEntry<T>
+    public struct B2StackEntry<T>
     {
         public ArraySegment<T> data;
         public string name;

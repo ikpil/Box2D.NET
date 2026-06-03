@@ -69,11 +69,11 @@ namespace Box2D.NET
                 // Reset sleep timer
                 body.sleepTime = 0.0f;
 
-                ref B2BodySim simDst = ref b2Array_Add(ref awakeSet.bodySims);
+                ref B2BodySim simDst = ref b2Array_Emplace(ref awakeSet.bodySims);
                 //memcpy( simDst, simSrc, sizeof( b2BodySim ) );
                 simDst.CopyFrom(simSrc);
 
-                ref B2BodyState state = ref b2Array_Add(ref awakeSet.bodyStates);
+                ref B2BodyState state = ref b2Array_Emplace(ref awakeSet.bodyStates);
                 //*state = b2_identityBodyState;
                 state.CopyFrom(b2_identityBodyState);
                 state.flags = body.flags;
@@ -102,7 +102,7 @@ namespace Box2D.NET
 
                     contact.setIndex = (int)B2SolverSetType.b2_awakeSet;
                     contact.localIndex = awakeSet.contactSims.count;
-                    ref B2ContactSim awakeContactSim = ref b2Array_Add(ref awakeSet.contactSims);
+                    ref B2ContactSim awakeContactSim = ref b2Array_Emplace(ref awakeSet.contactSims);
                     //memcpy( awakeContactSim, contactSim, sizeof( b2ContactSim ) );
                     awakeContactSim.CopyFrom(contactSim);
 
@@ -159,7 +159,7 @@ namespace Box2D.NET
                     B2Island island = b2Array_Get(ref world.islands, islandSrc.islandId);
                     island.setIndex = (int)B2SolverSetType.b2_awakeSet;
                     island.localIndex = awakeSet.islandSims.count;
-                    ref B2IslandSim islandDst = ref b2Array_Add(ref awakeSet.islandSims);
+                    ref B2IslandSim islandDst = ref b2Array_Emplace(ref awakeSet.islandSims);
                     //memcpy( islandDst, islandSrc, sizeof( b2IslandSim ) );
                     islandDst.CopyFrom(islandSrc);
                 }
@@ -237,7 +237,7 @@ namespace Box2D.NET
 
                     // move body sim to sleep set
                     int sleepBodyIndex = sleepSet.bodySims.count;
-                    ref B2BodySim sleepBodySim = ref b2Array_Add(ref sleepSet.bodySims);
+                    ref B2BodySim sleepBodySim = ref b2Array_Emplace(ref sleepSet.bodySims);
                     //memcpy( sleepBodySim, awakeSim, sizeof( b2BodySim ) );
                     sleepBodySim.CopyFrom(awakeSim);
 
@@ -294,7 +294,7 @@ namespace Box2D.NET
                         // move the non-touching contact to the disabled set
                         contact.setIndex = (int)B2SolverSetType.b2_disabledSet;
                         contact.localIndex = disabledSet.contactSims.count;
-                        ref B2ContactSim disabledContactSim = ref b2Array_Add(ref disabledSet.contactSims);
+                        ref B2ContactSim disabledContactSim = ref b2Array_Emplace(ref disabledSet.contactSims);
                         //memcpy( disabledContactSim, contactSim, sizeof( b2ContactSim ) );
                         disabledContactSim.CopyFrom(contactSim);
 
@@ -338,7 +338,7 @@ namespace Box2D.NET
                     B2ContactSim awakeContactSim = b2Array_Get(ref color.contactSims, localIndex);
 
                     int sleepContactIndex = sleepSet.contactSims.count;
-                    ref B2ContactSim sleepContactSim = ref b2Array_Add(ref sleepSet.contactSims);
+                    ref B2ContactSim sleepContactSim = ref b2Array_Emplace(ref sleepSet.contactSims);
                     //memcpy( sleepContactSim, awakeContactSim, sizeof( b2ContactSim ) );
                     sleepContactSim.CopyFrom(awakeContactSim);
 
@@ -385,7 +385,7 @@ namespace Box2D.NET
                     }
 
                     int sleepJointIndex = sleepSet.jointSims.count;
-                    ref B2JointSim sleepJointSim = ref b2Array_Add(ref sleepSet.jointSims);
+                    ref B2JointSim sleepJointSim = ref b2Array_Emplace(ref sleepSet.jointSims);
                     //memcpy( sleepJointSim, awakeJointSim, sizeof( b2JointSim ) );
                     sleepJointSim.CopyFrom(awakeJointSim);
 
@@ -411,7 +411,7 @@ namespace Box2D.NET
                 B2_ASSERT(island.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
                 int islandIndex = island.localIndex;
-                ref B2IslandSim sleepIsland = ref b2Array_Add(ref sleepSet.islandSims);
+                ref B2IslandSim sleepIsland = ref b2Array_Emplace(ref sleepSet.islandSims);
                 sleepIsland.islandId = islandId;
 
                 int movedIslandIndex = b2Array_RemoveSwap(ref awakeSet.islandSims, islandIndex);
@@ -472,7 +472,7 @@ namespace Box2D.NET
                     body.setIndex = setId1;
                     body.localIndex = set1.bodySims.count;
 
-                    ref B2BodySim simDst = ref b2Array_Add(ref set1.bodySims);
+                    ref B2BodySim simDst = ref b2Array_Emplace(ref set1.bodySims);
                     //memcpy( simDst, simSrc, sizeof( b2BodySim ) );
                     simDst.CopyFrom(simSrc);
                 }
@@ -490,7 +490,7 @@ namespace Box2D.NET
                     contact.setIndex = setId1;
                     contact.localIndex = set1.contactSims.count;
 
-                    ref B2ContactSim contactDst = ref b2Array_Add(ref set1.contactSims);
+                    ref B2ContactSim contactDst = ref b2Array_Emplace(ref set1.contactSims);
                     //memcpy( contactDst, contactSrc, sizeof( b2ContactSim ) );
                     contactDst.CopyFrom(contactSrc);
                 }
@@ -508,7 +508,7 @@ namespace Box2D.NET
                     joint.setIndex = setId1;
                     joint.localIndex = set1.jointSims.count;
 
-                    ref B2JointSim jointDst = ref b2Array_Add(ref set1.jointSims);
+                    ref B2JointSim jointDst = ref b2Array_Emplace(ref set1.jointSims);
                     //memcpy( jointDst, jointSrc, sizeof( b2JointSim ) );
                     jointDst.CopyFrom(jointSrc);
                 }
@@ -526,7 +526,7 @@ namespace Box2D.NET
                     island.setIndex = setId1;
                     island.localIndex = set1.islandSims.count;
 
-                    ref B2IslandSim islandDst = ref b2Array_Add(ref set1.islandSims);
+                    ref B2IslandSim islandDst = ref b2Array_Emplace(ref set1.islandSims);
                     //memcpy( islandDst, islandSrc, sizeof( b2IslandSim ) );
                     islandDst.CopyFrom(islandSrc);
                 }
@@ -549,7 +549,7 @@ namespace Box2D.NET
             B2BodySim sourceSim = b2Array_Get(ref sourceSet.bodySims, sourceIndex);
 
             int targetIndex = targetSet.bodySims.count;
-            ref B2BodySim targetSim = ref b2Array_Add(ref targetSet.bodySims);
+            ref B2BodySim targetSim = ref b2Array_Emplace(ref targetSet.bodySims);
             //memcpy( targetSim, sourceSim, sizeof( b2BodySim ) );
             targetSim.CopyFrom(sourceSim);
 
@@ -565,7 +565,7 @@ namespace Box2D.NET
             }
             else if (targetSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
-                ref B2BodyState state = ref b2Array_Add(ref targetSet.bodyStates);
+                ref B2BodyState state = ref b2Array_Emplace(ref targetSet.bodyStates);
                 //*state = b2_identityBodyState;
                 state.CopyFrom(b2_identityBodyState);
                 state.flags = body.flags;
@@ -612,7 +612,7 @@ namespace Box2D.NET
                 joint.localIndex = targetSet.jointSims.count;
                 joint.colorIndex = B2_NULL_INDEX;
 
-                ref B2JointSim targetSim = ref b2Array_Add(ref targetSet.jointSims);
+                ref B2JointSim targetSim = ref b2Array_Emplace(ref targetSet.jointSims);
                 //memcpy( targetSim, sourceSim, sizeof( b2JointSim ) );
                 targetSim.CopyFrom(sourceSim);
             }

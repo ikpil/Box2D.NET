@@ -32,7 +32,7 @@ namespace Box2D.NET.Shared
         {
             b2World_EnableSleeping(worldId, false);
 
-            int N = BENCHMARK_DEBUG ? 10 : 100;
+            int N = BENCHMARK_DEBUG ? 20 : 100;
 
             // Allocate to avoid huge stack usage
             B2BodyId[] bodies = new B2BodyId[N * N];
@@ -204,6 +204,18 @@ namespace Box2D.NET.Shared
             }
         }
 
+        public static B2Capacity GetManyPyramidsCapacity()
+        {
+            return new B2Capacity
+            {
+                staticShapeCount = 20,
+                staticBodyCount = 1,
+                dynamicShapeCount = 22000,
+                dynamicBodyCount = 22000,
+                contactCount = 58000,
+            };
+        }
+
 
         public static RainData CreateRain(B2WorldId worldId)
         {
@@ -217,10 +229,10 @@ namespace Box2D.NET.Shared
             rainData.gridCount = BENCHMARK_DEBUG ? 200 : 500;
 
             {
-                B2BodyDef bodyDef = b2DefaultBodyDef();
-                B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+                B2BodyDef groundBodyDef = b2DefaultBodyDef();
+                B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
 
-                B2ShapeDef shapeDef = b2DefaultShapeDef();
+                B2ShapeDef groundShapeDef = b2DefaultShapeDef();
                 float y = 0.0f;
                 float width = rainData.gridSize;
                 float height = rainData.gridSize;
@@ -231,7 +243,7 @@ namespace Box2D.NET.Shared
                     for (int j = 0; j <= rainData.gridCount; ++j)
                     {
                         B2Polygon box = b2MakeOffsetBox(0.5f * width, 0.5f * height, new B2Vec2(x, y), b2Rot_identity);
-                        b2CreatePolygonShape(groundId, shapeDef, box);
+                        b2CreatePolygonShape(groundId, groundShapeDef, box);
 
                         //b2Segment segment = { { x - 0.5f * width, y }, { x + 0.5f * width, y } };
                         //b2CreateSegmentShape( groundId, &shapeDef, &segment );
@@ -650,6 +662,7 @@ namespace Box2D.NET.Shared
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
+                shapeDef.enableHitEvents = true;
 
                 float y = -1.1f * a * gridCount + 10.0f;
                 for (int i = 0; i < gridCount; ++i)
@@ -777,6 +790,93 @@ namespace Box2D.NET.Shared
             B2Transform target = new B2Transform(new B2Vec2(60.0f * cs.sine, 0.0f), b2Rot_identity);
             b2Body_SetTargetTransform(junkyardData.pusherId, target, timeStep, true);
             return 0.0f;
+        }
+
+        // Lifted from samples/sample_benchmark.cpp BenchmarkBarrel (e_compoundShape branch).
+        // Each dynamic body is a compound of two triangular polygon shapes.
+        public static void CreateCompounds(B2WorldId worldId)
+        {
+            {
+                float gridSize = 1.0f;
+
+                B2BodyDef groundBodyDef = b2DefaultBodyDef();
+                B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
+
+                B2ShapeDef groundShapeDef = b2DefaultShapeDef();
+
+                float y = 0.0f;
+                float x = -40.0f * gridSize;
+                for (int i = 0; i < 81; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.55f * gridSize, 0.5f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, groundShapeDef, box);
+                    x += gridSize;
+                }
+
+                y = gridSize;
+                x = -40.0f * gridSize;
+                for (int i = 0; i < 100; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, groundShapeDef, box);
+                    y += gridSize;
+                }
+
+                y = gridSize;
+                x = 40.0f * gridSize;
+                for (int i = 0; i < 100; ++i)
+                {
+                    B2Polygon box = b2MakeOffsetBox(0.5f * gridSize, 0.55f * gridSize, new B2Vec2(x, y), b2Rot_identity);
+                    b2CreatePolygonShape(groundId, groundShapeDef, box);
+                    y += gridSize;
+                }
+
+                B2Segment segment = new B2Segment(new B2Vec2(-800.0f, -80.0f), new B2Vec2(800.0f, -80.0f));
+                b2CreateSegmentShape(groundId, groundShapeDef, segment);
+            }
+
+            int columnCount = BENCHMARK_DEBUG ? 10 : 20;
+            int rowCount = BENCHMARK_DEBUG ? 40 : 150;
+
+            B2Vec2[] leftPoints = new B2Vec2[] { new B2Vec2(-1.0f, 0.0f), new B2Vec2(0.5f, 1.0f), new B2Vec2(0.0f, 2.0f) };
+            B2Hull leftHull = b2ComputeHull(leftPoints, 3);
+            B2Polygon left = b2MakePolygon(leftHull, 0.0f);
+
+            B2Vec2[] rightPoints = new B2Vec2[] { new B2Vec2(1.0f, 0.0f), new B2Vec2(-0.5f, 1.0f), new B2Vec2(0.0f, 2.0f) };
+            B2Hull rightHull = b2ComputeHull(rightPoints, 3);
+            B2Polygon right = b2MakePolygon(rightHull, 0.0f);
+
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+
+            B2ShapeDef shapeDef = b2DefaultShapeDef();
+            shapeDef.density = 1.0f;
+            shapeDef.material.friction = 0.5f;
+
+            // Match the sample exactly: centery is computed before shift is reset for the compound branch.
+            float shift = 2.0f;
+            float extray = 0.25f;
+            float side = 0.25f;
+            float centerx = shift * columnCount / 2.0f - 1.0f;
+            float centery = 1.15f / 2.0f;
+            float yStart = 5.0f;
+
+            for (int i = 0; i < columnCount; ++i)
+            {
+                float x = i * shift - centerx;
+
+                for (int j = 0; j < rowCount; ++j)
+                {
+                    float y = j * (shift + extray) + centery + yStart;
+
+                    bodyDef.position = new B2Vec2(x + side, y);
+                    side = -side;
+
+                    B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+                    b2CreatePolygonShape(bodyId, shapeDef, left);
+                    b2CreatePolygonShape(bodyId, shapeDef, right);
+                }
+            }
         }
     }
 }

@@ -13,6 +13,12 @@ namespace Box2D.NET
         // These bits align with the contact id capacity and signal a change in contact status
         public B2BitSet contactStateBitSet;
 
+        // These bits align with the contact id capacity and signal a hit event.
+        public B2BitSet hitEventBitSet;
+
+        // Fast-path flag: true when this worker set at least one bit in hitEventBitSet this step.
+        public bool hasHitEvents;
+
         // These bits align with the joint id capacity and signal a change in contact status
         public B2BitSet jointStateBitSet;
 
@@ -26,5 +32,8 @@ namespace Box2D.NET
         // Per worker split island candidate
         public float splitSleepTime;
         public int splitIslandId;
+
+        // Number of contacts recycled this step (collide pass).
+        public int recycledContactCount;
     }
 }

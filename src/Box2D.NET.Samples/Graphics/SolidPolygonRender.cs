@@ -19,7 +19,7 @@ public struct SolidPolygonRender
 
     public SolidPolygonRender()
     {
-        polygons = new List<PolygonData>();
+        polygons = new List<PolygonData>(10 * SolidPolygons.e_batchSize);
         vaoId = new uint[1];
         vboIds = new uint[2];
     }
