@@ -139,7 +139,7 @@ public class DynamicTree : Sample
 
         float y = -4.0f;
 
-        m_tree = b2DynamicTree_Create();
+        m_tree = b2DynamicTree_Create(16);
 
         B2Vec2 aabbMargin = new B2Vec2(0.1f, 0.1f);
 

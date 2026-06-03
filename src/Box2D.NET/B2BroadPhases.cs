@@ -66,7 +66,7 @@ namespace Box2D.NET
 
 
         // #include <stdio.h>
-        public static void b2CreateBroadPhase(ref B2BroadPhase bp)
+        public static void b2CreateBroadPhase(ref B2BroadPhase bp, in B2Capacity capacity)
         {
             B2_ASSERT((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");
 
@@ -77,18 +77,27 @@ namespace Box2D.NET
             // }
             bp = new B2BroadPhase();
             bp.trees = new B2DynamicTree[(int)B2BodyType.b2_bodyTypeCount];
-            bp.moveSet = b2CreateSet(16);
-            bp.moveArray = b2Array_Create<int>(16);
+            bp.moveSet = b2CreateSet(b2MaxInt(16, 2 * capacity.dynamicShapeCount));
+            bp.moveArray = b2Array_Create<int>(b2MaxInt(16, capacity.dynamicShapeCount));
             bp.moveResults = null;
             bp.movePairs = null;
             bp.movePairCapacity = 0;
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
-            bp.pairSet = b2CreateSet(32);
+            bp.pairSet = b2CreateSet(b2MaxInt(32, 2 * capacity.contactCount));
 
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                bp.trees[i] = b2DynamicTree_Create();
-            }
+            int staticCapacity = b2MaxInt(16, capacity.staticShapeCount);
+            bp.trees[(int)B2BodyType.b2_staticBody] = b2DynamicTree_Create(staticCapacity);
+
+            int kinematicCapacity = 16;
+            bp.trees[(int)B2BodyType.b2_kinematicBody] = b2DynamicTree_Create(kinematicCapacity);
+
+            int dynamicCapacity = b2MaxInt(16, capacity.dynamicShapeCount);
+            bp.trees[(int)B2BodyType.b2_dynamicBody] = b2DynamicTree_Create(dynamicCapacity);
+        }
+
+        public static void b2CreateBroadPhase(ref B2BroadPhase bp)
+        {
+            b2CreateBroadPhase(ref bp, new B2Capacity());
         }
 
         public static void b2DestroyBroadPhase(B2BroadPhase bp)
@@ -410,7 +419,8 @@ namespace Box2D.NET
             b2TracyCZoneNC(B2TracyCZone.tree_task, "Rebuild BVH", B2HexColor.b2_colorFireBrick, true);
 
             B2World world = (B2World)context;
-            b2BroadPhase_RebuildTrees(world.broadPhase);
+            b2DynamicTree_Rebuild(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], false);
+            b2DynamicTree_Rebuild(world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody], false);
 
             b2TracyCZoneEnd(B2TracyCZone.tree_task);
         }
@@ -429,15 +439,15 @@ namespace Box2D.NET
 
             b2TracyCZoneNC(B2TracyCZone.update_pairs, "Find Pairs", B2HexColor.b2_colorMediumSlateBlue, true);
 
-            B2ArenaAllocator alloc = world.arena;
+            B2StackAllocator alloc = world.stack;
 
             // todo these could be in the step context
-            bp.moveResults = b2AllocateArenaItem<B2MoveResult>(alloc, moveCount, "move results");
+            bp.moveResults = b2StackAlloc<B2MoveResult>(alloc, moveCount, "move results");
 
             // This capacity can be exceeded if there are many overlapping pairs (e.g. all shapes at the origin)
             bp.movePairCapacity = 32 * moveCount;
 
-            bp.movePairs = b2AllocateArenaItem<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
+            bp.movePairs = b2StackAlloc<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
             b2AtomicStoreInt(ref bp.movePairIndex, 0);
 
 #if B2_SNOOP_TABLE_COUNTERS
@@ -518,9 +528,9 @@ namespace Box2D.NET
             b2Array_Clear(ref bp.moveArray);
             b2ClearSet(ref bp.moveSet);
 
-            b2FreeArenaItem(alloc, bp.movePairs);
+            b2StackFree(alloc, bp.movePairs);
             bp.movePairs = null;
-            b2FreeArenaItem(alloc, bp.moveResults);
+            b2StackFree(alloc, bp.moveResults);
             bp.moveResults = null;
 
             b2ValidateSolverSets(world);
@@ -540,12 +550,6 @@ namespace Box2D.NET
             B2AABB aabbA = b2DynamicTree_GetAABB(bp.trees[typeIndexA], proxyIdA);
             B2AABB aabbB = b2DynamicTree_GetAABB(bp.trees[typeIndexB], proxyIdB);
             return b2AABB_Overlaps(aabbA, aabbB);
-        }
-
-        internal static void b2BroadPhase_RebuildTrees(B2BroadPhase bp)
-        {
-            b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_dynamicBody], false);
-            b2DynamicTree_Rebuild(bp.trees[(int)B2BodyType.b2_kinematicBody], false);
         }
 
         public static int b2BroadPhase_GetShapeIndex(B2BroadPhase bp, int proxyKey)

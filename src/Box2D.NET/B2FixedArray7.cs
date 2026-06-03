@@ -24,16 +24,18 @@ namespace Box2D.NET
 
         public int Length => Size;
 
-        public ref T this[int index]
+        // readonly so an "in" or "ref readonly" receiver does not force a defensive
+        // copy. This matches Span<T>.this[int], which is also a readonly ref T indexer.
+        public readonly ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref AsSpanUnsafe()[index];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Span<T> AsSpanUnsafe()
+        internal readonly Span<T> AsSpanUnsafe()
         {
-            return MemoryMarshal.CreateSpan(ref _v0000, Size);
+            return MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in _v0000), Size);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

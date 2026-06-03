@@ -15,21 +15,21 @@ public class B2ArenaAllocatorTests
     public void Test_GetOrCreateFor_CreatesAllocatorForType()
     {
         // Arrange
-        var arena = b2CreateArenaAllocator(10);
+        var arena = b2CreateStackAllocator(10);
 
         // Act
         var typedAllocator = arena.GetOrCreateFor<int>();
 
         // Assert
         Assert.That(typedAllocator, Is.Not.Null, "Allocator should be created for the specified type.");
-        Assert.That(typedAllocator, Is.AssignableFrom<B2ArenaAllocatorTyped<int>>(), "Returned allocator should be of the correct type.");
+        Assert.That(typedAllocator, Is.AssignableFrom<B2Stack<int>>(), "Returned allocator should be of the correct type.");
     }
 
     [Test]
     public void Test_GetOrCreateFor_ReturnsSameAllocatorForSameType()
     {
         // Arrange
-        var arena = b2CreateArenaAllocator(10);
+        var arena = b2CreateStackAllocator(10);
 
         // Act
         var typedAllocator1 = arena.GetOrCreateFor<int>();
@@ -43,7 +43,7 @@ public class B2ArenaAllocatorTests
     public void Test_GetOrCreateFor_AllocatesForDifferentTypes()
     {
         // Arrange
-        var arena = b2CreateArenaAllocator(10);
+        var arena = b2CreateStackAllocator(10);
 
         // Act
         IB2ArenaAllocatable typedAllocator1 = arena.GetOrCreateFor<int>();
@@ -60,7 +60,7 @@ public class B2ArenaAllocatorTests
     public void Test_AsSpan_ReturnsAllocatorsSpan()
     {
         // Arrange
-        var arena = b2CreateArenaAllocator(10);
+        var arena = b2CreateStackAllocator(10);
         IB2ArenaAllocatable first = arena.GetOrCreateFor<int>();
         IB2ArenaAllocatable second = arena.GetOrCreateFor<float>();
         IB2ArenaAllocatable third = arena.GetOrCreateFor<double>();
@@ -79,7 +79,7 @@ public class B2ArenaAllocatorTests
     public void Test_GetOrCreateFor_ShouldBeThreadSafe_WhenCalledConcurrently()
     {
         // Arrange
-        var arena = b2CreateArenaAllocator(10);
+        var arena = b2CreateStackAllocator(10);
         var tasks = new Task[100];
         var typedAllocators = new IB2ArenaAllocatable[100];
         var ce = new CountdownEvent(1);
@@ -125,13 +125,13 @@ public class B2ArenaAllocatorTests
     [Test]
     public void Test_AllocateArenaItem_WithinCapacity_UsesArenaMemory()
     {
-        var arena = b2CreateArenaAllocator(100);
+        var arena = b2CreateStackAllocator(100);
         var alloc = arena.GetOrCreateFor<int>();
 
         // 0, 1, 2
         for (int i = 0; i < 100 / 32; ++i)
         {
-            var result = b2AllocateArenaItem<int>(arena, 1, "test");
+            var result = b2StackAlloc<int>(arena, 1, "test");
             Assert.That(result.Count, Is.EqualTo(32), $"index({i})");
             Assert.That(result.Offset, Is.EqualTo(i * 32), $"index({i})");
 
@@ -146,14 +146,14 @@ public class B2ArenaAllocatorTests
     public void Test_AllocateArenaItem_ExceedsCapacity_UsesHeapFallback()
     {
         // Create an arena with very small capacity to force fallback
-        var arena = b2CreateArenaAllocator(32);
+        var arena = b2CreateStackAllocator(32);
         var alloc = arena.GetOrCreateFor<int>();
 
         for (int i = 0; i < 3; ++i)
         {
             // Request size large enough to exceed arena capacity every time
             int requestSize = 33;
-            var result = b2AllocateArenaItem<int>(arena, requestSize, $"heap_test_{i}");
+            var result = b2StackAlloc<int>(arena, requestSize, $"heap_test_{i}");
 
             int expectedSize32 = ((requestSize - 1) | 0x1F) + 1;
 
@@ -174,26 +174,26 @@ public class B2ArenaAllocatorTests
     [Test]
     public void Test_FreeArenaItem_ArenaAndHeap()
     {
-        var arena = b2CreateArenaAllocator(64);
+        var arena = b2CreateStackAllocator(64);
         var alloc = arena.GetOrCreateFor<int>();
 
         // Arena allocation (fits into arena buffer)
-        var arenaMem = b2AllocateArenaItem<int>(arena, 1, "arena_alloc"); // size32 = 32
+        var arenaMem = b2StackAlloc<int>(arena, 1, "arena_alloc"); // size32 = 32
 
         // Heap fallback allocation (exceeds arena capacity)
-        var heapMem = b2AllocateArenaItem<int>(arena, 65, "heap_alloc"); // size32 = 96 → forces fallback
+        var heapMem = b2StackAlloc<int>(arena, 65, "heap_alloc"); // size32 = 96 → forces fallback
 
         Assert.That(alloc.entries.count, Is.EqualTo(2));
 
         // --- Free heap allocation ---
-        b2FreeArenaItem(arena, heapMem);
+        b2StackFree(arena, heapMem);
 
         Assert.That(alloc.entries.count, Is.EqualTo(1));
         Assert.That(alloc.index, Is.EqualTo(32), "Heap free should not affect arena index");
         Assert.That(alloc.allocation, Is.EqualTo(32));
 
         // --- Free arena allocation ---
-        b2FreeArenaItem(arena, arenaMem);
+        b2StackFree(arena, arenaMem);
 
         Assert.That(alloc.entries.count, Is.EqualTo(0));
         Assert.That(alloc.index, Is.EqualTo(0));
@@ -203,9 +203,9 @@ public class B2ArenaAllocatorTests
     [Test]
     public void Test_GrowArena()
     {
-        var arena = b2CreateArenaAllocator(10);
-        var intSegment = b2AllocateArenaItem<int>(arena, 32, "int * 32");
-        var byteSegment = b2AllocateArenaItem<byte>(arena, 32, "byte * 32");
+        var arena = b2CreateStackAllocator(10);
+        var intSegment = b2StackAlloc<int>(arena, 32, "int * 32");
+        var byteSegment = b2StackAlloc<byte>(arena, 32, "byte * 32");
 
         // before
         var allocSpan = arena.AsSpan();
@@ -217,9 +217,9 @@ public class B2ArenaAllocatorTests
             Assert.That(allocSpan[i].maxAllocation, Is.EqualTo(32));
         }
         
-        b2FreeArenaItem(arena, intSegment);
-        b2FreeArenaItem(arena, byteSegment);
-        b2GrowArena(arena);
+        b2StackFree(arena, intSegment);
+        b2StackFree(arena, byteSegment);
+        b2GrowStack(arena);
         
         for (int i = 0; i < allocSpan.Length; ++i)
         {

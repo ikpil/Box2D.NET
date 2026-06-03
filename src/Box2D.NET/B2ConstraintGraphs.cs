@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -12,10 +12,10 @@
 // cause horrible cache stalls. To make this feasible I would need a way to block these writes.
 // todo should be possible to branch on the scatters to avoid writing to kinematic bodies
 
-// TODO: @ikpil, check 
 // This is used for debugging by making all constraints be assigned to overflow.
-
-#define B2_FORCE_OVERFLOW
+// C uses "#define B2_FORCE_OVERFLOW 0" and tests "== 0". The C# preprocessor only has
+// boolean symbols, so leaving this undefined matches the C default of 0.
+//#define B2_FORCE_OVERFLOW
 
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Constants;
@@ -36,7 +36,7 @@ namespace Box2D.NET
         public const int B2_DYNAMIC_COLOR_COUNT = (B2_GRAPH_COLOR_COUNT - 4);
 
 
-        public static void b2CreateGraph(ref B2ConstraintGraph graph, int bodyCapacity)
+        public static void b2CreateGraph(ref B2ConstraintGraph graph, in B2Capacity capacity)
         {
             B2_ASSERT(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
             B2_ASSERT(B2_OVERFLOW_INDEX == B2_GRAPH_COLOR_COUNT - 1, "bad over flow index");
@@ -45,7 +45,7 @@ namespace Box2D.NET
             graph = new B2ConstraintGraph();
             graph.colors = new B2GraphColor[B2_GRAPH_COLOR_COUNT];
 
-            bodyCapacity = b2MaxInt(bodyCapacity, 8);
+            int bodyCapacity = b2MaxInt(capacity.staticBodyCount + capacity.dynamicBodyCount, 16);
 
             // Initialize graph color bit set.
             // No bitset for overflow color.
@@ -53,19 +53,9 @@ namespace Box2D.NET
             {
                 ref B2GraphColor color = ref graph.colors[i];
                 color.bodySet = b2CreateBitSet(bodyCapacity);
-                color.contactSims = b2Array_Create<B2ContactSim>();
-                color.jointSims = b2Array_Create<B2JointSim>();
-
                 b2SetBitCountAndClear(ref color.bodySet, bodyCapacity);
-            }
-
-            // @ikpil, for dummy
-            for (int i = B2_OVERFLOW_INDEX; i < B2_GRAPH_COLOR_COUNT; ++i)
-            {
-                var color = graph.colors[i];
-                color.bodySet = new B2BitSet();
-                color.contactSims = b2Array_Create<B2ContactSim>();
-                color.jointSims = b2Array_Create<B2JointSim>();
+                
+                b2Array_Reserve(ref color.contactSims, 16);
             }
         }
 
@@ -106,7 +96,7 @@ namespace Box2D.NET
             B2BodyType typeB = bodyB.type;
             B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
-#if B2_FORCE_OVERFLOW
+#if !B2_FORCE_OVERFLOW
             if (typeA == B2BodyType.b2_dynamicBody && typeB == B2BodyType.b2_dynamicBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
@@ -162,7 +152,7 @@ namespace Box2D.NET
             contact.colorIndex = colorIndex;
             contact.localIndex = color0.contactSims.count;
 
-            ref B2ContactSim newContact = ref b2Array_Add(ref color0.contactSims);
+            ref B2ContactSim newContact = ref b2Array_Emplace(ref color0.contactSims);
             //memcpy( newContact, contactSim, sizeof( b2ContactSim ) );
             newContact.CopyFrom(contactSim);
 
@@ -237,13 +227,13 @@ namespace Box2D.NET
             }
         }
 
-        // Contacts are always created as non-touching. They get moved into the constraint
-        // graph once they are found to be touching.
+        // Notice that a joint cannot share the same color as a contact between the same two bodies. This means I can solve contacts and
+        // joints in parallel with each other within each color.
         static int b2AssignJointColor(ref B2ConstraintGraph graph, int bodyIdA, int bodyIdB, B2BodyType typeA, B2BodyType typeB)
         {
             B2_ASSERT(typeA == B2BodyType.b2_dynamicBody || typeB == B2BodyType.b2_dynamicBody);
 
-#if B2_FORCE_OVERFLOW
+#if !B2_FORCE_OVERFLOW
             if (typeA == B2BodyType.b2_dynamicBody && typeB == B2BodyType.b2_dynamicBody)
             {
                 // Dynamic constraint colors cannot encroach on colors reserved for static constraints
@@ -308,7 +298,7 @@ namespace Box2D.NET
 
             int colorIndex = b2AssignJointColor(ref graph, bodyIdA, bodyIdB, bodyA.type, bodyB.type);
 
-            ref B2JointSim jointSim = ref b2Array_Add(ref graph.colors[colorIndex].jointSims);
+            ref B2JointSim jointSim = ref b2Array_Emplace(ref graph.colors[colorIndex].jointSims);
             //memset( jointSim, 0, sizeof( b2JointSim ) );
             jointSim.Clear();
 
@@ -354,10 +344,19 @@ namespace Box2D.NET
 
         internal static readonly B2HexColor[] b2_graphColors = new B2HexColor[]
         {
-            B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorGreen, B2HexColor.b2_colorCyan, B2HexColor.b2_colorBlue,
-            B2HexColor.b2_colorViolet, B2HexColor.b2_colorPink, B2HexColor.b2_colorChocolate, B2HexColor.b2_colorGoldenRod, B2HexColor.b2_colorCoral, B2HexColor.b2_colorRosyBrown,
-            B2HexColor.b2_colorAqua, B2HexColor.b2_colorPeru, B2HexColor.b2_colorLime, B2HexColor.b2_colorGold, B2HexColor.b2_colorPlum, B2HexColor.b2_colorSnow,
-            B2HexColor.b2_colorTeal, B2HexColor.b2_colorKhaki, B2HexColor.b2_colorSalmon, B2HexColor.b2_colorPeachPuff, B2HexColor.b2_colorHoneyDew, B2HexColor.b2_colorBlack,
+            B2HexColor.b2_colorRed, B2HexColor.b2_colorOrange, B2HexColor.b2_colorYellow, B2HexColor.b2_colorLimeGreen, B2HexColor.b2_colorSpringGreen,
+            B2HexColor.b2_colorAqua, B2HexColor.b2_colorDodgerBlue, B2HexColor.b2_colorBlueViolet, B2HexColor.b2_colorMagenta, B2HexColor.b2_colorDeepPink,
+            B2HexColor.b2_colorCrimson, B2HexColor.b2_colorCoral, B2HexColor.b2_colorGold, B2HexColor.b2_colorGreenYellow, B2HexColor.b2_colorMediumSeaGreen,
+            B2HexColor.b2_colorTurquoise, B2HexColor.b2_colorDeepSkyBlue, B2HexColor.b2_colorCornflowerBlue, B2HexColor.b2_colorMediumSlateBlue, B2HexColor.b2_colorMediumOrchid,
+            B2HexColor.b2_colorHotPink, B2HexColor.b2_colorTomato, B2HexColor.b2_colorKhaki, B2HexColor.b2_colorSilver,
         };
+
+        /// Get the visualization color assigned to a constraint graph color slot. The last index
+        /// (B2_GRAPH_COLOR_COUNT - 1) is the overflow color.
+        public static B2HexColor b2GetGraphColor(int index)
+        {
+            B2_ASSERT(0 <= index && index < B2_GRAPH_COLOR_COUNT);
+            return b2_graphColors[index];
+        }
     }
 }

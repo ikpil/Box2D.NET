@@ -4,6 +4,8 @@
 
 namespace Box2D.NET
 {
+    // Solver stages. Prepare joints and prepare contacts are split up
+    // because there is no need to store joint impulses.
     public enum B2SolverStageType
     {
         b2_stagePrepareJoints,

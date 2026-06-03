@@ -11,7 +11,7 @@ namespace Box2D.NET
     // The world also contains efficient memory management facilities.
     public class B2World
     {
-        public B2ArenaAllocator arena;
+        public B2StackAllocator stack;
         public B2BroadPhase broadPhase;
         public B2ConstraintGraph constraintGraph;
 
@@ -88,14 +88,7 @@ namespace Box2D.NET
         //b2BitSet bodyWakeSet;
         //b2ImpulseArray deferredImpulses;
 
-        // todo consider deferred waking and impulses to make it possible
-        // to apply forces and impulses from multiple threads
-        // impulses must be deferred because sleeping bodies have no velocity state
-        // Problems:
-        // - multiple forces applied to the same body from multiple threads
-        // Deferred wake
-        // b2BitSet bodyWakeSet;
-        // b2ImpulseArray deferredImpulses;
+        // Used to track debug draw
         public B2BitSet debugBodySet;
         public B2BitSet debugJointSet;
         public B2BitSet debugContactSet;
@@ -128,6 +121,8 @@ namespace Box2D.NET
         public ushort generation;
 
         public B2Profile profile;
+
+        public B2Capacity maxCapacity;
 
         public b2PreSolveFcn preSolveFcn;
         public object preSolveContext;
@@ -170,7 +165,7 @@ namespace Box2D.NET
 
         public void Clear()
         {
-            arena = null;
+            stack = null;
             broadPhase = null;
 
             bodyIdPool = null;
@@ -240,6 +235,8 @@ namespace Box2D.NET
             generation = 0;
 
             profile = new B2Profile();
+
+            maxCapacity = new B2Capacity();
 
             preSolveFcn = null;
             preSolveContext = null;

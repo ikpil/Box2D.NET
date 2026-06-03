@@ -70,6 +70,9 @@ namespace Box2D.NET
         /// User data
         public B2UserData userData;
 
+        /// Optional initial capacities
+        public B2Capacity capacity;
+
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;
     }

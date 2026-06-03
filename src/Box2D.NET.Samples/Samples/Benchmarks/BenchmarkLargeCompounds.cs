@@ -10,16 +10,16 @@ using static Box2D.NET.B2Shapes;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
-public class BenchmarkCompound : Sample
+public class BenchmarkLargeCompounds : Sample
 {
-    private static readonly int SampleCompound = SampleFactory.Shared.RegisterSample("Benchmark", "Compound", Create);
+    private static readonly int SampleLargeCompounds = SampleFactory.Shared.RegisterSample("Benchmark", "Large Compounds", Create);
 
     private static Sample Create(SampleContext context)
     {
-        return new BenchmarkCompound(context);
+        return new BenchmarkLargeCompounds(context);
     }
 
-    public BenchmarkCompound(SampleContext context) : base(context)
+    public BenchmarkLargeCompounds(SampleContext context) : base(context)
     {
         if (m_context.restart == false)
         {

@@ -56,13 +56,13 @@ namespace Box2D.NET
             return ref a.data[index];
         }
 
-        /* Add */
+        /* Emplace */
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T b2Array_Add<T>(ref B2Array<T> a) where T : new()
+        public static ref T b2Array_Emplace<T>(ref B2Array<T> a) where T : new()
         {
-            if (a.count == a.capacity)
+            if (a.count >= a.capacity)
             {
-                int newCapacity = a.capacity < 2 ? 2 : a.capacity + (a.capacity >> 1);
+                int newCapacity = a.capacity == 0 ? 8 : 2 * a.capacity;
                 b2Array_Reserve(ref a, newCapacity);
             }
 
@@ -74,9 +74,9 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Push<T>(ref B2Array<T> a, T value) where T : new()
         {
-            if (a.count == a.capacity)
+            if (a.count >= a.capacity)
             {
-                int newCapacity = a.capacity < 2 ? 2 : a.capacity + (a.capacity >> 1);
+                int newCapacity = a.capacity == 0 ? 8 : 2 * a.capacity;
                 b2Array_Reserve(ref a, newCapacity);
             }
 

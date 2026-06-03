@@ -162,7 +162,7 @@ namespace Box2D.NET
             draw.DrawCircleFcn = b2EmptyDrawCircle;
             draw.DrawSolidCircleFcn = b2EmptyDrawSolidCircle;
             draw.DrawSolidCapsuleFcn = b2EmptyDrawSolidCapsule;
-            draw.drawLineFcn = b2EmptyDrawSegment;
+            draw.DrawLineFcn = b2EmptyDrawSegment;
             draw.DrawTransformFcn = b2EmptyDrawTransform;
             draw.DrawPointFcn = b2EmptyDrawPoint;
             draw.DrawStringFcn = b2EmptyDrawString;

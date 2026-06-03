@@ -14,7 +14,7 @@ namespace Box2D.NET
         public DrawCircleFcn DrawCircleFcn;
         public DrawSolidCircleFcn DrawSolidCircleFcn;
         public DrawSolidCapsuleFcn DrawSolidCapsuleFcn;
-        public DrawLineFcn drawLineFcn;
+        public DrawLineFcn DrawLineFcn;
         public DrawTransformFcn DrawTransformFcn;
         public DrawPointFcn DrawPointFcn;
         public DrawStringFcn DrawStringFcn;

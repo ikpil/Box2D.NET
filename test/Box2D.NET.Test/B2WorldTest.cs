@@ -125,6 +125,42 @@ public class B2WorldTest
         Assert.That(b2World_IsValid(worldId), Is.EqualTo(false));
     }
 
+    [Test]
+    public void MaxCapacityTracksWorldUsage()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.capacity.staticBodyCount = 4;
+        worldDef.capacity.dynamicBodyCount = 8;
+        worldDef.capacity.staticShapeCount = 4;
+        worldDef.capacity.dynamicShapeCount = 8;
+        worldDef.capacity.contactCount = 16;
+
+        B2WorldId worldId = b2CreateWorld(worldDef);
+        Assert.That(b2World_IsValid(worldId), Is.EqualTo(true));
+
+        B2BodyDef groundBodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(worldId, groundBodyDef);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        b2CreatePolygonShape(groundId, shapeDef, b2MakeBox(10.0f, 1.0f));
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Vec2(0.0f, 4.0f);
+
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+        b2CreatePolygonShape(bodyId, shapeDef, b2MakeBox(0.5f, 0.5f));
+
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        B2Capacity capacity = b2World_GetMaxCapacity(worldId);
+        Assert.That(capacity.staticBodyCount, Is.GreaterThanOrEqualTo(1));
+        Assert.That(capacity.dynamicBodyCount, Is.GreaterThanOrEqualTo(1));
+        Assert.That(capacity.staticShapeCount, Is.GreaterThanOrEqualTo(1));
+        Assert.That(capacity.dynamicShapeCount, Is.GreaterThanOrEqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
     public const int BODY_COUNT = 10;
 
     [Test]

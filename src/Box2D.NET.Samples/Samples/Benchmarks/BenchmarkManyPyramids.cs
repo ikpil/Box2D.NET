@@ -8,11 +8,17 @@ namespace Box2D.NET.Samples.Samples.Benchmarks;
 
 public class BenchmarkManyPyramids : Sample
 {
-    private static readonly int SampleBenchmarkManyPyramids = SampleFactory.Shared.RegisterSample("Benchmark", "Many Pyramids", Create);
+    private static readonly int SampleBenchmarkManyPyramids =
+        SampleFactory.Shared.RegisterSampleWithCapacity("Benchmark", "Many Pyramids", Create, GetCapacity);
 
     private static Sample Create(SampleContext context)
     {
         return new BenchmarkManyPyramids(context);
+    }
+
+    private static B2Capacity GetCapacity()
+    {
+        return GetManyPyramidsCapacity();
     }
 
     public BenchmarkManyPyramids(SampleContext context) : base(context)

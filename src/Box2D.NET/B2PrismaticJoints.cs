@@ -275,25 +275,16 @@ namespace Box2D.NET
         // So:
         // Cdot + max(C1, 0)/h >= 0
 
-        // Linear constraint (point-to-line)
-        // d = pB - pA = xB + rB - xA - rA
-        // C = dot(perp, d)
-        // Cdot = dot(d, cross(wA, perp)) + dot(perp, vB + cross(wB, rB) - vA - cross(wA, rA))
-        //      = -dot(perp, vA) - dot(cross(rA + d, perp), wA) + dot(perp, vB) + dot(cross(rB, perp), vB)
-        // J = [-perp, -cross(rA + d, perp), perp, cross(rB, perp)]
+        // Block Solver
+        // We develop a block solver that includes the angular and linear constraints. This makes the limit stiffer.
         //
-        // Angular constraint
-        // C = aB - aA + a_initial
-        // Cdot = wB - wA
-        // J = [0 0 -1 0 0 1]
+        // The Jacobian has 2 rows:
+        // J = [-uT -s1 uT s2] // linear
+        //     [0   -1   0  1] // angular
         //
-        // K = J * invM * JT
-        //
-        // J = [-a -sA a sB]
-        //     [0  -1  0  1]
-        // a = perp
-        // sA = cross(rA + d, a) = cross(pB - xA, a)
-        // sB = cross(rB, a) = cross(pB - xB, a)
+        // u = perp
+        // s1 = cross(d + r1, u), s2 = cross(r2, u)
+        // a1 = cross(d + r1, v), a2 = cross(r2, v)
         internal static void b2PreparePrismaticJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
@@ -700,7 +691,7 @@ namespace Box2D.NET
             B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
             B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
-            draw.drawLineFcn(frameA.p, frameB.p, B2HexColor.b2_colorDimGray, draw.context);
+            draw.DrawLineFcn(frameA.p, frameB.p, B2HexColor.b2_colorDimGray, draw.context);
 
             if (joint.enableLimit)
             {
@@ -708,13 +699,13 @@ namespace Box2D.NET
                 B2Vec2 lower = b2MulAdd(frameA.p, joint.lowerTranslation, axisA);
                 B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
                 B2Vec2 perp = b2LeftPerp(axisA);
-                draw.drawLineFcn(lower, upper, B2HexColor.b2_colorGray, draw.context);
-                draw.drawLineFcn(b2MulSub(lower, b, perp), b2MulAdd(lower, b, perp), B2HexColor.b2_colorGreen, draw.context);
-                draw.drawLineFcn(b2MulSub(upper, b, perp), b2MulAdd(upper, b, perp), B2HexColor.b2_colorRed, draw.context);
+                draw.DrawLineFcn(lower, upper, B2HexColor.b2_colorGray, draw.context);
+                draw.DrawLineFcn(b2MulSub(lower, b, perp), b2MulAdd(lower, b, perp), B2HexColor.b2_colorGreen, draw.context);
+                draw.DrawLineFcn(b2MulSub(upper, b, perp), b2MulAdd(upper, b, perp), B2HexColor.b2_colorRed, draw.context);
             }
             else
             {
-                draw.drawLineFcn(b2MulSub(frameA.p, 1.0f, axisA), b2MulAdd(frameA.p, 1.0f, axisA), B2HexColor.b2_colorGray, draw.context);
+                draw.DrawLineFcn(b2MulSub(frameA.p, 1.0f, axisA), b2MulAdd(frameA.p, 1.0f, axisA), B2HexColor.b2_colorGray, draw.context);
             }
 
             if (joint.enableSpring)

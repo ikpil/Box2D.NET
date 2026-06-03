@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -600,20 +600,30 @@ namespace Box2D.NET
 
             B2Body body = b2Array_Get(ref world.bodies, chain.bodyId);
 
-            // TODO: @ikpil, check!
             // Remove the chain from the body's singly linked list.
+            // C walks a pointer-to-pointer so it can write through to the previous node.
+            // C# tracks the previous index instead and writes to whichever slot holds the link.
             int chainIdPtr = body.headChainId;
+            int prevChainId = B2_NULL_INDEX;
             bool found = false;
             while (chainIdPtr != B2_NULL_INDEX)
             {
                 if (chainIdPtr == chain.id)
                 {
-                    chainIdPtr = chain.nextChainId;
-                    body.headChainId = chain.nextChainId;
+                    if (prevChainId == B2_NULL_INDEX)
+                    {
+                        body.headChainId = chain.nextChainId;
+                    }
+                    else
+                    {
+                        world.chainShapes.data[prevChainId].nextChainId = chain.nextChainId;
+                    }
+
                     found = true;
                     break;
                 }
 
+                prevChainId = chainIdPtr;
                 chainIdPtr = world.chainShapes.data[chainIdPtr].nextChainId;
             }
 
@@ -1139,7 +1149,7 @@ namespace Box2D.NET
 
         // todo_erin untested
         /// Ray cast a shape directly
-        internal static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, in B2RayCastInput input)
+        public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, in B2RayCastInput input)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1433,7 +1443,7 @@ namespace Box2D.NET
             shape.enableContactEvents = flag;
         }
         /// Returns true if contact events are enabled
-        internal static bool b2Shape_AreContactEventsEnabled(B2ShapeId shapeId)
+        public static bool b2Shape_AreContactEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1454,7 +1464,7 @@ namespace Box2D.NET
             shape.enablePreSolveEvents = flag;
         }
         /// Returns true if pre-solve events are enabled
-        internal static bool b2Shape_ArePreSolveEventsEnabled(B2ShapeId shapeId)
+        public static bool b2Shape_ArePreSolveEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1474,7 +1484,7 @@ namespace Box2D.NET
             shape.enableHitEvents = flag;
         }
         /// Returns true if hit events are enabled
-        internal static bool b2Shape_AreHitEventsEnabled(B2ShapeId shapeId)
+        public static bool b2Shape_AreHitEventsEnabled(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1832,7 +1842,7 @@ namespace Box2D.NET
         }
 
         /// Compute the mass data for a shape
-        internal static B2MassData b2Shape_ComputeMassData(B2ShapeId shapeId)
+        public static B2MassData b2Shape_ComputeMassData(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)

@@ -103,7 +103,7 @@ public class BenchmarkSleep : Sample
         if (m_stepCount > 20)
         {
             // Creating and destroying a joint will engage the island splitter.
-            b2FilterJointDef jointDef = b2DefaultFilterJointDef();
+            B2FilterJointDef jointDef = b2DefaultFilterJointDef();
             jointDef.@base.bodyIdA = m_bodies[0];
             jointDef.@base.bodyIdB = m_bodies[1];
             B2JointId jointId = b2CreateFilterJoint(m_worldId, jointDef);
