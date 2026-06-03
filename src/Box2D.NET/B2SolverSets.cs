@@ -437,8 +437,6 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        // Merge set 2 into set 1 then destroy set 2.
-        // Warning: any pointers into these sets will be orphaned.
         // This is called when joints are created between sets. I want to allow the sets
         // to continue sleeping if both are asleep. Otherwise one set is waked.
         // Islands will get merge when the set is waked.

@@ -185,12 +185,13 @@ namespace Box2D.NET
         // Identity used:
         // w k % (rx i + ry j) = w * (-ry i + rx j)
 
-        // Angle constraint
-        // C = angle2 - angle1 - referenceAngle
-        // Cdot = w2 - w1
-        // J = [0 0 -1 0 0 1]
-        // K = invI1 + invI2
-
+        // Point-to-point constraint
+        // C = p2 - p1
+        // Cdot = v2 - v1
+        //      = v2 + cross(w2, r2) - v1 - cross(w1, r1)
+        // J = [-I -r1_skew I r2_skew ]
+        // Identity used:
+        // w k % (rx i + ry j) = w * (-ry i + rx j)
         internal static void b2PrepareMotorJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_motorJoint);

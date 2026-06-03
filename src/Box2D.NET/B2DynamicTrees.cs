@@ -171,9 +171,16 @@ namespace Box2D.NET
         // The cost for cases 1, 2a, and 3a can be computed using the sibling cost formula.
         // cost of sibling H = area(union(H, D)) + increased area of ancestors
 
-        // Suppose B (or C) is an internal node, then the lowest cost would be one of two cases:
-        // case1: D becomes a sibling of B
-        // case2: D becomes a descendant of B along with a new internal node of area(D).
+        // Greedy algorithm for sibling selection using the SAH
+        // We have three nodes A-(B,C) and want to add a leaf D, there are three choices.
+        // 1: make a new parent for A and D : E-(A-(B,C), D)
+        // 2: associate D with B
+        //   a: B is a leaf : A-(E-(B,D), C)
+        //   b: B is an internal node: A-(B{D},C)
+        // 3: associate D with C
+        //   a: C is a leaf : A-(B, E-(C,D))
+        //   b: C is an internal node: A-(B, C{D})
+        // All of these have a clear cost except when B or C is an internal node. Hence we need to be greedy.
         internal static int b2FindBestSibling(B2DynamicTree tree, in B2AABB boxD)
         {
             B2Vec2 centerD = b2AABB_Center(boxD);
@@ -746,8 +753,6 @@ namespace Box2D.NET
         }
 
         /// Create a proxy. Provide an AABB and a userData value.
-        // Create a proxy in the tree as a leaf node. We return the index of the node instead of a pointer so that we can grow
-        // the node pool.
         public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
         {
             B2_ASSERT(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
@@ -1626,7 +1631,6 @@ namespace Box2D.NET
         }
 
         //#else
-
         public const int B2_BIN_COUNT = 8;
 
 
@@ -1945,7 +1949,6 @@ namespace Box2D.NET
         }
 
         /// Rebuild the tree while retaining subtrees that haven't changed. Returns the number of boxes sorted.
-        // Not safe to access tree during this operation because it may grow
         public static int b2DynamicTree_Rebuild(B2DynamicTree tree, bool fullBuild)
         {
             int proxyCount = tree.proxyCount;

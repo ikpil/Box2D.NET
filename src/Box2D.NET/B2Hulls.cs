@@ -90,10 +90,6 @@ namespace Box2D.NET
         /// - more than B2_MAX_POLYGON_VERTICES points
         /// This welds close points and removes collinear points.
         /// @warning Do not modify a hull once it has been computed
-        // quickhull algorithm
-        // - merges vertices based on B2_LINEAR_SLOP
-        // - removes collinear points using B2_LINEAR_SLOP
-        // - returns an empty hull if it fails
         public static B2Hull b2ComputeHull(ReadOnlySpan<B2Vec2> points, int count)
         {
             B2Hull hull = new B2Hull();

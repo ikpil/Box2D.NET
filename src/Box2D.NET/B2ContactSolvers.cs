@@ -19,7 +19,6 @@ namespace Box2D.NET
 {
     public static class B2ContactSolvers
     {
-        // Overflow contacts don't fit into the constraint graph coloring
         // contact separation for sub-stepping
         // s = s0 + dot(cB + rB - cA - rA, normal)
         // normal is held constant
@@ -590,7 +589,7 @@ namespace Box2D.NET
         {
             return Vector.Max(a, b);
         }
-
+        // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> b2SymClampW(Vector<float> a, Vector<float> b)
         {
@@ -625,7 +624,7 @@ namespace Box2D.NET
             var mask = Vector.Equals(a, b);
             return Vector.ConditionalSelect(mask, Vector<float>.One, Vector<float>.Zero);
         }
-
+        // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector<float> b2BlendW(Vector<float> a, Vector<float> b, Vector<float> mask)
         {
@@ -704,7 +703,7 @@ namespace Box2D.NET
                 a.W >= b.W ? a.W : b.W
             );
         }
-
+        // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
         {
@@ -756,7 +755,7 @@ namespace Box2D.NET
         {
             return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
         }
-
+        // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
         {
@@ -1164,7 +1163,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #else
 
-        // This is a load and transpose
+        // This is a load and 8x8 transpose
         internal static B2BodyStateW b2GatherBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices)
         {
             B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
@@ -1196,6 +1195,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         }
 
         // This writes only the velocities back to the solver bodies
+        // https://developer.arm.com/documentation/102107a/0100/Floating-point-4x4-matrix-transposition
         internal static void b2ScatterBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
             B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);

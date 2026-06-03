@@ -52,7 +52,6 @@ namespace Box2D.NET
 
 
         // Ray cast an AABB
-        // From Real-time Collision Detection, p179.
         public static B2CastOutput b2AABB_RayCast(in B2AABB a, in B2Vec2 p1, in B2Vec2 p2)
         {
             // Radius not handled

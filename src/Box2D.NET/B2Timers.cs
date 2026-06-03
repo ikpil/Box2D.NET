@@ -13,7 +13,6 @@ namespace Box2D.NET
         private static readonly double s_invFrequency = 1000000000UL / (double)Stopwatch.Frequency; // counter to nano
 
         /// Get the absolute number of system ticks. The value is platform specific.
-        // nanoseconds
         public static ulong b2GetTicks()
         {
             long counter = Stopwatch.GetTimestamp();

@@ -541,8 +541,6 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus circle shape in local space.
-        // Precision Improvements for Ray / Sphere Intersection - Ray Tracing Gems 2019
-        // http://www.codercorner.com/blog/?p=321
         public static B2CastOutput b2RayCastCircle(in B2Circle shape, in B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(input));
@@ -757,7 +755,6 @@ namespace Box2D.NET
 
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
-        // Ray vs line segment
         public static B2CastOutput b2RayCastSegment(in B2Segment shape, in B2RayCastInput input, bool oneSided)
         {
             if (oneSided)

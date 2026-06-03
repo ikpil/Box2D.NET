@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    /// The @base joint class. Joints are used to constraint two bodies together in
+    /// The base joint class. Joints are used to constraint two bodies together in
     /// various fashions. Some joints also feature limits and motors.
     public class B2JointSim
     {

@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    //! @cond
+    /// ! @cond
     /// Profiling data. Times are in milliseconds.
     public struct B2Profile
     {

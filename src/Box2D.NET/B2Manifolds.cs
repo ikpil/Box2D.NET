@@ -38,10 +38,6 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between two circles
-        // point = qA * localAnchorA + pA
-        // localAnchorB = qBc * (point - pB)
-        // anchorB = point - pB = qA * localAnchorA + pA - pB
-        //         = anchorA + (pA - pB)
         public static B2Manifold b2CollideCircles(in B2Circle circleA, in B2Transform xfA, in B2Circle circleB, in B2Transform xfB)
         {
             B2Manifold manifold = new B2Manifold();
@@ -79,7 +75,6 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a capsule and circle
-        /// Compute the collision manifold between a capsule and circle
         public static B2Manifold b2CollideCapsuleAndCircle(in B2Capsule capsuleA, in B2Transform xfA, in B2Circle circleB, in B2Transform xfB)
         {
             B2Manifold manifold = new B2Manifold();
@@ -264,8 +259,6 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between a capsule and circle
-        // Follows Ericson 5.1.9 Closest Points of Two Line Segments
-        // Adds some logic to support clipping to get two contact points
         public static B2Manifold b2CollideCapsules(in B2Capsule capsuleA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB)
         {
             B2Vec2 origin = capsuleA.center1;
@@ -725,23 +718,6 @@ namespace Box2D.NET
         }
 
         /// Compute the contact manifold between two polygons
-        // Due to speculation, every polygon is rounded
-        // Algorithm:
-        //
-        // compute edge separation using the separating axis test (SAT)
-        // if (separation > speculation_distance)
-        //   return
-        // find reference and incident edge
-        // if separation >= 0.1f * B2_LINEAR_SLOP
-        //   compute closest points between reference and incident edge
-        //   if vertices are closest
-        //      single vertex-vertex contact
-        //   else
-        //      clip edges
-        //   end
-        // else
-        //   clip edges
-        // end
         public static B2Manifold b2CollidePolygons(ref B2Polygon polygonA, in B2Transform xfA, ref B2Polygon polygonB, in B2Transform xfB)
         {
             B2Vec2 origin = polygonA.vertices[0];

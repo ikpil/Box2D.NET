@@ -10,7 +10,8 @@ namespace Box2D.NET
 
     public static class B2Threads
     {
-        // macOS pthread_setname_np takes only the name; it always names the calling thread.
+        // SetThreadDescription exists on Windows 10 1607+. Resolve it dynamically so
+        // older Windows versions still link. Resolved once, cached for subsequent calls.
         public static void b2SetCurrentThreadName(string name)
         {
             if (string.IsNullOrEmpty(name))

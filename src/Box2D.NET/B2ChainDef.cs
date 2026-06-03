@@ -18,7 +18,7 @@ namespace Box2D.NET
     /// https://en.wikipedia.org/wiki/Polygonal_chain
     /// Must be initialized using b2DefaultChainDef().
     /// @warning Do not use chain shapes unless you understand the limitations. This is an advanced feature.
-    /// @ingroup shape    
+    /// @ingroup shape
     public struct B2ChainDef
     {
         /// Use this to store application specific shape data.

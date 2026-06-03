@@ -8,7 +8,7 @@ namespace Box2D.NET
     /// Connects two bodies together rigidly. This constraint provides springs to mimic
     /// soft-body simulation.
     /// @note The approximate solver in Box2D cannot hold many bodies together rigidly
-    /// @ingroup weld_join
+    /// @ingroup weld_joint
     public struct B2WeldJointDef
     {
         /// Base joint definition

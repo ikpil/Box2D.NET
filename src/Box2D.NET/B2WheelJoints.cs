@@ -15,6 +15,7 @@ namespace Box2D.NET
 {
     public static class B2WheelJoints
     {
+        /// Enable/disable the wheel joint spring
         public static void b2WheelJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
@@ -25,37 +26,37 @@ namespace Box2D.NET
                 joint.uj.wheelJoint.springImpulse = 0.0f;
             }
         }
-
+        /// Is the wheel joint spring enabled?
         public static bool b2WheelJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.enableSpring;
         }
-
+        /// Set the wheel joint stiffness in Hertz
         public static void b2WheelJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.hertz = hertz;
         }
-
+        /// Get the wheel joint stiffness in Hertz
         public static float b2WheelJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.hertz;
         }
-
+        /// Set the wheel joint damping ratio, non-dimensional
         public static void b2WheelJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.dampingRatio = dampingRatio;
         }
-
+        /// Get the wheel joint damping ratio, non-dimensional
         public static float b2WheelJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.dampingRatio;
         }
-
+        /// Enable/disable the wheel joint limit
         public static void b2WheelJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
@@ -66,25 +67,25 @@ namespace Box2D.NET
                 joint.uj.wheelJoint.enableLimit = enableLimit;
             }
         }
-
+        /// Is the wheel joint limit enabled?
         public static bool b2WheelJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.enableLimit;
         }
-
+        /// Get the wheel joint lower limit
         public static float b2WheelJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.lowerTranslation;
         }
-
+        /// Get the wheel joint upper limit
         public static float b2WheelJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.upperTranslation;
         }
-
+        /// Set the wheel joint limits
         public static void b2WheelJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2_ASSERT(lower <= upper);
@@ -98,7 +99,7 @@ namespace Box2D.NET
                 joint.uj.wheelJoint.upperImpulse = 0.0f;
             }
         }
-
+        /// Enable/disable the wheel joint motor
         public static void b2WheelJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
@@ -108,38 +109,38 @@ namespace Box2D.NET
                 joint.uj.wheelJoint.enableMotor = enableMotor;
             }
         }
-
+        /// Is the wheel joint motor enabled?
         public static bool b2WheelJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.enableMotor;
         }
-
+        /// Set the wheel joint motor speed in radians per second
         public static void b2WheelJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.motorSpeed = motorSpeed;
         }
-
+        /// Get the wheel joint motor speed in radians per second
         public static float b2WheelJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.motorSpeed;
         }
-
+        /// Get the wheel joint current motor torque, usually in newton-meters
         public static float b2WheelJoint_GetMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return world.inv_h * joint.uj.wheelJoint.motorImpulse;
         }
-
+        /// Set the wheel joint maximum motor torque, usually in newton-meters
         public static void b2WheelJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.maxMotorTorque = torque;
         }
-
+        /// Get the wheel joint maximum motor torque, usually in newton-meters
         public static float b2WheelJoint_GetMaxMotorTorque(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
@@ -181,10 +182,12 @@ namespace Box2D.NET
         // Cdot = = -dot(ax, vA) - dot(cross(d + rA, ax), wA) + dot(ax, vB) + dot(cross(rB, ax), vB)
         // J = [-ax -cross(d+rA, ax) ax cross(rB, ax)]
 
-        // Motor rotational constraint
-        // Cdot = wB - wA
-        // J = [0 0 -1 0 0 1]
-
+        // Linear constraint (point-to-line)
+        // d = pB - pA = xB + rB - xA - rA
+        // C = dot(ay, d)
+        // Cdot = dot(d, cross(wA, ay)) + dot(ay, vB + cross(wB, rB) - vA - cross(wA, rA))
+        //      = -dot(ay, vA) - dot(cross(d + rA, ay), wA) + dot(ay, vB) + dot(cross(rB, ay), vB)
+        // J = [-ay, -cross(d + rA, ay), ay, cross(rB, ay)]
         internal static void b2PrepareWheelJoint(B2JointSim @base, B2StepContext context)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);

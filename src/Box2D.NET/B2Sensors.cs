@@ -34,10 +34,10 @@ namespace Box2D.NET
         // Query all sensors for overlaps
         // Check against previous overlaps
 
-        // Data structures
-        // Each sensor has an double buffered array of overlaps
-        // These overlaps use a shape reference with index and generation
-
+        // Sensor shapes need to
+        // - detect begin and end overlap events
+        // - events must be reported in deterministic order
+        // - maintain an active list of overlaps for query
         internal static bool b2SensorQueryCallback(int proxyId, ulong userData, ref B2SensorQueryContext context)
         {
             B2_UNUSED(proxyId);

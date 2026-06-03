@@ -28,7 +28,7 @@ namespace Box2D.NET
         // Cdot = wB - wA
         // J = [0 0 -1 0 0 1]
         // K = invIA + invIB
-
+        /// Enable/disable the revolute joint spring
         public static void b2RevoluteJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -38,31 +38,31 @@ namespace Box2D.NET
                 joint.uj.revoluteJoint.springImpulse = 0.0f;
             }
         }
-
+        /// It the revolute angular spring enabled?
         public static bool b2RevoluteJoint_IsSpringEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.enableSpring;
         }
-
+        /// Set the revolute joint spring stiffness in Hertz
         public static void b2RevoluteJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.hertz = hertz;
         }
-
+        /// Get the revolute joint spring stiffness in Hertz
         public static float b2RevoluteJoint_GetSpringHertz(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.hertz;
         }
-
+        /// Set the revolute joint spring damping ratio, non-dimensional
         public static void b2RevoluteJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.dampingRatio = dampingRatio;
         }
-
+        /// Get the revolute joint spring damping ratio, non-dimensional
         public static float b2RevoluteJoint_GetSpringDampingRatio(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -82,7 +82,8 @@ namespace Box2D.NET
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.targetAngle;
         }
-
+        /// Get the revolute joint current angle in radians relative to the reference angle
+        /// @see b2RevoluteJointDef::referenceAngle
         public static float b2RevoluteJoint_GetAngle(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
@@ -96,7 +97,7 @@ namespace Box2D.NET
             float angle = b2RelativeAngle(qA, qB);
             return angle;
         }
-
+        /// Enable/disable the revolute joint limit
         public static void b2RevoluteJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -107,19 +108,19 @@ namespace Box2D.NET
                 joint.uj.revoluteJoint.upperImpulse = 0.0f;
             }
         }
-
+        /// Is the revolute joint limit enabled?
         public static bool b2RevoluteJoint_IsLimitEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.enableLimit;
         }
-
+        /// Get the revolute joint lower limit in radians
         public static float b2RevoluteJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.lowerAngle;
         }
-
+        /// Get the revolute joint upper limit in radians
         public static float b2RevoluteJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -128,6 +129,8 @@ namespace Box2D.NET
 
         // Set the revolute joint limits in radians. It is expected that lower <= upper
         // and that -0.99 * B2_PI <= lower && upper <= -0.99 * B2_PI.
+        /// Set the revolute joint limits in radians. It is expected that lower <= upper
+        /// and that -0.99 * B2_PI <= lower && upper <= -0.99 * B2_PI.
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2_ASSERT(lower <= upper);
@@ -143,7 +146,7 @@ namespace Box2D.NET
                 joint.uj.revoluteJoint.upperImpulse = 0.0f;
             }
         }
-
+        /// Enable/disable a revolute joint motor
         public static void b2RevoluteJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -153,38 +156,38 @@ namespace Box2D.NET
                 joint.uj.revoluteJoint.motorImpulse = 0.0f;
             }
         }
-
+        /// Is the revolute joint motor enabled?
         public static bool b2RevoluteJoint_IsMotorEnabled(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.enableMotor;
         }
-
+        /// Set the revolute joint motor speed in radians per second
         public static void b2RevoluteJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.motorSpeed = motorSpeed;
         }
-
+        /// Get the revolute joint motor speed in radians per second
         public static float b2RevoluteJoint_GetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.motorSpeed;
         }
-
+        /// Get the revolute joint current motor torque, usually in newton-meters
         public static float b2RevoluteJoint_GetMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return world.inv_h * joint.uj.revoluteJoint.motorImpulse;
         }
-
+        /// Set the revolute joint maximum motor torque, usually in newton-meters
         public static void b2RevoluteJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.maxMotorTorque = torque;
         }
-
+        /// Get the revolute joint maximum motor torque, usually in newton-meters
         public static float b2RevoluteJoint_GetMaxMotorTorque(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);

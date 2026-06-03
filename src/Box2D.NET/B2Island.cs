@@ -4,11 +4,13 @@
 
 namespace Box2D.NET
 {
-    // Persistent island for awake bodies, joints, and contacts.
-    // Contacts are touching.
-    // Contacts and joints may connect to static bodies, but static bodies are not in the island.
-    // https://en.wikipedia.org/wiki/Component_(graph_theory)
-    // https://en.wikipedia.org/wiki/Dynamic_connectivity
+    // Deterministic solver
+    //
+    // Collide all awake contacts
+    // Use bit array to emit start/stop touching events in defined order, per thread. Try using contact index, assuming contacts are
+    // created in a deterministic order. bit-wise OR together bit arrays and issue changes:
+    // - start touching: merge islands - temporary linked list - mark root island dirty - wake all - largest island is root
+    // - stop touching: increment constraintRemoveCount
     public class B2Island
     {
         // index of solver set stored in b2World

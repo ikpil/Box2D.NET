@@ -44,7 +44,6 @@ namespace Box2D.NET
         }
 
         /// Compute the distance between two line segments, clamping at the end points if needed.
-        /// Follows Ericson 5.1.9 Closest Points of Two Line Segments
         public static B2SegmentDistanceResult b2SegmentDistance(B2Vec2 p1, B2Vec2 q1, B2Vec2 p2, B2Vec2 q2)
         {
             B2SegmentDistanceResult result = new B2SegmentDistanceResult();
@@ -121,9 +120,6 @@ namespace Box2D.NET
         }
 
         /// Make a proxy for use in overlap, shape cast, and related functions. This is a deep copy of the points.
-        /// Make a proxy for use in GJK and related functions.
-        // GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
-        // todo try not copying
         public static B2ShapeProxy b2MakeProxy(ReadOnlySpan<B2Vec2> points, int count, float radius)
         {
             count = b2MinInt(count, B2_MAX_POLYGON_VERTICES);
@@ -157,6 +153,7 @@ namespace Box2D.NET
 
 
         // for single
+        /// Make a proxy for use in overlap, shape cast, and related functions. This is a deep copy of the points.
         public static B2ShapeProxy b2MakeProxy(B2Vec2 v1, int count, float radius)
         {
             B2_ASSERT(count == 1);
@@ -165,7 +162,7 @@ namespace Box2D.NET
             vertices[0] = v1;
             return b2MakeProxy(vertices, count, radius);
         }
-
+        /// Make a proxy for use in overlap, shape cast, and related functions. This is a deep copy of the points.
         public static B2ShapeProxy b2MakeProxy(B2Vec2 v1, B2Vec2 v2, int count, float radius)
         {
             B2_ASSERT(count == 2);
@@ -469,9 +466,6 @@ namespace Box2D.NET
         /// Compute the closest points between two shapes represented as point clouds.
         /// b2SimplexCache cache is input/output. On the first call set b2SimplexCache.count to zero.
         /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
-        // Uses GJK for computing the distance between convex shapes.
-        // https://box2d.org/files/ErinCatto_GJK_GDC2010.pdf
-        // I spent time optimizing this and could find no further significant gains 3/30/2025
         public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, Span<B2Simplex> simplexes, int simplexCapacity)
         {
             B2_UNUSED(simplexes, simplexCapacity);
@@ -666,7 +660,6 @@ namespace Box2D.NET
 
         /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
         /// Initially touching shapes are treated as a miss.
-        // Shape cast using conservative advancement
         public static B2CastOutput b2ShapeCast(in B2ShapeCastPairInput input)
         {
             // Compute tolerance
@@ -1174,8 +1167,6 @@ namespace Box2D.NET
         /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,
         /// non-tunneling collisions. If you change the time interval, you should call this function
         /// again.
-        // CCD via the local separating axis method. This seeks progression
-        // by computing the largest time at which separation is maintained.
         public static B2TOIOutput b2TimeOfImpact(in B2TOIInput input)
         {
 #if B2_SNOOP_TOI_COUNTERS

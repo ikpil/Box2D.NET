@@ -88,7 +88,14 @@ namespace Box2D.NET
         //b2BitSet bodyWakeSet;
         //b2ImpulseArray deferredImpulses;
 
-        // Used to track debug draw
+        // todo consider deferred waking and impulses to make it possible
+        // to apply forces and impulses from multiple threads
+        // impulses must be deferred because sleeping bodies have no velocity state
+        // Problems:
+        // - multiple forces applied to the same body from multiple threads
+        // Deferred wake
+        // b2BitSet bodyWakeSet;
+        // b2ImpulseArray deferredImpulses;
         public B2BitSet debugBodySet;
         public B2BitSet debugJointSet;
         public B2BitSet debugContactSet;

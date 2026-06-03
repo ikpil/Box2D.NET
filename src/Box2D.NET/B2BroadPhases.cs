@@ -65,8 +65,7 @@ namespace Box2D.NET
         }
 
 
-        // 
-        // static FILE* s_file = NULL;
+        // #include <stdio.h>
         public static void b2CreateBroadPhase(ref B2BroadPhase bp)
         {
             B2_ASSERT((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");

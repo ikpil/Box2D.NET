@@ -56,7 +56,8 @@ namespace Box2D.NET
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
-
+        /// Use this to initialize your joint definition
+        /// @ingroup motor_joint
         public static B2MotorJointDef b2DefaultMotorJointDef()
         {
             B2MotorJointDef def = new B2MotorJointDef();
@@ -84,7 +85,8 @@ namespace Box2D.NET
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
-
+        /// Use this to initialize your joint definition.
+        /// @ingroup revolute_joint
         public static B2RevoluteJointDef b2DefaultRevoluteJointDef()
         {
             B2RevoluteJointDef def = new B2RevoluteJointDef();
@@ -92,7 +94,8 @@ namespace Box2D.NET
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
-
+        /// Use this to initialize your joint definition
+        /// @ingroup weld_joint
         public static B2WeldJointDef b2DefaultWeldJointDef()
         {
             B2WeldJointDef def = new B2WeldJointDef();
@@ -100,7 +103,8 @@ namespace Box2D.NET
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
-
+        /// Use this to initialize your joint definition
+        /// @ingroup wheel_joint
         public static B2WheelJointDef b2DefaultWheelJointDef()
         {
             B2WheelJointDef def = new B2WheelJointDef();
@@ -111,7 +115,8 @@ namespace Box2D.NET
             def.internalValue = B2_SECRET_COOKIE;
             return def;
         }
-
+        /// Use this to initialize your explosion definition
+        /// @ingroup world
         public static B2ExplosionDef b2DefaultExplosionDef()
         {
             B2ExplosionDef def = new B2ExplosionDef();
@@ -391,7 +396,8 @@ namespace Box2D.NET
 
             return new B2JointPair(joint, jointSim);
         }
-
+        /// Create a distance joint
+        /// @see b2DistanceJointDef for details
         public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, in B2DistanceJointDef def)
         {
             B2_CHECK_DEF(def);
@@ -496,7 +502,8 @@ namespace Box2D.NET
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
-
+        /// Create a prismatic (slider) joint.
+        /// @see b2PrismaticJointDef for details
         public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, in B2PrismaticJointDef def)
         {
             B2_CHECK_DEF(def);
@@ -530,7 +537,8 @@ namespace Box2D.NET
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
-
+        /// Create a revolute joint
+        /// @see b2RevoluteJointDef for details
         public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, in B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(def);
@@ -568,8 +576,8 @@ namespace Box2D.NET
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
-
-
+        /// Create a weld joint
+        /// @see b2WeldJointDef for details
         public static B2JointId b2CreateWeldJoint(B2WorldId worldId, in B2WeldJointDef def)
         {
             B2_CHECK_DEF(def);
@@ -598,7 +606,8 @@ namespace Box2D.NET
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
-
+        /// Create a wheel joint
+        /// @see b2WheelJointDef for details
         public static B2JointId b2CreateWheelJoint(B2WorldId worldId, in B2WheelJointDef def)
         {
             B2_CHECK_DEF(def);
@@ -759,21 +768,21 @@ namespace Box2D.NET
 
             b2DestroyJointInternal(world, joint, wakeAttached);
         }
-
+        /// Get the joint type
         public static B2JointType b2Joint_GetType(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             return joint.type;
         }
-
+        /// Get body A id on a joint
         public static B2BodyId b2Joint_GetBodyA(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             return b2MakeBodyId(world, joint.edges[0].bodyId);
         }
-
+        /// Get body B id on a joint
         public static B2BodyId b2Joint_GetBodyB(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
@@ -827,7 +836,7 @@ namespace Box2D.NET
             B2JointSim jointSim = b2GetJointSim(world, joint);
             return jointSim.localFrameB;
         }
-
+        /// Toggle collision between connected bodies
         public static void b2Joint_SetCollideConnected(B2JointId jointId, bool shouldCollide)
         {
             B2World world = b2GetWorldLocked(jointId.world0);
@@ -872,28 +881,28 @@ namespace Box2D.NET
                 b2DestroyContactsBetweenBodies(world, bodyA, bodyB);
             }
         }
-
+        /// Is collision allowed between connected bodies?
         public static bool b2Joint_GetCollideConnected(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             return joint.collideConnected;
         }
-
+        /// Set the user data on a joint
         public static void b2Joint_SetUserData(B2JointId jointId, B2UserData userData)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             joint.userData = userData;
         }
-
+        /// Get the user data on a joint
         public static B2UserData b2Joint_GetUserData(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             return joint.userData;
         }
-
+        /// Wake the bodies connect to this joint
         public static void b2Joint_WakeBodies(B2JointId jointId)
         {
             B2World world = b2GetWorldLocked(jointId.world0);
@@ -1043,14 +1052,14 @@ namespace Box2D.NET
                     return 0.0f;
             }
         }
-
+        /// Get the current constraint force for this joint. Usually in Newtons.
         public static B2Vec2 b2Joint_GetConstraintForce(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
             return b2GetJointConstraintForce(world, joint);
         }
-
+        /// Get the current constraint torque for this joint. Usually in Newton * meters.
         public static float b2Joint_GetConstraintTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);

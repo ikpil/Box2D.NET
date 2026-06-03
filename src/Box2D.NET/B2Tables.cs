@@ -95,6 +95,9 @@ namespace Box2D.NET
             return key;
         }
 #elif TRUE
+        // Fast-hash
+        // https://jonkagstrom.com/bit-mixer-construction
+        // https://code.google.com/archive/p/fast-hash
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2KeyHash(ulong key)
         {
@@ -230,7 +233,6 @@ namespace Box2D.NET
         }
 
         // Returns true if the key was found
-        // See https://en.wikipedia.org/wiki/Open_addressing
         public static bool b2RemoveKey(ref B2HashSet set, ulong key)
         {
             ulong hash = b2KeyHash(key);

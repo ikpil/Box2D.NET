@@ -94,7 +94,7 @@ namespace Box2D.NET
             alloc.allocation -= entry.size;
             b2Array_Pop(ref alloc.entries);
         }
-
+        // Grow the arena based on usage
         public static void b2GrowArena(B2ArenaAllocator allocator)
         {
             var allocSpan = allocator.AsSpan();

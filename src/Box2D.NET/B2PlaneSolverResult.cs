@@ -4,7 +4,7 @@
 
 namespace Box2D.NET
 {
-    /// Result returned by b2SolvePlane
+    /// Result returned by b2SolvePlanes
     public struct B2PlaneSolverResult
     {
         /// The translation of the mover

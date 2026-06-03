@@ -15,8 +15,8 @@ namespace Box2D.NET
         public B2ShapeId shapeIdB;
 
         /// Id of the contact.
-        ///	@warning this contact may have been destroyed
-        ///	@see b2Contact_IsValid
+        /// @warning this contact may have been destroyed
+        /// @see b2Contact_IsValid
         public B2ContactId contactId;
         
         /// Point where the shapes hit at the beginning of the time step.

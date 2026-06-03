@@ -210,7 +210,7 @@ namespace Box2D.NET
             b2ValidateIsland(world, islandId);
         }
 
-        // Link a contact into an island.
+        // Link contacts into the island graph when it starts having contact points
         public static void b2LinkContact(B2World world, B2Contact contact)
         {
             B2_ASSERT((contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag) != 0);
@@ -251,7 +251,7 @@ namespace Box2D.NET
             b2AddContactToIsland(world, finalIslandId, contact);
         }
 
-        // This is called when a contact no longer has contact points or when a contact is destroyed.
+        // Unlink contact from the island graph when it stops having contact points
         public static void b2UnlinkContact(B2World world, B2Contact contact)
         {
             B2_ASSERT(contact.islandId != B2_NULL_INDEX);
@@ -301,7 +301,7 @@ namespace Box2D.NET
 
             b2ValidateIsland(world, islandId);
         }
-
+        // Link a joint into the island graph when it is created
         public static void b2LinkJoint(B2World world, B2Joint joint)
         {
             B2Body bodyA = b2Array_Get(ref world.bodies, joint.edges[0].bodyId);
@@ -329,7 +329,7 @@ namespace Box2D.NET
             // Add joint the island that survived
             b2AddJointToIsland(world, finalIslandId, joint);
         }
-
+        // Unlink a joint from the island graph when it is destroyed
         public static void b2UnlinkJoint(B2World world, B2Joint joint)
         {
             if (joint.islandId == B2_NULL_INDEX)

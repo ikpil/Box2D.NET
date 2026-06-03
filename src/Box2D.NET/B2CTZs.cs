@@ -8,7 +8,7 @@ namespace Box2D.NET
 {
     public static class B2CTZs
     {
-        // uint에 대해 trailing zero count (CTZ)
+        // https://en.wikipedia.org/wiki/Find_first_set
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2CTZ32(uint block)
         {
@@ -23,7 +23,7 @@ namespace Box2D.NET
             return count;
         }
 
-        // uint에 대해 leading zero count (CLZ)
+        // This function doesn't need to be fast, so using the Ivy Bridge fallback.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static uint b2CLZ32(uint value)
         {

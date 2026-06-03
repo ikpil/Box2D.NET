@@ -109,14 +109,14 @@ namespace Box2D.NET
             return id;
         }
 
-        /// Store a body id into a ulong.
+        /// Store a body id into a uint64_t.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreBodyId(B2BodyId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
-        /// Load a ulong into a body id.
+        /// Load a uint64_t into a body id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyId b2LoadBodyId(ulong x)
         {
@@ -124,14 +124,14 @@ namespace Box2D.NET
             return id;
         }
 
-        /// Store a shape id into a ulong.
+        /// Store a shape id into a uint64_t.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreShapeId(B2ShapeId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
-        /// Load a ulong into a shape id.
+        /// Load a uint64_t into a shape id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2ShapeId b2LoadShapeId(ulong x)
         {
@@ -139,14 +139,14 @@ namespace Box2D.NET
             return id;
         }
 
-        /// Store a chain id into a ulong.
+        /// Store a chain id into a uint64_t.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreChainId(B2ChainId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
-        /// Load a ulong into a chain id.
+        /// Load a uint64_t into a chain id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2ChainId b2LoadChainId(ulong x)
         {
@@ -154,14 +154,14 @@ namespace Box2D.NET
             return id;
         }
 
-        /// Store a joint id into a ulong.
+        /// Store a joint id into a uint64_t.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2StoreJointId(B2JointId id)
         {
             return ((ulong)id.index1 << 32) | ((ulong)id.world0) << 16 | (ulong)id.generation;
         }
 
-        /// Load a ulong into a joint id.
+        /// Load a uint64_t into a joint id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2JointId b2LoadJointId(ulong x)
         {

@@ -366,7 +366,7 @@ namespace Box2D.NET
 
         /// Normalized linear interpolation
         /// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-        ///	https://web.archive.org/web/20170825184056/http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
+        /// https://web.archive.org/web/20170825184056/http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Rot b2NLerp(in B2Rot q1, in B2Rot q2, float t)
         {
@@ -748,10 +748,9 @@ namespace Box2D.NET
         }
 
         /// Compute an approximate arctangent in the range [-pi, pi]
-        /// This is hand coded for cross-platform determinism. The MathF.Atan2
+        /// This is hand coded for cross-platform determinism. The atan2f
         /// function in the standard library is not cross-platform deterministic.
-        ///	Accurate to around 0.0023 degrees
-        // https://stackoverflow.com/questions/46210708/atan2-approximation-with-11bits-in-mantissa-on-x86with-sse2-and-armwith-vfpv4
+        /// Accurate to around 0.0023 degrees
         public static float b2Atan2(float y, float x)
         {
             // Added check for (0,0) to match MathF.Atan2 and avoid NaN
@@ -796,10 +795,6 @@ namespace Box2D.NET
 
         /// Compute the cosine and sine of an angle in radians. Implemented
         /// for cross-platform determinism.
-        // Approximate cosine and sine for determinism. In my testing MathF.Cos and MathF.Sin produced
-        // the same results on x64 and ARM using MSVC, GCC, and Clang. However, I don't trust
-        // this result.
-        // https://en.wikipedia.org/wiki/Bh%C4%81skara_I%27s_sine_approximation_formula
         public static B2CosSin b2ComputeCosSin(float radians)
         {
             float x = b2UnwindAngle(radians);
