@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
+// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System;
@@ -27,13 +27,19 @@ namespace Box2D.NET
         public ref T this[int index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref AsSpan()[index];
+            get => ref AsSpanUnsafe()[index];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span<T> AsSpan()
+        internal Span<T> AsSpanUnsafe()
         {
             return MemoryMarshal.CreateSpan(ref _v0000, Size);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly ReadOnlySpan<T> AsReadOnlySpan()
+        {
+            return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(in _v0000), Size);
         }
 
     }
