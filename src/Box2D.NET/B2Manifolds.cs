@@ -540,7 +540,7 @@ namespace Box2D.NET
         public static B2Manifold b2CollidePolygonAndCapsule(in B2Polygon polygonA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB)
         {
             B2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollidePolygons(in polygonA, xfA, in polyB, xfB);
+            return b2CollidePolygons(polygonA, xfA, polyB, xfB);
         }
 
         // Polygon clipper used to compute contact points when there are potentially two contact points.
@@ -1091,7 +1091,7 @@ namespace Box2D.NET
         public static B2Manifold b2CollideSegmentAndPolygon(in B2Segment segmentA, in B2Transform xfA, in B2Polygon polygonB, in B2Transform xfB)
         {
             B2Polygon polygonA = b2MakeCapsule(segmentA.point1, segmentA.point2, 0.0f);
-            return b2CollidePolygons(in polygonA, xfA, polygonB, xfB);
+            return b2CollidePolygons(polygonA, xfA, polygonB, xfB);
         }
 
         /// Compute the contact manifold between a chain segment and a circle
@@ -1186,7 +1186,7 @@ namespace Box2D.NET
         public static B2Manifold b2CollideChainSegmentAndCapsule(in B2ChainSegment segmentA, in B2Transform xfA, in B2Capsule capsuleB, in B2Transform xfB, ref B2SimplexCache cache)
         {
             B2Polygon polyB = b2MakeCapsule(capsuleB.center1, capsuleB.center2, capsuleB.radius);
-            return b2CollideChainSegmentAndPolygon(segmentA, xfA, in polyB, xfB, ref cache);
+            return b2CollideChainSegmentAndPolygon(segmentA, xfA, polyB, xfB, ref cache);
         }
 
         internal static B2Manifold b2ClipSegments(B2Vec2 a1, B2Vec2 a2, B2Vec2 b1, B2Vec2 b2, B2Vec2 normal, float ra, float rb, ushort id1, ushort id2)
