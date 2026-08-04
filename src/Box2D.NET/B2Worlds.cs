@@ -2703,7 +2703,7 @@ void b2World_Dump()
 
             int localIndex = body.localIndex;
             B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
-            B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+            ref B2BodyState state = ref b2Array_Get(ref set.bodyStates, localIndex);
             B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
             state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
             state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(closestPoint, bodySim.center), impulse);

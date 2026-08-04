@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -283,11 +283,11 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = b2_identityBodyState;
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
-            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            ref B2BodyState stateA = ref (joint.indexA == B2_NULL_INDEX ? ref dummyState : ref context.states[joint.indexA]);
+            ref B2BodyState stateB = ref (joint.indexB == B2_NULL_INDEX ? ref dummyState : ref context.states[joint.indexB]);
 
             B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
             B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
@@ -317,12 +317,12 @@ namespace Box2D.NET
             float iB = @base.invIB;
 
             // dummy state for static bodies
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = b2_identityBodyState;
 
             ref B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
-            B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
-            B2BodyState stateB = joint.indexB == B2_NULL_INDEX ? dummyState : context.states[joint.indexB];
+            ref B2BodyState stateA = ref (joint.indexA == B2_NULL_INDEX ? ref dummyState : ref context.states[joint.indexA]);
+            ref B2BodyState stateB = ref (joint.indexB == B2_NULL_INDEX ? ref dummyState : ref context.states[joint.indexB]);
 
             B2Vec2 vA = stateA.linearVelocity;
             float wA = stateA.angularVelocity;

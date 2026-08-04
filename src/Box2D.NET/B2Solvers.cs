@@ -123,7 +123,7 @@ namespace Box2D.NET
             for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
                 B2BodySim sim = sims[i];
-                B2BodyState state = states[i];
+                ref B2BodyState state = ref states[i];
 
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
@@ -171,7 +171,7 @@ namespace Box2D.NET
 
             for (int i = block.startIndex; i < block.startIndex + block.count; ++i)
             {
-                B2BodyState state = states[i];
+                ref B2BodyState state = ref states[i];
 
                 B2Vec2 v = state.linearVelocity;
                 float w = state.angularVelocity;
@@ -602,7 +602,7 @@ namespace Box2D.NET
 
             for (int simIndex = startIndex; simIndex < endIndex; ++simIndex)
             {
-                B2BodyState state = states[simIndex];
+                ref B2BodyState state = ref states[simIndex];
                 B2BodySim sim = sims[simIndex];
 
                 B2Vec2 v = state.linearVelocity;

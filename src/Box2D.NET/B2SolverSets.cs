@@ -74,8 +74,7 @@ namespace Box2D.NET
                 simDst.CopyFrom(simSrc);
 
                 ref B2BodyState state = ref b2Array_Emplace(ref awakeSet.bodyStates);
-                //*state = b2_identityBodyState;
-                state.CopyFrom(b2_identityBodyState);
+                state = b2_identityBodyState;
                 state.flags = body.flags;
 
                 // move non-touching contacts from disabled set to awake set
@@ -566,8 +565,7 @@ namespace Box2D.NET
             else if (targetSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 ref B2BodyState state = ref b2Array_Emplace(ref targetSet.bodyStates);
-                //*state = b2_identityBodyState;
-                state.CopyFrom(b2_identityBodyState);
+                state = b2_identityBodyState;
                 state.flags = body.flags;
             }
 

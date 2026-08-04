@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -95,7 +95,7 @@ namespace Box2D.NET
                 float iA = contactSim.invIA;
                 if (indexA != B2_NULL_INDEX)
                 {
-                    B2BodyState stateA = awakeStates[indexA];
+                    ref B2BodyState stateA = ref awakeStates[indexA];
                     vA = stateA.linearVelocity;
                     wA = stateA.angularVelocity;
                 }
@@ -106,7 +106,7 @@ namespace Box2D.NET
                 float iB = contactSim.invIB;
                 if (indexB != B2_NULL_INDEX)
                 {
-                    B2BodyState stateB = awakeStates[indexB];
+                    ref B2BodyState stateB = ref awakeStates[indexB];
                     vB = stateB.linearVelocity;
                     wB = stateB.angularVelocity;
                 }
@@ -183,7 +183,7 @@ namespace Box2D.NET
             B2BodyState[] states = awakeSet.bodyStates.data;
 
             // This is a dummy state to represent a static body because static bodies don't have a solver body.
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = b2_identityBodyState;
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -192,8 +192,8 @@ namespace Box2D.NET
                 int indexA = constraint.indexA - 1;
                 int indexB = constraint.indexB - 1;
 
-                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
-                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
+                ref B2BodyState stateA = ref (indexA == B2_NULL_INDEX ? ref dummyState : ref states[indexA]);
+                ref B2BodyState stateB = ref (indexB == B2_NULL_INDEX ? ref dummyState : ref states[indexB]);
 
                 B2Vec2 vA = stateA.linearVelocity;
                 float wA = stateA.angularVelocity;
@@ -263,7 +263,7 @@ namespace Box2D.NET
             float contactSpeed = context.world.contactSpeed;
 
             // This is a dummy body to represent a static body since static bodies don't have a solver body.
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = b2_identityBodyState;
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -276,12 +276,12 @@ namespace Box2D.NET
                 int indexA = constraint.indexA - 1;
                 int indexB = constraint.indexB - 1;
 
-                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
+                ref B2BodyState stateA = ref (indexA == B2_NULL_INDEX ? ref dummyState : ref states[indexA]);
                 B2Vec2 vA = stateA.linearVelocity;
                 float wA = stateA.angularVelocity;
                 B2Rot dqA = stateA.deltaRotation;
 
-                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
+                ref B2BodyState stateB = ref (indexB == B2_NULL_INDEX ? ref dummyState : ref states[indexB]);
                 B2Vec2 vB = stateB.linearVelocity;
                 float wB = stateB.angularVelocity;
                 B2Rot dqB = stateB.deltaRotation;
@@ -433,7 +433,7 @@ namespace Box2D.NET
             float threshold = context.world.restitutionThreshold;
 
             // dummy state to represent a static body
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            B2BodyState dummyState = b2_identityBodyState;
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -453,11 +453,11 @@ namespace Box2D.NET
                 int indexA = constraint.indexA - 1;
                 int indexB = constraint.indexB - 1;
 
-                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
+                ref B2BodyState stateA = ref (indexA == B2_NULL_INDEX ? ref dummyState : ref states[indexA]);
                 B2Vec2 vA = stateA.linearVelocity;
                 float wA = stateA.angularVelocity;
 
-                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
+                ref B2BodyState stateB = ref (indexB == B2_NULL_INDEX ? ref dummyState : ref states[indexB]);
                 B2Vec2 vB = stateB.linearVelocity;
                 float wB = stateB.angularVelocity;
 
@@ -1296,11 +1296,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 #else
 
         // This is a load and transpose
-        internal static B2BodyStateW b2GatherBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices)
+        internal static B2BodyStateW b2GatherBodies(Span<B2BodyState> states, ReadOnlySpan<int> indices)
         {
             B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
 
-            // Read-only here, so alias the shared instance instead of allocating a copy per call.
             B2BodyState identity = b2_identityBodyState;
 
             // zero means null
@@ -1309,10 +1308,11 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             int i3 = indices[2] - 1;
             int i4 = indices[3] - 1;
 
-            B2BodyState s1 = i1 == B2_NULL_INDEX ? identity : states[i1];
-            B2BodyState s2 = i2 == B2_NULL_INDEX ? identity : states[i2];
-            B2BodyState s3 = i3 == B2_NULL_INDEX ? identity : states[i3];
-            B2BodyState s4 = i4 == B2_NULL_INDEX ? identity : states[i4];
+            // Bind by ref so the 32 byte state is read in place instead of copied four times.
+            ref B2BodyState s1 = ref (i1 == B2_NULL_INDEX ? ref identity : ref states[i1]);
+            ref B2BodyState s2 = ref (i2 == B2_NULL_INDEX ? ref identity : ref states[i2]);
+            ref B2BodyState s3 = ref (i3 == B2_NULL_INDEX ? ref identity : ref states[i3]);
+            ref B2BodyState s4 = ref (i4 == B2_NULL_INDEX ? ref identity : ref states[i4]);
 
             B2BodyStateW simdBody = new B2BodyStateW();
             simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
@@ -1328,7 +1328,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         }
 
         // This writes only the velocities back to the solver bodies
-        internal static void b2ScatterBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
+        internal static void b2ScatterBodies(Span<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
             B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
 
@@ -1340,7 +1340,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             if (i1 != B2_NULL_INDEX && (states[i1].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[i1];
+                ref B2BodyState state = ref states[i1];
                 state.linearVelocity.X = simdBody.v.X.X;
                 state.linearVelocity.Y = simdBody.v.Y.X;
                 state.angularVelocity = simdBody.w.X;
@@ -1348,7 +1348,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             if (i2 != B2_NULL_INDEX && (states[i2].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[i2];
+                ref B2BodyState state = ref states[i2];
                 state.linearVelocity.X = simdBody.v.X.Y;
                 state.linearVelocity.Y = simdBody.v.Y.Y;
                 state.angularVelocity = simdBody.w.Y;
@@ -1356,7 +1356,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             if (i3 != B2_NULL_INDEX && (states[i3].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[i3];
+                ref B2BodyState state = ref states[i3];
                 state.linearVelocity.X = simdBody.v.X.Z;
                 state.linearVelocity.Y = simdBody.v.Y.Z;
                 state.angularVelocity = simdBody.w.Z;
@@ -1364,7 +1364,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             if (i4 != B2_NULL_INDEX && (states[i4].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
             {
-                B2BodyState state = states[i4];
+                ref B2BodyState state = ref states[i4];
                 state.linearVelocity.X = simdBody.v.X.W;
                 state.linearVelocity.Y = simdBody.v.Y.W;
                 state.angularVelocity = simdBody.w.W;
@@ -1462,7 +1462,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         float iA = contactSim.invIA;
                         if (indexA != B2_NULL_INDEX)
                         {
-                            B2BodyState stateA = states[indexA];
+                            ref B2BodyState stateA = ref states[indexA];
                             vA = stateA.linearVelocity;
                             wA = stateA.angularVelocity;
                         }
@@ -1473,7 +1473,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         float iB = contactSim.invIB;
                         if (indexB != B2_NULL_INDEX)
                         {
-                            B2BodyState stateB = states[indexB];
+                            ref B2BodyState stateB = ref states[indexB];
                             vB = stateB.linearVelocity;
                             wB = stateB.angularVelocity;
                         }

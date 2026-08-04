@@ -1931,7 +1931,7 @@ namespace Box2D.NET
 
             B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
-            B2BodyState state = b2GetBodyState(world, body);
+            ref B2BodyState state = ref b2GetBodyState(world, body);
             B2Transform transform = sim.transform;
 
             float lengthUnits = b2GetLengthUnitsPerMeter();

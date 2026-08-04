@@ -4,6 +4,7 @@
 
 using System;
 using System.Text;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -85,7 +86,7 @@ namespace Box2D.NET
             return s;
         }
 
-        public static void b2LimitVelocity(B2BodyState state, float maxLinearSpeed)
+        public static void b2LimitVelocity(ref B2BodyState state, float maxLinearSpeed)
         {
             float v2 = b2LengthSquared(state.linearVelocity);
             if (v2 > maxLinearSpeed * maxLinearSpeed)
@@ -146,15 +147,23 @@ namespace Box2D.NET
             return bodySim;
         }
 
-        public static B2BodyState b2GetBodyState(B2World world, B2Body body)
+        // C returns a b2BodyState* that may be NULL. B2BodyState is a value type here, so the
+        // null pointer is modelled with a null ref. Callers test it with b2IsNullBodyState.
+        public static ref B2BodyState b2GetBodyState(B2World world, B2Body body)
         {
             if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {
                 B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
-                return b2Array_Get(ref set.bodyStates, body.localIndex);
+                return ref b2Array_Get(ref set.bodyStates, body.localIndex);
             }
 
-            return null;
+            return ref Unsafe.NullRef<B2BodyState>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2IsNullBodyState(ref B2BodyState state)
+        {
+            return Unsafe.IsNullRef(ref state);
         }
 
         public static void b2CreateIslandForBody(B2World world, int setIndex, B2Body body)
@@ -681,8 +690,8 @@ namespace Box2D.NET
             bodySim.center0 = bodySim.center;
 
             // Update center of mass velocity
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state != null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state) == false)
             {
                 B2Vec2 deltaLinear = b2CrossSV(state.angularVelocity, b2Sub(bodySim.center, oldCenter));
                 state.linearVelocity = b2Add(state.linearVelocity, deltaLinear);
@@ -821,8 +830,8 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state != null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state) == false)
             {
                 return state.linearVelocity;
             }
@@ -834,8 +843,8 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state != null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state) == false)
             {
                 return state.angularVelocity;
             }
@@ -858,8 +867,8 @@ namespace Box2D.NET
                 b2WakeBody(world, body);
             }
 
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state == null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state))
             {
                 return;
             }
@@ -883,8 +892,8 @@ namespace Box2D.NET
                 b2WakeBody(world, body);
             }
 
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state == null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state))
             {
                 return;
             }
@@ -951,7 +960,7 @@ namespace Box2D.NET
 
             B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
-            B2BodyState state = b2GetBodyState(world, body);
+            ref B2BodyState state = ref b2GetBodyState(world, body);
             state.linearVelocity = linearVelocity;
             state.angularVelocity = angularVelocity;
         }
@@ -961,8 +970,8 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state == null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state))
             {
                 return b2Vec2_zero;
             }
@@ -980,8 +989,8 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state == null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state))
             {
                 return b2Vec2_zero;
             }
@@ -1121,12 +1130,12 @@ namespace Box2D.NET
             {
                 int localIndex = body.localIndex;
                 B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
-                B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                ref B2BodyState state = ref b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
                 state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(point, bodySim.center), impulse);
 
-                b2LimitVelocity(state, world.maxLinearSpeed);
+                b2LimitVelocity(ref state, world.maxLinearSpeed);
             }
         }
 
@@ -1156,11 +1165,11 @@ namespace Box2D.NET
             {
                 int localIndex = body.localIndex;
                 B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
-                B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                ref B2BodyState state = ref b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
 
-                b2LimitVelocity(state, world.maxLinearSpeed);
+                b2LimitVelocity(ref state, world.maxLinearSpeed);
             }
         }
 
@@ -1192,7 +1201,7 @@ namespace Box2D.NET
             {
                 int localIndex = body.localIndex;
                 B2SolverSet set = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
-                B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
+                ref B2BodyState state = ref b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.angularVelocity += bodySim.invInertia * impulse;
             }
@@ -1412,8 +1421,8 @@ namespace Box2D.NET
             // Body type affects the mass
             b2UpdateBodyMassData(world, body);
 
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state != null)
+            ref B2BodyState state = ref b2GetBodyState(world, body);
+            if (b2IsNullBodyState(ref state) == false)
             {
                 // Ensure flags are in sync (b2_skipSolverWrite)
                 state.flags = body.flags;
@@ -1912,9 +1921,9 @@ namespace Box2D.NET
                 bodySim.flags &= ~(uint)B2BodyFlags.b2_allLocks;
                 bodySim.flags |= newFlags;
 
-                B2BodyState state = b2GetBodyState(world, body);
+                ref B2BodyState state = ref b2GetBodyState(world, body);
 
-                if (state != null)
+                if (b2IsNullBodyState(ref state) == false)
                 {
                     state.flags = bodySim.flags;
 
