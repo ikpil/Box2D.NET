@@ -2,6 +2,8 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.InteropServices;
+
 namespace Box2D.NET
 {
     // Body State
@@ -31,6 +33,9 @@ namespace Box2D.NET
     // round shapes.
 
     // 32 bytes
+    // The layout is load bearing: the wide solver loads this as two Vector128<float> and
+    // transposes, so the field order must stay [vx vy w flags][dpx dpy dqc dqs].
+    [StructLayout(LayoutKind.Sequential)]
     public struct B2BodyState
     {
         public B2Vec2 linearVelocity; // 8

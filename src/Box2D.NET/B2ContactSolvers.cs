@@ -7,6 +7,8 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 #if NET7_0_OR_GREATER
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
+using System.Runtime.Intrinsics.X86;
 #endif
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
@@ -1295,6 +1297,108 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
 #else
 
+#if NET7_0_OR_GREATER
+        // b2UnpackLoW: [a0 b0 a1 b1]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector128<float> UnpackLoW(Vector128<float> a, Vector128<float> b)
+        {
+            if (Sse.IsSupported)
+            {
+                return Sse.UnpackLow(a, b);
+            }
+
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                return AdvSimd.Arm64.ZipLow(a, b);
+            }
+
+            return Vector128.Create(a.GetElement(0), b.GetElement(0), a.GetElement(1), b.GetElement(1));
+        }
+
+        // b2UnpackHiW: [a2 b2 a3 b3]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector128<float> UnpackHiW(Vector128<float> a, Vector128<float> b)
+        {
+            if (Sse.IsSupported)
+            {
+                return Sse.UnpackHigh(a, b);
+            }
+
+            if (AdvSimd.Arm64.IsSupported)
+            {
+                return AdvSimd.Arm64.ZipHigh(a, b);
+            }
+
+            return Vector128.Create(a.GetElement(2), b.GetElement(2), a.GetElement(3), b.GetElement(3));
+        }
+
+        // Reads the two 16 byte halves of a 32 byte body state.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector128<float> LoadHalf(ref B2BodyState state, int half)
+        {
+            return Unsafe.Add(ref Unsafe.As<B2BodyState, Vector128<float>>(ref state), half);
+        }
+
+        // This is a load and transpose
+        internal static B2BodyStateW b2GatherBodies(Span<B2BodyState> states, ReadOnlySpan<int> indices)
+        {
+            B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
+
+            // b2_identityBodyState is exactly [0 0 0 0][0 0 1 0], the identityA/identityB pair
+            // C builds inline, so a null index can bind to it and skip the per-load branch.
+            B2BodyState identity = b2_identityBodyState;
+
+            // zero means null
+            int i1 = indices[0] - 1;
+            int i2 = indices[1] - 1;
+            int i3 = indices[2] - 1;
+            int i4 = indices[3] - 1;
+
+            ref B2BodyState s1 = ref (i1 == B2_NULL_INDEX ? ref identity : ref states[i1]);
+            ref B2BodyState s2 = ref (i2 == B2_NULL_INDEX ? ref identity : ref states[i2]);
+            ref B2BodyState s3 = ref (i3 == B2_NULL_INDEX ? ref identity : ref states[i3]);
+            ref B2BodyState s4 = ref (i4 == B2_NULL_INDEX ? ref identity : ref states[i4]);
+
+            Vector128<float> b1a = LoadHalf(ref s1, 0);
+            Vector128<float> b1b = LoadHalf(ref s1, 1);
+            Vector128<float> b2a = LoadHalf(ref s2, 0);
+            Vector128<float> b2b = LoadHalf(ref s2, 1);
+            Vector128<float> b3a = LoadHalf(ref s3, 0);
+            Vector128<float> b3b = LoadHalf(ref s3, 1);
+            Vector128<float> b4a = LoadHalf(ref s4, 0);
+            Vector128<float> b4b = LoadHalf(ref s4, 1);
+
+            // [vx1 vx3 vy1 vy3]
+            Vector128<float> t1a = UnpackLoW(b1a, b3a);
+
+            // [vx2 vx4 vy2 vy4]
+            Vector128<float> t2a = UnpackLoW(b2a, b4a);
+
+            // [w1 w3 f1 f3]
+            Vector128<float> t3a = UnpackHiW(b1a, b3a);
+
+            // [w2 w4 f2 f4]
+            Vector128<float> t4a = UnpackHiW(b2a, b4a);
+
+            B2BodyStateW simdBody = new B2BodyStateW();
+            simdBody.v.X = StoreW(UnpackLoW(t1a, t2a));
+            simdBody.v.Y = StoreW(UnpackHiW(t1a, t2a));
+            simdBody.w = StoreW(UnpackLoW(t3a, t4a));
+            simdBody.flags = StoreW(UnpackHiW(t3a, t4a));
+
+            Vector128<float> t1b = UnpackLoW(b1b, b3b);
+            Vector128<float> t2b = UnpackLoW(b2b, b4b);
+            Vector128<float> t3b = UnpackHiW(b1b, b3b);
+            Vector128<float> t4b = UnpackHiW(b2b, b4b);
+
+            simdBody.dp.X = StoreW(UnpackLoW(t1b, t2b));
+            simdBody.dp.Y = StoreW(UnpackHiW(t1b, t2b));
+            simdBody.dq.C = StoreW(UnpackLoW(t3b, t4b));
+            simdBody.dq.S = StoreW(UnpackHiW(t3b, t4b));
+
+            return simdBody;
+        }
+#else
         // This is a load and transpose
         internal static B2BodyStateW b2GatherBodies(Span<B2BodyState> states, ReadOnlySpan<int> indices)
         {
@@ -1326,6 +1430,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             return simdBody;
         }
+#endif
 
         // This writes only the velocities back to the solver bodies
         internal static void b2ScatterBodies(Span<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
