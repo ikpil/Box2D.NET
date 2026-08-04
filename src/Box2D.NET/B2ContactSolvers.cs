@@ -5,6 +5,9 @@
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+#if NET7_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -651,6 +654,127 @@ namespace Box2D.NET
             return new B2FloatW(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
+#if NET7_0_OR_GREATER
+        // B2FloatW is four sequential floats, so it reinterprets to Vector128<float> for free.
+        // Masks stay in the scalar 1.0f/0.0f convention used by the C fallback path, so every
+        // function below is bit-identical to the scalar code it replaces.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Vector128<float> LoadW(in B2FloatW v)
+        {
+            return Unsafe.As<B2FloatW, Vector128<float>>(ref Unsafe.AsRef(in v));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static B2FloatW StoreW(Vector128<float> v)
+        {
+            return Unsafe.As<Vector128<float>, B2FloatW>(ref v);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2SplatW(float scalar)
+        {
+            return StoreW(Vector128.Create(scalar));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2AddW(in B2FloatW a, in B2FloatW b)
+        {
+            return StoreW(Vector128.Add(LoadW(a), LoadW(b)));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2SubW(in B2FloatW a, in B2FloatW b)
+        {
+            return StoreW(Vector128.Subtract(LoadW(a), LoadW(b)));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2MulW(in B2FloatW a, in B2FloatW b)
+        {
+            return StoreW(Vector128.Multiply(LoadW(a), LoadW(b)));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2MulAddW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
+        {
+            // Deliberately not FusedMultiplyAdd. C keeps the separate multiply and add
+            // (see the commented out _mm256_fmadd_ps) because fusing skips a rounding step
+            // and breaks cross platform determinism.
+            return StoreW(Vector128.Add(LoadW(a), Vector128.Multiply(LoadW(b), LoadW(c))));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2MulSubW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
+        {
+            return StoreW(Vector128.Subtract(LoadW(a), Vector128.Multiply(LoadW(b), LoadW(c))));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2MinW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> wa = LoadW(a);
+            Vector128<float> wb = LoadW(b);
+            return StoreW(Vector128.ConditionalSelect(Vector128.LessThanOrEqual(wa, wb), wa, wb));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2MaxW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> wa = LoadW(a);
+            Vector128<float> wb = LoadW(b);
+            return StoreW(Vector128.ConditionalSelect(Vector128.GreaterThanOrEqual(wa, wb), wa, wb));
+        }
+
+        // a = clamp(a, -b, b)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> wa = LoadW(a);
+            Vector128<float> upper = LoadW(b);
+            Vector128<float> lower = Vector128.Negate(upper);
+
+            // a < lower ? lower : (a > upper ? upper : a)
+            Vector128<float> clamped = Vector128.ConditionalSelect(Vector128.GreaterThan(wa, upper), upper, wa);
+            return StoreW(Vector128.ConditionalSelect(Vector128.LessThan(wa, lower), lower, clamped));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2OrW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> zero = Vector128<float>.Zero;
+            Vector128<float> bothZero = Vector128.BitwiseAnd(Vector128.Equals(LoadW(a), zero), Vector128.Equals(LoadW(b), zero));
+            return StoreW(Vector128.ConditionalSelect(bothZero, zero, Vector128.Create(1.0f)));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2GreaterThanW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> mask = Vector128.GreaterThan(LoadW(a), LoadW(b));
+            return StoreW(Vector128.ConditionalSelect(mask, Vector128.Create(1.0f), Vector128<float>.Zero));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2EqualsW(in B2FloatW a, in B2FloatW b)
+        {
+            Vector128<float> mask = Vector128.Equals(LoadW(a), LoadW(b));
+            return StoreW(Vector128.ConditionalSelect(mask, Vector128.Create(1.0f), Vector128<float>.Zero));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2AllZeroW(in B2FloatW a)
+        {
+            // Uses the float compare, so NaN lanes report non-zero exactly like the scalar path.
+            return Vector128.ExtractMostSignificantBits(Vector128.Equals(LoadW(a), Vector128<float>.Zero)) == 0b1111;
+        }
+
+        // component-wise returns mask ? b : a
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
+        {
+            Vector128<float> isZero = Vector128.Equals(LoadW(mask), Vector128<float>.Zero);
+            return StoreW(Vector128.ConditionalSelect(isZero, LoadW(a), LoadW(b)));
+        }
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SplatW(float scalar)
         {
@@ -775,6 +899,7 @@ namespace Box2D.NET
                 W = mask.W != 0.0f ? b.W : a.W,
             };
         }
+#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2DotW(in B2Vec2W a, in B2Vec2W b)
