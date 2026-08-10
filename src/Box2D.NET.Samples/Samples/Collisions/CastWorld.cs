@@ -407,14 +407,14 @@ public class CastWorld : Sample
         }
         else
         {
-            b2CastResultFcn[] functions =
+            b2CastResultFcn<CastContext>[] functions =
             [
                 RayCastAnyCallback,
                 RayCastClosestCallback,
                 RayCastMultipleCallback,
                 RayCastSortedCallback
             ];
-            b2CastResultFcn modeFcn = functions[m_mode];
+            b2CastResultFcn<CastContext> modeFcn = functions[m_mode];
 
             CastContext context = new CastContext();
 
@@ -556,9 +556,9 @@ public class CastWorld : Sample
 
 
     // This callback finds the closest hit. This is the most common callback used in games.
-    static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
     {
-        CastContext rayContext = (CastContext)context;
+        CastContext rayContext = context;
 
         ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
@@ -584,9 +584,9 @@ public class CastWorld : Sample
     // This callback finds any hit. For this type of query we are usually just checking for obstruction,
     // so the hit data is not relevant.
     // NOTE: shape hits are not ordered, so this may not return the closest hit
-    static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
     {
-        CastContext rayContext = (CastContext)context;
+        CastContext rayContext = context;
 
         ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
@@ -614,9 +614,9 @@ public class CastWorld : Sample
     // NOTE: shape hits are not ordered, so this may return hits in any order. This means that
     // if you limit the number of results, you may discard the closest hit. You can see this
     // behavior in the sample.
-    static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
     {
-        CastContext rayContext = (CastContext)context;
+        CastContext rayContext = context;
 
         ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 
@@ -648,9 +648,9 @@ public class CastWorld : Sample
     }
 
     // This ray cast collects multiple hits along the ray and sorts them.
-    static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
     {
-        CastContext rayContext = (CastContext)context;
+        CastContext rayContext = context;
 
         ShapeUserData userData = b2Shape_GetUserData(shapeId).GetRef<ShapeUserData>();
 

@@ -93,9 +93,9 @@ public class Mover : Sample
         return new Mover(context);
     }
 
-    private static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    private static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastResult context)
     {
-        CastResult result = (CastResult)context;
+        CastResult result = context;
         result.point = point;
         result.normal = normal;
         result.bodyId = b2Shape_GetBody(shapeId);

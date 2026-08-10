@@ -27,6 +27,7 @@ public class B2IdsTest
         Assert.That(B2_IS_NULL(b2_nullShapeId), Is.True, "Shape null ID should be null");
         Assert.That(B2_IS_NULL(b2_nullChainId), Is.True, "Chain null ID should be null");
         Assert.That(B2_IS_NULL(b2_nullJointId), Is.True, "Joint null ID should be null");
+        Assert.That(B2_IS_NULL(b2_nullContactId), Is.True, "Contact null ID should be null");
     }
 
     [Test]
@@ -38,12 +39,14 @@ public class B2IdsTest
         var shapeId = new B2ShapeId(1, 1, 1);
         var chainId = new B2ChainId(1, 1, 1);
         var jointId = new B2JointId(1, 1, 1);
+        var contactId = new B2ContactId(1, 1, 0, 1);
 
         Assert.That(B2_IS_NON_NULL(worldId), Is.True, "World ID should be non-null");
         Assert.That(B2_IS_NON_NULL(bodyId), Is.True, "Body ID should be non-null");
         Assert.That(B2_IS_NON_NULL(shapeId), Is.True, "Shape ID should be non-null");
         Assert.That(B2_IS_NON_NULL(chainId), Is.True, "Chain ID should be non-null");
         Assert.That(B2_IS_NON_NULL(jointId), Is.True, "Joint ID should be non-null");
+        Assert.That(B2_IS_NON_NULL(contactId), Is.True, "Contact ID should be non-null");
     }
 
     [Test]

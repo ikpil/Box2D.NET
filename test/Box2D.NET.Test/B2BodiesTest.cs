@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Text;
 using Box2D.NET.Test.Helpers;
 using NUnit.Framework;
 using static Box2D.NET.B2Worlds;
@@ -257,5 +258,30 @@ public class B2BodiesTest
             state = b2GetBodyState(world, body);
             Assert.That(state, Is.Not.Null, "Body state should not be null after waking up");
         }
+    }
+
+    [Test]
+    public void BodyNamesAreLimitedTo31Utf8Bytes()
+    {
+        using B2TestContext context = B2TestContext.CreateFor();
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.name = new string('a', 40);
+        B2BodyId bodyId = b2CreateBody(context.WorldId, bodyDef);
+
+        string createdName = b2Body_GetName(bodyId);
+        Assert.That(createdName, Is.EqualTo(new string('a', 31)));
+        Assert.That(Encoding.UTF8.GetByteCount(createdName), Is.EqualTo(31));
+
+        b2Body_SetName(bodyId, "가가가가가가가가가가가");
+        string updatedName = b2Body_GetName(bodyId);
+        Assert.That(updatedName, Is.EqualTo("가가가가가가가가가가"));
+        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(30));
+
+        string emojiName = new string('b', 27) + "😀x";
+        b2Body_SetName(bodyId, emojiName);
+        updatedName = b2Body_GetName(bodyId);
+        Assert.That(updatedName, Is.EqualTo(new string('b', 27) + "😀"));
+        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(31));
     }
 }

@@ -196,6 +196,38 @@ public class B2BitSetTest
     }
 
     [Test]
+    public void NegativeBitIndexesDoNotAliasBit63()
+    {
+        B2BitSet bitSet = b2CreateBitSet(64);
+        b2SetBitCountAndClear(ref bitSet, 64);
+        b2SetBit(ref bitSet, 63);
+
+        Assert.That(b2GetBit(ref bitSet, -1), Is.False);
+        Assert.Throws<ArgumentOutOfRangeException>((Action)(() => b2SetBit(ref bitSet, -1)));
+        Assert.Throws<ArgumentOutOfRangeException>((Action)(() => b2SetBitGrow(ref bitSet, -1)));
+        Assert.That(b2GetBit(ref bitSet, 63), Is.True);
+
+        b2DestroyBitSet(ref bitSet);
+    }
+
+    [Test]
+    public void ZeroCapacityBitSetCanBeCreatedAndCleared()
+    {
+        B2BitSet bitSet = b2CreateBitSet(0);
+
+        Assert.That(bitSet.bits, Is.Null);
+        Assert.That(bitSet.blockCapacity, Is.Zero);
+        Assert.That(bitSet.blockCount, Is.Zero);
+
+        Assert.DoesNotThrow((Action)(() => b2SetBitCountAndClear(ref bitSet, 0)));
+        Assert.That(bitSet.bits, Is.Null);
+        Assert.That(bitSet.blockCapacity, Is.Zero);
+        Assert.That(bitSet.blockCount, Is.Zero);
+
+        b2DestroyBitSet(ref bitSet);
+    }
+
+    [Test]
     public void Test_B2BitSet_b2GetBitSetBytes()
     {
         // Arrange

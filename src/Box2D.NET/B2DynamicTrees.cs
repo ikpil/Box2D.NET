@@ -1075,7 +1075,7 @@ namespace Box2D.NET
         }
 
         /// Validate this tree has no enlarged AABBs. For testing.
-        internal static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
+        public static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
         {
 #if DEBUG
             int capacity = tree.nodeCapacity;
@@ -1097,9 +1097,9 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetByteCount(B2DynamicTree tree)
         {
-            // int size = B2SizeOf<B2DynamicTree>.Size + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
-            //            tree.rebuildCapacity * (B2SizeOf<int>.Size + B2SizeOf<B2AABB>.Size + B2SizeOf<B2Vec2>.Size + B2SizeOf<int>.Size);
-            int size = B2SizeOf<int>.Size * 6 + B2SizeOf<ulong>.Size * 4 + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
+            // Upstream-compatible logical payload size, not a CLR heap-size estimate.
+            int treeHeaderSize = IntPtr.Size == 8 ? 72 : 44;
+            int size = treeHeaderSize + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
                        tree.rebuildCapacity * (B2SizeOf<int>.Size + B2SizeOf<B2AABB>.Size + B2SizeOf<B2Vec2>.Size + B2SizeOf<int>.Size);
             return (int)size;
         }
@@ -1122,7 +1122,7 @@ namespace Box2D.NET
 
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context) where T : struct
+        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1245,8 +1245,7 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the ray
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, in B2RayCastInput input, ulong maskBits,
-            b2TreeRayCastCallbackFcn<T> callback, ref T context) where T : struct
+        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, in B2RayCastInput input, ulong maskBits, b2TreeRayCastCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1378,8 +1377,8 @@ namespace Box2D.NET
         /// @param callback a callback class that is called for each proxy that is hit by the shape
         /// @param context user context that is passed to the callback
         /// @return performance data
-        internal static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, in B2ShapeCastInput input, ulong maskBits,
-            b2TreeShapeCastCallbackFcn<T> callback, ref T context) where T : struct
+        public static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, in B2ShapeCastInput input, ulong maskBits,
+            b2TreeShapeCastCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats stats = new B2TreeStats();
 

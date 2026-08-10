@@ -234,9 +234,9 @@ public class ShapeCastChain : Sample
         return false;
     }
 
-    private static float b2CastResult_Closest(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object c)
+    private static float b2CastResult_Closest(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext_Single c)
     {
-        CastContext_Single context = c as CastContext_Single;
+        CastContext_Single context = c;
 
         if (b2Dot(context!.translation, normal) >= 0.0f)
             return -1.0f;

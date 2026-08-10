@@ -102,7 +102,7 @@ namespace Box2D.NET
     /// @return -1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue
     /// @see b2World_CastRay
     /// @ingroup world
-    public delegate float b2CastResultFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context);
+    public delegate float b2CastResultFcn<T>(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref T context);
 
     // Used to collect collision planes for character movers.
     // Return true to continue gathering planes.

@@ -163,9 +163,9 @@ public class BenchmarkCast : Sample
         m_minTime = 1e6f;
     }
 
-    static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+    static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastResult context)
     {
-        CastResult result = context as CastResult;
+        CastResult result = context;
         result.point = point;
         result.fraction = fraction;
         result.hit = true;

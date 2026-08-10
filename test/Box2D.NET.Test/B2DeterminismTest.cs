@@ -54,6 +54,7 @@ public class B2DeterminismTest
 
     // Test multithreaded determinism.
     [Test]
+    [Order(1)]
     public void MultithreadingTest()
     {
         for (int run = 0; run < 3; ++run)
@@ -72,8 +73,47 @@ public class B2DeterminismTest
         }
     }
 
+    // Test determinism using the built-in scheduler (no external task system).
+    [Test]
+    [Order(2)]
+    public void BuiltInSchedulerTest()
+    {
+        for (int workerCount = 2; workerCount <= 8; workerCount += 2)
+        {
+            B2WorldDef worldDef = b2DefaultWorldDef();
+            worldDef.workerCount = workerCount;
+
+            B2WorldId worldId = b2CreateWorld(worldDef);
+
+            FallingHingeData data = CreateFallingHinges(worldId);
+
+            float timeStep = 1.0f / 60.0f;
+            int stepLimit = 1000;
+            for (int i = 0; i < stepLimit; ++i)
+            {
+                int subStepCount = 4;
+                b2World_Step(worldId, timeStep, subStepCount);
+
+                bool done = UpdateFallingHinges(worldId, ref data);
+                if (done)
+                {
+                    break;
+                }
+            }
+
+            b2DestroyWorld(worldId);
+
+            string message = $"built-in scheduler workers={workerCount} sleepStep={data.sleepStep} hash=0x{data.hash:X8}";
+            Assert.That(data.sleepStep, Is.EqualTo(EXPECTED_SLEEP_STEP), message);
+            Assert.That(data.hash, Is.EqualTo(EXPECTED_HASH), message);
+
+            DestroyFallingHinges(ref data);
+        }
+    }
+
     // Test cross-platform determinism.
     [Test]
+    [Order(3)]
     public void CrossPlatformTest()
     {
         B2WorldDef worldDef = b2DefaultWorldDef();

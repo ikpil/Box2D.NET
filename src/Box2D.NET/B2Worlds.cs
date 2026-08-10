@@ -2192,13 +2192,13 @@ namespace Box2D.NET
             return treeStats;
         }
 
-        internal static float RayCastCallback(in B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float RayCastCallback<T>(in B2RayCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext<T> context) where T : class
         {
             B2_UNUSED(proxyId);
 
             int shapeId = (int)userData;
 
-            ref B2WorldRayCastContext worldContext = ref context;
+            ref B2WorldRayCastContext<T> worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2215,7 +2215,7 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, worldContext.userContext);
+                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2239,7 +2239,7 @@ namespace Box2D.NET
         /// @param fcn A user implemented callback function
         /// @param context A user context that is passed along to the callback function
         /// @return traversal performance counters
-        public static B2TreeStats b2World_CastRay(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn fcn, object context)
+        public static B2TreeStats b2World_CastRay<T>(B2WorldId worldId, B2Vec2 origin, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn<T> fcn, T context) where T : class
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2255,7 +2255,7 @@ namespace Box2D.NET
 
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
 
-            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            var worldContext = B2WorldRayCastContext.Create(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2276,7 +2276,7 @@ namespace Box2D.NET
         }
 
         // This callback finds the closest hit. This is the most common callback used in games.
-        internal static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, object context)
+        internal static float b2RayCastClosestFcn(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref B2RayResult context)
         {
             // Ignore initial overlap
             if (fraction == 0.0f)
@@ -2310,7 +2310,7 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidVec2(translation));
 
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
-            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, b2RayCastClosestFcn, filter, 1.0f, result);
+            var worldContext = B2WorldRayCastContext.Create(world, b2RayCastClosestFcn, filter, 1.0f, result);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2330,13 +2330,13 @@ namespace Box2D.NET
             return result;
         }
 
-        internal static float ShapeCastCallback(in B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext context)
+        internal static float ShapeCastCallback<T>(in B2ShapeCastInput input, int proxyId, ulong userData, ref B2WorldRayCastContext<T> context) where T : class
         {
             B2_UNUSED(proxyId);
 
             int shapeId = (int)userData;
 
-            ref B2WorldRayCastContext worldContext = ref context;
+            ref B2WorldRayCastContext<T> worldContext = ref context;
             B2World world = worldContext.world;
 
             B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
@@ -2354,7 +2354,7 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, worldContext.userContext);
+                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2370,8 +2370,7 @@ namespace Box2D.NET
 
         /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
         /// @see b2World_CastRay
-        public static B2TreeStats b2World_CastShape(B2WorldId worldId, ref B2ShapeProxy proxy, B2Vec2 translation, in B2QueryFilter filter,
-            b2CastResultFcn fcn, object context)
+        public static B2TreeStats b2World_CastShape<T>(B2WorldId worldId, ref B2ShapeProxy proxy, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn<T> fcn, T context) where T : class
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2389,7 +2388,7 @@ namespace Box2D.NET
             input.translation = translation;
             input.maxFraction = 1.0f;
 
-            B2WorldRayCastContext worldContext = new B2WorldRayCastContext(world, fcn, filter, 1.0f, context);
+            var worldContext = B2WorldRayCastContext.Create(world, fcn, filter, 1.0f, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
