@@ -3,7 +3,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace Box2D.NET.Benchmark.Fixtures;
+namespace Box2D.NET.Benchmark.V2.Fixtures;
 
 public class ClassBasedFixedArray2<T> where T : unmanaged
 {

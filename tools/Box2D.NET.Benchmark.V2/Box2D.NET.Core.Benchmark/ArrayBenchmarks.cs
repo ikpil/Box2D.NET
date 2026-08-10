@@ -22,7 +22,7 @@ using System;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 
-namespace Box2D.NET.Benchmark.Box2D.NET.Core.Benchmark;
+namespace Box2D.NET.Benchmark.V2.Box2D.NET.Core.Benchmark;
 
 [MemoryDiagnoser]
 public class ArrayBenchmarks

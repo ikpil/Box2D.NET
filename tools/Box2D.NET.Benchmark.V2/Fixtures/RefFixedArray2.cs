@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Box2D.NET.Benchmark.Fixtures;
+namespace Box2D.NET.Benchmark.V2.Fixtures;
 
 public ref struct RefFixedArray2<T> where T : unmanaged
 {
