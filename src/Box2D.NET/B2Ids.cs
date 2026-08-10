@@ -60,6 +60,9 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NULL(B2JointId id) => id.index1 == 0;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool B2_IS_NULL(B2ContactId id) => id.index1 == 0;
+
         /// Macro to determine if any id is non-null.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool B2_IS_NON_NULL(B2WorldId id) => id.index1 != 0;

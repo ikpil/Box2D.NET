@@ -7,7 +7,7 @@ namespace Box2D.NET
     /// This struct holds callbacks you can implement to draw a Box2D world.
     /// This structure should be zero initialized.
     /// @ingroup world
-    public class B2DebugDraw
+    public struct B2DebugDraw
     {
         public DrawPolygonFcn DrawPolygonFcn;
         public DrawSolidPolygonFcn DrawSolidPolygonFcn;

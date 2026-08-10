@@ -13,7 +13,7 @@ namespace Box2D.NET.Samples.Samples.Issues;
 // This can be made stable by increasing the size of the middle circle and/or increasing the number of sub-steps.
 public class UnstablePrismaticJoints : Sample
 {
-    private static readonly int SamplePrismaticJointCrash = SampleFactory.Shared.RegisterSample("Issues", "Unstable Joints", Create);
+    private static readonly int SamplePrismaticJointCrash = SampleFactory.Shared.RegisterSample("Issues", "Unstable Prismatic Joints", Create);
 
     private static Sample Create(SampleContext context)
     {

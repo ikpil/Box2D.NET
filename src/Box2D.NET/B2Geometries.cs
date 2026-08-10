@@ -16,7 +16,7 @@ namespace Box2D.NET
         // B2_ASSERT( B2_MAX_POLYGON_VERTICES > 2, "must be 3 or more" );
 
         /// Validate ray cast input data (NaN, etc)
-        internal static bool b2IsValidRay(in B2RayCastInput input)
+        public static bool b2IsValidRay(in B2RayCastInput input)
         {
             bool isValid = b2IsValidVec2(input.origin) && b2IsValidVec2(input.translation) &&
                            b2IsValidFloat(input.maxFraction) && 0.0f <= input.maxFraction && input.maxFraction < B2_HUGE;
@@ -932,7 +932,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a circle.
-        internal static B2CastOutput b2ShapeCastCircle(in B2Circle shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2ShapeCastCircle(in B2Circle shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -948,7 +948,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a capsule.
-        internal static B2CastOutput b2ShapeCastCapsule(in B2Capsule shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2ShapeCastCapsule(in B2Capsule shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -964,7 +964,7 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a line segment.
-        internal static B2CastOutput b2ShapeCastSegment(in B2Segment shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2ShapeCastSegment(in B2Segment shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -980,10 +980,10 @@ namespace Box2D.NET
         }
 
         /// Shape cast versus a convex polygon.
-        internal static B2CastOutput b2ShapeCastPolygon(ref B2Polygon shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2ShapeCastPolygon(in B2Polygon shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
-            pairInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
+            pairInput.proxyA = b2MakeProxy(shape.vertices.AsReadOnlySpan(), shape.count, shape.radius);
             pairInput.proxyB = input.proxy;
             pairInput.transformA = b2Transform_identity;
             pairInput.transformB = b2Transform_identity;

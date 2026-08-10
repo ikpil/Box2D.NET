@@ -56,6 +56,15 @@ namespace Box2D.NET
         {
             TracyCFree( ptr )
         }
+
+        // Managed object allocations do not expose a stable native address to Tracy.
+        public static void b2TracyCAlloc<T>(T ptr, int size) where T : class
+        {
+        }
+
+        public static void b2TracyCFree<T>(T ptr) where T : class
+        {
+        }
 #else
         public static void b2TracyCAlloc<T>(T[] ptr, int size)
         {
@@ -69,7 +78,11 @@ namespace Box2D.NET
         {
         }
 
+        public static void b2TracyCAlloc<T>(T ptr, int size) where T : class
+        {
+        }
+
 #endif
 
     }
-} 
+}

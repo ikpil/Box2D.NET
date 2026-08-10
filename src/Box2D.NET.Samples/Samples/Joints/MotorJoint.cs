@@ -145,7 +145,7 @@ public class MotorJoint : Sample
 
         if (ImGui.SliderFloat("Max Torque", ref m_maxTorque, 0.0f, 10000.0f, "%.0f"))
         {
-            b2MotorJoint_SetMaxVelocityTorque(m_jointId, m_maxTorque);
+            b2MotorJoint_SetMaxSpringTorque(m_jointId, m_maxTorque);
         }
 
         if (ImGui.Button("Apply Impulse"))

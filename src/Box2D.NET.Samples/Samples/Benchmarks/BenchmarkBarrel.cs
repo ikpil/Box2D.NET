@@ -31,8 +31,8 @@ public class BenchmarkBarrel : Sample
         e_humanShape,
     }
 
-    private const int e_maxColumns = 30;
-    private const int e_maxRows = 300;
+    private const int e_maxColumns = 26;
+    private const int e_maxRows = 150;
 
 
     private B2BodyId[] m_bodies = new B2BodyId[e_maxRows * e_maxColumns];
@@ -110,9 +110,6 @@ public class BenchmarkBarrel : Sample
 
         m_shapeType = ShapeType.e_compoundShape;
 
-        m_columnCount = e_maxColumns / (m_isDebug ? 3 : 2);
-        m_rowCount = e_maxRows / (m_isDebug ? 3 : 2);
-
         CreateScene();
     }
 
@@ -135,25 +132,24 @@ public class BenchmarkBarrel : Sample
         }
 
 
-        // if (m_shapeType == ShapeType.e_compoundShape)
-        // {
-        //     if (m_context.sampleDebug == false)
-        //     {
-        //         m_columnCount = e_maxColumns;
-        //     }
-        // }
-        // else if (m_shapeType == ShapeType.e_humanShape)
-        // {
-        //     if (m_context.sampleDebug)
-        //     {
-        //         m_rowCount = 5;
-        //         m_columnCount = 10;
-        //     }
-        //     else
-        //     {
-        //         m_rowCount = 30;
-        //     }
-        // }
+        m_columnCount = m_isDebug ? 10 : e_maxColumns;
+        m_rowCount = m_isDebug ? 40 : e_maxRows;
+
+        if (m_shapeType == ShapeType.e_compoundShape)
+        {
+#if !DEBUG
+            m_columnCount = 20;
+#endif
+        }
+        else if (m_shapeType == ShapeType.e_humanShape)
+        {
+#if DEBUG
+            m_rowCount = 5;
+            m_columnCount = 10;
+#else
+            m_rowCount = 30;
+#endif
+        }
 
         float rad = 0.5f;
 
@@ -311,23 +307,13 @@ public class BenchmarkBarrel : Sample
         base.UpdateGui();
 
         float fontSize = ImGui.GetFontSize();
-        float height = 10.0f * fontSize;
+        float height = 6.0f * fontSize;
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
         ImGui.SetNextWindowSize(new Vector2(15.0f * fontSize, height));
 
         ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
-        if (ImGui.SliderInt("rows", ref m_rowCount, 1, e_maxRows, "%d"))
-        {
-            changed = true;
-        }
-
-        if (ImGui.SliderInt("columns", ref m_columnCount, 1, e_maxColumns, "%d"))
-        {
-            changed = true;
-        }
-
         string[] shapeTypes = ["Circle", "Capsule", "Mix", "Compound", "Human"];
         int shapeType = (int)m_shapeType;
         if (ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length))

@@ -54,12 +54,19 @@ namespace Box2D.NET
         }
 
         [Conditional("DEBUG")]
-        public static void B2_ASSERT(bool condition, string message = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
+        [Conditional("B2_ENABLE_ASSERT")]
+        public static void B2_ASSERT(bool condition, [CallerArgumentExpression("condition")] string message = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
         {
             if (condition)
                 return;
 
-            throw new InvalidOperationException($"{message} {memberName}() {fileName}:{lineNumber}");
+            string conditionText = string.IsNullOrEmpty(message) ? memberName : message;
+            int result = b2InternalAssert(conditionText, fileName, lineNumber);
+            if (result != 0)
+            {
+                // A managed exception is the portable equivalent of the native debugger breakpoint.
+                throw new InvalidOperationException($"{conditionText} {memberName}() {fileName}:{lineNumber}");
+            }
         }
 
         [Conditional("DEBUG")]
@@ -73,7 +80,8 @@ namespace Box2D.NET
 
         public static int b2DefaultAssertFcn(string condition, string fileName, int lineNumber)
         {
-            Console.Write($"BOX2D ASSERTION: {condition}, {fileName}, line {lineNumber}\n");
+            Console.Error.Write($"BOX2D ASSERTION: {condition}, {fileName}, line {lineNumber}\n");
+            Console.Error.Flush();
 
             // return non-zero to break to debugger
             return 1;

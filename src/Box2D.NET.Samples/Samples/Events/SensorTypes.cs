@@ -141,6 +141,9 @@ public class SensorTypes : Sample
 
     void PrintOverlaps(B2ShapeId sensorShapeId, string prefix)
     {
+        const int bufferSize = 256;
+        const int payloadCapacity = bufferSize - 1;
+
         // Determine the necessary capacity
         int capacity = b2Shape_GetSensorCapacity(sensorShapeId);
         m_visitorIds.Resize(capacity);
@@ -149,8 +152,12 @@ public class SensorTypes : Sample
         int count = b2Shape_GetSensorData(sensorShapeId, CollectionsMarshal.AsSpan(m_visitorIds), capacity);
         m_visitorIds.Resize(count);
 
-        var builder = new StringBuilder();
-        for (int i = 0; i < count; ++i)
+        var builder = new StringBuilder(payloadCapacity);
+        string header = $"{prefix}: ";
+        int storedByteCount = AppendUtf8(builder, header, payloadCapacity);
+        int start = Encoding.UTF8.GetByteCount(header);
+
+        for (int i = 0; i < count && start < bufferSize; ++i)
         {
             B2ShapeId visitorId = m_visitorIds[i];
             if (b2Shape_IsValid(visitorId) == false)
@@ -160,17 +167,38 @@ public class SensorTypes : Sample
 
             B2BodyId bodyId = b2Shape_GetBody(visitorId);
             string name = b2Body_GetName(bodyId);
-            if (string.IsNullOrEmpty(name))
+            if (name == null)
             {
                 continue;
             }
 
 
             // todo fix this
-            builder.Append($"{prefix}: {name}, ");
+            string entry = $"{name}, ";
+            int entryByteCount = Encoding.UTF8.GetByteCount(entry);
+            storedByteCount += AppendUtf8(builder, entry, payloadCapacity - storedByteCount);
+            start += entryByteCount;
         }
 
         DrawTextLine(builder.ToString());
+    }
+
+    private static int AppendUtf8(StringBuilder builder, string text, int maxByteCount)
+    {
+        int byteCount = 0;
+        foreach (Rune rune in text.EnumerateRunes())
+        {
+            int runeByteCount = rune.Utf8SequenceLength;
+            if (byteCount + runeByteCount > maxByteCount)
+            {
+                break;
+            }
+
+            builder.Append(rune.ToString());
+            byteCount += runeByteCount;
+        }
+
+        return byteCount;
     }
 
     public override void Step()

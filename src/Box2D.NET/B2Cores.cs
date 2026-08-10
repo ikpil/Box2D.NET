@@ -42,7 +42,7 @@ namespace Box2D.NET
         /// forces.
         /// @warning This must be modified before any calls to Box2D
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void b2SetLengthUnitsPerMeter(float lengthUnits)
+        public static void b2SetLengthUnitsPerMeter(float lengthUnits)
         {
             B2_ASSERT(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f);
             b2_lengthUnitsPerMeter = lengthUnits;
@@ -50,7 +50,7 @@ namespace Box2D.NET
 
         /// Get the current length units per meter.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static float b2GetLengthUnitsPerMeter()
+        public static float b2GetLengthUnitsPerMeter()
         {
             return b2_lengthUnitsPerMeter;
         }

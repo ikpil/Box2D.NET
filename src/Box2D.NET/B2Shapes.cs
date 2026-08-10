@@ -965,7 +965,7 @@ namespace Box2D.NET
                     output = b2ShapeCastCircle(shape.us.circle, localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(ref shape.us.polygon, localInput);
+                    output = b2ShapeCastPolygon(shape.us.polygon, localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
                     output = b2ShapeCastSegment(shape.us.segment, localInput);

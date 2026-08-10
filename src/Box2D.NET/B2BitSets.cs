@@ -15,6 +15,11 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2SetBit(ref B2BitSet bitSet, int bitIndex)
         {
+            if (bitIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitIndex));
+            }
+
             int blockIndex = bitIndex / 64;
             B2_ASSERT(blockIndex < bitSet.blockCount);
             bitSet.bits[blockIndex] |= ((ulong)1 << (bitIndex % 64));
@@ -22,6 +27,11 @@ namespace Box2D.NET
 
         public static void b2SetBitGrow(ref B2BitSet bitSet, int bitIndex)
         {
+            if (bitIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(bitIndex));
+            }
+
             int blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
             {
@@ -46,6 +56,11 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2GetBit(ref B2BitSet bitSet, int bitIndex)
         {
+            if (bitIndex < 0)
+            {
+                return false;
+            }
+
             int blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
             {
@@ -75,7 +90,10 @@ namespace Box2D.NET
             bitSet.blockCount = 0;
             bitSet.bits = b2Alloc<ulong>(bitSet.blockCapacity);
             //memset( bitSet.bits, 0, bitSet.blockCapacity * sizeof( ulong ) );
-            Array.Fill(bitSet.bits, 0UL);
+            if (bitSet.blockCapacity > 0)
+            {
+                Array.Fill(bitSet.bits, 0UL);
+            }
         }
 
         public static void b2DestroyBitSet(ref B2BitSet bitSet)
@@ -99,7 +117,10 @@ namespace Box2D.NET
 
             bitSet.blockCount = blockCount;
             //memset( bitSet->bits, 0, bitSet->blockCount * sizeof( ulong ) );
-            Array.Fill(bitSet.bits, 0UL, 0, bitSet.blockCount);
+            if (bitSet.blockCount > 0)
+            {
+                Array.Fill(bitSet.bits, 0UL, 0, bitSet.blockCount);
+            }
         }
 
         public static void b2GrowBitSet(ref B2BitSet bitSet, int blockCount)

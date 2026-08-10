@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Text;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -26,6 +27,42 @@ namespace Box2D.NET
     {
         // Length of body debug name
         public const int B2_NAME_LENGTH = 32;
+
+        private static string b2TruncateBodyName(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return string.Empty;
+            }
+
+            int maximumByteCount = B2_NAME_LENGTH - 1;
+            if (Encoding.UTF8.GetByteCount(name) <= maximumByteCount)
+            {
+                return name;
+            }
+
+            int characterCount = 0;
+            int byteCount = 0;
+            while (characterCount < name.Length)
+            {
+                int scalarCharacterCount =
+                    char.IsHighSurrogate(name[characterCount]) &&
+                    characterCount + 1 < name.Length &&
+                    char.IsLowSurrogate(name[characterCount + 1])
+                        ? 2
+                        : 1;
+                int scalarByteCount = Encoding.UTF8.GetByteCount(name, characterCount, scalarCharacterCount);
+                if (byteCount + scalarByteCount > maximumByteCount)
+                {
+                    break;
+                }
+
+                characterCount += scalarCharacterCount;
+                byteCount += scalarByteCount;
+            }
+
+            return name.Substring(0, characterCount);
+        }
 
         // Identity body state, notice the deltaRotation is {1, 0}
         internal static readonly B2BodyState b2_identityBodyState = new B2BodyState()
@@ -301,14 +338,7 @@ namespace Box2D.NET
 
             B2Body body = b2Array_Get(ref world.bodies, bodyId);
 
-            if (!string.IsNullOrEmpty(def.name))
-            {
-                body.name = def.name;
-            }
-            else
-            {
-                body.name = string.Empty;
-            }
+            body.name = b2TruncateBodyName(def.name);
 
             body.userData = def.userData;
             body.setIndex = setId;
@@ -1399,14 +1429,7 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                body.name = name;
-            }
-            else
-            {
-                body.name = string.Empty;
-            }
+            body.name = b2TruncateBodyName(name);
         }
 
         /// Get the body name.
