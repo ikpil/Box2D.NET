@@ -78,9 +78,11 @@ namespace Box2D.NET
             return !(a == b);
         }
 
+        // Not "this == other". The operator follows C and uses IEEE compare, where NaN != NaN.
+        // Equals must stay reflexive and agree with GetHashCode, so it compares bitwise.
         public bool Equals(B2Vec2 other)
         {
-            return this == other;
+            return X.Equals(other.X) && Y.Equals(other.Y);
         }
 
         public override bool Equals(object obj)
