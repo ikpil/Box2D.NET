@@ -1152,7 +1152,7 @@ namespace Box2D.NET
         // todo this has varying order for moving shapes, causing flicker when overlapping shapes are moving
         // solution: display order by shape id modulus 3, keep 3 buckets in GLSolid* and flush in 3 passes.
         /// Call this to draw shapes and other debug draw data
-        public static void b2World_Draw(B2WorldId worldId, B2DebugDraw draw)
+        public static void b2World_Draw(B2WorldId worldId, in B2DebugDraw draw)
         {
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);

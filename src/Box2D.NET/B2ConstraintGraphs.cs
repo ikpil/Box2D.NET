@@ -207,8 +207,8 @@ namespace Box2D.NET
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
                 // This might clear a bit for a kinematic or static body, but this has no effect
-                b2ClearBit(ref color.bodySet, (uint)bodyIdA);
-                b2ClearBit(ref color.bodySet, (uint)bodyIdB);
+                b2ClearBit(ref color.bodySet, bodyIdA);
+                b2ClearBit(ref color.bodySet, bodyIdB);
             }
 
             int movedIndex = b2Array_RemoveSwap(ref color.contactSims, localIndex);
@@ -324,8 +324,8 @@ namespace Box2D.NET
             if (colorIndex != B2_OVERFLOW_INDEX)
             {
                 // May clear static bodies, no effect
-                b2ClearBit(ref color.bodySet, (uint)bodyIdA);
-                b2ClearBit(ref color.bodySet, (uint)bodyIdB);
+                b2ClearBit(ref color.bodySet, bodyIdA);
+                b2ClearBit(ref color.bodySet, bodyIdB);
             }
 
             int movedIndex = b2Array_RemoveSwap(ref color.jointSims, localIndex);

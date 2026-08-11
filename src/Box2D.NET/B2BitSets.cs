@@ -42,15 +42,20 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void b2ClearBit(ref B2BitSet bitSet, uint bitIndex)
+        public static void b2ClearBit(ref B2BitSet bitSet, int bitIndex)
         {
-            uint blockIndex = bitIndex / 64;
+            if (bitIndex < 0)
+            {
+                return;
+            }
+
+            int blockIndex = bitIndex / 64;
             if (blockIndex >= bitSet.blockCount)
             {
                 return;
             }
 
-            bitSet.bits[blockIndex] &= ~((ulong)1 << (int)(bitIndex % 64));
+            bitSet.bits[blockIndex] &= ~((ulong)1 << (bitIndex % 64));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,9 +142,13 @@ namespace Box2D.NET
                 ulong[] newBits = b2Alloc<ulong>(bitSet.blockCapacity);
                 //memset( newBits, 0, bitSet->blockCapacity * sizeof( ulong ) );
                 Array.Fill(newBits, 0UL, 0, bitSet.blockCapacity);
-                B2_ASSERT(bitSet.bits != null);
                 //memcpy( newBits, bitSet->bits, oldCapacity * sizeof( ulong ) );
-                Array.Copy(bitSet.bits, newBits, oldCapacity);
+                // b2Alloc returns null for a zero capacity, and C's memcpy from NULL with a zero
+                // length is harmless, so guard rather than fault on the first grow.
+                if (oldCapacity > 0)
+                {
+                    Array.Copy(bitSet.bits, newBits, oldCapacity);
+                }
                 b2Free(bitSet.bits, oldCapacity);
                 bitSet.bits = newBits;
             }
