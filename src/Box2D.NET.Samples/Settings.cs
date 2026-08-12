@@ -31,7 +31,6 @@ public class Settings
     public bool drawBounds = false;
     public bool drawMass = false;
     public bool drawBodyNames = false;
-    public B2ContactDrawType contactDrawType;
     public bool drawContactNormals = false;
     public bool drawContactFeatures = false;
     public bool drawContactForces = false;
@@ -93,7 +92,6 @@ public class Settings
         setting.singleStep = context.singleStep;
         
         //
-        setting.contactDrawType = context.debugDraw.contactDrawType;
         setting.drawShapes = context.debugDraw.drawShapes;
         setting.drawJoints = context.debugDraw.drawJoints;
         setting.drawJointExtras = context.debugDraw.drawJointExtras;
