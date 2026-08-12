@@ -471,4 +471,221 @@ public class B2WorldTest
 
         b2DestroyWorld(worldId);
     }
+
+    [Test]
+    public void ChainSegmentShapeTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = new B2Vec2(0.0f, -10.0f);
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+
+        B2ChainSegment cs = new B2ChainSegment();
+        cs.ghost1 = new B2Vec2(2.0f, 0.0f);
+        cs.segment.point1 = new B2Vec2(1.0f, 0.0f);
+        cs.segment.point2 = new B2Vec2(-1.0f, 0.0f);
+        cs.ghost2 = new B2Vec2(-2.0f, 0.0f);
+        cs.chainId = 99;
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2ShapeId orphanShape = b2CreateChainSegmentShape(groundId, shapeDef, cs);
+        Assert.That(B2_IS_NON_NULL(orphanShape));
+
+        Assert.That(b2Shape_GetType(orphanShape), Is.EqualTo(B2ShapeType.b2_chainSegmentShape));
+
+        B2ChainId parentChain = b2Shape_GetParentChain(orphanShape);
+        Assert.That(B2_IS_NULL(parentChain));
+
+        B2ChainSegment got = b2Shape_GetChainSegment(orphanShape);
+        Assert.That(got.ghost1.X - cs.ghost1.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.ghost1.Y - cs.ghost1.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.segment.point1.X - cs.segment.point1.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.segment.point1.Y - cs.segment.point1.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.segment.point2.X - cs.segment.point2.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.segment.point2.Y - cs.segment.point2.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.ghost2.X - cs.ghost2.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.ghost2.Y - cs.ghost2.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got.chainId, Is.EqualTo(B2_NULL_INDEX));
+
+        B2BodyDef dynamicDef = b2DefaultBodyDef();
+        dynamicDef.type = B2BodyType.b2_dynamicBody;
+        dynamicDef.position = new B2Vec2(0.0f, 2.0f);
+        B2BodyId circleBodyId = b2CreateBody(worldId, dynamicDef);
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+        B2ShapeDef circleShapeDef = b2DefaultShapeDef();
+        b2CreateCircleShape(circleBodyId, circleShapeDef, circle);
+
+        for (int i = 0; i < 120; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+        }
+
+        B2Vec2 circlePos = b2Body_GetPosition(circleBodyId);
+        Assert.That(circlePos.Y, Is.GreaterThan(0.0f));
+
+        B2ChainSegment cs2 = new B2ChainSegment();
+        cs2.ghost1 = new B2Vec2(3.0f, 0.0f);
+        cs2.segment.point1 = new B2Vec2(2.0f, 0.0f);
+        cs2.segment.point2 = new B2Vec2(-2.0f, 0.0f);
+        cs2.ghost2 = new B2Vec2(-3.0f, 0.0f);
+        cs2.chainId = B2_NULL_INDEX;
+
+        b2Shape_SetChainSegment(orphanShape, cs2);
+
+        B2ChainSegment got2 = b2Shape_GetChainSegment(orphanShape);
+        Assert.That(got2.segment.point1.X - cs2.segment.point1.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.segment.point1.Y - cs2.segment.point1.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.segment.point2.X - cs2.segment.point2.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.segment.point2.Y - cs2.segment.point2.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.ghost1.X - cs2.ghost1.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.ghost1.Y - cs2.ghost1.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.ghost2.X - cs2.ghost2.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.ghost2.Y - cs2.ghost2.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got2.chainId, Is.EqualTo(B2_NULL_INDEX));
+
+        B2ChainId parentChain2 = b2Shape_GetParentChain(orphanShape);
+        Assert.That(B2_IS_NULL(parentChain2));
+
+        B2BodyId convBody = b2CreateBody(worldId, bodyDef);
+        B2Circle convCircle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.25f);
+        B2ShapeId convShape = b2CreateCircleShape(convBody, shapeDef, convCircle);
+        Assert.That(b2Shape_GetType(convShape), Is.EqualTo(B2ShapeType.b2_circleShape));
+
+        b2Shape_SetChainSegment(convShape, cs2);
+
+        Assert.That(b2Shape_GetType(convShape), Is.EqualTo(B2ShapeType.b2_chainSegmentShape));
+        B2ChainSegment got3 = b2Shape_GetChainSegment(convShape);
+        Assert.That(got3.ghost1.X - cs2.ghost1.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got3.ghost1.Y - cs2.ghost1.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got3.ghost2.X - cs2.ghost2.X, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got3.ghost2.Y - cs2.ghost2.Y, Is.EqualTo(0.0f).Within(1e-5f));
+        Assert.That(got3.chainId, Is.EqualTo(B2_NULL_INDEX));
+
+        B2ChainId parentChain3 = b2Shape_GetParentChain(convShape);
+        Assert.That(B2_IS_NULL(parentChain3));
+
+        b2DestroyShape(orphanShape, true);
+        b2DestroyWorld(worldId);
+    }
+
+    [Test]
+    public void DeferredMassFlagSyncTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        shapeDef.updateBodyMass = false;
+
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
+        b2CreateCircleShape(bodyId, shapeDef, circle);
+
+        b2Body_ApplyMassFromShapes(bodyId);
+
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        b2DestroyWorld(worldId);
+    }
+
+    [Test]
+    public void EnableSleepFlagSyncTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.enableSleep = false;
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        Assert.That(b2Body_IsSleepEnabled(bodyId), Is.False);
+
+        b2Body_EnableSleep(bodyId, true);
+        Assert.That(b2Body_IsSleepEnabled(bodyId), Is.True);
+
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        b2DestroyWorld(worldId);
+    }
+
+    [Test]
+    public void EnableContactRecyclingTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+
+        // Default is enabled
+        B2BodyId bodyA = b2CreateBody(worldId, bodyDef);
+        Assert.That(b2Body_IsContactRecyclingEnabled(bodyA), Is.True);
+
+        b2Body_EnableContactRecycling(bodyA, false);
+        Assert.That(b2Body_IsContactRecyclingEnabled(bodyA), Is.False);
+
+        b2Body_EnableContactRecycling(bodyA, true);
+        Assert.That(b2Body_IsContactRecyclingEnabled(bodyA), Is.True);
+
+        // Per-def opt-out at creation
+        bodyDef.enableContactRecycling = false;
+        B2BodyId bodyB = b2CreateBody(worldId, bodyDef);
+        Assert.That(b2Body_IsContactRecyclingEnabled(bodyB), Is.False);
+
+        // Stepping after toggling must not trip the flag-sync validator
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        b2DestroyWorld(worldId);
+    }
+
+    [Test]
+    public void SetBulletDriftTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.isBullet = false;
+            B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+            Assert.That(b2Body_IsBullet(bodyId), Is.False);
+
+            b2Body_SetBullet(bodyId, true);
+            Assert.That(b2Body_IsBullet(bodyId), Is.True);
+
+            B2MotionLocks locks = new B2MotionLocks();
+            locks.linearX = true;
+            b2Body_SetMotionLocks(bodyId, locks);
+
+            Assert.That(b2Body_IsBullet(bodyId), Is.True);
+        }
+
+        {
+            B2BodyDef bodyDef = b2DefaultBodyDef();
+            bodyDef.type = B2BodyType.b2_dynamicBody;
+            bodyDef.isBullet = true;
+            B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+            Assert.That(b2Body_IsBullet(bodyId), Is.True);
+
+            b2Body_SetBullet(bodyId, false);
+            Assert.That(b2Body_IsBullet(bodyId), Is.False);
+
+            B2MotionLocks locks = new B2MotionLocks();
+            locks.linearX = true;
+            b2Body_SetMotionLocks(bodyId, locks);
+
+            Assert.That(b2Body_IsBullet(bodyId), Is.False);
+        }
+
+        b2DestroyWorld(worldId);
+    }
 }

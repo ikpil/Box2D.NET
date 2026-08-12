@@ -25,9 +25,6 @@ namespace Box2D.NET
 {
     public static class B2Bodies
     {
-        // Length of body debug name
-        public const int B2_NAME_LENGTH = 32;
-
         private static string b2TruncateBodyName(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -35,7 +32,7 @@ namespace Box2D.NET
                 return string.Empty;
             }
 
-            int maximumByteCount = B2_NAME_LENGTH - 1;
+            int maximumByteCount = B2_NAME_LENGTH;
             if (Encoding.UTF8.GetByteCount(name) <= maximumByteCount)
             {
                 return name;
@@ -155,6 +152,21 @@ namespace Box2D.NET
             }
 
             return null;
+        }
+
+        public static void b2SyncBodyFlags(B2World world, B2Body body)
+        {
+            // Never sync transient flags
+            uint flags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            bodySim.flags = flags;
+
+            B2BodyState bodyState = b2GetBodyState(world, body);
+            if (bodyState != null)
+            {
+                bodyState.flags = flags;
+            }
         }
 
         public static void b2CreateIslandForBody(B2World world, int setIndex, B2Body body)
@@ -313,6 +325,8 @@ namespace Box2D.NET
             bodySim.flags |= def.isBullet ? (uint)B2BodyFlags.b2_isBullet : 0;
             bodySim.flags |= def.allowFastRotation ? (uint)B2BodyFlags.b2_allowFastRotation : 0;
             bodySim.flags |= def.type == B2BodyType.b2_dynamicBody ? (uint)B2BodyFlags.b2_dynamicFlag : 0;
+            bodySim.flags |= def.enableSleep ? (uint)B2BodyFlags.b2_enableSleep : 0;
+            bodySim.flags |= def.enableContactRecycling ? (uint)B2BodyFlags.b2_bodyEnableContactRecycling : 0;
 
 
             if (setId == (int)B2SolverSetType.b2_awakeSet)
@@ -361,7 +375,6 @@ namespace Box2D.NET
             body.sleepTime = 0.0f;
             body.type = def.type;
             body.flags = bodySim.flags;
-            body.enableSleep = def.enableSleep;
 
             // dynamic and kinematic bodies that are enabled need a island
             if (setId >= (int)B2SolverSetType.b2_awakeSet)
@@ -1260,6 +1273,8 @@ namespace Box2D.NET
                     body.flags &= ~(uint)B2BodyFlags.b2_dynamicFlag;
                 }
 
+                b2SyncBodyFlags(world, body);
+
                 // Body type affects the mass properties
                 b2UpdateBodyMassData(world, body);
                 return;
@@ -1409,15 +1424,10 @@ namespace Box2D.NET
                 b2LinkJoint(world, joint);
             }
 
+            b2SyncBodyFlags(world, body);
+
             // Body type affects the mass
             b2UpdateBodyMassData(world, body);
-
-            B2BodyState state = b2GetBodyState(world, body);
-            if (state != null)
-            {
-                // Ensure flags are in sync (b2_skipSolverWrite)
-                state.flags = body.flags;
-            }
 
             b2ValidateSolverSets(world);
             b2ValidateIsland(world, body.islandId);
@@ -1691,7 +1701,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            return body.enableSleep;
+            return (body.flags & (uint)B2BodyFlags.b2_enableSleep) == (uint)B2BodyFlags.b2_enableSleep;
         }
         /// Set the sleep threshold, usually in meters per second
         public static void b2Body_SetSleepThreshold(B2BodyId bodyId, float sleepThreshold)
@@ -1707,7 +1717,7 @@ namespace Box2D.NET
             B2Body body = b2GetBodyFullId(world, bodyId);
             return body.sleepThreshold;
         }
-        /// Enable or disable sleeping for this body. If sleeping is disabled the body will wake.
+        /// Enable or disable sleeping for this body. If sleeping is disabled the body will wake (and the entire island).
         public static void b2Body_EnableSleep(B2BodyId bodyId, bool enableSleep)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
@@ -1717,7 +1727,15 @@ namespace Box2D.NET
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
-            body.enableSleep = enableSleep;
+
+            bool flag = (body.flags & (uint)B2BodyFlags.b2_enableSleep) == (uint)B2BodyFlags.b2_enableSleep;
+            if (enableSleep == flag)
+            {
+                return;
+            }
+
+            body.flags = enableSleep ? body.flags | (uint)B2BodyFlags.b2_enableSleep : body.flags & ~(uint)B2BodyFlags.b2_enableSleep;
+            b2SyncBodyFlags(world, body);
 
             if (enableSleep == false)
             {
@@ -1908,16 +1926,12 @@ namespace Box2D.NET
                 body.flags &= ~(uint)B2BodyFlags.b2_allLocks;
                 body.flags |= newFlags;
 
-                B2BodySim bodySim = b2GetBodySim(world, body);
-                bodySim.flags &= ~(uint)B2BodyFlags.b2_allLocks;
-                bodySim.flags |= newFlags;
+                b2SyncBodyFlags(world, body);
 
                 B2BodyState state = b2GetBodyState(world, body);
 
                 if (state != null)
                 {
-                    state.flags = bodySim.flags;
-
                     if (locks.linearX)
                     {
                         state.linearVelocity.X = 0.0f;
@@ -1958,17 +1972,18 @@ namespace Box2D.NET
                 return;
             }
 
-            B2Body body = b2GetBodyFullId(world, bodyId);
-            B2BodySim bodySim = b2GetBodySim(world, body);
+            uint newFlag = flag ? (uint)B2BodyFlags.b2_isBullet : 0;
 
-            if (flag)
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            if ((body.flags & (uint)B2BodyFlags.b2_isBullet) == newFlag)
             {
-                bodySim.flags |= (uint)B2BodyFlags.b2_isBullet;
+                return;
             }
-            else
-            {
-                bodySim.flags &= ~(uint)B2BodyFlags.b2_isBullet;
-            }
+
+            body.flags &= ~(uint)B2BodyFlags.b2_isBullet;
+            body.flags |= newFlag;
+
+            b2SyncBodyFlags(world, body);
         }
         /// Is this body a bullet?
         public static bool b2Body_IsBullet(B2BodyId bodyId)
@@ -1977,6 +1992,41 @@ namespace Box2D.NET
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
             return (bodySim.flags & (uint)B2BodyFlags.b2_isBullet) != 0;
+        }
+
+        /// Enable or disable contact recycling for this body. Contact recycling is a performance optimization
+        /// that reuses contact manifolds when bodies move slightly. Disabling it can avoid ghost collisions
+        /// on characters at the cost of higher per-step work. Existing contacts retain their prior setting;
+        /// only contacts created after this call see the new value.
+        /// @see b2BodyDef::enableContactRecycling
+        public static void b2Body_EnableContactRecycling(B2BodyId bodyId, bool flag)
+        {
+            B2World world = b2GetWorldLocked(bodyId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
+            uint newFlag = flag ? (uint)B2BodyFlags.b2_bodyEnableContactRecycling : 0;
+
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            if ((body.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) == newFlag)
+            {
+                return;
+            }
+
+            body.flags &= ~(uint)B2BodyFlags.b2_bodyEnableContactRecycling;
+            body.flags |= newFlag;
+
+            b2SyncBodyFlags(world, body);
+        }
+
+        /// Is contact recycling enabled on this body?
+        public static bool b2Body_IsContactRecyclingEnabled(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            return (body.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0;
         }
         /// Enable/disable contact events on all shapes.
         /// @see b2ShapeDef::enableContactEvents

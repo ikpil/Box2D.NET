@@ -277,9 +277,10 @@ namespace Box2D.NET
             {
                 b2UpdateBodyMassData(world, body);
             }
-            else
+            else if ((body.flags & (uint)B2BodyFlags.b2_dirtyMass) == 0)
             {
                 body.flags |= (uint)B2BodyFlags.b2_dirtyMass;
+                b2SyncBodyFlags(world, body);
             }
 
             b2ValidateSolverSets(world);
@@ -321,7 +322,7 @@ namespace Box2D.NET
 
         /// Create a line segment shape and attach it to a body. The shape definition and geometry are fully cloned.
         /// Contacts are not created until the next time step.
-        /// @return the shape id for accessing the shape
+        /// @return the shape id or b2_nullShapeId if the segment is too short.
         public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, in B2ShapeDef def, in B2Segment segment)
         {
             float lengthSqr = b2DistanceSquared(segment.point1, segment.point2);
@@ -332,6 +333,27 @@ namespace Box2D.NET
             }
 
             return b2CreateShape(bodyId, def, segment, B2ShapeType.b2_segmentShape);
+        }
+
+        /// Create an orphaned chain segment shape and attach it to a body. The shape definition and
+        /// geometry are fully cloned. The caller is responsible for the segment's ghost vertices and
+        /// lifetime. The segment is not owned by any b2ChainShape (b2Shape_GetParentChain returns
+        /// b2_nullChainId). Contacts are not created until the next time step.
+        /// @return the shape id, or b2_nullShapeId if the segment is too short.
+        public static B2ShapeId b2CreateChainSegmentShape(B2BodyId bodyId, in B2ShapeDef def, in B2ChainSegment chainSegment)
+        {
+            float lengthSqr = b2DistanceSquared(chainSegment.segment.point1, chainSegment.segment.point2);
+            if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
+            {
+                B2_ASSERT(false);
+                return b2_nullShapeId;
+            }
+
+            // No parent chain shape
+            B2ChainSegment local = chainSegment;
+            local.chainId = B2_NULL_INDEX;
+
+            return b2CreateShape(bodyId, def, local, B2ShapeType.b2_chainSegmentShape);
         }
 
         // Destroy a shape on a body. This doesn't need to be called when destroying a body.
@@ -426,6 +448,13 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
+
+            // Cannot destroy a chain segment that has a parent chain shape
+            if (shape.type == B2ShapeType.b2_chainSegmentShape && shape.us.chainSegment.chainId != B2_NULL_INDEX)
+            {
+                B2_ASSERT(false);
+                return;
+            }
 
             // need to wake bodies because this might be a static body
             bool wakeBodies = true;
@@ -1626,6 +1655,44 @@ namespace Box2D.NET
             bool destroyProxy = true;
             b2ResetProxy(world, shape, wakeBodies, destroyProxy);
         }
+
+        /// Allows you to change a shape to be an orphaned chain segment or update the current chain
+        /// segment, including its ghost vertices. The chainId on the input is ignored. The resulting
+        /// shape is always orphaned. Asserts if the shape is already a chain segment
+        /// owned by a b2ChainShape (chainId != B2_NULL_INDEX).
+        public static void b2Shape_SetChainSegment(B2ShapeId shapeId, in B2ChainSegment chainSegment)
+        {
+            B2World world = b2GetWorldLocked(shapeId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
+            B2Shape shape = b2GetShape(world, shapeId);
+
+            // Cannot modify a chain segment that has a parent chain shape
+            if (shape.type == B2ShapeType.b2_chainSegmentShape && shape.us.chainSegment.chainId != B2_NULL_INDEX)
+            {
+                B2_ASSERT(false);
+                return;
+            }
+
+            float lengthSqr = b2DistanceSquared(chainSegment.segment.point1, chainSegment.segment.point2);
+            if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
+            {
+                return;
+            }
+
+            shape.us.chainSegment = chainSegment;
+            shape.us.chainSegment.chainId = B2_NULL_INDEX;
+            shape.type = B2ShapeType.b2_chainSegmentShape;
+            shape.aabbMargin = b2ComputeShapeMargin(shape);
+
+            bool wakeBodies = true;
+            bool destroyProxy = true;
+            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+        }
+
         /// Get the parent chain id if the shape type is a chain segment, otherwise
         /// returns b2_nullChainId.
         public static B2ChainId b2Shape_GetParentChain(B2ShapeId shapeId)

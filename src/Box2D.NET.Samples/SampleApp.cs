@@ -465,6 +465,7 @@ public class SampleApp
         unsafe
         {
             // ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+            // This brightens the font, improving readability when it is small.
             // fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
             //
             // float regularSize = MathF.Floor(13.0f * _context.uiScale);
@@ -472,6 +473,7 @@ public class SampleApp
             // float largeSize = MathF.Floor(64.0f * _context.uiScale);
             //
             // var io = ImGui.GetIO();
+            //_context.regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize);
             //_context.regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize, fontConfig);
             // _context.mediumFont = io.Fonts.AddFontFromFileTTF(fontPath, mediumSize, fontConfig);
             // _context.largeFont = io.Fonts.AddFontFromFileTTF(fontPath, largeSize, fontConfig);
@@ -652,6 +654,12 @@ public class SampleApp
             return;
         }
 
+        // Silk.NET may dispatch mouse events before the first update creates the delayed sample.
+        if (_context.sample == null)
+        {
+            return;
+        }
+
         double xd, yd;
         _context.glfw.GetCursorPos(_context.window, out xd, out yd);
         B2Vec2 ps = new B2Vec2((float)(xd), (float)(yd));
@@ -694,6 +702,12 @@ public class SampleApp
 
         var io = ImGui.GetIO();
         if (io.WantCaptureMouse)
+        {
+            return;
+        }
+
+        // Silk.NET may dispatch mouse events before the first update creates the delayed sample.
+        if (_context.sample == null)
         {
             return;
         }

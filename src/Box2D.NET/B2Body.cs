@@ -7,8 +7,6 @@ namespace Box2D.NET
     // Body organizational details that are not used in the solver.
     public class B2Body
     {
-        public string name;
-
         public B2UserData userData;
 
         // index of solver set stored in b2World
@@ -61,7 +59,6 @@ namespace Box2D.NET
         // Used to check for invalid b2BodyId
         public ushort generation;
 
-        // todo move into flags
-        public bool enableSleep;
+        public string name;
     }
 }

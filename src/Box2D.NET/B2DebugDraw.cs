@@ -37,6 +37,9 @@ namespace Box2D.NET
         /// Option to draw shapes
         public bool drawShapes;
 
+        /// Option to draw chain shape normals
+        public bool drawChainNormals;
+
         /// Option to draw joints
         public bool drawJoints;
 

@@ -46,7 +46,18 @@ namespace Box2D.NET
         // computation but b2Body_ApplyMassFromShapes was not called before the world step.
         b2_dirtyMass = 0x00000400,
 
+        b2_enableSleep = 0x00000800,
+
+        b2_bodyEnableContactRecycling = 0x00001000,
+
         // All lock flags
         b2_allLocks = b2_lockAngularZ | b2_lockLinearX | b2_lockLinearY,
+
+        // If this flag is set then the body has fixed rotation
+        // todo use this to set the inverse inertia to zero
+        b2_fixedRotation = b2_lockAngularZ,
+
+        // These flags are transient per time step. These may be different across b2Body, b2BodySim, and b2BodyState.
+        b2_bodyTransientFlags = b2_isFast | b2_isSpeedCapped | b2_hadTimeOfImpact,
     }
 }

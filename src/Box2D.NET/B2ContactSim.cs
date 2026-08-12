@@ -40,7 +40,7 @@ namespace Box2D.NET
         public float rollingResistance;
         public float tangentSpeed;
 
-        // b2ContactSimFlags
+        // b2ContactFlags
         public uint simFlags;
 
         public B2SimplexCache cache;

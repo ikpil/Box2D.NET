@@ -14,12 +14,9 @@ namespace Box2D.NET
     {
         public B2DynamicTree[] trees;
 
-        // The move set and array are used to track shapes that have moved significantly
-        // and need a pair query for new contacts. The array has a deterministic order.
-        // todo perhaps just a move set?
-        // todo implement a 32bit hash set for faster lookup
-        // todo moveSet can grow quite large on the first time step and remain large
-        public B2HashSet moveSet;
+        // Per body-type bit sets indexed by proxyId, marking proxies moved this step.
+        // Paired with moveArray which preserves deterministic insertion order for pair queries.
+        public B2BitSet[] movedProxies;
         public B2Array<int> moveArray;
 
         // These are the results from the pair query and are used to create new contacts
@@ -36,7 +33,7 @@ namespace Box2D.NET
         public void Clear()
         {
             trees = null;
-            moveSet = new B2HashSet();
+            movedProxies = null;
             b2Array_Clear(ref moveArray);
             moveResults = null;
             movePairs = null;

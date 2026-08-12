@@ -478,6 +478,11 @@ namespace Box2D.NET
             world.generation = (ushort)(generation + 1);
         }
 
+        private static float b2RelativeCos(B2Rot a, B2Rot b)
+        {
+            return a.c * b.c + a.s * b.s;
+        }
+
         internal static void b2CollideTask(int startIndex, int endIndex, int workerIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.collide_task, "Collide", B2HexColor.b2_colorDodgerBlue, true);
@@ -508,13 +513,13 @@ namespace Box2D.NET
                 bool overlap = b2AABB_Overlaps(shapeA.fatAABB, shapeB.fatAABB);
                 if (overlap == false)
                 {
-                    contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simDisjoint;
-                    contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simTouchingFlag;
+                    contactSim.simFlags |= (uint)B2ContactFlags.b2_simDisjoint;
+                    contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simTouchingFlag;
                     b2SetBit(ref taskContext.contactStateBitSet, contactId);
                 }
                 else
                 {
-                    bool wasTouching = 0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag);
+                    bool wasTouching = 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simTouchingFlag);
 
                     // Update contact respecting shape/body order (A,B)
                     B2Body bodyA = bodies[shapeA.bodyId];
@@ -536,10 +541,16 @@ namespace Box2D.NET
                     // Contact recycling optimization. Please cite this code if you use this optimization.
                     // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
                     // However, this allows larger relative motion and has fewer tuning parameters (just one).
-                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simRelativeTransformValid))
+                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
+                        0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_contactRecycleFlag))
                     {
                         B2Transform xf = b2InvMulTransforms(transformA, transformB);
                         B2Transform xfc = b2InvMulTransforms(contactSim.cachedTransformA, contactSim.cachedTransformB);
+
+                        float cosA = b2RelativeCos(transformA.q, contactSim.cachedTransformA.q);
+                        float cosB = b2RelativeCos(transformB.q, contactSim.cachedTransformB.q);
+                        float minCos = b2MinFloat(cosA, cosB);
+
                         float maxExtentA = bodyA.type == B2BodyType.b2_staticBody ? 0.0f : bodySimA.maxExtent;
                         float maxExtentB = bodyB.type == B2BodyType.b2_staticBody ? 0.0f : bodySimB.maxExtent;
                         float maxExtent = b2MaxFloat(maxExtentA, maxExtentB);
@@ -550,7 +561,8 @@ namespace Box2D.NET
                         // Note that qr.s == sin(theta) ~= theta for small angles.
                         // Need a tighter tolerance for non-touching shapes so that contacts are not missed.
                         float tolerance = wasTouching ? recycleDistance : recycleDistanceNonTouching;
-                        if (distance + maxExtent * b2AbsFloat(qr.s) < tolerance)
+
+                        if (minCos > B2_CONTACT_RECYCLE_COS_ANGLE && distance + maxExtent * b2AbsFloat(qr.s) < tolerance)
                         {
                             B2Rot dqA = b2MulRot(transformA.q, b2InvertRot(contactSim.cachedTransformA.q));
                             B2Rot dqB = b2MulRot(transformB.q, b2InvertRot(contactSim.cachedTransformB.q));
@@ -581,7 +593,7 @@ namespace Box2D.NET
                     // Caching for contact recycling.
                     contactSim.cachedTransformA = transformA;
                     contactSim.cachedTransformB = transformB;
-                    contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simRelativeTransformValid;
+                    contactSim.simFlags |= (uint)B2ContactFlags.b2_simRelativeTransformValid;
 
                     B2Vec2 centerOffsetA = b2RotateVector(transformA.q, bodySimA.localCenter);
                     B2Vec2 centerOffsetB = b2RotateVector(transformB.q, bodySimB.localCenter);
@@ -593,12 +605,12 @@ namespace Box2D.NET
                     // State changes that affect island connectivity. Also affects contact events.
                     if (touching == true && wasTouching == false)
                     {
-                        contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStartedTouching;
+                        contactSim.simFlags |= (uint)B2ContactFlags.b2_simStartedTouching;
                         b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
                     else if (touching == false && wasTouching == true)
                     {
-                        contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simStoppedTouching;
+                        contactSim.simFlags |= (uint)B2ContactFlags.b2_simStoppedTouching;
                         b2SetBit(ref taskContext.contactStateBitSet, contactId);
                     }
 
@@ -783,14 +795,14 @@ namespace Box2D.NET
                     uint flags = contact.flags;
                     uint simFlags = contactSim.simFlags;
 
-                    if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simDisjoint))
+                    if (0 != (simFlags & (uint)B2ContactFlags.b2_simDisjoint))
                     {
                         // Bounding boxes no longer overlap
                         b2DestroyContact(world, contact, false);
                         contact = null;
                         contactSim = null;
                     }
-                    else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching))
+                    else if (0 != (simFlags & (uint)B2ContactFlags.b2_simStartedTouching))
                     {
                         B2_ASSERT(contact.islandId == B2_NULL_INDEX);
 
@@ -816,7 +828,7 @@ namespace Box2D.NET
                         // so I just need to refresh it.
                         contactSim = b2Array_Get(ref awakeSet.contactSims, localIndex);
 
-                        contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simStartedTouching;
+                        contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simStartedTouching;
 
                         // Add first for memcpy
                         b2AddContactToGraph(world, contactSim, contact);
@@ -825,9 +837,9 @@ namespace Box2D.NET
                         b2RemoveNonTouchingContact(world, (int)B2SolverSetType.b2_awakeSet, localIndex);
                         contactSim = null;
                     }
-                    else if (0 != (simFlags & (uint)B2ContactSimFlags.b2_simStoppedTouching))
+                    else if (0 != (simFlags & (uint)B2ContactFlags.b2_simStoppedTouching))
                     {
-                        contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simStoppedTouching;
+                        contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simStoppedTouching;
                         contact.flags &= ~(uint)B2ContactFlags.b2_contactTouchingFlag;
 
                         if (0 != (contact.flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
@@ -1004,7 +1016,7 @@ namespace Box2D.NET
             //b2TracyCFrame
         }
 
-        internal static void b2DrawShape(B2DebugDraw draw, B2Shape shape, B2Transform xf, B2HexColor color)
+        internal static void b2DrawShape(B2DebugDraw draw, B2Shape shape, B2Transform xf, B2HexColor color, bool drawChainNormals)
         {
             switch (shape.type)
             {
@@ -1048,7 +1060,15 @@ namespace Box2D.NET
                     B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
                     draw.DrawLineFcn(p1, p2, color, draw.context);
                     draw.DrawPointFcn(p2, 4.0f, color, draw.context);
-                    draw.DrawLineFcn(p1, b2Lerp(p1, p2, 0.1f), B2HexColor.b2_colorPaleGreen, draw.context);
+
+                    if (drawChainNormals)
+                    {
+                        B2Vec2 c = b2Lerp(p1, p2, 0.5f);
+                        B2Vec2 e = b2Normalize(b2Sub(p2, p1));
+                        B2Vec2 n = b2RightPerp(e);
+                        float L = 0.2f * b2GetLengthUnitsPerMeter();
+                        draw.DrawLineFcn(c, b2MulAdd(c, L, n), B2HexColor.b2_colorPaleGreen, draw.context);
+                    }
                 }
                     break;
 
@@ -1129,7 +1149,7 @@ namespace Box2D.NET
                     color = B2HexColor.b2_colorGray;
                 }
 
-                b2DrawShape(draw, shape, bodySim.transform, color);
+                b2DrawShape(draw, shape, bodySim.transform, color, draw.drawChainNormals);
             }
 
             if (draw.drawBounds)
@@ -2005,8 +2025,12 @@ namespace Box2D.NET
             writer.Write("static tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_staticBody]));
             writer.Write("kinematic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody]));
             writer.Write("dynamic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody]));
-            ref B2HashSet moveSet = ref world.broadPhase.moveSet;
-            writer.Write("moveSet: {0} ({1}, {2})\n", b2GetHashSetBytes(ref moveSet), moveSet.count, moveSet.capacity);
+            int movedBytes = 0;
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                movedBytes += b2GetBitSetBytes(ref world.broadPhase.movedProxies[i]);
+            }
+            writer.Write("movedProxies: {0}\n", movedBytes);
             writer.Write("moveArray: {0}\n", b2Array_ByteCount(ref world.broadPhase.moveArray));
             ref B2HashSet pairSet = ref world.broadPhase.pairSet;
             writer.Write("pairSet: {0} ({1}, {2})\n", b2GetHashSetBytes(ref pairSet), pairSet.count, pairSet.capacity);
@@ -2905,6 +2929,15 @@ void b2World_Dump()
                             B2_ASSERT(body.setIndex == setIndex);
                             B2_ASSERT(body.localIndex == i);
 
+                            uint syncedFlags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+                            B2_ASSERT((bodySim.flags & syncedFlags) == syncedFlags);
+
+                            B2BodyState bodyState = b2GetBodyState(world, body);
+                            if (bodyState != null)
+                            {
+                                B2_ASSERT((bodyState.flags & syncedFlags) == syncedFlags);
+                            }
+
                             if (body.type == B2BodyType.b2_dynamicBody)
                             {
                                 B2_ASSERT(0 != (body.flags & (uint)B2BodyFlags.b2_dynamicFlag));
@@ -3012,7 +3045,7 @@ void b2World_Dump()
                                 // contact should be non-touching if awake
                                 // or it could be this contact hasn't been transferred yet
                                 B2_ASSERT(contactSim.manifold.pointCount == 0 ||
-                                          (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simStartedTouching) != 0);
+                                          (contactSim.simFlags & (uint)B2ContactFlags.b2_simStartedTouching) != 0);
                             }
 
                             B2_ASSERT(contact.setIndex == setIndex);
@@ -3081,7 +3114,7 @@ void b2World_Dump()
                     B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
                     // contact should be touching in the constraint graph or awaiting transfer to non-touching
                     B2_ASSERT(contactSim.manifold.pointCount > 0 ||
-                              (contactSim.simFlags & ((uint)B2ContactSimFlags.b2_simStoppedTouching | (uint)B2ContactSimFlags.b2_simDisjoint)) != 0);
+                              (contactSim.simFlags & ((uint)B2ContactFlags.b2_simStoppedTouching | (uint)B2ContactFlags.b2_simDisjoint)) != 0);
                     B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
                     B2_ASSERT(contact.colorIndex == colorIndex);
                     B2_ASSERT(contact.localIndex == i);
@@ -3235,7 +3268,7 @@ void b2World_Dump()
                 B2_ASSERT(contactSim.bodyIdA == contact.edges[0].bodyId);
                 B2_ASSERT(contactSim.bodyIdB == contact.edges[1].bodyId);
 
-                bool simTouching = (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag) != 0;
+                bool simTouching = (contactSim.simFlags & (uint)B2ContactFlags.b2_simTouchingFlag) != 0;
                 B2_ASSERT(touching == simTouching);
 
                 B2_ASSERT(0 <= contactSim.manifold.pointCount && contactSim.manifold.pointCount <= 2);

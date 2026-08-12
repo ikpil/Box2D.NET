@@ -80,7 +80,7 @@ namespace Box2D.NET
         internal static void b2AddContactToGraph(B2World world, B2ContactSim contactSim, B2Contact contact)
         {
             B2_ASSERT(contactSim.manifold.pointCount > 0);
-            B2_ASSERT(0 != (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simTouchingFlag));
+            B2_ASSERT(0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simTouchingFlag));
             B2_ASSERT(0 != (contact.flags & (uint)B2ContactFlags.b2_contactTouchingFlag));
 
             ref B2ConstraintGraph graph = ref world.constraintGraph;

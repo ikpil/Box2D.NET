@@ -35,6 +35,9 @@ namespace Box2D.NET
         // Maximum number of simultaneous worlds that can be allocated
         public const int B2_MAX_WORLDS = 128;
 
+        /// Maximum length of the body name. Can be 0 if you don't need names.
+        public const int B2_NAME_LENGTH = 10;
+
         // The maximum rotation of a body per time step. This limit is very large and is used
         // to prevent numerical problems. You shouldn't need to adjust this.
         // @warning increasing this to 0.5f * b2_pi or greater will break continuous collision.
@@ -47,6 +50,9 @@ namespace Box2D.NET
 
         // The default contact recycling distance.
         public static float B2_CONTACT_RECYCLE_DISTANCE => (10.0f * B2_LINEAR_SLOP);
+
+        /// The default contact recycling world angle threshold. 0.98 ~= 11.5 degrees
+        public const float B2_CONTACT_RECYCLE_COS_ANGLE = 0.98f;
 
         // This is used to fatten AABBs in the dynamic tree. This allows proxies
         // to move by a small amount without triggering a tree adjustment. This is in meters.
@@ -75,6 +81,7 @@ namespace Box2D.NET
         public const ulong B2_DEFAULT_MASK_BITS = ulong.MaxValue;
 
         // core
+        /// Used to indicate an unset or invalid index value.
         public const int B2_NULL_INDEX = -1;
 
         // Use 32 byte alignment for everything. Works with 256bit SIMD.

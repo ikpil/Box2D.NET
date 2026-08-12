@@ -107,10 +107,12 @@ public class SampleContext
         //
         sampleIndex = settings.sampleIndex;
         debugDraw.drawShapes = settings.drawShapes;
+        debugDraw.drawChainNormals = settings.drawChainNormals;
         debugDraw.drawJoints = settings.drawJoints;
 
         //
         debugDraw.drawShapes = settings.drawShapes;
+        debugDraw.drawChainNormals = settings.drawChainNormals;
         debugDraw.drawJoints = settings.drawJoints;
         debugDraw.drawJointExtras = settings.drawJointExtras;
         debugDraw.drawBounds = settings.drawBounds;

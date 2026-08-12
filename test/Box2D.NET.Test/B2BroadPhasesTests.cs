@@ -10,11 +10,30 @@ using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2BitSets;
 
 namespace Box2D.NET.Test;
 
 public class B2BroadPhasesTests
 {
+    private static bool IsMoved(B2BroadPhase bp, int proxyKey)
+    {
+        B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+        int proxyId = B2_PROXY_ID(proxyKey);
+        return b2GetBit(ref bp.movedProxies[(int)proxyType], proxyId);
+    }
+
+    private static int GetMovedProxyCount(B2BroadPhase bp)
+    {
+        int count = 0;
+        for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+        {
+            count += b2CountSetBits(ref bp.movedProxies[i]);
+        }
+
+        return count;
+    }
+
     [Test]
     public void Test_B2BoardPhases_B2_PROXY_ID_TYPE_KEY()
     {
@@ -33,7 +52,7 @@ public class B2BroadPhasesTests
     [Test]
     public void Test_B2BoardPhases_b2BufferMove()
     {
-        // Arrange: Create a new BroadPhase object with an empty moveSet and moveArray
+        // Arrange: Create a new BroadPhase object with empty movedProxies and moveArray
         B2BroadPhase bp = null;
         b2CreateBroadPhase(ref bp);
 
@@ -42,7 +61,7 @@ public class B2BroadPhasesTests
         // Act 1: Call b2BufferMove for the first time. It should add to moveArray
         b2BufferMove(bp, proxyKey);
 
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKey + 1), Is.True, "moveSet should contain proxyKey + 1");
+        Assert.That(IsMoved(bp, proxyKey), Is.True, "movedProxies should contain proxyKey");
         Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should have exactly one element after the first call");
         Assert.That(bp.moveArray.data[0], Is.EqualTo(proxyKey), "moveArray should contain the correct proxyKey");
 
@@ -60,7 +79,10 @@ public class B2BroadPhasesTests
 
         Assert.That(bp, Is.Not.Null, "B2BroadPhase object should be initialized.");
         Assert.That(bp.trees.Length, Is.EqualTo((int)B2BodyType.b2_bodyTypeCount), "The trees array should have the same length as B2BodyType.b2_bodyTypeCount.");
-        Assert.That(bp.moveSet.capacity, Is.EqualTo(16), "moveSet should be initialized.");
+        Assert.That(bp.movedProxies.Length, Is.EqualTo((int)B2BodyType.b2_bodyTypeCount), "movedProxies should be initialized.");
+        Assert.That(bp.movedProxies[(int)B2BodyType.b2_staticBody].blockCapacity, Is.EqualTo(1));
+        Assert.That(bp.movedProxies[(int)B2BodyType.b2_kinematicBody].blockCapacity, Is.EqualTo(1));
+        Assert.That(bp.movedProxies[(int)B2BodyType.b2_dynamicBody].blockCapacity, Is.EqualTo(1));
         Assert.That(bp.moveArray.capacity, Is.EqualTo(16), "moveArray should be initialized.");
         Assert.That(bp.moveResults.Array, Is.Null, "moveResults should be null initially.");
         Assert.That(bp.movePairs.Array, Is.Null, "movePairs should be null initially.");
@@ -83,7 +105,7 @@ public class B2BroadPhasesTests
         b2DestroyBroadPhase(bp);
 
         Assert.That(bp.trees, Is.Null);
-        Assert.That(bp.moveSet.capacity, Is.EqualTo(0));
+        Assert.That(bp.movedProxies, Is.Null);
         Assert.That(bp.moveArray.count, Is.EqualTo(0));
         Assert.That(bp.moveResults.Array, Is.Null);
         Assert.That(bp.movePairs.Array, Is.Null);
@@ -98,23 +120,23 @@ public class B2BroadPhasesTests
         B2BroadPhase bp = null;
         b2CreateBroadPhase(ref bp);
 
-        int proxyKeyA = 42;
-        int proxyKeyB = 99;
-        int proxyKeyC = 88;
+        int proxyKeyA = B2_PROXY_KEY(10, B2BodyType.b2_dynamicBody);
+        int proxyKeyB = B2_PROXY_KEY(20, B2BodyType.b2_kinematicBody);
+        int proxyKeyC = B2_PROXY_KEY(30, B2BodyType.b2_staticBody);
 
         b2BufferMove(bp, proxyKeyA);
         b2BufferMove(bp, proxyKeyB);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(2));
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(2));
         Assert.That(bp.moveArray.count, Is.EqualTo(2));
 
         // not found key C
         b2UnBufferMove(bp, proxyKeyC);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(2));
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.True);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.True);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(2));
+        Assert.That(IsMoved(bp, proxyKeyA), Is.True);
+        Assert.That(IsMoved(bp, proxyKeyB), Is.True);
+        Assert.That(IsMoved(bp, proxyKeyC), Is.False);
 
         Assert.That(bp.moveArray.count, Is.EqualTo(2));
         Assert.That(bp.moveArray.data, Does.Contain(proxyKeyA));
@@ -124,10 +146,10 @@ public class B2BroadPhasesTests
         // delete A
         b2UnBufferMove(bp, proxyKeyA);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(1));
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.False);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.True);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(1));
+        Assert.That(IsMoved(bp, proxyKeyA), Is.False);
+        Assert.That(IsMoved(bp, proxyKeyB), Is.True);
+        Assert.That(IsMoved(bp, proxyKeyC), Is.False);
 
         Assert.That(bp.moveArray.count, Is.EqualTo(1));
         Assert.That(bp.moveArray.data, Does.Not.Contain(proxyKeyA));
@@ -137,10 +159,10 @@ public class B2BroadPhasesTests
         // delete B
         b2UnBufferMove(bp, proxyKeyB);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(0));
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyA + 1), Is.False);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyB + 1), Is.False);
-        Assert.That(b2ContainsKey(ref bp.moveSet, (ulong)proxyKeyC + 1), Is.False);
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(0));
+        Assert.That(IsMoved(bp, proxyKeyA), Is.False);
+        Assert.That(IsMoved(bp, proxyKeyB), Is.False);
+        Assert.That(IsMoved(bp, proxyKeyC), Is.False);
 
         Assert.That(bp.moveArray.count, Is.EqualTo(0));
     }
@@ -162,20 +184,20 @@ public class B2BroadPhasesTests
         // case 1: static body, forcePairCreation = false
         int proxyKeyA = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb, categoryBits, shapeIndex, false);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(0), "Should not add to moveSet if static body and forcePairCreation == false");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(0), "Should not add to movedProxies if static body and forcePairCreation == false");
         Assert.That(bp.moveArray.count, Is.EqualTo(0), "Should not add to moveArray if static body and forcePairCreation == false");
 
         // case 2: static body, forcePairCreation = true
         int proxyKeyB = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_staticBody, aabb, categoryBits, shapeIndex + 1, true);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(1), "Should add to moveSet if static body but forcePairCreation == true");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(1), "Should add to movedProxies if static body but forcePairCreation == true");
         Assert.That(bp.moveArray.count, Is.EqualTo(1), "Should add to moveArray if static body but forcePairCreation == true");
         Assert.That(bp.moveArray.data, Does.Contain(proxyKeyB), "moveArray should contain proxyKeyB");
 
         // case 3: dynamic body, forcePairCreation irrelevant
         int proxyKeyC = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex + 2, false);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(2), "Should add to moveSet if body is dynamic");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(2), "Should add to movedProxies if body is dynamic");
         Assert.That(bp.moveArray.count, Is.EqualTo(2), "Should add to moveArray if body is dynamic");
         Assert.That(bp.moveArray.data, Does.Contain(proxyKeyC), "moveArray should contain proxyKeyC");
     }
@@ -198,19 +220,19 @@ public class B2BroadPhasesTests
         int proxyKeyA = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex, false);
         int proxyKeyB = b2BroadPhase_CreateProxy(bp, B2BodyType.b2_dynamicBody, aabb, categoryBits, shapeIndex + 1, false);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(2), "moveSet should have 2 items before destroying proxies");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(2), "movedProxies should have 2 items before destroying proxies");
         Assert.That(bp.moveArray.count, Is.EqualTo(2), "moveArray should have 2 items before destroying proxies");
 
         // Destroy proxy A
         b2BroadPhase_DestroyProxy(bp, proxyKeyA);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(1), "moveSet should have 1 item after destroying proxy A");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(1), "movedProxies should have 1 item after destroying proxy A");
         Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should have 1 item after destroying proxy A");
 
         // Destroy proxy B
         b2BroadPhase_DestroyProxy(bp, proxyKeyB);
 
-        Assert.That(bp.moveSet.count, Is.EqualTo(0), "moveSet should have 0 items after destroying proxy B");
+        Assert.That(GetMovedProxyCount(bp), Is.EqualTo(0), "movedProxies should have 0 items after destroying proxy B");
         Assert.That(bp.moveArray.count, Is.EqualTo(0), "moveArray should have 0 items after destroying proxy B");
 
 #if DEBUG
@@ -249,7 +271,7 @@ public class B2BroadPhasesTests
             b2BroadPhase_MoveProxy(bp, proxyKey, aabb2);
             Assert.That(bp.trees[(int)proxyType].nodes[proxyId].aabb, Is.EqualTo(aabb2));
 
-            Assert.That(bp.moveSet.count, Is.EqualTo(1));
+            Assert.That(GetMovedProxyCount(bp), Is.EqualTo(1));
             Assert.That(bp.moveArray.count, Is.EqualTo(1));
             Assert.That(bp.moveArray.data, Does.Contain(proxyKey));
         }
@@ -295,7 +317,7 @@ public class B2BroadPhasesTests
             Assert.That(node.aabb.upperBound.X, Is.EqualTo(aabb2.upperBound.X), "UpperBound.X should match enlarged AABB");
             Assert.That(node.aabb.upperBound.Y, Is.EqualTo(aabb2.upperBound.Y), "UpperBound.Y should match enlarged AABB");
 
-            Assert.That(bp.moveSet.count, Is.EqualTo(1), "moveSet should contain one key after enlarge");
+            Assert.That(GetMovedProxyCount(bp), Is.EqualTo(1), "movedProxies should contain one key after enlarge");
             Assert.That(bp.moveArray.count, Is.EqualTo(1), "moveArray should contain one key after enlarge");
             Assert.That(bp.moveArray.data, Does.Contain(proxyKey), "moveArray should contain the enlarged proxyKey");
         }
@@ -510,7 +532,7 @@ public class B2BroadPhasesTests
         // - Check that all allocated memory is freed
         // - Ensure indices are reset to initial state
         Assert.That(world.broadPhase.moveArray.count, Is.EqualTo(0), "moveArray should be cleared");
-        Assert.That(world.broadPhase.moveSet.count, Is.EqualTo(0), "moveSet should be cleared");
+        Assert.That(GetMovedProxyCount(world.broadPhase), Is.EqualTo(0), "movedProxies should be cleared");
         Assert.That(world.broadPhase.moveResults.Array, Is.Null, "moveResults should be freed");
         Assert.That(world.broadPhase.movePairs.Array, Is.Null, "movePairs should be freed");
         Assert.That(world.broadPhase.movePairIndex.value, Is.EqualTo(2), "movePairIndex should reflect the number of collision pairs created");

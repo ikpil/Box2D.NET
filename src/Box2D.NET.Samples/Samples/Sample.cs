@@ -890,6 +890,7 @@ public class Sample : IDisposable
                     ImGui.Separator();
 
                     ImGui.Checkbox("Shapes", ref context.debugDraw.drawShapes);
+                    ImGui.Checkbox("Chain Normals", ref context.debugDraw.drawChainNormals);
                     ImGui.Checkbox("Joints", ref context.debugDraw.drawJoints);
                     ImGui.Checkbox("Joint Extras", ref context.debugDraw.drawJointExtras);
                     ImGui.Checkbox("Bounds", ref context.debugDraw.drawBounds);

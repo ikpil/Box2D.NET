@@ -1995,7 +1995,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         m.points[1].normalVelocity = normalVelocity2[laneIndex];
 
                         // Check for hit events to speed up serial processing later in the step
-                        if ((contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnableHitEvent) != 0)
+                        if ((contactSim.simFlags & (uint)B2ContactFlags.b2_simEnableHitEvent) != 0)
                         {
                             for (int k = 0; k < contactSim.manifold.pointCount; ++k)
                             {

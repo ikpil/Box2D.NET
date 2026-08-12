@@ -213,8 +213,14 @@ namespace Box2D.NET
             contact.islandIndex = B2_NULL_INDEX;
             contact.shapeIdA = shapeIdA;
             contact.shapeIdB = shapeIdB;
-            //contact.isMarked = false;
             contact.flags = 0;
+
+            // Both bodies must enable recycling
+            if ((bodyA.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0 &&
+                (bodyB.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0)
+            {
+                contact.flags |= (uint)B2ContactFlags.b2_contactRecycleFlag;
+            }
 
             B2_ASSERT(shapeA.sensorIndex == B2_NULL_INDEX && shapeB.sensorIndex == B2_NULL_INDEX);
 
@@ -291,11 +297,11 @@ namespace Box2D.NET
                 shapeB.material.restitution, shapeB.material.userMaterialId);
 
             contactSim.tangentSpeed = 0.0f;
-            contactSim.simFlags = 0;
+            contactSim.simFlags = contact.flags;
 
             if (shapeA.enablePreSolveEvents || shapeB.enablePreSolveEvents)
             {
-                contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simEnablePreSolveEvents;
+                contactSim.simFlags |= (uint)B2ContactFlags.b2_simEnablePreSolveEvents;
             }
         }
 
@@ -487,7 +493,7 @@ namespace Box2D.NET
             int pointCount = contactSim.manifold.pointCount;
             bool touching = pointCount > 0;
 
-            if (touching && world.preSolveFcn != null && (contactSim.simFlags & (uint)B2ContactSimFlags.b2_simEnablePreSolveEvents) != 0)
+            if (touching && world.preSolveFcn != null && (contactSim.simFlags & (uint)B2ContactFlags.b2_simEnablePreSolveEvents) != 0)
             {
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
@@ -535,11 +541,11 @@ namespace Box2D.NET
 
             if (touching && (shapeA.enableHitEvents || shapeB.enableHitEvents))
             {
-                contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simEnableHitEvent;
+                contactSim.simFlags |= (uint)B2ContactFlags.b2_simEnableHitEvent;
             }
             else
             {
-                contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simEnableHitEvent;
+                contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simEnableHitEvent;
             }
 
             if (pointCount > 0)
@@ -623,11 +629,11 @@ namespace Box2D.NET
 
             if (touching)
             {
-                contactSim.simFlags |= (uint)B2ContactSimFlags.b2_simTouchingFlag;
+                contactSim.simFlags |= (uint)B2ContactFlags.b2_simTouchingFlag;
             }
             else
             {
-                contactSim.simFlags &= ~(uint)B2ContactSimFlags.b2_simTouchingFlag;
+                contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simTouchingFlag;
             }
 
             return touching;

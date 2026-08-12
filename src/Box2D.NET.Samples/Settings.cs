@@ -47,6 +47,7 @@ public class Settings
     //
     public int sampleIndex = 0;
     public bool drawShapes = true;
+    public bool drawChainNormals = false;
     public bool drawJoints = true;
 
     public static void Save(SampleContext context)
@@ -93,6 +94,7 @@ public class Settings
         
         //
         setting.drawShapes = context.debugDraw.drawShapes;
+        setting.drawChainNormals = context.debugDraw.drawChainNormals;
         setting.drawJoints = context.debugDraw.drawJoints;
         setting.drawJointExtras = context.debugDraw.drawJointExtras;
         setting.drawBounds = context.debugDraw.drawBounds;

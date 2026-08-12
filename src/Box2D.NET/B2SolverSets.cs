@@ -126,7 +126,7 @@ namespace Box2D.NET
                     B2ContactSim contactSim = set.contactSims.data[i];
                     B2Contact contact = b2Array_Get(ref world.contacts, contactSim.contactId);
                     B2_ASSERT(0 != (contact.flags & (int)B2ContactFlags.b2_contactTouchingFlag));
-                    B2_ASSERT(0 != (contactSim.simFlags & (int)B2ContactSimFlags.b2_simTouchingFlag));
+                    B2_ASSERT(0 != (contactSim.simFlags & (int)B2ContactFlags.b2_simTouchingFlag));
                     B2_ASSERT(contactSim.manifold.pointCount > 0);
                     B2_ASSERT(contact.setIndex == setIndex);
                     b2AddContactToGraph(world, contactSim, contact);

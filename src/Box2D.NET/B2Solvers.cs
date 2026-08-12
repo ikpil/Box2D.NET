@@ -651,13 +651,13 @@ namespace Box2D.NET
                 // If you hit this then it means you deferred mass computation but never called b2Body_ApplyMassFromShapes
                 B2_ASSERT((body.flags & (uint)B2BodyFlags.b2_dirtyMass) == 0);
 
-                body.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
+                body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
                 body.flags |= (sim.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
                 body.flags |= (state.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
-                sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
-                state.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
+                sim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+                state.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
 
-                if (enableSleep == false || body.enableSleep == false || sleepVelocity > body.sleepThreshold)
+                if (enableSleep == false || (body.flags & (uint)B2BodyFlags.b2_enableSleep) == 0 || sleepVelocity > body.sleepThreshold)
                 {
                     // Body is not sleepy
                     body.sleepTime = 0.0f;
@@ -1999,7 +1999,7 @@ namespace Box2D.NET
                         B2_ASSERT(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
                         // all fast bullet shapes should already be in the move buffer
-                        B2_ASSERT(b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1)));
+                        B2_ASSERT(b2GetBit(ref broadPhase.movedProxies[(int)B2BodyType.b2_dynamicBody], proxyId));
 
                         b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
 

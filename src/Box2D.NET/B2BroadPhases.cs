@@ -18,6 +18,7 @@ using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2ParallelFors;
+using static Box2D.NET.B2BitSets;
 
 namespace Box2D.NET
 {
@@ -56,10 +57,12 @@ namespace Box2D.NET
         // Warning: this must be called in deterministic order
         public static void b2BufferMove(B2BroadPhase bp, int queryProxy)
         {
-            // Adding 1 because 0 is the sentinel
-            bool alreadyAdded = b2AddKey(ref bp.moveSet, (ulong)(queryProxy + 1));
-            if (alreadyAdded == false)
+            B2BodyType proxyType = B2_PROXY_TYPE(queryProxy);
+            int proxyId = B2_PROXY_ID(queryProxy);
+            ref B2BitSet set = ref bp.movedProxies[(int)proxyType];
+            if (b2GetBit(ref set, proxyId) == false)
             {
+                b2SetBitGrow(ref set, proxyId);
                 b2Array_Push(ref bp.moveArray, queryProxy);
             }
         }
@@ -77,7 +80,10 @@ namespace Box2D.NET
             // }
             bp = new B2BroadPhase();
             bp.trees = new B2DynamicTree[(int)B2BodyType.b2_bodyTypeCount];
-            bp.moveSet = b2CreateSet(b2MaxInt(16, 2 * capacity.dynamicShapeCount));
+            bp.movedProxies = new B2BitSet[(int)B2BodyType.b2_bodyTypeCount];
+            bp.movedProxies[(int)B2BodyType.b2_staticBody] = b2CreateBitSet(b2MaxInt(16, capacity.staticShapeCount));
+            bp.movedProxies[(int)B2BodyType.b2_kinematicBody] = b2CreateBitSet(16);
+            bp.movedProxies[(int)B2BodyType.b2_dynamicBody] = b2CreateBitSet(b2MaxInt(16, capacity.dynamicShapeCount));
             bp.moveArray = b2Array_Create<int>(b2MaxInt(16, capacity.dynamicShapeCount));
             bp.moveResults = null;
             bp.movePairs = null;
@@ -107,7 +113,10 @@ namespace Box2D.NET
                 b2DynamicTree_Destroy(bp.trees[i]);
             }
 
-            b2DestroySet(ref bp.moveSet);
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                b2DestroyBitSet(ref bp.movedProxies[i]);
+            }
             b2Array_Destroy(ref bp.moveArray);
             b2DestroySet(ref bp.pairSet);
 
@@ -123,10 +132,14 @@ namespace Box2D.NET
 
         public static void b2UnBufferMove(B2BroadPhase bp, int proxyKey)
         {
-            bool found = b2RemoveKey(ref bp.moveSet, (ulong)(proxyKey + 1));
+            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+            int proxyId = B2_PROXY_ID(proxyKey);
+            ref B2BitSet set = ref bp.movedProxies[(int)proxyType];
 
-            if (found)
+            if (b2GetBit(ref set, proxyId))
             {
+                b2ClearBit(ref set, proxyId);
+
                 // Purge from move buffer. Linear search.
                 // todo if I can iterate the move set then I don't need the moveArray
                 int count = bp.moveArray.count;
@@ -156,7 +169,6 @@ namespace Box2D.NET
 
         public static void b2BroadPhase_DestroyProxy(B2BroadPhase bp, int proxyKey)
         {
-            B2_ASSERT(bp.moveArray.count == (int)bp.moveSet.count);
             b2UnBufferMove(bp, proxyKey);
 
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
@@ -210,22 +222,16 @@ namespace Box2D.NET
 
             // De-duplication
             // It is important to prevent duplicate contacts from being created. Ideally I can prevent duplicates
-            // early and in the worker. Most of the time the moveSet contains dynamic and kinematic proxies, but
-            // sometimes it has static proxies.
-
-            // I had an optimization here to skip checking the move set if this is a query into
-            // the static tree. The assumption is that the static proxies are never in the move set
-            // so there is no risk of duplication. However, this is not true with
-            // b2ShapeDef::invokeContactCreation or when a static shape is modified.
-            // There can easily be scenarios where the static proxy is in the moveSet but the dynamic proxy is not.
-            // I could have some flag to indicate that there are any static bodies in the moveSet.
+            // early and in the worker. Most of the time the movedProxies bit sets contain dynamic and kinematic
+            // proxies, but sometimes static proxies are in there too (b2ShapeDef::invokeContactCreation or a
+            // modified static shape), so we always have to check.
 
             // Is this proxy also moving?
             if (queryProxyType == B2BodyType.b2_dynamicBody)
             {
                 if (treeType == B2BodyType.b2_dynamicBody && proxyKey < queryProxyKey)
                 {
-                    bool moved = b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1));
+                    bool moved = b2GetBit(ref broadPhase.movedProxies[(int)treeType], proxyId);
                     if (moved)
                     {
                         // Both proxies are moving. Avoid duplicate pairs.
@@ -236,7 +242,7 @@ namespace Box2D.NET
             else
             {
                 B2_ASSERT(treeType == B2BodyType.b2_dynamicBody);
-                bool moved = b2ContainsKey(ref broadPhase.moveSet, (ulong)(proxyKey + 1));
+                bool moved = b2GetBit(ref broadPhase.movedProxies[(int)treeType], proxyId);
                 if (moved)
                 {
                     // Both proxies are moving. Avoid duplicate pairs.
@@ -429,8 +435,9 @@ namespace Box2D.NET
         {
             B2BroadPhase bp = world.broadPhase;
 
+            b2ValidateMovedProxies(bp);
+
             int moveCount = bp.moveArray.count;
-            B2_ASSERT(moveCount == (int)bp.moveSet.count);
 
             if (moveCount == 0)
             {
@@ -524,9 +531,14 @@ namespace Box2D.NET
             //	fprintf(s_file, "count = %d\n\n", pairCount);
             // }
 
-            // Reset move buffer
+            // Reset move buffer: clear only the bits that were set this step.
+            // Invariant: bit set in movedProxies[type] iff proxyKey is present in moveArray.
+            for (int i = 0; i < bp.moveArray.count; ++i)
+            {
+                int proxyKey = bp.moveArray.data[i];
+                b2ClearBit(ref bp.movedProxies[(int)B2_PROXY_TYPE(proxyKey)], B2_PROXY_ID(proxyKey));
+            }
             b2Array_Clear(ref bp.moveArray);
-            b2ClearSet(ref bp.moveSet);
 
             b2StackFree(alloc, bp.movePairs);
             bp.movePairs = null;
@@ -566,6 +578,30 @@ namespace Box2D.NET
             b2DynamicTree_Validate(bp.trees[(int)B2BodyType.b2_kinematicBody]);
 
             // TODO_ERIN validate every shape AABB is contained in tree AABB
+        }
+
+        internal static void b2ValidateMovedProxies(B2BroadPhase bp)
+        {
+#if DEBUG
+            // Invariant: bit set in movedProxies[type] iff proxyKey is present in moveArray.
+            int moveCount = bp.moveArray.count;
+            for (int i = 0; i < moveCount; ++i)
+            {
+                int proxyKey = bp.moveArray.data[i];
+                B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+                int proxyId = B2_PROXY_ID(proxyKey);
+                B2_ASSERT(b2GetBit(ref bp.movedProxies[(int)proxyType], proxyId));
+            }
+
+            int totalSetBits = 0;
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                totalSetBits += b2CountSetBits(ref bp.movedProxies[i]);
+            }
+            B2_ASSERT(totalSetBits == moveCount);
+#else
+            B2_UNUSED(bp);
+#endif
         }
 
         internal static void b2ValidateNoEnlarged(B2BroadPhase bp)

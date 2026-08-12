@@ -13,6 +13,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Ids;
+using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Test;
 
@@ -261,7 +262,7 @@ public class B2BodiesTest
     }
 
     [Test]
-    public void BodyNamesAreLimitedTo31Utf8Bytes()
+    public void BodyNamesAreLimitedToB2NameLengthUtf8Bytes()
     {
         using B2TestContext context = B2TestContext.CreateFor();
 
@@ -270,18 +271,18 @@ public class B2BodiesTest
         B2BodyId bodyId = b2CreateBody(context.WorldId, bodyDef);
 
         string createdName = b2Body_GetName(bodyId);
-        Assert.That(createdName, Is.EqualTo(new string('a', 31)));
-        Assert.That(Encoding.UTF8.GetByteCount(createdName), Is.EqualTo(31));
+        Assert.That(createdName, Is.EqualTo(new string('a', B2_NAME_LENGTH)));
+        Assert.That(Encoding.UTF8.GetByteCount(createdName), Is.EqualTo(B2_NAME_LENGTH));
 
         b2Body_SetName(bodyId, "가가가가가가가가가가가");
         string updatedName = b2Body_GetName(bodyId);
-        Assert.That(updatedName, Is.EqualTo("가가가가가가가가가가"));
-        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(30));
+        Assert.That(updatedName, Is.EqualTo("가가가"));
+        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(9));
 
-        string emojiName = new string('b', 27) + "😀x";
+        string emojiName = new string('b', 6) + "😀x";
         b2Body_SetName(bodyId, emojiName);
         updatedName = b2Body_GetName(bodyId);
-        Assert.That(updatedName, Is.EqualTo(new string('b', 27) + "😀"));
-        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(31));
+        Assert.That(updatedName, Is.EqualTo(new string('b', 6) + "😀"));
+        Assert.That(Encoding.UTF8.GetByteCount(updatedName), Is.EqualTo(B2_NAME_LENGTH));
     }
 }

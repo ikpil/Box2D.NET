@@ -47,7 +47,7 @@ namespace Box2D.NET
         /// Sleep speed threshold, default is 0.05 meters per second
         public float sleepThreshold;
 
-        /// Optional body name for debugging. Up to 31 characters (excluding null termination)
+        /// Optional body name for debugging. Up to B2_NAME_LENGTH characters
         public string name;
 
         /// Use this to store application specific body data.
@@ -85,6 +85,10 @@ namespace Box2D.NET
         /// This allows this body to bypass rotational speed limits. Should only be used
         /// for circular objects, like wheels.
         public bool allowFastRotation;
+
+        /// Enable contact recycling. True by default. Leaving this enabled improves performance
+        /// but may lead to ghost collision that should be avoided on characters.
+        public bool enableContactRecycling;
 
         /// Used internally to detect a valid definition. DO NOT SET.
         public int internalValue;
