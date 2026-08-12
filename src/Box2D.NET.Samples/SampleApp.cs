@@ -27,6 +27,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.Samples.Graphics.Draws;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.Samples.Sample;
 using ErrorCode = Silk.NET.GLFW.ErrorCode;
 using Monitor = Silk.NET.GLFW.Monitor;
 using MouseButton = Silk.NET.GLFW.MouseButton;
@@ -41,8 +42,6 @@ public class SampleApp
     private IWindow _window;
     private IInputContext _input;
     private ImGuiController _imgui;
-    private int s_selection = 0;
-    private Sample s_sample = null;
     private SampleContext _context;
     private bool s_rightMouseDown = false;
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
@@ -167,8 +166,7 @@ public class SampleApp
 
     private void OnWindowClosing()
     {
-        s_sample?.Dispose();
-        s_sample = null;
+        _context.sample?.Dispose();
         DestroyDraw(_context.draw);
         DestroyUI();
     }
@@ -246,7 +244,6 @@ public class SampleApp
         _context.draw = CreateDraw(_context);
 
         _context.sampleIndex = b2ClampInt(_context.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
-        s_selection = _context.sampleIndex;
 
         // todo put this in _context.settings
         CreateUI(glslVersion);
@@ -303,27 +300,13 @@ public class SampleApp
         // For the Tracy profiler
         //FrameMark;
 
-        if (s_selection != _context.sampleIndex)
-        {
-            ResetView(_context.camera);
-            _context.sampleIndex = s_selection;
-
-            // #todo restore all drawing settings that may have been overridden by a sample
-            _context.subStepCount = 4;
-            _context.debugDraw.drawJoints = true;
-
-            s_sample?.Dispose();
-            s_sample = null;
-            s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
-        }
-
-        if (s_sample == null)
+        if (_context.sample == null)
         {
             // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
+            _context.sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
         }
 
-        s_sample.Step();
+        _context.sample.Step();
 
         _context.glfw.PollEvents();
 
@@ -374,19 +357,19 @@ public class SampleApp
         ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
         ImGui.End();
 
-        s_sample.ResetText();
+        _context.sample.ResetText();
 
         var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
-        s_sample.DrawColoredTextLine(B2HexColor.b2_colorYellow, title);
+        _context.sample.DrawColoredTextLine(B2HexColor.b2_colorYellow, title);
 
-        string buffer = $"{1000.0f * _frameTime:0.0} ms - step {s_sample.m_stepCount} - " +
+        string buffer = $"{1000.0f * _frameTime:0.0} ms - step {_context.sample.m_stepCount} - " +
                         $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
         DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
 
-        s_sample.Draw();
+        _context.sample.Draw();
         FlushDraw(_context.draw, _context.camera);
 
-        UpdateUI();
+        UpdateSampleUI(_context);
 
         //ImGui.ShowDemoWindow();
 
@@ -441,16 +424,6 @@ public class SampleApp
     private void glfwErrorCallback(ErrorCode error, string description)
     {
         Logger.Information($"GLFW error occurred. Code: {error}. Description: {description}");
-    }
-
-    private void RestartSample()
-    {
-        s_sample?.Dispose();
-        s_sample = null;
-        _context.restart = true;
-
-        s_sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
-        _context.restart = false;
     }
 
     private void CreateUI(string glslVersion)
@@ -541,7 +514,7 @@ public class SampleApp
                     if (0 != ((uint)mods & (uint)KeyModifiers.Control))
                     {
                         B2Vec2 newOrigin = new B2Vec2(2.0f, 0.0f);
-                        s_sample.ShiftOrigin(newOrigin);
+                        _context.sample.ShiftOrigin(newOrigin);
                     }
                     else
                     {
@@ -555,7 +528,7 @@ public class SampleApp
                     if (0 != ((uint)mods & (uint)KeyModifiers.Control))
                     {
                         B2Vec2 newOrigin = new B2Vec2(-2.0f, 0.0f);
-                        s_sample.ShiftOrigin(newOrigin);
+                        _context.sample.ShiftOrigin(newOrigin);
                     }
                     else
                     {
@@ -569,7 +542,7 @@ public class SampleApp
                     if (0 != ((uint)mods & (uint)KeyModifiers.Control))
                     {
                         B2Vec2 newOrigin = new B2Vec2(0.0f, 2.0f);
-                        s_sample.ShiftOrigin(newOrigin);
+                        _context.sample.ShiftOrigin(newOrigin);
                     }
                     else
                     {
@@ -583,7 +556,7 @@ public class SampleApp
                     if (0 != ((uint)mods & (uint)KeyModifiers.Control))
                     {
                         B2Vec2 newOrigin = new B2Vec2(0.0f, -2.0f);
-                        s_sample.ShiftOrigin(newOrigin);
+                        _context.sample.ShiftOrigin(newOrigin);
                     }
                     else
                     {
@@ -597,7 +570,7 @@ public class SampleApp
                     break;
 
                 case Keys.R:
-                    RestartSample();
+                    SelectSample(_context, _context.sampleIndex, true);
                     break;
 
                 case Keys.O:
@@ -610,20 +583,28 @@ public class SampleApp
 
                 case Keys.LeftBracket:
                     // Switch to previous test
-                    --s_selection;
-                    if (s_selection < 0)
                     {
-                        s_selection = SampleFactory.Shared.SampleCount - 1;
+                        int selection = _context.sampleIndex - 1;
+                        if (selection < 0)
+                        {
+                            selection = SampleFactory.Shared.SampleCount - 1;
+                        }
+
+                        SelectSample(_context, selection, false);
                     }
 
                     break;
 
                 case Keys.RightBracket:
                     // Switch to next test
-                    ++s_selection;
-                    if (s_selection == SampleFactory.Shared.SampleCount)
                     {
-                        s_selection = 0;
+                        int selection = _context.sampleIndex + 1;
+                        if (selection == SampleFactory.Shared.SampleCount)
+                        {
+                            selection = 0;
+                        }
+
+                        SelectSample(_context, selection, false);
                     }
 
                     break;
@@ -633,9 +614,9 @@ public class SampleApp
                     break;
 
                 default:
-                    if (null != s_sample)
+                    if (_context.sample != null)
                     {
-                        s_sample.Keyboard(key);
+                        _context.sample.Keyboard(key);
                     }
 
                     break;
@@ -681,12 +662,12 @@ public class SampleApp
             B2Vec2 pw = ConvertScreenToWorld(_context.camera, ps);
             if (action == InputAction.Press)
             {
-                s_sample.MouseDown(pw, button, modifiers);
+                _context.sample.MouseDown(pw, button, modifiers);
             }
 
             if (action == InputAction.Release)
             {
-                s_sample.MouseUp(pw, button);
+                _context.sample.MouseUp(pw, button);
             }
         }
         else if (button == MouseButton.Right)
@@ -722,7 +703,7 @@ public class SampleApp
         //ImGui_ImplGlfw_CursorPosCallback(window, ps.x, ps.y);
 
         B2Vec2 pw = ConvertScreenToWorld(_context.camera, ps);
-        s_sample?.MouseMove(pw);
+        _context.sample.MouseMove(pw);
 
         if (s_rightMouseDown)
         {
@@ -747,6 +728,10 @@ public class SampleApp
             return;
         }
 
+        _context.glfw.GetCursorPos(_context.window, out double xd, out double yd);
+        B2Vec2 ps = new B2Vec2((float)xd, (float)yd);
+        B2Vec2 pw1 = ConvertScreenToWorld(_context.camera, ps);
+
         if (dy > 0)
         {
             _context.camera.zoom /= 1.1f;
@@ -755,182 +740,9 @@ public class SampleApp
         {
             _context.camera.zoom *= 1.1f;
         }
+
+        B2Vec2 pw2 = ConvertScreenToWorld(_context.camera, ps);
+        _context.camera.center -= pw2 - pw1;
     }
 
-    private void UpdateUI()
-    {
-        int maxWorkers = B2_MAX_WORKERS;
-
-        float fontSize = ImGui.GetFontSize();
-        float menuWidth = 13.0f * fontSize;
-        if (_context.showUI)
-        {
-            ImGui.SetNextWindowPos(new Vector2(_context.camera.width - menuWidth - 0.5f * fontSize, 0.5f * fontSize));
-            ImGui.SetNextWindowSize(new Vector2(menuWidth, _context.camera.height - fontSize));
-
-            ImGui.Begin("Tools", ref _context.showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
-
-            if (ImGui.BeginTabBar("ControlTabs", ImGuiTabBarFlags.None))
-            {
-                if (ImGui.BeginTabItem("Controls"))
-                {
-                    ImGui.PushItemWidth(100.0f);
-                    ImGui.SliderInt("Sub-steps", ref _context.subStepCount, 1, 32);
-                    ImGui.SliderFloat("Hertz", ref _context.hertz, 5.0f, 240.0f, "%.0f hz");
-
-                    if (ImGui.SliderInt("Workers", ref _context.workerCount, 1, maxWorkers))
-                    {
-                        _context.workerCount = b2ClampInt(_context.workerCount, 1, maxWorkers);
-                        RestartSample();
-                    }
-
-                    ImGui.PopItemWidth();
-
-                    ImGui.Separator();
-
-                    ImGui.Checkbox("Sleep", ref _context.enableSleep);
-                    ImGui.Checkbox("Warm Starting", ref _context.enableWarmStarting);
-                    ImGui.Checkbox("Continuous", ref _context.enableContinuous);
-                    ImGui.Checkbox("Contact Recycling", ref _context.enableRecycling);
-
-                    ImGui.Separator();
-
-                    ImGui.Checkbox("Shapes", ref _context.debugDraw.drawShapes);
-                    ImGui.Checkbox("Joints", ref _context.debugDraw.drawJoints);
-                    ImGui.Checkbox("Joint Extras", ref _context.debugDraw.drawJointExtras);
-                    ImGui.Checkbox("Bounds", ref _context.debugDraw.drawBounds);
-                    ImGui.Checkbox("Mass", ref _context.debugDraw.drawMass);
-                    ImGui.Checkbox("Body Names", ref _context.debugDraw.drawBodyNames);
-                    ImGui.Checkbox("Graph Colors", ref _context.debugDraw.drawGraphColors);
-                    ImGui.Checkbox("Islands", ref _context.debugDraw.drawIslands);
-                    ImGui.Checkbox("Counters", ref _context.drawCounters);
-                    ImGui.Checkbox("Profile", ref _context.drawProfile);
-                    ImGui.Checkbox("Frame Time", ref _context.frameTime);
-
-                    ImGui.Separator();
-
-                    {
-                        bool changed = false;
-                        string[] drawTypes =
-                        [
-                            "None", "Clip", "AnchorA", "AnchorB", "Average"
-                        ];
-                        int drawType = (int)_context.debugDraw.contactDrawType;
-                        changed = changed || ImGui.Combo("Contact", ref drawType, drawTypes, drawTypes.Length);
-                        _context.debugDraw.contactDrawType = (B2ContactDrawType)drawType;
-                    }
-
-                    ImGui.Checkbox("Contact Normals", ref _context.debugDraw.drawContactNormals);
-                    ImGui.Checkbox("Contact Features", ref _context.debugDraw.drawContactFeatures);
-                    ImGui.Checkbox("Contact Forces", ref _context.debugDraw.drawContactForces);
-                    ImGui.Checkbox("Friction Forces", ref _context.debugDraw.drawFrictionForces);
-
-                    ImGui.Separator();
-
-
-                    ImGui.PushItemWidth(80.0f);
-                    ImGui.InputFloat("Joint Scale", ref _context.debugDraw.jointScale);
-                    ImGui.InputFloat("Force Scale", ref _context.debugDraw.forceScale);
-                    ImGui.PopItemWidth();
-
-                    Vector2 button_sz = new Vector2(-1, 0);
-                    if (ImGui.Button("Pause (P)", button_sz))
-                    {
-                        _context.pause = !_context.pause;
-                    }
-
-                    if (ImGui.Button("Single Step (O)", button_sz))
-                    {
-                        _context.singleStep = !_context.singleStep;
-                    }
-
-                    if (ImGui.Button("Dump Mem Stats", button_sz))
-                    {
-                        b2World_DumpMemoryStats(s_sample.m_worldId);
-                    }
-
-                    if (ImGui.Button("Reset Profile", button_sz))
-                    {
-                        s_sample.ResetProfile();
-                    }
-
-                    if (ImGui.Button("Restart (R)", button_sz))
-                    {
-                        RestartSample();
-                    }
-
-                    if (ImGui.Button("Quit", button_sz))
-                    {
-                        unsafe
-                        {
-                            _context.glfw.SetWindowShouldClose(_context.window, true);
-                        }
-                    }
-
-                    ImGui.EndTabItem();
-                }
-
-                ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
-                leafNodeFlags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
-
-                ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
-
-                if (ImGui.BeginTabItem("Samples"))
-                {
-                    int categoryIndex = 0;
-                    string category = SampleFactory.Shared.GetCategory(categoryIndex);
-                    int i = 0;
-                    while (i < SampleFactory.Shared.SampleCount)
-                    {
-                        bool categorySelected = category == SampleFactory.Shared.GetCategory(_context.sampleIndex);
-                        ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags.Selected : 0;
-                        bool nodeOpen = ImGui.TreeNodeEx(category, nodeFlags | nodeSelectionFlags);
-
-                        if (nodeOpen)
-                        {
-                            while (i < SampleFactory.Shared.SampleCount && category == SampleFactory.Shared.GetCategory(i))
-                            {
-                                ImGuiTreeNodeFlags selectionFlags = 0;
-                                if (_context.sampleIndex == i)
-                                {
-                                    selectionFlags = ImGuiTreeNodeFlags.Selected;
-                                }
-
-                                ImGui.TreeNodeEx(SampleFactory.Shared.GetName(i), leafNodeFlags | selectionFlags);
-                                if (ImGui.IsItemClicked())
-                                {
-                                    s_selection = i;
-                                }
-
-                                ++i;
-                            }
-
-                            ImGui.TreePop();
-                        }
-                        else
-                        {
-                            while (i < SampleFactory.Shared.SampleCount && category == SampleFactory.Shared.GetCategory(i))
-                            {
-                                ++i;
-                            }
-                        }
-
-                        if (i < SampleFactory.Shared.SampleCount)
-                        {
-                            category = SampleFactory.Shared.GetCategory(i);
-                            categoryIndex = i;
-                        }
-                    }
-
-                    ImGui.EndTabItem();
-                }
-
-                ImGui.EndTabBar();
-            }
-
-            ImGui.End();
-
-            s_sample.UpdateGui();
-        }
-    }
 }

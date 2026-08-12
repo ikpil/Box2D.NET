@@ -6,10 +6,12 @@ using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 using Box2D.NET.Samples.Graphics;
+using Box2D.NET.Samples.Samples;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 using static Box2D.NET.B2Types;
+using static Box2D.NET.B2Constants;
 using static Box2D.NET.Samples.Graphics.Backgrounds;
 using static Box2D.NET.Samples.Graphics.Draws;
 
@@ -20,11 +22,20 @@ public class SampleContext
     //
     public readonly string Signature;
     public readonly Glfw glfw;
+    public GL gl;
+    public unsafe WindowHandle* window;
     public readonly Camera camera;
     public Draw draw;
+    public Sample sample = null;
+    public B2Capacity capacity;
+    public B2DebugDraw debugDraw;
+    public ImFontPtr regularFont;
+    public ImFontPtr mediumFont;
+    public ImFontPtr largeFont;
 
     public float uiScale = 1.0f;
     public float hertz = 60.0f;
+    public float recycleDistance = 0.05f;
     public int subStepCount = 4;
     public int workerCount = 1;
     public bool restart = false;
@@ -34,25 +45,12 @@ public class SampleContext
     public bool drawProfile = false;
     public bool enableWarmStarting = true;
     public bool enableContinuous = true;
-    public bool enableRecycling = true;
     public bool enableSleep = true;
     public bool showUI = true;
     public bool frameTime = false;
 
     // These are persisted
     public int sampleIndex = 0;
-    public B2Capacity capacity;
-
-
-    public B2DebugDraw debugDraw;
-
-    public ImFontPtr regularFont;
-    public ImFontPtr mediumFont;
-    public ImFontPtr largeFont;
-
-    //
-    public GL gl;
-    public unsafe WindowHandle* window;
 
     private static string CreateSignature(string member, string file, int line)
     {
@@ -92,6 +90,8 @@ public class SampleContext
 
     public void Load()
     {
+        recycleDistance = B2_CONTACT_RECYCLE_DISTANCE;
+
         var settings = Settings.Load();
 
         //
@@ -110,7 +110,6 @@ public class SampleContext
         debugDraw.drawJoints = settings.drawJoints;
 
         //
-        debugDraw.contactDrawType = settings.contactDrawType;
         debugDraw.drawShapes = settings.drawShapes;
         debugDraw.drawJoints = settings.drawJoints;
         debugDraw.drawJointExtras = settings.drawJointExtras;

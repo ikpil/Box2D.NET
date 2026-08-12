@@ -59,13 +59,13 @@ public class Sample : IDisposable
     private ulong m_profileWriteIndex;
     
     //
-    private B2Profile m_totalProfile;
     private static bool s_showProfilePlots;
     private static readonly bool[] s_profileRowOpen = new bool[22];
     
     //
     private bool m_didStep;
 
+    //
     private readonly float[] m_frameTimes;
 
     public Sample(SampleContext context)
@@ -93,8 +93,6 @@ public class Sample : IDisposable
         m_currentProfileIndex = 0;
         m_profileReadIndex = 0;
         m_profileWriteIndex = 0;
-
-        m_totalProfile = new B2Profile();
 
         g_randomSeed = RAND_SEED;
 
@@ -124,6 +122,7 @@ public class Sample : IDisposable
         worldDef.capacity = m_context.capacity;
 
         m_worldId = b2CreateWorld(worldDef);
+        b2World_SetContactRecycleDistance(m_worldId, m_context.recycleDistance);
     }
 
     public void TestMathCpp()
@@ -166,34 +165,86 @@ public class Sample : IDisposable
             int count = (int)(m_profileWriteIndex - m_profileReadIndex);
 
             // Unroll ring buffer into per-field histories.
-            const int rowCount = 22;
-            float[][] histories = new float[rowCount][];
-            for (int row = 0; row < rowCount; ++row)
+            const int kRowCount = 22;
+            float[][] histories = new float[kRowCount][];
+            float[] totals = new float[kRowCount];
+            for (int i = 0; i < kRowCount; ++i)
             {
-                histories[row] = new float[m_profileCapacity];
+                histories[i] = new float[m_profileCapacity];
             }
 
             for (int i = 0; i < count; ++i)
             {
-                int index = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
-                B2Profile profile = m_profiles[index];
-                for (int row = 0; row < rowCount; ++row)
-                {
-                    histories[row][i] = GetProfileValue(profile, row);
-                }
+                int idx = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
+                ref readonly B2Profile p = ref m_profiles[idx];
+                histories[0][i] = p.step;
+                histories[1][i] = p.pairs;
+                histories[2][i] = p.collide;
+                histories[3][i] = p.solve;
+                histories[4][i] = p.solverSetup;
+                histories[5][i] = p.constraints;
+                histories[6][i] = p.prepareConstraints;
+                histories[7][i] = p.integrateVelocities;
+                histories[8][i] = p.warmStart;
+                histories[9][i] = p.solveImpulses;
+                histories[10][i] = p.integratePositions;
+                histories[11][i] = p.relaxImpulses;
+                histories[12][i] = p.applyRestitution;
+                histories[13][i] = p.storeImpulses;
+                histories[14][i] = p.splitIslands;
+                histories[15][i] = p.transforms;
+                histories[16][i] = p.jointEvents;
+                histories[17][i] = p.hitEvents;
+                histories[18][i] = p.refit;
+                histories[19][i] = p.sleepIslands;
+                histories[20][i] = p.bullets;
+                histories[21][i] = p.sensors;
+
+                totals[0] += p.step;
+                totals[1] += p.pairs;
+                totals[2] += p.collide;
+                totals[3] += p.solve;
+                totals[4] += p.solverSetup;
+                totals[5] += p.constraints;
+                totals[6] += p.prepareConstraints;
+                totals[7] += p.integrateVelocities;
+                totals[8] += p.warmStart;
+                totals[9] += p.solveImpulses;
+                totals[10] += p.integratePositions;
+                totals[11] += p.relaxImpulses;
+                totals[12] += p.applyRestitution;
+                totals[13] += p.storeImpulses;
+                totals[14] += p.splitIslands;
+                totals[15] += p.transforms;
+                totals[16] += p.jointEvents;
+                totals[17] += p.hitEvents;
+                totals[18] += p.refit;
+                totals[19] += p.sleepIslands;
+                totals[20] += p.bullets;
+                totals[21] += p.sensors;
             }
 
-            float[] avg = new float[rowCount];
-            if (m_stepCount > 0)
+            ref readonly B2Profile cur = ref m_profiles[m_currentProfileIndex];
+            float[] now =
+            [
+                cur.step, cur.pairs, cur.collide, cur.solve, cur.solverSetup,
+                cur.constraints, cur.prepareConstraints, cur.integrateVelocities, cur.warmStart,
+                cur.solveImpulses, cur.integratePositions, cur.relaxImpulses, cur.applyRestitution,
+                cur.storeImpulses, cur.splitIslands, cur.transforms, cur.jointEvents,
+                cur.hitEvents, cur.refit, cur.sleepIslands, cur.bullets, cur.sensors
+            ];
+
+            // Rolling average
+            float[] avg = new float[kRowCount];
+            if (count > 0)
             {
-                float scale = 1.0f / m_stepCount;
-                for (int row = 0; row < rowCount; ++row)
+                float scale = 1.0f / count;
+                for (int i = 0; i < kRowCount; ++i)
                 {
-                    avg[row] = scale * GetProfileValue(m_totalProfile, row);
+                    avg[i] = scale * totals[i];
                 }
             }
 
-            ref readonly B2Profile current = ref m_profiles[m_currentProfileIndex];
             string[] names =
             [
                 "step", "pairs", "collide", "solve", "setup", "constraints", "prepare",
@@ -203,11 +254,11 @@ public class Sample : IDisposable
             ];
             int[] indents = [0, 0, 0, 0, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 0];
             // Derive parent/child links from the indent levels so we can collapse subtrees.
-            int[] parents = new int[rowCount];
-            bool[] hasChildren = new bool[rowCount];
+            int[] parents = new int[kRowCount];
+            bool[] hasChildren = new bool[kRowCount];
             int[] stack = new int[8];
             int stackSize = 0;
-            for (int i = 0; i < rowCount; ++i)
+            for (int i = 0; i < kRowCount; ++i)
             {
                 while (stackSize > 0 && indents[stack[stackSize - 1]] >= indents[i])
                 {
@@ -237,15 +288,6 @@ public class Sample : IDisposable
                 colorDefault, colorDefault, colorDefault, colorDefault, colorDefault, colorDefault,
                 colorDefault, colorDefault, colorDefault, colorDefault
             ];
-            float[] now =
-            [
-                current.step, current.pairs, current.collide, current.solve, current.solverSetup,
-                current.constraints, current.prepareConstraints, current.integrateVelocities, current.warmStart,
-                current.solveImpulses, current.integratePositions, current.relaxImpulses, current.applyRestitution,
-                current.storeImpulses, current.splitIslands, current.transforms, current.jointEvents,
-                current.hitEvents, current.refit, current.sleepIslands, current.bullets, current.sensors
-            ];
-
             if (ImGui.Button("Reset"))
             {
                 ResetProfile();
@@ -272,9 +314,9 @@ public class Sample : IDisposable
                 float rowHeight = 1.5f * fontSize;
 
                 // Bars are drawn relative to the step row so the proportions are visually consistent.
-                float stepNow = b2MaxFloat(current.step, 0.001f);
+                float stepNow = b2MaxFloat(cur.step, 0.001f);
 
-                for (int row = 0; row < rowCount; ++row)
+                for (int row = 0; row < kRowCount; ++row)
                 {
                     bool visible = true;
                     for (int parent = parents[row]; parent >= 0; parent = parents[parent])
@@ -453,36 +495,6 @@ public class Sample : IDisposable
         {
             UpdateFrameTimeGui(fontSize);
         }
-    }
-
-    private static float GetProfileValue(in B2Profile profile, int row)
-    {
-        return row switch
-        {
-            0 => profile.step,
-            1 => profile.pairs,
-            2 => profile.collide,
-            3 => profile.solve,
-            4 => profile.solverSetup,
-            5 => profile.constraints,
-            6 => profile.prepareConstraints,
-            7 => profile.integrateVelocities,
-            8 => profile.warmStart,
-            9 => profile.solveImpulses,
-            10 => profile.integratePositions,
-            11 => profile.relaxImpulses,
-            12 => profile.applyRestitution,
-            13 => profile.storeImpulses,
-            14 => profile.splitIslands,
-            15 => profile.transforms,
-            16 => profile.jointEvents,
-            17 => profile.hitEvents,
-            18 => profile.refit,
-            19 => profile.sleepIslands,
-            20 => profile.bullets,
-            21 => profile.sensors,
-            _ => 0.0f,
-        };
     }
 
     private static Vector4 HexToColor(B2HexColor color)
@@ -722,11 +734,7 @@ public class Sample : IDisposable
 
     public void ResetProfile()
     {
-        m_totalProfile = new B2Profile();
         m_stepCount = 0;
-        m_currentProfileIndex = 0;
-        m_profileReadIndex = 0;
-        m_profileWriteIndex = 0;
     }
 
     public virtual void Step()
@@ -769,19 +777,9 @@ public class Sample : IDisposable
         b2World_EnableWarmStarting(m_worldId, m_context.enableWarmStarting);
         b2World_EnableContinuous(m_worldId, m_context.enableContinuous);
 
-        if (m_context.enableRecycling)
-        {
-            b2World_SetContactRecycleDistance(m_worldId, B2_CONTACT_RECYCLE_DISTANCE);
-        }
-        else
-        {
-            b2World_SetContactRecycleDistance(m_worldId, 0.0f);
-        }
-
         for (int i = 0; i < 1; ++i)
         {
             b2World_Step(m_worldId, timeStep, m_context.subStepCount);
-            // m_taskCount = 0;
         }
 
         if (timeStep > 0.0f)
@@ -799,33 +797,6 @@ public class Sample : IDisposable
             m_profileWriteIndex += 1;
         }
 
-        // Accumulate profile averages
-        if (m_didStep)
-        {
-            B2Profile p = m_profiles[m_currentProfileIndex];
-            m_totalProfile.step += p.step;
-            m_totalProfile.pairs += p.pairs;
-            m_totalProfile.collide += p.collide;
-            m_totalProfile.solve += p.solve;
-            m_totalProfile.solverSetup += p.solverSetup;
-            m_totalProfile.constraints += p.constraints;
-            m_totalProfile.prepareConstraints += p.prepareConstraints;
-            m_totalProfile.integrateVelocities += p.integrateVelocities;
-            m_totalProfile.warmStart += p.warmStart;
-            m_totalProfile.solveImpulses += p.solveImpulses;
-            m_totalProfile.integratePositions += p.integratePositions;
-            m_totalProfile.relaxImpulses += p.relaxImpulses;
-            m_totalProfile.applyRestitution += p.applyRestitution;
-            m_totalProfile.storeImpulses += p.storeImpulses;
-            m_totalProfile.transforms += p.transforms;
-            m_totalProfile.splitIslands += p.splitIslands;
-            m_totalProfile.jointEvents += p.jointEvents;
-            m_totalProfile.hitEvents += p.hitEvents;
-            m_totalProfile.refit += p.refit;
-            m_totalProfile.bullets += p.bullets;
-            m_totalProfile.sleepIslands += p.sleepIslands;
-            m_totalProfile.sensors += p.sensors;
-        }
     }
 
     public virtual void Draw()
@@ -853,5 +824,202 @@ public class Sample : IDisposable
     protected InputAction GetKey(Keys key)
     {
         return GlfwHelpers.GetKey(m_context, key);
+    }
+
+    public static void SelectSample(SampleContext context, int selection, bool restart)
+    {
+        if (restart == false)
+        {
+            ResetView(context.camera);
+            context.sampleIndex = selection;
+            context.subStepCount = 4;
+            context.debugDraw.drawJoints = true;
+        }
+
+        context.sample?.Dispose();
+        context.sample = null;
+        context.restart = restart;
+        context.sample = SampleFactory.Shared.Create(context.sampleIndex, context);
+        context.restart = false;
+    }
+
+    public static void UpdateSampleUI(SampleContext context)
+    {
+        int maxWorkers = B2_MAX_WORKERS;
+        B2WorldId worldId = context.sample.m_worldId;
+
+        float fontSize = ImGui.GetFontSize();
+        float menuWidth = 13.0f * fontSize;
+        if (context.showUI)
+        {
+            ImGui.SetNextWindowPos(new Vector2(context.camera.width - menuWidth - 0.5f * fontSize, 0.5f * fontSize));
+            ImGui.SetNextWindowSize(new Vector2(menuWidth, context.camera.height - fontSize));
+
+            ImGui.Begin("Tools", ref context.showUI, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse);
+
+            if (ImGui.BeginTabBar("ControlTabs", ImGuiTabBarFlags.None))
+            {
+                if (ImGui.BeginTabItem("Controls"))
+                {
+                    ImGui.PushItemWidth(100.0f);
+                    ImGui.SliderInt("Sub-steps", ref context.subStepCount, 1, 32);
+                    ImGui.SliderFloat("Hertz", ref context.hertz, 5.0f, 240.0f, "%.0f hz");
+
+                    if (ImGui.SliderInt("Workers", ref context.workerCount, 1, maxWorkers))
+                    {
+                        context.workerCount = b2ClampInt(context.workerCount, 1, maxWorkers);
+                        SelectSample(context, context.sampleIndex, true);
+                    }
+                    ImGui.PopItemWidth();
+
+                    ImGui.Separator();
+
+                    ImGui.Checkbox("Sleep", ref context.enableSleep);
+                    ImGui.Checkbox("Warm Starting", ref context.enableWarmStarting);
+                    ImGui.Checkbox("Continuous", ref context.enableContinuous);
+
+                    ImGui.PushItemWidth(100.0f);
+                    float recyclingCentimeters = 100.0f * context.recycleDistance;
+                    if (ImGui.SliderFloat("Recycle", ref recyclingCentimeters, 0.0f, 10.0f, "%.1f cm"))
+                    {
+                        context.recycleDistance = 0.01f * recyclingCentimeters;
+                        b2World_SetContactRecycleDistance(worldId, context.recycleDistance);
+                    }
+                    ImGui.PopItemWidth();
+
+                    ImGui.Separator();
+
+                    ImGui.Checkbox("Shapes", ref context.debugDraw.drawShapes);
+                    ImGui.Checkbox("Joints", ref context.debugDraw.drawJoints);
+                    ImGui.Checkbox("Joint Extras", ref context.debugDraw.drawJointExtras);
+                    ImGui.Checkbox("Bounds", ref context.debugDraw.drawBounds);
+                    ImGui.Checkbox("Mass", ref context.debugDraw.drawMass);
+                    ImGui.Checkbox("Body Names", ref context.debugDraw.drawBodyNames);
+                    ImGui.Checkbox("Graph Colors", ref context.debugDraw.drawGraphColors);
+                    ImGui.Checkbox("Islands", ref context.debugDraw.drawIslands);
+                    ImGui.Checkbox("Counters", ref context.drawCounters);
+                    ImGui.Checkbox("Profile", ref context.drawProfile);
+                    ImGui.Checkbox("Frame Time", ref context.frameTime);
+
+                    ImGui.Separator();
+
+                    ImGui.Checkbox("Contact Points", ref context.debugDraw.drawContacts);
+
+                    if (ImGui.RadioButton("Anchor A", context.debugDraw.drawAnchorA == true))
+                    {
+                        context.debugDraw.drawAnchorA = true;
+                    }
+                    ImGui.SameLine();
+                    if (ImGui.RadioButton("Anchor B", context.debugDraw.drawAnchorA == false))
+                    {
+                        context.debugDraw.drawAnchorA = false;
+                    }
+                    ImGui.Checkbox("Contact Normals", ref context.debugDraw.drawContactNormals);
+                    ImGui.Checkbox("Contact Features", ref context.debugDraw.drawContactFeatures);
+                    ImGui.Checkbox("Contact Forces", ref context.debugDraw.drawContactForces);
+                    ImGui.Checkbox("Friction Forces", ref context.debugDraw.drawFrictionForces);
+
+                    ImGui.Separator();
+
+                    ImGui.PushItemWidth(80.0f);
+                    ImGui.InputFloat("Joint Scale", ref context.debugDraw.jointScale);
+                    ImGui.InputFloat("Force Scale", ref context.debugDraw.forceScale);
+                    ImGui.PopItemWidth();
+
+                    Vector2 button_sz = new Vector2(-1, 0);
+                    if (ImGui.Button("Pause (P)", button_sz))
+                    {
+                        context.pause = !context.pause;
+                    }
+
+                    if (ImGui.Button("Single Step (O)", button_sz))
+                    {
+                        context.singleStep = !context.singleStep;
+                    }
+
+                    if (ImGui.Button("Dump Mem Stats", button_sz))
+                    {
+                        b2World_DumpMemoryStats(context.sample.m_worldId);
+                    }
+
+                    if (ImGui.Button("Reset Profile", button_sz))
+                    {
+                        context.sample.ResetProfile();
+                    }
+
+                    if (ImGui.Button("Restart (R)", button_sz))
+                    {
+                        SelectSample(context, context.sampleIndex, true);
+                    }
+
+                    if (ImGui.Button("Quit", button_sz))
+                    {
+                        unsafe
+                        {
+                            context.glfw.SetWindowShouldClose(context.window, true);
+                        }
+                    }
+
+                    ImGui.EndTabItem();
+                }
+
+                ImGuiTreeNodeFlags leafNodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
+                leafNodeFlags |= ImGuiTreeNodeFlags.Leaf | ImGuiTreeNodeFlags.NoTreePushOnOpen;
+
+                ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags.OpenOnArrow | ImGuiTreeNodeFlags.OpenOnDoubleClick;
+
+                if (ImGui.BeginTabItem("Samples"))
+                {
+                    int categoryIndex = 0;
+                    string category = SampleFactory.Shared.GetCategory(categoryIndex);
+                    int i = 0;
+                    while (i < SampleFactory.Shared.SampleCount)
+                    {
+                        bool categorySelected = category == SampleFactory.Shared.GetCategory(context.sampleIndex);
+                        ImGuiTreeNodeFlags nodeSelectionFlags = categorySelected ? ImGuiTreeNodeFlags.Selected : 0;
+                        bool nodeOpen = ImGui.TreeNodeEx(category, nodeFlags | nodeSelectionFlags);
+
+                        if (nodeOpen)
+                        {
+                            while (i < SampleFactory.Shared.SampleCount && category == SampleFactory.Shared.GetCategory(i))
+                            {
+                                ImGuiTreeNodeFlags selectionFlags = 0;
+                                if (context.sampleIndex == i)
+                                {
+                                    selectionFlags = ImGuiTreeNodeFlags.Selected;
+                                }
+
+                                ImGui.TreeNodeEx(SampleFactory.Shared.GetName(i), leafNodeFlags | selectionFlags);
+                                if (ImGui.IsItemClicked())
+                                {
+                                    SelectSample(context, i, false);
+                                }
+                                ++i;
+                            }
+                            ImGui.TreePop();
+                        }
+                        else
+                        {
+                            while (i < SampleFactory.Shared.SampleCount && category == SampleFactory.Shared.GetCategory(i))
+                            {
+                                ++i;
+                            }
+                        }
+
+                        if (i < SampleFactory.Shared.SampleCount)
+                        {
+                            category = SampleFactory.Shared.GetCategory(i);
+                            categoryIndex = i;
+                        }
+                    }
+                    ImGui.EndTabItem();
+                }
+                ImGui.EndTabBar();
+            }
+
+            ImGui.End();
+
+            context.sample.UpdateGui();
+        }
     }
 }

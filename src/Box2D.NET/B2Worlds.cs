@@ -1252,7 +1252,7 @@ namespace Box2D.NET
                     }
 
                     float linearSlop = B2_LINEAR_SLOP;
-                    if (draw.contactDrawType != B2ContactDrawType.b2_drawContacts_None && body.type == B2BodyType.b2_dynamicBody)
+                    if (draw.drawContacts && body.type == B2BodyType.b2_dynamicBody)
                     {
                         int contactKey = body.headContactKey;
                         while (contactKey != B2_NULL_INDEX)
@@ -1279,20 +1279,14 @@ namespace Box2D.NET
                                 {
                                     ref B2ManifoldPoint mp = ref contactSim.manifold.points[j];
 
-                                    B2Vec2 p = mp.clipPoint;
-                                    if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_AnchorA)
+                                    B2Vec2 p;
+                                    if (draw.drawAnchorA)
                                     {
                                         p = b2Add(bodySimA.center, mp.anchorA);
                                     }
-                                    else if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_AnchorB)
+                                    else
                                     {
                                         p = b2Add(bodySimB.center, mp.anchorB);
-                                    }
-                                    else if (draw.contactDrawType == B2ContactDrawType.b2_drawContacts_Average)
-                                    {
-                                        B2Vec2 pA = b2Add(bodySimA.center, mp.anchorA);
-                                        B2Vec2 pB = b2Add(bodySimB.center, mp.anchorB);
-                                        p = b2Lerp(pA, pB, 0.5f);
                                     }
 
                                     if (draw.drawGraphColors && contact.colorIndex != B2_NULL_INDEX)

@@ -29,7 +29,10 @@ namespace Box2D.NET
         public float jointScale;
         
         /// Option to draw contact points
-        public B2ContactDrawType contactDrawType;
+        public bool drawContacts;
+
+        /// Draw anchor A for contact points (instead of anchorB)
+        public bool drawAnchorA;
 
         /// Option to draw shapes
         public bool drawShapes;
