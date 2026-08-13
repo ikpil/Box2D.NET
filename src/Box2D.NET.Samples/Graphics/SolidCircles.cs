@@ -9,6 +9,7 @@ using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -22,7 +23,7 @@ public static class SolidCircles
     public static SolidCircleRender CreateSolidCircles(GL gl)
     {
         var render = new SolidCircleRender();
-        render.programId = gl.CreateProgramFromFiles("data/solid_circle.vs", "data/solid_circle.fs");
+        render.programId = gl.CreateProgramFromStrings(k_solid_circle_vs, k_solid_circle_fs);
         render.projectionUniform = gl.GetUniformLocation(render.programId, "projectionMatrix");
         render.pixelScaleUniform = gl.GetUniformLocation(render.programId, "pixelScale");
 

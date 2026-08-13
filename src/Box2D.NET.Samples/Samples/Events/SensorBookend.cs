@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -120,14 +120,9 @@ public class SensorBookend : Sample
         m_visitorShapeId = b2CreateCircleShape(m_visitorBodyId, shapeDef, circle);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 19.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(12.0f * fontSize, height));
 
-        ImGui.Begin("Sensor Bookend", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (B2_IS_NULL(m_visitorBodyId))
         {
@@ -247,7 +242,7 @@ public class SensorBookend : Sample
             }
         }
 
-        ImGui.End();
+
     }
 
     public override void Step()

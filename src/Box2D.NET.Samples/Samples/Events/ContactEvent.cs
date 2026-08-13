@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -144,20 +144,11 @@ public class ContactEvent : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 60.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Contact Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("force", ref m_force, 100.0f, 500.0f, "%.1f");
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()
@@ -435,6 +426,6 @@ public class ContactEvent : Sample
     {
         base.Draw();
 
-        DrawTextLine("move using WASD");
+        DrawScreenTextLine("move using WASD");
     }
 }

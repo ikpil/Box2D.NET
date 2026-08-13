@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -111,16 +111,9 @@ public class SkinnyBox : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 110.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(140.0f, height));
-
-        ImGui.Begin("Skinny Box", ImGuiWindowFlags.NoResize);
 
         ImGui.Checkbox("Capsule", ref m_capsule);
 
@@ -131,7 +124,7 @@ public class SkinnyBox : Sample
 
         ImGui.Checkbox("Auto Test", ref m_autoTest);
 
-        ImGui.End();
+
     }
 
     public override void Step()

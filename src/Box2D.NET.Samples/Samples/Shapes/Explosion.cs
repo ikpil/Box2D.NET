@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -80,16 +80,9 @@ public class Explosion : Sample
         m_impulse = 10.0f;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 160.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Explosion", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("Explode"))
         {
@@ -101,11 +94,11 @@ public class Explosion : Sample
             b2World_Explode(m_worldId, def);
         }
 
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("radius", ref m_radius, 0.0f, 20.0f, "%.1f");
         ImGui.SliderFloat("falloff", ref m_falloff, 0.0f, 20.0f, "%.1f");
         ImGui.SliderFloat("impulse", ref m_impulse, -20.0f, 20.0f, "%.1f");
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -194,16 +194,9 @@ public class CompoundShapes : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
-
-        ImGui.Begin("Compound Shapes", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("Intrude"))
         {
@@ -212,7 +205,7 @@ public class CompoundShapes : Sample
 
         ImGui.Checkbox("Body AABBs", ref m_drawBodyAABBs);
 
-        ImGui.End();
+
     }
 
     public override void Draw()

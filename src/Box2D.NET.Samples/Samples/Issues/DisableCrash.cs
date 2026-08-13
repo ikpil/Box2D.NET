@@ -73,15 +73,9 @@ public class DisableCrash : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 11.0f * fontSize;
-        float winX = 0.5f * fontSize;
-        float winY = m_camera.height - height - 2.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(winX, winY), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(9.0f * fontSize, height));
-        ImGui.Begin("Disable Crash", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+
 
         if (ImGui.Checkbox("Enable", ref m_isEnabled))
         {
@@ -95,6 +89,6 @@ public class DisableCrash : Sample
             }
         }
 
-        ImGui.End();
+
     }
 }

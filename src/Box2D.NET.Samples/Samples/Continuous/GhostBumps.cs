@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -267,17 +267,10 @@ public class GhostBumps : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
-
-        ImGui.Begin("Ghost Bumps", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.Checkbox("Chain", ref m_useChain))
         {
@@ -320,6 +313,6 @@ public class GhostBumps : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 }

@@ -128,15 +128,10 @@ public class Wind : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 15.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(24.0f * fontSize, height));
 
-        ImGui.Begin("Wind", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(18.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
         int shapeType = (int)m_shapeType;
@@ -157,7 +152,7 @@ public class Wind : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 
     public override void Step()

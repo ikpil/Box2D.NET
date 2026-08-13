@@ -64,20 +64,15 @@ public class WakeTouching : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 5.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(10.0f * fontSize, height));
 
-        ImGui.Begin("Wake Touching", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("Wake Touching"))
         {
             b2Body_WakeTouching(m_groundId);
         }
 
-        ImGui.End();
+
     }
 }

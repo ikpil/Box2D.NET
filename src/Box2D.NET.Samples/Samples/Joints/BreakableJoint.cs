@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -200,17 +200,9 @@ public class BreakableJoint : Sample
         m_breakForce = 1000.0f;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Breakable Joint", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("break force", ref m_breakForce, 0.0f, 10000.0f, "%.1f");
 
         B2Vec2 gravity = b2World_GetGravity(m_worldId);
@@ -218,8 +210,7 @@ public class BreakableJoint : Sample
         {
             b2World_SetGravity(m_worldId, gravity);
         }
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
 

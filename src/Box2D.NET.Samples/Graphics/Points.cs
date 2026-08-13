@@ -9,6 +9,7 @@ using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -19,7 +20,7 @@ public static class Points
     public static PointRender CreatePointDrawData(GL gl)
     {
         PointRender render = new PointRender();
-        render.programId = gl.CreateProgramFromFiles("data/point.vs", "data/point.fs");
+        render.programId = gl.CreateProgramFromStrings(k_point_vs, k_point_fs);
         render.projectionUniform = gl.GetUniformLocation(render.programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint sizeAttribute = 1;

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -109,14 +109,9 @@ public class TopDownFriction : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Top Down Friction", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("Explode"))
         {
@@ -130,6 +125,6 @@ public class TopDownFriction : Sample
             DrawCircle(m_draw, def.position, 10.0f, B2HexColor.b2_colorWhite);
         }
 
-        ImGui.End();
+
     }
 }

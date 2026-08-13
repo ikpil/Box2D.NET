@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -266,16 +266,9 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 330.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(140.0f, height));
-
-        ImGui.Begin("Overlap World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("Polygon 1"))
             Create(0);
@@ -330,7 +323,7 @@ public class OverlapWorld : Sample
         ImGui.RadioButton("Capsule##Overlap", ref m_shapeType, e_capsuleShape);
         ImGui.RadioButton("Box##Overlap", ref m_shapeType, e_boxShape);
 
-        ImGui.End();
+
     }
 
     public override void Step()
@@ -392,9 +385,9 @@ public class OverlapWorld : Sample
     {
         base.Draw();
 
-        DrawTextLine("left mouse button: drag query shape");
+        DrawScreenTextLine("left mouse button: drag query shape");
 
-        DrawTextLine("left mouse button + shift: rotate query shape");
+        DrawScreenTextLine("left mouse button + shift: rotate query shape");
 
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))

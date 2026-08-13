@@ -7,12 +7,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using Box2D.NET.Samples.Graphics;
 using Box2D.NET.Samples.Samples;
-using ImGuiNET;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.Samples.Graphics.Backgrounds;
+using static Box2D.NET.Samples.Graphics.Cameras;
 using static Box2D.NET.Samples.Graphics.Draws;
 
 namespace Box2D.NET.Samples;
@@ -29,9 +29,6 @@ public class SampleContext
     public Sample sample = null;
     public B2Capacity capacity;
     public B2DebugDraw debugDraw;
-    public ImFontPtr regularFont;
-    public ImFontPtr mediumFont;
-    public ImFontPtr largeFont;
 
     public float uiScale = 1.0f;
     public float hertz = 60.0f;
@@ -41,13 +38,16 @@ public class SampleContext
     public bool restart = false;
     public bool pause = false;
     public bool singleStep = false;
-    public bool drawCounters = false;
-    public bool drawProfile = false;
     public bool enableWarmStarting = true;
     public bool enableContinuous = true;
     public bool enableSleep = true;
     public bool showUI = true;
-    public bool frameTime = false;
+
+    // Diagnostics drawer visibility. D toggles.
+    public bool showDiagnostics = false;
+
+    // Set by Ctrl+O; consumed by UpdateSampleUI to open the fuzzy sample picker.
+    public bool openSamplePicker = false;
 
     // These are persisted
     public int sampleIndex = 0;
@@ -61,7 +61,7 @@ public class SampleContext
     {
         Signature = signature;
         this.glfw = glfw;
-        camera = new Camera();
+        camera = GetDefaultCamera();
         draw = new Draw();
 
         showUI = true;
@@ -83,9 +83,6 @@ public class SampleContext
 
         debugDraw.context = this;
 
-        mediumFont = default;
-        largeFont = default;
-        regularFont = default;
     }
 
     public void Load()
@@ -95,44 +92,10 @@ public class SampleContext
         var settings = Settings.Load();
 
         //
-        camera.width = settings.windowWidth;
-        camera.height = settings.windowHeight;
-
-        //
-        uiScale = settings.uiScale;
-        hertz = settings.hertz;
-        subStepCount = settings.subStepCount;
-        workerCount = settings.workerCount;
-
-        //
         sampleIndex = settings.sampleIndex;
         debugDraw.drawShapes = settings.drawShapes;
-        debugDraw.drawChainNormals = settings.drawChainNormals;
         debugDraw.drawJoints = settings.drawJoints;
-
-        //
-        debugDraw.drawShapes = settings.drawShapes;
-        debugDraw.drawChainNormals = settings.drawChainNormals;
-        debugDraw.drawJoints = settings.drawJoints;
-        debugDraw.drawJointExtras = settings.drawJointExtras;
-        debugDraw.drawBounds = settings.drawBounds;
-        debugDraw.drawMass = settings.drawMass;
-        debugDraw.drawGraphColors = settings.drawGraphColors;
-        debugDraw.drawContactNormals = settings.drawContactNormals;
-        debugDraw.drawContactForces = settings.drawContactForces;
-        debugDraw.drawContactFeatures = settings.drawContactFeatures;
-        debugDraw.drawFrictionForces = settings.drawFrictionForces;
-        debugDraw.drawIslands = settings.drawIslands;
-        drawCounters = settings.drawCounters;
-        drawProfile = settings.drawProfile;
-        frameTime = settings.frameTime;
-        enableWarmStarting = settings.enableWarmStarting;
-        enableContinuous = settings.enableContinuous;
-        enableSleep = settings.enableSleep;
-
-        //
-        debugDraw.jointScale = settings.jointScale;
-        debugDraw.forceScale = settings.forceScale;
+        showDiagnostics = settings.showDiagnostics;
     }
 
 

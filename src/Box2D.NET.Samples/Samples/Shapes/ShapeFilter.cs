@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -88,16 +88,9 @@ public class ShapeFilter : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Shape Filter", ImGuiWindowFlags.NoResize);
 
         ImGui.Text("Player 1 Collides With");
         {
@@ -205,7 +198,7 @@ public class ShapeFilter : Sample
             }
         }
 
-        ImGui.End();
+
     }
 
     public override void Draw()

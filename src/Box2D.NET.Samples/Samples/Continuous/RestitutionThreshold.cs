@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -81,6 +81,6 @@ public class RestitutionThreshold : Sample
 
         B2Vec2 p = b2Body_GetPosition(m_ballId);
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
-        DrawTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
+        DrawScreenTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
     }
 }

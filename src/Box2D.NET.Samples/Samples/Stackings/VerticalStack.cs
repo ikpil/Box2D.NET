@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -242,18 +242,11 @@ public class VerticalStack : Sample
     }
 
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 16.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(20.0f * fontSize, height));
-
-        ImGui.Begin("Vertical Stack", ImGuiWindowFlags.NoResize);
         
-        ImGui.PushItemWidth(13.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         bool changed = false;
         string[] shapeTypes = ["Circle", "Box"];
@@ -292,6 +285,6 @@ public class VerticalStack : Sample
             CreateStacks();
         }
 
-        ImGui.End();
+
     }
 }

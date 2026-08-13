@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -91,16 +91,9 @@ public class PrismaticJoint : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Prismatic Joint", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Limit", ref m_enableLimit))
         {
@@ -116,6 +109,7 @@ public class PrismaticJoint : Sample
 
         if (m_enableMotor)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Max Force", ref m_motorForce, 0.0f, 200.0f, "%.0f"))
             {
                 b2PrismaticJoint_SetMaxMotorForce(m_jointId, m_motorForce);
@@ -127,6 +121,7 @@ public class PrismaticJoint : Sample
                 b2PrismaticJoint_SetMotorSpeed(m_jointId, m_motorSpeed);
                 b2Joint_WakeBodies(m_jointId);
             }
+            ImGui.PopItemWidth();
         }
 
         if (ImGui.Checkbox("Spring", ref m_enableSpring))
@@ -137,6 +132,7 @@ public class PrismaticJoint : Sample
 
         if (m_enableSpring)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 10.0f, "%.1f"))
             {
                 b2PrismaticJoint_SetSpringHertz(m_jointId, m_hertz);
@@ -154,9 +150,8 @@ public class PrismaticJoint : Sample
                 b2PrismaticJoint_SetTargetTranslation(m_jointId, m_translation);
                 b2Joint_WakeBodies(m_jointId);
             }
+            ImGui.PopItemWidth();
         }
-
-        ImGui.End();
     }
 
     public override void Draw()

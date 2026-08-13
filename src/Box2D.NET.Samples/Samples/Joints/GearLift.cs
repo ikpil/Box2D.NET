@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -294,20 +294,17 @@ public class GearLift : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 25.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Gear Lift", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Motor", ref m_enableMotor))
         {
             b2RevoluteJoint_EnableMotor(m_driverId, m_enableMotor);
             b2Joint_WakeBodies(m_driverId);
         }
+
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Max Torque", ref m_motorTorque, 0.0f, 100.0f, "%.0f"))
         {
@@ -320,8 +317,7 @@ public class GearLift : Sample
             b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()

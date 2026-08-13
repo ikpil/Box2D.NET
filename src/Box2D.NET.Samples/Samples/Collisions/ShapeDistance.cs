@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -212,17 +212,9 @@ public class ShapeDistance : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 21.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(19.0f * fontSize, height));
-
-        ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = ["point", "segment", "triangle", "box"];
         int shapeType = (int)m_typeA;
         if (ImGui.Combo("shape A", ref shapeType, shapeTypes, shapeTypes.Length))
@@ -258,6 +250,8 @@ public class ShapeDistance : Sample
             m_transform.q = b2MakeRot(m_angle);
         }
 
+        ImGui.PopItemWidth();
+
         ImGui.Separator();
 
         ImGui.Checkbox("show indices", ref m_showIndices);
@@ -272,11 +266,11 @@ public class ShapeDistance : Sample
 
         if (m_drawSimplex && m_simplexCount > 0)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             ImGui.SliderInt("index", ref m_simplexIndex, 0, m_simplexCount - 1);
             m_simplexIndex = b2ClampInt(m_simplexIndex, 0, m_simplexCount - 1);
+            ImGui.PopItemWidth();
         }
-
-        ImGui.End();
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
@@ -442,11 +436,11 @@ public class ShapeDistance : Sample
             }
         }
 
-        DrawTextLine("mouse button 1: drag");
+        DrawScreenTextLine("mouse button 1: drag");
 
-        DrawTextLine("mouse button 1 + shift: rotate");
+        DrawScreenTextLine("mouse button 1 + shift: rotate");
 
-        DrawTextLine($"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
+        DrawScreenTextLine($"distance = {_outputDistance:F2}, iterations = {_outputIterations}");
 
 
         if (m_cache.count == 1)
@@ -459,7 +453,7 @@ public class ShapeDistance : Sample
         }
         else if (m_cache.count == 3)
         {
-            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
+            DrawScreenTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
         }
     }
 }

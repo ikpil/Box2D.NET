@@ -76,8 +76,6 @@ public class TimeOfImpact : Sample
         DrawTextLine($"toi = {_output.fraction:g}");
         
 
-        // DrawTextLine("max toi iters = %d, max root iters = %d", b2_toiMaxIters, b2_toiMaxRootIters);
-
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
 
         // Draw A

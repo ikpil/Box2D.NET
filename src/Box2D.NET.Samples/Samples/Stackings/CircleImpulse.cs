@@ -104,14 +104,9 @@ public class CircleImpulse : Sample
         b2Body_SetMassData(m_bodyId, massData);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 6.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(10.0f * fontSize, height));
 
-        ImGui.Begin("Circle Impulse", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("gravity", ref m_useGravity))
         {
@@ -123,7 +118,7 @@ public class CircleImpulse : Sample
             Spawn();
         }
 
-        ImGui.End();
+
     }
 
     public override void Step()
@@ -151,14 +146,14 @@ public class CircleImpulse : Sample
             m_events.Add(e);
         }
 
-        DrawTextLine($"mass = {m_mass}, gravity = {(m_useGravity ? 10.0f : 0.0f)}, restitution = {(m_useRestitution ? m_restitution : 0.0f)}");
+        DrawScreenTextLine($"mass = {m_mass}, gravity = {(m_useGravity ? 10.0f : 0.0f)}, restitution = {(m_useRestitution ? m_restitution : 0.0f)}");
 
         int eventCount = m_events.Count;
         var eventsSpan = CollectionsMarshal.AsSpan(m_events);
         for (int i = 0; i < eventCount; ++i)
         {
             ref readonly Event e = ref eventsSpan[i];
-            DrawTextLine($"hit speed = {e.speed}, hit momentum = {m_mass * e.speed}, final impulse = {e.impulse}, total impulse = {e.totalImpulse}");
+            DrawScreenTextLine($"hit speed = {e.speed}, hit momentum = {m_mass * e.speed}, final impulse = {e.impulse}, total impulse = {e.totalImpulse}");
         }
     }
 }

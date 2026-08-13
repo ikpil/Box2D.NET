@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -138,18 +138,11 @@ public class Bridge : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(320.0f, height));
 
-        ImGui.Begin("Bridge", ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(ImGui.GetWindowWidth() * 0.6f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         bool updateFriction = ImGui.SliderFloat("Joint Friction", ref m_frictionTorque, 0.0f, 10000.0f, "%2.f");
         if (updateFriction)
         {
@@ -193,6 +186,6 @@ public class Bridge : Sample
 
         ImGui.PopItemWidth();
 
-        ImGui.End();
+
     }
 }

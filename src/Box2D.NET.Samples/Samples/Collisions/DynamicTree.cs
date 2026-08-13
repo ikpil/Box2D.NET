@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -188,18 +188,11 @@ public class DynamicTree : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
-        ImGui.Begin("Dynamic Tree", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         bool changed = false;
         if (ImGui.SliderInt("rows", ref m_rowCount, 0, 1000, "%d"))
@@ -235,6 +228,8 @@ public class DynamicTree : Sample
         {
         }
 
+        ImGui.PopItemWidth();
+
         if (ImGui.RadioButton("Incremental", m_updateType == (int)UpdateType.Update_Incremental))
         {
             m_updateType = (int)UpdateType.Update_Incremental;
@@ -257,9 +252,6 @@ public class DynamicTree : Sample
 
         ImGui.Text("mouse button 1: ray cast");
         ImGui.Text("mouse button 1 + shift: query");
-
-        ImGui.PopItemWidth();
-        ImGui.End();
 
         if (changed)
         {
@@ -449,7 +441,7 @@ public class DynamicTree : Sample
             DrawPoint(m_draw, m_startPoint, 5.0f, B2HexColor.b2_colorGreen);
             DrawPoint(m_draw, m_endPoint, 5.0f, B2HexColor.b2_colorRed);
 
-            DrawTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
+            DrawScreenTextLine($"node visits = {result.nodeVisits}, leaf visits = {result.leafVisits}");
         }
 
         switch ((UpdateType)m_updateType)
@@ -481,6 +473,6 @@ public class DynamicTree : Sample
         float areaRatio = b2DynamicTree_GetAreaRatio(m_tree);
 
         int hmin = (int)(MathF.Ceiling(MathF.Log((float)m_proxyCount) / MathF.Log(2.0f) - 1.0f));
-        DrawTextLine($"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
+        DrawScreenTextLine($"proxies = {m_proxyCount}, height = {height}, hmin = {hmin}, area ratio = {areaRatio:F1}");
     }
 }

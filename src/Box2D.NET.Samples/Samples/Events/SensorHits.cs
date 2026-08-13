@@ -170,14 +170,9 @@ public class SensorHits : Sample
         m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(120.0f, height));
 
-        ImGui.Begin("Sensor Hit", ImGuiWindowFlags.NoResize);
 
         ImGui.Checkbox("Bullet", ref m_isBullet);
 
@@ -186,7 +181,7 @@ public class SensorHits : Sample
             Launch();
         }
 
-        ImGui.End();
+
     }
 
     void CollectTransforms(B2ShapeId sensorShapeId)

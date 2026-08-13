@@ -3,8 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.IO;
-using System.Text;
 using Serilog;
 using Silk.NET.OpenGL;
 using static Box2D.NET.B2Diagnostics;
@@ -131,67 +129,4 @@ public static class Shader
         return program;
     }
 
-    public static uint sCreateShaderFromFile(this GL gl, string filename, GLEnum type)
-    {
-        if (!File.Exists(filename))
-        {
-            Logger.Information($"Error opening {filename}");
-            return 0;
-        }
-
-        byte[] bytes = File.ReadAllBytes(filename);
-        var source = Encoding.UTF8.GetString(bytes);
-
-
-        uint shader = gl.CreateShader(type);
-
-        gl.ShaderSource(shader, source);
-        gl.CompileShader(shader);
-
-        Span<int> success = stackalloc int[1];
-        gl.GetShader(shader, GLEnum.CompileStatus, success);
-
-        if (success[0] == 0)
-        {
-            Logger.Information($"Error compiling shader of type {type}!");
-            gl.PrintLogGL(shader);
-        }
-
-        return shader;
-    }
-
-    public static uint CreateProgramFromFiles(this GL gl, string vertexPath, string fragmentPath)
-    {
-        uint vertex = gl.sCreateShaderFromFile(vertexPath, GLEnum.VertexShader);
-        if (vertex == 0)
-        {
-            return 0;
-        }
-
-        uint fragment = gl.sCreateShaderFromFile(fragmentPath, GLEnum.FragmentShader);
-        if (fragment == 0)
-        {
-            return 0;
-        }
-
-        uint program = gl.CreateProgram();
-        gl.AttachShader(program, vertex);
-        gl.AttachShader(program, fragment);
-
-        gl.LinkProgram(program);
-
-        Span<int> success = stackalloc int[1];
-        gl.GetProgram(program, GLEnum.LinkStatus, success);
-        if (success[0] == 0)
-        {
-            Logger.Information("glLinkProgram:");
-            gl.PrintLogGL(program);
-            return 0;
-        }
-
-        gl.DeleteShader(vertex);
-        gl.DeleteShader(fragment);
-
-        return program;
-    }
 }

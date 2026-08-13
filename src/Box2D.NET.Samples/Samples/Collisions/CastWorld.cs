@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -297,21 +297,15 @@ public class CastWorld : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 320.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
-
-        ImGui.Begin("Ray-cast World", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         ImGui.Checkbox("Simple", ref m_simple);
 
         if (m_simple == false)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             string[] castTypes = ["Ray", "Circle", "Capsule", "Polygon"];
             int castType = (int)m_castType;
             if (ImGui.Combo("Type", ref castType, castTypes, castTypes.Length))
@@ -330,6 +324,7 @@ public class CastWorld : Sample
             {
                 m_mode = mode;
             }
+            ImGui.PopItemWidth();
         }
 
         if (ImGui.Button("Polygon"))
@@ -373,8 +368,6 @@ public class CastWorld : Sample
         {
             DestroyBody();
         }
-
-        ImGui.End();
     }
 
     public override void Step()
@@ -513,31 +506,31 @@ public class CastWorld : Sample
     {
         base.Draw();
 
-        DrawTextLine("Click left mouse button and drag to modify ray cast");
-        DrawTextLine("Shape 7 is intentionally ignored by the ray");
+        DrawScreenTextLine("Click left mouse button and drag to modify ray cast");
+        DrawScreenTextLine("Shape 7 is intentionally ignored by the ray");
 
         if (m_simple)
         {
-            DrawTextLine("Simple closest point ray cast");
+            DrawScreenTextLine("Simple closest point ray cast");
         }
         else
         {
             switch ((Mode)m_mode)
             {
                 case Mode.e_any:
-                    DrawTextLine("Cast mode: any - check for obstruction - unsorted");
+                    DrawScreenTextLine("Cast mode: any - check for obstruction - unsorted");
                     break;
 
                 case Mode.e_closest:
-                    DrawTextLine("Cast mode: closest - find closest shape along the cast");
+                    DrawScreenTextLine("Cast mode: closest - find closest shape along the cast");
                     break;
 
                 case Mode.e_multiple:
-                    DrawTextLine("Cast mode: multiple - gather up to 3 shapes - unsorted");
+                    DrawScreenTextLine("Cast mode: multiple - gather up to 3 shapes - unsorted");
                     break;
 
                 case Mode.e_sorted:
-                    DrawTextLine("Cast mode: sorted - gather up to 3 shapes sorted by closeness");
+                    DrawScreenTextLine("Cast mode: sorted - gather up to 3 shapes sorted by closeness");
                     break;
 
                 default:

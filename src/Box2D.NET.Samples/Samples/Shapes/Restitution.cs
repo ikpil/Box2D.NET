@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -104,17 +104,9 @@ public class Restitution : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Restitution", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         bool changed = false;
         string[] shapeTypes = ["Circle", "Box"];
 
@@ -122,13 +114,13 @@ public class Restitution : Sample
         changed = changed || ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length);
         m_shapeType = (ShapeType)shapeType;
 
+        ImGui.PopItemWidth();
+
         changed = changed || ImGui.Button("Reset");
 
         if (changed)
         {
             CreateBodies();
         }
-
-        ImGui.End();
     }
 }

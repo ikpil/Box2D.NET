@@ -106,13 +106,9 @@ public class Crash01 : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 11.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(9.0f * fontSize, height));
-        ImGui.Begin("Crash 01", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
+
 
         if (ImGui.RadioButton("Static", m_type == B2BodyType.b2_staticBody))
         {
@@ -145,6 +141,6 @@ public class Crash01 : Sample
             }
         }
 
-        ImGui.End();
+
     }
 }

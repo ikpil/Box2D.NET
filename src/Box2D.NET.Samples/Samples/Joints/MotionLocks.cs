@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -198,16 +198,9 @@ public class MotionLocks : Sample
         ++index;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 8.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(14.0f * fontSize, height));
-
-        ImGui.Begin("Motion Locks", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Lock Linear X", ref m_motionLocks.linearX))
         {
@@ -236,7 +229,7 @@ public class MotionLocks : Sample
             }
         }
 
-        ImGui.End();
+
     }
 
     public override void Step()

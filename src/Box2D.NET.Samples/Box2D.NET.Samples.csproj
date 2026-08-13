@@ -11,6 +11,11 @@
 
   <ItemGroup>
     <None Include="../../README.md" Pack="true" PackagePath="\"/>
+    <!-- Embed shaders so the samples binary has no runtime dependency on data/*.vs and *.fs. -->
+    <EmbeddedResource Include="../../data/*.vs" LogicalName="Box2D.NET.Samples.Shaders.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../../data/*.fs" LogicalName="Box2D.NET.Samples.Shaders.%(Filename)%(Extension)" />
+    <!-- ImGui.NET 1.90 does not expose ImGui's embedded vector font, so embed the existing font instead. -->
+    <EmbeddedResource Include="../../data/droid_sans.ttf" LogicalName="Box2D.NET.Samples.Fonts.droid_sans.ttf" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">

@@ -10,6 +10,7 @@ using Box2D.NET.Samples.Primitives;
 using Serilog;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -23,7 +24,7 @@ public static class SolidCapsules
     public static SolidCapsuleRender CreateSolidCapsule(GL gl)
     {
         var render = new SolidCapsuleRender();
-        render.programId = gl.CreateProgramFromFiles("data/solid_capsule.vs", "data/solid_capsule.fs");
+        render.programId = gl.CreateProgramFromStrings(k_solid_capsule_vs, k_solid_capsule_fs);
 
         render.projectionUniform = gl.GetUniformLocation(render.programId, "projectionMatrix");
         render.pixelScaleUniform = gl.GetUniformLocation(render.programId, "pixelScale");

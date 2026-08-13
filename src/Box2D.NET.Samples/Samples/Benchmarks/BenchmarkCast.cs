@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -321,18 +321,11 @@ public class BenchmarkCast : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 17.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(13.0f * fontSize, height));
 
-        ImGui.Begin("Cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(7.5f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         bool changed = false;
 
@@ -378,6 +371,8 @@ public class BenchmarkCast : Sample
             changed = true;
         }
 
+        ImGui.PopItemWidth();
+
         if (ImGui.Checkbox("top down", ref m_topDown))
         {
             changed = true;
@@ -387,9 +382,6 @@ public class BenchmarkCast : Sample
         {
             m_drawIndex = (m_drawIndex + 1) % m_origins.Count;
         }
-
-        ImGui.PopItemWidth();
-        ImGui.End();
 
         if (changed)
         {
@@ -404,7 +396,7 @@ public class BenchmarkCast : Sample
         DrawTextLine($"build time ms = {m_buildTime:g}");
 
 
-        DrawTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
+        DrawScreenTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
 
 
         DrawTextLine($"total ms = {ms:F3}");

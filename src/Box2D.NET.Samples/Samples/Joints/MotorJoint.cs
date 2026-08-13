@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -123,17 +123,9 @@ public class MotorJoint : Sample
         m_time = 0.0f;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 180.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Motor Joint", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         if (ImGui.SliderFloat("Speed", ref m_speed, -5.0f, 5.0f, "%.0f"))
         {
         }
@@ -148,12 +140,12 @@ public class MotorJoint : Sample
             b2MotorJoint_SetMaxSpringTorque(m_jointId, m_maxTorque);
         }
 
+        ImGui.PopItemWidth();
+
         if (ImGui.Button("Apply Impulse"))
         {
             b2Body_ApplyLinearImpulseToCenter(m_bodyId, new B2Vec2(100.0f, 0.0f), true);
         }
-
-        ImGui.End();
     }
 
 
@@ -196,7 +188,7 @@ public class MotorJoint : Sample
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        DrawTextLine($"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
+        DrawScreenTextLine($"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
         DrawTransform(m_draw, _transform, 1.0f);
     }
 }

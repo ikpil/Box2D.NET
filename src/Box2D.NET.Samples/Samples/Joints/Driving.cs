@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -211,18 +211,11 @@ public class Driving : Sample
         m_car.Spawn(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f, m_hertz, m_dampingRatio, m_torque, B2UserData.Empty);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 10.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(16.0f * fontSize, height));
 
-        ImGui.Begin("Driving", ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(8.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         if (ImGui.SliderFloat("Spring Hertz", ref m_hertz, 0.0f, 20.0f, "%.0f"))
         {
             m_car.SetHertz(m_hertz);
@@ -245,7 +238,7 @@ public class Driving : Sample
 
         ImGui.PopItemWidth();
 
-        ImGui.End();
+
     }
 
     public override void Step()
@@ -275,7 +268,7 @@ public class Driving : Sample
     {
         base.Draw();
 
-        DrawTextLine("Keys: left = a, brake = s, right = d");
+        DrawScreenTextLine("Keys: left = a, brake = s, right = d");
 
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);

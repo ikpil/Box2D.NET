@@ -162,15 +162,9 @@ public class ChainSegmentShape : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 130.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Chain Segment Shape", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
         int shapeType = (int)m_shapeType;
         if (ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length))
@@ -178,6 +172,8 @@ public class ChainSegmentShape : Sample
             m_shapeType = (ShapeType)shapeType;
             Launch();
         }
+
+        ImGui.PopItemWidth();
 
         if (ImGui.Button("Launch"))
         {
@@ -188,8 +184,6 @@ public class ChainSegmentShape : Sample
         {
             Mutate();
         }
-
-        ImGui.End();
     }
 
     public override void Step()

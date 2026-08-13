@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -143,16 +143,9 @@ public class RevoluteJoint : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 8.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(8.0f * fontSize, height));
-
-        ImGui.Begin("Revolute Joint", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Limit", ref m_enableLimit))
         {
@@ -168,6 +161,7 @@ public class RevoluteJoint : Sample
 
         if (m_enableMotor)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Max Torque", ref m_motorTorque, 0.0f, 5000.0f, "%.0f"))
             {
                 b2RevoluteJoint_SetMaxMotorTorque(m_jointId1, m_motorTorque);
@@ -179,6 +173,7 @@ public class RevoluteJoint : Sample
                 b2RevoluteJoint_SetMotorSpeed(m_jointId1, m_motorSpeed);
                 b2Joint_WakeBodies(m_jointId1);
             }
+            ImGui.PopItemWidth();
         }
 
         if (ImGui.Checkbox("Spring", ref m_enableSpring))
@@ -189,6 +184,7 @@ public class RevoluteJoint : Sample
 
         if (m_enableSpring)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 30.0f, "%.1f"))
             {
                 b2RevoluteJoint_SetSpringHertz(m_jointId1, m_hertz);
@@ -207,9 +203,8 @@ public class RevoluteJoint : Sample
                 b2RevoluteJoint_SetTargetAngle(m_jointId1, B2_PI * m_targetDegrees / 180.0f);
                 b2Joint_WakeBodies(m_jointId1);
             }
+            ImGui.PopItemWidth();
         }
-
-        ImGui.End();
     }
 
     public override void Draw()

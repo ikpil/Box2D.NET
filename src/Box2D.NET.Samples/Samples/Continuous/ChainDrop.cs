@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -85,25 +85,18 @@ public class ChainDrop : Sample
         //m_shapeId = b2CreatePolygonShape( m_bodyId, &shapeDef, &box );
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Chain Drop", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("Speed", ref m_speed, -100.0f, 0.0f, "%.0f");
         ImGui.SliderFloat("Y Offset", ref m_yOffset, -1.0f, 1.0f, "%.1f");
+        ImGui.PopItemWidth();
 
         if (ImGui.Button("Launch"))
         {
             Launch();
         }
 
-        ImGui.End();
+
     }
 }

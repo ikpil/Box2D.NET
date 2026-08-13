@@ -133,17 +133,10 @@ public class SmoothManifold : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 290.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(180.0f, height));
-
-        ImGui.Begin("Smooth Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         {
             string[] shapeTypes = { "Circle", "Box" };
@@ -161,6 +154,9 @@ public class SmoothManifold : Sample
         }
 
         ImGui.SliderFloat("Round", ref m_round, 0.0f, 0.4f, "%.1f");
+
+        ImGui.PopItemWidth();
+
         ImGui.Checkbox("Show Ids", ref m_showIds);
         ImGui.Checkbox("Show Separation", ref m_showSeparation);
         ImGui.Checkbox("Show Anchors", ref m_showAnchors);
@@ -176,8 +172,6 @@ public class SmoothManifold : Sample
         ImGui.Text("mouse button 1: drag");
         ImGui.Text("mouse button 1 + shift: rotate");
 
-        ImGui.PopItemWidth();
-        ImGui.End();
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
