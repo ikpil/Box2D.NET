@@ -33,34 +33,7 @@ public class Sample : IDisposable
     public const int m_maxTasks = 512;
     public const int m_maxThreads = 64;
     public const int m_profileCapacity = 512;
-    public const int m_maxHudLines = 64;
     private const int MAX_SAMPLES = 256;
-
-    public struct HudLine
-    {
-        public B2HexColor color;
-        public string text;
-    }
-
-    private readonly struct ProfileRowDef
-    {
-        public readonly string name;
-        public readonly int indent;
-        public readonly Vector4 color;
-
-        public ProfileRowDef(string name, int indent, Vector4 color)
-        {
-            this.name = name;
-            this.indent = indent;
-            this.color = color;
-        }
-    }
-
-    private struct ScoredSample
-    {
-        public int index;
-        public int score;
-    }
 
 #if DEBUG
     public const bool m_isDebug = true;
@@ -81,8 +54,6 @@ public class Sample : IDisposable
     protected float m_mouseForceScale;
     public int m_stepCount;
 
-    public readonly HudLine[] m_hudLines;
-    public int m_hudLineCount;
     private float m_screenTextY;
     
     //
@@ -101,7 +72,7 @@ public class Sample : IDisposable
     private static int s_pickerHighlight;
     private static int s_previousPickerHighlight;
     private static readonly int[] s_filteredSamples = new int[MAX_SAMPLES];
-    private static readonly ScoredSample[] s_scoredSamples = new ScoredSample[MAX_SAMPLES];
+    private static readonly Scored[] s_scored = new Scored[MAX_SAMPLES];
     private static int s_filteredCount;
     private static bool s_pickerJustOpened;
     private static bool s_forcePickerScroll;
@@ -124,8 +95,6 @@ public class Sample : IDisposable
 
         m_stepCount = 0;
         m_didStep = false;
-        m_hudLines = new HudLine[m_maxHudLines];
-        m_hudLineCount = 0;
         m_screenTextY = 0.0f;
 
         m_mouseBodyId = b2_nullBodyId;
@@ -198,15 +167,42 @@ public class Sample : IDisposable
         c += c;
     }
 
-    public virtual void UpdateGui()
+    private readonly struct RowDef
     {
-        float fontSize = ImGui.GetFontSize();
+        public readonly string name;
+        public readonly int indent;
+        public readonly Vector4 color;
 
-        if (m_context.showDiagnostics == false)
+        public RowDef(string name, int indent, Vector4 color)
+        {
+            this.name = name;
+            this.indent = indent;
+            this.color = color;
+        }
+    }
+
+    private static float AddSegment(ImDrawListPtr dl, float availWidth, float t, float stepNow, Vector4 col, float x,
+        Vector2 cursor, float barHeight)
+    {
+        float w = availWidth * (t / stepNow);
+        if (w > 0.0f)
+        {
+            dl.AddRectFilled(new Vector2(x, cursor.Y), new Vector2(x + w, cursor.Y + barHeight),
+                ImGui.ColorConvertFloat4ToU32(col));
+            x += w;
+        }
+
+        return x;
+    }
+
+    public void DrawMetrics()
+    {
+        if (m_context.showMetrics == false)
         {
             return;
         }
 
+        float fontSize = ImGui.GetFontSize();
         float menuWidth = 14.0f * fontSize;
         float drawerHeight = 16.0f * fontSize;
         float drawerWidth = m_camera.width - menuWidth - 1.5f * fontSize;
@@ -214,11 +210,11 @@ public class Sample : IDisposable
         ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - drawerHeight - 0.5f * fontSize));
         ImGui.SetNextWindowSize(new Vector2(drawerWidth, drawerHeight));
 
-        ImGui.Begin("Diagnostics",
+        ImGui.Begin("Metrics",
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar);
 
-        if (ImGui.BeginTabBar("DiagnosticsTabs", ImGuiTabBarFlags.None))
+        if (ImGui.BeginTabBar("MetricsTabs", ImGuiTabBarFlags.None))
         {
             if (ImGui.BeginTabItem("Profile"))
             {
@@ -314,7 +310,7 @@ public class Sample : IDisposable
                 Vector4 colorOther = new Vector4(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
                 Vector4 colorDefault = new Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
 
-                ProfileRowDef[] rows =
+                RowDef[] rows =
                 [
                     new("step", 0, colorStep), new("pairs", 0, colorPairs), new("collide", 0, colorCollide),
                     new("solve", 0, colorSolve), new("setup", 1, colorDefault), new("constraints", 1, colorDefault),
@@ -371,21 +367,11 @@ public class Sample : IDisposable
                     Vector2 cursor = ImGui.GetCursorScreenPos();
                     float x = cursor.X;
 
-                    void AddSegment(float t, Vector4 color)
-                    {
-                        float width = availWidth * (t / stepNow);
-                        if (width > 0.0f)
-                        {
-                            drawList.AddRectFilled(new Vector2(x, cursor.Y), new Vector2(x + width, cursor.Y + barHeight), ImGui.ColorConvertFloat4ToU32(color));
-                            x += width;
-                        }
-                    }
-
-                    AddSegment(pairsT, colorPairs);
-                    AddSegment(collideT, colorCollide);
-                    AddSegment(solveT, colorSolve);
-                    AddSegment(sensorsT, colorSensors);
-                    AddSegment(otherT, colorOther);
+                    x = AddSegment(drawList, availWidth, pairsT, stepNow, colorPairs, x, cursor, barHeight);
+                    x = AddSegment(drawList, availWidth, collideT, stepNow, colorCollide, x, cursor, barHeight);
+                    x = AddSegment(drawList, availWidth, solveT, stepNow, colorSolve, x, cursor, barHeight);
+                    x = AddSegment(drawList, availWidth, sensorsT, stepNow, colorSensors, x, cursor, barHeight);
+                    x = AddSegment(drawList, availWidth, otherT, stepNow, colorOther, x, cursor, barHeight);
 
                     ImGui.Dummy(new Vector2(availWidth, barHeight));
                 }
@@ -432,7 +418,7 @@ public class Sample : IDisposable
                             continue;
                         }
 
-                        ProfileRowDef row = rows[r];
+                        RowDef row = rows[r];
                         float[] history = histories[r];
 
                         ImGui.TableNextRow();
@@ -579,7 +565,7 @@ public class Sample : IDisposable
                                 continue;
                             }
                             float segmentWidth = availableWidth * itemCount * invTotal;
-                            uint color = ImGui.ColorConvertFloat4ToU32(HexToColor(b2GetGraphColor(i)));
+                            uint color = ImGui.ColorConvertFloat4ToU32(MakeColor(b2GetGraphColor(i)));
                             drawList.AddRectFilled(new Vector2(x, cursor.Y), new Vector2(x + segmentWidth, cursor.Y + barHeight), color);
                             x += segmentWidth;
                         }
@@ -602,12 +588,6 @@ public class Sample : IDisposable
         }
 
         ImGui.End();
-    }
-
-    private static Vector4 HexToColor(B2HexColor color)
-    {
-        uint hex = (uint)color;
-        return new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
     }
 
     private void DrawProfilePlot(string label, int count, float maxValue, float maxTime, Vector2 size)
@@ -703,7 +683,6 @@ public class Sample : IDisposable
 
     public void ResetText()
     {
-        m_hudLineCount = 0;
         float fontSize = ImGui.GetFontSize();
         if (m_context.showUI)
         {
@@ -818,40 +797,9 @@ public class Sample : IDisposable
         m_mousePoint = p;
     }
 
-    public void DrawColoredTextLine(B2HexColor color, string text)
-    {
-        if (m_context.showUI == false || m_hudLineCount >= m_maxHudLines)
-        {
-            return;
-        }
-
-        m_hudLines[m_hudLineCount].color = color;
-        m_hudLines[m_hudLineCount].text = TruncateText(text);
-        m_hudLineCount += 1;
-    }
-
-
-    public void DrawTextLine(string text)
-    {
-        if (m_context.showUI == false || m_hudLineCount >= m_maxHudLines)
-        {
-            return;
-        }
-
-        m_hudLines[m_hudLineCount].color = B2HexColor.b2_colorWhite;
-        m_hudLines[m_hudLineCount].text = TruncateText(text);
-        m_hudLineCount += 1;
-    }
-
     public void DrawScreenTextLine(string text)
     {
         DrawScreenString(m_draw, 5.0f, m_screenTextY, B2HexColor.b2_colorWhite, TruncateText(text));
-        m_screenTextY += 1.5f * ImGui.GetFontSize();
-    }
-
-    public void DrawColoredScreenTextLine(B2HexColor color, string text)
-    {
-        DrawScreenString(m_draw, 5.0f, m_screenTextY, color, TruncateText(text));
         m_screenTextY += 1.5f * ImGui.GetFontSize();
     }
 
@@ -884,8 +832,8 @@ public class Sample : IDisposable
 
             if (m_context.showUI)
             {
-                DrawTextLine("****PAUSED****");
-                DrawTextLine("");
+                DrawScreenTextLine("****PAUSED****");
+                DrawScreenTextLine("");
             }
         }
 
@@ -941,13 +889,9 @@ public class Sample : IDisposable
 
     }
 
-    public virtual void BuildSamplePanel()
+    public virtual bool DrawControls()
     {
-    }
-
-    public void ShiftOrigin(B2Vec2 newOrigin)
-    {
-        // m_world.ShiftOrigin(newOrigin);
+        return false;
     }
 
 
@@ -1020,53 +964,7 @@ public class Sample : IDisposable
         return score;
     }
 
-    private static void RebuildSampleFilter(string query)
-    {
-        int sampleCount = Math.Min(SampleFactory.Shared.SampleCount, MAX_SAMPLES);
-        int count = 0;
-        for (int i = 0; i < sampleCount; ++i)
-        {
-            int nameScore = FuzzyScore(query, SampleFactory.Shared.GetName(i));
-            int categoryScore = FuzzyScore(query, SampleFactory.Shared.GetCategory(i));
-            int best = -1;
-            if (nameScore >= 0)
-            {
-                best = nameScore * 2; // name matches outweigh category-only matches
-            }
-            if (categoryScore >= 0 && categoryScore > best)
-            {
-                best = categoryScore;
-            }
-            if (best < 0)
-            {
-                continue;
-            }
-            s_scoredSamples[count].index = i;
-            s_scoredSamples[count].score = best;
-            ++count;
-        }
-
-        // Stable insertion sort by score desc; equal scores keep registry order
-        // (which main.cpp sorts by category then name).
-        for (int i = 1; i < count; ++i)
-        {
-            ScoredSample temporary = s_scoredSamples[i];
-            int j = i - 1;
-            while (j >= 0 && s_scoredSamples[j].score < temporary.score)
-            {
-                s_scoredSamples[j + 1] = s_scoredSamples[j];
-                --j;
-            }
-            s_scoredSamples[j + 1] = temporary;
-        }
-        for (int i = 0; i < count; ++i)
-        {
-            s_filteredSamples[i] = s_scoredSamples[i].index;
-        }
-        s_filteredCount = count;
-    }
-
-    private static void AddHelpRow(string key, string description)
+    private static void DrawRow(string key, string description)
     {
         ImGui.TableNextRow();
         ImGui.TableSetColumnIndex(0);
@@ -1097,17 +995,9 @@ public class Sample : IDisposable
         }
     }
 
-    public static void UpdateSampleUI(SampleContext context)
+    private static void DrawMenuBar(SampleContext context)
     {
-        int maxWorkers = B2_MAX_WORKERS;
-
         float fontSize = ImGui.GetFontSize();
-        float menuWidth = 14.0f * fontSize;
-
-        if (context.showUI == false)
-        {
-            return;
-        }
 
         if (ImGui.BeginMainMenuBar())
         {
@@ -1200,7 +1090,7 @@ public class Sample : IDisposable
                     ImGui.EndMenu();
                 }
                 ImGui.Separator();
-                ImGui.MenuItem("Diagnostics", "M", ref context.showDiagnostics);
+                ImGui.MenuItem("Diagnostics", "M", ref context.showMetrics);
                 ImGui.Separator();
                 if (ImGui.BeginMenu("Scale"))
                 {
@@ -1252,6 +1142,7 @@ public class Sample : IDisposable
 
             ImGui.EndMainMenuBar();
 
+            // Draw a dark border along the bottom of the menu
             {
                 float menuBarBottom = ImGui.GetFrameHeight();
                 uint borderColor = ImGui.GetColorU32(ImGuiCol.Border);
@@ -1272,27 +1163,27 @@ public class Sample : IDisposable
                     ImGui.SeparatorText("Keyboard");
                     if (ImGui.BeginTable("keys", 2, ImGuiTableFlags.SizingFixedFit))
                     {
-                        AddHelpRow("Tab", "Show / hide UI");
-                        AddHelpRow("M", "Show / hide diagnostics");
-                        AddHelpRow("P", "Pause / resume");
-                        AddHelpRow("O", "Single step");
-                        AddHelpRow("R", "Restart sample");
-                        AddHelpRow("[  ]", "Previous / next sample");
-                        AddHelpRow("Ctrl+O", "Open sample picker");
-                        AddHelpRow("Arrows", "Pan camera");
-                        AddHelpRow("Ctrl+Arrows", "Shift origin");
-                        AddHelpRow("Z  X", "Zoom out / in");
-                        AddHelpRow("Home", "Reset camera");
-                        AddHelpRow("Esc", "Quit");
+                        DrawRow("Tab", "Show / hide UI");
+                        DrawRow("M", "Show / hide diagnostics");
+                        DrawRow("P", "Pause / resume");
+                        DrawRow("O", "Single step");
+                        DrawRow("R", "Restart sample");
+                        DrawRow("[  ]", "Previous / next sample");
+                        DrawRow("Ctrl+O", "Open sample picker");
+                        DrawRow("Arrows", "Pan camera");
+                        DrawRow("Ctrl+Arrows", "Shift origin");
+                        DrawRow("Z  X", "Zoom out / in");
+                        DrawRow("Home", "Reset camera");
+                        DrawRow("Esc", "Quit");
                         ImGui.EndTable();
                     }
 
                     ImGui.SeparatorText("Mouse");
                     if (ImGui.BeginTable("mouse", 2, ImGuiTableFlags.SizingFixedFit))
                     {
-                        AddHelpRow("Left drag", "Move bodies (mouse joint)");
-                        AddHelpRow("Right drag", "Pan camera");
-                        AddHelpRow("Scroll wheel", "Zoom");
+                        DrawRow("Left drag", "Move bodies (mouse joint)");
+                        DrawRow("Right drag", "Pan camera");
+                        DrawRow("Scroll wheel", "Zoom");
                         ImGui.EndTable();
                     }
                 }
@@ -1317,90 +1208,172 @@ public class Sample : IDisposable
                 ImGui.End();
             }
         }
+    }
+
+    private struct Scored
+    {
+        public int idx;
+        public int score;
+    }
+
+    private static void Rebuild(string query)
+    {
+        int sampleCount = Math.Min(SampleFactory.Shared.SampleCount, MAX_SAMPLES);
+        int count = 0;
+        for (int i = 0; i < sampleCount; ++i)
+        {
+            int nameScore = FuzzyScore(query, SampleFactory.Shared.GetName(i));
+            int categoryScore = FuzzyScore(query, SampleFactory.Shared.GetCategory(i));
+            int best = -1;
+            if (nameScore >= 0)
+            {
+                best = nameScore * 2; // name matches outweigh category-only matches
+            }
+            if (categoryScore >= 0 && categoryScore > best)
+            {
+                best = categoryScore;
+            }
+            if (best < 0)
+            {
+                continue;
+            }
+            s_scored[count].idx = i;
+            s_scored[count].score = best;
+            count += 1;
+        }
+
+        // Stable insertion sort by score desc. Equal scores keep registry order
+        // (which main.cpp sorts by category then name).
+        for (int i = 1; i < count; ++i)
+        {
+            Scored temporary = s_scored[i];
+            int j = i - 1;
+            while (j >= 0 && s_scored[j].score < temporary.score)
+            {
+                s_scored[j + 1] = s_scored[j];
+                --j;
+            }
+            s_scored[j + 1] = temporary;
+        }
+
+        for (int i = 0; i < count; ++i)
+        {
+            s_filteredSamples[i] = s_scored[i].idx;
+        }
+        s_filteredCount = count;
+    }
+
+    private static void DrawSamplePicker(SampleContext context)
+    {
+        float fontSize = ImGui.GetFontSize();
 
         // Fuzzy sample picker (Ctrl+O). Opens a transient popup; type to filter by
         // name or category, Up/Down to navigate, Enter to select, Esc / click-outside to dismiss.
+        if (context.openSamplePicker)
         {
-            if (context.openSamplePicker)
+            ImGui.OpenPopup("##sample_picker");
+            context.openSamplePicker = false;
+            s_pickerQuery = string.Empty;
+            s_previousPickerQuery = string.Empty;
+            s_pickerHighlight = 0;
+            s_previousPickerHighlight = 0;
+            Rebuild(s_pickerQuery);
+            s_pickerJustOpened = true;
+            s_forcePickerScroll = true;
+        }
+
+        ImGui.SetNextWindowPos(new Vector2(context.camera.width * 0.5f, context.camera.height * 0.35f),
+            ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+        ImGui.SetNextWindowSize(new Vector2(32.0f * fontSize, 0.0f), ImGuiCond.Appearing);
+
+        if (ImGui.BeginPopup("##sample_picker",
+                ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoSavedSettings))
+        {
+            if (s_pickerJustOpened)
             {
-                ImGui.OpenPopup("##sample_picker");
-                context.openSamplePicker = false;
-                s_pickerQuery = string.Empty;
-                s_previousPickerQuery = string.Empty;
+                ImGui.SetKeyboardFocusHere();
+                s_pickerJustOpened = false;
+            }
+
+            ImGui.PushItemWidth(-1.0f);
+            ImGui.InputTextWithHint("##q", "Search by name or category...", ref s_pickerQuery, 64);
+            ImGui.PopItemWidth();
+
+            if (s_pickerQuery != s_previousPickerQuery)
+            {
+                Rebuild(s_pickerQuery);
+                s_previousPickerQuery = s_pickerQuery;
                 s_pickerHighlight = 0;
-                s_previousPickerHighlight = 0;
-                RebuildSampleFilter(s_pickerQuery);
-                s_pickerJustOpened = true;
                 s_forcePickerScroll = true;
             }
 
-            ImGui.SetNextWindowPos(new Vector2(context.camera.width * 0.5f, context.camera.height * 0.35f),
-                ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
-            ImGui.SetNextWindowSize(new Vector2(32.0f * fontSize, 0.0f), ImGuiCond.Appearing);
-
-            if (ImGui.BeginPopup("##sample_picker",
-                    ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoSavedSettings))
+            if (s_filteredCount > 0)
             {
-                if (s_pickerJustOpened)
+                if (ImGui.IsKeyPressed(ImGuiKey.DownArrow, true))
                 {
-                    ImGui.SetKeyboardFocusHere();
-                    s_pickerJustOpened = false;
+                    s_pickerHighlight = (s_pickerHighlight + 1) % s_filteredCount;
                 }
-
-                ImGui.PushItemWidth(-1.0f);
-                ImGui.InputTextWithHint("##q", "Search by name or category...", ref s_pickerQuery, 64);
-                ImGui.PopItemWidth();
-
-                if (s_pickerQuery != s_previousPickerQuery)
+                if (ImGui.IsKeyPressed(ImGuiKey.UpArrow, true))
                 {
-                    RebuildSampleFilter(s_pickerQuery);
-                    s_previousPickerQuery = s_pickerQuery;
-                    s_pickerHighlight = 0;
-                    s_forcePickerScroll = true;
+                    s_pickerHighlight = (s_pickerHighlight + s_filteredCount - 1) % s_filteredCount;
                 }
-
-                if (s_filteredCount > 0)
-                {
-                    if (ImGui.IsKeyPressed(ImGuiKey.DownArrow, true))
-                    {
-                        s_pickerHighlight = (s_pickerHighlight + 1) % s_filteredCount;
-                    }
-                    if (ImGui.IsKeyPressed(ImGuiKey.UpArrow, true))
-                    {
-                        s_pickerHighlight = (s_pickerHighlight + s_filteredCount - 1) % s_filteredCount;
-                    }
-                }
-                bool commit = ImGui.IsKeyPressed(ImGuiKey.Enter, false) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, false);
-
-                ImGui.BeginChild("##results", new Vector2(0.0f, 14.0f * fontSize), ImGuiChildFlags.Border);
-                for (int row = 0; row < s_filteredCount; ++row)
-                {
-                    int i = s_filteredSamples[row];
-                    string label = $"{SampleFactory.Shared.GetCategory(i)}  >  {SampleFactory.Shared.GetName(i)}";
-                    bool selected = row == s_pickerHighlight;
-                    if (ImGui.Selectable(label, selected))
-                    {
-                        s_pickerHighlight = row;
-                        commit = true;
-                    }
-                    if (selected && (s_forcePickerScroll || s_pickerHighlight != s_previousPickerHighlight))
-                    {
-                        ImGui.SetScrollHereY();
-                    }
-                }
-                ImGui.EndChild();
-                s_previousPickerHighlight = s_pickerHighlight;
-                s_forcePickerScroll = false;
-
-                if (commit && s_filteredCount > 0)
-                {
-                    SelectSample(context, s_filteredSamples[s_pickerHighlight], false);
-                    ImGui.CloseCurrentPopup();
-                }
-
-                ImGui.EndPopup();
             }
+            bool commit = ImGui.IsKeyPressed(ImGuiKey.Enter, false) || ImGui.IsKeyPressed(ImGuiKey.KeypadEnter, false);
+
+            ImGui.BeginChild("##results", new Vector2(0.0f, 14.0f * fontSize), ImGuiChildFlags.Border);
+            for (int row = 0; row < s_filteredCount; ++row)
+            {
+                int i = s_filteredSamples[row];
+                string label = $"{SampleFactory.Shared.GetCategory(i)}  >  {SampleFactory.Shared.GetName(i)}";
+                bool selected = row == s_pickerHighlight;
+                if (ImGui.Selectable(label, selected))
+                {
+                    s_pickerHighlight = row;
+                    commit = true;
+                }
+                if (selected && (s_forcePickerScroll || s_pickerHighlight != s_previousPickerHighlight))
+                {
+                    ImGui.SetScrollHereY();
+                }
+            }
+            ImGui.EndChild();
+            s_previousPickerHighlight = s_pickerHighlight;
+            s_forcePickerScroll = false;
+
+            if (commit && s_filteredCount > 0)
+            {
+                SelectSample(context, s_filteredSamples[s_pickerHighlight], false);
+                ImGui.CloseCurrentPopup();
+            }
+
+            ImGui.EndPopup();
         }
+    }
+
+    // When UI is hidden draw a minimal in world hud
+    private static void DrawHud(SampleContext context, float frameTime)
+    {
+        string category = SampleFactory.Shared.GetCategory(context.sampleIndex);
+        string name = SampleFactory.Shared.GetName(context.sampleIndex);
+        float fontSize = ImGui.GetFontSize();
+
+        DrawScreenString(context.draw, 5.0f, 1.5f * fontSize, B2HexColor.b2_colorYellow, $"{category} : {name}");
+        DrawScreenString(context.draw, 5.0f, context.camera.height - 0.5f * fontSize, B2HexColor.b2_colorSeaGreen,
+            FormattableString.Invariant($"{1000.0f * frameTime:0.0} ms  step {context.sample.m_stepCount}"));
+    }
+
+    private static Vector4 MakeColor(B2HexColor color)
+    {
+        uint hex = (uint)color;
+        return new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
+    }
+
+    private static void DrawRightPanel(SampleContext context, float frameTime)
+    {
+        string name = SampleFactory.Shared.GetName(context.sampleIndex);
+        string category = SampleFactory.Shared.GetCategory(context.sampleIndex);
+        float fontSize = ImGui.GetFontSize();
+        float menuWidth = 14.0f * fontSize;
 
         float menuBarHeight = ImGui.GetFrameHeight();
 
@@ -1412,27 +1385,23 @@ public class Sample : IDisposable
             ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse |
             ImGuiWindowFlags.NoTitleBar);
 
-        for (int i = 0; i < context.sample.m_hudLineCount; ++i)
-        {
-            HudLine line = context.sample.m_hudLines[i];
-            if (string.IsNullOrEmpty(line.text))
-            {
-                ImGui.Separator();
-                continue;
-            }
-            ImGui.PushStyleColor(ImGuiCol.Text, HexToColor(line.color));
-            ImGui.TextUnformatted(line.text);
-            ImGui.PopStyleColor();
-        }
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorGoldenRod), name);
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorLightGray), category);
+        ImGui.Separator();
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen), FormattableString.Invariant($"{1000.0f * frameTime:0.0} ms"));
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen), $"step {context.sample.m_stepCount}");
+        ImGui.Separator();
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen),
+            FormattableString.Invariant($"cam ({context.camera.center.X:0.0}, {context.camera.center.Y:0.0})"));
+        ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen),
+            FormattableString.Invariant($"zoom {context.camera.zoom:0.00}"));
 
-        if (context.sample.m_hudLineCount > 0)
+        ImGui.Separator();
+
+        if (context.sample.DrawControls())
         {
             ImGui.Separator();
         }
-
-        context.sample.BuildSamplePanel();
-
-        ImGui.Separator();
 
         if (ImGui.CollapsingHeader("Solver", ImGuiTreeNodeFlags.DefaultOpen))
         {
@@ -1440,9 +1409,9 @@ public class Sample : IDisposable
             ImGui.SliderInt("Sub-steps", ref context.subStepCount, 1, 32);
             ImGui.SliderFloat("Hertz", ref context.hertz, 5.0f, 240.0f, "%.0f hz");
 
-            if (ImGui.SliderInt("Workers", ref context.workerCount, 1, maxWorkers))
+            if (ImGui.SliderInt("Workers", ref context.workerCount, 1, B2_MAX_WORKERS))
             {
-                context.workerCount = b2ClampInt(context.workerCount, 1, maxWorkers);
+                context.workerCount = b2ClampInt(context.workerCount, 1, B2_MAX_WORKERS);
                 SelectSample(context, context.sampleIndex, true);
             }
 
@@ -1460,8 +1429,23 @@ public class Sample : IDisposable
         }
 
         ImGui.End();
+    }
 
-        context.sample.UpdateGui();
+    // Entry point for all UI drawing. This should not be a member of Sample because
+    // this can delete the current sample.
+    public static void DrawUI(SampleContext context, float frameTime)
+    {
+        if (context.showUI == false)
+        {
+            // Minimal hud
+            DrawHud(context, frameTime);
+            return;
+        }
+
+        DrawMenuBar(context);
+        DrawSamplePicker(context);
+        DrawRightPanel(context, frameTime);
+        context.sample.DrawMetrics();
     }
 
 

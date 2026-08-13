@@ -142,7 +142,7 @@ public class Cliff : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -153,5 +153,7 @@ public class Cliff : Sample
         }
 
 
+
+        return true;
     }
 }

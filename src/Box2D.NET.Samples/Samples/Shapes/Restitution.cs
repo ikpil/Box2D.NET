@@ -104,7 +104,7 @@ public class Restitution : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         bool changed = false;
@@ -122,5 +122,7 @@ public class Restitution : Sample
         {
             CreateBodies();
         }
+
+        return true;
     }
 }

@@ -144,11 +144,13 @@ public class ContactEvent : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("force", ref m_force, 100.0f, 500.0f, "%.1f");
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()

@@ -154,12 +154,14 @@ public class Platform : Sample
         return false;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("force", ref m_force, 0.0f, 50.0f, "%.1f");
         ImGui.SliderFloat("impulse", ref m_impulse, 0.0f, 50.0f, "%.1f");
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()
@@ -254,6 +256,6 @@ public class Platform : Sample
         DrawScreenTextLine("Movement: A/D/Space");
 
 
-        DrawTextLine($"Can jump = {m_canJump}");
+        DrawScreenTextLine($"Can jump = {m_canJump}");
     }
 }

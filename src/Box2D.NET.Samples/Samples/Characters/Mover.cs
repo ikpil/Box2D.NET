@@ -459,7 +459,7 @@ public class Mover : Sample
         m_velocity = b2ClipVector(m_velocity, m_planes, m_planeCount);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.TextUnformatted("Mover");
         ImGui.Spacing();
@@ -489,6 +489,8 @@ public class Mover : Sample
         ImGui.RadioButton("Segment", ref m_pogoShape, (int)PogoShape.PogoSegment);
 
         ImGui.Checkbox("Lock Camera", ref m_lockCamera);
+
+        return true;
     }
 
     static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)
@@ -633,9 +635,9 @@ public class Mover : Sample
         }
 
         B2Vec2 p = m_transform.p;
-        DrawTextLine($"position {p.X:F2} {p.Y:F2}");
-        DrawTextLine($"velocity {m_velocity.X:F2}, {m_velocity.Y:F2}");
-        DrawTextLine($"iterations {m_totalIterations}");
+        DrawScreenTextLine($"position {p.X:F2} {p.Y:F2}");
+        DrawScreenTextLine($"velocity {m_velocity.X:F2}, {m_velocity.Y:F2}");
+        DrawScreenTextLine($"iterations {m_totalIterations}");
 
         if (m_lockCamera)
         {

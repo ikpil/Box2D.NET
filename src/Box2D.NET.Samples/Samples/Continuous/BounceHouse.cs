@@ -125,7 +125,7 @@ public class BounceHouse : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
@@ -143,6 +143,8 @@ public class BounceHouse : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()

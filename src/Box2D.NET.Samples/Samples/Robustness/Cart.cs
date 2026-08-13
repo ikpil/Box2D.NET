@@ -141,7 +141,7 @@ public class Cart : Sample
         b2Joint_SetConstraintTuning(m_jointId2, m_constraintHertz, m_constraintDampingRatio);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -178,5 +178,7 @@ public class Cart : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 }

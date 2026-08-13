@@ -167,7 +167,7 @@ public class LargeWorld : Sample
         m_followCar = false;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("speed", ref m_speed, -400.0f, 400.0f, "%.0f");
@@ -182,6 +182,8 @@ public class LargeWorld : Sample
 
         ImGui.Text($"world size = {m_gridSize * m_gridCount / 1000.0f} kilometers");
 
+
+        return true;
     }
 
     public override void Step()

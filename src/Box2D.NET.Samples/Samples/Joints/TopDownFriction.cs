@@ -109,7 +109,7 @@ public class TopDownFriction : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -126,5 +126,7 @@ public class TopDownFriction : Sample
         }
 
 
+
+        return true;
     }
 }

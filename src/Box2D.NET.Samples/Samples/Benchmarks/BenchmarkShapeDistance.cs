@@ -98,11 +98,13 @@ public class BenchmarkShapeDistance : Sample
         m_outputs = null;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderInt("draw index", ref m_drawIndex, 0, m_count - 1);
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()
@@ -139,9 +141,9 @@ public class BenchmarkShapeDistance : Sample
 
         if (m_context.pause == false || m_context.singleStep == true)
         {
-            DrawTextLine($"count = {m_count}");
+            DrawScreenTextLine($"count = {m_count}");
             DrawScreenTextLine($"min ms = {FormatFloat(m_minMilliseconds)}, ave us = {FormatFloat(1000.0f * m_minMilliseconds / (float)m_count)}");
-            DrawTextLine($"average iterations = {totalIterations / (float)m_count}");
+            DrawScreenTextLine($"average iterations = {totalIterations / (float)m_count}");
         }
 
         B2Transform xfA = m_transformAs[m_drawIndex];
@@ -153,6 +155,6 @@ public class BenchmarkShapeDistance : Sample
         DrawPoint(m_draw, output.pointA, 10.0f, B2HexColor.b2_colorWhite);
         DrawPoint(m_draw, output.pointB, 10.0f, B2HexColor.b2_colorWhite);
         DrawLine(m_draw, output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
-        DrawTextLine($"distance = {output.distance}");
+        DrawScreenTextLine($"distance = {output.distance}");
     }
 }

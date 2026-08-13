@@ -108,7 +108,7 @@ public class ModifyGeometry : Sample
         b2Body_ApplyMassFromShapes(bodyId);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -160,5 +160,7 @@ public class ModifyGeometry : Sample
         {
             b2Body_SetType(bodyId, B2BodyType.b2_dynamicBody);
         }
+
+        return true;
     }
 }

@@ -261,7 +261,7 @@ public class SensorFunnel : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -278,6 +278,8 @@ public class SensorFunnel : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()

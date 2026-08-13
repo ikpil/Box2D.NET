@@ -111,7 +111,7 @@ public class SkinnyBox : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -125,6 +125,8 @@ public class SkinnyBox : Sample
         ImGui.Checkbox("Auto Test", ref m_autoTest);
 
 
+
+        return true;
     }
 
     public override void Step()

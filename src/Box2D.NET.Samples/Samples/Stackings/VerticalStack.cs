@@ -242,7 +242,7 @@ public class VerticalStack : Sample
     }
 
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         
@@ -286,5 +286,7 @@ public class VerticalStack : Sample
         }
 
 
+
+        return true;
     }
 }

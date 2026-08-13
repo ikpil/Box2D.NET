@@ -196,7 +196,7 @@ public class ConvexHull : Sample
 
         if (m_valid == false)
         {
-            DrawTextLine($"generation = {m_generation}, FAILED");
+            DrawScreenTextLine($"generation = {m_generation}, FAILED");
             
         }
         else
@@ -207,7 +207,7 @@ public class ConvexHull : Sample
 
         if (m_milliseconds > 0.0f)
         {
-            DrawTextLine($"milliseconds = {m_milliseconds:G}");
+            DrawScreenTextLine($"milliseconds = {m_milliseconds:G}");
             
         }
 

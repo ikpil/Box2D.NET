@@ -188,7 +188,7 @@ public class DynamicTree : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -257,6 +257,8 @@ public class DynamicTree : Sample
         {
             BuildTree();
         }
+
+        return true;
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
@@ -448,19 +450,19 @@ public class DynamicTree : Sample
         {
             case UpdateType.Update_Incremental:
             {
-                DrawTextLine($"incremental : {_ms:F3} ms");
+                DrawScreenTextLine($"incremental : {_ms:F3} ms");
             }
                 break;
 
             case UpdateType.Update_FullRebuild:
             {
-                DrawTextLine($"full build {_boxCount} : {_ms:F3} ms");
+                DrawScreenTextLine($"full build {_boxCount} : {_ms:F3} ms");
             }
                 break;
 
             case UpdateType.Update_PartialRebuild:
             {
-                DrawTextLine($"partial rebuild {_boxCount} : {_ms:F3} ms");
+                DrawScreenTextLine($"partial rebuild {_boxCount} : {_ms:F3} ms");
             }
                 break;
 

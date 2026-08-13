@@ -185,7 +185,7 @@ public class ChainShape : Sample
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
@@ -213,5 +213,7 @@ public class ChainShape : Sample
         {
             Launch();
         }
+
+        return true;
     }
 }

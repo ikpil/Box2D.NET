@@ -171,7 +171,7 @@ public class Sleep : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -212,6 +212,8 @@ public class Sleep : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()
@@ -260,7 +262,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            DrawTextLine($"sensor touch {i} = {m_sensorTouching[i]}");
+            DrawScreenTextLine($"sensor touch {i} = {m_sensorTouching[i]}");
         }
     }
 }

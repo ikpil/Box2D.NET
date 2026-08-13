@@ -133,7 +133,7 @@ public class SmoothManifold : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -172,6 +172,8 @@ public class SmoothManifold : Sample
         ImGui.Text("mouse button 1: drag");
         ImGui.Text("mouse button 1 + shift: rotate");
 
+
+        return true;
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)

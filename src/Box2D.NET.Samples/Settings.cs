@@ -45,7 +45,7 @@ public class Settings
         setting.sampleIndex = context.sampleIndex;
         setting.drawShapes = context.debugDraw.drawShapes;
         setting.drawJoints = context.debugDraw.drawJoints;
-        setting.showDiagnostics = context.showDiagnostics;
+        setting.showDiagnostics = context.showMetrics;
 
         return setting;
     }

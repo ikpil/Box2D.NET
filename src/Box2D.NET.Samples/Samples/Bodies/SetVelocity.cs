@@ -61,6 +61,6 @@ public class SetVelocity : Sample
     {
         base.Draw();
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawTextLine($"(x, y) = {position.X:G}, {position.Y:G})");
+        DrawScreenTextLine($"(x, y) = {position.X:G}, {position.Y:G})");
     }
 }

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -151,7 +151,7 @@ public class FootSensor : Sample
             DrawPoint(m_draw, point, 10.0f, B2HexColor.b2_colorWhite);
         }
 
-        DrawTextLine($"count == {m_overlapCount}");
+        DrawScreenTextLine($"count == {m_overlapCount}");
         
     }
 }

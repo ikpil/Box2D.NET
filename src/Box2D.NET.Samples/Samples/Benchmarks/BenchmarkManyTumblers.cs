@@ -138,7 +138,7 @@ public class BenchmarkManyTumblers : Sample
         m_bodyIndex = 0;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -163,6 +163,8 @@ public class BenchmarkManyTumblers : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 
     public override void Step()

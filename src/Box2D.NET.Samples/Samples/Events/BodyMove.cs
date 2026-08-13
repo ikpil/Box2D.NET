@@ -177,7 +177,7 @@ public class BodyMove : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -194,6 +194,8 @@ public class BodyMove : Sample
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("Magnitude", ref m_explosionMagnitude, -20.0f, 20.0f, "%.1f");
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Draw()
@@ -202,6 +204,6 @@ public class BodyMove : Sample
 
         DrawCircle(m_draw, m_explosionPosition, m_explosionRadius, B2HexColor.b2_colorAzure);
 
-        DrawTextLine($"sleep count: {m_sleepCount}");
+        DrawScreenTextLine($"sleep count: {m_sleepCount}");
     }
 }

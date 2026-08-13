@@ -170,7 +170,7 @@ public class SensorHits : Sample
         m_shapeId = b2CreateCircleShape(m_bodyId, shapeDef, circle);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -182,6 +182,8 @@ public class SensorHits : Sample
         }
 
 
+
+        return true;
     }
 
     void CollectTransforms(B2ShapeId sensorShapeId)
@@ -246,7 +248,7 @@ public class SensorHits : Sample
             DrawTransform(m_draw, m_transforms[i], 1.0f);
         }
 
-        DrawTextLine($"begin touch count = {m_beginCount}");
-        DrawTextLine($"end touch count = {m_endCount}");
+        DrawScreenTextLine($"begin touch count = {m_beginCount}");
+        DrawScreenTextLine($"end touch count = {m_endCount}");
     }
 }

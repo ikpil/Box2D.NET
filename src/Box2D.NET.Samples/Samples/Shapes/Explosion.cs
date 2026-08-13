@@ -80,7 +80,7 @@ public class Explosion : Sample
         m_impulse = 10.0f;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -99,6 +99,8 @@ public class Explosion : Sample
         ImGui.SliderFloat("falloff", ref m_falloff, 0.0f, 20.0f, "%.1f");
         ImGui.SliderFloat("impulse", ref m_impulse, -20.0f, 20.0f, "%.1f");
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()
@@ -124,7 +126,7 @@ public class Explosion : Sample
     {
         base.Draw();
 
-        DrawTextLine($"reference angle = {m_referenceAngle:g}");
+        DrawScreenTextLine($"reference angle = {m_referenceAngle:g}");
 
         DrawCircle(m_draw, b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
         DrawCircle(m_draw, b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);

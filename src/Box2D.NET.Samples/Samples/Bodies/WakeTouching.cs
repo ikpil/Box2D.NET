@@ -64,7 +64,7 @@ public class WakeTouching : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -74,5 +74,7 @@ public class WakeTouching : Sample
         }
 
 
+
+        return true;
     }
 }

@@ -194,7 +194,7 @@ public class CompoundShapes : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -206,6 +206,8 @@ public class CompoundShapes : Sample
         ImGui.Checkbox("Body AABBs", ref m_drawBodyAABBs);
 
 
+
+        return true;
     }
 
     public override void Draw()

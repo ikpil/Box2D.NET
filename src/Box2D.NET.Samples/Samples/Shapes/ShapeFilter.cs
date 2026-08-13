@@ -88,7 +88,7 @@ public class ShapeFilter : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -124,6 +124,8 @@ public class ShapeFilter : Sample
 
                 b2Shape_SetFilter(m_shape1Id, filter1);
             }
+
+            return true;
         }
 
         ImGui.Separator();
@@ -197,8 +199,6 @@ public class ShapeFilter : Sample
                 b2Shape_SetFilter(m_shape3Id, filter3);
             }
         }
-
-
     }
 
     public override void Draw()

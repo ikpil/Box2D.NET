@@ -46,6 +46,6 @@ public class BenchmarkSpinner : Sample
     {
         base.Draw();
         
-        //DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
+        // DrawScreenTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }
 }

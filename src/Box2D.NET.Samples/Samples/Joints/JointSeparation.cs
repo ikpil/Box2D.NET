@@ -176,7 +176,7 @@ public class JointSeparation : Sample
         m_jointDampingRatio = 2.0f;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         B2Vec2 gravity = b2World_GetGravity(m_worldId);
@@ -213,6 +213,8 @@ public class JointSeparation : Sample
                 b2Body_ApplyLinearImpulse(m_bodyIds[i], new B2Vec2(m_impulse, -m_impulse), p, true);
             }
         }
+
+        return true;
     }
 
     public override void Draw()

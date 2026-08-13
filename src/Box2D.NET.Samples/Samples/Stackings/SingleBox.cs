@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -56,6 +56,6 @@ public class SingleBox : Sample
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawTextLine($"(x, y) = ({position.X:G2}, {position.Y:G2})");
+        DrawScreenTextLine($"(x, y) = ({position.X:G2}, {position.Y:G2})");
     }
 }

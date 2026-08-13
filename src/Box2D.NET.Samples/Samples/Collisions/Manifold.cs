@@ -86,7 +86,7 @@ public class Manifold : Sample
         m_wedge = b2ComputeHull(points, 3);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -125,6 +125,8 @@ public class Manifold : Sample
         ImGui.Text("mouse button 1 + shift: rotate");
 
 
+
+        return true;
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
