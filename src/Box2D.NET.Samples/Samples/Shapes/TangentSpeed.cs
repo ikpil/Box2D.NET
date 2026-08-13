@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -114,15 +114,10 @@ public class TangentSpeed : Sample
         m_bodyIds.Clear();
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 80.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(260.0f, height));
 
-        ImGui.Begin("Ball Parameters", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(140.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Friction", ref m_friction, 0.0f, 2.0f, "%.2f"))
         {
@@ -133,8 +128,7 @@ public class TangentSpeed : Sample
         {
             Reset();
         }
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()

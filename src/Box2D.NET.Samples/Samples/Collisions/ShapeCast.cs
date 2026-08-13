@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -297,15 +297,9 @@ public class ShapeCast : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 300.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Shape Distance", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "point", "segment", "triangle", "box" };
         int shapeType = (int)m_typeA;
         if (ImGui.Combo("shape A", ref shapeType, shapeTypes, shapeTypes.Length))
@@ -341,12 +335,12 @@ public class ShapeCast : Sample
             m_transform.q = b2MakeRot(m_angle);
         }
 
+        ImGui.PopItemWidth();
+
         ImGui.Separator();
 
         ImGui.Checkbox("show indices", ref m_showIndices);
         ImGui.Checkbox("encroach", ref m_encroach);
-
-        ImGui.End();
     }
 
     public override void Step()
@@ -387,7 +381,7 @@ public class ShapeCast : Sample
     {
         base.Draw();
 
-        DrawTextLine($"hit = {output.hit}, iterations = {output.iterations}, fraction = {output.fraction}, distance = {_distanceOutput.distance}");
+        DrawScreenTextLine($"hit = {output.hit}, iterations = {output.iterations}, fraction = {output.fraction}, distance = {_distanceOutput.distance}");
 
         DrawShape(m_typeA, b2Transform_identity, m_radiusA, B2HexColor.b2_colorCyan);
         DrawShape(m_typeB, m_transform, m_radiusB, B2HexColor.b2_colorLightGreen);
@@ -425,9 +419,9 @@ public class ShapeCast : Sample
             }
         }
 
-        DrawTextLine("mouse button 1: drag");
-        DrawTextLine("mouse button 1 + shift: rotate");
-        DrawTextLine("mouse button 1 + control: sweep");
-        DrawTextLine($"distance = {_distanceOutput.distance:F2}, iterations = {output.iterations}");
+        DrawScreenTextLine("mouse button 1: drag");
+        DrawScreenTextLine("mouse button 1 + shift: rotate");
+        DrawScreenTextLine("mouse button 1 + control: sweep");
+        DrawScreenTextLine($"distance = {_distanceOutput.distance:F2}, iterations = {output.iterations}");
     }
 }

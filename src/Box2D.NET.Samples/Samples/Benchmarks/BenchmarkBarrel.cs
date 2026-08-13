@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -302,16 +302,9 @@ public class BenchmarkBarrel : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 6.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(15.0f * fontSize, height));
-
-        ImGui.Begin("Benchmark: Barrel", ImGuiWindowFlags.NoResize);
 
         bool changed = false;
         string[] shapeTypes = ["Circle", "Capsule", "Mix", "Compound", "Human"];
@@ -333,6 +326,6 @@ public class BenchmarkBarrel : Sample
             CreateScene();
         }
 
-        ImGui.End();
+
     }
 }

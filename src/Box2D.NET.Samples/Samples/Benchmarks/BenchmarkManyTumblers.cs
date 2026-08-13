@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -138,16 +138,10 @@ public class BenchmarkManyTumblers : Sample
         m_bodyIndex = 0;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 8.5f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(15.5f * fontSize, height));
-        ImGui.Begin("Benchmark: Many Tumblers", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(8.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         bool changed = false;
         changed = changed || ImGui.SliderInt("Row Count", ref m_rowCount, 1, 32);
@@ -168,7 +162,7 @@ public class BenchmarkManyTumblers : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 
     public override void Step()

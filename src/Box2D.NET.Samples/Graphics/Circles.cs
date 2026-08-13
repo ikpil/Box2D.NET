@@ -9,6 +9,7 @@ using Box2D.NET.Samples.Helpers;
 using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -19,7 +20,7 @@ public static class Circles
     public static CircleRender CreateCircles(GL gl)
     {
         CircleRender render = new CircleRender();
-        render.programId = gl.CreateProgramFromFiles("data/circle.vs", "data/circle.fs");
+        render.programId = gl.CreateProgramFromStrings(k_circle_vs, k_circle_fs);
         render.projectionUniform = gl.GetUniformLocation(render.programId, "projectionMatrix");
         render.pixelScaleUniform = gl.GetUniformLocation(render.programId, "pixelScale");
         uint vertexAttribute = 0;

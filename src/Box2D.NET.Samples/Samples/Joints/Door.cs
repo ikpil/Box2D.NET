@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -91,14 +91,9 @@ public class Door : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 220.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
 
-        ImGui.Begin("Door", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Button("impulse"))
         {
@@ -107,12 +102,9 @@ public class Door : Sample
             m_translationError = 0.0f;
         }
 
-        ImGui.SliderFloat("magnitude", ref m_impulse, 1000.0f, 100000.0f, "%.0f");
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
-        if (ImGui.Checkbox("limit", ref m_enableLimit))
-        {
-            b2RevoluteJoint_EnableLimit(m_jointId, m_enableLimit);
-        }
+        ImGui.SliderFloat("magnitude", ref m_impulse, 1000.0f, 100000.0f, "%.0f");
 
         if (ImGui.SliderFloat("hertz", ref m_jointHertz, 15.0f, 480.0f, "%.0f"))
         {
@@ -124,7 +116,12 @@ public class Door : Sample
             b2Joint_SetConstraintTuning(m_jointId, m_jointHertz, m_jointDampingRatio);
         }
 
-        ImGui.End();
+        ImGui.PopItemWidth();
+
+        if (ImGui.Checkbox("limit", ref m_enableLimit))
+        {
+            b2RevoluteJoint_EnableLimit(m_jointId, m_enableLimit);
+        }
     }
 
     public override void Draw()

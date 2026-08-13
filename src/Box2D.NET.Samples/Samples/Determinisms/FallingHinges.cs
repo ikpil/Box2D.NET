@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -60,7 +60,7 @@ public class FallingHinges : Sample
 
         if (m_done)
         {
-            DrawTextLine($"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
+            DrawScreenTextLine($"sleep step = {m_data.sleepStep}, hash = 0x{m_data.hash:X8}");
         }
     }
 }

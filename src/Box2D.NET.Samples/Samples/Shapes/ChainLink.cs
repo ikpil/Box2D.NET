@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -95,7 +95,7 @@ public class ChainLink : Sample
     {
         base.Draw();
 
-        DrawTextLine("This shows how to link together two chain shapes");
+        DrawScreenTextLine("This shows how to link together two chain shapes");
         
     }
 }

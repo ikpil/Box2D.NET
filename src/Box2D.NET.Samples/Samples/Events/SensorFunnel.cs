@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -261,17 +261,9 @@ public class SensorFunnel : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 90.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize),
-            ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(140.0f, height));
-
-        ImGui.Begin("Sensor Event", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
 
         if (ImGui.RadioButton("donut", m_type == (int)e_donut))
         {
@@ -285,7 +277,7 @@ public class SensorFunnel : Sample
             m_type = (int)e_human;
         }
 
-        ImGui.End();
+
     }
 
     public override void Step()

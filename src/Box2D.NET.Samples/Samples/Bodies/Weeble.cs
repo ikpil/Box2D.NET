@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2022 Erin Catto
+// SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -91,15 +91,9 @@ public class Weeble : Sample
     }
 
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 120.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
-        ImGui.Begin("Weeble", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
         if (ImGui.Button("Teleport"))
         {
             b2Body_SetTransform(m_weebleId, new B2Vec2(0.0f, 5.0f), b2MakeRot(0.95f * B2_PI));
@@ -115,12 +109,12 @@ public class Weeble : Sample
             b2World_Explode(m_worldId, def);
         }
 
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         ImGui.SliderFloat("Magnitude", ref m_explosionMagnitude, -100.0f, 100.0f, "%.1f");
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 
     public override void Draw()

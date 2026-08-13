@@ -20,6 +20,5 @@ public class Draw
     public SolidCircleRender circles;
     public SolidCapsuleRender capsules;
     public SolidPolygonRender polygons;
-    public Font font;
 
 }

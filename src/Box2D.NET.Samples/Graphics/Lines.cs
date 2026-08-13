@@ -10,6 +10,7 @@ using Box2D.NET.Samples.Primitives;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Samples.Graphics.Cameras;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -23,7 +24,7 @@ public static class Lines
     public static LineRender CreateLineRender(GL gl)
     {
         var render = new LineRender();
-        render.m_programId = gl.CreateProgramFromFiles("data/line.vs", "data/line.fs");
+        render.m_programId = gl.CreateProgramFromStrings(k_line_vs, k_line_fs);
         render.m_projectionUniform = gl.GetUniformLocation(render.m_programId, "projectionMatrix");
         uint vertexAttribute = 0;
         uint colorAttribute = 1;

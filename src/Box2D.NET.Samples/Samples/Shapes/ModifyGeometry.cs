@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -108,16 +108,9 @@ public class ModifyGeometry : Sample
         b2Body_ApplyMassFromShapes(bodyId);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 230.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
-
-        ImGui.Begin("Modify Geometry", ImGuiWindowFlags.NoResize);
 
         if (ImGui.RadioButton("Circle", m_shapeType == B2ShapeType.b2_circleShape))
         {
@@ -143,10 +136,12 @@ public class ModifyGeometry : Sample
             UpdateShape();
         }
 
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         if (ImGui.SliderFloat("Scale", ref m_scale, 0.1f, 10.0f, "%.2f"))
         {
             UpdateShape();
         }
+        ImGui.PopItemWidth();
 
         B2BodyId bodyId = b2Shape_GetBody(m_shapeId);
         B2BodyType bodyType = b2Body_GetType(bodyId);
@@ -165,7 +160,5 @@ public class ModifyGeometry : Sample
         {
             b2Body_SetType(bodyId, B2BodyType.b2_dynamicBody);
         }
-
-        ImGui.End();
     }
 }

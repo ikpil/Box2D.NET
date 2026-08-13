@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -191,7 +191,7 @@ public class ConvexHull : Sample
     {
         base.Draw();
 
-        DrawTextLine("Options: generate(g), auto(a), bulk(b)");
+        DrawScreenTextLine("Options: generate(g), auto(a), bulk(b)");
         
 
         if (m_valid == false)
@@ -201,7 +201,7 @@ public class ConvexHull : Sample
         }
         else
         {
-            DrawTextLine($"generation = {m_generation}, count = {m_hull.count}");
+            DrawScreenTextLine($"generation = {m_generation}, count = {m_hull.count}");
             
         }
 

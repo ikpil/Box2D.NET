@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -85,16 +85,9 @@ public class WheelJoint : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 15.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(18.0f, height));
-
-        ImGui.Begin("Wheel Joint", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Limit", ref m_enableLimit))
         {
@@ -108,6 +101,7 @@ public class WheelJoint : Sample
 
         if (m_enableMotor)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Torque", ref m_motorTorque, 0.0f, 20.0f, "%.0f"))
             {
                 b2WheelJoint_SetMaxMotorTorque(m_jointId, m_motorTorque);
@@ -117,6 +111,7 @@ public class WheelJoint : Sample
             {
                 b2WheelJoint_SetMotorSpeed(m_jointId, m_motorSpeed);
             }
+            ImGui.PopItemWidth();
         }
 
         if (ImGui.Checkbox("Spring", ref m_enableSpring))
@@ -126,6 +121,7 @@ public class WheelJoint : Sample
 
         if (m_enableSpring)
         {
+            ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
             if (ImGui.SliderFloat("Hertz", ref m_hertz, 0.0f, 10.0f, "%.1f"))
             {
                 b2WheelJoint_SetSpringHertz(m_jointId, m_hertz);
@@ -135,9 +131,8 @@ public class WheelJoint : Sample
             {
                 b2WheelJoint_SetSpringDampingRatio(m_jointId, m_dampingRatio);
             }
+            ImGui.PopItemWidth();
         }
-
-        ImGui.End();
     }
 
     public override void Draw()

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -100,17 +100,10 @@ public class Cantilever : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 14.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(19.0f * fontSize, height));
-
-        ImGui.Begin("Cantilever", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(8.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Linear Hertz", ref m_linearHertz, 0.0f, 20.0f, "%.0f"))
         {
@@ -144,14 +137,6 @@ public class Cantilever : Sample
             }
         }
 
-        if (ImGui.Checkbox("Collide Connected", ref m_collideConnected))
-        {
-            for (int i = 0; i < e_count; ++i)
-            {
-                b2Joint_SetCollideConnected(m_jointIds[i], m_collideConnected);
-            }
-        }
-
         if (ImGui.SliderFloat("Gravity Scale", ref m_gravityScale, -1.0f, 1.0f, "%.1f"))
         {
             for (int i = 0; i < e_count; ++i)
@@ -161,7 +146,14 @@ public class Cantilever : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
+        if (ImGui.Checkbox("Collide Connected", ref m_collideConnected))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                b2Joint_SetCollideConnected(m_jointIds[i], m_collideConnected);
+            }
+        }
     }
 
 

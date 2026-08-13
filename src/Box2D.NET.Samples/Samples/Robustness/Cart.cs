@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -141,17 +141,10 @@ public class Cart : Sample
         b2Joint_SetConstraintTuning(m_jointId2, m_constraintHertz, m_constraintDampingRatio);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 240.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(320.0f, height));
-
-        ImGui.Begin("Cart", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(200.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         bool changed = false;
         ImGui.Text("Contact");
@@ -184,6 +177,6 @@ public class Cart : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 }

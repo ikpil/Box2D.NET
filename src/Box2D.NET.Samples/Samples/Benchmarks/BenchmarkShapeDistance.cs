@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -97,17 +97,11 @@ public class BenchmarkShapeDistance : Sample
         m_outputs = null;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 5.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(17.0f * fontSize, height));
-        ImGui.Begin("Benchmark: Shape Distance", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderInt("draw index", ref m_drawIndex, 0, m_count - 1);
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()
@@ -145,7 +139,7 @@ public class BenchmarkShapeDistance : Sample
         if (m_context.pause == false || m_context.singleStep == true)
         {
             DrawTextLine($"count = {m_count}");
-            DrawTextLine($"min ms = {m_minMilliseconds}, ave us = {1000.0f * m_minMilliseconds / (float)m_count}");
+            DrawScreenTextLine($"min ms = {m_minMilliseconds}, ave us = {1000.0f * m_minMilliseconds / (float)m_count}");
             DrawTextLine($"average iterations = {totalIterations / (float)m_count}");
         }
 

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -80,18 +80,11 @@ public class RayCast : Sample
         m_showFraction = false;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 230.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(200.0f, height));
 
-        ImGui.Begin("Ray-cast", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
-        ImGui.PushItemWidth(100.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
         ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
@@ -104,6 +97,8 @@ public class RayCast : Sample
         // if (ImGui.SliderFloat("ray radius", &m_rayRadius, 0.0f, 1.0f, "%.1f"))
         //{
         // }
+
+        ImGui.PopItemWidth();
 
         ImGui.Checkbox("show fraction", ref m_showFraction);
 
@@ -119,9 +114,6 @@ public class RayCast : Sample
         ImGui.Text("mouse btn 1 + shft: translate");
         ImGui.Text("mouse btn 1 + ctrl: rotate");
 
-        ImGui.PopItemWidth();
-
-        ImGui.End();
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)

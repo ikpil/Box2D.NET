@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2022 Erin Catto
+// SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -459,16 +459,12 @@ public class Mover : Sample
         m_velocity = b2ClipVector(m_velocity, m_planes, m_planeCount);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 350.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 25.0f), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(340.0f, height));
+        ImGui.TextUnformatted("Mover");
+        ImGui.Spacing();
 
-        ImGui.Begin("Mover", 0);
-
-        ImGui.PushItemWidth(240.0f);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         ImGui.SliderFloat("Jump Speed", ref m_jumpSpeed, 0.0f, 40.0f, "%.0f");
         ImGui.SliderFloat("Min Speed", ref m_minSpeed, 0.0f, 1.0f, "%.2f");
@@ -485,7 +481,7 @@ public class Mover : Sample
 
         ImGui.Separator();
 
-        ImGui.Text("Pogo Shape");
+        ImGui.TextUnformatted("Pogo Shape");
         ImGui.RadioButton("Point", ref m_pogoShape, (int)PogoShape.PogoPoint);
         ImGui.SameLine();
         ImGui.RadioButton("Circle", ref m_pogoShape, (int)PogoShape.PogoCircle);
@@ -493,8 +489,6 @@ public class Mover : Sample
         ImGui.RadioButton("Segment", ref m_pogoShape, (int)PogoShape.PogoSegment);
 
         ImGui.Checkbox("Lock Camera", ref m_lockCamera);
-
-        ImGui.End();
     }
 
     static bool PlaneResultFcn(B2ShapeId shapeId, ref B2PlaneResult planeResult, object context)

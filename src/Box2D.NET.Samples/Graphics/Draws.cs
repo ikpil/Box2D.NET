@@ -4,7 +4,6 @@
 
 using System;
 using static Box2D.NET.B2MathFunction;
-using static Box2D.NET.Samples.Graphics.Cameras;
 using static Box2D.NET.Samples.Graphics.Backgrounds;
 using static Box2D.NET.Samples.Graphics.Points;
 using static Box2D.NET.Samples.Graphics.Circles;
@@ -12,11 +11,10 @@ using static Box2D.NET.Samples.Graphics.Lines;
 using static Box2D.NET.Samples.Graphics.SolidCapsules;
 using static Box2D.NET.Samples.Graphics.SolidCircles;
 using static Box2D.NET.Samples.Graphics.SolidPolygons;
-using static Box2D.NET.Samples.Graphics.Fonts;
 
 namespace Box2D.NET.Samples.Graphics;
 
-public static class Draws
+public static partial class Draws
 {
     public static Draw CreateDraw(SampleContext context)
     {
@@ -30,8 +28,6 @@ public static class Draws
         draw.circles = CreateSolidCircles(context.gl);
         draw.capsules = CreateSolidCapsule(context.gl);
         draw.polygons = CreateSolidPolygons(context.gl);
-        draw.font = CreateFont(context.gl, "data/droid_sans.ttf", 18.0f);
-
         return draw;
     }
 
@@ -44,7 +40,6 @@ public static class Draws
         DestroySolidCircles(draw.gl, ref draw.circles);
         DestroyCapsules(draw.gl, ref draw.capsules);
         DestroyPolygons(draw.gl, ref draw.polygons);
-        DestroyFont(draw.gl, ref draw.font);
     }
 
     public static void DrawPolygon(Draw draw, ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color)
@@ -87,17 +82,6 @@ public static class Draws
         AddLine(ref draw.lines, p4, p1, c);
     }
     
-    public static void DrawScreenString(Draw draw, float x, float y, B2HexColor color, string message)
-    {
-        AddText(ref draw.font, x, y, color, message);
-    }
-
-    public static void DrawWorldString(Draw draw, Camera camera, B2Vec2 p, B2HexColor color, string message)
-    {
-        B2Vec2 ps = ConvertWorldToScreen(camera, p);
-        AddText(ref draw.font, ps.X, ps.Y, color, message);
-    }
-
     public static void DrawCircle(Draw draw, B2Vec2 center, float radius, B2HexColor color)
     {
         AddCircle(ref draw.hollowCircles, center, radius, color);
@@ -135,7 +119,6 @@ public static class Draws
         FlushCircles(draw.gl, ref draw.hollowCircles, camera);
         FlushLines(draw.gl, ref draw.lines, camera);
         FlushPoints(draw.gl, ref draw.points, camera);
-        FlushText(draw.gl, ref draw.font, camera);
         draw.gl.CheckOpenGL();
     }
 }

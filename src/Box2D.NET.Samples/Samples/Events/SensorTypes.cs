@@ -180,7 +180,7 @@ public class SensorTypes : Sample
             start += entryByteCount;
         }
 
-        DrawTextLine(builder.ToString());
+        DrawScreenTextLine(builder.ToString());
     }
 
     private static int AppendUtf8(StringBuilder builder, string text, int maxByteCount)

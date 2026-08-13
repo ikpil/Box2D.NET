@@ -5,6 +5,7 @@
 using System;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
+using static Box2D.NET.Samples.EmbeddedShaders;
 
 namespace Box2D.NET.Samples.Graphics;
 
@@ -14,7 +15,7 @@ public static class Backgrounds
     {
         Background background = new Background();
 
-        background.programId = gl.CreateProgramFromFiles("data/background.vs", "data/background.fs");
+        background.programId = gl.CreateProgramFromStrings(k_background_vs, k_background_fs);
         background.timeUniform = gl.GetUniformLocation(background.programId, "time");
         background.resolutionUniform = gl.GetUniformLocation(background.programId, "resolution");
         background.baseColorUniform = gl.GetUniformLocation(background.programId, "baseColor");

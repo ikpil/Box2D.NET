@@ -47,6 +47,9 @@ public class SampleApp
     private B2Vec2 s_clickPointWS = b2Vec2_zero;
     private float s_framebufferScale = 1.0f;
     private float _frameTime = 0.0f;
+    private double _frameStartTime = 0.0;
+    private byte[] _fontData;
+    private GCHandle _fontDataHandle;
 
     public SampleApp()
     {
@@ -241,12 +244,11 @@ public class SampleApp
             _context.glfw.SetScrollCallback(_context.window, ScrollCallback);
         }
 
+        // todo put this in _context.settings
+        CreateUI(glslVersion);
         _context.draw = CreateDraw(_context);
 
         _context.sampleIndex = b2ClampInt(_context.sampleIndex, 0, SampleFactory.Shared.SampleCount - 1);
-
-        // todo put this in _context.settings
-        CreateUI(glslVersion);
 
         _context.gl.ClearColor(0.2f, 0.2f, 0.2f, 1.0f);
     }
@@ -271,7 +273,7 @@ public class SampleApp
                 return;
         }
 
-        double time1 = _context.glfw.GetTime();
+        _frameStartTime = _context.glfw.GetTime();
 
         if (GlfwHelpers.GetKey(_context, Keys.Z) == InputAction.Press)
         {
@@ -297,30 +299,6 @@ public class SampleApp
             _context.glfw.GetCursorPos(_context.window, out cursorPosX, out cursorPosY);
         }
 
-        // For the Tracy profiler
-        //FrameMark;
-
-        if (_context.sample == null)
-        {
-            // delayed creation because imgui doesn't create fonts until NewFrame() is called
-            _context.sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
-        }
-
-        _context.sample.Step();
-
-        _context.glfw.PollEvents();
-
-        // Limit frame rate to 60Hz
-        double time2 = _context.glfw.GetTime();
-        double targetTime = time1 + 1.0 / 60.0;
-        while (time2 < targetTime)
-        {
-            b2Yield();
-            time2 = _context.glfw.GetTime();
-        }
-
-        _frameTime = (float)(time2 - time1);
-
         // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
         // ImGui_ImplOpenGL3_NewFrame();
         // ImGui_ImplGlfw_NewFrame();
@@ -333,6 +311,30 @@ public class SampleApp
             io.DeltaTime = (float)dt;
             _imgui.Update((float)dt);
         }
+
+        if (_context.sample == null)
+        {
+            // delayed creation because imgui doesn't create fonts until NewFrame() is called
+            _context.sample = SampleFactory.Shared.Create(_context.sampleIndex, _context);
+        }
+
+        _context.sample.ResetText();
+
+        if (_context.showUI)
+        {
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorGoldenRod, SampleFactory.Shared.GetName(_context.sampleIndex));
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorLightGray, SampleFactory.Shared.GetCategory(_context.sampleIndex));
+            _context.sample.DrawTextLine("");
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"{1000.0f * _frameTime:0.0} ms");
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"step {_context.sample.m_stepCount}");
+            _context.sample.DrawTextLine("");
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen,
+                $"cam ({_context.camera.center.X:0.0}, {_context.camera.center.Y:0.0})");
+            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"zoom {_context.camera.zoom:0.00}");
+        }
+
+        _context.sample.Step();
+        _context.sample.Draw();
     }
 
     private void OnWindowRenderSafe(double dt)
@@ -351,22 +353,15 @@ public class SampleApp
     {
         _context.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        ImGui.SetNextWindowPos(new Vector2(0.0f, 0.0f));
-        ImGui.SetNextWindowSize(new Vector2(_context.camera.width, _context.camera.height));
-        ImGui.SetNextWindowBgAlpha(0.0f);
-        ImGui.Begin("Overlay", ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.NoInputs | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar);
-        ImGui.End();
+        if (_context.showUI == false)
+        {
+            float fontSize = ImGui.GetFontSize();
+            DrawScreenString(_context.draw, 5.0f, 1.5f * fontSize, B2HexColor.b2_colorYellow,
+                $"{SampleFactory.Shared.GetCategory(_context.sampleIndex)} : {SampleFactory.Shared.GetName(_context.sampleIndex)}");
+            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 0.5f * fontSize, B2HexColor.b2_colorSeaGreen,
+                $"{1000.0f * _frameTime:0.0} ms  step {_context.sample.m_stepCount}");
+        }
 
-        _context.sample.ResetText();
-
-        var title = SampleFactory.Shared.GetTitle(_context.sampleIndex);
-        _context.sample.DrawColoredTextLine(B2HexColor.b2_colorYellow, title);
-
-        string buffer = $"{1000.0f * _frameTime:0.0} ms - step {_context.sample.m_stepCount} - " +
-                        $"camera ({_context.camera.center.X:G}, {_context.camera.center.Y:G}, {_context.camera.zoom:G})";
-        DrawScreenString(_context.draw, 5.0f, _context.camera.height - 18.0f, B2HexColor.b2_colorSeaGreen, buffer);
-
-        _context.sample.Draw();
         FlushDraw(_context.draw, _context.camera);
 
         UpdateSampleUI(_context);
@@ -380,6 +375,22 @@ public class SampleApp
         {
             _context.glfw.SwapBuffers(_context.window);
         }
+
+        // For the Tracy profiler
+        //FrameMark;
+
+        // Silk.NET.Windowing polls events for the run loop.
+
+        // Limit frame rate to 60Hz
+        double time2 = _context.glfw.GetTime();
+        double targetTime = _frameStartTime + 1.0 / 60.0;
+        while (time2 < targetTime)
+        {
+            b2Yield();
+            time2 = _context.glfw.GetTime();
+        }
+
+        _frameTime = (float)(time2 - _frameStartTime);
     }
 
 
@@ -426,6 +437,90 @@ public class SampleApp
         Logger.Information($"GLFW error occurred. Code: {error}. Description: {description}");
     }
 
+    private static void ApplyUIStyle()
+    {
+        ImGuiStylePtr style = ImGui.GetStyle();
+
+        // Metrics: containers round at 4px, controls at 3px - one deliberate
+        // system instead of the stock mix. Padding gives rows room to breathe.
+        style.WindowPadding = new Vector2(10.0f, 10.0f);
+        style.FramePadding = new Vector2(8.0f, 4.0f);
+        style.CellPadding = new Vector2(6.0f, 4.0f);
+        style.ItemSpacing = new Vector2(8.0f, 7.0f);
+        style.ItemInnerSpacing = new Vector2(7.0f, 4.0f);
+        style.IndentSpacing = 18.0f;
+        style.ScrollbarSize = 12.0f;
+        style.GrabMinSize = 10.0f;
+
+        style.WindowBorderSize = 1.0f;
+        style.FrameBorderSize = 0.0f;
+        style.PopupBorderSize = 1.0f;
+        style.TabBorderSize = 0.0f;
+        style.SeparatorTextBorderSize = 1.0f;
+
+        style.WindowRounding = 4.0f;
+        style.ChildRounding = 4.0f;
+        style.PopupRounding = 4.0f;
+        style.FrameRounding = 3.0f;
+        style.GrabRounding = 3.0f;
+        style.ScrollbarRounding = 3.0f;
+        style.TabRounding = 3.0f;
+
+        style.WindowTitleAlign = new Vector2(0.0f, 0.5f);
+
+        // Palette: neutral charcoal surfaces, one steel-blue accent at three
+        // brightnesses. Replaces stock ImGui's saturated cornflower blue.
+        Vector4 accent = new Vector4(0.28f, 0.48f, 0.66f, 1.00f);
+        Vector4 accentHi = new Vector4(0.38f, 0.60f, 0.80f, 1.00f);
+        Vector4 accentLo = new Vector4(0.22f, 0.36f, 0.50f, 1.00f);
+
+        style.Colors[(int)ImGuiCol.Text] = new Vector4(0.90f, 0.91f, 0.93f, 1.00f);
+        style.Colors[(int)ImGuiCol.TextDisabled] = new Vector4(0.49f, 0.51f, 0.55f, 1.00f);
+        style.Colors[(int)ImGuiCol.WindowBg] = new Vector4(0.110f, 0.115f, 0.125f, 0.97f);
+        style.Colors[(int)ImGuiCol.ChildBg] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+        style.Colors[(int)ImGuiCol.PopupBg] = new Vector4(0.100f, 0.105f, 0.115f, 0.98f);
+        style.Colors[(int)ImGuiCol.Border] = new Vector4(0.00f, 0.00f, 0.00f, 0.45f);
+        style.Colors[(int)ImGuiCol.BorderShadow] = new Vector4(0.00f, 0.00f, 0.00f, 0.00f);
+        style.Colors[(int)ImGuiCol.FrameBg] = new Vector4(0.18f, 0.19f, 0.21f, 1.00f);
+        style.Colors[(int)ImGuiCol.FrameBgHovered] = new Vector4(0.24f, 0.26f, 0.29f, 1.00f);
+        style.Colors[(int)ImGuiCol.FrameBgActive] = new Vector4(0.29f, 0.32f, 0.36f, 1.00f);
+        style.Colors[(int)ImGuiCol.TitleBg] = new Vector4(0.090f, 0.095f, 0.105f, 1.00f);
+        style.Colors[(int)ImGuiCol.TitleBgActive] = new Vector4(0.14f, 0.16f, 0.19f, 1.00f);
+        style.Colors[(int)ImGuiCol.TitleBgCollapsed] = new Vector4(0.090f, 0.095f, 0.105f, 0.75f);
+        style.Colors[(int)ImGuiCol.MenuBarBg] = new Vector4(0.13f, 0.14f, 0.16f, 1.00f);
+        style.Colors[(int)ImGuiCol.ScrollbarBg] = new Vector4(0.06f, 0.06f, 0.07f, 0.55f);
+        style.Colors[(int)ImGuiCol.ScrollbarGrab] = new Vector4(0.28f, 0.30f, 0.33f, 1.00f);
+        style.Colors[(int)ImGuiCol.ScrollbarGrabHovered] = new Vector4(0.36f, 0.39f, 0.43f, 1.00f);
+        style.Colors[(int)ImGuiCol.ScrollbarGrabActive] = accent;
+        style.Colors[(int)ImGuiCol.CheckMark] = accentHi;
+        style.Colors[(int)ImGuiCol.SliderGrab] = accent;
+        style.Colors[(int)ImGuiCol.SliderGrabActive] = accentHi;
+        style.Colors[(int)ImGuiCol.Button] = new Vector4(0.22f, 0.24f, 0.27f, 1.00f);
+        style.Colors[(int)ImGuiCol.ButtonHovered] = accentLo;
+        style.Colors[(int)ImGuiCol.ButtonActive] = accent;
+        style.Colors[(int)ImGuiCol.Header] = new Vector4(0.19f, 0.21f, 0.24f, 1.00f);
+        style.Colors[(int)ImGuiCol.HeaderHovered] = accentLo;
+        style.Colors[(int)ImGuiCol.HeaderActive] = accent;
+        style.Colors[(int)ImGuiCol.Separator] = new Vector4(1.00f, 1.00f, 1.00f, 0.09f);
+        style.Colors[(int)ImGuiCol.SeparatorHovered] = accentLo;
+        style.Colors[(int)ImGuiCol.SeparatorActive] = accent;
+        style.Colors[(int)ImGuiCol.ResizeGrip] = new Vector4(1.00f, 1.00f, 1.00f, 0.06f);
+        style.Colors[(int)ImGuiCol.ResizeGripHovered] = accentLo;
+        style.Colors[(int)ImGuiCol.ResizeGripActive] = accent;
+        style.Colors[(int)ImGuiCol.Tab] = new Vector4(0.15f, 0.16f, 0.18f, 1.00f);
+        style.Colors[(int)ImGuiCol.TabHovered] = accentLo;
+        style.Colors[(int)ImGuiCol.TabActive] = accent;
+        style.Colors[(int)ImGuiCol.TabUnfocused] = new Vector4(0.12f, 0.13f, 0.14f, 1.00f);
+        style.Colors[(int)ImGuiCol.TabUnfocusedActive] = accentLo;
+        style.Colors[(int)ImGuiCol.TextSelectedBg] = new Vector4(accent.X, accent.Y, accent.Z, 0.40f);
+        style.Colors[(int)ImGuiCol.DragDropTarget] = accentHi;
+        style.Colors[(int)ImGuiCol.NavHighlight] = accentHi;
+        style.Colors[(int)ImGuiCol.PlotLines] = new Vector4(0.70f, 0.72f, 0.75f, 1.00f);
+        style.Colors[(int)ImGuiCol.PlotLinesHovered] = accentHi;
+        style.Colors[(int)ImGuiCol.PlotHistogram] = accent;
+        style.Colors[(int)ImGuiCol.PlotHistogramHovered] = accentHi;
+    }
+
     private void CreateUI(string glslVersion)
     {
         //IMGUI_CHECKVERSION();
@@ -446,39 +541,38 @@ public class SampleApp
         // }
         //
 
-        var fontPath = Path.Combine("data", "droid_sans.ttf");
-        if (!File.Exists(fontPath))
+        // ImGui.NET 1.90 does not expose AddFontDefaultVector, so use the existing font as an embedded resource.
+        using (Stream stream = typeof(SampleApp).Assembly.GetManifestResourceStream("Box2D.NET.Samples.Fonts.droid_sans.ttf")!)
         {
-            Logger.Information("ERROR: the Box2D samples working directory must be the top level Box2D directory (same as README.md)");
-            //exit(EXIT_FAILURE);
-            return;
+            _fontData = new byte[stream.Length];
+            stream.ReadExactly(_fontData);
+            _fontDataHandle = GCHandle.Alloc(_fontData, GCHandleType.Pinned);
         }
 
         // for windows : Microsoft Visual C++ Redistributable Package
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
-        var imGuiFontConfig = new ImGuiFontConfig(fontPath, 15, null);
-        _imgui = new ImGuiController(_context.gl, _window, _input, imGuiFontConfig);
-
-        ImGui.GetFontSize();
-        ImGui.GetStyle().ScaleAllSizes(_context.uiScale);
-
-        unsafe
+        _imgui = new ImGuiController(_context.gl, _window, _input, () =>
         {
-            // ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-            // This brightens the font, improving readability when it is small.
-            // fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
-            //
-            // float regularSize = MathF.Floor(13.0f * _context.uiScale);
-            // float mediumSize = MathF.Floor(40.0f * _context.uiScale);
-            // float largeSize = MathF.Floor(64.0f * _context.uiScale);
-            //
-            // var io = ImGui.GetIO();
-            //_context.regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize);
-            //_context.regularFont = io.Fonts.AddFontFromFileTTF(fontPath, regularSize, fontConfig);
-            // _context.mediumFont = io.Fonts.AddFontFromFileTTF(fontPath, mediumSize, fontConfig);
-            // _context.largeFont = io.Fonts.AddFontFromFileTTF(fontPath, largeSize, fontConfig);
+            ImGuiIOPtr io = ImGui.GetIO();
+            unsafe
+            {
+                ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+                // This brightens the font, improving readability when it is small.
+                fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
+                fontConfig.FontDataOwnedByAtlas = false;
 
-            //io.FontDefault = _context.regularFont;
+                float regularSize = MathF.Floor(13.0f * _context.uiScale);
+                io.Fonts.Clear();
+                io.Fonts.AddFontFromMemoryTTF(_fontDataHandle.AddrOfPinnedObject(), _fontData.Length, regularSize, fontConfig);
+                ImGuiNative.ImFontConfig_destroy(fontConfig.NativePtr);
+            }
+        });
+
+        ApplyUIStyle();
+
+        if (_context.uiScale != 1.0f)
+        {
+            ImGui.GetStyle().ScaleAllSizes(_context.uiScale);
         }
     }
 
@@ -487,6 +581,11 @@ public class SampleApp
         var tmp = _imgui;
         _imgui = null;
         tmp.Dispose();
+        if (_fontDataHandle.IsAllocated)
+        {
+            _fontDataHandle.Free();
+        }
+        _fontData = null;
     }
 
     private unsafe void KeyCallback(WindowHandle* window, Keys key, int scancode, InputAction action, KeyModifiers mods)
@@ -576,7 +675,15 @@ public class SampleApp
                     break;
 
                 case Keys.O:
-                    _context.singleStep = true;
+                    if (mods == KeyModifiers.Control)
+                    {
+                        _context.showUI = true;
+                        _context.openSamplePicker = true;
+                    }
+                    else
+                    {
+                        _context.singleStep = true;
+                    }
                     break;
 
                 case Keys.P:
@@ -613,6 +720,10 @@ public class SampleApp
 
                 case Keys.Tab:
                     _context.showUI = !_context.showUI;
+                    break;
+
+                case Keys.M:
+                    _context.showDiagnostics = !_context.showDiagnostics;
                     break;
 
                 default:

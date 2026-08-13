@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -204,22 +204,17 @@ public class ScissorLift : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 140.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Scissor Lift", ImGuiWindowFlags.NoResize);
 
         if (ImGui.Checkbox("Motor", ref m_enableMotor))
         {
             b2DistanceJoint_EnableMotor(m_liftJointId, m_enableMotor);
             b2Joint_WakeBodies(m_liftJointId);
         }
+
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Max Force", ref m_motorForce, 0.0f, 3000.0f, "%.0f"))
         {
@@ -232,7 +227,6 @@ public class ScissorLift : Sample
             b2DistanceJoint_SetMotorSpeed(m_liftJointId, m_motorSpeed);
             b2Joint_WakeBodies(m_liftJointId);
         }
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 }

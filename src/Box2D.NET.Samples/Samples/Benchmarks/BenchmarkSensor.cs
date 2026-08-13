@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -240,7 +240,7 @@ public class BenchmarkSensor : Sample
     {
         base.Draw();
 
-        DrawTextLine($"max begin touch events = {m_maxBeginCount}");
-        DrawTextLine($"max end touch events = {m_maxEndCount}");
+        DrawScreenTextLine($"max begin touch events = {m_maxBeginCount}");
+        DrawScreenTextLine($"max end touch events = {m_maxEndCount}");
     }
 }

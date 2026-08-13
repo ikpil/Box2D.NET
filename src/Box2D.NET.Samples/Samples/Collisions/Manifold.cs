@@ -86,18 +86,11 @@ public class Manifold : Sample
         m_wedge = b2ComputeHull(points, 3);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 24.0f * fontSize;
-        ImGui.SetNextWindowPos( new Vector2( 0.5f * fontSize, m_camera.height - height - 2.0f * fontSize ), ImGuiCond.Once );
-        ImGui.SetNextWindowSize( new Vector2( 20.0f * fontSize, height ) );
 
-        ImGui.Begin( "Manifold", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize );
-
-        ImGui.PushItemWidth( 14.0f * fontSize );
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         ImGui.SliderFloat("x offset", ref m_transform.p.X, -2.0f, 2.0f, "%.2f");
         ImGui.SliderFloat("y offset", ref m_transform.p.Y, -2.0f, 2.0f, "%.2f");
@@ -131,7 +124,7 @@ public class Manifold : Sample
         ImGui.Text("mouse button 1: drag");
         ImGui.Text("mouse button 1 + shift: rotate");
 
-        ImGui.End();
+
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)

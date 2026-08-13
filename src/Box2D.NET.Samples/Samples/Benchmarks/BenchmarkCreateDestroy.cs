@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -138,11 +138,11 @@ public class BenchmarkCreateDestroy : Sample
     {
         base.Draw();
 
-        DrawTextLine($"total: create = {m_createTime} ms, destroy = {m_destroyTime} ms");
+        DrawScreenTextLine($"total: create = {m_createTime} ms, destroy = {m_destroyTime} ms");
 
         float createPerBody = 1000.0f * m_createTime / m_iterations / m_bodyCount;
         float destroyPerBody = 1000.0f * m_destroyTime / m_iterations / m_bodyCount;
 
-        DrawTextLine($"body: create = {createPerBody} us, destroy = {destroyPerBody} us");
+        DrawScreenTextLine($"body: create = {createPerBody} us, destroy = {destroyPerBody} us");
     }
 }

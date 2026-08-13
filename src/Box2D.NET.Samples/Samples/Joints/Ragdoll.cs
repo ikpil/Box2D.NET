@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -61,17 +61,10 @@ public class Ragdoll : Sample
         //Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 10.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(14.0f * fontSize, height));
-
-        ImGui.Begin("Ragdoll", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(8.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Friction", ref m_jointFrictionTorque, 0.0f, 1.0f, "%3.2f"))
         {
@@ -88,13 +81,13 @@ public class Ragdoll : Sample
             Human_SetJointDampingRatio(ref m_human, m_jointDampingRatio);
         }
 
+        ImGui.PopItemWidth();
+
         if (ImGui.Button("Respawn"))
         {
             DestroyHuman(ref m_human);
             Spawn();
         }
 
-        ImGui.PopItemWidth();
-        ImGui.End();
     }
 }

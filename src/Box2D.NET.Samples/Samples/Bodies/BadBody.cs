@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -86,9 +86,9 @@ public class BadBody : Sample
     {
         base.Draw();
 
-        DrawTextLine("A bad body is a dynamic body with no mass and behaves like a kinematic body.");
+        DrawScreenTextLine("A bad body is a dynamic body with no mass and behaves like a kinematic body.");
 
 
-        DrawTextLine("Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
+        DrawScreenTextLine("Bad bodies are considered invalid and a user bug. Behavior is not guaranteed.");
     }
 }

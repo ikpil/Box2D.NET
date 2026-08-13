@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -56,18 +56,13 @@ public class ScaleRagdoll : Sample
         float jointHertz = 1.0f;
         float jointDampingRatio = 0.5f;
         CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 5.0f), m_scale, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, false);
-        Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
+        Human_ApplyRandomAngularImpulse(ref m_human, 0.1f);
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 4.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(20.0f * fontSize, height));
 
-        ImGui.Begin("Scale Ragdoll", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(15.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Scale", ref m_scale, 0.1f, 10.0f, "%3.2f", ImGuiSliderFlags.AlwaysClamp))
         {
@@ -75,6 +70,6 @@ public class ScaleRagdoll : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 }

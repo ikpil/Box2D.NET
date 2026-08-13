@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -176,28 +176,13 @@ public class JointSeparation : Sample
         m_jointDampingRatio = 2.0f;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        float fontSize = ImGui.GetFontSize();
-        float height = 14.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(20.0f * fontSize, height));
-
-        ImGui.Begin("Joint Separation", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         B2Vec2 gravity = b2World_GetGravity(m_worldId);
         if (ImGui.SliderFloat("gravity", ref gravity.Y, -500.0f, 500.0f, "%.0f"))
         {
             b2World_SetGravity(m_worldId, gravity);
-        }
-
-        if (ImGui.Button("impulse"))
-        {
-            for (int i = 0; i < e_count; ++i)
-            {
-                B2Vec2 p = b2Body_GetWorldPoint(m_bodyIds[i], new B2Vec2(1.0f, 1.0f));
-                b2Body_ApplyLinearImpulse(m_bodyIds[i], new B2Vec2(m_impulse, -m_impulse), p, true);
-            }
         }
 
         ImGui.SliderFloat("magnitude", ref m_impulse, 0.0f, 1000.0f, "%.0f");
@@ -218,7 +203,16 @@ public class JointSeparation : Sample
             }
         }
 
-        ImGui.End();
+        ImGui.PopItemWidth();
+
+        if (ImGui.Button("impulse"))
+        {
+            for (int i = 0; i < e_count; ++i)
+            {
+                B2Vec2 p = b2Body_GetWorldPoint(m_bodyIds[i], new B2Vec2(1.0f, 1.0f));
+                b2Body_ApplyLinearImpulse(m_bodyIds[i], new B2Vec2(m_impulse, -m_impulse), p, true);
+            }
+        }
     }
 
     public override void Draw()

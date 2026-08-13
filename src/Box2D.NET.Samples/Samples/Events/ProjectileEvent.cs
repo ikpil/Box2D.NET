@@ -176,7 +176,7 @@ class ProjectileEvent : Sample
     {
         base.Draw();
         
-        DrawTextLine("Use Ctrl + Left Mouse to drag and shoot a projectile");
+        DrawScreenTextLine("Use Ctrl + Left Mouse to drag and shoot a projectile");
 
         if (m_dragging)
         {

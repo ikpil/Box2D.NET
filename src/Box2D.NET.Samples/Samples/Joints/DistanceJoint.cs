@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -129,17 +129,10 @@ public class DistanceJoint : Sample
         }
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
 
-        float fontSize = ImGui.GetFontSize();
-        float height = 20.0f * fontSize;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(18.0f * fontSize, height));
-
-        ImGui.Begin("Distance Joint", ImGuiWindowFlags.NoResize);
-        ImGui.PushItemWidth(10.0f * fontSize);
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
 
         if (ImGui.SliderFloat("Length", ref m_length, 0.1f, 4.0f, "%3.1f"))
         {
@@ -236,6 +229,6 @@ public class DistanceJoint : Sample
         }
 
         ImGui.PopItemWidth();
-        ImGui.End();
+
     }
 }

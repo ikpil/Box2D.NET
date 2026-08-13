@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -185,17 +185,9 @@ public class ChainShape : Sample
         // DrawTextLine($"toi calls, hits = {b2_toiCalls}, {b2_toiHitCount}");
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 155.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("Chain Shape", ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
         int shapeType = (int)m_shapeType;
         if (ImGui.Combo("Shape", ref shapeType, shapeTypes, shapeTypes.Length))
@@ -215,11 +207,11 @@ public class ChainShape : Sample
             b2Shape_SetSurfaceMaterial(m_shapeId, m_material);
         }
 
+        ImGui.PopItemWidth();
+
         if (ImGui.Button("Launch"))
         {
             Launch();
         }
-
-        ImGui.End();
     }
 }

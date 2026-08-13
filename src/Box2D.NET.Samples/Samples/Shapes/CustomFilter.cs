@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -100,7 +100,7 @@ public class CustomFilter : Sample
     {
         base.Draw();
 
-        DrawTextLine("Custom filter disables collision between odd and even shapes");
+        DrawScreenTextLine("Custom filter disables collision between odd and even shapes");
 
 
         for (int i = 0; i < e_count; ++i)

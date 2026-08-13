@@ -14,41 +14,10 @@ public class Settings
     public const int MAX_TOKENS = 32;
     public const string fileName = "settings.ini";
 
-    public int windowWidth = 1920;
-    public int windowHeight = 1080;
-    
-    //
-    public float uiScale = 1.0f;
-    public float hertz = 60.0f;
-    public float jointScale = 1.0f;
-    public float forceScale = 1.0f;
-    public int subStepCount = 4;
-    public int workerCount = 1;
-    
-    //
-    public bool singleStep = false;
-    public bool drawJointExtras = false;
-    public bool drawBounds = false;
-    public bool drawMass = false;
-    public bool drawBodyNames = false;
-    public bool drawContactNormals = false;
-    public bool drawContactFeatures = false;
-    public bool drawContactForces = false;
-    public bool drawFrictionForces = false;
-    public bool drawIslands = false;
-    public bool drawGraphColors = false;
-    public bool drawCounters = false;
-    public bool drawProfile = false;
-    public bool frameTime = false;
-    public bool enableWarmStarting = true;
-    public bool enableContinuous = true;
-    public bool enableSleep = true;
-    
-    //
     public int sampleIndex = 0;
     public bool drawShapes = true;
-    public bool drawChainNormals = false;
     public bool drawJoints = true;
+    public bool showDiagnostics = false;
 
     public static void Save(SampleContext context)
     {
@@ -73,39 +42,10 @@ public class Settings
     public static Settings CopyFrom(SampleContext context)
     {
         var setting = new Settings();
-        setting.windowWidth = (int)context.camera.width;
-        setting.windowHeight = (int)context.camera.height;
-        
         setting.sampleIndex = context.sampleIndex;
-        //
-        setting.uiScale = context.uiScale;
-        setting.hertz = context.hertz;
-        setting.subStepCount = context.subStepCount;
-        setting.workerCount = context.workerCount;
-
-        //
-        setting.drawCounters = context.drawCounters;
-        setting.drawProfile = context.drawProfile;
-        setting.frameTime = context.frameTime;
-        setting.enableWarmStarting = context.enableWarmStarting;
-        setting.enableContinuous = context.enableContinuous;
-        setting.enableSleep = context.enableSleep;
-        setting.singleStep = context.singleStep;
-        
-        //
         setting.drawShapes = context.debugDraw.drawShapes;
-        setting.drawChainNormals = context.debugDraw.drawChainNormals;
         setting.drawJoints = context.debugDraw.drawJoints;
-        setting.drawJointExtras = context.debugDraw.drawJointExtras;
-        setting.drawBounds = context.debugDraw.drawBounds;
-        setting.drawMass = context.debugDraw.drawMass;
-        setting.drawBodyNames = context.debugDraw.drawBodyNames;
-        setting.drawContactNormals = context.debugDraw.drawContactNormals;
-        setting.drawContactForces = context.debugDraw.drawContactForces;
-        setting.drawContactFeatures = context.debugDraw.drawContactFeatures;
-        setting.drawFrictionForces = context.debugDraw.drawFrictionForces;
-        setting.drawIslands = context.debugDraw.drawIslands;
-        setting.drawGraphColors = context.debugDraw.drawGraphColors;
+        setting.showDiagnostics = context.showDiagnostics;
 
         return setting;
     }

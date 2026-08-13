@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -154,21 +154,12 @@ public class Platform : Sample
         return false;
     }
 
-    public override void UpdateGui()
+    public override void BuildSamplePanel()
     {
-        base.UpdateGui();
-
-        float fontSize = ImGui.GetFontSize();
-        float height = 100.0f;
-        ImGui.SetNextWindowPos(new Vector2(0.5f * fontSize, m_camera.height - height - 2.0f * fontSize), ImGuiCond.Once);
-        ImGui.SetNextWindowSize(new Vector2(240.0f, height));
-
-        ImGui.Begin("One-Sided Platform", ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoResize);
-
+        ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("force", ref m_force, 0.0f, 50.0f, "%.1f");
         ImGui.SliderFloat("impulse", ref m_impulse, 0.0f, 50.0f, "%.1f");
-
-        ImGui.End();
+        ImGui.PopItemWidth();
     }
 
     public override void Step()
@@ -256,11 +247,11 @@ public class Platform : Sample
         {
             Span<B2ContactData> contactData = stackalloc B2ContactData[1];
             int contactCount = b2Body_GetContactData(m_movingPlatformId, contactData, contactData.Length);
-            DrawTextLine($"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
+            DrawScreenTextLine($"Platform contact count = {contactCount}, point count = {contactData[0].manifold.pointCount}");
         }
 
 
-        DrawTextLine("Movement: A/D/Space");
+        DrawScreenTextLine("Movement: A/D/Space");
 
 
         DrawTextLine($"Can jump = {m_canJump}");
