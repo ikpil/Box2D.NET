@@ -13,6 +13,7 @@ using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -146,14 +147,14 @@ public class CircleImpulse : Sample
             m_events.Add(e);
         }
 
-        DrawScreenTextLine($"mass = {m_mass}, gravity = {(m_useGravity ? 10.0f : 0.0f)}, restitution = {(m_useRestitution ? m_restitution : 0.0f)}");
+        DrawScreenTextLine($"mass = {FormatFloat(m_mass)}, gravity = {FormatFloat(m_useGravity ? 10.0f : 0.0f)}, restitution = {FormatFloat(m_useRestitution ? m_restitution : 0.0f)}");
 
         int eventCount = m_events.Count;
         var eventsSpan = CollectionsMarshal.AsSpan(m_events);
         for (int i = 0; i < eventCount; ++i)
         {
             ref readonly Event e = ref eventsSpan[i];
-            DrawScreenTextLine($"hit speed = {e.speed}, hit momentum = {m_mass * e.speed}, final impulse = {e.impulse}, total impulse = {e.totalImpulse}");
+            DrawScreenTextLine($"hit speed = {FormatFloat(e.speed)}, hit momentum = {FormatFloat(m_mass * e.speed)}, final impulse = {FormatFloat(e.impulse)}, total impulse = {FormatFloat(e.totalImpulse)}");
         }
     }
 }

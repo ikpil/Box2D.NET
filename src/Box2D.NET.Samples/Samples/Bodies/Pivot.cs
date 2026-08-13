@@ -8,6 +8,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Bodies;
 
@@ -76,7 +77,7 @@ public class Pivot : Sample
         B2Vec2 r = b2Body_GetWorldVector(m_bodyId, new B2Vec2(0.0f, -m_lever));
 
         B2Vec2 vp = v + b2CrossSV(omega, r);
-        DrawScreenTextLine($"pivot velocity = ({vp.X:g}, {vp.Y:g})");
+        DrawScreenTextLine($"pivot velocity = ({FormatFloat(vp.X)}, {FormatFloat(vp.Y)})");
         
     }
 }

@@ -11,6 +11,7 @@ using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -139,7 +140,7 @@ public class BenchmarkShapeDistance : Sample
         if (m_context.pause == false || m_context.singleStep == true)
         {
             DrawTextLine($"count = {m_count}");
-            DrawScreenTextLine($"min ms = {m_minMilliseconds}, ave us = {1000.0f * m_minMilliseconds / (float)m_count}");
+            DrawScreenTextLine($"min ms = {FormatFloat(m_minMilliseconds)}, ave us = {FormatFloat(1000.0f * m_minMilliseconds / (float)m_count)}");
             DrawTextLine($"average iterations = {totalIterations / (float)m_count}");
         }
 
