@@ -143,7 +143,7 @@ public class BenchmarkShapeDistance : Sample
         {
             DrawScreenTextLine($"count = {m_count}");
             DrawScreenTextLine($"min ms = {FormatFloat(m_minMilliseconds)}, ave us = {FormatFloat(1000.0f * m_minMilliseconds / (float)m_count)}");
-            DrawScreenTextLine($"average iterations = {totalIterations / (float)m_count}");
+            DrawScreenTextLine($"average iterations = {FormatFloat(totalIterations / (float)m_count)}");
         }
 
         B2Transform xfA = m_transformAs[m_drawIndex];
@@ -155,6 +155,6 @@ public class BenchmarkShapeDistance : Sample
         DrawPoint(m_draw, output.pointA, 10.0f, B2HexColor.b2_colorWhite);
         DrawPoint(m_draw, output.pointB, 10.0f, B2HexColor.b2_colorWhite);
         DrawLine(m_draw, output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
-        DrawScreenTextLine($"distance = {output.distance}");
+        DrawScreenTextLine($"distance = {FormatFloat(output.distance)}");
     }
 }

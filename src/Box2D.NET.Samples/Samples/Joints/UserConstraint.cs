@@ -8,6 +8,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -135,6 +136,6 @@ public class UserConstraint : Sample
         base.Draw();
 
         float invTimeStep = m_context.hertz;
-        DrawScreenTextLine($"forces = {m_impulses[0] * invTimeStep:g}, {m_impulses[1] * invTimeStep:g}");
+        DrawScreenTextLine($"forces = {FormatFloat(m_impulses[0] * invTimeStep)}, {FormatFloat(m_impulses[1] * invTimeStep)}");
     }
 }

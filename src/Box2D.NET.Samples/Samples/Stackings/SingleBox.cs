@@ -6,6 +6,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -56,6 +57,6 @@ public class SingleBox : Sample
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawScreenTextLine($"(x, y) = ({position.X:G2}, {position.Y:G2})");
+        DrawScreenTextLine($"(x, y) = ({FormatFloat(position.X, 2)}, {FormatFloat(position.Y, 2)})");
     }
 }

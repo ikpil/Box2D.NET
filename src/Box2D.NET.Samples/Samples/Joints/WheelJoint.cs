@@ -142,6 +142,6 @@ public class WheelJoint : Sample
         base.Draw();
 
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
-        DrawScreenTextLine($"Motor Torque = {torque,4:F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque = {torque,4:F1}"));
     }
 }

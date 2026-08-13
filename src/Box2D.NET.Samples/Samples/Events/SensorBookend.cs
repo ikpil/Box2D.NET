@@ -345,8 +345,8 @@ public class SensorBookend : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"visiting 1 == {m_isVisiting1}");
-        DrawScreenTextLine($"visiting 2 == {m_isVisiting2}");
+        DrawScreenTextLine($"visiting 1 == {(m_isVisiting1 ? "true" : "false")}");
+        DrawScreenTextLine($"visiting 2 == {(m_isVisiting2 ? "true" : "false")}");
         DrawScreenTextLine($"sensors overlap count == {m_sensorsOverlapCount}");
     }
 }

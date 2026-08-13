@@ -8,6 +8,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Geometries;
 
@@ -207,7 +208,7 @@ public class ConvexHull : Sample
 
         if (m_milliseconds > 0.0f)
         {
-            DrawScreenTextLine($"milliseconds = {m_milliseconds:G}");
+            DrawScreenTextLine($"milliseconds = {FormatFloat(m_milliseconds)}");
             
         }
 

@@ -450,19 +450,19 @@ public class DynamicTree : Sample
         {
             case UpdateType.Update_Incremental:
             {
-                DrawScreenTextLine($"incremental : {_ms:F3} ms");
+                DrawScreenTextLine(System.FormattableString.Invariant($"incremental : {_ms:F3} ms"));
             }
                 break;
 
             case UpdateType.Update_FullRebuild:
             {
-                DrawScreenTextLine($"full build {_boxCount} : {_ms:F3} ms");
+                DrawScreenTextLine(System.FormattableString.Invariant($"full build {_boxCount} : {_ms:F3} ms"));
             }
                 break;
 
             case UpdateType.Update_PartialRebuild:
             {
-                DrawScreenTextLine($"partial rebuild {_boxCount} : {_ms:F3} ms");
+                DrawScreenTextLine(System.FormattableString.Invariant($"partial rebuild {_boxCount} : {_ms:F3} ms"));
             }
                 break;
 

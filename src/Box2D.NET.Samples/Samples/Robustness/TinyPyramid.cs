@@ -71,6 +71,6 @@ public class TinyPyramid : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"{200.0f * m_extent:F1}cm squares");
+        DrawScreenTextLine(System.FormattableString.Invariant($"{200.0f * m_extent:F1}cm squares"));
     }
 }

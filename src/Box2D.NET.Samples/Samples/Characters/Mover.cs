@@ -635,8 +635,8 @@ public class Mover : Sample
         }
 
         B2Vec2 p = m_transform.p;
-        DrawScreenTextLine($"position {p.X:F2} {p.Y:F2}");
-        DrawScreenTextLine($"velocity {m_velocity.X:F2}, {m_velocity.Y:F2}");
+        DrawScreenTextLine(FormattableString.Invariant($"position {p.X:F2} {p.Y:F2}"));
+        DrawScreenTextLine(FormattableString.Invariant($"velocity {m_velocity.X:F2} {m_velocity.Y:F2}"));
         DrawScreenTextLine($"iterations {m_totalIterations}");
 
         if (m_lockCamera)

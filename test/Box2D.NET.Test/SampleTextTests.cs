@@ -33,4 +33,12 @@ public class SampleTextTests
             CultureInfo.CurrentCulture = previousCulture;
         }
     }
+
+    [TestCase(1.26f, 2, "1.3")]
+    [TestCase(123.456f, 2, "1.2e+02")]
+    [TestCase(0.001234f, 2, "0.0012")]
+    public void FormatFloatSupportsPrintfGeneralFormatPrecision(float value, int precision, string expected)
+    {
+        Assert.That(SampleText.FormatFloat(value, precision), Is.EqualTo(expected));
+    }
 }
