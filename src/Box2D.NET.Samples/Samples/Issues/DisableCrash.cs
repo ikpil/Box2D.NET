@@ -73,7 +73,7 @@ public class DisableCrash : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -90,5 +90,7 @@ public class DisableCrash : Sample
         }
 
 
+
+        return true;
     }
 }

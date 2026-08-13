@@ -59,7 +59,7 @@ public class ScaleRagdoll : Sample
         Human_ApplyRandomAngularImpulse(ref m_human, 0.1f);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -71,5 +71,7 @@ public class ScaleRagdoll : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 }

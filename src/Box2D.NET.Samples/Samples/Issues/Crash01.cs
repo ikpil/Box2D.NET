@@ -106,7 +106,7 @@ public class Crash01 : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -142,5 +142,7 @@ public class Crash01 : Sample
         }
 
 
+
+        return true;
     }
 }

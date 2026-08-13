@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -127,7 +127,7 @@ public class BenchmarkSleep : Sample
         base.Draw();
 
         int count = m_stepCount - 20;
-        DrawTextLine($"wake ave = {m_wakeTotal / count:g} ms");
-        DrawTextLine($"sleep ave = {m_sleepTotal / count:g} ms");
+        DrawScreenTextLine($"wake ave = {m_wakeTotal / count:g} ms");
+        DrawScreenTextLine($"sleep ave = {m_sleepTotal / count:g} ms");
     }
 }

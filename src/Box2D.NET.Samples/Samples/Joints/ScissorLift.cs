@@ -204,7 +204,7 @@ public class ScissorLift : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -228,5 +228,7 @@ public class ScissorLift : Sample
             b2Joint_WakeBodies(m_liftJointId);
         }
         ImGui.PopItemWidth();
+
+        return true;
     }
 }

@@ -162,7 +162,7 @@ public class ChainSegmentShape : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "Circle", "Capsule", "Box" };
@@ -184,6 +184,8 @@ public class ChainSegmentShape : Sample
         {
             Mutate();
         }
+
+        return true;
     }
 
     public override void Step()

@@ -266,7 +266,7 @@ public class OverlapWorld : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -324,6 +324,8 @@ public class OverlapWorld : Sample
         ImGui.RadioButton("Box##Overlap", ref m_shapeType, e_boxShape);
 
 
+
+        return true;
     }
 
     public override void Step()

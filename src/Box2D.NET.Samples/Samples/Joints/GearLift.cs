@@ -294,7 +294,7 @@ public class GearLift : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -318,6 +318,8 @@ public class GearLift : Sample
             b2Joint_WakeBodies(m_driverId);
         }
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()

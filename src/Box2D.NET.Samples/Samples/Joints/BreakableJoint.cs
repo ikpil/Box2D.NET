@@ -200,7 +200,7 @@ public class BreakableJoint : Sample
         m_breakForce = 1000.0f;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("break force", ref m_breakForce, 0.0f, 10000.0f, "%.1f");
@@ -211,6 +211,8 @@ public class BreakableJoint : Sample
             b2World_SetGravity(m_worldId, gravity);
         }
         ImGui.PopItemWidth();
+
+        return true;
     }
 
 

@@ -85,7 +85,7 @@ public class ChainDrop : Sample
         //m_shapeId = b2CreatePolygonShape( m_bodyId, &shapeDef, &box );
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         ImGui.SliderFloat("Speed", ref m_speed, -100.0f, 0.0f, "%.0f");
@@ -98,5 +98,7 @@ public class ChainDrop : Sample
         }
 
 
+
+        return true;
     }
 }

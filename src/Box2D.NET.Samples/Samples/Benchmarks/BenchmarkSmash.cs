@@ -54,7 +54,7 @@ public class BenchmarkSmash : Sample
     }
 
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -80,5 +80,7 @@ public class BenchmarkSmash : Sample
         }
 
 
+
+        return true;
     }
 }

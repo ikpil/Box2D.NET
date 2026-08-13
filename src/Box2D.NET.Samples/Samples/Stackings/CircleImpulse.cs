@@ -105,7 +105,7 @@ public class CircleImpulse : Sample
         b2Body_SetMassData(m_bodyId, massData);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -120,6 +120,8 @@ public class CircleImpulse : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()

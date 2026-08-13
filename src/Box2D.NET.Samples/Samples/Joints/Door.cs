@@ -91,7 +91,7 @@ public class Door : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -122,6 +122,8 @@ public class Door : Sample
         {
             b2RevoluteJoint_EnableLimit(m_jointId, m_enableLimit);
         }
+
+        return true;
     }
 
     public override void Draw()
@@ -134,6 +136,6 @@ public class Door : Sample
         float translationError = b2Joint_GetLinearSeparation(m_jointId);
         m_translationError = b2MaxFloat(m_translationError, translationError);
 
-        DrawTextLine($"translation error = {m_translationError}");
+        DrawScreenTextLine($"translation error = {m_translationError}");
     }
 }

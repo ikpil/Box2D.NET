@@ -114,7 +114,7 @@ public class TangentSpeed : Sample
         m_bodyIds.Clear();
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -129,6 +129,8 @@ public class TangentSpeed : Sample
             Reset();
         }
         ImGui.PopItemWidth();
+
+        return true;
     }
 
     public override void Step()

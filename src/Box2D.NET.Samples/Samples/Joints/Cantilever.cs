@@ -100,7 +100,7 @@ public class Cantilever : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -154,6 +154,8 @@ public class Cantilever : Sample
                 b2Joint_SetCollideConnected(m_jointIds[i], m_collideConnected);
             }
         }
+
+        return true;
     }
 
 
@@ -162,6 +164,6 @@ public class Cantilever : Sample
         base.Draw();
 
         B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
-        DrawTextLine($"tip-y = {tipPosition.Y:F2}");
+        DrawScreenTextLine($"tip-y = {tipPosition.Y:F2}");
     }
 }

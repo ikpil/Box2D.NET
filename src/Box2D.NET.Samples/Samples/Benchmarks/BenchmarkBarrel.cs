@@ -302,7 +302,7 @@ public class BenchmarkBarrel : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -327,5 +327,7 @@ public class BenchmarkBarrel : Sample
         }
 
 
+
+        return true;
     }
 }

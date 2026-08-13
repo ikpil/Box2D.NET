@@ -211,7 +211,7 @@ public class Driving : Sample
         m_car.Spawn(m_worldId, new B2Vec2(0.0f, 0.0f), 1.0f, m_hertz, m_dampingRatio, m_torque, B2UserData.Empty);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -239,6 +239,8 @@ public class Driving : Sample
         ImGui.PopItemWidth();
 
 
+
+        return true;
     }
 
     public override void Step()
@@ -273,7 +275,7 @@ public class Driving : Sample
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.X * 3.6f;
-        DrawTextLine($"speed in kph: {kph:G2}");
+        DrawScreenTextLine($"speed in kph: {kph:G2}");
 
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);

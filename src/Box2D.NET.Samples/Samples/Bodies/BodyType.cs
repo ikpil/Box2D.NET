@@ -220,7 +220,7 @@ public class BodyType : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -276,6 +276,8 @@ public class BodyType : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()

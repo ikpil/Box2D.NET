@@ -44,7 +44,7 @@ public class SampleContext
     public bool showUI = true;
 
     // Diagnostics drawer visibility. D toggles.
-    public bool showDiagnostics = false;
+    public bool showMetrics = false;
 
     // Set by Ctrl+O; consumed by UpdateSampleUI to open the fuzzy sample picker.
     public bool openSamplePicker = false;
@@ -95,7 +95,7 @@ public class SampleContext
         sampleIndex = settings.sampleIndex;
         debugDraw.drawShapes = settings.drawShapes;
         debugDraw.drawJoints = settings.drawJoints;
-        showDiagnostics = settings.showDiagnostics;
+        showMetrics = settings.showDiagnostics;
     }
 
 

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -32,6 +32,6 @@ public class BenchmarkWasher : Sample
         base.Step();
 
         B2ContactEvents events = b2World_GetContactEvents(m_worldId);
-        DrawTextLine($"hits = {events.hitCount}");
+        DrawScreenTextLine($"hits = {events.hitCount}");
     }
 }

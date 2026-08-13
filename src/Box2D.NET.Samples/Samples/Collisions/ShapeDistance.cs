@@ -212,7 +212,7 @@ public class ShapeDistance : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = ["point", "segment", "triangle", "box"];
@@ -271,6 +271,8 @@ public class ShapeDistance : Sample
             m_simplexIndex = b2ClampInt(m_simplexIndex, 0, m_simplexCount - 1);
             ImGui.PopItemWidth();
         }
+
+        return true;
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)
@@ -445,11 +447,11 @@ public class ShapeDistance : Sample
 
         if (m_cache.count == 1)
         {
-            DrawTextLine($"cache = {{{m_cache.indexA[0]}}}, {{{m_cache.indexB[0]}}}");
+            DrawScreenTextLine($"cache = {{{m_cache.indexA[0]}}}, {{{m_cache.indexB[0]}}}");
         }
         else if (m_cache.count == 2)
         {
-            DrawTextLine($"cache = {{{m_cache.indexA[0]}, {m_cache.indexA[1]}}}, {{{m_cache.indexB[0]}, {m_cache.indexB[1]}}}");
+            DrawScreenTextLine($"cache = {{{m_cache.indexA[0]}, {m_cache.indexA[1]}}}, {{{m_cache.indexB[0]}, {m_cache.indexB[1]}}}");
         }
         else if (m_cache.count == 3)
         {

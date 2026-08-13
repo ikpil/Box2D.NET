@@ -198,7 +198,7 @@ public class MotionLocks : Sample
         ++index;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -230,6 +230,8 @@ public class MotionLocks : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()

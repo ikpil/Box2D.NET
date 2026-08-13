@@ -321,7 +321,7 @@ public class BenchmarkCast : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -387,25 +387,27 @@ public class BenchmarkCast : Sample
         {
             BuildScene();
         }
+
+        return true;
     }
 
     public override void Draw()
     {
         base.Draw();
 
-        DrawTextLine($"build time ms = {m_buildTime:g}");
+        DrawScreenTextLine($"build time ms = {m_buildTime:g}");
 
 
         DrawScreenTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
 
 
-        DrawTextLine($"total ms = {ms:F3}");
+        DrawScreenTextLine($"total ms = {ms:F3}");
 
 
-        DrawTextLine($"min total ms = {m_minTime:F3}");
+        DrawScreenTextLine($"min total ms = {m_minTime:F3}");
 
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
-        DrawTextLine($"average us = {aveRayCost:F2}");
+        DrawScreenTextLine($"average us = {aveRayCost:F2}");
     }
 }

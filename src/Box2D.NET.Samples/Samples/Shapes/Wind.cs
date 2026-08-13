@@ -128,7 +128,7 @@ public class Wind : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -153,6 +153,8 @@ public class Wind : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 
     public override void Step()

@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -111,7 +111,7 @@ public class CircleStack : Sample
         int eventCount = m_events.Count;
         for (int i = 0; i < eventCount; ++i)
         {
-            DrawTextLine($"{m_events[i].indexA}, {m_events[i].indexB}");
+            DrawScreenTextLine($"{m_events[i].indexA}, {m_events[i].indexB}");
         }
     }
 }

@@ -123,7 +123,7 @@ public class MotorJoint : Sample
         m_time = 0.0f;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         if (ImGui.SliderFloat("Speed", ref m_speed, -5.0f, 5.0f, "%.0f"))
@@ -146,6 +146,8 @@ public class MotorJoint : Sample
         {
             b2Body_ApplyLinearImpulseToCenter(m_bodyId, new B2Vec2(100.0f, 0.0f), true);
         }
+
+        return true;
     }
 
 

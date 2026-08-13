@@ -143,7 +143,7 @@ public class RevoluteJoint : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -205,6 +205,8 @@ public class RevoluteJoint : Sample
             }
             ImGui.PopItemWidth();
         }
+
+        return true;
     }
 
     public override void Draw()
@@ -212,13 +214,13 @@ public class RevoluteJoint : Sample
         base.Draw();
 
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
-        DrawTextLine($"Angle (Deg) 1 = {angle1:F1}");
+        DrawScreenTextLine($"Angle (Deg) 1 = {angle1:F1}");
 
 
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
-        DrawTextLine($"Motor Torque 1 = {torque1:F1}");
+        DrawScreenTextLine($"Motor Torque 1 = {torque1:F1}");
 
         float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        DrawTextLine($"Motor Torque 2 = {torque2:F1}");
+        DrawScreenTextLine($"Motor Torque 2 = {torque2:F1}");
     }
 }

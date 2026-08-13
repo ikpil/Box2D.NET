@@ -107,7 +107,7 @@ public class BallAndChain : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         bool updateFriction = ImGui.SliderFloat("Joint Friction", ref m_frictionTorque, 0.0f, 1000.0f, "%2.f");
@@ -119,5 +119,7 @@ public class BallAndChain : Sample
                 b2RevoluteJoint_SetMaxMotorTorque(m_jointIds[i], m_frictionTorque);
             }
         }
+
+        return true;
     }
 }

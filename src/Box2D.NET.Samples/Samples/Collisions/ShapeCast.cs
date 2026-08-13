@@ -298,7 +298,7 @@ public class ShapeCast : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
         string[] shapeTypes = { "point", "segment", "triangle", "box" };
@@ -342,6 +342,8 @@ public class ShapeCast : Sample
 
         ImGui.Checkbox("show indices", ref m_showIndices);
         ImGui.Checkbox("encroach", ref m_encroach);
+
+        return true;
     }
 
     public override void Step()

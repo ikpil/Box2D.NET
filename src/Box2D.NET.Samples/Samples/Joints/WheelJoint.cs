@@ -85,7 +85,7 @@ public class WheelJoint : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -133,6 +133,8 @@ public class WheelJoint : Sample
             }
             ImGui.PopItemWidth();
         }
+
+        return true;
     }
 
     public override void Draw()
@@ -140,6 +142,6 @@ public class WheelJoint : Sample
         base.Draw();
 
         float torque = b2WheelJoint_GetMotorTorque(m_jointId);
-        DrawTextLine($"Motor Torque = {torque,4:F1}");
+        DrawScreenTextLine($"Motor Torque = {torque,4:F1}");
     }
 }

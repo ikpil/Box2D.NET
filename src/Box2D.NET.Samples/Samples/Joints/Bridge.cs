@@ -138,7 +138,7 @@ public class Bridge : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -187,5 +187,7 @@ public class Bridge : Sample
         ImGui.PopItemWidth();
 
 
+
+        return true;
     }
 }

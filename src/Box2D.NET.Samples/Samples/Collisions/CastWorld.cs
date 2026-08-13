@@ -297,7 +297,7 @@ public class CastWorld : Sample
         }
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -368,6 +368,8 @@ public class CastWorld : Sample
         {
             DestroyBody();
         }
+
+        return true;
     }
 
     public override void Step()

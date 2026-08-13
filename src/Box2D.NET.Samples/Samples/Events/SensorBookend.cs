@@ -120,7 +120,7 @@ public class SensorBookend : Sample
         m_visitorShapeId = b2CreateCircleShape(m_visitorBodyId, shapeDef, circle);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -243,6 +243,8 @@ public class SensorBookend : Sample
         }
 
 
+
+        return true;
     }
 
     public override void Step()
@@ -343,8 +345,8 @@ public class SensorBookend : Sample
     {
         base.Draw();
 
-        DrawTextLine($"visiting 1 == {m_isVisiting1}");
-        DrawTextLine($"visiting 2 == {m_isVisiting2}");
-        DrawTextLine($"sensors overlap count == {m_sensorsOverlapCount}");
+        DrawScreenTextLine($"visiting 1 == {m_isVisiting1}");
+        DrawScreenTextLine($"visiting 2 == {m_isVisiting2}");
+        DrawScreenTextLine($"sensors overlap count == {m_sensorsOverlapCount}");
     }
 }

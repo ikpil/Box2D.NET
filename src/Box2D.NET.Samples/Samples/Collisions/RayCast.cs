@@ -80,7 +80,7 @@ public class RayCast : Sample
         m_showFraction = false;
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
 
@@ -114,6 +114,8 @@ public class RayCast : Sample
         ImGui.Text("mouse btn 1 + shft: translate");
         ImGui.Text("mouse btn 1 + ctrl: rotate");
 
+
+        return true;
     }
 
     public override void MouseDown(B2Vec2 p, MouseButton button, KeyModifiers mods)

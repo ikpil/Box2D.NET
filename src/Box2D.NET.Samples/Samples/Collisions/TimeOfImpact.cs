@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -73,7 +73,7 @@ public class TimeOfImpact : Sample
     {
         base.Draw();
 
-        DrawTextLine($"toi = {_output.fraction:g}");
+        DrawScreenTextLine($"toi = {_output.fraction:g}");
         
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
@@ -126,7 +126,7 @@ public class TimeOfImpact : Sample
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
-            DrawTextLine($"distance = {distanceOutput.distance}:g");
+            DrawScreenTextLine($"distance = {distanceOutput.distance}:g");
             
         }
 

@@ -101,7 +101,7 @@ public class OverlapRecovery : Sample
         B2_ASSERT(bodyIndex == m_bodyCount);
     }
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         ImGui.PushItemWidth(6.0f * ImGui.GetFontSize());
@@ -122,5 +122,7 @@ public class OverlapRecovery : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 }

@@ -114,15 +114,18 @@ public class SampleApp
             Monitor* primaryMonitor = _context.glfw.GetPrimaryMonitor();
             if (null != primaryMonitor)
             {
+                float contentScale = 1.0f;
+                _context.glfw.GetMonitorContentScale(primaryMonitor, out contentScale, out contentScale);
+
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    _context.glfw.GetMonitorContentScale(primaryMonitor, out s_framebufferScale, out s_framebufferScale);
+                    _context.uiScale = 1.0f;
+                    s_framebufferScale = contentScale;
                 }
                 else
                 {
-                    float uiScale = 1.0f;
-                    _context.glfw.GetMonitorContentScale(primaryMonitor, out uiScale, out uiScale);
-                    _context.uiScale = uiScale;
+                    _context.uiScale = contentScale;
+                    s_framebufferScale = 1.0f;
                 }
             }
         }
@@ -288,26 +291,27 @@ public class SampleApp
 
         int bufferWidth = 0;
         int bufferHeight = 0;
-        double cursorPosX = 0.0d;
-        double cursorPosY = 0.0d;
         unsafe
         {
             _context.glfw.GetFramebufferSize(_context.window, out bufferWidth, out bufferHeight);
 
             // _ctx.draw.DrawBackground();
-
-            _context.glfw.GetCursorPos(_context.window, out cursorPosX, out cursorPosY);
         }
 
-        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
-        // ImGui_ImplOpenGL3_NewFrame();
-        // ImGui_ImplGlfw_NewFrame();
-        // ImGui_ImplGlfw_CursorPosCallback(_ctx.g_mainWindow, cursorPosX / s_windowScale, cursorPosY / s_windowScale);
         if (null != _imgui)
         {
             var io = ImGui.GetIO();
             io.DisplaySize = new Vector2(_context.camera.width, _context.camera.height);
-            io.DisplayFramebufferScale = new Vector2(bufferWidth / (float)_context.camera.width, bufferHeight / (float)_context.camera.height);
+
+            // These can be zero if the window is minimized
+            if (_context.camera.width > 0.0f && _context.camera.height > 0.0f)
+            {
+                // Framebuffer/window ratio: 1 on Windows/Linux, 2 on a Retina display. Drives
+                // both UI magnification and font rasterizer density.
+                io.DisplayFramebufferScale = new Vector2(bufferWidth / (float)_context.camera.width,
+                    bufferHeight / (float)_context.camera.height);
+            }
+
             io.DeltaTime = (float)dt;
             _imgui.Update((float)dt);
         }
@@ -319,20 +323,6 @@ public class SampleApp
         }
 
         _context.sample.ResetText();
-
-        if (_context.showUI)
-        {
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorGoldenRod, SampleFactory.Shared.GetName(_context.sampleIndex));
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorLightGray, SampleFactory.Shared.GetCategory(_context.sampleIndex));
-            _context.sample.DrawTextLine("");
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"{1000.0f * _frameTime:0.0} ms");
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"step {_context.sample.m_stepCount}");
-            _context.sample.DrawTextLine("");
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen,
-                $"cam ({_context.camera.center.X:0.0}, {_context.camera.center.Y:0.0})");
-            _context.sample.DrawColoredTextLine(B2HexColor.b2_colorSeaGreen, $"zoom {_context.camera.zoom:0.00}");
-        }
-
         _context.sample.Step();
         _context.sample.Draw();
     }
@@ -353,18 +343,9 @@ public class SampleApp
     {
         _context.gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-        if (_context.showUI == false)
-        {
-            float fontSize = ImGui.GetFontSize();
-            DrawScreenString(_context.draw, 5.0f, 1.5f * fontSize, B2HexColor.b2_colorYellow,
-                $"{SampleFactory.Shared.GetCategory(_context.sampleIndex)} : {SampleFactory.Shared.GetName(_context.sampleIndex)}");
-            DrawScreenString(_context.draw, 5.0f, _context.camera.height - 0.5f * fontSize, B2HexColor.b2_colorSeaGreen,
-                $"{1000.0f * _frameTime:0.0} ms  step {_context.sample.m_stepCount}");
-        }
-
         FlushDraw(_context.draw, _context.camera);
 
-        UpdateSampleUI(_context);
+        DrawUI(_context, _frameTime);
 
         //ImGui.ShowDemoWindow();
 
@@ -541,7 +522,7 @@ public class SampleApp
         // }
         //
 
-        if (_context.uiScale != 1.0f)
+        if (_context.uiScale != 1.0f || s_framebufferScale != 1.0f)
         {
             // ImGui.NET 1.90 does not expose AddFontDefaultVector, so use the existing font as an embedded resource.
             using Stream stream = typeof(SampleApp).Assembly.GetManifestResourceStream("Box2D.NET.Samples.Fonts.droid_sans.ttf")!;
@@ -556,8 +537,11 @@ public class SampleApp
         {
             ApplyUIStyle();
 
+            ImGuiStylePtr style = ImGui.GetStyle();
+            style.ScaleAllSizes(_context.uiScale);
+
             ImGuiIOPtr io = ImGui.GetIO();
-            if (_context.uiScale == 1.0f)
+            if (_context.uiScale == 1.0f && s_framebufferScale == 1.0f)
             {
                 io.Fonts.AddFontDefault();
             }
@@ -566,21 +550,15 @@ public class SampleApp
                 unsafe
                 {
                     ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-                    // This brightens the font, improving readability when it is small.
-                    fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
                     fontConfig.FontDataOwnedByAtlas = false;
 
-                    float regularSize = MathF.Floor(13.0f * _context.uiScale);
+                    float regularSize = MathF.Floor(13.0f * _context.uiScale * s_framebufferScale);
                     io.Fonts.AddFontFromMemoryTTF(_fontDataHandle.AddrOfPinnedObject(), _fontData.Length, regularSize, fontConfig);
+                    io.FontGlobalScale = 1.0f / s_framebufferScale;
                     ImGuiNative.ImFontConfig_destroy(fontConfig.NativePtr);
                 }
             }
         });
-
-        if (_context.uiScale != 1.0f)
-        {
-            ImGui.GetStyle().ScaleAllSizes(_context.uiScale);
-        }
     }
 
     public void DestroyUI()
@@ -619,58 +597,20 @@ public class SampleApp
 
                 case Keys.Left:
                     // Pan left
-                    if (0 != ((uint)mods & (uint)KeyModifiers.Control))
-                    {
-                        B2Vec2 newOrigin = new B2Vec2(2.0f, 0.0f);
-                        _context.sample.ShiftOrigin(newOrigin);
-                    }
-                    else
-                    {
-                        _context.camera.center.X -= 0.5f;
-                    }
-
+                    _context.camera.center.X -= 0.5f;
                     break;
 
                 case Keys.Right:
                     // Pan right
-                    if (0 != ((uint)mods & (uint)KeyModifiers.Control))
-                    {
-                        B2Vec2 newOrigin = new B2Vec2(-2.0f, 0.0f);
-                        _context.sample.ShiftOrigin(newOrigin);
-                    }
-                    else
-                    {
-                        _context.camera.center.X += 0.5f;
-                    }
-
+                    _context.camera.center.X += 0.5f;
                     break;
 
                 case Keys.Down:
-                    // Pan down
-                    if (0 != ((uint)mods & (uint)KeyModifiers.Control))
-                    {
-                        B2Vec2 newOrigin = new B2Vec2(0.0f, 2.0f);
-                        _context.sample.ShiftOrigin(newOrigin);
-                    }
-                    else
-                    {
-                        _context.camera.center.Y -= 0.5f;
-                    }
-
+                    _context.camera.center.Y -= 0.5f;
                     break;
 
                 case Keys.Up:
-                    // Pan up
-                    if (0 != ((uint)mods & (uint)KeyModifiers.Control))
-                    {
-                        B2Vec2 newOrigin = new B2Vec2(0.0f, -2.0f);
-                        _context.sample.ShiftOrigin(newOrigin);
-                    }
-                    else
-                    {
-                        _context.camera.center.Y += 0.5f;
-                    }
-
+                    _context.camera.center.Y += 0.5f;
                     break;
 
                 case Keys.Home:
@@ -730,7 +670,7 @@ public class SampleApp
                     break;
 
                 case Keys.M:
-                    _context.showDiagnostics = !_context.showDiagnostics;
+                    _context.showMetrics = !_context.showMetrics;
                     break;
 
                 default:

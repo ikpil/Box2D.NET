@@ -91,7 +91,7 @@ public class Weeble : Sample
     }
 
 
-    public override void BuildSamplePanel()
+    public override bool DrawControls()
     {
 
         if (ImGui.Button("Teleport"))
@@ -115,6 +115,8 @@ public class Weeble : Sample
 
         ImGui.PopItemWidth();
 
+
+        return true;
     }
 
     public override void Draw()
