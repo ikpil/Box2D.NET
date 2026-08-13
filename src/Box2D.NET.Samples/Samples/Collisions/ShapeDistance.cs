@@ -445,15 +445,15 @@ public class ShapeDistance : Sample
 
         if (m_cache.count == 1)
         {
-            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexB[0]}");
+            DrawTextLine($"cache = {{{m_cache.indexA[0]}}}, {{{m_cache.indexB[0]}}}");
         }
         else if (m_cache.count == 2)
         {
-            DrawTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}");
+            DrawTextLine($"cache = {{{m_cache.indexA[0]}, {m_cache.indexA[1]}}}, {{{m_cache.indexB[0]}, {m_cache.indexB[1]}}}");
         }
         else if (m_cache.count == 3)
         {
-            DrawScreenTextLine($"cache = {m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}, {m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}");
+            DrawScreenTextLine($"cache = {{{m_cache.indexA[0]}, {m_cache.indexA[1]}, {m_cache.indexA[2]}}}, {{{m_cache.indexB[0]}, {m_cache.indexB[1]}, {m_cache.indexB[2]}}}");
         }
     }
 }

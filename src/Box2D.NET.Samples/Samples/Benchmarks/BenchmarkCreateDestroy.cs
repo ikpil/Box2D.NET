@@ -10,6 +10,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -138,11 +139,11 @@ public class BenchmarkCreateDestroy : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"total: create = {m_createTime} ms, destroy = {m_destroyTime} ms");
+        DrawScreenTextLine($"total: create = {FormatFloat(m_createTime)} ms, destroy = {FormatFloat(m_destroyTime)} ms");
 
         float createPerBody = 1000.0f * m_createTime / m_iterations / m_bodyCount;
         float destroyPerBody = 1000.0f * m_destroyTime / m_iterations / m_bodyCount;
 
-        DrawScreenTextLine($"body: create = {createPerBody} us, destroy = {destroyPerBody} us");
+        DrawScreenTextLine($"body: create = {FormatFloat(createPerBody)} us, destroy = {FormatFloat(destroyPerBody)} us");
     }
 }

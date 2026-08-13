@@ -11,6 +11,7 @@ using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -381,7 +382,7 @@ public class ShapeCast : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"hit = {output.hit}, iterations = {output.iterations}, fraction = {output.fraction}, distance = {_distanceOutput.distance}");
+        DrawScreenTextLine($"hit = {(output.hit ? "true" : "false")}, iterations = {output.iterations}, fraction = {FormatFloat(output.fraction)}, distance = {FormatFloat(_distanceOutput.distance)}");
 
         DrawShape(m_typeA, b2Transform_identity, m_radiusA, B2HexColor.b2_colorCyan);
         DrawShape(m_typeB, m_transform, m_radiusB, B2HexColor.b2_colorLightGreen);

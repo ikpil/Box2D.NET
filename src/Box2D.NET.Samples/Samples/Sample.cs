@@ -24,6 +24,7 @@ using static Box2D.NET.Samples.Graphics.Draws;
 using static Box2D.NET.Samples.Graphics.Cameras;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples;
 
@@ -506,7 +507,7 @@ public class Sample : IDisposable
                 }
 
                 // This project does not depend on ImPlot, so draw the same profile data with ImGui's draw list.
-                DrawProfilePlot("Profile", count, maxValue, ImGui.GetContentRegionAvail());
+                DrawProfilePlot("Profile", count, maxValue, m_profileCapacity / 60.0f, ImGui.GetContentRegionAvail());
 
                 ImGui.EndTabItem();
             }
@@ -609,15 +610,8 @@ public class Sample : IDisposable
         return new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
     }
 
-    private void DrawProfilePlot(string label, int count, float maxValue, Vector2 size)
+    private void DrawProfilePlot(string label, int count, float maxValue, float maxTime, Vector2 size)
     {
-        if (count == 0)
-        {
-            ImGui.TextUnformatted("No frame data");
-            return;
-        }
-
-        maxValue = b2MaxFloat(maxValue, 0.001f);
         Vector2 canvasPos = ImGui.GetCursorScreenPos();
         Vector2 canvasSize = size;
         if (canvasSize.X < 0.0f)
@@ -630,29 +624,57 @@ public class Sample : IDisposable
 
         ImGui.InvisibleButton(label, canvasSize);
 
-        Vector2 min = canvasPos;
-        Vector2 max = canvasPos + canvasSize;
+        Vector2 min = canvasPos + new Vector2(42.0f, 8.0f);
+        Vector2 max = canvasPos + canvasSize - new Vector2(12.0f, 28.0f);
+        Vector2 plotSize = max - min;
         ImDrawListPtr drawList = ImGui.GetWindowDrawList();
         uint borderColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.35f, 0.35f, 0.35f, 1.0f));
         uint gridColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.20f, 0.20f, 1.0f));
         uint textColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.85f, 0.85f, 1.0f));
+        Vector4 stepColor = new Vector4(0.20f, 0.70f, 1.00f, 1.0f);
+        Vector4 collideColor = new Vector4(0.95f, 0.65f, 0.20f, 1.0f);
+        Vector4 solveColor = new Vector4(0.30f, 0.85f, 0.45f, 1.0f);
 
         drawList.AddRect(min, max, borderColor);
         for (int i = 1; i < 4; ++i)
         {
-            float y = min.Y + canvasSize.Y * i / 4.0f;
+            float y = min.Y + plotSize.Y * i / 4.0f;
             drawList.AddLine(new Vector2(min.X, y), new Vector2(max.X, y), gridColor);
+
+            float x = min.X + plotSize.X * i / 4.0f;
+            drawList.AddLine(new Vector2(x, min.Y), new Vector2(x, max.Y), gridColor);
         }
 
-        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.step, new Vector4(0.20f, 0.70f, 1.00f, 1.0f));
-        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.collide, new Vector4(0.95f, 0.65f, 0.20f, 1.0f));
-        DrawProfileSeries(drawList, min, canvasSize, count, maxValue, p => p.solve, new Vector4(0.30f, 0.85f, 0.45f, 1.0f));
+        float plotMaxValue = maxValue > 0.0f ? maxValue : 1.0f;
+        DrawProfileSeries(drawList, min, plotSize, count, plotMaxValue, maxTime, p => p.step, stepColor);
+        DrawProfileSeries(drawList, min, plotSize, count, plotMaxValue, maxTime, p => p.collide, collideColor);
+        DrawProfileSeries(drawList, min, plotSize, count, plotMaxValue, maxTime, p => p.solve, solveColor);
 
-        drawList.AddText(min + new Vector2(8.0f, 6.0f), textColor, $"step / collide / solve    max {maxValue:F2} ms");
-        drawList.AddText(new Vector2(min.X + 8.0f, max.Y - 22.0f), textColor, $"0s .. {m_frameTimes[count - 1]:F1}s");
+        drawList.AddText(new Vector2(canvasPos.X + 4.0f, min.Y), textColor, "ms");
+        drawList.AddText(new Vector2(canvasPos.X + 4.0f, min.Y + ImGui.GetFontSize()), textColor, FormatFloat(maxValue));
+        drawList.AddText(new Vector2(min.X, max.Y + 4.0f), textColor, "0");
+        drawList.AddText(new Vector2(max.X - 36.0f, max.Y + 4.0f), textColor, FormatFloat(maxTime));
+        drawList.AddText(new Vector2(max.X + 2.0f, max.Y + 4.0f), textColor, "t");
+
+        Vector2 legend = min + new Vector2(8.0f, 6.0f);
+        legend = DrawProfileLegendItem(drawList, legend, "step", stepColor, textColor);
+        legend = DrawProfileLegendItem(drawList, legend, "collide", collideColor, textColor);
+        DrawProfileLegendItem(drawList, legend, "solve", solveColor, textColor);
     }
 
-    private void DrawProfileSeries(ImDrawListPtr drawList, Vector2 origin, Vector2 size, int count, float maxValue, Func<B2Profile, float> selector, Vector4 color)
+    private static Vector2 DrawProfileLegendItem(ImDrawListPtr drawList, Vector2 position, string name, Vector4 color, uint textColor)
+    {
+        uint lineColor = ImGui.ColorConvertFloat4ToU32(color);
+        float centerY = position.Y + 0.5f * ImGui.GetFontSize();
+        drawList.AddLine(new Vector2(position.X, centerY), new Vector2(position.X + 14.0f, centerY), lineColor, 2.0f);
+        position.X += 18.0f;
+        drawList.AddText(position, textColor, name);
+        position.X += ImGui.CalcTextSize(name).X + 12.0f;
+        return position;
+    }
+
+    private void DrawProfileSeries(ImDrawListPtr drawList, Vector2 origin, Vector2 size, int count, float maxValue, float maxTime,
+        Func<B2Profile, float> selector, Vector4 color)
     {
         if (count < 2)
         {
@@ -661,13 +683,12 @@ public class Sample : IDisposable
 
         uint lineColor = ImGui.ColorConvertFloat4ToU32(color);
         Vector2 previous = default;
-        float invCount = 1.0f / (count - 1);
 
         for (int i = 0; i < count; ++i)
         {
             int index = (int)((m_profileReadIndex + (ulong)i) & (m_profileCapacity - 1));
             float value = selector(m_profiles[index]);
-            float x = origin.X + size.X * i * invCount;
+            float x = origin.X + size.X * m_frameTimes[i] / maxTime;
             float y = origin.Y + size.Y * (1.0f - b2ClampFloat(value / maxValue, 0.0f, 1.0f));
             Vector2 current = new Vector2(x, y);
 
@@ -679,6 +700,7 @@ public class Sample : IDisposable
             previous = current;
         }
     }
+
     public void ResetText()
     {
         m_hudLineCount = 0;
@@ -1055,10 +1077,20 @@ public class Sample : IDisposable
 
     private static void TextLinkOpenURL(string label, string url)
     {
-        // ImGui.NET 1.90 does not expose TextLinkOpenURL, so preserve the same click behavior here.
-        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.26f, 0.59f, 0.98f, 1.0f));
+        // ImGui.NET 1.90 does not expose TextLinkOpenURL, so preserve the same appearance and click behavior here.
+        Vector4 color = new Vector4(0.26f, 0.59f, 0.98f, 1.0f);
+        ImGui.PushStyleColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(label);
         ImGui.PopStyleColor();
+        if (ImGui.IsItemHovered())
+        {
+            Vector2 min = ImGui.GetItemRectMin();
+            Vector2 max = ImGui.GetItemRectMax();
+            uint underlineColor = ImGui.ColorConvertFloat4ToU32(color);
+            ImGui.GetWindowDrawList().AddLine(new Vector2(min.X, max.Y), max, underlineColor);
+            ImGui.SetMouseCursor(ImGuiMouseCursor.Hand);
+        }
+
         if (ImGui.IsItemClicked())
         {
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
@@ -1280,7 +1312,7 @@ public class Sample : IDisposable
                     ImGui.Text($"Box2D {version.major}.{version.minor}.{version.revision}");
                     ImGui.Spacing();
                     TextLinkOpenURL("box2d.org", "https://box2d.org/");
-                    TextLinkOpenURL("github.com/erincatto/box2d", "https://github.com/erincatto/box2d");
+                    TextLinkOpenURL("github.com/ikpil/Box2D.NET", "https://github.com/ikpil/Box2D.NET");
                 }
                 ImGui.End();
             }

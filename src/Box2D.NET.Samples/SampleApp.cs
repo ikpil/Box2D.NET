@@ -541,9 +541,10 @@ public class SampleApp
         // }
         //
 
-        // ImGui.NET 1.90 does not expose AddFontDefaultVector, so use the existing font as an embedded resource.
-        using (Stream stream = typeof(SampleApp).Assembly.GetManifestResourceStream("Box2D.NET.Samples.Fonts.droid_sans.ttf")!)
+        if (_context.uiScale != 1.0f)
         {
+            // ImGui.NET 1.90 does not expose AddFontDefaultVector, so use the existing font as an embedded resource.
+            using Stream stream = typeof(SampleApp).Assembly.GetManifestResourceStream("Box2D.NET.Samples.Fonts.droid_sans.ttf")!;
             _fontData = new byte[stream.Length];
             stream.ReadExactly(_fontData);
             _fontDataHandle = GCHandle.Alloc(_fontData, GCHandleType.Pinned);
@@ -553,22 +554,28 @@ public class SampleApp
         // link - https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist
         _imgui = new ImGuiController(_context.gl, _window, _input, () =>
         {
-            ImGuiIOPtr io = ImGui.GetIO();
-            unsafe
-            {
-                ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
-                // This brightens the font, improving readability when it is small.
-                fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
-                fontConfig.FontDataOwnedByAtlas = false;
+            ApplyUIStyle();
 
-                float regularSize = MathF.Floor(13.0f * _context.uiScale);
-                io.Fonts.Clear();
-                io.Fonts.AddFontFromMemoryTTF(_fontDataHandle.AddrOfPinnedObject(), _fontData.Length, regularSize, fontConfig);
-                ImGuiNative.ImFontConfig_destroy(fontConfig.NativePtr);
+            ImGuiIOPtr io = ImGui.GetIO();
+            if (_context.uiScale == 1.0f)
+            {
+                io.Fonts.AddFontDefault();
+            }
+            else
+            {
+                unsafe
+                {
+                    ImFontConfigPtr fontConfig = new ImFontConfigPtr(ImGuiNative.ImFontConfig_ImFontConfig());
+                    // This brightens the font, improving readability when it is small.
+                    fontConfig.RasterizerMultiply = _context.uiScale * s_framebufferScale;
+                    fontConfig.FontDataOwnedByAtlas = false;
+
+                    float regularSize = MathF.Floor(13.0f * _context.uiScale);
+                    io.Fonts.AddFontFromMemoryTTF(_fontDataHandle.AddrOfPinnedObject(), _fontData.Length, regularSize, fontConfig);
+                    ImGuiNative.ImFontConfig_destroy(fontConfig.NativePtr);
+                }
             }
         });
-
-        ApplyUIStyle();
 
         if (_context.uiScale != 1.0f)
         {

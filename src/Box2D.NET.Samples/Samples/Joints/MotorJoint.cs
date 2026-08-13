@@ -188,7 +188,7 @@ public class MotorJoint : Sample
         B2Vec2 force = b2Joint_GetConstraintForce(m_jointId);
         float torque = b2Joint_GetConstraintTorque(m_jointId);
 
-        DrawScreenTextLine($"force = {force.X:3,F0}, {force.Y:3,F0}, torque = {torque:3,F0}");
+        DrawScreenTextLine(FormattableString.Invariant($"force = {{{force.X,3:F0}, {force.Y,3:F0}}}, torque = {torque,3:F0}"));
         DrawTransform(m_draw, _transform, 1.0f);
     }
 }
