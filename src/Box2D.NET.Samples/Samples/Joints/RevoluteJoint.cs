@@ -214,13 +214,13 @@ public class RevoluteJoint : Sample
         base.Draw();
 
         float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
-        DrawScreenTextLine($"Angle (Deg) 1 = {angle1:F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Angle (Deg) 1 = {angle1,2:F1}"));
 
 
         float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
-        DrawScreenTextLine($"Motor Torque 1 = {torque1:F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque 1 = {torque1,4:F1}"));
 
         float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
-        DrawScreenTextLine($"Motor Torque 2 = {torque2:F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque 2 = {torque2,4:F1}"));
     }
 }

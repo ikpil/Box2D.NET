@@ -6,6 +6,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Collisions;
 
@@ -73,7 +74,7 @@ public class TimeOfImpact : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"toi = {_output.fraction:g}");
+        DrawScreenTextLine($"toi = {FormatFloat(_output.fraction)}");
         
 
         B2Vec2[] vertices = new B2Vec2[B2_MAX_POLYGON_VERTICES];
@@ -126,7 +127,7 @@ public class TimeOfImpact : Sample
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
-            DrawScreenTextLine($"distance = {distanceOutput.distance}:g");
+            DrawScreenTextLine($"distance = {FormatFloat(distanceOutput.distance)}");
             
         }
 

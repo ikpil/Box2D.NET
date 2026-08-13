@@ -6,6 +6,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.Samples.SampleText;
 
 
 namespace Box2D.NET.Samples.Samples.Bodies;
@@ -61,6 +62,6 @@ public class SetVelocity : Sample
     {
         base.Draw();
         B2Vec2 position = b2Body_GetPosition(m_bodyId);
-        DrawScreenTextLine($"(x, y) = {position.X:G}, {position.Y:G})");
+        DrawScreenTextLine($"(x, y) = ({FormatFloat(position.X, 2)}, {FormatFloat(position.Y, 2)})");
     }
 }

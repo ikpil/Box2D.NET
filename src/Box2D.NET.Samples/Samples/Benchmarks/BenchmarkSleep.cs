@@ -9,6 +9,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -127,7 +128,7 @@ public class BenchmarkSleep : Sample
         base.Draw();
 
         int count = m_stepCount - 20;
-        DrawScreenTextLine($"wake ave = {m_wakeTotal / count:g} ms");
-        DrawScreenTextLine($"sleep ave = {m_sleepTotal / count:g} ms");
+        DrawScreenTextLine($"wake ave = {FormatFloat(m_wakeTotal / count)} ms");
+        DrawScreenTextLine($"sleep ave = {FormatFloat(m_sleepTotal / count)} ms");
     }
 }

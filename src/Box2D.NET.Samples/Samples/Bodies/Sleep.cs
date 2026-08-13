@@ -262,7 +262,7 @@ public class Sleep : Sample
 
         for (int i = 0; i < 2; ++i)
         {
-            DrawScreenTextLine($"sensor touch {i} = {m_sensorTouching[i]}");
+            DrawScreenTextLine($"sensor touch {i} = {(m_sensorTouching[i] ? "true" : "false")}");
         }
     }
 }

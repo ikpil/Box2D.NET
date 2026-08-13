@@ -161,14 +161,14 @@ public class PrismaticJoint : Sample
         base.Draw();
 
         float force = b2PrismaticJoint_GetMotorForce(m_jointId);
-        DrawScreenTextLine($"Motor Force = {force:4,F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Motor Force = {force,4:F1}"));
 
 
         float translation = b2PrismaticJoint_GetTranslation(m_jointId);
-        DrawScreenTextLine($"Translation = {translation:4,F1}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Translation = {translation,4:F1}"));
 
 
         float speed = b2PrismaticJoint_GetSpeed(m_jointId);
-        DrawScreenTextLine($"Speed = {speed:4,F8}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"Speed = {speed,4:F8}"));
     }
 }

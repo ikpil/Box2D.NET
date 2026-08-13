@@ -17,6 +17,7 @@ using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Distances;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -395,19 +396,19 @@ public class BenchmarkCast : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"build time ms = {m_buildTime:g}");
+        DrawScreenTextLine($"build time ms = {FormatFloat(m_buildTime)}");
 
 
         DrawScreenTextLine($"hit count = {hitCount}, node visits = {nodeVisits}, leaf visits = {leafVisits}");
 
 
-        DrawScreenTextLine($"total ms = {ms:F3}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"total ms = {ms:F3}"));
 
 
-        DrawScreenTextLine($"min total ms = {m_minTime:F3}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"min total ms = {m_minTime:F3}"));
 
 
         float aveRayCost = 1000.0f * m_minTime / (float)sampleCount;
-        DrawScreenTextLine($"average us = {aveRayCost:F2}");
+        DrawScreenTextLine(System.FormattableString.Invariant($"average us = {aveRayCost:F2}"));
     }
 }

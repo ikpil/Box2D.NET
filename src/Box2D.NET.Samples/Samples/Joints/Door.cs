@@ -13,6 +13,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -136,6 +137,6 @@ public class Door : Sample
         float translationError = b2Joint_GetLinearSeparation(m_jointId);
         m_translationError = b2MaxFloat(m_translationError, translationError);
 
-        DrawScreenTextLine($"translation error = {m_translationError}");
+        DrawScreenTextLine($"translation error = {FormatFloat(m_translationError)}");
     }
 }

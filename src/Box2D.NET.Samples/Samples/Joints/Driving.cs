@@ -12,6 +12,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -275,7 +276,7 @@ public class Driving : Sample
 
         B2Vec2 linearVelocity = b2Body_GetLinearVelocity(m_car.m_chassisId);
         float kph = linearVelocity.X * 3.6f;
-        DrawScreenTextLine($"speed in kph: {kph:G2}");
+        DrawScreenTextLine($"speed in kph: {FormatFloat(kph, 2)}");
 
 
         B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);

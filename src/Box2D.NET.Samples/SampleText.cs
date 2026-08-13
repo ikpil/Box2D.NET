@@ -7,7 +7,7 @@ namespace Box2D.NET.Samples;
 
 public static class SampleText
 {
-    public static string FormatFloat(float value)
+    public static string FormatFloat(float value, int precision = 6)
     {
         if (float.IsNaN(value))
         {
@@ -25,6 +25,6 @@ public static class SampleText
         }
 
         // C printf("%g") defaults to six significant digits and is not affected by the current .NET culture.
-        return value.ToString("g6", CultureInfo.InvariantCulture);
+        return value.ToString($"g{precision}", CultureInfo.InvariantCulture);
     }
 }

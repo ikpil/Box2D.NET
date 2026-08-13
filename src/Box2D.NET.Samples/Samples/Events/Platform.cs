@@ -256,6 +256,6 @@ public class Platform : Sample
         DrawScreenTextLine("Movement: A/D/Space");
 
 
-        DrawScreenTextLine($"Can jump = {m_canJump}");
+        DrawScreenTextLine($"Can jump = {(m_canJump ? "true" : "false")}");
     }
 }

@@ -13,6 +13,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -126,7 +127,7 @@ public class Explosion : Sample
     {
         base.Draw();
 
-        DrawScreenTextLine($"reference angle = {m_referenceAngle:g}");
+        DrawScreenTextLine($"reference angle = {FormatFloat(m_referenceAngle)}");
 
         DrawCircle(m_draw, b2Vec2_zero, m_radius + m_falloff, B2HexColor.b2_colorBox2DBlue);
         DrawCircle(m_draw, b2Vec2_zero, m_radius, B2HexColor.b2_colorBox2DYellow);
