@@ -11,11 +11,6 @@ namespace Box2D.NET.Test;
 
 public class B2ThreadTest
 {
-    private sealed class SemData
-    {
-        public B2Semaphore sem;
-        public int value;
-    }
 
     private static void SemWorker(object context)
     {
@@ -82,11 +77,6 @@ public class B2ThreadTest
         b2DestroySemaphore(ref data.sem);
     }
 
-    private sealed class SumData
-    {
-        public B2Mutex mutex;
-        public int sum;
-    }
 
     private static void SumWorker(object context)
     {

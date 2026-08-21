@@ -25,11 +25,6 @@ public class Mover : Sample
 {
     private static readonly int SampleMover = SampleFactory.Shared.RegisterSample("Character", "Mover", Create);
 
-    public class ShapeUserData
-    {
-        public float maxPush;
-        public bool clipVelocity;
-    }
 
     private const ulong StaticBit = 0x0001;
     private const ulong MoverBit = 0x0002;
@@ -44,14 +39,6 @@ public class Mover : Sample
         PogoSegment
     }
 
-    public class CastResult
-    {
-        public B2Vec2 point;
-        public B2Vec2 normal;
-        public B2BodyId bodyId;
-        public float fraction;
-        public bool hit;
-    }
 
     private const int m_planeCapacity = 8;
     private readonly B2Vec2 m_elevatorBase = new B2Vec2(112.0f, 10.0f);

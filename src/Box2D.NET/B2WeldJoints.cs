@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,8 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -82,6 +84,16 @@ namespace Box2D.NET
         /// Set the weld joint linear stiffness in Hertz. 0 is rigid.
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_WeldJointSetLinearHertz _a = new B2RecArgs_WeldJointSetLinearHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_WeldJointSetLinearHertz(world.recording, in _a);
+            }
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearHertz = hertz;
@@ -95,6 +107,16 @@ namespace Box2D.NET
         /// Set the weld joint linear damping ratio (non-dimensional)
         public static void b2WeldJoint_SetLinearDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_WeldJointSetLinearDampingRatio _a = new B2RecArgs_WeldJointSetLinearDampingRatio
+                {
+                    joint = jointId,
+                    dampingRatio = dampingRatio,
+                };
+                b2RecWrite_WeldJointSetLinearDampingRatio(world.recording, in _a);
+            }
             B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearDampingRatio = dampingRatio;
@@ -108,6 +130,16 @@ namespace Box2D.NET
         /// Set the weld joint angular stiffness in Hertz. 0 is rigid.
         public static void b2WeldJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_WeldJointSetAngularHertz _a = new B2RecArgs_WeldJointSetAngularHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_WeldJointSetAngularHertz(world.recording, in _a);
+            }
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularHertz = hertz;
@@ -121,6 +153,16 @@ namespace Box2D.NET
         /// Set weld joint angular damping ratio, non-dimensional
         public static void b2WeldJoint_SetAngularDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_WeldJointSetAngularDampingRatio _a = new B2RecArgs_WeldJointSetAngularDampingRatio
+                {
+                    joint = jointId,
+                    dampingRatio = dampingRatio,
+                };
+                b2RecWrite_WeldJointSetAngularDampingRatio(world.recording, in _a);
+            }
             B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularDampingRatio = dampingRatio;

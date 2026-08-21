@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Diagnostics;
 
@@ -9,16 +10,19 @@ namespace Box2D.NET
 {
     public static class B2IdPools
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int b2GetIdCount(B2IdPool pool)
         {
             return pool.nextIndex - pool.freeArray.count;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int b2GetIdCapacity(B2IdPool pool)
         {
             return pool.nextIndex;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int b2GetIdBytes(B2IdPool pool)
         {
             return b2Array_ByteCount(ref pool.freeArray);

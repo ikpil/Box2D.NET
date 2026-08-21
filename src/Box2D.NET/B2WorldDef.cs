@@ -70,6 +70,10 @@ namespace Box2D.NET
         /// User data
         public B2UserData userData;
 
+        /// Path to record this world's mutator calls to a .b2rec file. NULL disables recording.
+        /// Set before calling b2CreateWorld. Recording cannot be started mid-session.
+        public string recordingPath;
+
         /// Optional initial capacities
         public B2Capacity capacity;
 

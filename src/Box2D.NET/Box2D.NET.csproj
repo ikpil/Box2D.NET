@@ -29,5 +29,24 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.2"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(IntermediateOutputPath)B2BuildHash.g.cs" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="GenerateBox2DBuildHash" BeforeTargets="CoreCompile">
+    <Exec Command="git rev-parse --short=8 HEAD" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" StandardOutputImportance="Low" IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" ItemName="_Box2DGitHashLines" />
+      <Output TaskParameter="ExitCode" PropertyName="_Box2DGitExitCode" />
+    </Exec>
+    <PropertyGroup>
+      <Box2DBuildHash Condition="'$(_Box2DGitExitCode)' == '0'">@(_Box2DGitHashLines)</Box2DBuildHash>
+      <Box2DBuildHash Condition="'$(_Box2DGitExitCode)' != '0'">00000000</Box2DBuildHash>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(IntermediateOutputPath)B2BuildHash.g.cs"
+                      Lines="namespace Box2D.NET { internal enum B2BuildHashGenerated : uint { Value = 0x$(Box2DBuildHash)u } }"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true" />
+  </Target>
   
 </Project>

@@ -20,6 +20,7 @@ namespace Box2D.NET
 
         /// Enlarge a to contain b
         /// @return true if the AABB grew
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2EnlargeAABB(ref B2AABB a, in B2AABB b)
         {
             bool changed = false;

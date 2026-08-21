@@ -49,6 +49,11 @@ public class SampleContext
     // Set by Ctrl+O; consumed by UpdateSampleUI to open the fuzzy sample picker.
     public bool openSamplePicker = false;
 
+    // When set, the next world created records to recordingFile. Cleared when a
+    // different sample is selected so a restart re-records but a switch does not.
+    public bool record = false;
+    public string recordingFile = "recording.b2rec";
+
     // These are persisted
     public int sampleIndex = 0;
 

@@ -28,8 +28,13 @@ namespace Box2D.NET
 
         // readonly so an "in" or "ref readonly" receiver does not force a defensive
         // copy. This matches Span<T>.this[int], which is also a readonly ref T indexer.
-        public readonly ref float this[int index] => ref MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in X), 4)[index];
+        public readonly ref float this[int index]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => ref MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in X), 4)[index];
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly Span<float> AsSpan()
         {
             return MemoryMarshal.CreateSpan(ref Unsafe.AsRef(in X), 4);

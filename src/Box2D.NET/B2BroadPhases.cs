@@ -55,6 +55,7 @@ namespace Box2D.NET
 
         // This is what triggers new contact pairs to be created
         // Warning: this must be called in deterministic order
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2BufferMove(B2BroadPhase bp, int queryProxy)
         {
             B2BodyType proxyType = B2_PROXY_TYPE(queryProxy);

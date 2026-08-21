@@ -1,6 +1,7 @@
 ﻿// SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Atomics;
 
 namespace Box2D.NET
@@ -14,18 +15,11 @@ namespace Box2D.NET
             return b2AtomicFetchAddInt(ref _indices, 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int Index<T>() where T : new()
         {
             return B2ArenaAllocatorIndexer<T>.Index;
         }
     }
 
-    internal class B2ArenaAllocatorIndexer<T> where T : new()
-    {
-        internal static readonly int Index = B2ArenaAllocatorIndexer.Next<T>();
-
-        private B2ArenaAllocatorIndexer()
-        {
-        }
-    }
 }

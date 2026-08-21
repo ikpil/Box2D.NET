@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Box2D.NET
@@ -16,6 +17,7 @@ namespace Box2D.NET
         public B2SimplexVertex v3; // vertices
         public int count; // number of valid vertices
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Span<B2SimplexVertex> AsSpan()
         {
             return MemoryMarshal.CreateSpan(ref v1, 3);

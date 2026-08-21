@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,7 +11,7 @@ using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
-
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -22,6 +22,16 @@ namespace Box2D.NET
         /// @param length The new distance joint length
         public static void b2DistanceJoint_SetLength(B2JointId jointId, float length)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetLength _a = new B2RecArgs_DistanceJointSetLength
+                {
+                    joint = jointId,
+                    length = length,
+                };
+                b2RecWrite_DistanceJointSetLength(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
@@ -41,6 +51,16 @@ namespace Box2D.NET
         /// and the limit has no effect.
         public static void b2DistanceJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointEnableLimit _a = new B2RecArgs_DistanceJointEnableLimit
+                {
+                    joint = jointId,
+                    enableLimit = enableLimit,
+                };
+                b2RecWrite_DistanceJointEnableLimit(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             joint.enableLimit = enableLimit;
@@ -54,6 +74,17 @@ namespace Box2D.NET
         /// Set the minimum and maximum length parameters of a distance joint
         public static void b2DistanceJoint_SetLengthRange(B2JointId jointId, float minLength, float maxLength)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetLengthRange _a = new B2RecArgs_DistanceJointSetLengthRange
+                {
+                    joint = jointId,
+                    minLength = minLength,
+                    maxLength = maxLength,
+                };
+                b2RecWrite_DistanceJointSetLengthRange(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
@@ -104,6 +135,16 @@ namespace Box2D.NET
         /// Enable/disable the distance joint spring. When disabled the distance joint is rigid.
         public static void b2DistanceJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointEnableSpring _a = new B2RecArgs_DistanceJointEnableSpring
+                {
+                    joint = jointId,
+                    enableSpring = enableSpring,
+                };
+                b2RecWrite_DistanceJointEnableSpring(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.enableSpring = enableSpring;
         }
@@ -118,6 +159,17 @@ namespace Box2D.NET
         /// Set the force range for the spring.
         public static void b2DistanceJoint_SetSpringForceRange(B2JointId jointId, float lowerForce, float upperForce)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetSpringForceRange _a = new B2RecArgs_DistanceJointSetSpringForceRange
+                {
+                    joint = jointId,
+                    lowerForce = lowerForce,
+                    upperForce = upperForce,
+                };
+                b2RecWrite_DistanceJointSetSpringForceRange(world.recording, in _a);
+            }
             B2_ASSERT(lowerForce <= upperForce);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.lowerSpringForce = lowerForce;
@@ -135,12 +187,32 @@ namespace Box2D.NET
         /// Set the spring stiffness in Hertz
         public static void b2DistanceJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetSpringHertz _a = new B2RecArgs_DistanceJointSetSpringHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_DistanceJointSetSpringHertz(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.hertz = hertz;
         }
         /// Set the spring damping ratio, non-dimensional
         public static void b2DistanceJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetSpringDampingRatio _a = new B2RecArgs_DistanceJointSetSpringDampingRatio
+                {
+                    joint = jointId,
+                    dampingRatio = dampingRatio,
+                };
+                b2RecWrite_DistanceJointSetSpringDampingRatio(world.recording, in _a);
+            }
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.dampingRatio = dampingRatio;
         }
@@ -161,6 +233,16 @@ namespace Box2D.NET
         /// Enable/disable the distance joint motor
         public static void b2DistanceJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointEnableMotor _a = new B2RecArgs_DistanceJointEnableMotor
+                {
+                    joint = jointId,
+                    enableMotor = enableMotor,
+                };
+                b2RecWrite_DistanceJointEnableMotor(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             if (enableMotor != joint.uj.distanceJoint.enableMotor)
             {
@@ -177,6 +259,16 @@ namespace Box2D.NET
         /// Set the distance joint motor speed, usually in meters per second
         public static void b2DistanceJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetMotorSpeed _a = new B2RecArgs_DistanceJointSetMotorSpeed
+                {
+                    joint = jointId,
+                    motorSpeed = motorSpeed,
+                };
+                b2RecWrite_DistanceJointSetMotorSpeed(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             joint.uj.distanceJoint.motorSpeed = motorSpeed;
         }
@@ -196,6 +288,16 @@ namespace Box2D.NET
         /// Set the distance joint maximum motor force, usually in newtons
         public static void b2DistanceJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_DistanceJointSetMaxMotorForce _a = new B2RecArgs_DistanceJointSetMaxMotorForce
+                {
+                    joint = jointId,
+                    force = force,
+                };
+                b2RecWrite_DistanceJointSetMaxMotorForce(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             joint.uj.distanceJoint.maxMotorForce = force;
         }

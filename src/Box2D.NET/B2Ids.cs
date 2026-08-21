@@ -34,6 +34,7 @@ namespace Box2D.NET
      */
     public static class B2Ids
     {
+        /// A null id. Works for any id type.
         /// Use these to make your identifiers null.
         /// You may also use zero initialization to get null.
         public static readonly B2WorldId b2_nullWorldId = new B2WorldId(0, 0);
