@@ -15,10 +15,6 @@ namespace Box2D.NET.Test;
 
 public class B2DebugDrawTests
 {
-    private sealed class PointCapture
-    {
-        public readonly List<B2Vec2> Points = new List<B2Vec2>();
-    }
 
     [Test]
     public void ContactDrawingUsesSelectedBodyAnchor()

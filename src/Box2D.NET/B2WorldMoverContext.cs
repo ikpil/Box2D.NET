@@ -11,5 +11,6 @@ namespace Box2D.NET
         public B2QueryFilter filter;
         public B2Capsule mover;
         public object userContext;
+        internal B2RecQueryWriter recording;
     }
 }

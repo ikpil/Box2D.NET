@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -9,6 +9,8 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Solvers;
+using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -28,6 +30,16 @@ namespace Box2D.NET
         /// Set the desired relative linear velocity in meters per second
         public static void b2MotorJoint_SetLinearVelocity(B2JointId jointId, B2Vec2 velocity)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetLinearVelocity _a = new B2RecArgs_MotorJointSetLinearVelocity
+                {
+                    joint = jointId,
+                    velocity = velocity,
+                };
+                b2RecWrite_MotorJointSetLinearVelocity(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearVelocity = velocity;
         }
@@ -42,6 +54,16 @@ namespace Box2D.NET
         /// Set the desired relative angular velocity in radians per second
         public static void b2MotorJoint_SetAngularVelocity(B2JointId jointId, float velocity)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetAngularVelocity _a = new B2RecArgs_MotorJointSetAngularVelocity
+                {
+                    joint = jointId,
+                    velocity = velocity,
+                };
+                b2RecWrite_MotorJointSetAngularVelocity(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularVelocity = velocity;
         }
@@ -56,6 +78,16 @@ namespace Box2D.NET
         /// Set the motor joint maximum force, usually in newtons
         public static void b2MotorJoint_SetMaxVelocityForce(B2JointId jointId, float maxForce)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetMaxVelocityForce _a = new B2RecArgs_MotorJointSetMaxVelocityForce
+                {
+                    joint = jointId,
+                    maxForce = maxForce,
+                };
+                b2RecWrite_MotorJointSetMaxVelocityForce(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxVelocityForce = maxForce;
         }
@@ -70,6 +102,16 @@ namespace Box2D.NET
         /// Set the motor joint maximum torque, usually in newton-meters
         public static void b2MotorJoint_SetMaxVelocityTorque(B2JointId jointId, float maxTorque)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetMaxVelocityTorque _a = new B2RecArgs_MotorJointSetMaxVelocityTorque
+                {
+                    joint = jointId,
+                    maxTorque = maxTorque,
+                };
+                b2RecWrite_MotorJointSetMaxVelocityTorque(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxVelocityTorque = maxTorque;
         }
@@ -85,6 +127,16 @@ namespace Box2D.NET
         /// Set the spring linear hertz stiffness
         public static void b2MotorJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetLinearHertz _a = new B2RecArgs_MotorJointSetLinearHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_MotorJointSetLinearHertz(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearHertz = hertz;
         }
@@ -99,6 +151,16 @@ namespace Box2D.NET
         /// Set the spring linear damping ratio. Use 1.0 for critical damping.
         public static void b2MotorJoint_SetLinearDampingRatio(B2JointId jointId, float damping)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetLinearDampingRatio _a = new B2RecArgs_MotorJointSetLinearDampingRatio
+                {
+                    joint = jointId,
+                    damping = damping,
+                };
+                b2RecWrite_MotorJointSetLinearDampingRatio(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearDampingRatio = damping;
         }
@@ -113,6 +175,16 @@ namespace Box2D.NET
         /// Set the spring angular hertz stiffness
         public static void b2MotorJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetAngularHertz _a = new B2RecArgs_MotorJointSetAngularHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_MotorJointSetAngularHertz(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularHertz = hertz;
         }
@@ -127,6 +199,16 @@ namespace Box2D.NET
         /// Set the spring angular damping ratio. Use 1.0 for critical damping.
         public static void b2MotorJoint_SetAngularDampingRatio(B2JointId jointId, float damping)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetAngularDampingRatio _a = new B2RecArgs_MotorJointSetAngularDampingRatio
+                {
+                    joint = jointId,
+                    damping = damping,
+                };
+                b2RecWrite_MotorJointSetAngularDampingRatio(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularDampingRatio = damping;
         }
@@ -141,6 +223,16 @@ namespace Box2D.NET
         /// Set the maximum spring force in newtons.
         public static void b2MotorJoint_SetMaxSpringForce(B2JointId jointId, float maxForce)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetMaxSpringForce _a = new B2RecArgs_MotorJointSetMaxSpringForce
+                {
+                    joint = jointId,
+                    maxForce = maxForce,
+                };
+                b2RecWrite_MotorJointSetMaxSpringForce(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxSpringForce = b2MaxFloat(0.0f, maxForce);
         }
@@ -155,6 +247,16 @@ namespace Box2D.NET
         /// Set the maximum spring torque in newtons * meters
         public static void b2MotorJoint_SetMaxSpringTorque(B2JointId jointId, float maxTorque)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_MotorJointSetMaxSpringTorque _a = new B2RecArgs_MotorJointSetMaxSpringTorque
+                {
+                    joint = jointId,
+                    maxTorque = maxTorque,
+                };
+                b2RecWrite_MotorJointSetMaxSpringTorque(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxSpringTorque = b2MaxFloat(0.0f, maxTorque);
         }

@@ -30,13 +30,6 @@ public struct PhysicsHitQueryResult2D
     }
 };
 
-public class CastContext_Single
-{
-    public B2Vec2 startPos;
-    public B2Vec2 translation;
-    public PhysicsHitQueryResult2D result;
-    public bool hit;
-};
 
 // This showed a problem with shape casts hitting the back-side of a chain shape
 public class ShapeCastChain : Sample

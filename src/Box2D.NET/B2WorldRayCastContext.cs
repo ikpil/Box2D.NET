@@ -2,8 +2,6 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
-using System;
-
 namespace Box2D.NET
 {
     public struct B2WorldRayCastContext<T> where T : class
@@ -13,6 +11,7 @@ namespace Box2D.NET
         public B2QueryFilter filter;
         public float fraction;
         public T userContext;
+        internal B2RecQueryWriter recording;
 
         internal B2WorldRayCastContext(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, T userContext)
         {
@@ -21,14 +20,7 @@ namespace Box2D.NET
             this.filter = filter;
             this.fraction = fraction;
             this.userContext = userContext;
-        }
-    }
-
-    public struct B2WorldRayCastContext
-    {
-        public static B2WorldRayCastContext<T> Create<T>(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, T userContext) where T : class
-        {
-            return new B2WorldRayCastContext<T>(world, fcn, filter, fraction, userContext);
+            this.recording = default;
         }
     }
 }

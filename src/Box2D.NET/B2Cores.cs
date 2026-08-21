@@ -24,6 +24,13 @@ namespace Box2D.NET
             );
         }
 
+        /// Get the short git hash of this Box2D build, or 0 if built without git.
+        /// Stamped into recordings so a replay host can tell which build produced a file.
+        public static uint b2GetBuildHash()
+        {
+            return B2BuildHash.Value;
+        }
+
         // This allows the user to change the length units at runtime
         internal static float b2_lengthUnitsPerMeter = 1.0f;
 

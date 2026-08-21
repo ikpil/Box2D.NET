@@ -1,8 +1,9 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
@@ -26,6 +27,7 @@ using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Solvers;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2BitSets;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -125,6 +127,7 @@ namespace Box2D.NET
             return def;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static B2Joint b2GetJointFullId(B2World world, B2JointId jointId)
         {
             int id = jointId.index1 - 1;
@@ -133,6 +136,7 @@ namespace Box2D.NET
             return joint;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static B2JointSim b2GetJointSim(B2World world, B2Joint joint)
         {
             if (joint.setIndex == (int)B2SolverSetType.b2_awakeSet)
@@ -438,6 +442,17 @@ namespace Box2D.NET
             joint.uj.distanceJoint.motorImpulse = 0.0f;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateDistanceJoint _ca = new B2RecArgs_CreateDistanceJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateDistanceJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
 
@@ -471,6 +486,17 @@ namespace Box2D.NET
             joint.uj.motorJoint.maxSpringTorque = def.maxSpringTorque;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateMotorJoint _ca = new B2RecArgs_CreateMotorJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateMotorJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
 
@@ -501,6 +527,17 @@ namespace Box2D.NET
             B2JointSim joint = pair.jointSim;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateFilterJoint _ca = new B2RecArgs_CreateFilterJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateFilterJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
         /// Create a prismatic (slider) joint.
@@ -536,6 +573,17 @@ namespace Box2D.NET
             joint.uj.prismaticJoint.enableMotor = def.enableMotor;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreatePrismaticJoint _ca = new B2RecArgs_CreatePrismaticJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreatePrismaticJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
         /// Create a revolute joint
@@ -575,6 +623,17 @@ namespace Box2D.NET
             joint.uj.revoluteJoint.enableMotor = def.enableMotor;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateRevoluteJoint _ca = new B2RecArgs_CreateRevoluteJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateRevoluteJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
         /// Create a weld joint
@@ -605,6 +664,17 @@ namespace Box2D.NET
             joint.uj.weldJoint.angularImpulse = 0.0f;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateWeldJoint _ca = new B2RecArgs_CreateWeldJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateWeldJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
         /// Create a wheel joint
@@ -644,6 +714,17 @@ namespace Box2D.NET
             joint.uj.wheelJoint.enableMotor = def.enableMotor;
 
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateWheelJoint _ca = new B2RecArgs_CreateWheelJoint
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateWheelJoint(world.recording, in _ca, jointId);
+            }
+
             return jointId;
         }
 
@@ -765,6 +846,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_DestroyJoint _a = new B2RecArgs_DestroyJoint
+                {
+                    joint = jointId,
+                    wakeAttached = wakeAttached,
+                };
+                b2RecWrite_DestroyJoint(world.recording, in _a);
+            }
+
             B2Joint joint = b2GetJointFullId(world, jointId);
 
             b2DestroyJointInternal(world, joint, wakeAttached);
@@ -804,6 +895,15 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidTransform(localFrame));
 
             B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetLocalFrameA _a = new B2RecArgs_JointSetLocalFrameA
+                {
+                    joint = jointId,
+                    localFrame = localFrame,
+                };
+                b2RecWrite_JointSetLocalFrameA(world.recording, in _a);
+            }
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim jointSim = b2GetJointSim(world, joint);
             jointSim.localFrameA = localFrame;
@@ -824,6 +924,15 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidTransform(localFrame));
 
             B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetLocalFrameB _a = new B2RecArgs_JointSetLocalFrameB
+                {
+                    joint = jointId,
+                    localFrame = localFrame,
+                };
+                b2RecWrite_JointSetLocalFrameB(world.recording, in _a);
+            }
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim jointSim = b2GetJointSim(world, joint);
             jointSim.localFrameB = localFrame;
@@ -844,6 +953,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetCollideConnected _a = new B2RecArgs_JointSetCollideConnected
+                {
+                    joint = jointId,
+                    shouldCollide = shouldCollide,
+                };
+                b2RecWrite_JointSetCollideConnected(world.recording, in _a);
             }
 
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -910,6 +1029,15 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_JointWakeBodies _a = new B2RecArgs_JointWakeBodies
+                {
+                    joint = jointId,
+                };
+                b2RecWrite_JointWakeBodies(world.recording, in _a);
             }
 
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -1264,6 +1392,16 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
 
             B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetConstraintTuning _a = new B2RecArgs_JointSetConstraintTuning
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                    dampingRatio = dampingRatio,
+                };
+                b2RecWrite_JointSetConstraintTuning(world.recording, in _a);
+            }
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim @base = b2GetJointSim(world, joint);
             @base.constraintHertz = hertz;
@@ -1286,6 +1424,15 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
 
             B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetForceThreshold _a = new B2RecArgs_JointSetForceThreshold
+                {
+                    joint = jointId,
+                    threshold = threshold,
+                };
+                b2RecWrite_JointSetForceThreshold(world.recording, in _a);
+            }
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim @base = b2GetJointSim(world, joint);
             @base.forceThreshold = threshold;
@@ -1306,6 +1453,15 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
 
             B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_JointSetTorqueThreshold _a = new B2RecArgs_JointSetTorqueThreshold
+                {
+                    joint = jointId,
+                    threshold = threshold,
+                };
+                b2RecWrite_JointSetTorqueThreshold(world.recording, in _a);
+            }
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim @base = b2GetJointSim(world, joint);
             @base.torqueThreshold = threshold;

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Distances;
@@ -12,6 +13,7 @@ namespace Box2D.NET
 {
     public static class B2Manifolds
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ushort B2_MAKE_ID(int A, int B)
         {
             return (ushort)((byte)(A) << 8 | (byte)(B));

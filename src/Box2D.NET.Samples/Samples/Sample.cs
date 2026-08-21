@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -24,6 +24,7 @@ using static Box2D.NET.Samples.Graphics.Draws;
 using static Box2D.NET.Samples.Graphics.Cameras;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Recordings;
 using static Box2D.NET.Samples.SampleText;
 
 namespace Box2D.NET.Samples.Samples;
@@ -83,7 +84,9 @@ public class Sample : IDisposable
     //
     private readonly float[] m_frameTimes;
 
-    public Sample(SampleContext context)
+    // createWorld false lets a subclass that supplies its own world (e.g. the replay viewer)
+    // skip the throwaway world the base would otherwise build and immediately discard
+    public Sample(SampleContext context, bool createWorld = true)
     {
         m_context = context;
         m_camera = context.camera;
@@ -110,14 +113,19 @@ public class Sample : IDisposable
 
         g_randomSeed = RAND_SEED;
 
-        CreateWorld();
+        if (createWorld)
+        {
+            CreateWorld();
+        }
         TestMathCpp();
     }
 
     public virtual void Dispose()
     {
-        // By deleting the world, we delete the bomb, mouse joint, etc.
-        b2DestroyWorld(m_worldId);
+        if (B2_IS_NON_NULL(m_worldId))
+        {
+            b2DestroyWorld(m_worldId);
+        }
         
     }
 
@@ -134,6 +142,10 @@ public class Sample : IDisposable
         worldDef.userTaskContext = this;
         worldDef.enableSleep = m_context.enableSleep;
         worldDef.capacity = m_context.capacity;
+        if (m_context.record)
+        {
+            worldDef.recordingPath = m_context.recordingFile;
+        }
 
         m_worldId = b2CreateWorld(worldDef);
         b2World_SetContactRecycleDistance(m_worldId, m_context.recycleDistance);
@@ -584,6 +596,8 @@ public class Sample : IDisposable
                 ImGui.EndTabItem();
             }
 
+            DrawMetricsTab();
+
             ImGui.EndTabBar();
         }
 
@@ -894,6 +908,17 @@ public class Sample : IDisposable
         return false;
     }
 
+    // Allow solver controls to be hidden by a sample.
+    public virtual bool HasSolverControls()
+    {
+        return true;
+    }
+
+    // Allow a sample to add extra tabs to the metrics window.
+    public virtual void DrawMetricsTab()
+    {
+    }
+
 
     protected InputAction GetKey(Keys key)
     {
@@ -908,6 +933,9 @@ public class Sample : IDisposable
             context.sampleIndex = selection;
             context.subStepCount = 4;
             context.debugDraw.drawJoints = true;
+
+            // Switching samples stops recording; a restart keeps it on and re-records
+            context.record = false;
         }
 
         context.sample?.Dispose();
@@ -1403,29 +1431,56 @@ public class Sample : IDisposable
             ImGui.Separator();
         }
 
-        if (ImGui.CollapsingHeader("Solver", ImGuiTreeNodeFlags.DefaultOpen))
+        if (context.sample.HasSolverControls() && ImGui.CollapsingHeader("Solver", ImGuiTreeNodeFlags.DefaultOpen))
         {
             ImGui.PushItemWidth(6.0f * fontSize);
-            ImGui.SliderInt("Sub-steps", ref context.subStepCount, 1, 32);
-            ImGui.SliderFloat("Hertz", ref context.hertz, 5.0f, 240.0f, "%.0f hz");
+            ImGui.SliderInt("Sub-steps##Solver", ref context.subStepCount, 1, 32);
+            ImGui.SliderFloat("Hertz##Solver", ref context.hertz, 5.0f, 240.0f, "%.0f hz");
 
-            if (ImGui.SliderInt("Workers", ref context.workerCount, 1, B2_MAX_WORKERS))
+            if (ImGui.SliderInt("Workers##Solver", ref context.workerCount, 1, B2_MAX_WORKERS))
             {
                 context.workerCount = b2ClampInt(context.workerCount, 1, B2_MAX_WORKERS);
                 SelectSample(context, context.sampleIndex, true);
             }
 
             float recyclingCentimeters = 100.0f * context.recycleDistance;
-            if (ImGui.SliderFloat("Recycle", ref recyclingCentimeters, 0.0f, 10.0f, "%.1f cm"))
+            if (ImGui.SliderFloat("Recycle##Solver", ref recyclingCentimeters, 0.0f, 10.0f, "%.1f cm"))
             {
                 context.recycleDistance = 0.01f * recyclingCentimeters;
                 b2World_SetContactRecycleDistance(context.sample.m_worldId, context.recycleDistance);
             }
             ImGui.PopItemWidth();
 
-            ImGui.Checkbox("Sleep", ref context.enableSleep);
-            ImGui.Checkbox("Warm Starting", ref context.enableWarmStarting);
-            ImGui.Checkbox("Continuous", ref context.enableContinuous);
+            ImGui.Checkbox("Sleep##Solver", ref context.enableSleep);
+            ImGui.Checkbox("Warm Starting##Solver", ref context.enableWarmStarting);
+            ImGui.Checkbox("Continuous##Solver", ref context.enableContinuous);
+        }
+
+        if (context.sample.HasSolverControls() && ImGui.CollapsingHeader("Recording", ImGuiTreeNodeFlags.DefaultOpen))
+        {
+            ImGui.PushItemWidth(9.0f * fontSize);
+            ImGui.InputText("File##Recording", ref context.recordingFile, 256);
+            ImGui.PopItemWidth();
+
+            if (context.record == false)
+            {
+                // Recording must begin at world creation, so restart with it enabled
+                if (ImGui.Button("Record##Recording"))
+                {
+                    context.record = true;
+                    SelectSample(context, context.sampleIndex, true);
+                }
+            }
+            else
+            {
+                if (ImGui.Button("Stop##Recording"))
+                {
+                    b2World_StopRecording(context.sample.m_worldId);
+                    context.record = false;
+                }
+                ImGui.SameLine();
+                ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen), "recording");
+            }
         }
 
         ImGui.End();

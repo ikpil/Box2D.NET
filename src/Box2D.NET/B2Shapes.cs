@@ -19,6 +19,7 @@ using static Box2D.NET.B2IdPools;
 using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2Distances;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -66,6 +67,7 @@ namespace Box2D.NET
             return shape;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static B2ChainShape b2GetChainShape(B2World world, B2ChainId chainId)
         {
             int id = chainId.index1 - 1;
@@ -294,7 +296,21 @@ namespace Box2D.NET
         /// @return the shape id for accessing the shape
         public static B2ShapeId b2CreateCircleShape(B2BodyId bodyId, in B2ShapeDef def, in B2Circle circle)
         {
-            return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
+            B2ShapeId id = b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
+
+            B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateCircleShape _ca = new B2RecArgs_CreateCircleShape
+                {
+                    body = bodyId,
+                    def = def,
+                    circle = circle,
+                };
+                b2RecWriteRet_CreateCircleShape(world.recording, in _ca, id);
+            }
+
+            return id;
         }
 
         /// Create a capsule shape and attach it to a body. The shape definition and geometry are fully cloned.
@@ -308,7 +324,21 @@ namespace Box2D.NET
                 return b2_nullShapeId;
             }
 
-            return b2CreateShape(bodyId, def, capsule, B2ShapeType.b2_capsuleShape);
+            B2ShapeId id = b2CreateShape(bodyId, def, capsule, B2ShapeType.b2_capsuleShape);
+
+            B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateCapsuleShape _ca = new B2RecArgs_CreateCapsuleShape
+                {
+                    body = bodyId,
+                    def = def,
+                    capsule = capsule,
+                };
+                b2RecWriteRet_CreateCapsuleShape(world.recording, in _ca, id);
+            }
+
+            return id;
         }
 
         /// Create a polygon shape and attach it to a body. The shape definition and geometry are fully cloned.
@@ -317,7 +347,22 @@ namespace Box2D.NET
         public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, in B2ShapeDef def, in B2Polygon polygon)
         {
             B2_ASSERT(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
-            return b2CreateShape(bodyId, def, polygon, B2ShapeType.b2_polygonShape);
+
+            B2ShapeId id = b2CreateShape(bodyId, def, polygon, B2ShapeType.b2_polygonShape);
+
+            B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_CreatePolygonShape _ca = new B2RecArgs_CreatePolygonShape
+                {
+                    body = bodyId,
+                    def = def,
+                    polygon = polygon,
+                };
+                b2RecWriteRet_CreatePolygonShape(world.recording, in _ca, id);
+            }
+
+            return id;
         }
 
         /// Create a line segment shape and attach it to a body. The shape definition and geometry are fully cloned.
@@ -332,7 +377,21 @@ namespace Box2D.NET
                 return b2_nullShapeId;
             }
 
-            return b2CreateShape(bodyId, def, segment, B2ShapeType.b2_segmentShape);
+            B2ShapeId id = b2CreateShape(bodyId, def, segment, B2ShapeType.b2_segmentShape);
+
+            B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateSegmentShape _ca = new B2RecArgs_CreateSegmentShape
+                {
+                    body = bodyId,
+                    def = def,
+                    segment = segment,
+                };
+                b2RecWriteRet_CreateSegmentShape(world.recording, in _ca, id);
+            }
+
+            return id;
         }
 
         /// Create an orphaned chain segment shape and attach it to a body. The shape definition and
@@ -353,7 +412,21 @@ namespace Box2D.NET
             B2ChainSegment local = chainSegment;
             local.chainId = B2_NULL_INDEX;
 
-            return b2CreateShape(bodyId, def, local, B2ShapeType.b2_chainSegmentShape);
+            B2ShapeId id = b2CreateShape(bodyId, def, local, B2ShapeType.b2_chainSegmentShape);
+
+            B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateChainSegmentShape _ca = new B2RecArgs_CreateChainSegmentShape
+                {
+                    body = bodyId,
+                    def = def,
+                    chainSegment = local,
+                };
+                b2RecWriteRet_CreateChainSegmentShape(world.recording, in _ca, id);
+            }
+
+            return id;
         }
 
         // Destroy a shape on a body. This doesn't need to be called when destroying a body.
@@ -445,6 +518,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_DestroyShape _a = new B2RecArgs_DestroyShape
+                {
+                    shape = shapeId,
+                    updateBodyMass = updateBodyMass,
+                };
+                b2RecWrite_DestroyShape(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -605,6 +688,17 @@ namespace Box2D.NET
             }
 
             B2ChainId id = new B2ChainId(chainId + 1, world.worldId, chainShape.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateChain _ca = new B2RecArgs_CreateChain
+                {
+                    body = bodyId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateChain(world.recording, in _ca, id);
+            }
+
             return id;
         }
 
@@ -623,6 +717,15 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_DestroyChain _a = new B2RecArgs_DestroyChain
+                {
+                    chain = chainId,
+                };
+                b2RecWrite_DestroyChain(world.recording, in _a);
             }
 
             B2ChainShape chain = b2GetChainShape(world, chainId);
@@ -1160,20 +1263,37 @@ namespace Box2D.NET
             B2Transform transform = b2GetBodyTransform(world, shape.bodyId);
             B2Vec2 localPoint = b2InvTransformPoint(transform, point);
 
+            bool result;
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2PointInCapsule(shape.us.capsule, localPoint);
+                    result = b2PointInCapsule(shape.us.capsule, localPoint);
+                    break;
 
                 case B2ShapeType.b2_circleShape:
-                    return b2PointInCircle(shape.us.circle, localPoint);
+                    result = b2PointInCircle(shape.us.circle, localPoint);
+                    break;
 
                 case B2ShapeType.b2_polygonShape:
-                    return b2PointInPolygon(ref shape.us.polygon, localPoint);
+                    result = b2PointInPolygon(ref shape.us.polygon, localPoint);
+                    break;
 
                 default:
-                    return false;
+                    result = false;
+                    break;
             }
+
+            if (world.recording != null)
+            {
+                B2RecBuffer recBuf = default;
+                b2RecW_SHAPEID(ref recBuf, shapeId);
+                b2RecW_VEC2(ref recBuf, point);
+                b2RecW_BOOL(ref recBuf, result);
+                b2RecCommitRecord(world.recording, B2RecOpcode.ShapeTestPoint, recBuf);
+                b2RecBufFree(ref recBuf);
+            }
+
+            return result;
         }
 
         // todo_erin untested
@@ -1216,7 +1336,7 @@ namespace Box2D.NET
 
                 default:
                     B2_ASSERT(false);
-                    return output;
+                    break;
             }
 
             if (output.hit)
@@ -1224,6 +1344,16 @@ namespace Box2D.NET
                 // convert to world coordinates
                 output.normal = b2RotateVector(transform.q, output.normal);
                 output.point = b2TransformPoint(transform, output.point);
+            }
+
+            if (world.recording != null)
+            {
+                B2RecBuffer recBuf = default;
+                b2RecW_SHAPEID(ref recBuf, shapeId);
+                b2RecW_RAYCASTINPUT(ref recBuf, input);
+                b2RecW_CASTOUTPUT(ref recBuf, output);
+                b2RecCommitRecord(world.recording, B2RecOpcode.ShapeRayCast, recBuf);
+                b2RecBufFree(ref recBuf);
             }
 
             return output;
@@ -1239,6 +1369,17 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetDensity _a = new B2RecArgs_ShapeSetDensity
+                {
+                    shape = shapeId,
+                    density = density,
+                    updateBodyMass = updateBodyMass,
+                };
+                b2RecWrite_ShapeSetDensity(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1276,6 +1417,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetFriction _a = new B2RecArgs_ShapeSetFriction
+                {
+                    shape = shapeId,
+                    friction = friction,
+                };
+                b2RecWrite_ShapeSetFriction(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.material.friction = friction;
         }
@@ -1298,6 +1449,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetRestitution _a = new B2RecArgs_ShapeSetRestitution
+                {
+                    shape = shapeId,
+                    restitution = restitution,
+                };
+                b2RecWrite_ShapeSetRestitution(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.material.restitution = restitution;
         }
@@ -1317,6 +1478,16 @@ namespace Box2D.NET
             if (world.locked)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetUserMaterial _a = new B2RecArgs_ShapeSetUserMaterial
+                {
+                    shape = shapeId,
+                    material = material,
+                };
+                b2RecWrite_ShapeSetUserMaterial(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1343,6 +1514,15 @@ namespace Box2D.NET
         public static void b2Shape_SetSurfaceMaterial(B2ShapeId shapeId, in B2SurfaceMaterial surfaceMaterial)
         {
             B2World world = b2GetWorld(shapeId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetSurfaceMaterial _a = new B2RecArgs_ShapeSetSurfaceMaterial
+                {
+                    shape = shapeId,
+                    material = surfaceMaterial,
+                };
+                b2RecWrite_ShapeSetSurfaceMaterial(world.recording, in _a);
+            }
             B2Shape shape = b2GetShape(world, shapeId);
             shape.material = surfaceMaterial;
         }
@@ -1416,6 +1596,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetFilter _a = new B2RecArgs_ShapeSetFilter
+                {
+                    shape = shapeId,
+                    filter = filter,
+                };
+                b2RecWrite_ShapeSetFilter(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             if (filter.maskBits == shape.filter.maskBits && filter.categoryBits == shape.filter.categoryBits &&
                 filter.groupIndex == shape.filter.groupIndex)
@@ -1446,6 +1636,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeEnableSensorEvents _a = new B2RecArgs_ShapeEnableSensorEvents
+                {
+                    shape = shapeId,
+                    flag = flag,
+                };
+                b2RecWrite_ShapeEnableSensorEvents(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.enableSensorEvents = flag;
         }
@@ -1466,6 +1666,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeEnableContactEvents _a = new B2RecArgs_ShapeEnableContactEvents
+                {
+                    shape = shapeId,
+                    flag = flag,
+                };
+                b2RecWrite_ShapeEnableContactEvents(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1489,6 +1699,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeEnablePreSolveEvents _a = new B2RecArgs_ShapeEnablePreSolveEvents
+                {
+                    shape = shapeId,
+                    flag = flag,
+                };
+                b2RecWrite_ShapeEnablePreSolveEvents(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.enablePreSolveEvents = flag;
         }
@@ -1507,6 +1727,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeEnableHitEvents _a = new B2RecArgs_ShapeEnableHitEvents
+                {
+                    shape = shapeId,
+                    flag = flag,
+                };
+                b2RecWrite_ShapeEnableHitEvents(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1578,6 +1808,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetCircle _a = new B2RecArgs_ShapeSetCircle
+                {
+                    shape = shapeId,
+                    circle = circle,
+                };
+                b2RecWrite_ShapeSetCircle(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.circle = new B2Circle(circle.center, circle.radius);
             shape.type = B2ShapeType.b2_circleShape;
@@ -1597,6 +1837,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetCapsule _a = new B2RecArgs_ShapeSetCapsule
+                {
+                    shape = shapeId,
+                    capsule = capsule,
+                };
+                b2RecWrite_ShapeSetCapsule(world.recording, in _a);
             }
 
             float lengthSqr = b2DistanceSquared(capsule.center1, capsule.center2);
@@ -1624,6 +1874,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetSegment _a = new B2RecArgs_ShapeSetSegment
+                {
+                    shape = shapeId,
+                    segment = segment,
+                };
+                b2RecWrite_ShapeSetSegment(world.recording, in _a);
+            }
+
             B2Shape shape = b2GetShape(world, shapeId);
             shape.us.segment = new B2Segment(segment.point1, segment.point2);
             shape.type = B2ShapeType.b2_segmentShape;
@@ -1643,6 +1903,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetPolygon _a = new B2RecArgs_ShapeSetPolygon
+                {
+                    shape = shapeId,
+                    polygon = polygon,
+                };
+                b2RecWrite_ShapeSetPolygon(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1666,6 +1936,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeSetChainSegment _a = new B2RecArgs_ShapeSetChainSegment
+                {
+                    shape = shapeId,
+                    chainSegment = chainSegment,
+                };
+                b2RecWrite_ShapeSetChainSegment(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
@@ -1728,6 +2008,17 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ChainSetSurfaceMaterial _a = new B2RecArgs_ChainSetSurfaceMaterial
+                {
+                    chain = chainId,
+                    material = material,
+                    materialIndex = materialIndex,
+                };
+                b2RecWrite_ChainSetSurfaceMaterial(world.recording, in _a);
             }
 
             B2ChainShape chainShape = b2GetChainShape(world, chainId);
@@ -1966,6 +2257,19 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_ShapeApplyWind _a = new B2RecArgs_ShapeApplyWind
+                {
+                    shape = shapeId,
+                    wind = wind,
+                    drag = drag,
+                    lift = lift,
+                    wake = wake,
+                };
+                b2RecWrite_ShapeApplyWind(world.recording, in _a);
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
