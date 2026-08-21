@@ -4,5 +4,7 @@
   href: https://box2d.org/
 - name: Overview
   href: https://box2d.org/documentation/index.html
+- name: Recording and Replay
+  href: recording.md
 - name: FAQ
   href: https://box2d.org/documentation/md_faq.html

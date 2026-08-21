@@ -402,6 +402,7 @@ FodyWeavers.xsd
 .idea/
 imgui.ini
 settings.ini
+*.b2rec
 
 # DocFX API Generated Pages
 docs/api/*

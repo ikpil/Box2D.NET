@@ -1,9 +1,10 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2DynamicTrees;
@@ -25,13 +26,13 @@ using static Box2D.NET.B2Distances;
 using static Box2D.NET.B2ConstraintGraphs;
 using static Box2D.NET.B2BitSets;
 using static Box2D.NET.B2SolverSets;
-using static Box2D.NET.B2AABBs;
 using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Islands;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Sensors;
 using static Box2D.NET.B2ParallelFors;
 using static Box2D.NET.B2Schedulers;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -69,6 +70,7 @@ namespace Box2D.NET
             return world;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2World b2GetWorldFromId(B2WorldId id)
         {
             B2_ASSERT(1 <= id.index1 && id.index1 <= B2_MAX_WORLDS);
@@ -78,6 +80,7 @@ namespace Box2D.NET
             return world;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static B2World b2GetWorld(int index)
         {
             B2_ASSERT(0 <= index && index < B2_MAX_WORLDS);
@@ -86,6 +89,7 @@ namespace Box2D.NET
             return world;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static B2World b2GetWorldLocked(int index)
         {
             B2_ASSERT(0 <= index && index < B2_MAX_WORLDS);
@@ -374,6 +378,13 @@ namespace Box2D.NET
             world.debugContactSet = b2CreateBitSet(256);
             world.debugIslandSet = b2CreateBitSet(256);
 
+            // Start recording if requested; b2StartRecording writes the CreateWorld record
+            world.recording = null;
+            if (def.recordingPath != null)
+            {
+                b2StartRecording(world, def);
+            }
+
             // add one to worldId so that 0 represents a null b2WorldId
             return new B2WorldId((ushort)(worldId + 1), world.generation);
         }
@@ -381,6 +392,9 @@ namespace Box2D.NET
         public static void b2DestroyWorld(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
+
+            // Flush and close recording before teardown
+            b2StopRecordingInternal(world);
 
             if (world.scheduler != null)
             {
@@ -478,6 +492,7 @@ namespace Box2D.NET
             world.generation = (ushort)(generation + 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static float b2RelativeCos(B2Rot a, B2Rot b)
         {
             return a.c * b.c + a.s * b.s;
@@ -889,6 +904,18 @@ namespace Box2D.NET
                 return;
             }
 
+            // Record step inputs before simulation runs
+            if (world.recording != null)
+            {
+                B2RecArgs_Step _a = new B2RecArgs_Step
+                {
+                    world = worldId,
+                    dt = timeStep,
+                    subStepCount = subStepCount,
+                };
+                b2RecWrite_Step(world.recording, in _a);
+            }
+
             // Prepare to capture events
             // Ensure user does not access stale data if there is an early return
             b2Array_Clear(ref world.bodyMoveEvents);
@@ -1012,6 +1039,22 @@ namespace Box2D.NET
             world.endEventArrayIndex = 1 - world.endEventArrayIndex;
             b2Array_Clear(ref world.sensorEndEvents[world.endEventArrayIndex]);
             b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
+
+            if (world.recording != null)
+            {
+                // Write the per-step StateHash and flush while the world is still locked. Queries early
+                // return while locked, so this keeps the shared recording buffer single-writer without a
+                // lock. StateHash proves the simulation reproduced exactly on replay.
+                ulong hash = b2HashWorldState(world);
+                B2RecArgs_StateHash sha = new B2RecArgs_StateHash
+                {
+                    world = worldId,
+                    hash = hash,
+                };
+                b2RecWrite_StateHash(world.recording, in sha);
+                b2FlushRecording(world.recording);
+            }
+
             world.locked = false;
             //b2TracyCFrame
         }
@@ -1683,6 +1726,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldEnableSleeping _a = new B2RecArgs_WorldEnableSleeping
+                {
+                    world = worldId,
+                    flag = flag,
+                };
+                b2RecWrite_WorldEnableSleeping(world.recording, in _a);
+            }
+
             if (flag == world.enableSleep)
             {
                 return;
@@ -1721,6 +1774,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldEnableWarmStarting _a = new B2RecArgs_WorldEnableWarmStarting
+                {
+                    world = worldId,
+                    flag = flag,
+                };
+                b2RecWrite_WorldEnableWarmStarting(world.recording, in _a);
+            }
+
             world.enableWarmStarting = flag;
         }
         /// Is constraint warm starting enabled?
@@ -1749,6 +1812,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldEnableContinuous _a = new B2RecArgs_WorldEnableContinuous
+                {
+                    world = worldId,
+                    flag = flag,
+                };
+                b2RecWrite_WorldEnableContinuous(world.recording, in _a);
+            }
+
             world.enableContinuous = flag;
         }
         /// Is continuous collision enabled?
@@ -1769,6 +1842,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetRestitutionThreshold _a = new B2RecArgs_WorldSetRestitutionThreshold
+                {
+                    world = worldId,
+                    value = value,
+                };
+                b2RecWrite_WorldSetRestitutionThreshold(world.recording, in _a);
+            }
+
             world.restitutionThreshold = b2ClampFloat(value, 0.0f, float.MaxValue);
         }
         /// Get the the restitution speed threshold. Usually in meters per second.
@@ -1787,6 +1870,16 @@ namespace Box2D.NET
             if (world.locked)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetHitEventThreshold _a = new B2RecArgs_WorldSetHitEventThreshold
+                {
+                    world = worldId,
+                    value = value,
+                };
+                b2RecWrite_WorldSetHitEventThreshold(world.recording, in _a);
             }
 
             world.hitEventThreshold = b2ClampFloat(value, 0.0f, float.MaxValue);
@@ -1812,6 +1905,18 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetContactTuning _a = new B2RecArgs_WorldSetContactTuning
+                {
+                    world = worldId,
+                    hertz = hertz,
+                    dampingRatio = dampingRatio,
+                    pushSpeed = pushSpeed,
+                };
+                b2RecWrite_WorldSetContactTuning(world.recording, in _a);
+            }
+
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
             world.contactSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
@@ -1826,6 +1931,16 @@ namespace Box2D.NET
             if (world.locked)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetContactRecycleDistance _a = new B2RecArgs_WorldSetContactRecycleDistance
+                {
+                    world = worldId,
+                    recycleDistance = recycleDistance,
+                };
+                b2RecWrite_WorldSetContactRecycleDistance(world.recording, in _a);
             }
 
             world.contactRecycleDistance = b2ClampFloat(recycleDistance, 0.0f, float.MaxValue);
@@ -1847,6 +1962,16 @@ namespace Box2D.NET
             if (world.locked)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetMaximumLinearSpeed _a = new B2RecArgs_WorldSetMaximumLinearSpeed
+                {
+                    world = worldId,
+                    maximumLinearSpeed = maximumLinearSpeed,
+                };
+                b2RecWrite_WorldSetMaximumLinearSpeed(world.recording, in _a);
             }
 
             world.maxLinearSpeed = maximumLinearSpeed;
@@ -2109,8 +2234,11 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-            bool result = worldContext.fcn(id, worldContext.userContext);
-            return result;
+            if (worldContext.recording.buf.data != null)
+            {
+                return b2RecOverlapTrampoline(id, ref worldContext.recording);
+            }
+            return worldContext.fcn(id, worldContext.userContext);
         }
         /// Overlap test for all shapes that *potentially* overlap the provided AABB
         public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, in B2AABB aabb, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
@@ -2126,7 +2254,20 @@ namespace Box2D.NET
 
             B2_ASSERT(b2IsValidAABB(aabb));
 
+            B2RecQueryWriter recWriter = default;
+            if (world.recording != null)
+            {
+                b2RecQueryBegin(ref recWriter, context);
+                recWriter.userFcn.overlapFcn = fcn;
+                b2RecW_WORLDID(ref recWriter.buf, worldId);
+                b2RecW_AABB(ref recWriter.buf, aabb);
+                b2RecW_QUERYFILTER(ref recWriter.buf, filter);
+                recWriter.countOffset = b2RecReserveU32(ref recWriter.buf);
+            }
+
             B2WorldQueryContext worldContext = new B2WorldQueryContext(world, fcn, filter, context);
+            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2135,6 +2276,14 @@ namespace Box2D.NET
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
+            }
+
+            if (world.recording != null)
+            {
+                recWriter = worldContext.recording;
+                b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
+                b2RecW_TREESTATS(ref recWriter.buf, treeStats);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapAABB, ref recWriter);
             }
 
             return treeStats;
@@ -2177,8 +2326,11 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-            bool result = worldContext.fcn(id, worldContext.userContext);
-            return result;
+            if (worldContext.recording.buf.data != null)
+            {
+                return b2RecOverlapTrampoline(id, ref worldContext.recording);
+            }
+            return worldContext.fcn(id, worldContext.userContext);
         }
 
         /// Overlap test for all shapes that overlap the provided shape proxy.
@@ -2193,10 +2345,23 @@ namespace Box2D.NET
                 return treeStats;
             }
 
+            B2RecQueryWriter recWriter = default;
+            if (world.recording != null)
+            {
+                b2RecQueryBegin(ref recWriter, context);
+                recWriter.userFcn.overlapFcn = fcn;
+                b2RecW_WORLDID(ref recWriter.buf, worldId);
+                b2RecW_SHAPEPROXY(ref recWriter.buf, proxy);
+                b2RecW_QUERYFILTER(ref recWriter.buf, filter);
+                recWriter.countOffset = b2RecReserveU32(ref recWriter.buf);
+            }
+
             B2AABB aabb = b2MakeAABB(proxy.points.AsSpan(), proxy.count, proxy.radius);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, proxy, context
             );
+            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2205,6 +2370,14 @@ namespace Box2D.NET
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
+            }
+
+            if (world.recording != null)
+            {
+                recWriter = worldContext.recording;
+                b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
+                b2RecW_TREESTATS(ref recWriter.buf, treeStats);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapShape, ref recWriter);
             }
 
             return treeStats;
@@ -2233,7 +2406,9 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
+                float fraction = worldContext.recording.buf.data != null
+                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, ref worldContext.recording)
+                    : worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2271,9 +2446,23 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidVec2(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
+            B2RecQueryWriter recWriter = default;
+            if (world.recording != null)
+            {
+                b2RecQueryBegin(ref recWriter, context);
+                recWriter.userFcn.castFcn = fcn;
+                b2RecW_WORLDID(ref recWriter.buf, worldId);
+                b2RecW_VEC2(ref recWriter.buf, origin);
+                b2RecW_VEC2(ref recWriter.buf, translation);
+                b2RecW_QUERYFILTER(ref recWriter.buf, filter);
+                recWriter.countOffset = b2RecReserveU32(ref recWriter.buf);
+            }
+
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
 
-            var worldContext = B2WorldRayCastContext.Create(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext<T> worldContext = new B2WorldRayCastContext<T>(world, fcn, filter, 1.0f, context);
+            // C replaces context with &recWriter. The generic callback context carries the value writer by ref.
+            worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2284,10 +2473,18 @@ namespace Box2D.NET
 
                 if (worldContext.fraction == 0.0f)
                 {
-                    return treeStats;
+                    break;
                 }
 
                 input.maxFraction = worldContext.fraction;
+            }
+
+            if (world.recording != null)
+            {
+                recWriter = worldContext.recording;
+                b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
+                b2RecW_TREESTATS(ref recWriter.buf, treeStats);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastRay, ref recWriter);
             }
 
             return treeStats;
@@ -2328,7 +2525,8 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidVec2(translation));
 
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
-            var worldContext = B2WorldRayCastContext.Create(world, b2RayCastClosestFcn, filter, 1.0f, result);
+            B2WorldRayCastContext<B2RayResult> worldContext =
+                new B2WorldRayCastContext<B2RayResult>(world, b2RayCastClosestFcn, filter, 1.0f, result);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2339,10 +2537,22 @@ namespace Box2D.NET
 
                 if (worldContext.fraction == 0.0f)
                 {
-                    return result;
+                    break;
                 }
 
                 input.maxFraction = worldContext.fraction;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecBuffer recBuf = default;
+                b2RecW_WORLDID(ref recBuf, worldId);
+                b2RecW_VEC2(ref recBuf, origin);
+                b2RecW_VEC2(ref recBuf, translation);
+                b2RecW_QUERYFILTER(ref recBuf, filter);
+                b2RecW_RAYRESULT(ref recBuf, result);
+                b2RecCommitRecord(world.recording, B2RecOpcode.QueryCastRayClosest, recBuf);
+                b2RecBufFree(ref recBuf);
             }
 
             return result;
@@ -2372,7 +2582,9 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
+                float fraction = worldContext.recording.buf.data != null
+                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, ref worldContext.recording)
+                    : worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2401,12 +2613,26 @@ namespace Box2D.NET
 
             B2_ASSERT(b2IsValidVec2(translation));
 
+            B2RecQueryWriter recWriter = default;
+            if (world.recording != null)
+            {
+                b2RecQueryBegin(ref recWriter, context);
+                recWriter.userFcn.castFcn = fcn;
+                b2RecW_WORLDID(ref recWriter.buf, worldId);
+                b2RecW_SHAPEPROXY(ref recWriter.buf, proxy);
+                b2RecW_VEC2(ref recWriter.buf, translation);
+                b2RecW_QUERYFILTER(ref recWriter.buf, filter);
+                recWriter.countOffset = b2RecReserveU32(ref recWriter.buf);
+            }
+
             B2ShapeCastInput input = new B2ShapeCastInput();
             input.proxy = proxy;
             input.translation = translation;
             input.maxFraction = 1.0f;
 
-            var worldContext = B2WorldRayCastContext.Create(world, fcn, filter, 1.0f, context);
+            B2WorldRayCastContext<T> worldContext = new B2WorldRayCastContext<T>(world, fcn, filter, 1.0f, context);
+            // C replaces context with &recWriter. The generic callback context carries the value writer by ref.
+            worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2417,10 +2643,18 @@ namespace Box2D.NET
 
                 if (worldContext.fraction == 0.0f)
                 {
-                    return treeStats;
+                    break;
                 }
 
                 input.maxFraction = worldContext.fraction;
+            }
+
+            if (world.recording != null)
+            {
+                recWriter = worldContext.recording;
+                b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
+                b2RecW_TREESTATS(ref recWriter.buf, treeStats);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastShape, ref recWriter);
             }
 
             return treeStats;
@@ -2486,10 +2720,22 @@ namespace Box2D.NET
 
                 if (worldContext.fraction == 0.0f)
                 {
-                    return 0.0f;
+                    break;
                 }
 
                 input.maxFraction = worldContext.fraction;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecBuffer recBuf = default;
+                b2RecW_WORLDID(ref recBuf, worldId);
+                b2RecW_CAPSULE(ref recBuf, mover);
+                b2RecW_VEC2(ref recBuf, translation);
+                b2RecW_QUERYFILTER(ref recBuf, filter);
+                b2RecW_F32(ref recBuf, worldContext.fraction);
+                b2RecCommitRecord(world.recording, B2RecOpcode.QueryCastMover, recBuf);
+                b2RecBufFree(ref recBuf);
             }
 
             return worldContext.fraction;
@@ -2520,6 +2766,10 @@ namespace Box2D.NET
             if (result.hit && b2IsNormalized(result.plane.normal))
             {
                 B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
+                if (worldContext.recording.buf.data != null)
+                {
+                    return b2RecPlaneTrampoline(id, ref result, ref worldContext.recording);
+                }
                 return worldContext.fcn(id, ref result, worldContext.userContext);
             }
 
@@ -2527,6 +2777,8 @@ namespace Box2D.NET
         }
 
 
+        // It is tempting to use a shape proxy for the mover, but this makes handling deep overlap difficult and the generality may
+        // not be worth it.
         /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for
         /// kinematic character movement.
         public static void b2World_CollideMover(B2WorldId worldId, in B2Capsule mover, in B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
@@ -2536,6 +2788,17 @@ namespace Box2D.NET
             if (world.locked)
             {
                 return;
+            }
+
+            B2RecQueryWriter recWriter = default;
+            if (world.recording != null)
+            {
+                b2RecQueryBegin(ref recWriter, context);
+                recWriter.userFcn.planeFcn = fcn;
+                b2RecW_WORLDID(ref recWriter.buf, worldId);
+                b2RecW_CAPSULE(ref recWriter.buf, mover);
+                b2RecW_QUERYFILTER(ref recWriter.buf, filter);
+                recWriter.countOffset = b2RecReserveU32(ref recWriter.buf);
             }
 
             B2Vec2 r = new B2Vec2(mover.radius, mover.radius);
@@ -2550,10 +2813,20 @@ namespace Box2D.NET
             worldContext.filter = filter;
             worldContext.mover = mover;
             worldContext.userContext = context;
+            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeCollideCallback, ref worldContext);
+            }
+
+            if (world.recording != null)
+            {
+                recWriter = worldContext.recording;
+                b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
+                // CollideMover returns void; no TREESTATS tail
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCollideMover, ref recWriter);
             }
         }
 
@@ -2626,6 +2899,11 @@ void b2World_Dump()
         public static void b2World_SetCustomFilterCallback(B2WorldId worldId, b2CustomFilterFcn fcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
+            if (fcn != null && world.recording != null)
+            {
+                Console.WriteLine("b2World_SetCustomFilterCallback: customFilter not supported while recording");
+                B2_ASSERT(false, "customFilter callbacks are not supported while recording");
+            }
             world.customFilterFcn = fcn;
             world.customFilterContext = context;
         }
@@ -2633,6 +2911,11 @@ void b2World_Dump()
         public static void b2World_SetPreSolveCallback(B2WorldId worldId, b2PreSolveFcn fcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
+            if (fcn != null && world.recording != null)
+            {
+                Console.WriteLine("b2World_SetPreSolveCallback: preSolve not supported while recording");
+                B2_ASSERT(false, "preSolve callbacks are not supported while recording");
+            }
             world.preSolveFcn = fcn;
             world.preSolveContext = context;
         }
@@ -2642,6 +2925,15 @@ void b2World_Dump()
         public static void b2World_SetGravity(B2WorldId worldId, B2Vec2 gravity)
         {
             B2World world = b2GetWorldFromId(worldId);
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldSetGravity _a = new B2RecArgs_WorldSetGravity
+                {
+                    world = worldId,
+                    gravity = gravity,
+                };
+                b2RecWrite_WorldSetGravity(world.recording, in _a);
+            }
             world.gravity = gravity;
         }
         /// Get the gravity vector
@@ -2751,6 +3043,16 @@ void b2World_Dump()
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldExplode _a = new B2RecArgs_WorldExplode
+                {
+                    world = worldId,
+                    def = explosionDef,
+                };
+                b2RecWrite_WorldExplode(world.recording, in _a);
+            }
+
             B2ExplosionContext explosionContext = new B2ExplosionContext(world, position, radius, falloff, impulsePerLength);
 
             B2AABB aabb;
@@ -2771,6 +3073,15 @@ void b2World_Dump()
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldRebuildStaticTree _a = new B2RecArgs_WorldRebuildStaticTree
+                {
+                    world = worldId,
+                };
+                b2RecWrite_WorldRebuildStaticTree(world.recording, in _a);
+            }
+
             B2DynamicTree staticTree = world.broadPhase.trees[(int)B2BodyType.b2_staticBody];
             b2DynamicTree_Rebuild(staticTree, true);
         }
@@ -2778,6 +3089,15 @@ void b2World_Dump()
         public static void b2World_EnableSpeculative(B2WorldId worldId, bool flag)
         {
             B2World world = b2GetWorldFromId(worldId);
+            if (world.recording != null)
+            {
+                B2RecArgs_WorldEnableSpeculative _a = new B2RecArgs_WorldEnableSpeculative
+                {
+                    world = worldId,
+                    flag = flag,
+                };
+                b2RecWrite_WorldEnableSpeculative(world.recording, in _a);
+            }
             world.enableSpeculative = flag;
         }
 

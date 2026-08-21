@@ -25,6 +25,7 @@ namespace Box2D.NET
             bitSet.bits[blockIndex] |= ((ulong)1 << (bitIndex % 64));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2SetBitGrow(ref B2BitSet bitSet, int bitIndex)
         {
             if (bitIndex < 0)

@@ -10,10 +10,6 @@ namespace Box2D.NET.Test;
 
 public class B2DynamicTreeContextTests
 {
-    private sealed class CallbackContext
-    {
-        public int Visits;
-    }
 
     private static bool QueryCallback(int proxyId, ulong userData, ref CallbackContext context)
     {

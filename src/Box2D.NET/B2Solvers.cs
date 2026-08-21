@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
@@ -61,6 +62,7 @@ namespace Box2D.NET
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Softness b2MakeSoft(float hertz, float zeta, float h)
         {
             if (hertz == 0.0f)
@@ -98,6 +100,7 @@ namespace Box2D.NET
         }
 
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void b2Pause()
         {
             // C uses _mm_pause() / __yield(). Thread.SpinWait(1) emits the same
@@ -941,6 +944,7 @@ namespace Box2D.NET
         }
 
         // This staggers the worker start indices so they avoid touching the same solver blocks
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int GetWorkerStartIndex(int workerIndex, int blockCount, int workerCount)
         {
             if (blockCount <= workerCount)

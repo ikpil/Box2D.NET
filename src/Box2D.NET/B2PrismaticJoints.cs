@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Joints;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Cores;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -19,6 +20,16 @@ namespace Box2D.NET
         /// Enable/disable the joint spring.
         public static void b2PrismaticJoint_EnableSpring(B2JointId jointId, bool enableSpring)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointEnableSpring _a = new B2RecArgs_PrismaticJointEnableSpring
+                {
+                    joint = jointId,
+                    enableSpring = enableSpring,
+                };
+                b2RecWrite_PrismaticJointEnableSpring(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             if (enableSpring != joint.uj.prismaticJoint.enableSpring)
             {
@@ -37,6 +48,16 @@ namespace Box2D.NET
         /// runs at 60Hz then the joint stiffness should be 15Hz or less.
         public static void b2PrismaticJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetSpringHertz _a = new B2RecArgs_PrismaticJointSetSpringHertz
+                {
+                    joint = jointId,
+                    hertz = hertz,
+                };
+                b2RecWrite_PrismaticJointSetSpringHertz(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.hertz = hertz;
         }
@@ -49,6 +70,16 @@ namespace Box2D.NET
         /// Set the prismatic joint damping ratio (non-dimensional)
         public static void b2PrismaticJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetSpringDampingRatio _a = new B2RecArgs_PrismaticJointSetSpringDampingRatio
+                {
+                    joint = jointId,
+                    dampingRatio = dampingRatio,
+                };
+                b2RecWrite_PrismaticJointSetSpringDampingRatio(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.dampingRatio = dampingRatio;
         }
@@ -62,6 +93,16 @@ namespace Box2D.NET
         /// Set the prismatic joint spring target angle, usually in meters
         public static void b2PrismaticJoint_SetTargetTranslation(B2JointId jointId, float translation)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetTargetTranslation _a = new B2RecArgs_PrismaticJointSetTargetTranslation
+                {
+                    joint = jointId,
+                    translation = translation,
+                };
+                b2RecWrite_PrismaticJointSetTargetTranslation(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.targetTranslation = translation;
         }
@@ -75,6 +116,16 @@ namespace Box2D.NET
         /// Enable/disable a prismatic joint limit
         public static void b2PrismaticJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointEnableLimit _a = new B2RecArgs_PrismaticJointEnableLimit
+                {
+                    joint = jointId,
+                    enableLimit = enableLimit,
+                };
+                b2RecWrite_PrismaticJointEnableLimit(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             if (enableLimit != joint.uj.prismaticJoint.enableLimit)
             {
@@ -104,6 +155,17 @@ namespace Box2D.NET
         /// Set the prismatic joint limits
         public static void b2PrismaticJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetLimits _a = new B2RecArgs_PrismaticJointSetLimits
+                {
+                    joint = jointId,
+                    lower = lower,
+                    upper = upper,
+                };
+                b2RecWrite_PrismaticJointSetLimits(world.recording, in _a);
+            }
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
@@ -119,6 +181,16 @@ namespace Box2D.NET
         /// Enable/disable a prismatic joint motor
         public static void b2PrismaticJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointEnableMotor _a = new B2RecArgs_PrismaticJointEnableMotor
+                {
+                    joint = jointId,
+                    enableMotor = enableMotor,
+                };
+                b2RecWrite_PrismaticJointEnableMotor(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             if (enableMotor != joint.uj.prismaticJoint.enableMotor)
             {
@@ -135,6 +207,16 @@ namespace Box2D.NET
         /// Set the prismatic joint motor speed, usually in meters per second
         public static void b2PrismaticJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetMotorSpeed _a = new B2RecArgs_PrismaticJointSetMotorSpeed
+                {
+                    joint = jointId,
+                    motorSpeed = motorSpeed,
+                };
+                b2RecWrite_PrismaticJointSetMotorSpeed(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.motorSpeed = motorSpeed;
         }
@@ -154,6 +236,16 @@ namespace Box2D.NET
         /// Set the prismatic joint maximum motor force, usually in newtons
         public static void b2PrismaticJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
+            B2World world = b2GetWorld(jointId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_PrismaticJointSetMaxMotorForce _a = new B2RecArgs_PrismaticJointSetMaxMotorForce
+                {
+                    joint = jointId,
+                    force = force,
+                };
+                b2RecWrite_PrismaticJointSetMaxMotorForce(world.recording, in _a);
+            }
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.maxMotorForce = force;
         }

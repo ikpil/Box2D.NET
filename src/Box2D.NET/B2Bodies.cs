@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
@@ -20,6 +21,7 @@ using static Box2D.NET.B2Sensors;
 using static Box2D.NET.B2SolverSets;
 using static Box2D.NET.B2BroadPhases;
 using static Box2D.NET.B2ArenaAllocators;
+using static Box2D.NET.B2Recordings;
 
 namespace Box2D.NET
 {
@@ -71,6 +73,7 @@ namespace Box2D.NET
             deltaRotation = new B2Rot(1.0f, 0.0f),
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Sweep b2MakeSweep(B2BodySim bodySim)
         {
             B2Sweep s = new B2Sweep();
@@ -108,6 +111,7 @@ namespace Box2D.NET
         }
 
         // Get a validated body from a world using an id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Body b2GetBodyFullId(B2World world, B2BodyId bodyId)
         {
             B2_ASSERT(b2Body_IsValid(bodyId));
@@ -116,6 +120,7 @@ namespace Box2D.NET
             return b2Array_Get(ref world.bodies, bodyId.index1 - 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Transform b2GetBodyTransformQuick(B2World world, B2Body body)
         {
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
@@ -123,6 +128,7 @@ namespace Box2D.NET
             return bodySim.transform;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Transform b2GetBodyTransform(B2World world, int bodyId)
         {
             B2Body body = b2Array_Get(ref world.bodies, bodyId);
@@ -130,12 +136,14 @@ namespace Box2D.NET
         }
 
         // Create a b2BodyId from a raw id.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyId b2MakeBodyId(B2World world, int bodyId)
         {
             B2Body body = b2Array_Get(ref world.bodies, bodyId);
             return new B2BodyId(bodyId + 1, world.worldId, body.generation);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodySim b2GetBodySim(B2World world, B2Body body)
         {
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
@@ -143,6 +151,7 @@ namespace Box2D.NET
             return bodySim;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2BodyState b2GetBodyState(B2World world, B2Body body)
         {
             if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
@@ -385,6 +394,17 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
 
             B2BodyId id = new B2BodyId(bodyId + 1, world.worldId, body.generation);
+
+            if (world.recording != null)
+            {
+                B2RecArgs_CreateBody _ca = new B2RecArgs_CreateBody
+                {
+                    world = worldId,
+                    def = def,
+                };
+                b2RecWriteRet_CreateBody(world.recording, in _ca, id);
+            }
+
             return id;
         }
 
@@ -408,6 +428,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            // Record before destroying (body must still be valid)
+            if (world.recording != null)
+            {
+                B2RecArgs_DestroyBody _a = new B2RecArgs_DestroyBody
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_DestroyBody(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -783,6 +813,17 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2_ASSERT(world.locked == false);
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetTransform _a = new B2RecArgs_BodySetTransform
+                {
+                    body = bodyId,
+                    position = position,
+                    rotation = rotation,
+                };
+                b2RecWrite_BodySetTransform(world.recording, in _a);
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
 
@@ -859,6 +900,15 @@ namespace Box2D.NET
         public static void b2Body_SetLinearVelocity(B2BodyId bodyId, B2Vec2 linearVelocity)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetLinearVelocity _a = new B2RecArgs_BodySetLinearVelocity
+                {
+                    body = bodyId,
+                    v = linearVelocity,
+                };
+                b2RecWrite_BodySetLinearVelocity(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type == B2BodyType.b2_staticBody)
@@ -884,6 +934,15 @@ namespace Box2D.NET
         public static void b2Body_SetAngularVelocity(B2BodyId bodyId, float angularVelocity)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetAngularVelocity _a = new B2RecArgs_BodySetAngularVelocity
+                {
+                    body = bodyId,
+                    w = angularVelocity,
+                };
+                b2RecWrite_BodySetAngularVelocity(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type == B2BodyType.b2_staticBody || 0 != (body.flags & (uint)B2BodyFlags.b2_lockAngularZ))
@@ -916,6 +975,17 @@ namespace Box2D.NET
         public static void b2Body_SetTargetTransform(B2BodyId bodyId, in B2Transform target, float timeStep, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetTargetTransform _a = new B2RecArgs_BodySetTargetTransform
+                {
+                    body = bodyId,
+                    target = target,
+                    timeStep = timeStep,
+                    wake = wake,
+                };
+                b2RecWrite_BodySetTargetTransform(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1017,6 +1087,17 @@ namespace Box2D.NET
         public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Vec2 point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyForce _a = new B2RecArgs_BodyApplyForce
+                {
+                    body = bodyId,
+                    force = force,
+                    point = point,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyForce(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1045,6 +1126,16 @@ namespace Box2D.NET
         public static void b2Body_ApplyForceToCenter(B2BodyId bodyId, B2Vec2 force, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyForceToCenter _a = new B2RecArgs_BodyApplyForceToCenter
+                {
+                    body = bodyId,
+                    force = force,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyForceToCenter(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1072,6 +1163,16 @@ namespace Box2D.NET
         public static void b2Body_ApplyTorque(B2BodyId bodyId, float torque, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyTorque _a = new B2RecArgs_BodyApplyTorque
+                {
+                    body = bodyId,
+                    torque = torque,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyTorque(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1098,6 +1199,14 @@ namespace Box2D.NET
         public static void b2Body_ClearForces(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyClearForces _a = new B2RecArgs_BodyClearForces
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_BodyClearForces(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
             bodySim.force = b2Vec2_zero;
@@ -1118,6 +1227,17 @@ namespace Box2D.NET
         public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Vec2 point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyLinearImpulse _a = new B2RecArgs_BodyApplyLinearImpulse
+                {
+                    body = bodyId,
+                    impulse = impulse,
+                    point = point,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyLinearImpulse(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1153,6 +1273,16 @@ namespace Box2D.NET
         public static void b2Body_ApplyLinearImpulseToCenter(B2BodyId bodyId, B2Vec2 impulse, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyLinearImpulseToCenter _a = new B2RecArgs_BodyApplyLinearImpulseToCenter
+                {
+                    body = bodyId,
+                    impulse = impulse,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyLinearImpulseToCenter(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1188,6 +1318,16 @@ namespace Box2D.NET
         {
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyAngularImpulse _a = new B2RecArgs_BodyApplyAngularImpulse
+                {
+                    body = bodyId,
+                    impulse = impulse,
+                    wake = wake,
+                };
+                b2RecWrite_BodyApplyAngularImpulse(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (body.type != B2BodyType.b2_dynamicBody || body.setIndex == (int)B2SolverSetType.b2_disabledSet)
@@ -1250,6 +1390,15 @@ namespace Box2D.NET
         public static void b2Body_SetType(B2BodyId bodyId, B2BodyType type)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetType _a = new B2RecArgs_BodySetType
+                {
+                    body = bodyId,
+                    type = (int)type,
+                };
+                b2RecWrite_BodySetType(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             B2BodyType originalType = body.type;
@@ -1437,6 +1586,15 @@ namespace Box2D.NET
         public static void b2Body_SetName(B2BodyId bodyId, string name)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetName _a = new B2RecArgs_BodySetName
+                {
+                    body = bodyId,
+                    name = name,
+                };
+                b2RecWrite_BodySetName(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             body.name = b2TruncateBodyName(name);
@@ -1510,6 +1668,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetMassData _a = new B2RecArgs_BodySetMassData
+                {
+                    body = bodyId,
+                    massData = massData,
+                };
+                b2RecWrite_BodySetMassData(world.recording, in _a);
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
 
@@ -1548,6 +1716,15 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyApplyMassFromShapes _a = new B2RecArgs_BodyApplyMassFromShapes
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_BodyApplyMassFromShapes(world.recording, in _a);
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
             b2UpdateBodyMassData(world, body);
         }
@@ -1560,6 +1737,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetLinearDamping _a = new B2RecArgs_BodySetLinearDamping
+                {
+                    body = bodyId,
+                    damping = linearDamping,
+                };
+                b2RecWrite_BodySetLinearDamping(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1585,6 +1772,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetAngularDamping _a = new B2RecArgs_BodySetAngularDamping
+                {
+                    body = bodyId,
+                    damping = angularDamping,
+                };
+                b2RecWrite_BodySetAngularDamping(world.recording, in _a);
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
             B2BodySim bodySim = b2GetBodySim(world, body);
             bodySim.angularDamping = angularDamping;
@@ -1608,6 +1805,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetGravityScale _a = new B2RecArgs_BodySetGravityScale
+                {
+                    body = bodyId,
+                    scale = gravityScale,
+                };
+                b2RecWrite_BodySetGravityScale(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1641,6 +1848,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetAwake _a = new B2RecArgs_BodySetAwake
+                {
+                    body = bodyId,
+                    awake = awake,
+                };
+                b2RecWrite_BodySetAwake(world.recording, in _a);
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             if (awake && body.setIndex >= (int)B2SolverSetType.b2_firstSleepingSet)
@@ -1663,6 +1880,14 @@ namespace Box2D.NET
         public static void b2Body_WakeTouching(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyWakeTouching _a = new B2RecArgs_BodyWakeTouching
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_BodyWakeTouching(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             int contactKey = body.headContactKey;
@@ -1707,6 +1932,15 @@ namespace Box2D.NET
         public static void b2Body_SetSleepThreshold(B2BodyId bodyId, float sleepThreshold)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetSleepThreshold _a = new B2RecArgs_BodySetSleepThreshold
+                {
+                    body = bodyId,
+                    threshold = sleepThreshold,
+                };
+                b2RecWrite_BodySetSleepThreshold(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
             body.sleepThreshold = sleepThreshold;
         }
@@ -1724,6 +1958,16 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyEnableSleep _a = new B2RecArgs_BodyEnableSleep
+                {
+                    body = bodyId,
+                    flag = enableSleep,
+                };
+                b2RecWrite_BodyEnableSleep(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1752,6 +1996,15 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyDisable _a = new B2RecArgs_BodyDisable
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_BodyDisable(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1822,6 +2075,15 @@ namespace Box2D.NET
             if (world == null)
             {
                 return;
+            }
+
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyEnable _a = new B2RecArgs_BodyEnable
+                {
+                    body = bodyId,
+                };
+                b2RecWrite_BodyEnable(world.recording, in _a);
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1915,6 +2177,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetMotionLocks _a = new B2RecArgs_BodySetMotionLocks
+                {
+                    body = bodyId,
+                    locks = locks,
+                };
+                b2RecWrite_BodySetMotionLocks(world.recording, in _a);
+            }
+
             uint newFlags = 0;
             newFlags |= locks.linearX ? (uint)B2BodyFlags.b2_lockLinearX : 0;
             newFlags |= locks.linearY ? (uint)B2BodyFlags.b2_lockLinearY : 0;
@@ -1972,6 +2244,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodySetBullet _a = new B2RecArgs_BodySetBullet
+                {
+                    body = bodyId,
+                    flag = flag,
+                };
+                b2RecWrite_BodySetBullet(world.recording, in _a);
+            }
+
             uint newFlag = flag ? (uint)B2BodyFlags.b2_isBullet : 0;
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -2007,6 +2289,16 @@ namespace Box2D.NET
                 return;
             }
 
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyEnableContactRecycling _a = new B2RecArgs_BodyEnableContactRecycling
+                {
+                    body = bodyId,
+                    flag = flag,
+                };
+                b2RecWrite_BodyEnableContactRecycling(world.recording, in _a);
+            }
+
             uint newFlag = flag ? (uint)B2BodyFlags.b2_bodyEnableContactRecycling : 0;
 
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -2034,6 +2326,15 @@ namespace Box2D.NET
         public static void b2Body_EnableContactEvents(B2BodyId bodyId, bool flag)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyEnableContactEvents _a = new B2RecArgs_BodyEnableContactEvents
+                {
+                    body = bodyId,
+                    flag = flag,
+                };
+                b2RecWrite_BodyEnableContactEvents(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
@@ -2048,6 +2349,15 @@ namespace Box2D.NET
         public static void b2Body_EnableHitEvents(B2BodyId bodyId, bool flag)
         {
             B2World world = b2GetWorld(bodyId.world0);
+            if (world.recording != null)
+            {
+                B2RecArgs_BodyEnableHitEvents _a = new B2RecArgs_BodyEnableHitEvents
+                {
+                    body = bodyId,
+                    flag = flag,
+                };
+                b2RecWrite_BodyEnableHitEvents(world.recording, in _a);
+            }
             B2Body body = b2GetBodyFullId(world, bodyId);
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)

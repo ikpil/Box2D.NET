@@ -10,6 +10,7 @@ namespace Box2D.NET
         public b2OverlapResultFcn fcn;
         public B2QueryFilter filter;
         public object userContext;
+        internal B2RecQueryWriter recording;
 
         public B2WorldQueryContext(B2World world, b2OverlapResultFcn fcn, in B2QueryFilter filter, object userContext)
         {
@@ -17,6 +18,7 @@ namespace Box2D.NET
             this.fcn = fcn;
             this.filter = filter;
             this.userContext = userContext;
+            this.recording = default;
         }
     }
 }

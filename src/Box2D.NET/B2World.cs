@@ -140,6 +140,8 @@ namespace Box2D.NET
 
         public B2UserData userData;
 
+        internal B2Recording recording; // NULL unless recordingPath was set at world creation
+
         // Remember type step used for reporting forces and torques
         // inverse sub-step
         public float inv_h;
@@ -252,6 +254,7 @@ namespace Box2D.NET
             scheduler = null;
 
             userData = B2UserData.Empty;
+            recording = null;
 
             inv_h = 0.0f;
             inv_dt = 0.0f;

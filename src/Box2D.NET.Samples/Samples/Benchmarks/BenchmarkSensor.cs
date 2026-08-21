@@ -18,11 +18,6 @@ public class BenchmarkSensor : Sample
 {
     private static readonly int benchmarkSensor = SampleFactory.Shared.RegisterSample("Benchmark", "Sensor", Create);
 
-    public class ShapeUserData
-    {
-        public int row;
-        public bool active;
-    };
 
     private const int m_columnCount = 40;
     private const int m_rowCount = 40;
