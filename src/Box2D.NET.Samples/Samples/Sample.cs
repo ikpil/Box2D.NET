@@ -830,6 +830,34 @@ public class Sample : IDisposable
     public void ResetProfile()
     {
         m_stepCount = 0;
+        ClearProfileHistory();
+    }
+
+    protected void ClearProfileHistory()
+    {
+        Array.Clear(m_profiles);
+        m_currentProfileIndex = 0;
+        m_profileReadIndex = 0;
+        m_profileWriteIndex = 0;
+    }
+
+    // Store the profile produced by the most recent world step. Samples that drive the world
+    // themselves, such as ReplayFile, use this instead of duplicating the metrics ring logic.
+    protected void CaptureProfile()
+    {
+        if (B2_IS_NON_NULL(m_worldId) == false)
+        {
+            return;
+        }
+
+        if (m_profileWriteIndex == m_profileCapacity + m_profileReadIndex)
+        {
+            m_profileReadIndex += 1;
+        }
+
+        m_currentProfileIndex = (int)(m_profileWriteIndex & (m_profileCapacity - 1));
+        m_profiles[m_currentProfileIndex] = b2World_GetProfile(m_worldId);
+        m_profileWriteIndex += 1;
     }
 
     public virtual void Step()
@@ -887,15 +915,7 @@ public class Sample : IDisposable
         {
             m_stepCount += 1;
             m_didStep = true;
-
-            if (m_profileWriteIndex == m_profileCapacity + m_profileReadIndex)
-            {
-                m_profileReadIndex += 1;
-            }
-
-            m_currentProfileIndex = (int)(m_profileWriteIndex & (m_profileCapacity - 1));
-            m_profiles[m_currentProfileIndex] = b2World_GetProfile(m_worldId);
-            m_profileWriteIndex += 1;
+            CaptureProfile();
         }
 
     }
