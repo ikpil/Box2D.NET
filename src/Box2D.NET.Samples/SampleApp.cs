@@ -581,6 +581,18 @@ public class SampleApp
         }
 
         var io = ImGui.GetIO();
+        bool down = action != InputAction.Release;
+        ImGuiKey imguiKey = ToImGuiKey(key);
+        if (imguiKey != ImGuiKey.None)
+        {
+            io.AddKeyEvent(imguiKey, down);
+        }
+        // The custom GLFW callback replaces the input backend's callback, so feed both the physical
+        // modifier keys and their aggregate state into ImGui before handling sample shortcuts.
+        io.AddKeyEvent(ImGuiKey.ModCtrl, (mods & KeyModifiers.Control) != 0);
+        io.AddKeyEvent(ImGuiKey.ModShift, (mods & KeyModifiers.Shift) != 0);
+        io.AddKeyEvent(ImGuiKey.ModAlt, (mods & KeyModifiers.Alt) != 0);
+        io.AddKeyEvent(ImGuiKey.ModSuper, (mods & KeyModifiers.Super) != 0);
         if (io.WantCaptureKeyboard)
         {
             return;
@@ -686,17 +698,49 @@ public class SampleApp
 
     private unsafe void CharCallback(WindowHandle* window, uint c)
     {
-        //ImGui_ImplGlfw_CharCallback(window, c);
         if (null == _imgui)
         {
             return;
         }
 
-        var io = ImGui.GetIO();
-        if (io.WantCaptureKeyboard)
+        // Text input must always reach ImGui. The previous callback discarded every character,
+        // leaving InputText widgets visible and focusable but impossible to edit.
+        ImGui.GetIO().AddInputCharacter(c);
+    }
+
+    private static ImGuiKey ToImGuiKey(Keys key)
+    {
+        return key switch
         {
-            return;
-        }
+            Keys.Tab => ImGuiKey.Tab,
+            Keys.Left => ImGuiKey.LeftArrow,
+            Keys.Right => ImGuiKey.RightArrow,
+            Keys.Up => ImGuiKey.UpArrow,
+            Keys.Down => ImGuiKey.DownArrow,
+            Keys.Home => ImGuiKey.Home,
+            Keys.End => ImGuiKey.End,
+            Keys.Delete => ImGuiKey.Delete,
+            Keys.Backspace => ImGuiKey.Backspace,
+            Keys.Enter => ImGuiKey.Enter,
+            Keys.KeypadEnter => ImGuiKey.KeypadEnter,
+            Keys.Escape => ImGuiKey.Escape,
+            Keys.A => ImGuiKey.A,
+            Keys.C => ImGuiKey.C,
+            Keys.L => ImGuiKey.L,
+            Keys.V => ImGuiKey.V,
+            Keys.X => ImGuiKey.X,
+            Keys.Y => ImGuiKey.Y,
+            Keys.Z => ImGuiKey.Z,
+            Keys.ShiftLeft => ImGuiKey.LeftShift,
+            Keys.ShiftRight => ImGuiKey.RightShift,
+            Keys.ControlLeft => ImGuiKey.LeftCtrl,
+            Keys.ControlRight => ImGuiKey.RightCtrl,
+            Keys.AltLeft => ImGuiKey.LeftAlt,
+            Keys.AltRight => ImGuiKey.RightAlt,
+            Keys.SuperLeft => ImGuiKey.LeftSuper,
+            Keys.SuperRight => ImGuiKey.RightSuper,
+            _ => ImGuiKey.None,
+        };
     }
 
     private unsafe void MouseButtonCallback(WindowHandle* window, MouseButton button, InputAction action, KeyModifiers modifiers)
