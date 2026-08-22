@@ -4,6 +4,7 @@
 
 using System;
 using System.Numerics;
+using Box2D.NET.Samples.Helpers;
 using ImGuiNET;
 using Silk.NET.GLFW;
 using static Box2D.NET.B2Bodies;
@@ -42,6 +43,11 @@ public class ReplayFile : Sample
     }
 
     private B2RecPlayer m_player;
+    private readonly FilePicker m_filePicker = new FilePicker(
+        "Open recording",
+        "ReplayFilePicker",
+        new FilePicker.Filter("Box2D recordings (*.b2rec)", ".b2rec"),
+        new FilePicker.Filter("All files (*.*)"));
     private string m_path = "recording.b2rec";
     private string m_status = string.Empty;
     private uint m_recHash;
@@ -129,6 +135,12 @@ public class ReplayFile : Sample
             m_runHash = b2GetBuildHash();
             m_buildMismatch = m_recHash != 0 && m_runHash != 0 && m_recHash != m_runHash;
             m_status = $"loaded (build {m_recHash:x8})";
+#if DEBUG
+            // Managed debug replay is intentionally slow. Start paused so opening a recording does
+            // not make the sample look hung; the user can step or press Play when ready.
+            m_context.pause = true;
+            m_context.singleStep = false;
+#endif
         }
         else
         {
@@ -860,6 +872,11 @@ public class ReplayFile : Sample
         ImGui.InputText("File", ref m_path, 256);
         ImGui.PopItemWidth();
         ImGui.SameLine();
+        if (ImGui.Button("Browse..."))
+        {
+            m_filePicker.ShowOpen(m_path);
+        }
+        ImGui.SameLine();
         if (ImGui.Button("Load"))
         {
             OpenPlayer();
@@ -873,6 +890,13 @@ public class ReplayFile : Sample
         }
         ImGui.SameLine();
         ImGui.TextUnformatted(m_status);
+
+        // Draw the modal even when no player is loaded, so a failed/default path can be replaced.
+        if (m_filePicker.Draw(out string selectedPath))
+        {
+            m_path = selectedPath;
+            OpenPlayer();
+        }
 
         if (m_player == null)
         {
