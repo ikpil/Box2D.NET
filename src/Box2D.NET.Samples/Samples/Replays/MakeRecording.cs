@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 using Box2D.NET.Shared;
+using ImGuiNET;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Recordings;
 using static Box2D.NET.B2Types;
@@ -104,7 +105,7 @@ public class MakeRecording : Sample
 
     public override bool DrawControls()
     {
-        ImGuiNET.ImGui.TextWrapped($"Recording to \"{m_path}\".");
+        ImGui.TextWrapped($"Recording to \"{m_path}\".");
         return true;
     }
 
