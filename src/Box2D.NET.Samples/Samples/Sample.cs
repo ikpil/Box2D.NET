@@ -77,6 +77,11 @@ public class Sample : IDisposable
     private static int s_filteredCount;
     private static bool s_pickerJustOpened;
     private static bool s_forcePickerScroll;
+    private static readonly FilePicker s_recordingFilePicker = new FilePicker(
+        "Save recording",
+        "RecordingFilePicker",
+        new FilePicker.Filter("Box2D recordings (*.b2rec)", ".b2rec"),
+        new FilePicker.Filter("All files (*.*)"));
     
     //
     private bool m_didStep;
@@ -1458,9 +1463,27 @@ public class Sample : IDisposable
 
         if (context.sample.HasSolverControls() && ImGui.CollapsingHeader("Recording", ImGuiTreeNodeFlags.DefaultOpen))
         {
-            ImGui.PushItemWidth(9.0f * fontSize);
-            ImGui.InputText("File##Recording", ref context.recordingFile, 256);
+            if (context.record)
+            {
+                ImGui.BeginDisabled();
+            }
+            ImGui.TextUnformatted("File:");
+            float browseWidth = ImGui.CalcTextSize("...").X + 2.0f * ImGui.GetStyle().FramePadding.X;
+            float fileWidth = Math.Max(4.0f * fontSize,
+                ImGui.GetContentRegionAvail().X - browseWidth - ImGui.GetStyle().ItemSpacing.X);
+            ImGui.PushItemWidth(fileWidth);
+            ImGui.InputText("##RecordingFile", ref context.recordingFile, 512);
             ImGui.PopItemWidth();
+            ImGui.SameLine();
+            if (ImGui.Button("...##RecordingFile"))
+            {
+                s_recordingFilePicker.ShowSave(context.recordingFile);
+            }
+            ImGui.SetItemTooltip("Choose where to save the recording");
+            if (context.record)
+            {
+                ImGui.EndDisabled();
+            }
 
             if (context.record == false)
             {
@@ -1481,6 +1504,13 @@ public class Sample : IDisposable
                 ImGui.SameLine();
                 ImGui.TextColored(MakeColor(B2HexColor.b2_colorSeaGreen), "recording");
             }
+        }
+
+        // Keep drawing the modal independently of the collapsing header so it cannot disappear if
+        // the panel is collapsed while choosing a path.
+        if (s_recordingFilePicker.Draw(out string recordingPath))
+        {
+            context.recordingFile = recordingPath;
         }
 
         ImGui.End();
