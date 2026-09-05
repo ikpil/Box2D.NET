@@ -2257,7 +2257,8 @@ namespace Box2D.NET
             B2RecQueryWriter recWriter = default;
             if (world.recording != null)
             {
-                b2RecQueryBegin(ref recWriter, context);
+                recWriter = world.recording.pooledWriters
+                b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.overlapFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
                 b2RecW_AABB(ref recWriter.buf, aabb);
@@ -2348,7 +2349,7 @@ namespace Box2D.NET
             B2RecQueryWriter recWriter = default;
             if (world.recording != null)
             {
-                b2RecQueryBegin(ref recWriter, context);
+                b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.overlapFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
                 b2RecW_SHAPEPROXY(ref recWriter.buf, proxy);
@@ -2446,10 +2447,10 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidVec2(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
-            B2RecQueryWriter recWriter = default;
+            using B2RecQueryWriter recWriter = b2RentWriter(world);
             if (world.recording != null)
             {
-                b2RecQueryBegin(ref recWriter, context);
+                b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.castFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
                 b2RecW_VEC2(ref recWriter.buf, origin);
@@ -2616,7 +2617,7 @@ namespace Box2D.NET
             B2RecQueryWriter recWriter = default;
             if (world.recording != null)
             {
-                b2RecQueryBegin(ref recWriter, context);
+                b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.castFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
                 b2RecW_SHAPEPROXY(ref recWriter.buf, proxy);
@@ -2793,7 +2794,7 @@ namespace Box2D.NET
             B2RecQueryWriter recWriter = default;
             if (world.recording != null)
             {
-                b2RecQueryBegin(ref recWriter, context);
+                b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.planeFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
                 b2RecW_CAPSULE(ref recWriter.buf, mover);

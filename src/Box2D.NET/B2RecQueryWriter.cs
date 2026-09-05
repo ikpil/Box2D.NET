@@ -2,10 +2,12 @@
 // SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
+
 namespace Box2D.NET
 {
     // Per-query writer context: holds user fcn+ctx, the local payload buffer, and the hit counter
-    internal struct B2RecQueryWriter
+    internal class B2RecQueryWriter
     {
         internal B2RecQueryUserFcn userFcn;
         internal object userContext;

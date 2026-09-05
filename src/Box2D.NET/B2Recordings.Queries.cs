@@ -7,7 +7,7 @@ namespace Box2D.NET
     public static partial class B2Recordings
     {
         // Recording trampolines: replace the user fcn pointer so hits are captured before dispatch
-        internal static bool b2RecOverlapTrampoline(B2ShapeId id, ref B2RecQueryWriter w)
+        internal static bool b2RecOverlapTrampoline(B2ShapeId id, B2RecQueryWriter w)
         {
             b2OverlapResultFcn userFcn = w.userFcn.overlapFcn;
             bool ret = userFcn(id, w.userContext);
@@ -18,7 +18,7 @@ namespace Box2D.NET
         }
 
         internal static float b2RecCastTrampoline<T>(B2ShapeId id, B2Vec2 point, B2Vec2 normal, float fraction,
-            ref B2RecQueryWriter w) where T : class
+            B2RecQueryWriter w) where T : class
         {
             b2CastResultFcn<T> userFcn = (b2CastResultFcn<T>)w.userFcn.castFcn;
             T userContext = (T)w.userContext;
@@ -33,7 +33,7 @@ namespace Box2D.NET
             return ret;
         }
 
-        internal static bool b2RecPlaneTrampoline(B2ShapeId id, ref B2PlaneResult plane, ref B2RecQueryWriter w)
+        internal static bool b2RecPlaneTrampoline(B2ShapeId id, ref B2PlaneResult plane, B2RecQueryWriter w)
         {
             b2PlaneResultFcn userFcn = w.userFcn.planeFcn;
             bool ret = userFcn(id, ref plane, w.userContext);
