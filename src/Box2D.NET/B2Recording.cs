@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace Box2D.NET
@@ -14,5 +15,6 @@ namespace Box2D.NET
         internal B2RecBuffer buffer;
         internal int recordStart; // offset of the 3-byte size field for u24 backpatch
         internal object @lock; // serializes query record commits across concurrent query threads
+        internal ConcurrentStack<B2RecQueryWriter> pooledWriters;
     }
 }

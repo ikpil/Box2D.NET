@@ -99,7 +99,7 @@ namespace Box2D.NET
             }
         }
 
-        internal static void b2RecQueryBegin(ref B2RecQueryWriter w, object context)
+        internal static void b2RecQueryBegin(B2RecQueryWriter w, object context)
         {
             w.buf = default;
             w.userFcn.overlapFcn = null;
@@ -108,7 +108,7 @@ namespace Box2D.NET
             w.countOffset = 0;
         }
 
-        internal static void b2RecQueryCommit(B2Recording rec, B2RecOpcode opcode, ref B2RecQueryWriter w)
+        internal static void b2RecQueryCommit(B2Recording rec, B2RecOpcode opcode, B2RecQueryWriter w)
         {
             b2RecCommitRecord(rec, opcode, w.buf);
             b2RecBufFree(ref w.buf);
