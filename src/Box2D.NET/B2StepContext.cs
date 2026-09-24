@@ -9,6 +9,34 @@ namespace Box2D.NET
     // Context for a time step. Recreated each time step.
     public class B2StepContext // TODO: @ikpil, check struct or class
     {
+        internal void Reset()
+        {
+            dt = inv_dt = h = inv_h = 0;
+            subStepCount = 0;
+            contactSoftness = staticSoftness = default;
+            restitutionThreshold = maxLinearVelocity = 0;
+            world = null;
+            graph = default;
+            states = null;
+            sims = null;
+            enlargedShapes = null;
+            enlargedShapeCount = 0;
+            bulletBodies = default;
+            bulletBodyCount = default;
+            contactSims = default;
+            wideContactConstraints = default;
+            contactPrepareSpans = null;
+            wideContactCount = 0;
+            jointPrepareSpans = null;
+            jointCount = 0;
+            activeColorCount = workerCount = 0;
+            stages = default;
+            stageCount = 0;
+            enableWarmStarting = false;
+            atomicSyncBits = default;
+            mainClaimed = default;
+        }
+
         // time step
         public float dt;
 

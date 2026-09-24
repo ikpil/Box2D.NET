@@ -936,7 +936,8 @@ namespace Box2D.NET
                 world.profile.pairs = b2GetMilliseconds(pairTicks);
             }
 
-            B2StepContext context = new B2StepContext();
+            B2StepContext context = world.reusableStepContext;
+            context.Reset();
             context.world = world;
             context.dt = timeStep;
             context.subStepCount = b2MaxInt(1, subStepCount);
