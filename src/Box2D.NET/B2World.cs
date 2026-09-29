@@ -11,6 +11,8 @@ namespace Box2D.NET
     // The world also contains efficient memory management facilities.
     public class B2World
     {
+        internal readonly B2StepContext reusableStepContext = new B2StepContext();
+        internal readonly System.ArraySegment<B2SyncBlock>[] reusableGraphColorBlocks = new System.ArraySegment<B2SyncBlock>[B2Constants.B2_GRAPH_COLOR_COUNT];
         public B2StackAllocator stack;
         public B2BroadPhase broadPhase;
         public B2ConstraintGraph constraintGraph;

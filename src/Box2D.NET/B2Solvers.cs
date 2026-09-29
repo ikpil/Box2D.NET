@@ -1538,7 +1538,8 @@ namespace Box2D.NET
                 b2InitBlocks(jointBlocks, jointPrepareDim, jointCount, B2SolverBlockType.b2_jointBlock, byte.MaxValue);
 
                 // Prepare graph work blocks. Each color gets joint blocks followed by contact blocks.
-                ArraySegment<B2SyncBlock>[] graphColorBlocks = new ArraySegment<B2SyncBlock>[B2_GRAPH_COLOR_COUNT];
+                ArraySegment<B2SyncBlock>[] graphColorBlocks = world.reusableGraphColorBlocks;
+                Array.Clear(graphColorBlocks);
                 ArraySegment<B2SyncBlock> baseGraphBlock = graphBlocks;
                 B2FixedArray24<int> arrayGraphBlockCounts = new B2FixedArray24<int>();
                 Span<int> graphBlockCounts = arrayGraphBlockCounts.AsSpan();
