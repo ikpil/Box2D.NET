@@ -2,10 +2,55 @@
 // SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
+using System.Threading;
+
 namespace Box2D.NET
 {
     public static partial class B2Recordings
     {
+        // Bound cached scratch memory independently from the number of active queries.
+        private const int B2_MAX_RETAINED_QUERY_BUFFER_CAPACITY = 64 * 1024;
+        // Cache the method-group delegate even when compiled with the netstandard C# version.
+        private static readonly Func<B2ObjectPool<B2RecQueryWriter>> _queryWriterPoolFactory = b2CreateQueryWriterPool;
+
+        private static B2ObjectPool<B2RecQueryWriter> b2CreateQueryWriterPool()
+        {
+            return new B2ObjectPool<B2RecQueryWriter>(() => new B2RecQueryWriter(), b2ResetQueryWriter);
+        }
+
+        private static bool b2ResetQueryWriter(B2RecQueryWriter writer)
+        {
+            // Keep ordinary byte arrays for the next query, but never retain user objects
+            // or let one unusually large query pin its buffer for the world's lifetime.
+            writer.userFcn = default;
+            writer.userContext = null;
+            writer.buf.size = 0;
+            if (writer.buf.capacity > B2_MAX_RETAINED_QUERY_BUFFER_CAPACITY)
+            {
+                b2RecBufFree(ref writer.buf);
+            }
+            writer.countOffset = 0;
+            writer.hitCount = 0;
+            return true;
+        }
+
+        // Rent only while recording; a null lease makes using a no-op for ordinary queries.
+        internal static B2RecQueryWriter b2RentQueryWriterIfRecording(B2World world)
+        {
+            B2Recording recording = world.recording;
+            if (recording == null)
+            {
+                return null;
+            }
+
+            B2ObjectPool<B2RecQueryWriter> pool = LazyInitializer.EnsureInitialized(
+                ref world.queryWriterPool, ref world.queryWriterPoolLock, _queryWriterPoolFactory);
+            B2RecQueryWriter writer = pool.Get();
+            writer.owner = pool;
+            return writer;
+        }
+
         // Recording trampolines: replace the user fcn pointer so hits are captured before dispatch
         internal static bool b2RecOverlapTrampoline(B2ShapeId id, B2RecQueryWriter w)
         {

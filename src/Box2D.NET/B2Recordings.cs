@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Bodies;
@@ -30,7 +29,6 @@ namespace Box2D.NET
                 return;
             }
 
-            rec.pooledWriters = new ConcurrentStack<B2RecQueryWriter>();
             rec.@lock = new object();
 
             rec.buffer = default;

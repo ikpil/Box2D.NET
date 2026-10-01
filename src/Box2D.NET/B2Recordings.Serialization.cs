@@ -101,7 +101,7 @@ namespace Box2D.NET
 
         internal static void b2RecQueryBegin(B2RecQueryWriter w, object context)
         {
-            w.buf = default;
+            w.buf.size = 0;
             w.userFcn.overlapFcn = null;
             w.userContext = context;
             w.hitCount = 0;
@@ -111,7 +111,6 @@ namespace Box2D.NET
         internal static void b2RecQueryCommit(B2Recording rec, B2RecOpcode opcode, B2RecQueryWriter w)
         {
             b2RecCommitRecord(rec, opcode, w.buf);
-            b2RecBufFree(ref w.buf);
         }
 
         // Record framing

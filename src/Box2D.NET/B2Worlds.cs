@@ -2234,12 +2234,13 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-            if (worldContext.recording.buf.data != null)
+            if (worldContext.recording != null)
             {
-                return b2RecOverlapTrampoline(id, ref worldContext.recording);
+                return b2RecOverlapTrampoline(id, worldContext.recording);
             }
             return worldContext.fcn(id, worldContext.userContext);
         }
+
         /// Overlap test for all shapes that *potentially* overlap the provided AABB
         public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, in B2AABB aabb, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
         {
@@ -2254,10 +2255,9 @@ namespace Box2D.NET
 
             B2_ASSERT(b2IsValidAABB(aabb));
 
-            B2RecQueryWriter recWriter = default;
+            using B2RecQueryWriter recWriter = b2RentQueryWriterIfRecording(world);
             if (world.recording != null)
             {
-                recWriter = world.recording.pooledWriters
                 b2RecQueryBegin(recWriter, context);
                 recWriter.userFcn.overlapFcn = fcn;
                 b2RecW_WORLDID(ref recWriter.buf, worldId);
@@ -2267,7 +2267,7 @@ namespace Box2D.NET
             }
 
             B2WorldQueryContext worldContext = new B2WorldQueryContext(world, fcn, filter, context);
-            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            // The callback context shares the writer exclusively rented by this query.
             worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2281,10 +2281,9 @@ namespace Box2D.NET
 
             if (world.recording != null)
             {
-                recWriter = worldContext.recording;
                 b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
                 b2RecW_TREESTATS(ref recWriter.buf, treeStats);
-                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapAABB, ref recWriter);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapAABB, recWriter);
             }
 
             return treeStats;
@@ -2327,9 +2326,9 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-            if (worldContext.recording.buf.data != null)
+            if (worldContext.recording != null)
             {
-                return b2RecOverlapTrampoline(id, ref worldContext.recording);
+                return b2RecOverlapTrampoline(id, worldContext.recording);
             }
             return worldContext.fcn(id, worldContext.userContext);
         }
@@ -2346,7 +2345,7 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            B2RecQueryWriter recWriter = default;
+            using B2RecQueryWriter recWriter = b2RentQueryWriterIfRecording(world);
             if (world.recording != null)
             {
                 b2RecQueryBegin(recWriter, context);
@@ -2361,7 +2360,7 @@ namespace Box2D.NET
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
                 world, fcn, filter, proxy, context
             );
-            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            // The callback context shares the writer exclusively rented by this query.
             worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2375,10 +2374,9 @@ namespace Box2D.NET
 
             if (world.recording != null)
             {
-                recWriter = worldContext.recording;
                 b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
                 b2RecW_TREESTATS(ref recWriter.buf, treeStats);
-                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapShape, ref recWriter);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryOverlapShape, recWriter);
             }
 
             return treeStats;
@@ -2407,8 +2405,8 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.recording.buf.data != null
-                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, ref worldContext.recording)
+                float fraction = worldContext.recording != null
+                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, worldContext.recording)
                     : worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
@@ -2447,7 +2445,7 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidVec2(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
-            using B2RecQueryWriter recWriter = b2RentWriter(world);
+            using B2RecQueryWriter recWriter = b2RentQueryWriterIfRecording(world);
             if (world.recording != null)
             {
                 b2RecQueryBegin(recWriter, context);
@@ -2462,7 +2460,7 @@ namespace Box2D.NET
             B2RayCastInput input = new B2RayCastInput(origin, translation, 1.0f);
 
             B2WorldRayCastContext<T> worldContext = new B2WorldRayCastContext<T>(world, fcn, filter, 1.0f, context);
-            // C replaces context with &recWriter. The generic callback context carries the value writer by ref.
+            // The callback context shares the writer exclusively rented by this query.
             worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2482,10 +2480,9 @@ namespace Box2D.NET
 
             if (world.recording != null)
             {
-                recWriter = worldContext.recording;
                 b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
                 b2RecW_TREESTATS(ref recWriter.buf, treeStats);
-                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastRay, ref recWriter);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastRay, recWriter);
             }
 
             return treeStats;
@@ -2583,8 +2580,8 @@ namespace Box2D.NET
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                float fraction = worldContext.recording.buf.data != null
-                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, ref worldContext.recording)
+                float fraction = worldContext.recording != null
+                    ? b2RecCastTrampoline<T>(id, output.point, output.normal, output.fraction, worldContext.recording)
                     : worldContext.fcn(id, output.point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
@@ -2614,7 +2611,7 @@ namespace Box2D.NET
 
             B2_ASSERT(b2IsValidVec2(translation));
 
-            B2RecQueryWriter recWriter = default;
+            using B2RecQueryWriter recWriter = b2RentQueryWriterIfRecording(world);
             if (world.recording != null)
             {
                 b2RecQueryBegin(recWriter, context);
@@ -2632,7 +2629,7 @@ namespace Box2D.NET
             input.maxFraction = 1.0f;
 
             B2WorldRayCastContext<T> worldContext = new B2WorldRayCastContext<T>(world, fcn, filter, 1.0f, context);
-            // C replaces context with &recWriter. The generic callback context carries the value writer by ref.
+            // The callback context shares the writer exclusively rented by this query.
             worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2652,10 +2649,9 @@ namespace Box2D.NET
 
             if (world.recording != null)
             {
-                recWriter = worldContext.recording;
                 b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
                 b2RecW_TREESTATS(ref recWriter.buf, treeStats);
-                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastShape, ref recWriter);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCastShape, recWriter);
             }
 
             return treeStats;
@@ -2767,9 +2763,9 @@ namespace Box2D.NET
             if (result.hit && b2IsNormalized(result.plane.normal))
             {
                 B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                if (worldContext.recording.buf.data != null)
+                if (worldContext.recording != null)
                 {
-                    return b2RecPlaneTrampoline(id, ref result, ref worldContext.recording);
+                    return b2RecPlaneTrampoline(id, ref result, worldContext.recording);
                 }
                 return worldContext.fcn(id, ref result, worldContext.userContext);
             }
@@ -2791,7 +2787,7 @@ namespace Box2D.NET
                 return;
             }
 
-            B2RecQueryWriter recWriter = default;
+            using B2RecQueryWriter recWriter = b2RentQueryWriterIfRecording(world);
             if (world.recording != null)
             {
                 b2RecQueryBegin(recWriter, context);
@@ -2814,7 +2810,7 @@ namespace Box2D.NET
             worldContext.filter = filter;
             worldContext.mover = mover;
             worldContext.userContext = context;
-            // C replaces context with &recWriter. The managed callback context carries the value writer by ref.
+            // The callback context shares the writer exclusively rented by this query.
             worldContext.recording = recWriter;
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2824,10 +2820,9 @@ namespace Box2D.NET
 
             if (world.recording != null)
             {
-                recWriter = worldContext.recording;
                 b2RecPatchU32(ref recWriter.buf, recWriter.countOffset, recWriter.hitCount);
                 // CollideMover returns void; no TREESTATS tail
-                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCollideMover, ref recWriter);
+                b2RecQueryCommit(world.recording, B2RecOpcode.QueryCollideMover, recWriter);
             }
         }
 

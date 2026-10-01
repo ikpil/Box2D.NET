@@ -329,6 +329,8 @@ namespace Box2D.NET.Test
                 MethodInfo[] operations = stateType
                     .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly)
                     .Where(method => !method.IsSpecialName)
+                    // The managed pooled writer returns its lease through IDisposable.
+                    .Where(method => stateType.Name != "B2RecQueryWriter" || method.Name != nameof(IDisposable.Dispose))
                     .ToArray();
 
                 Assert.That(operations, Is.Empty, stateType.Name);
@@ -346,7 +348,8 @@ namespace Box2D.NET.Test
             Type recordedHitType = typeof(B2Recordings).Assembly.GetType("Box2D.NET.B2RecRecordedHit", true);
             Type replayContextType = typeof(B2Recordings).Assembly.GetType("Box2D.NET.B2RecReplayQueryCtx", true);
 
-            Assert.That(writerType.IsValueType, Is.True);
+            Assert.That(writerType.IsSealed, Is.True);
+            Assert.That(typeof(IDisposable).IsAssignableFrom(writerType), Is.True);
             Assert.That(bufferType.IsValueType, Is.True);
             Assert.That(bufferType.GetFields(flags).Select(field => field.Name), Is.EquivalentTo(new[] { "data", "capacity", "size" }));
             Assert.That(bufferType.GetProperties(flags), Is.Empty);
@@ -363,7 +366,7 @@ namespace Box2D.NET.Test
             Assert.That(typeof(B2Recordings).Assembly.GetType("Box2D.NET.B2RecReplayQueryContext"), Is.Null);
 
             string[] fieldNames = writerType.GetFields(flags).Select(field => field.Name).ToArray();
-            Assert.That(fieldNames, Is.EquivalentTo(new[] { "userFcn", "userContext", "buf", "countOffset", "hitCount" }));
+            Assert.That(fieldNames, Is.EquivalentTo(new[] { "userFcn", "userContext", "buf", "countOffset", "hitCount", "owner" }));
 
             Type userFcnType = writerType.GetField("userFcn", flags).FieldType;
             Assert.That(userFcnType.Name, Is.EqualTo("B2RecQueryUserFcn"));

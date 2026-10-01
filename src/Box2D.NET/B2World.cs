@@ -142,6 +142,11 @@ namespace Box2D.NET
 
         internal B2Recording recording; // NULL unless recordingPath was set at world creation
 
+        // C# query scratch objects are owned by the world, not by the recording session.
+        // Each concurrent or nested query borrows its own writer. Create the pool lazily.
+        internal B2ObjectPool<B2RecQueryWriter> queryWriterPool;
+        internal object queryWriterPoolLock;
+
         // Remember type step used for reporting forces and torques
         // inverse sub-step
         public float inv_h;
@@ -167,6 +172,12 @@ namespace Box2D.NET
 
         public void Clear()
         {
+            // World slots are reused. Close the old pool so late returns cannot refill it.
+            // World teardown, like recording stop, requires all queries to have completed.
+            queryWriterPool?.Dispose();
+            queryWriterPool = null;
+            queryWriterPoolLock = null;
+
             stack = null;
             broadPhase = null;
 
