@@ -282,8 +282,8 @@ namespace Box2D.NET
             float iA = @base.invIA;
             float iB = @base.invIB;
 
-            // dummy state for static bodies
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            // Static-body branches only read this shared identity state.
+            B2BodyState dummyState = b2_identityBodyState;
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
             B2BodyState stateA = joint.indexA == B2_NULL_INDEX ? dummyState : context.states[joint.indexA];
@@ -316,8 +316,8 @@ namespace Box2D.NET
             float iA = @base.invIA;
             float iB = @base.invIB;
 
-            // dummy state for static bodies
-            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+            // Static-body branches only read this shared identity state.
+            B2BodyState dummyState = b2_identityBodyState;
 
             ref B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 

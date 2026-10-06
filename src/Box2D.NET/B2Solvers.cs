@@ -996,6 +996,10 @@ namespace Box2D.NET
         // Execute a stage on worker 0 (main thread).
         internal static void b2ExecuteMainStage(B2SolverStage stage, B2StepContext context, uint syncBits)
         {
+            if (System.Threading.Volatile.Read(ref context.workerFailure) is Exception failure)
+            {
+                throw new InvalidOperationException("Constraint worker failed.", failure);
+            }
             int blockCount = stage.blockCount;
             if (blockCount == 0)
             {
@@ -1003,6 +1007,14 @@ namespace Box2D.NET
             }
 
             int workerIndex = 0;
+
+            if (context.workerCount == 1)
+            {
+                for (int i = 0; i < blockCount; i++)
+                    b2ExecuteBlock(stage, context, stage.blocks[i].block, workerIndex);
+                return;
+            }
+
 
             if (blockCount == 1)
             {
@@ -1021,6 +1033,10 @@ namespace Box2D.NET
                 // Spin waiting for thieves to finish
                 while (b2AtomicLoadInt(ref stage.completionCount) != blockCount)
                 {
+                    if (System.Threading.Volatile.Read(ref context.workerFailure) is Exception workerFailure)
+                    {
+                        throw new InvalidOperationException("Constraint worker failed.", workerFailure);
+                    }
                     b2Pause();
                 }
 
@@ -1030,6 +1046,20 @@ namespace Box2D.NET
 
         // Parallel solver task
         internal static void b2SolverTask(object taskContext)
+        {
+            B2StepContext context = ((B2WorkerContext)taskContext).context;
+            try
+            {
+                b2SolverTaskCore(taskContext);
+            }
+            catch (Exception failure)
+            {
+                System.Threading.Interlocked.CompareExchange(ref context.workerFailure, failure, null);
+                b2AtomicStoreU32(ref context.atomicSyncBits, uint.MaxValue);
+            }
+        }
+
+        private static void b2SolverTaskCore(object taskContext)
         {
             B2WorkerContext workerContext = taskContext as B2WorkerContext;
             int workerIndex = workerContext.workerIndex;
@@ -1410,7 +1440,7 @@ namespace Box2D.NET
                 B2BlockDim contactPrepareDim = b2ComputeBlockCount(wideContactCount, minContactsPerBlock, maxBlockCount);
                 B2BlockDim jointPrepareDim = b2ComputeBlockCount(jointCount, minJointsPerBlock, maxBlockCount);
 
-                B2_ASSERT(B2FixedArray4<B2ContactConstraintWide>.Size == B2_SIMD_WIDTH);
+                B2_ASSERT(B2FixedArray8<B2ContactConstraintWide>.Size == B2_SIMD_WIDTH);
                 int wideContactConstraintByteCount = b2GetWideContactConstraintByteCount();
                 ArraySegment<B2ContactConstraintWide> wideContactConstraints =
                     b2StackAlloc<B2ContactConstraintWide>(world.stack, wideContactCount /** wideContactConstraintByteCount */, "contact constraint");
@@ -1424,8 +1454,10 @@ namespace Box2D.NET
                 // Build the span table for the flat prepare/store parallel-for while I slice the
                 // wide constraint buffer across colors. One entry per active color plus a sentinel
                 // at wideContactCount.
-                B2ContactPrepareSpan[] contactPrepareSpans = new B2ContactPrepareSpan[B2_GRAPH_COLOR_COUNT + 1];
-                B2JointPrepareSpan[] jointPrepareSpans = new B2JointPrepareSpan[B2_GRAPH_COLOR_COUNT + 1];
+                B2ContactPrepareSpan[] contactPrepareSpans = world.reusableContactPrepareSpans;
+                Array.Clear(contactPrepareSpans, 0, contactPrepareSpans.Length);
+                B2JointPrepareSpan[] jointPrepareSpans = world.reusableJointPrepareSpans;
+                Array.Clear(jointPrepareSpans, 0, jointPrepareSpans.Length);
 
                 // Distribute transient constraints to each graph color and prepare spans
                 {
@@ -1538,7 +1570,8 @@ namespace Box2D.NET
                 b2InitBlocks(jointBlocks, jointPrepareDim, jointCount, B2SolverBlockType.b2_jointBlock, byte.MaxValue);
 
                 // Prepare graph work blocks. Each color gets joint blocks followed by contact blocks.
-                ArraySegment<B2SyncBlock>[] graphColorBlocks = new ArraySegment<B2SyncBlock>[B2_GRAPH_COLOR_COUNT];
+                ArraySegment<B2SyncBlock>[] graphColorBlocks = world.reusableGraphColorBlocks;
+                Array.Clear(graphColorBlocks, 0, graphColorBlocks.Length);
                 ArraySegment<B2SyncBlock> baseGraphBlock = graphBlocks;
                 B2FixedArray24<int> arrayGraphBlockCounts = new B2FixedArray24<int>();
                 Span<int> graphBlockCounts = arrayGraphBlockCounts.AsSpan();
@@ -1604,47 +1637,64 @@ namespace Box2D.NET
 
                 int jointIdCapacity = b2GetIdCapacity(world.jointIdPool);
                 int contactIdCapacity = b2GetIdCapacity(world.contactIdPool);
-                for (int i = 0; i < workerCount; ++i)
+                try
                 {
-                    B2TaskContext taskContext = b2Array_Get(ref world.taskContexts, i);
-                    b2SetBitCountAndClear(ref taskContext.jointStateBitSet, jointIdCapacity);
-                    b2SetBitCountAndClear(ref taskContext.hitEventBitSet, contactIdCapacity);
-                    taskContext.hasHitEvents = false;
-
-                    workerContext[i].context = stepContext;
-                    workerContext[i].workerIndex = i;
-
-                    if (world.taskCount < B2_MAX_TASKS)
+                    for (int i = 0; i < workerCount; ++i)
                     {
-                        workerContext[i].userTask = world.enqueueTaskFcn(b2SolverTask, workerContext[i], world.userTaskContext);
-                        world.taskCount += 1;
-                        world.activeTaskCount += workerContext[i].userTask == null ? 0 : 1;
+                        B2TaskContext taskContext = b2Array_Get(ref world.taskContexts, i);
+                        b2SetBitCountAndClear(ref taskContext.jointStateBitSet, jointIdCapacity);
+                        b2SetBitCountAndClear(ref taskContext.hitEventBitSet, contactIdCapacity);
+                        taskContext.hasHitEvents = false;
+
+                        workerContext[i].context = stepContext;
+                        workerContext[i].workerIndex = i;
+
+                        if (world.taskCount < B2_MAX_TASKS)
+                        {
+                            workerContext[i].userTask = world.enqueueTaskFcn(b2SolverTask, workerContext[i], world.userTaskContext);
+                            world.taskCount += 1;
+                            world.activeTaskCount += workerContext[i].userTask == null ? 0 : 1;
+                        }
+                        else
+                        {
+                            workerContext[i].userTask = null;
+                            b2SolverTask(workerContext[i]);
+                        }
                     }
-                    else
-                    {
-                        workerContext[i].userTask = null;
-                        b2SolverTask(workerContext[i]);
-                    }
+
+                    // The calling thread of b2World_Step also enters b2SolverTask as worker 0 and races for the
+                    // orchestrator slot via the CAS inside. This guarantees progress even when the user's task
+                    // system can't run the queued worker 0 promptly: it might schedule out of order, have fewer
+                    // threads than workerCount, or invert priority by parking the calling thread in finishTaskFcn.
+                    // Whoever wins the CAS becomes the orchestrator; the loser returns and lets the spinner-only
+                    // path handle workers >0.
+                    b2SolverTask(workerContext[0]);
+
                 }
-
-                // The calling thread of b2World_Step also enters b2SolverTask as worker 0 and races for the
-                // orchestrator slot via the CAS inside. This guarantees progress even when the user's task
-                // system can't run the queued worker 0 promptly: it might schedule out of order, have fewer
-                // threads than workerCount, or invert priority by parking the calling thread in finishTaskFcn.
-                // Whoever wins the CAS becomes the orchestrator; the loser returns and lets the spinner-only
-                // path handle workers >0.
-                B2WorkerContext callerContext = new B2WorkerContext();
-                callerContext.context = stepContext;
-                callerContext.workerIndex = 0;
-                b2SolverTask(callerContext);
+                catch (Exception failure)
+                {
+                    System.Threading.Interlocked.CompareExchange(ref stepContext.workerFailure, failure, null);
+                    b2AtomicStoreU32(ref stepContext.atomicSyncBits, uint.MaxValue);
+                }
 
                 // Finish constraint solve
                 for (int i = 0; i < workerCount; ++i)
                 {
                     if (workerContext[i].userTask != null)
                     {
-                        world.finishTaskFcn(workerContext[i].userTask, world.userTaskContext);
-                        world.activeTaskCount -= 1;
+                        try
+                        {
+                            world.finishTaskFcn(workerContext[i].userTask, world.userTaskContext);
+                        }
+                        catch (Exception failure)
+                        {
+                            System.Threading.Interlocked.CompareExchange(ref stepContext.workerFailure, failure, null);
+                            b2AtomicStoreU32(ref stepContext.atomicSyncBits, uint.MaxValue);
+                        }
+                        finally
+                        {
+                            world.activeTaskCount -= 1;
+                        }
                     }
                 }
 
@@ -1655,6 +1705,10 @@ namespace Box2D.NET
                     world.activeTaskCount -= 1;
                 }
 
+                if (System.Threading.Volatile.Read(ref stepContext.workerFailure) is Exception workerFailure)
+                {
+                    throw new InvalidOperationException("Constraint worker failed.", workerFailure);
+                }
                 world.splitIslandId = B2_NULL_INDEX;
 
                 world.profile.constraints = b2GetMillisecondsAndReset(ref constraintTicks);
@@ -2022,7 +2076,7 @@ namespace Box2D.NET
                 ulong sensorHitTicks = b2GetTicks();
 
                 int workerCount = world.workerCount;
-                B2_ASSERT(workerCount == world.taskContexts.count);
+                B2_ASSERT(workerCount <= world.taskContexts.count);
 
                 for (int i = 0; i < workerCount; ++i)
                 {

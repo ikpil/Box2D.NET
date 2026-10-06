@@ -8,6 +8,18 @@ namespace Box2D.NET
     // claim work, so a slow chunk can't strand the other threads.
     internal class B2ParallelForShared
     {
+        public readonly B2ParallelForTask[] tasks = new B2ParallelForTask[B2Constants.B2_MAX_WORKERS];
+        public readonly object[] handles = new object[B2Constants.B2_MAX_WORKERS];
+        public System.Exception failure;
+
+        public B2ParallelForShared()
+        {
+            for (int i = 0; i < tasks.Length; ++i)
+            {
+                tasks[i] = new B2ParallelForTask { shared = this, workerIndex = i };
+            }
+        }
+
         public B2AtomicInt nextBlock;
         public int blockCount;
         public int blockSize;

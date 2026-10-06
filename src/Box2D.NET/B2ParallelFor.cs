@@ -47,7 +47,16 @@ namespace Box2D.NET
                     end = itemCount;
                 }
 
-                callback(start, end, workerIndex, context);
+                try
+                {
+                    callback(start, end, workerIndex, context);
+                }
+                catch (Exception failure)
+                {
+                    System.Threading.Interlocked.CompareExchange(ref shared.failure, failure, null);
+                    b2AtomicStoreInt(ref shared.nextBlock, blockCount);
+                    break;
+                }
             }
         }
 
@@ -94,46 +103,81 @@ namespace Box2D.NET
             // No point enqueueing more tasks than blocks.
             int taskCount = b2MinInt(workerCount, blockCount);
 
-            B2ParallelForShared shared = new B2ParallelForShared
+            if (taskCount == 1)
             {
-                blockCount = blockCount,
-                blockSize = blockSize,
-                itemCount = itemCount,
-                callback = callback,
-                context = context,
-            };
-            b2AtomicStoreInt(ref shared.nextBlock, 0);
-
-            Span<B2ParallelForTask> tasks = new B2ParallelForTask[B2_MAX_WORKERS];
-            object[] handles = new object[B2_MAX_WORKERS];
-            for (int i = 0; i < taskCount; ++i)
-            {
-                tasks[i] = new B2ParallelForTask
-                {
-                    shared = shared,
-                    workerIndex = i,
-                };
-
-                if (world.taskCount < B2_MAX_TASKS)
-                {
-                    handles[i] = world.enqueueTaskFcn(b2ParallelForTrampoline, tasks[i], world.userTaskContext);
-                    world.taskCount += 1;
-                    world.activeTaskCount += handles[i] == null ? 0 : 1;
-                }
-                else
-                {
-                    handles[i] = null;
-                    b2ParallelForTrampoline(tasks[i]);
-                }
+                callback(0, itemCount, 0, context);
+                return;
             }
 
-            for (int i = 0; i < taskCount; ++i)
+            bool reuse = System.Threading.Interlocked.CompareExchange(ref world.parallelForInUse, 1, 0) == 0;
+            B2ParallelForShared shared = reuse
+                ? world.reusableParallelFor ?? (world.reusableParallelFor = new B2ParallelForShared())
+                : new B2ParallelForShared();
+            shared.blockCount = blockCount;
+            shared.blockSize = blockSize;
+            shared.itemCount = itemCount;
+            shared.callback = callback;
+            shared.context = context;
+            shared.failure = null;
+            b2AtomicStoreInt(ref shared.nextBlock, 0);
+            object[] handles = shared.handles;
+            int enqueuedCount = 0;
+            Exception workerFailure = null;
+            try
             {
-                if (handles[i] != null)
+                for (int i = 0; i < taskCount; ++i)
                 {
-                    world.finishTaskFcn(handles[i], world.userTaskContext);
-                    world.activeTaskCount -= 1;
+                    B2ParallelForTask task = shared.tasks[i];
+                    if (world.taskCount < B2_MAX_TASKS)
+                    {
+                        handles[i] = world.enqueueTaskFcn(b2ParallelForTrampoline, task, world.userTaskContext);
+                        enqueuedCount = i + 1;
+                        world.taskCount += 1;
+                        world.activeTaskCount += handles[i] == null ? 0 : 1;
+                    }
+                    else
+                    {
+                        handles[i] = null;
+                        b2ParallelForTrampoline(task);
+                    }
                 }
+            }
+            catch (Exception failure)
+            {
+                System.Threading.Interlocked.CompareExchange(ref shared.failure, failure, null);
+                b2AtomicStoreInt(ref shared.nextBlock, blockCount);
+            }
+            finally
+            {
+                for (int i = 0; i < enqueuedCount; ++i)
+                {
+                    if (handles[i] != null)
+                    {
+                        try
+                        {
+                            world.finishTaskFcn(handles[i], world.userTaskContext);
+                        }
+                        catch (Exception failure)
+                        {
+                            System.Threading.Interlocked.CompareExchange(ref shared.failure, failure, null);
+                        }
+                        finally
+                        {
+                            world.activeTaskCount -= 1;
+                            handles[i] = null;
+                        }
+                    }
+                }
+                workerFailure = shared.failure;
+                shared.failure = null;
+                shared.callback = null;
+                shared.context = null;
+                if (reuse)
+                    System.Threading.Volatile.Write(ref world.parallelForInUse, 0);
+            }
+            if (workerFailure != null)
+            {
+                throw new InvalidOperationException("Parallel worker failed.", workerFailure);
             }
         }
     }

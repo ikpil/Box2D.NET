@@ -197,7 +197,7 @@ namespace Box2D.NET
             int contactId = b2AllocId(world.contactIdPool);
             if (contactId == world.contacts.count)
             {
-                b2Array_Push(ref world.contacts, new B2Contact());
+                b2Array_Emplace(ref world.contacts);
             }
 
             int shapeIdA = shapeA.id;

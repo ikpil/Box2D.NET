@@ -449,11 +449,7 @@ namespace Box2D.NET
             int setCapacity = world.solverSets.count;
             for (int i = 0; i < setCapacity; ++i)
             {
-                B2SolverSet set = world.solverSets.data[i];
-                if (set.setIndex != B2_NULL_INDEX)
-                {
-                    b2DestroySolverSet(world, i);
-                }
+                b2DestroySolverSet(world, i, true);
             }
 
             b2Array_Destroy(ref world.solverSets);
@@ -903,116 +899,135 @@ namespace Box2D.NET
             b2TracyCZoneNC(B2TracyCZone.world_step, "Step", B2HexColor.b2_colorBox2DGreen, true);
 
             world.locked = true;
-            world.activeTaskCount = 0;
-            world.taskCount = 0;
-
-            if (world.scheduler != null)
+            try
             {
-                b2ResetScheduler(world.scheduler);
+                world.activeTaskCount = 0;
+                world.taskCount = 0;
+
+                if (world.scheduler != null)
+                {
+                    b2ResetScheduler(world.scheduler);
+                }
+
+                ulong stepTicks = b2GetTicks();
+
+                {
+                    ref B2Capacity c = ref world.maxCapacity;
+                    c.staticShapeCount = b2MaxInt(c.staticShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_staticBody].proxyCount);
+                    c.dynamicShapeCount = b2MaxInt(c.dynamicShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody].proxyCount);
+
+                    int staticBodyCount = world.solverSets.data[(int)B2SolverSetType.b2_staticSet].bodySims.count;
+                    c.staticBodyCount = b2MaxInt(c.staticBodyCount, staticBodyCount);
+
+                    // this includes kinematic bodies
+                    int totalBodyCount = b2GetIdCount(world.bodyIdPool);
+                    c.dynamicBodyCount = b2MaxInt(c.dynamicBodyCount, totalBodyCount - staticBodyCount);
+
+                    int totalContactCount = b2GetIdCount(world.contactIdPool);
+                    c.contactCount = b2MaxInt(c.contactCount, totalContactCount);
+                }
+
+                // Update collision pairs and create contacts
+                {
+                    ulong pairTicks = b2GetTicks();
+                    b2UpdateBroadPhasePairs(world);
+                    world.profile.pairs = b2GetMilliseconds(pairTicks);
+                }
+
+                B2StepContext context = world.reusableStepContext;
+                context.Reset();
+                context.world = world;
+                context.dt = timeStep;
+                context.subStepCount = b2MaxInt(1, subStepCount);
+
+                if (timeStep > 0.0f)
+                {
+                    context.inv_dt = 1.0f / timeStep;
+                    context.h = timeStep / context.subStepCount;
+                    context.inv_h = context.subStepCount * context.inv_dt;
+                }
+                else
+                {
+                    context.inv_dt = 0.0f;
+                    context.h = 0.0f;
+                    context.inv_h = 0.0f;
+                }
+
+                world.inv_h = context.inv_h;
+                world.inv_dt = context.inv_dt;
+
+                // Hertz values get reduced for large time steps
+                float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
+                context.contactSoftness = b2MakeSoft(contactHertz, world.contactDampingRatio, context.h);
+                context.staticSoftness = b2MakeSoft(2.0f * contactHertz, world.contactDampingRatio, context.h);
+
+                context.restitutionThreshold = world.restitutionThreshold;
+                context.maxLinearVelocity = world.maxLinearSpeed;
+                context.enableWarmStarting = world.enableWarmStarting;
+
+                // Narrow phase : update contacts
+                {
+                    ulong collideTicks = b2GetTicks();
+                    b2Collide(context);
+                    world.profile.collide = b2GetMilliseconds(collideTicks);
+                }
+
+                // Integrate velocities, solve velocity constraints, and integrate positions.
+                if (timeStep > 0.0f)
+                {
+                    ulong solveTicks = b2GetTicks();
+                    b2Solve(world, context);
+                    world.profile.solve = b2GetMilliseconds(solveTicks);
+                }
+
+                // Finish the tree task in case b2Solve didn't finish it
+                if (world.userTreeTask != null)
+                {
+                    world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
+                    world.userTreeTask = null;
+                    world.activeTaskCount -= 1;
+                }
+
+                // Update sensors
+                {
+                    ulong sensorTicks = b2GetTicks();
+                    b2OverlapSensors(world);
+                    world.profile.sensors = b2GetMilliseconds(sensorTicks);
+                }
+
+                world.profile.step = b2GetMilliseconds(stepTicks);
+
+                B2_ASSERT(b2GetStackAllocation(world.stack) == 0);
+
+                // Ensure stack is large enough
+                b2GrowStack(world.stack);
+
+                // Make sure all tasks that were started were also finished
+                B2_ASSERT(world.activeTaskCount == 0);
+
+                b2TracyCZoneEnd(B2TracyCZone.world_step);
+
+                // Swap end event array buffers
+                world.endEventArrayIndex = 1 - world.endEventArrayIndex;
+                b2Array_Clear(ref world.sensorEndEvents[world.endEventArrayIndex]);
+                b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
             }
-
-            ulong stepTicks = b2GetTicks();
-
+            finally
             {
-                ref B2Capacity c = ref world.maxCapacity;
-                c.staticShapeCount = b2MaxInt(c.staticShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_staticBody].proxyCount);
-                c.dynamicShapeCount = b2MaxInt(c.dynamicShapeCount, world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody].proxyCount);
-
-                int staticBodyCount = world.solverSets.data[(int)B2SolverSetType.b2_staticSet].bodySims.count;
-                c.staticBodyCount = b2MaxInt(c.staticBodyCount, staticBodyCount);
-
-                // this includes kinematic bodies
-                int totalBodyCount = b2GetIdCount(world.bodyIdPool);
-                c.dynamicBodyCount = b2MaxInt(c.dynamicBodyCount, totalBodyCount - staticBodyCount);
-
-                int totalContactCount = b2GetIdCount(world.contactIdPool);
-                c.contactCount = b2MaxInt(c.contactCount, totalContactCount);
+                try
+                {
+                    if (world.userTreeTask != null)
+                    {
+                        world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
+                        world.userTreeTask = null;
+                        world.activeTaskCount -= 1;
+                    }
+                }
+                finally
+                {
+                    world.locked = false;
+                }
             }
-
-            // Update collision pairs and create contacts
-            {
-                ulong pairTicks = b2GetTicks();
-                b2UpdateBroadPhasePairs(world);
-                world.profile.pairs = b2GetMilliseconds(pairTicks);
-            }
-
-            B2StepContext context = new B2StepContext();
-            context.world = world;
-            context.dt = timeStep;
-            context.subStepCount = b2MaxInt(1, subStepCount);
-
-            if (timeStep > 0.0f)
-            {
-                context.inv_dt = 1.0f / timeStep;
-                context.h = timeStep / context.subStepCount;
-                context.inv_h = context.subStepCount * context.inv_dt;
-            }
-            else
-            {
-                context.inv_dt = 0.0f;
-                context.h = 0.0f;
-                context.inv_h = 0.0f;
-            }
-
-            world.inv_h = context.inv_h;
-            world.inv_dt = context.inv_dt;
-
-            // Hertz values get reduced for large time steps
-            float contactHertz = b2MinFloat(world.contactHertz, 0.125f * context.inv_h);
-            context.contactSoftness = b2MakeSoft(contactHertz, world.contactDampingRatio, context.h);
-            context.staticSoftness = b2MakeSoft(2.0f * contactHertz, world.contactDampingRatio, context.h);
-
-            context.restitutionThreshold = world.restitutionThreshold;
-            context.maxLinearVelocity = world.maxLinearSpeed;
-            context.enableWarmStarting = world.enableWarmStarting;
-
-            // Narrow phase : update contacts
-            {
-                ulong collideTicks = b2GetTicks();
-                b2Collide(context);
-                world.profile.collide = b2GetMilliseconds(collideTicks);
-            }
-
-            // Integrate velocities, solve velocity constraints, and integrate positions.
-            if (timeStep > 0.0f)
-            {
-                ulong solveTicks = b2GetTicks();
-                b2Solve(world, context);
-                world.profile.solve = b2GetMilliseconds(solveTicks);
-            }
-
-            // Finish the tree task in case b2Solve didn't finish it
-            if (world.userTreeTask != null)
-            {
-                world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
-                world.userTreeTask = null;
-                world.activeTaskCount -= 1;
-            }
-
-            // Update sensors
-            {
-                ulong sensorTicks = b2GetTicks();
-                b2OverlapSensors(world);
-                world.profile.sensors = b2GetMilliseconds(sensorTicks);
-            }
-
-            world.profile.step = b2GetMilliseconds(stepTicks);
-
-            B2_ASSERT(b2GetStackAllocation(world.stack) == 0);
-
-            // Ensure stack is large enough
-            b2GrowStack(world.stack);
-
-            // Make sure all tasks that were started were also finished
-            B2_ASSERT(world.activeTaskCount == 0);
-
-            b2TracyCZoneEnd(B2TracyCZone.world_step);
-
-            // Swap end event array buffers
-            world.endEventArrayIndex = 1 - world.endEventArrayIndex;
-            b2Array_Clear(ref world.sensorEndEvents[world.endEventArrayIndex]);
-            b2Array_Clear(ref world.contactEndEvents[world.endEventArrayIndex]);
-            world.locked = false;
             //b2TracyCFrame
         }
 
@@ -1021,55 +1036,55 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                {
-                    ref readonly B2Capsule capsule = ref shape.us.capsule;
-                    B2Vec2 p1 = b2TransformPoint(xf, capsule.center1);
-                    B2Vec2 p2 = b2TransformPoint(xf, capsule.center2);
-                    draw.DrawSolidCapsuleFcn(p1, p2, capsule.radius, color, draw.context);
-                }
+                    {
+                        ref readonly B2Capsule capsule = ref shape.us.capsule;
+                        B2Vec2 p1 = b2TransformPoint(xf, capsule.center1);
+                        B2Vec2 p2 = b2TransformPoint(xf, capsule.center2);
+                        draw.DrawSolidCapsuleFcn(p1, p2, capsule.radius, color, draw.context);
+                    }
                     break;
 
                 case B2ShapeType.b2_circleShape:
-                {
-                    ref readonly B2Circle circle = ref shape.us.circle;
-                    xf.p = b2TransformPoint(xf, circle.center);
-                    draw.DrawSolidCircleFcn(xf, circle.radius, color, draw.context);
-                }
+                    {
+                        ref readonly B2Circle circle = ref shape.us.circle;
+                        xf.p = b2TransformPoint(xf, circle.center);
+                        draw.DrawSolidCircleFcn(xf, circle.radius, color, draw.context);
+                    }
                     break;
 
                 case B2ShapeType.b2_polygonShape:
-                {
-                    ref B2Polygon poly = ref shape.us.polygon;
-                    draw.DrawSolidPolygonFcn(xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
-                }
+                    {
+                        ref B2Polygon poly = ref shape.us.polygon;
+                        draw.DrawSolidPolygonFcn(xf, poly.vertices.AsSpan(), poly.count, poly.radius, color, draw.context);
+                    }
                     break;
 
                 case B2ShapeType.b2_segmentShape:
-                {
-                    ref readonly B2Segment segment = ref shape.us.segment;
-                    B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
-                    B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
-                    draw.DrawLineFcn(p1, p2, color, draw.context);
-                }
+                    {
+                        ref readonly B2Segment segment = ref shape.us.segment;
+                        B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
+                        B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
+                        draw.DrawLineFcn(p1, p2, color, draw.context);
+                    }
                     break;
 
                 case B2ShapeType.b2_chainSegmentShape:
-                {
-                    ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
-                    B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
-                    B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
-                    draw.DrawLineFcn(p1, p2, color, draw.context);
-                    draw.DrawPointFcn(p2, 4.0f, color, draw.context);
-
-                    if (drawChainNormals)
                     {
-                        B2Vec2 c = b2Lerp(p1, p2, 0.5f);
-                        B2Vec2 e = b2Normalize(b2Sub(p2, p1));
-                        B2Vec2 n = b2RightPerp(e);
-                        float L = 0.2f * b2GetLengthUnitsPerMeter();
-                        draw.DrawLineFcn(c, b2MulAdd(c, L, n), B2HexColor.b2_colorPaleGreen, draw.context);
+                        ref readonly B2Segment segment = ref shape.us.chainSegment.segment;
+                        B2Vec2 p1 = b2TransformPoint(xf, segment.point1);
+                        B2Vec2 p2 = b2TransformPoint(xf, segment.point2);
+                        draw.DrawLineFcn(p1, p2, color, draw.context);
+                        draw.DrawPointFcn(p2, 4.0f, color, draw.context);
+
+                        if (drawChainNormals)
+                        {
+                            B2Vec2 c = b2Lerp(p1, p2, 0.5f);
+                            B2Vec2 e = b2Normalize(b2Sub(p2, p1));
+                            B2Vec2 n = b2RightPerp(e);
+                            float L = 0.2f * b2GetLengthUnitsPerMeter();
+                            draw.DrawLineFcn(c, b2MulAdd(c, L, n), B2HexColor.b2_colorPaleGreen, draw.context);
+                        }
                     }
-                }
                     break;
 
                 default:
@@ -3173,8 +3188,8 @@ void b2World_Dump()
             int jointIdCount = b2GetIdCount(world.jointIdPool);
             B2_ASSERT(totalJointCount == jointIdCount);
 
-// Validate shapes
-// This is very slow on compounds
+            // Validate shapes
+            // This is very slow on compounds
 #if FALSE
 	int shapeCapacity = b2Array(world.shapeArray).count;
 	for (int shapeIndex = 0; shapeIndex < shapeCapacity; shapeIndex += 1)

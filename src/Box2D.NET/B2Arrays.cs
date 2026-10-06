@@ -105,12 +105,13 @@ namespace Box2D.NET
             if (index != a.count - 1)
             {
                 movedIndex = a.count - 1;
+                T removed = a.data[index];
                 a.data[index] = a.data[movedIndex];
 
                 // fixed, ikpil
                 if (!typeof(T).IsValueType)
                 {
-                    a.data[movedIndex] = new T();
+                    a.data[movedIndex] = removed;
                 }
             }
 

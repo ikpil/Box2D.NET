@@ -11,6 +11,12 @@ namespace Box2D.NET
     // The world also contains efficient memory management facilities.
     public class B2World
     {
+        internal readonly B2StepContext reusableStepContext = new B2StepContext();
+        internal readonly System.ArraySegment<B2SyncBlock>[] reusableGraphColorBlocks = new System.ArraySegment<B2SyncBlock>[B2Constants.B2_GRAPH_COLOR_COUNT];
+        internal readonly B2ContactPrepareSpan[] reusableContactPrepareSpans = new B2ContactPrepareSpan[B2Constants.B2_GRAPH_COLOR_COUNT + 1];
+        internal readonly B2JointPrepareSpan[] reusableJointPrepareSpans = new B2JointPrepareSpan[B2Constants.B2_GRAPH_COLOR_COUNT + 1];
+        internal B2ParallelForShared reusableParallelFor;
+        internal int parallelForInUse;
         public B2StackAllocator stack;
         public B2BroadPhase broadPhase;
         public B2ConstraintGraph constraintGraph;
@@ -135,7 +141,7 @@ namespace Box2D.NET
         public b2FinishTaskCallback finishTaskFcn;
         public object userTaskContext;
         public object userTreeTask;
-        
+
         public B2Scheduler scheduler;
 
         public B2UserData userData;
@@ -165,6 +171,12 @@ namespace Box2D.NET
 
         public void Clear()
         {
+            reusableStepContext.Reset();
+            System.Array.Clear(reusableGraphColorBlocks, 0, reusableGraphColorBlocks.Length);
+            System.Array.Clear(reusableContactPrepareSpans, 0, reusableContactPrepareSpans.Length);
+            System.Array.Clear(reusableJointPrepareSpans, 0, reusableJointPrepareSpans.Length);
+            reusableParallelFor = null;
+            parallelForInUse = 0;
             stack = null;
             broadPhase = null;
 
@@ -227,7 +239,7 @@ namespace Box2D.NET
             contactSpeed = 0.0f;
             contactHertz = 0.0f;
             contactDampingRatio = 0.0f;
-            contactRecycleDistance = 0.0f; 
+            contactRecycleDistance = 0.0f;
 
             frictionCallback = null;
             restitutionCallback = null;

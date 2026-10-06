@@ -27,16 +27,21 @@ namespace Box2D.NET
             return set;
         }
 
-        public static void b2DestroySolverSet(B2World world, int setIndex)
+        public static void b2DestroySolverSet(B2World world, int setIndex) => b2DestroySolverSet(world, setIndex, false);
+
+        internal static void b2DestroySolverSet(B2World world, int setIndex, bool releaseStorage)
         {
             B2SolverSet set = b2Array_Get(ref world.solverSets, setIndex);
-            b2Array_Destroy(ref set.bodySims);
-            b2Array_Destroy(ref set.bodyStates);
-            b2Array_Destroy(ref set.contactSims);
-            b2Array_Destroy(ref set.jointSims);
-            b2Array_Destroy(ref set.islandSims);
-            b2FreeId(world.solverSetIdPool, setIndex);
-            //*set = ( b2SolverSet ){ 0 };
+            if (releaseStorage)
+            {
+                b2Array_Destroy(ref set.bodySims);
+                b2Array_Destroy(ref set.bodyStates);
+                b2Array_Destroy(ref set.contactSims);
+                b2Array_Destroy(ref set.jointSims);
+                b2Array_Destroy(ref set.islandSims);
+            }
+            if (set.setIndex != B2_NULL_INDEX)
+                b2FreeId(world.solverSetIdPool, setIndex);
             set.Clear();
             set.setIndex = B2_NULL_INDEX;
         }
@@ -205,9 +210,9 @@ namespace Box2D.NET
             B2_ASSERT(0 <= island.localIndex && island.localIndex < awakeSet.islandSims.count);
 
             sleepSet.setIndex = sleepSetId;
-            sleepSet.bodySims = b2Array_Create<B2BodySim>(island.bodies.count);
-            sleepSet.contactSims = b2Array_Create<B2ContactSim>(island.contacts.count);
-            sleepSet.jointSims = b2Array_Create<B2JointSim>(island.joints.count);
+            b2Array_Reserve(ref sleepSet.bodySims, island.bodies.count);
+            b2Array_Reserve(ref sleepSet.contactSims, island.contacts.count);
+            b2Array_Reserve(ref sleepSet.jointSims, island.joints.count);
 
             // move awake bodies to sleeping set
             // this shuffles around bodies in the awake set

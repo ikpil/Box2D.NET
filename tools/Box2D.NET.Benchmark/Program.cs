@@ -39,6 +39,11 @@ namespace Box2D.NET.PhysicsBenchmark
 
         public static int Main(string[] args)
         {
+            if (args.Length > 0 && args[0] == "--dense")
+            {
+                return DenseBenchmark.Run(args);
+            }
+
             Benchmark[] benchmarks = CreateBenchmarks();
 
             int maxSteps = benchmarks[0].TotalStepCount;

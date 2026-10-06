@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
+    <!-- Cache static method-group conversions on netstandard as well. -->
+    <LangVersion Condition="'$(TargetFramework)' == 'netstandard2.1'">12.0</LangVersion>
     <PackageId>Box2D.NET</PackageId>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Authors>ikpil</Authors>

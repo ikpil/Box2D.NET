@@ -34,7 +34,7 @@ namespace Box2D.NET
 
             if (islandId == world.islands.count)
             {
-                b2Array_Push(ref world.islands, new B2Island());
+                b2Array_Emplace(ref world.islands);
             }
             else
             {
@@ -47,9 +47,9 @@ namespace Box2D.NET
             island.setIndex = setIndex;
             island.localIndex = set.islandSims.count;
             island.islandId = islandId;
-            island.bodies = b2Array_Create<int>();
-            island.contacts = b2Array_Create<B2ContactLink>();
-            island.joints = b2Array_Create<B2JointLink>();
+            b2Array_Clear(ref island.bodies);
+            b2Array_Clear(ref island.contacts);
+            b2Array_Clear(ref island.joints);
             island.constraintRemoveCount = 0;
 
             ref B2IslandSim islandSim = ref b2Array_Emplace(ref set.islandSims);
@@ -70,23 +70,18 @@ namespace Box2D.NET
             B2SolverSet set = b2Array_Get(ref world.solverSets, island.setIndex);
             {
                 int localIndex = island.localIndex;
-                int lastIndex = set.islandSims.count - 1;
-                B2_ASSERT(0 <= localIndex && localIndex <= lastIndex);
-                int moveIslandId = set.islandSims.data[lastIndex].islandId;
-                set.islandSims.data[localIndex].CopyFrom(set.islandSims.data[lastIndex]);
-                world.islands.data[moveIslandId].localIndex = localIndex;
-                if (localIndex != lastIndex)
+                int movedIndex = b2Array_RemoveSwap(ref set.islandSims, localIndex);
+                if (movedIndex != B2_NULL_INDEX)
                 {
-                    set.islandSims.data[lastIndex] = new B2IslandSim();
+                    int movedIslandId = set.islandSims.data[localIndex].islandId;
+                    world.islands.data[movedIslandId].localIndex = localIndex;
                 }
-
-                set.islandSims.count -= 1;
             }
 
             // Free island and id (preserve island revision)
-            b2Array_Destroy(ref island.bodies);
-            b2Array_Destroy(ref island.contacts);
-            b2Array_Destroy(ref island.joints);
+            b2Array_Clear(ref island.bodies);
+            b2Array_Clear(ref island.contacts);
+            b2Array_Clear(ref island.joints);
             island.constraintRemoveCount = 0;
             island.localIndex = B2_NULL_INDEX;
             island.islandId = B2_NULL_INDEX;

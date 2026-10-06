@@ -4,6 +4,9 @@
 
 using System;
 using System.Numerics;
+#if NET8_0_OR_GREATER
+using System.Runtime.Intrinsics;
+#endif
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
@@ -175,6 +178,11 @@ namespace Box2D.NET
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
+            if (contactCount == 0)
+            {
+                b2TracyCZoneEnd(B2TracyCZone.warmstart_overflow_contact);
+                return;
+            }
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
@@ -252,6 +260,11 @@ namespace Box2D.NET
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
+            if (contactCount == 0)
+            {
+                b2TracyCZoneEnd(B2TracyCZone.solve_contact);
+                return;
+            }
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
@@ -423,6 +436,11 @@ namespace Box2D.NET
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
             Span<B2ContactConstraint> constraints = color.overflowConstraints;
             int contactCount = color.contactSims.count;
+            if (contactCount == 0)
+            {
+                b2TracyCZoneEnd(B2TracyCZone.overflow_resitution);
+                return;
+            }
             B2World world = context.world;
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodyState[] states = awakeSet.bodyStates.data;
@@ -648,132 +666,187 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2ZeroW()
         {
-            return new B2FloatW(0.0f, 0.0f, 0.0f, 0.0f);
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SplatW(float scalar)
         {
-            return new B2FloatW(scalar, scalar, scalar, scalar);
+            return new B2FloatW(scalar, scalar, scalar, scalar, scalar, scalar, scalar, scalar);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2AddW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Unsafe.BitCast<B2FloatW, Vector256<float>>(a) + Unsafe.BitCast<B2FloatW, Vector256<float>>(b));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] + b[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SubW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Unsafe.BitCast<B2FloatW, Vector256<float>>(a) - Unsafe.BitCast<B2FloatW, Vector256<float>>(b));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] - b[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Unsafe.BitCast<B2FloatW, Vector256<float>>(a) * Unsafe.BitCast<B2FloatW, Vector256<float>>(b));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] * b[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulAddW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
         {
-            return new B2FloatW(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Unsafe.BitCast<B2FloatW, Vector256<float>>(a) + Unsafe.BitCast<B2FloatW, Vector256<float>>(b) * Unsafe.BitCast<B2FloatW, Vector256<float>>(c));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] + b[i] * c[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MulSubW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
         {
-            return new B2FloatW(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Unsafe.BitCast<B2FloatW, Vector256<float>>(a) - Unsafe.BitCast<B2FloatW, Vector256<float>>(b) * Unsafe.BitCast<B2FloatW, Vector256<float>>(c));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] - b[i] * c[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MinW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(
-                a.X <= b.X ? a.X : b.X,
-                a.Y <= b.Y ? a.Y : b.Y,
-                a.Z <= b.Z ? a.Z : b.Z,
-                a.W <= b.W ? a.W : b.W
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.ConditionalSelect(Vector256.LessThanOrEqual(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)), Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] <= b[i] ? a[i] : b[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2MaxW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(
-                a.X >= b.X ? a.X : b.X,
-                a.Y >= b.Y ? a.Y : b.Y,
-                a.Z >= b.Z ? a.Z : b.Z,
-                a.W >= b.W ? a.W : b.W
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.ConditionalSelect(Vector256.GreaterThanOrEqual(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)), Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] >= b[i] ? a[i] : b[i];
+            return result;
+#endif
         }
 
         // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
         {
-            // a = clamp(a, -b, b)
-            return new B2FloatW(
-                b2ClampFloat(a.X, -b.X, b.X),
-                b2ClampFloat(a.Y, -b.Y, b.Y),
-                b2ClampFloat(a.Z, -b.Z, b.Z),
-                b2ClampFloat(a.W, -b.W, b.W)
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.ConditionalSelect(Vector256.LessThan(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), -Unsafe.BitCast<B2FloatW, Vector256<float>>(b)), -Unsafe.BitCast<B2FloatW, Vector256<float>>(b),
+                            Vector256.ConditionalSelect(Vector256.GreaterThan(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)), Unsafe.BitCast<B2FloatW, Vector256<float>>(b), Unsafe.BitCast<B2FloatW, Vector256<float>>(a))));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] < -b[i] ? -b[i] : a[i] > b[i] ? b[i] : a[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2OrW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(
-                a.X != 0.0f || b.X != 0.0f ? 1.0f : 0.0f,
-                a.Y != 0.0f || b.Y != 0.0f ? 1.0f : 0.0f,
-                a.Z != 0.0f || b.Z != 0.0f ? 1.0f : 0.0f,
-                a.W != 0.0f || b.W != 0.0f ? 1.0f : 0.0f
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>((~Vector256.Equals(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Vector256<float>.Zero) | ~Vector256.Equals(Unsafe.BitCast<B2FloatW, Vector256<float>>(b), Vector256<float>.Zero)) & Vector256<float>.One);
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] != 0 || b[i] != 0 ? 1 : 0;
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2GreaterThanW(in B2FloatW a, in B2FloatW b)
         {
-            return new B2FloatW(
-                a.X > b.X ? 1.0f : 0.0f,
-                a.Y > b.Y ? 1.0f : 0.0f,
-                a.Z > b.Z ? 1.0f : 0.0f,
-                a.W > b.W ? 1.0f : 0.0f
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.GreaterThan(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)) & Vector256<float>.One);
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] > b[i] ? 1 : 0;
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2EqualsW(in B2FloatW a, in B2FloatW b)
         {
-            // TODO: @ikpil check float equal
-            return new B2FloatW(
-                a.X == b.X ? 1.0f : 0.0f,
-                a.Y == b.Y ? 1.0f : 0.0f,
-                a.Z == b.Z ? 1.0f : 0.0f,
-                a.W == b.W ? 1.0f : 0.0f
-            );
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.Equals(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)) & Vector256<float>.One);
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = a[i] == b[i] ? 1 : 0;
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool b2AllZeroW(in B2FloatW a)
         {
-            return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
+#if NET8_0_OR_GREATER
+            return Vector256.EqualsAll(Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Vector256<float>.Zero);
+#else
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+            {
+                if (a[i] != 0)
+                    return false;
+            }
+            return true;
+#endif
         }
 
         // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
         {
-            // component-wise returns mask ? b : a
-            return new B2FloatW()
-            {
-                X = mask.X != 0.0f ? b.X : a.X,
-                Y = mask.Y != 0.0f ? b.Y : a.Y,
-                Z = mask.Z != 0.0f ? b.Z : a.Z,
-                W = mask.W != 0.0f ? b.W : a.W,
-            };
+#if NET8_0_OR_GREATER
+            return Unsafe.BitCast<Vector256<float>, B2FloatW>(Vector256.ConditionalSelect(Vector256.Equals(Unsafe.BitCast<B2FloatW, Vector256<float>>(mask), Vector256<float>.Zero), Unsafe.BitCast<B2FloatW, Vector256<float>>(a), Unsafe.BitCast<B2FloatW, Vector256<float>>(b)));
+#else
+            B2FloatW result = default;
+            for (int i = 0; i < B2_SIMD_WIDTH; i++)
+                result[i] = mask[i] != 0 ? b[i] : a[i];
+            return result;
+#endif
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -803,7 +876,7 @@ namespace Box2D.NET
         }
 
 
-// Custom gather/scatter for each SIMD type
+        // Custom gather/scatter for each SIMD type
 #if B2_SIMD_AVX2
 // This is a load and 8x8 transpose
 static b2BodyStateW b2GatherBodies( const b2BodyState* states, int* indices )
@@ -1183,21 +1256,28 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             int i2 = indices[1] - 1;
             int i3 = indices[2] - 1;
             int i4 = indices[3] - 1;
-
+            int i5 = indices[4] - 1;
+            int i6 = indices[5] - 1;
+            int i7 = indices[6] - 1;
+            int i8 = indices[7] - 1;
             B2BodyState s1 = i1 == B2_NULL_INDEX ? identity : states[i1];
             B2BodyState s2 = i2 == B2_NULL_INDEX ? identity : states[i2];
             B2BodyState s3 = i3 == B2_NULL_INDEX ? identity : states[i3];
             B2BodyState s4 = i4 == B2_NULL_INDEX ? identity : states[i4];
+            B2BodyState s5 = i5 == B2_NULL_INDEX ? identity : states[i5];
+            B2BodyState s6 = i6 == B2_NULL_INDEX ? identity : states[i6];
+            B2BodyState s7 = i7 == B2_NULL_INDEX ? identity : states[i7];
+            B2BodyState s8 = i8 == B2_NULL_INDEX ? identity : states[i8];
 
             B2BodyStateW simdBody = new B2BodyStateW();
-            simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
-            simdBody.v.Y = new B2FloatW(s1.linearVelocity.Y, s2.linearVelocity.Y, s3.linearVelocity.Y, s4.linearVelocity.Y);
-            simdBody.w = new B2FloatW(s1.angularVelocity, s2.angularVelocity, s3.angularVelocity, s4.angularVelocity);
-            simdBody.flags = new B2FloatW((float)s1.flags, (float)s2.flags, (float)s3.flags, (float)s4.flags);
-            simdBody.dp.X = new B2FloatW(s1.deltaPosition.X, s2.deltaPosition.X, s3.deltaPosition.X, s4.deltaPosition.X);
-            simdBody.dp.Y = new B2FloatW(s1.deltaPosition.Y, s2.deltaPosition.Y, s3.deltaPosition.Y, s4.deltaPosition.Y);
-            simdBody.dq.C = new B2FloatW(s1.deltaRotation.c, s2.deltaRotation.c, s3.deltaRotation.c, s4.deltaRotation.c);
-            simdBody.dq.S = new B2FloatW(s1.deltaRotation.s, s2.deltaRotation.s, s3.deltaRotation.s, s4.deltaRotation.s);
+            simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X, s5.linearVelocity.X, s6.linearVelocity.X, s7.linearVelocity.X, s8.linearVelocity.X);
+            simdBody.v.Y = new B2FloatW(s1.linearVelocity.Y, s2.linearVelocity.Y, s3.linearVelocity.Y, s4.linearVelocity.Y, s5.linearVelocity.Y, s6.linearVelocity.Y, s7.linearVelocity.Y, s8.linearVelocity.Y);
+            simdBody.w = new B2FloatW(s1.angularVelocity, s2.angularVelocity, s3.angularVelocity, s4.angularVelocity, s5.angularVelocity, s6.angularVelocity, s7.angularVelocity, s8.angularVelocity);
+            simdBody.flags = new B2FloatW((float)s1.flags, (float)s2.flags, (float)s3.flags, (float)s4.flags, (float)s5.flags, (float)s6.flags, (float)s7.flags, (float)s8.flags);
+            simdBody.dp.X = new B2FloatW(s1.deltaPosition.X, s2.deltaPosition.X, s3.deltaPosition.X, s4.deltaPosition.X, s5.deltaPosition.X, s6.deltaPosition.X, s7.deltaPosition.X, s8.deltaPosition.X);
+            simdBody.dp.Y = new B2FloatW(s1.deltaPosition.Y, s2.deltaPosition.Y, s3.deltaPosition.Y, s4.deltaPosition.Y, s5.deltaPosition.Y, s6.deltaPosition.Y, s7.deltaPosition.Y, s8.deltaPosition.Y);
+            simdBody.dq.C = new B2FloatW(s1.deltaRotation.c, s2.deltaRotation.c, s3.deltaRotation.c, s4.deltaRotation.c, s5.deltaRotation.c, s6.deltaRotation.c, s7.deltaRotation.c, s8.deltaRotation.c);
+            simdBody.dq.S = new B2FloatW(s1.deltaRotation.s, s2.deltaRotation.s, s3.deltaRotation.s, s4.deltaRotation.s, s5.deltaRotation.s, s6.deltaRotation.s, s7.deltaRotation.s, s8.deltaRotation.s);
 
             return simdBody;
         }
@@ -1205,44 +1285,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         // This writes only the velocities back to the solver bodies
         internal static void b2ScatterBodies(ReadOnlySpan<B2BodyState> states, ReadOnlySpan<int> indices, ref B2BodyStateW simdBody)
         {
-            B2_VALIDATE(indices[0] >= 0 && indices[1] >= 0 && indices[2] >= 0 && indices[3] >= 0);
-
-            // zero means null
-            int i1 = indices[0] - 1;
-            int i2 = indices[1] - 1;
-            int i3 = indices[2] - 1;
-            int i4 = indices[3] - 1;
-
-            if (i1 != B2_NULL_INDEX && (states[i1].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
+            for (int lane = 0; lane < B2_SIMD_WIDTH; lane++)
             {
-                B2BodyState state = states[i1];
-                state.linearVelocity.X = simdBody.v.X.X;
-                state.linearVelocity.Y = simdBody.v.Y.X;
-                state.angularVelocity = simdBody.w.X;
-            }
-
-            if (i2 != B2_NULL_INDEX && (states[i2].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
-            {
-                B2BodyState state = states[i2];
-                state.linearVelocity.X = simdBody.v.X.Y;
-                state.linearVelocity.Y = simdBody.v.Y.Y;
-                state.angularVelocity = simdBody.w.Y;
-            }
-
-            if (i3 != B2_NULL_INDEX && (states[i3].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
-            {
-                B2BodyState state = states[i3];
-                state.linearVelocity.X = simdBody.v.X.Z;
-                state.linearVelocity.Y = simdBody.v.Y.Z;
-                state.angularVelocity = simdBody.w.Z;
-            }
-
-            if (i4 != B2_NULL_INDEX && (states[i4].flags & (uint)B2BodyFlags.b2_dynamicFlag) != 0)
-            {
-                B2BodyState state = states[i4];
-                state.linearVelocity.X = simdBody.v.X.W;
-                state.linearVelocity.Y = simdBody.v.Y.W;
-                state.angularVelocity = simdBody.w.W;
+                int index = indices[lane] - 1;
+                if (index == B2_NULL_INDEX || (states[index].flags & (uint)B2BodyFlags.b2_dynamicFlag) == 0)
+                    continue;
+                B2BodyState state = states[index];
+                state.linearVelocity.X = simdBody.v.X[lane];
+                state.linearVelocity.Y = simdBody.v.Y[lane];
+                state.angularVelocity = simdBody.w[lane];
             }
         }
 
@@ -1530,6 +1581,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, c.normalImpulse1);
                 }
 
+                if (!b2AllZeroW(c.normalMass2))
                 {
                     // fixed anchors
                     B2Vec2W rA = c.anchorA2;
@@ -1652,6 +1704,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 }
 
                 // second point non-penetration constraint
+                if (!b2AllZeroW(c.normalMass2))
                 {
                     // moving anchors for current separation
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA2);
@@ -1758,6 +1811,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     }
 
                     // second point friction constraint
+                    if (!b2AllZeroW(c.normalMass2))
                     {
                         // fixed anchors for Jacobians
                         B2Vec2W rA = c.anchorA2;
@@ -1949,14 +2003,14 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             // Loop over block
             while (wideIndex < endWideIndex)
             {
-                int colorWideEndIndex = b2MinInt( spans[colorIndex + 1].start, endWideIndex );
+                int colorWideEndIndex = b2MinInt(spans[colorIndex + 1].start, endWideIndex);
                 int colorWideStart = spans[colorIndex].start;
                 int colorContactCount = spans[colorIndex].count;
                 Span<B2ContactSim> contactSims = spans[colorIndex].contacts;
 
 
                 // Loop over color
-                for ( ; wideIndex < colorWideEndIndex; ++wideIndex )
+                for (; wideIndex < colorWideEndIndex; ++wideIndex)
                 {
                     ref readonly B2ContactConstraintWide c = ref wideBase[wideIndex];
                     ref readonly B2FloatW rollingImpulse = ref c.rollingImpulse;
@@ -1968,14 +2022,14 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     ref readonly B2FloatW totalNormalImpulse2 = ref c.totalNormalImpulse2;
                     ref readonly B2FloatW normalVelocity1 = ref c.relativeVelocity1;
                     ref readonly B2FloatW normalVelocity2 = ref c.relativeVelocity2;
-                    
+
                     int localWideIndex = wideIndex - colorWideStart;
                     int baseIndex = B2_SIMD_WIDTH * localWideIndex;
 
-                    for ( int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex )
+                    for (int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex)
                     {
                         int contactIndex = baseIndex + laneIndex;
-                        if ( contactIndex >= colorContactCount )
+                        if (contactIndex >= colorContactCount)
                         {
                             break;
                         }

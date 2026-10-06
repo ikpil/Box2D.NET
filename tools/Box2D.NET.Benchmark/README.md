@@ -34,3 +34,7 @@ configurations, not expected values for managed runs on different hardware.
 Release builds use the upstream scenario sizes and step counts. Debug builds
 use the same reduced scenario sizes and ten-step loop as the native debug
 runner, which is useful for smoke checks.
+
+## Dense contact regression workload
+
+Use `--dense 1` or `--dense 4` to run the always-awake 1,536-circle allocation and timing workload. See [the patch inventory, reproduction commands and measured results](DENSE_PERFORMANCE.md).
