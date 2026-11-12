@@ -815,15 +815,15 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    return b2ComputeCapsuleAABB(shape.us.capsule, xf);
+                    return b2ComputeCapsuleBounds(shape.us.capsule, xf);
                 case B2ShapeType.b2_circleShape:
-                    return b2ComputeCircleAABB(shape.us.circle, xf);
+                    return b2ComputeCircleBounds(shape.us.circle, xf);
                 case B2ShapeType.b2_polygonShape:
-                    return b2ComputePolygonAABB(shape.us.polygon, xf);
+                    return b2ComputePolygonBounds(shape.us.polygon, xf);
                 case B2ShapeType.b2_segmentShape:
-                    return b2ComputeSegmentAABB(shape.us.segment, xf);
+                    return b2ComputeSegmentBounds(shape.us.segment, xf);
                 case B2ShapeType.b2_chainSegmentShape:
-                    return b2ComputeSegmentAABB(shape.us.chainSegment.segment, xf);
+                    return b2ComputeSegmentBounds(shape.us.chainSegment.segment, xf);
                 default:
                 {
                     B2_ASSERT(false);

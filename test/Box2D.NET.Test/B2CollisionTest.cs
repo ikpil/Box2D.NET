@@ -228,7 +228,7 @@ public class B2CollisionTest
         // Rounded box: 0.5 half extents plus 0.1 radius, so the tight extent is 0.6 each way
         B2Polygon box = b2MakeRoundedBox(0.5f, 0.5f, 0.1f);
 
-        B2AABB aabbOrigin = b2ComputePolygonAABB(box, b2WorldTransform_identity);
+        B2AABB aabbOrigin = b2ComputePolygonBounds(box, b2WorldTransform_identity);
         Assert.That(MathF.Abs(aabbOrigin.lowerBound.X + 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
         Assert.That(MathF.Abs(aabbOrigin.lowerBound.Y + 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
         Assert.That(MathF.Abs(aabbOrigin.upperBound.X - 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));

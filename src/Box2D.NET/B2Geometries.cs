@@ -494,25 +494,25 @@ namespace Box2D.NET
         }
 
         /// Compute the bounding box of a transformed circle
-        public static B2AABB b2ComputeCircleAABB(in B2Circle shape, in B2WorldTransform xf)
+        public static B2AABB b2ComputeCircleBounds(in B2Circle shape, in B2WorldTransform xf)
         {
             return b2ComputeCircleFatAABB(shape, xf, 0.0f);
         }
 
         /// Compute the bounding box of a transformed capsule
-        public static B2AABB b2ComputeCapsuleAABB(in B2Capsule shape, in B2WorldTransform xf)
+        public static B2AABB b2ComputeCapsuleBounds(in B2Capsule shape, in B2WorldTransform xf)
         {
             return b2ComputeCapsuleFatAABB(shape, xf, 0.0f);
         }
 
         /// Compute the bounding box of a transformed polygon
-        public static B2AABB b2ComputePolygonAABB(in B2Polygon shape, in B2WorldTransform xf)
+        public static B2AABB b2ComputePolygonBounds(in B2Polygon shape, in B2WorldTransform xf)
         {
             return b2ComputePolygonFatAABB(shape, xf, 0.0f);
         }
 
         /// Compute the bounding box of a transformed line segment
-        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, in B2WorldTransform xf)
+        public static B2AABB b2ComputeSegmentBounds(in B2Segment shape, in B2WorldTransform xf)
         {
             return b2ComputeSegmentFatAABB(shape, xf, 0.0f);
         }
