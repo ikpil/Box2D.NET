@@ -85,7 +85,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                task.callback(task.taskContext);
+                task.callbackFcn(task.taskContext);
 
                 b2AtomicStoreInt(ref task.status, (int)B2SchedulerTaskStatus.b2_schedulerComplete);
                 return true;
@@ -192,7 +192,7 @@ namespace Box2D.NET
         }
 
         // See b2EnqueueTaskCallback and b2FinishTaskCallback
-        internal static object b2SchedulerEnqueueTask(b2TaskCallback task, object taskContext, object userContext)
+        internal static object b2SchedulerEnqueueTask(b2TaskCallbackFcn task, object taskContext, object userContext)
         {
             B2Scheduler scheduler = (B2Scheduler)userContext;
 
@@ -200,7 +200,7 @@ namespace Box2D.NET
             B2_ASSERT(slot < B2_MAX_TASKS);
 
             ref B2SchedulerTask schedulerTask = ref scheduler.tasks[slot];
-            schedulerTask.callback = task;
+            schedulerTask.callbackFcn = task;
             schedulerTask.taskContext = taskContext;
 
             // Memory fence: status must be published after callback and context are written

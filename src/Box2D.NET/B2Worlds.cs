@@ -100,7 +100,7 @@ namespace Box2D.NET
             return world;
         }
 
-        internal static object b2DefaultAddTaskFcn(b2TaskCallback task, object taskContext, object userContext)
+        internal static object b2DefaultAddTaskFcn(b2TaskCallbackFcn task, object taskContext, object userContext)
         {
             B2_UNUSED(userContext);
             task(taskContext);
@@ -309,14 +309,14 @@ namespace Box2D.NET
             world.contactRecycleDistance = B2_CONTACT_RECYCLE_DISTANCE;
 
 
-            if (def.frictionCallback != null)
+            if (def.frictionCallbackFcn != null)
             {
-                world.frictionCallback = def.frictionCallback;
+                world.frictionCallbackFcn = def.frictionCallbackFcn;
             }
 
-            if (def.restitutionCallback != null)
+            if (def.restitutionCallbackFcn != null)
             {
-                world.restitutionCallback = def.restitutionCallback;
+                world.restitutionCallbackFcn = def.restitutionCallbackFcn;
             }
 
             // @ikpil, new profile
@@ -1112,7 +1112,7 @@ namespace Box2D.NET
 
                     if (drawChainNormals)
                     {
-                        B2Pos c = b2LerpPosition(p1, p2, 0.5f);
+                        B2Pos c = b2LerpPos(p1, p2, 0.5f);
                         B2Vec2 e = b2Normalize(b2SubPos(p2, p1));
                         B2Vec2 n = b2RightPerp(e);
                         float L = 0.2f * b2GetLengthUnitsPerMeter();
@@ -2182,7 +2182,7 @@ namespace Box2D.NET
             return world.contactRecycleDistance;
         }
         /// Set the maximum linear speed. Usually in m/s.
-        public static void b2World_SetMaximumLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
+        public static void b2World_SetMaxLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(maximumLinearSpeed) && maximumLinearSpeed > 0.0f) == false) return;
 
@@ -2196,7 +2196,7 @@ namespace Box2D.NET
             world.maxLinearSpeed = maximumLinearSpeed;
         }
         /// Get the maximum linear speed. Usually in m/s.
-        public static float b2World_GetMaximumLinearSpeed(B2WorldId worldId)
+        public static float b2World_GetMaxLinearSpeed(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
             return world.maxLinearSpeed;
@@ -2299,7 +2299,7 @@ namespace Box2D.NET
             return world.userData;
         }
         /// Set the friction callback. Passing NULL resets to default.
-        public static void b2World_SetFrictionCallback(B2WorldId worldId, b2FrictionCallback callback)
+        public static void b2World_SetFrictionCallback(B2WorldId worldId, b2FrictionCallbackFcn callbackFcn)
         {
             B2World world = b2GetWorldFromId(worldId);
             if (world.locked)
@@ -2307,10 +2307,10 @@ namespace Box2D.NET
                 return;
             }
 
-            world.frictionCallback = callback;
+            world.frictionCallbackFcn = callbackFcn;
         }
         /// Set the restitution callback. Passing NULL resets to default.
-        public static void b2World_SetRestitutionCallback(B2WorldId worldId, b2RestitutionCallback callback)
+        public static void b2World_SetRestitutionCallback(B2WorldId worldId, b2RestitutionCallbackFcn callbackFcn)
         {
             B2World world = b2GetWorldFromId(worldId);
             if (world.locked)
@@ -2318,7 +2318,7 @@ namespace Box2D.NET
                 return;
             }
 
-            world.restitutionCallback = callback;
+            world.restitutionCallbackFcn = callbackFcn;
         }
         /// Dump memory stats to box2d_memory.txt
         public static void b2World_DumpMemoryStats(B2WorldId worldId)
@@ -2432,13 +2432,13 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-            bool result = worldContext.fcn(id, worldContext.userContext);
+            bool result = worldContext.callbackFcn(id, worldContext.userContext);
             return result;
         }
         /// Overlap test for all shapes that *potentially* overlap the provided AABB.
         /// The AABB is relative to the origin, which keeps the test precise far from the world origin
         /// in large world mode. Near the origin pass b2Pos_zero and a world AABB.
-        public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, B2Pos origin, in B2AABB aabb, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
+        public static B2TreeStats b2World_OverlapAABB(B2WorldId worldId, B2Pos origin, in B2AABB aabb, in B2QueryFilter filter, b2OverlapResultCallbackFcn callbackFcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2449,13 +2449,13 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidAABB(aabb));
 
             // Lift to a world float box with outward rounding so the conservative tree test never misses
             B2AABB worldBox = b2OffsetAABB(aabb, origin);
 
-            B2WorldQueryContext worldContext = new B2WorldQueryContext(world, fcn, filter, context);
+            B2WorldQueryContext worldContext = new B2WorldQueryContext(world, callbackFcn, filter, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2506,13 +2506,13 @@ namespace Box2D.NET
             }
 
             B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-            bool result = worldContext.fcn(id, worldContext.userContext);
+            bool result = worldContext.callbackFcn(id, worldContext.userContext);
             return result;
         }
 
         /// Overlap test for all shapes that overlap the provided shape proxy.
         /// The proxy points are relative to the origin. Near the origin pass b2Pos_zero and world points.
-        public static B2TreeStats b2World_OverlapShape(B2WorldId worldId, B2Pos origin, ref B2ShapeProxy proxy, in B2QueryFilter filter, b2OverlapResultFcn fcn, object context)
+        public static B2TreeStats b2World_OverlapShape(B2WorldId worldId, B2Pos origin, ref B2ShapeProxy proxy, in B2QueryFilter filter, b2OverlapResultCallbackFcn callbackFcn, object context)
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2523,12 +2523,12 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
 
             // Relative box lifted to world float with outward rounding, conservative for the tree
             B2AABB aabb = b2OffsetAABB(b2MakeAABB(proxy.points.AsSpan(), proxy.count, proxy.radius), origin);
             B2WorldOverlapContext worldContext = new B2WorldOverlapContext(
-                world, fcn, filter, proxy, origin, context
+                world, callbackFcn, filter, proxy, origin, context
             );
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
@@ -2571,7 +2571,7 @@ namespace Box2D.NET
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
                 B2Pos point = b2OffsetPos(worldContext.origin, output.point);
-                float fraction = worldContext.fcn(id, point, output.normal, output.fraction, ref worldContext.userContext);
+                float fraction = worldContext.callbackFcn(id, point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2595,7 +2595,7 @@ namespace Box2D.NET
         /// @param fcn A user implemented callback function
         /// @param context A user context that is passed along to the callback function
         /// @return traversal performance counters
-        public static B2TreeStats b2World_CastRay<T>(B2WorldId worldId, B2Pos origin, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn<T> fcn, T context) where T : class
+        public static B2TreeStats b2World_CastRay<T>(B2WorldId worldId, B2Pos origin, B2Vec2 translation, in B2QueryFilter filter, b2CastResultCallbackFcn<T> callbackFcn, T context) where T : class
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2606,7 +2606,7 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
             // Tree traversal sees the origin truncated to float, displacing the ray by up to one
@@ -2614,7 +2614,7 @@ namespace Box2D.NET
             // re-difference against the full precision origin carried on the context.
             B2RayCastInput input = new B2RayCastInput(b2ToVec2(origin), translation, 1.0f);
 
-            var worldContext = B2WorldRayCastContext.Create(world, fcn, filter, 1.0f, origin, context);
+            var worldContext = B2WorldRayCastContext.Create(world, callbackFcn, filter, 1.0f, origin, context);
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
@@ -2665,7 +2665,7 @@ namespace Box2D.NET
                 return result;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
             B2RayCastInput input = new B2RayCastInput(b2ToVec2(origin), translation, 1.0f);
@@ -2721,7 +2721,7 @@ namespace Box2D.NET
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
 
                 B2Pos point = b2OffsetPos(worldContext.origin, output.point);
-                float fraction = worldContext.fcn(id, point, output.normal, output.fraction, ref worldContext.userContext);
+                float fraction = worldContext.callbackFcn(id, point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
                 if (0.0f <= fraction && fraction <= 1.0f)
@@ -2738,7 +2738,7 @@ namespace Box2D.NET
         /// Cast a shape through the world. Similar to a cast ray except that a shape is cast instead of a point.
         /// The proxy points are relative to the origin. Callback points are world positions.
         /// @see b2World_CastRay
-        public static B2TreeStats b2World_CastShape<T>(B2WorldId worldId, B2Pos origin, ref B2ShapeProxy proxy, B2Vec2 translation, in B2QueryFilter filter, b2CastResultFcn<T> fcn, T context) where T : class
+        public static B2TreeStats b2World_CastShape<T>(B2WorldId worldId, B2Pos origin, ref B2ShapeProxy proxy, B2Vec2 translation, in B2QueryFilter filter, b2CastResultCallbackFcn<T> callbackFcn, T context) where T : class
         {
             B2TreeStats treeStats = new B2TreeStats();
 
@@ -2749,12 +2749,12 @@ namespace Box2D.NET
                 return treeStats;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
             B2WorldShapeCastContext<T> worldContext = new B2WorldShapeCastContext<T>();
             worldContext.world = world;
-            worldContext.fcn = fcn;
+            worldContext.callbackFcn = callbackFcn;
             worldContext.filter = filter;
             worldContext.fraction = 1.0f;
             worldContext.origin = origin;
@@ -2826,7 +2826,7 @@ namespace Box2D.NET
         /// clipping. The mover capsule is relative to the origin. Near the origin pass b2Pos_zero and a world capsule.
         public static float b2World_CastMover(B2WorldId worldId, B2Pos origin, in B2Capsule mover, B2Vec2 translation, in B2QueryFilter filter)
         {
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidVec2(translation));
             B2_ASSERT(mover.radius > 2.0f * B2_LINEAR_SLOP);
 
@@ -2899,7 +2899,7 @@ namespace Box2D.NET
             if (result.hit && b2IsNormalized(result.plane.normal))
             {
                 B2ShapeId id = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
-                return worldContext.fcn(id, ref result, worldContext.userContext);
+                return worldContext.callbackFcn(id, ref result, worldContext.userContext);
             }
 
             return true;
@@ -2908,7 +2908,7 @@ namespace Box2D.NET
 
         /// Collide a capsule mover with the world, gathering collision planes that can be fed to b2SolvePlanes. Useful for
         /// kinematic character movement. The mover capsule and the resulting planes are relative to the origin.
-        public static void b2World_CollideMover(B2WorldId worldId, B2Pos origin, in B2Capsule mover, in B2QueryFilter filter, b2PlaneResultFcn fcn, object context)
+        public static void b2World_CollideMover(B2WorldId worldId, B2Pos origin, in B2Capsule mover, in B2QueryFilter filter, b2PlaneResultCallbackFcn callbackFcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
@@ -2917,7 +2917,7 @@ namespace Box2D.NET
                 return;
             }
 
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
 
             B2Vec2 r = new B2Vec2(mover.radius, mover.radius);
 
@@ -2929,7 +2929,7 @@ namespace Box2D.NET
 
             B2WorldMoverContext worldContext = new B2WorldMoverContext();
             worldContext.world = world;
-            worldContext.fcn = fcn;
+            worldContext.callbackFcn = callbackFcn;
             worldContext.filter = filter;
             worldContext.mover = mover;
             worldContext.origin = origin;
@@ -3007,19 +3007,19 @@ void b2World_Dump()
 }
 #endif
         /// Register the custom filter callback. This is optional.
-        public static void b2World_SetCustomFilterCallback(B2WorldId worldId, b2CustomFilterFcn fcn, object context)
+        public static void b2World_SetCustomFilterCallback(B2WorldId worldId, b2CustomFilterCallbackFcn callbackFcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
-            world.customFilterFcn = fcn;
+            world.customFilterCallbackFcn = callbackFcn;
             world.customFilterContext = context;
         }
         /// Register the pre-solve and pre-continuous callback. This is optional.
-        public static void b2World_SetPreSolveCallback(B2WorldId worldId, b2PreSolveFcn preSolveFcn, b2PreContinuousFcn preContinuousFcn, object context)
+        public static void b2World_SetPreSolveCallback(B2WorldId worldId, b2PreSolveCallbackFcn preSolveCallbackFcn, b2PreContinuousCallbackFcn preContinuousCallbackFcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
 
-            world.preSolveFcn = preSolveFcn;
-            world.preContinuousFcn = preContinuousFcn;
+            world.preSolveCallbackFcn = preSolveCallbackFcn;
+            world.preContinuousCallbackFcn = preContinuousCallbackFcn;
             world.preSolveContext = context;
         }
         /// Set the gravity vector for the entire world. Box2D has no concept of an up direction and this
@@ -3132,7 +3132,7 @@ void b2World_Dump()
             float falloff = explosionDef.falloff;
             float impulsePerLength = explosionDef.impulsePerLength;
 
-            if (B2_CHECK_INPUT(b2IsValidPosition(position)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPos(position)) == false) return;
             if (B2_CHECK_INPUT(b2IsValidFloat(radius) && radius >= 0.0f) == false) return;
             if (B2_CHECK_INPUT(b2IsValidFloat(falloff) && falloff >= 0.0f) == false) return;
             if (B2_CHECK_INPUT(b2IsValidFloat(impulsePerLength)) == false) return;

@@ -120,8 +120,8 @@ namespace Box2D.NET
         public float contactDampingRatio;
         public float contactRecycleDistance;
 
-        public b2FrictionCallback frictionCallback;
-        public b2RestitutionCallback restitutionCallback;
+        public b2FrictionCallbackFcn frictionCallbackFcn;
+        public b2RestitutionCallbackFcn restitutionCallbackFcn;
 
         public ushort generation;
 
@@ -129,16 +129,16 @@ namespace Box2D.NET
 
         public B2Capacity maxCapacity;
 
-        public b2PreSolveFcn preSolveFcn;
-        public b2PreContinuousFcn preContinuousFcn;
+        public b2PreSolveCallbackFcn preSolveCallbackFcn;
+        public b2PreContinuousCallbackFcn preContinuousCallbackFcn;
         public object preSolveContext;
 
-        public b2CustomFilterFcn customFilterFcn;
+        public b2CustomFilterCallbackFcn customFilterCallbackFcn;
         public object customFilterContext;
 
         public int workerCount;
-        public b2EnqueueTaskCallback enqueueTaskFcn;
-        public b2FinishTaskCallback finishTaskFcn;
+        public b2EnqueueTaskCallbackFcn enqueueTaskFcn;
+        public b2FinishTaskCallbackFcn finishTaskFcn;
         public object userTaskContext;
         public object userTreeTask;
         
@@ -236,8 +236,8 @@ namespace Box2D.NET
             contactDampingRatio = 0.0f;
             contactRecycleDistance = 0.0f; 
 
-            frictionCallback = null;
-            restitutionCallback = null;
+            frictionCallbackFcn = null;
+            restitutionCallbackFcn = null;
 
             generation = 0;
 
@@ -245,11 +245,11 @@ namespace Box2D.NET
 
             maxCapacity = new B2Capacity();
 
-            preSolveFcn = null;
-            preContinuousFcn = null;
+            preSolveCallbackFcn = null;
+            preContinuousCallbackFcn = null;
             preSolveContext = null;
 
-            customFilterFcn = null;
+            customFilterCallbackFcn = null;
             customFilterContext = null;
 
             workerCount = 0;

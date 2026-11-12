@@ -38,14 +38,14 @@ public class B2InvalidInputTest
     private static void BeginRejectCount()
     {
         _logCount = 0;
-        b2SetLogFcn(CountingLogFcn);
-        b2SetAssertFcn(SilentAssertFcn);
+        b2SetLogCallback(CountingLogFcn);
+        b2SetAssertCallback(SilentAssertFcn);
     }
 
     private static void EndRejectCount()
     {
-        b2SetAssertFcn(b2DefaultAssertFcn);
-        b2SetLogFcn(b2DefaultLogFcn);
+        b2SetAssertCallback(b2DefaultAssertFcn);
+        b2SetLogCallback(b2DefaultLogFcn);
     }
 
     private static void Rejects(Action call, string name)
@@ -66,7 +66,7 @@ public class B2InvalidInputTest
 
     private static bool IsBodyFinite(B2BodyId bodyId)
     {
-        return b2IsValidPosition(b2Body_GetPosition(bodyId)) && b2IsValidRotation(b2Body_GetRotation(bodyId)) &&
+        return b2IsValidPos(b2Body_GetPosition(bodyId)) && b2IsValidRot(b2Body_GetRotation(bodyId)) &&
                b2IsValidVec2(b2Body_GetLinearVelocity(bodyId)) && b2IsValidFloat(b2Body_GetAngularVelocity(bodyId));
     }
 
@@ -87,7 +87,7 @@ public class B2InvalidInputTest
         float restitutionThreshold = b2World_GetRestitutionThreshold(worldId);
         float hitEventThreshold = b2World_GetHitEventThreshold(worldId);
         float recycleDistance = b2World_GetContactRecycleDistance(worldId);
-        float maximumLinearSpeed = b2World_GetMaximumLinearSpeed(worldId);
+        float maximumLinearSpeed = b2World_GetMaxLinearSpeed(worldId);
         int restitutionIterations = b2World_GetRestitutionIterations(worldId);
 
         BeginRejectCount();
@@ -99,7 +99,7 @@ public class B2InvalidInputTest
             Rejects(() => b2World_SetRestitutionThreshold(worldId, bad), "b2World_SetRestitutionThreshold");
             Rejects(() => b2World_SetHitEventThreshold(worldId, bad), "b2World_SetHitEventThreshold");
             Rejects(() => b2World_SetContactRecycleDistance(worldId, bad), "b2World_SetContactRecycleDistance");
-            Rejects(() => b2World_SetMaximumLinearSpeed(worldId, bad), "b2World_SetMaximumLinearSpeed");
+            Rejects(() => b2World_SetMaxLinearSpeed(worldId, bad), "b2World_SetMaximumLinearSpeed");
             Rejects(() => b2World_SetContactTuning(worldId, bad, 10.0f, 3.0f), "b2World_SetContactTuning hertz");
             Rejects(() => b2World_SetContactTuning(worldId, 30.0f, bad, 3.0f), "b2World_SetContactTuning damping");
             Rejects(() => b2World_SetContactTuning(worldId, 30.0f, 10.0f, bad), "b2World_SetContactTuning speed");
@@ -116,7 +116,7 @@ public class B2InvalidInputTest
         Assert.That(b2World_GetRestitutionThreshold(worldId), Is.EqualTo(restitutionThreshold));
         Assert.That(b2World_GetHitEventThreshold(worldId), Is.EqualTo(hitEventThreshold));
         Assert.That(b2World_GetContactRecycleDistance(worldId), Is.EqualTo(recycleDistance));
-        Assert.That(b2World_GetMaximumLinearSpeed(worldId), Is.EqualTo(maximumLinearSpeed));
+        Assert.That(b2World_GetMaxLinearSpeed(worldId), Is.EqualTo(maximumLinearSpeed));
         Assert.That(b2World_GetRestitutionIterations(worldId), Is.EqualTo(restitutionIterations));
 
         b2DestroyWorld(worldId);
@@ -258,7 +258,7 @@ public class B2InvalidInputTest
 
         // The rejected geometry never reached the shape, so the proxy is still the original box
         Assert.That(b2Shape_GetType(shapeId), Is.EqualTo(B2ShapeType.b2_polygonShape));
-        Assert.That(b2IsValidAABB(b2Shape_GetAABB(shapeId)));
+        Assert.That(b2IsValidAABB(b2Shape_GetBounds(shapeId)));
         Assert.That(b2IsValidAABB(b2World_GetBounds(worldId)));
         Assert.That(b2Shape_GetDensity(shapeId), Is.EqualTo(density));
         Assert.That(b2Shape_GetFriction(shapeId), Is.EqualTo(0.4f));

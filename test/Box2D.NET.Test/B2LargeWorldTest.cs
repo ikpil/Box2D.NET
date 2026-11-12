@@ -263,7 +263,7 @@ public class B2LargeWorldTest
         // Shape level queries at the base
         data.insidePoint = b2Shape_TestPoint(shapeId, @base);
 
-        B2WorldCastOutput rayOutput = b2Shape_RayCast(shapeId, b2OffsetPos(@base, new B2Vec2(-5.0f, 0.0f)), new B2Vec2(10.0f, 0.0f));
+        B2WorldCastOutput rayOutput = b2Shape_CastRay(shapeId, b2OffsetPos(@base, new B2Vec2(-5.0f, 0.0f)), new B2Vec2(10.0f, 0.0f));
         data.shapeRayHit = rayOutput.hit;
         data.shapeRayPoint = rayOutput.point;
 

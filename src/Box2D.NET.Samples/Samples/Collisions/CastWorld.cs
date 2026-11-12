@@ -402,14 +402,14 @@ public class CastWorld : Sample
         }
         else
         {
-            b2CastResultFcn<CastContext>[] functions =
+            b2CastResultCallbackFcn<CastContext>[] functions =
             [
                 RayCastAnyCallback,
                 RayCastClosestCallback,
                 RayCastMultipleCallback,
                 RayCastSortedCallback
             ];
-            b2CastResultFcn<CastContext> modeFcn = functions[m_mode];
+            b2CastResultCallbackFcn<CastContext> modeCallbackFcn = functions[m_mode];
 
             CastContext context = new CastContext();
 
@@ -426,7 +426,7 @@ public class CastWorld : Sample
             B2ShapeProxy proxy = new B2ShapeProxy();
             if (m_castType == CastType.e_rayCast)
             {
-                b2World_CastRay(m_worldId, b2ToPos(m_rayStart), rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                b2World_CastRay(m_worldId, b2ToPos(m_rayStart), rayTranslation, b2DefaultQueryFilter(), modeCallbackFcn, context);
             }
             else
             {
@@ -443,7 +443,7 @@ public class CastWorld : Sample
                     proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
                 }
 
-                b2World_CastShape(m_worldId, b2Pos_zero, ref proxy, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                b2World_CastShape(m_worldId, b2Pos_zero, ref proxy, rayTranslation, b2DefaultQueryFilter(), modeCallbackFcn, context);
             }
 
             if (context.count > 0)

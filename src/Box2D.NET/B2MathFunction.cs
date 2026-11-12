@@ -600,7 +600,7 @@ namespace Box2D.NET
 
         /// World position interpolation for sweeps and sampling.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Pos b2LerpPosition(in B2Pos a, in B2Pos b, float t)
+        public static B2Pos b2LerpPos(in B2Pos a, in B2Pos b, float t)
         {
             return new B2Pos((1.0f - t) * a.X + t * b.X, (1.0f - t) * a.Y + t * b.Y);
         }
@@ -833,7 +833,7 @@ namespace Box2D.NET
 
         /// Is this a valid rotation? Not NaN or infinity. Is normalized.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2IsValidRotation(in B2Rot q)
+        public static bool b2IsValidRot(in B2Rot q)
         {
             if (float.IsNaN(q.s) || float.IsNaN(q.c))
             {
@@ -857,11 +857,11 @@ namespace Box2D.NET
                 return false;
             }
 
-            return b2IsValidRotation(t.q);
+            return b2IsValidRot(t.q);
         }
 
         /// Is this a valid world position? Not NaN or infinity.
-        public static bool b2IsValidPosition(in B2Pos p)
+        public static bool b2IsValidPos(in B2Pos p)
         {
             if (float.IsNaN(p.X) || float.IsNaN(p.Y))
             {
@@ -879,12 +879,12 @@ namespace Box2D.NET
         /// Is this a valid world transform? Not NaN or infinity. Rotation is normalized.
         public static bool b2IsValidWorldTransform(in B2WorldTransform t)
         {
-            if (b2IsValidPosition(t.p) == false)
+            if (b2IsValidPos(t.p) == false)
             {
                 return false;
             }
 
-            return b2IsValidRotation(t.q);
+            return b2IsValidRot(t.q);
         }
 
         /// Is this a valid bounding box? Not Nan or infinity. Upper bound greater than or equal to lower bound.

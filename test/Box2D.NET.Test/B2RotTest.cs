@@ -70,13 +70,13 @@ public class B2RotTest
     public void Test_B2Rot_Validation()
     {
         var validRot = b2MakeRot(B2_PI / 4);
-        Assert.That(b2IsValidRotation(validRot), Is.True, "Normalized rotation should be valid");
+        Assert.That(b2IsValidRot(validRot), Is.True, "Normalized rotation should be valid");
 
         var invalidRot = new B2Rot(2.0f, 0.0f);
-        Assert.That(b2IsValidRotation(invalidRot), Is.False, "Non-normalized rotation should be invalid");
+        Assert.That(b2IsValidRot(invalidRot), Is.False, "Non-normalized rotation should be invalid");
 
         var nanRot = new B2Rot(float.NaN, 0.0f);
-        Assert.That(b2IsValidRotation(nanRot), Is.False, "Rotation with NaN should be invalid");
+        Assert.That(b2IsValidRot(nanRot), Is.False, "Rotation with NaN should be invalid");
     }
 
     [Test]

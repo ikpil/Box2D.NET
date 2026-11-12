@@ -232,12 +232,12 @@ namespace Box2D.NET
                 // Custom user filter
                 if (shapeA.enableCustomFiltering || shapeB.enableCustomFiltering)
                 {
-                    b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
-                    if (customFilterFcn != null)
+                    b2CustomFilterCallbackFcn customFilterCallbackFcn = world.customFilterCallbackFcn;
+                    if (customFilterCallbackFcn != null)
                     {
                         B2ShapeId idA = new B2ShapeId(shapeIdA + 1, world.worldId, shapeA.generation);
                         B2ShapeId idB = new B2ShapeId(shapeIdB + 1, world.worldId, shapeB.generation);
-                        bool shouldCollide = customFilterFcn(idA, idB, world.customFilterContext);
+                        bool shouldCollide = customFilterCallbackFcn(idA, idB, world.customFilterContext);
                         if (shouldCollide == false)
                         {
                             continue;

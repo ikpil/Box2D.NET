@@ -42,10 +42,10 @@ namespace Box2D.NET
         public float maximumLinearSpeed;
 
         /// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
-        public b2FrictionCallback frictionCallback;
+        public b2FrictionCallbackFcn frictionCallbackFcn;
 
         /// Optional mixing callback for restitution. The default uses max(restitutionA, restitutionB).
-        public b2RestitutionCallback restitutionCallback;
+        public b2RestitutionCallbackFcn restitutionCallbackFcn;
 
         /// Can bodies go to sleep to improve performance
         public bool enableSleep;
@@ -63,10 +63,10 @@ namespace Box2D.NET
         public int workerCount;
 
         /// Function to spawn tasks
-        public b2EnqueueTaskCallback enqueueTask;
+        public b2EnqueueTaskCallbackFcn enqueueTask;
 
         /// Function to finish a task
-        public b2FinishTaskCallback finishTask;
+        public b2FinishTaskCallbackFcn finishTask;
 
         /// User context that is provided to enqueueTask and finishTask
         public object userTaskContext;

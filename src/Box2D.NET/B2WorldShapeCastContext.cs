@@ -7,7 +7,7 @@ namespace Box2D.NET
     public struct B2WorldShapeCastContext<T> where T : class
     {
         public B2World world;
-        public b2CastResultFcn<T> fcn;
+        public b2CastResultCallbackFcn<T> callbackFcn;
         public B2QueryFilter filter;
         public float fraction;
         public B2Pos origin;

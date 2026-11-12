@@ -193,8 +193,8 @@ public class B2MathTest
         B2Vec2 r = b2ToVec2(@base);
         Assert.That(r.X == 10.0f && r.Y == -20.0f, Is.True);
 
-        Assert.That(b2IsValidPosition(p), Is.True);
-        Assert.That(b2IsValidPosition(b2Pos_zero), Is.True);
+        Assert.That(b2IsValidPos(p), Is.True);
+        Assert.That(b2IsValidPos(b2Pos_zero), Is.True);
         Assert.That(b2IsValidWorldTransform(b2WorldTransform_identity), Is.True);
 
         B2WorldTransform wt = new B2WorldTransform(new B2Pos(3.0f, -4.0f), b2MakeRot(0.7f));

@@ -11,8 +11,8 @@ namespace Box2D.NET
 {
     public static class B2Buffers
     {
-        private static b2AllocFcn b2_allocFcn;
-        private static b2FreeFcn b2_freeFcn;
+        private static b2AllocCallbackFcn _b2AllocCallbackFcn;
+        private static b2FreeCallbackFcn _b2FreeCallbackFcn;
         private static B2AtomicInt b2_byteCount;
 
         public static T[] b2GrowAlloc<T>(T[] oldMem, int oldSize, int newSize) where T : new()
@@ -75,10 +75,10 @@ namespace Box2D.NET
 
         /// This allows the user to override the allocation functions. These should be
         /// set during application startup.
-        public static void b2SetAllocator(b2AllocFcn allocFcn, b2FreeFcn freeFcn)
+        public static void b2SetAllocator(b2AllocCallbackFcn allocCallbackFcn, b2FreeCallbackFcn freeCallbackFcn)
         {
-            b2_allocFcn = allocFcn;
-            b2_freeFcn = freeFcn;
+            _b2AllocCallbackFcn = allocCallbackFcn;
+            _b2FreeCallbackFcn = freeCallbackFcn;
         }
 
         public static T[] b2Alloc<T>(int size) where T : new()
@@ -158,7 +158,7 @@ namespace Box2D.NET
 
             b2TracyCFree(mem);
 
-            if (b2_freeFcn != null)
+            if (_b2FreeCallbackFcn != null)
             {
                 //b2_freeFcn(mem, size);
             }

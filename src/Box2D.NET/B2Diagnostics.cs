@@ -100,19 +100,19 @@ namespace Box2D.NET
             return 1;
         }
 
-        private static b2AssertFcn b2AssertHandler = b2DefaultAssertFcn;
+        private static b2AssertCallbackFcn _b2AssertCallbackHandler = b2DefaultAssertFcn;
 
         /// Override the default assert function
         /// @param assertFcn a non-null assert callback
-        public static void b2SetAssertFcn(b2AssertFcn assertFcn)
+        public static void b2SetAssertCallback(b2AssertCallbackFcn assertCallbackFcn)
         {
-            B2_ASSERT(assertFcn != null);
-            b2AssertHandler = assertFcn;
+            B2_ASSERT(assertCallbackFcn != null);
+            _b2AssertCallbackHandler = assertCallbackFcn;
         }
 
         public static int b2InternalAssert(string condition, string fileName, int lineNumber)
         {
-            return b2AssertHandler(condition, fileName, lineNumber);
+            return _b2AssertCallbackHandler(condition, fileName, lineNumber);
         }
 
         public static void b2DefaultLogFcn(in string message)
@@ -120,19 +120,19 @@ namespace Box2D.NET
             Console.WriteLine($"Box2D: {message}");
         }
 
-        private static b2LogFcn b2LogHandler = b2DefaultLogFcn;
+        private static b2LogCallbackFcn _b2LogCallbackHandler = b2DefaultLogFcn;
 
         /// Override the default log function
         /// @param logFcn a non-null log callback
-        public static void b2SetLogFcn(b2LogFcn logFcn)
+        public static void b2SetLogCallback(b2LogCallbackFcn logCallbackFcn)
         {
-            B2_ASSERT(logFcn != null);
-            b2LogHandler = logFcn;
+            B2_ASSERT(logCallbackFcn != null);
+            _b2LogCallbackHandler = logCallbackFcn;
         }
 
         public static void b2Log(in string format)
         {
-            b2LogHandler.Invoke(format);
+            _b2LogCallbackHandler.Invoke(format);
         }
     }
 }

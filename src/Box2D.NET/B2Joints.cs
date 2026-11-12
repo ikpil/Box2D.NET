@@ -1861,7 +1861,7 @@ namespace Box2D.NET
                 int colorIndex = joint.colorIndex;
                 if (colorIndex != B2_NULL_INDEX)
                 {
-                    B2Pos p = b2LerpPosition(pA, pB, 0.5f);
+                    B2Pos p = b2LerpPos(pA, pB, 0.5f);
                     draw.DrawPointFcn(p, 5.0f, b2GetGraphColor(colorIndex), draw.context);
                 }
             }
@@ -1870,7 +1870,7 @@ namespace Box2D.NET
             {
                 B2Vec2 force = b2GetJointConstraintForce(world, joint);
                 float torque = b2GetJointConstraintTorque(world, joint);
-                B2Pos p = b2LerpPosition(pA, pB, 0.5f);
+                B2Pos p = b2LerpPos(pA, pB, 0.5f);
 
                 draw.DrawLineFcn(p, b2OffsetPos(p, b2MulSV(0.001f, force)), B2HexColor.b2_colorAzure, draw.context);
 

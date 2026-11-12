@@ -6,7 +6,7 @@ namespace Box2D.NET
 {
     public class B2SchedulerTask
     {
-        public b2TaskCallback callback;
+        public b2TaskCallbackFcn callbackFcn;
         public object taskContext;
         public B2AtomicInt status;
     }

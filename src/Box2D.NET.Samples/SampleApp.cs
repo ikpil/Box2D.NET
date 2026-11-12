@@ -60,7 +60,7 @@ public class SampleApp
     {
         // Install memory hooks
         b2SetAllocator(AllocFcn, FreeFcn);
-        b2SetAssertFcn(AssertFcn);
+        b2SetAssertCallback(AssertFcn);
 
         _context.Load();
         _context.workerCount = b2MinInt(8, Environment.ProcessorCount / 2);

@@ -179,7 +179,7 @@ public class BenchmarkCast : Sample
         OverlapResult result = context as OverlapResult;
         if (result.count < 32)
         {
-            B2AABB aabb = b2Shape_GetAABB(shapeId);
+            B2AABB aabb = b2Shape_GetBounds(shapeId);
             result.points[result.count] = b2AABB_Center(aabb);
             result.count += 1;
         }

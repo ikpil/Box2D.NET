@@ -1272,9 +1272,9 @@ namespace Box2D.NET
 
         /// Ray cast a single shape. The ray starts at the origin and extends by the translation. The output
         /// point is a world position.
-        public static B2WorldCastOutput b2Shape_RayCast(B2ShapeId shapeId, B2Pos origin, B2Vec2 translation)
+        public static B2WorldCastOutput b2Shape_CastRay(B2ShapeId shapeId, B2Pos origin, B2Vec2 translation)
         {
-            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidPos(origin));
             B2_ASSERT(b2IsValidVec2(translation));
 
             B2World world = b2GetWorld(shapeId.world0);
@@ -1917,7 +1917,7 @@ namespace Box2D.NET
         }
 
         /// Get the current world AABB
-        public static B2AABB b2Shape_GetAABB(B2ShapeId shapeId)
+        public static B2AABB b2Shape_GetBounds(B2ShapeId shapeId)
         {
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)

@@ -135,7 +135,7 @@ public class B2TransformTest
             new B2Vec2(1.0f, 2.0f),
             b2MakeRot(B2_PI / 4)
         );
-        Assert.That(b2IsValidVec2(validTransform.p) && b2IsValidRotation(validTransform.q), 
+        Assert.That(b2IsValidVec2(validTransform.p) && b2IsValidRot(validTransform.q), 
             Is.True, "Transform with valid position and rotation should be valid");
 
         // Test invalid position (NaN)
@@ -143,7 +143,7 @@ public class B2TransformTest
             new B2Vec2(float.NaN, 2.0f),
             b2MakeRot(B2_PI / 4)
         );
-        Assert.That(b2IsValidVec2(invalidPosTransform.p) && b2IsValidRotation(invalidPosTransform.q), 
+        Assert.That(b2IsValidVec2(invalidPosTransform.p) && b2IsValidRot(invalidPosTransform.q), 
             Is.False, "Transform with NaN position should be invalid");
 
         // Test invalid rotation (not normalized)
@@ -151,7 +151,7 @@ public class B2TransformTest
             new B2Vec2(1.0f, 2.0f),
             new B2Rot(2.0f, 0.0f)  // Not normalized
         );
-        Assert.That(b2IsValidVec2(invalidRotTransform.p) && b2IsValidRotation(invalidRotTransform.q), 
+        Assert.That(b2IsValidVec2(invalidRotTransform.p) && b2IsValidRot(invalidRotTransform.q), 
             Is.False, "Transform with non-normalized rotation should be invalid");
     }
 } 

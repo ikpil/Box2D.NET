@@ -148,7 +148,7 @@ public class FootSensor : Sample
         for (int i = 0; i < count; ++i)
         {
             B2ShapeId shapeId = m_visitorIds[i];
-            B2AABB aabb = b2Shape_GetAABB(shapeId);
+            B2AABB aabb = b2Shape_GetBounds(shapeId);
             B2Vec2 point = b2AABB_Center(aabb);
             DrawPoint(m_draw, point, 10.0f, B2HexColor.b2_colorWhite);
         }

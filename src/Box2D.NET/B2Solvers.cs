@@ -268,12 +268,12 @@ namespace Box2D.NET
             // Custom user filtering
             if (shape.enableCustomFiltering || fastShape.enableCustomFiltering)
             {
-                b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
-                if (customFilterFcn != null)
+                b2CustomFilterCallbackFcn customFilterCallbackFcn = world.customFilterCallbackFcn;
+                if (customFilterCallbackFcn != null)
                 {
                     B2ShapeId idA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                     B2ShapeId idB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
-                    canCollide = customFilterFcn(idA, idB, world.customFilterContext);
+                    canCollide = customFilterCallbackFcn(idA, idB, world.customFilterContext);
                     if (canCollide == false)
                     {
                         return true;
@@ -385,14 +385,14 @@ namespace Box2D.NET
                     }
                 }
 
-                if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preContinuousFcn != null)
+                if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preContinuousCallbackFcn != null)
                 {
                     B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                     B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
 
                     // TOI runs in the base frame, lift the hit point back to world for the callback
                     B2Pos worldPoint = b2OffsetPos(continuousContext.@base, output.point);
-                    didHit = world.preContinuousFcn(shapeIdA, shapeIdB, worldPoint, output.normal, world.preSolveContext);
+                    didHit = world.preContinuousCallbackFcn(shapeIdA, shapeIdB, worldPoint, output.normal, world.preSolveContext);
                 }
 
                 if (didHit)

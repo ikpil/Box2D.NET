@@ -296,8 +296,8 @@ namespace Box2D.NET
         public static B2BodyId b2CreateBody(B2WorldId worldId, in B2BodyDef def)
         {
             B2_CHECK_DEF(def);
-            if (B2_CHECK_INPUT(b2IsValidPosition(def.position)) == false) return b2_nullBodyId;
-            if (B2_CHECK_INPUT(b2IsValidRotation(def.rotation)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidPos(def.position)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidRot(def.rotation)) == false) return b2_nullBodyId;
             if (B2_CHECK_INPUT(b2IsValidVec2(def.linearVelocity)) == false) return b2_nullBodyId;
             if (B2_CHECK_INPUT(b2IsValidFloat(def.angularVelocity)) == false) return b2_nullBodyId;
             if (B2_CHECK_INPUT(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f) == false) return b2_nullBodyId;
@@ -610,7 +610,7 @@ namespace Box2D.NET
         }
         /// Get the current world AABB that contains all the attached shapes. Note that this may not encompass the body origin.
         /// If there are no shapes attached then the returned AABB is empty and centered on the body origin.
-        public static B2AABB b2Body_ComputeAABB(B2BodyId bodyId)
+        public static B2AABB b2Body_ComputeBounds(B2BodyId bodyId)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -851,8 +851,8 @@ namespace Box2D.NET
         /// @see b2BodyDef::position and b2BodyDef::rotation
         public static void b2Body_SetTransform(B2BodyId bodyId, B2Pos position, B2Rot rotation)
         {
-            if (B2_CHECK_INPUT(b2IsValidPosition(position)) == false) return;
-            if (B2_CHECK_INPUT(b2IsValidRotation(rotation)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPos(position)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidRot(rotation)) == false) return;
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
             B2_ASSERT(world.locked == false);
@@ -1094,7 +1094,7 @@ namespace Box2D.NET
         public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Pos point, bool wake)
         {
             if (B2_CHECK_INPUT(b2IsValidVec2(force)) == false) return;
-            if (B2_CHECK_INPUT(b2IsValidPosition(point)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPos(point)) == false) return;
 
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1202,7 +1202,7 @@ namespace Box2D.NET
         public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Pos point, bool wake)
         {
             if (B2_CHECK_INPUT(b2IsValidVec2(impulse)) == false) return;
-            if (B2_CHECK_INPUT(b2IsValidPosition(point)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPos(point)) == false) return;
 
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1841,7 +1841,7 @@ namespace Box2D.NET
             return body.setIndex != (int)B2SolverSetType.b2_disabledSet;
         }
         /// Returns true if sleeping is enabled for this body
-        public static bool b2Body_IsSleepEnabled(B2BodyId bodyId)
+        public static bool b2Body_IsSleepingEnabled(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1891,7 +1891,7 @@ namespace Box2D.NET
             return body.safetyFactor;
         }
         /// Enable or disable sleeping for this body. If sleeping is disabled the body will wake (and the entire island).
-        public static void b2Body_EnableSleep(B2BodyId bodyId, bool enableSleep)
+        public static void b2Body_EnableSleeping(B2BodyId bodyId, bool enableSleep)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -2357,7 +2357,7 @@ namespace Box2D.NET
         }
 
         /// The maximum distance from any point on the body shapes to the body origin. Conservative.
-        public static float b2Body_GetMaxExtentOrigin(B2BodyId bodyId)
+        public static float b2Body_GetMaxExtentFromOrigin(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);

@@ -344,8 +344,8 @@ public class B2WorldTest
 
         b2World_SetContactTuning(worldId, 10.0f, 2.0f, 4.0f);
 
-        b2World_SetMaximumLinearSpeed(worldId, 10.0f);
-        value = b2World_GetMaximumLinearSpeed(worldId);
+        b2World_SetMaxLinearSpeed(worldId, 10.0f);
+        value = b2World_GetMaxLinearSpeed(worldId);
         Assert.That(value, Is.EqualTo(10.0f));
 
         b2World_EnableWarmStarting(worldId, true);
@@ -603,10 +603,10 @@ public class B2WorldTest
         bodyDef.enableSleep = false;
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
-        Assert.That(b2Body_IsSleepEnabled(bodyId), Is.False);
+        Assert.That(b2Body_IsSleepingEnabled(bodyId), Is.False);
 
-        b2Body_EnableSleep(bodyId, true);
-        Assert.That(b2Body_IsSleepEnabled(bodyId), Is.True);
+        b2Body_EnableSleeping(bodyId, true);
+        Assert.That(b2Body_IsSleepingEnabled(bodyId), Is.True);
 
         b2World_Step(worldId, 1.0f / 60.0f, 4);
 
@@ -1447,7 +1447,7 @@ public class B2WorldTest
 
         // The fat boxes overlap across a tenth of a meter, well past the speculative distance
         B2BodyId mover = CreateLocatorBox(worldId, B2BodyType.b2_kinematicBody, 1.1f, 0.5f);
-        b2Body_EnableSleep(mover, false);
+        b2Body_EnableSleeping(mover, false);
 
         Assert.That(StepUntilAsleep(worldId, sleeper, 600), Is.True);
         Assert.That(b2Body_IsAwake(mover), Is.True);
@@ -1521,7 +1521,7 @@ public class B2WorldTest
         B2BodyId right = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 5.0f, 0.5f);
 
         B2BodyId watcher = CreateLocatorBox(worldId, B2BodyType.b2_kinematicBody, -3.9f, 0.5f);
-        b2Body_EnableSleep(watcher, false);
+        b2Body_EnableSleeping(watcher, false);
 
         Assert.That(StepUntilAsleep(worldId, left, 600), Is.True);
         Assert.That(b2Body_IsAwake(right), Is.False);
@@ -1569,10 +1569,10 @@ public class B2WorldTest
         StepLocatorWorld(worldId, 4);
         Assert.That(b2Body_GetPosition(bullet).X, Is.GreaterThan(2.0f));
 
-        b2Body_EnableSleep(bullet, false);
+        b2Body_EnableSleeping(bullet, false);
         StepLocatorWorld(worldId, 4);
 
-        b2Body_EnableSleep(bullet, true);
+        b2Body_EnableSleeping(bullet, true);
         StepLocatorWorld(worldId, 30);
 
         // It stopped at the wall instead of tunneling through

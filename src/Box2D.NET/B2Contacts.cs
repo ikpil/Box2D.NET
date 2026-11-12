@@ -299,23 +299,23 @@ namespace Box2D.NET
             contactSim.manifold = new B2Manifold();
 
             // These get updated in the narrow phase, but these are needed for first touch
-            if (world.frictionCallback == null)
+            if (world.frictionCallbackFcn == null)
             {
                 contactSim.friction = b2MixFriction(shapeA.material.friction, shapeB.material.friction);
             }
             else
             {
-                contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
+                contactSim.friction = world.frictionCallbackFcn(shapeA.material.friction, shapeA.material.userMaterialId,
                     shapeB.material.friction, shapeB.material.userMaterialId);
             }
 
-            if (world.restitutionCallback == null)
+            if (world.restitutionCallbackFcn == null)
             {
                 contactSim.restitution = b2MixRestitution(shapeA.material.restitution, shapeB.material.restitution);
             }
             else
             {
-                contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
+                contactSim.restitution = world.restitutionCallbackFcn(shapeA.material.restitution, shapeA.material.userMaterialId,
                     shapeB.material.restitution, shapeB.material.userMaterialId);
             }
 
@@ -511,23 +511,23 @@ namespace Box2D.NET
             }
 
             // Keep these updated in case the values on the shapes are modified
-            if (world.frictionCallback == null)
+            if (world.frictionCallbackFcn == null)
             {
                 contactSim.friction = b2MixFriction(shapeA.material.friction, shapeB.material.friction);
             }
             else
             {
-                contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
+                contactSim.friction = world.frictionCallbackFcn(shapeA.material.friction, shapeA.material.userMaterialId,
                     shapeB.material.friction, shapeB.material.userMaterialId);
             }
 
-            if (world.restitutionCallback == null)
+            if (world.restitutionCallbackFcn == null)
             {
                 contactSim.restitution = b2MixRestitution(shapeA.material.restitution, shapeB.material.restitution);
             }
             else
             {
-                contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
+                contactSim.restitution = world.restitutionCallbackFcn(shapeA.material.restitution, shapeA.material.userMaterialId,
                     shapeB.material.restitution, shapeB.material.userMaterialId);
             }
 
@@ -549,13 +549,13 @@ namespace Box2D.NET
             int pointCount = contactSim.manifold.pointCount;
             bool touching = pointCount > 0;
 
-            if (touching && world.preSolveFcn != null && (contactSim.simFlags & (uint)B2ContactFlags.b2_simEnablePreSolveEvents) != 0)
+            if (touching && world.preSolveCallbackFcn != null && (contactSim.simFlags & (uint)B2ContactFlags.b2_simEnablePreSolveEvents) != 0)
             {
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
                 // This call assumes thread safety.
-                world.preSolveFcn(shapeIdA, shapeIdB, ref contactSim.manifold, world.preSolveContext);
+                world.preSolveCallbackFcn(shapeIdA, shapeIdB, ref contactSim.manifold, world.preSolveContext);
 
                 // Keep these current.
                 pointCount = contactSim.manifold.pointCount;
