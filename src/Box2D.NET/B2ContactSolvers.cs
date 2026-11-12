@@ -871,12 +871,7 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 b2NegW(in Vector4 a)
         {
-#if NET8_0_OR_GREATER
-            // Flip the sign bit, like scalar negation. Zero - a would turn -0 into +0.
-            return Vector128.Xor(a.AsVector128(), Vector128.Create(-0.0f)).AsVector4();
-#else
-            return new Vector4(-a.X, -a.Y, -a.Z, -a.W);
-#endif
+            return Vector4.Negate(a);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
