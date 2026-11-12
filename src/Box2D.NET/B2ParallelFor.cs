@@ -55,7 +55,7 @@ namespace Box2D.NET
         // up to world->workerCount tasks are enqueued, and each task loops, atomically
         // claiming the next unclaimed block until the range is drained. Blocks the
         // caller until all work is complete. minRange is the minimum block size; block
-        // size grows once itemCount exceeds 4 * workerCount * minRange so block count
+        // size grows once itemCount exceeds 8 * workerCount * minRange so block count
         // stays bounded.
         public static void b2ParallelFor(B2World world, b2ParallelForCallback callback, int itemCount, int minRange, object context)
         {
@@ -72,7 +72,7 @@ namespace Box2D.NET
             // Target multiple blocks per worker to reduce thread stalls.
             // block size grows once items exceed maxBlockCount * minRange
             // so the block count stays bounded and per-block sync overhead stays low.
-            int blocksPerWorker = 4;
+            int blocksPerWorker = 8;
             int maxBlockCount = blocksPerWorker * workerCount;
 
             int blockSize;

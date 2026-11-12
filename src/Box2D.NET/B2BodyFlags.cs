@@ -34,7 +34,7 @@ namespace Box2D.NET
         b2_allowFastRotation = 0x00000080,
 
         // This body need's to have its AABB increased
-        b2_enlargeBounds = 0x00000100,
+        b2_enlargeBulletBounds = 0x00000100,
         
         // This body is dynamic so the solver should write to it.
         // This prevents writing to kinematic bodies that causes a multithreaded sharing

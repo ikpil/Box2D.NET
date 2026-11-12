@@ -271,6 +271,7 @@ namespace Box2D.NET
             world.shapeIdPool = b2CreateIdPool();
             int shapeCapacity = b2MaxInt(16, def.capacity.staticShapeCount + def.capacity.dynamicShapeCount);
             world.shapes = b2Array_Create<B2Shape>(shapeCapacity);
+            world.fatAABBs = b2Array_Create<B2AABB>(shapeCapacity);
 
             world.chainIdPool = b2CreateIdPool();
             world.chainShapes = b2Array_Create<B2ChainShape>(4);
@@ -431,6 +432,7 @@ namespace Box2D.NET
 
             b2Array_Destroy(ref world.bodies);
             b2Array_Destroy(ref world.shapes);
+            b2Array_Destroy(ref world.fatAABBs);
             b2Array_Destroy(ref world.chainShapes);
             b2Array_Destroy(ref world.contacts);
             b2Array_Destroy(ref world.joints);
@@ -482,6 +484,22 @@ namespace Box2D.NET
             return a.c * b.c + a.s * b.s;
         }
 
+        private static B2BodySim b2ResolveContactBodySim(B2World world, B2BodySim[] awakeSims, B2BodySim[] staticSims, int encodedIndex,
+            int bodyId)
+        {
+            if (encodedIndex >= 0)
+            {
+                return awakeSims[encodedIndex];
+            }
+
+            if (b2IsStaticSimIndex(encodedIndex))
+            {
+                return staticSims[-encodedIndex - 2];
+            }
+
+            return b2GetBodySim(world, b2Array_Get(ref world.bodies, bodyId));
+        }
+
         internal static void b2CollideTask(int startIndex, int endIndex, int workerIndex, object context)
         {
             b2TracyCZoneNC(B2TracyCZone.collide_task, "Collide", B2HexColor.b2_colorDodgerBlue, true);
@@ -489,12 +507,25 @@ namespace Box2D.NET
             B2StepContext stepContext = context as B2StepContext;
             B2World world = stepContext.world;
             B2TaskContext taskContext = world.taskContexts.data[workerIndex];
-            ArraySegment<B2ContactSim> contactSims = stepContext.contactSims;
+            B2ContactCollideSpan[] spans = stepContext.collideSpans;
             B2Shape[] shapes = world.shapes.data;
-            B2Body[] bodies = world.bodies.data;
-            B2BodyState[] states = world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].bodyStates.data;
+            B2AABB[] fatAABBs = world.fatAABBs.data;
+            B2SolverSet[] solverSets = world.solverSets.data;
+            B2BodySim[] awakeSims = solverSets[(int)B2SolverSetType.b2_awakeSet].bodySims.data;
+            B2BodySim[] staticSims = solverSets[(int)B2SolverSetType.b2_staticSet].bodySims.data;
+            B2BodyState[] states = solverSets[(int)B2SolverSetType.b2_awakeSet].bodyStates.data;
 
             B2_ASSERT(startIndex < endIndex);
+
+            int spanIndex = 0;
+            while (spans[spanIndex + 1].start <= startIndex)
+            {
+                spanIndex += 1;
+            }
+
+            int spanStart = spans[spanIndex].start;
+            int spanEnd = spans[spanIndex + 1].start;
+            B2ContactSim[] spanBase = spans[spanIndex].contacts;
 
             float recycleDistance = world.contactRecycleDistance;
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
@@ -502,15 +533,22 @@ namespace Box2D.NET
 
             for (int contactIndex = startIndex; contactIndex < endIndex; ++contactIndex)
             {
-                B2ContactSim contactSim = contactSims[contactIndex];
+                if (contactIndex == spanEnd)
+                {
+                    spanIndex += 1;
+                    spanStart = spans[spanIndex].start;
+                    spanEnd = spans[spanIndex + 1].start;
+                    spanBase = spans[spanIndex].contacts;
+                }
+
+                B2ContactSim contactSim = spanBase[contactIndex - spanStart];
 
                 int contactId = contactSim.contactId;
-
-                B2Shape shapeA = shapes[contactSim.shapeIdA];
-                B2Shape shapeB = shapes[contactSim.shapeIdB];
+                int shapeIdA = contactSim.shapeIdA;
+                int shapeIdB = contactSim.shapeIdB;
 
                 // Do proxies still overlap?
-                bool overlap = b2AABB_Overlaps(shapeA.fatAABB, shapeB.fatAABB);
+                bool overlap = b2AABB_Overlaps(fatAABBs[shapeIdA], fatAABBs[shapeIdB]);
                 if (overlap == false)
                 {
                     contactSim.simFlags |= (uint)B2ContactFlags.b2_simDisjoint;
@@ -519,26 +557,26 @@ namespace Box2D.NET
                 }
                 else
                 {
+                    B2Shape shapeA = shapes[shapeIdA];
+                    B2Shape shapeB = shapes[shapeIdB];
+
                     bool wasTouching = 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simTouchingFlag);
 
                     // Update contact respecting shape/body order (A,B)
-                    B2Body bodyA = bodies[shapeA.bodyId];
-                    B2Body bodyB = bodies[shapeB.bodyId];
-                    B2BodySim bodySimA = b2GetBodySim(world, bodyA);
-                    B2BodySim bodySimB = b2GetBodySim(world, bodyB);
+                    int encodedA = contactSim.encodedBodySimA;
+                    int encodedB = contactSim.encodedBodySimB;
+                    B2BodySim bodySimA = b2ResolveContactBodySim(world, awakeSims, staticSims, encodedA, shapeA.bodyId);
+                    B2BodySim bodySimB = b2ResolveContactBodySim(world, awakeSims, staticSims, encodedB, shapeB.bodyId);
                     B2WorldTransform transformA = bodySimA.transform;
                     B2WorldTransform transformB = bodySimB.transform;
 
                     // These may not be skipped by relative transform check below
-                    contactSim.bodySimIndexA = bodyA.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyA.localIndex : B2_NULL_INDEX;
                     contactSim.invMassA = bodySimA.invMass;
                     contactSim.invIA = bodySimA.invInertia;
-
-                    contactSim.bodySimIndexB = bodyB.setIndex == (int)B2SolverSetType.b2_awakeSet ? bodyB.localIndex : B2_NULL_INDEX;
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
-                    bool isFast = 0 != (bodyA.flags & (uint)B2BodyFlags.b2_isFast) || 0 != (bodyB.flags & (uint)B2BodyFlags.b2_isFast);
+                    bool isFast = ((bodySimA.flags | bodySimB.flags) & (uint)B2BodyFlags.b2_isFast) != 0;
 
                     // Contact recycling optimization. Please cite this code if you use this optimization.
                     // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
@@ -555,8 +593,8 @@ namespace Box2D.NET
                         float cosB = b2RelativeCos(transformB.q, cachedQB);
                         float minCos = b2MinFloat(cosA, cosB);
 
-                        float maxExtentA = bodyA.type == B2BodyType.b2_staticBody ? 0.0f : bodySimA.maxExtent;
-                        float maxExtentB = bodyB.type == B2BodyType.b2_staticBody ? 0.0f : bodySimB.maxExtent;
+                        float maxExtentA = b2IsStaticSimIndex(encodedA) ? 0.0f : bodySimA.maxExtent;
+                        float maxExtentB = b2IsStaticSimIndex(encodedB) ? 0.0f : bodySimB.maxExtent;
                         float maxExtent = b2MaxFloat(maxExtentA, maxExtentB);
                         float distance = b2Distance(xf.p, xfc.p);
                         B2Rot qr = b2InvMulRot(xf.q, xfc.q);
@@ -593,7 +631,7 @@ namespace Box2D.NET
                                     mp.restitutionVelocity = 0.0f;
                                 }
 
-                                int indexA = contactSim.bodySimIndexA;
+                                int indexA = b2DecodeAwakeIndex(encodedA);
                                 B2Vec2 vrA = b2Vec2_zero;
                                 if (indexA != B2_NULL_INDEX)
                                 {
@@ -601,7 +639,7 @@ namespace Box2D.NET
                                     vrA = b2Add(stateA.linearVelocity, b2CrossSV(stateA.angularVelocity, mp.anchorA));
                                 }
 
-                                int indexB = contactSim.bodySimIndexB;
+                                int indexB = b2DecodeAwakeIndex(encodedB);
                                 B2Vec2 vrB = b2Vec2_zero;
                                 if (indexB != B2_NULL_INDEX)
                                 {
@@ -610,7 +648,6 @@ namespace Box2D.NET
                                 }
 
                                 mp.normalVelocity = b2Dot(contactSim.manifold.normal, b2Sub(vrB, vrA));
-
                                 mp.persisted = true;
                             }
 
@@ -655,7 +692,7 @@ namespace Box2D.NET
                             mp.baseSeparation = mp.separation;
 
                             // Save relative velocity for restitution and hit events reporting.
-                            int indexA = contactSim.bodySimIndexA;
+                            int indexA = b2DecodeAwakeIndex(encodedA);
                             B2Vec2 vrA = b2Vec2_zero;
                             if (indexA != B2_NULL_INDEX)
                             {
@@ -663,7 +700,7 @@ namespace Box2D.NET
                                 vrA = b2Add(stateA.linearVelocity, b2CrossSV(stateA.angularVelocity, mp.anchorA));
                             }
 
-                            int indexB = contactSim.bodySimIndexB;
+                            int indexB = b2DecodeAwakeIndex(encodedB);
                             B2Vec2 vrB = b2Vec2_zero;
                             if (indexB != B2_NULL_INDEX)
                             {
@@ -746,33 +783,37 @@ namespace Box2D.NET
                 return;
             }
 
-            ArraySegment<B2ContactSim> contactSims = b2StackAlloc<B2ContactSim>(world.stack, contactCount, "contacts");
-
+            B2ContactCollideSpan[] collideSpans = new B2ContactCollideSpan[B2_GRAPH_COLOR_COUNT + 2];
+            int spanCount = 0;
             int contactIndex = 0;
             for (int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i)
             {
                 ref B2GraphColor color = ref graphColors[i];
                 int count = color.contactSims.count;
-                B2ContactSim[] @base = color.contactSims.data;
-                for (int j = 0; j < count; ++j)
+                if (count > 0)
                 {
-                    contactSims[contactIndex] = @base[j];
-                    contactIndex += 1;
+                    collideSpans[spanCount].start = contactIndex;
+                    collideSpans[spanCount].contacts = color.contactSims.data;
+                    spanCount += 1;
+                    contactIndex += count;
                 }
             }
 
+            if (nonTouchingCount > 0)
             {
-                B2ContactSim[] @base = world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims.data;
-                for (int i = 0; i < nonTouchingCount; ++i)
-                {
-                    contactSims[contactIndex] = @base[i];
-                    contactIndex += 1;
-                }
+                collideSpans[spanCount].start = contactIndex;
+                collideSpans[spanCount].contacts = world.solverSets.data[(int)B2SolverSetType.b2_awakeSet].contactSims.data;
+                spanCount += 1;
+                contactIndex += nonTouchingCount;
             }
 
             B2_ASSERT(contactIndex == contactCount);
+            B2_ASSERT(spanCount <= B2_GRAPH_COLOR_COUNT + 1);
 
-            context.contactSims = contactSims;
+            collideSpans[spanCount].start = contactCount;
+            collideSpans[spanCount].contacts = null;
+
+            context.collideSpans = collideSpans;
 
             // Contact bit set on ids because contact pointers are unstable as they move between touching and not touching.
             int contactIdCapacity = b2GetIdCapacity(world.contactIdPool);
@@ -786,12 +827,9 @@ namespace Box2D.NET
             int minRange = 64;
             b2ParallelFor(world, b2CollideTask, contactCount, minRange, context);
 
-            b2StackFree(world.stack, contactSims);
-            context.contactSims = null;
-            contactSims = null;
+            context.collideSpans = null;
 
             // Serially update contact state
-            // todo_erin bring this zone together with island merge
             b2TracyCZoneNC(B2TracyCZone.contact_state, "Contact State", B2HexColor.b2_colorLightSlateGray, true);
 
             // Bitwise OR all contact bits
@@ -836,17 +874,6 @@ namespace Box2D.NET
                         contactSim = b2Array_Get(ref awakeSet.contactSims, localIndex);
                     }
 
-                    B2Shape shapeA = shapes[contact.shapeIdA];
-                    B2Shape shapeB = shapes[contact.shapeIdB];
-                    B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
-                    B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
-                    B2ContactId contactFullId = new B2ContactId(
-                        index1: contactId + 1,
-                        world0: worldId,
-                        padding: 0,
-                        generation: contact.generation
-                    );
-
                     uint flags = contact.flags;
                     uint simFlags = contactSim.simFlags;
 
@@ -863,6 +890,17 @@ namespace Box2D.NET
 
                         if (0 != (flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
+                            B2Shape shapeA = shapes[contact.shapeIdA];
+                            B2Shape shapeB = shapes[contact.shapeIdB];
+                            B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
+                            B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
+                            B2ContactId contactFullId = new B2ContactId(
+                                index1: contactId + 1,
+                                world0: worldId,
+                                padding: 0,
+                                generation: contact.generation
+                            );
+
                             B2ContactBeginTouchEvent @event = new B2ContactBeginTouchEvent(shapeIdA, shapeIdB, contactFullId);
                             b2Array_Push(ref world.contactBeginEvents, @event);
                         }
@@ -899,6 +937,17 @@ namespace Box2D.NET
 
                         if (0 != (contact.flags & (uint)B2ContactFlags.b2_contactEnableContactEvents))
                         {
+                            B2Shape shapeA = shapes[contact.shapeIdA];
+                            B2Shape shapeB = shapes[contact.shapeIdB];
+                            B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
+                            B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);
+                            B2ContactId contactFullId = new B2ContactId(
+                                index1: contactId + 1,
+                                world0: worldId,
+                                padding: 0,
+                                generation: contact.generation
+                            );
+
                             B2ContactEndTouchEvent @event = new B2ContactEndTouchEvent(shapeIdA, shapeIdB, contactFullId);
                             b2Array_Push(ref world.contactEndEvents[endEventArrayIndex], @event);
                         }
@@ -1209,7 +1258,7 @@ namespace Box2D.NET
 
             if (draw.drawBounds)
             {
-                draw.DrawBoundsFcn(shape.fatAABB, B2HexColor.b2_colorGold, draw.context);
+                draw.DrawBoundsFcn(world.fatAABBs.data[shapeId], B2HexColor.b2_colorGold, draw.context);
             }
 
             return true;
@@ -1449,7 +1498,7 @@ namespace Box2D.NET
                                 while (shapeId != B2_NULL_INDEX)
                                 {
                                     B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                                    aabb = b2AABB_Union(aabb, shape.fatAABB);
+                                    aabb = b2AABB_Union(aabb, world.fatAABBs.data[shapeId]);
                                     shapeCount += 1;
                                     shapeId = shape.nextShapeId;
                                 }
@@ -3291,6 +3340,7 @@ void b2World_Dump()
 
                             uint syncedFlags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
                             B2_ASSERT((bodySim.flags & syncedFlags) == syncedFlags);
+                            B2_ASSERT((bodySim.flags & (uint)B2BodyFlags.b2_isFast) == (body.flags & (uint)B2BodyFlags.b2_isFast));
 
                             B2BodyState bodyState = b2GetBodyState(world, body);
                             if (bodyState != null)
@@ -3411,6 +3461,11 @@ void b2World_Dump()
                             B2_ASSERT(contact.setIndex == setIndex);
                             B2_ASSERT(contact.colorIndex == B2_NULL_INDEX);
                             B2_ASSERT(contact.localIndex == i);
+
+                            B2Body edgeBodyA = b2Array_Get(ref world.bodies, contact.edges[0].bodyId);
+                            B2Body edgeBodyB = b2Array_Get(ref world.bodies, contact.edges[1].bodyId);
+                            B2_ASSERT(contactSim.encodedBodySimA == b2EncodeBodySimIndex(edgeBodyA));
+                            B2_ASSERT(contactSim.encodedBodySimB == b2EncodeBodySimIndex(edgeBodyB));
                         }
                     }
 
@@ -3482,16 +3537,18 @@ void b2World_Dump()
                     int bodyIdA = contact.edges[0].bodyId;
                     int bodyIdB = contact.edges[1].bodyId;
 
+                    B2Body edgeBodyA = b2Array_Get(ref world.bodies, bodyIdA);
+                    B2Body edgeBodyB = b2Array_Get(ref world.bodies, bodyIdB);
+                    B2_ASSERT(contactSim.encodedBodySimA == b2EncodeBodySimIndex(edgeBodyA));
+                    B2_ASSERT(contactSim.encodedBodySimB == b2EncodeBodySimIndex(edgeBodyB));
+
                     if (colorIndex < B2_OVERFLOW_INDEX)
                     {
-                        B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-                        B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (edgeBodyA.type == B2BodyType.b2_dynamicBody));
+                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (edgeBodyB.type == B2BodyType.b2_dynamicBody));
 
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdA) == (bodyA.type == B2BodyType.b2_dynamicBody));
-                        B2_ASSERT(b2GetBit(ref color.bodySet, bodyIdB) == (bodyB.type == B2BodyType.b2_dynamicBody));
-
-                        bitCount += bodyA.type == B2BodyType.b2_dynamicBody ? 1 : 0;
-                        bitCount += bodyB.type == B2BodyType.b2_dynamicBody ? 1 : 0;
+                        bitCount += edgeBodyA.type == B2BodyType.b2_dynamicBody ? 1 : 0;
+                        bitCount += edgeBodyB.type == B2BodyType.b2_dynamicBody ? 1 : 0;
                     }
                 }
 

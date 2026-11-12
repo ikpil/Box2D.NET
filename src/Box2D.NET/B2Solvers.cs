@@ -404,7 +404,6 @@ namespace Box2D.NET
 
                 if (didHit)
                 {
-                    fastBodySim.flags |= (uint)B2BodyFlags.b2_hadTimeOfImpact;
                     continuousContext.fraction = hitFraction;
                 }
             }
@@ -508,6 +507,8 @@ namespace Box2D.NET
                 ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
                 @event.transform = fastBodySim.transform;
 
+                fastBody.flags |= (uint)B2BodyFlags.b2_hadTimeOfImpact;
+
                 // Prepare AABBs for broad-phase.
                 // Even though a body is fast, it may not move much. So the AABB may not need enlargement.
 
@@ -520,7 +521,8 @@ namespace Box2D.NET
                     B2AABB aabb = b2ComputeFatShapeAABB(shape, fastBodySim.transform, speculativeDistance);
                     shape.aabb = aabb;
 
-                    if (b2AABB_Contains(shape.fatAABB, aabb) == false)
+                    ref B2AABB shapeFatAABB = ref world.fatAABBs.data[shapeId];
+                    if (b2AABB_Contains(shapeFatAABB, aabb) == false)
                     {
                         float margin = shape.aabbMargin;
                         B2AABB fatAABB;
@@ -528,15 +530,17 @@ namespace Box2D.NET
                         fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
                         fatAABB.upperBound.X = aabb.upperBound.X + margin;
                         fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
-                        shape.fatAABB = fatAABB;
-
-                        fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
+                        shapeFatAABB = fatAABB;
 
                         // Regular bodies mark the hierarchy as enlarged using atomic operations.
                         // Bullets are handled separately at a later stage.
                         if (isBullet == false)
                         {
                             b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
+                        }
+                        else
+                        {
+                            fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBulletBounds;
                         }
                     }
 
@@ -559,27 +563,27 @@ namespace Box2D.NET
 
                     // shape.aabb is still valid from above
 
-                    if (b2AABB_Contains(shape.fatAABB, shape.aabb) == false)
+                    ref B2AABB shapeFatAABB = ref world.fatAABBs.data[shapeId];
+                    if (b2AABB_Contains(shapeFatAABB, shape.aabb) == false)
                     {
                         float margin = shape.aabbMargin;
 
                         // Note: far from the origin the margin can be snapped to the nearest ULP.
                         // This relevant for DP mode. So we lose the broad-phase hysteresis.
-                        // todo consider using b2Expand to ensure at least one ULP of margin.
                         B2AABB fatAABB;
                         fatAABB.lowerBound.X = shape.aabb.lowerBound.X - margin;
                         fatAABB.lowerBound.Y = shape.aabb.lowerBound.Y - margin;
                         fatAABB.upperBound.X = shape.aabb.upperBound.X + margin;
                         fatAABB.upperBound.Y = shape.aabb.upperBound.Y + margin;
-                        shape.fatAABB = fatAABB;
+                        shapeFatAABB = fatAABB;
 
-                        fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
-
-                        // Regular bodies mark the hierarchy as enlarged using atomic operations.
-                        // Bullets are handled separately at a later stage.
                         if (isBullet == false)
                         {
                             b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
+                        }
+                        else
+                        {
+                            fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBulletBounds;
                         }
                     }
 
@@ -679,10 +683,13 @@ namespace Box2D.NET
                 // If you hit this then it means you deferred mass computation but never called b2Body_UpdateMassFromShapes
                 B2_ASSERT((body.flags & (uint)B2BodyFlags.b2_dirtyMass) == 0);
 
+                // Clear the transient flags (fast, speed capped, had TOI). These flags are conditionally set
+                // as part of the code below.
                 body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
-                body.flags |= (sim.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
-                body.flags |= (state.flags & (uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact));
                 sim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+
+                // The body state flag knows about speed capping (used for debug draw).
+                body.flags |= (state.flags & (uint)B2BodyFlags.b2_isSpeedCapped);
                 state.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
 
                 if (enableSleep == false || (body.flags & (uint)B2BodyFlags.b2_enableSleep) == 0 || sleepVelocity > body.sleepThreshold)
@@ -696,9 +703,10 @@ namespace Box2D.NET
                     {
                         // This flag is used for debug draw and contact recycling.
                         body.flags |= (uint)B2BodyFlags.b2_isFast;
+                        sim.flags |= (uint)B2BodyFlags.b2_isFast;
 
-                        // Store in fast array for the continuous collision stage
-                        // This is deterministic because the order of TOI sweeps doesn't matter
+                        // Store fast bullets for processing later.
+                        // This is deterministic because the order of TOI sweeps doesn't matter.
                         if (0 != (sim.flags & (uint)B2BodyFlags.b2_isBullet))
                         {
                             int bulletIndex = b2AtomicFetchAddInt(ref stepContext.bulletBodyCount, 1);
@@ -769,7 +777,8 @@ namespace Box2D.NET
                         B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
                         shape.aabb = aabb;
 
-                        if (b2AABB_Contains(shape.fatAABB, aabb) == false)
+                        ref B2AABB shapeFatAABB = ref world.fatAABBs.data[shapeId];
+                        if (b2AABB_Contains(shapeFatAABB, aabb) == false)
                         {
                             float margin = shape.aabbMargin;
                             B2AABB fatAABB;
@@ -777,7 +786,7 @@ namespace Box2D.NET
                             fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
                             fatAABB.upperBound.X = aabb.upperBound.X + margin;
                             fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
-                            shape.fatAABB = fatAABB;
+                            shapeFatAABB = fatAABB;
 
                             // Mark the hierarchy as enlarged using atomic operations.
                             b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
@@ -1892,7 +1901,6 @@ namespace Box2D.NET
                 int minRange = 8;
                 b2ParallelFor(world, b2BulletBodyTask, bulletBodyCount, minRange, stepContext);
 
-                // Serially enlarge broad-phase proxies for bullet shapes
                 B2BroadPhase broadPhase = world.broadPhase;
                 B2DynamicTree dynamicTree = broadPhase.trees[(int)B2BodyType.b2_dynamicBody];
 
@@ -1901,20 +1909,22 @@ namespace Box2D.NET
                 B2BodySim[] bodySimArray = awakeSet.bodySims.data;
                 B2Shape[] shapeArray = world.shapes.data;
 
-                // Serially enlarge broad-phase proxies for bullet shapes
                 ArraySegment<int> bulletBodySimIndices = stepContext.bulletBodies;
 
-                // This loop has non-deterministic order but it shouldn't affect the result
+                // Serially enlarge broad-phase proxies for bullet shapes.
+                // This loop has non-deterministic order but it shouldn't affect the result.
                 for (int i = 0; i < bulletBodyCount; ++i)
                 {
                     B2BodySim bulletBodySim = bodySimArray[bulletBodySimIndices[i]];
-                    if ((bulletBodySim.flags & (uint)B2BodyFlags.b2_enlargeBounds) == 0)
+
+                    // It is worth tracking this flag because bullets may be moving slowly.
+                    if ((bulletBodySim.flags & (uint)B2BodyFlags.b2_enlargeBulletBounds) == 0)
                     {
                         continue;
                     }
 
                     // Clear flag
-                    bulletBodySim.flags &= ~(uint)B2BodyFlags.b2_enlargeBounds;
+                    bulletBodySim.flags &= ~(uint)B2BodyFlags.b2_enlargeBulletBounds;
 
                     int bodyId = bulletBodySim.bodyId;
                     B2_ASSERT(0 <= bodyId && bodyId < world.bodies.count);
@@ -1929,10 +1939,13 @@ namespace Box2D.NET
                         B2_VALIDATE(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
                         B2AABB treeAABB = b2DynamicTree_GetAABB(dynamicTree, proxyId);
+                        B2AABB shapeFatAABB = world.fatAABBs.data[shapeId];
 
-                        if (b2AABB_Contains(treeAABB, shape.fatAABB) == false)
+                        // Double check containment because a bullet can have multiple
+                        // shapes and maybe just one needs an update.
+                        if (b2AABB_Contains(treeAABB, shapeFatAABB) == false)
                         {
-                            b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
+                            b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shapeFatAABB);
                         }
 
                         shapeId = shape.nextShapeId;

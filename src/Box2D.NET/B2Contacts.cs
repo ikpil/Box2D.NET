@@ -279,8 +279,8 @@ namespace Box2D.NET
             contactSim.bodyIdB = shapeB.bodyId;
 #endif
 
-            contactSim.bodySimIndexA = B2_NULL_INDEX;
-            contactSim.bodySimIndexB = B2_NULL_INDEX;
+            contactSim.encodedBodySimA = b2EncodeBodySimIndex(bodyA);
+            contactSim.encodedBodySimB = b2EncodeBodySimIndex(bodyB);
             contactSim.invMassA = 0.0f;
             contactSim.invIA = 0.0f;
             contactSim.invMassB = 0.0f;
@@ -401,7 +401,7 @@ namespace Box2D.NET
 
             bodyB.contactCount -= 1;
 
-            // Remove contact from the array that owns it
+            // Remove contact from island.
             if (contact.islandId != B2_NULL_INDEX)
             {
                 b2UnlinkContact(world, contact);

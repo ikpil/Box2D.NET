@@ -44,9 +44,8 @@ namespace Box2D.NET
         public ArraySegment<int> bulletBodies;
         public B2AtomicInt bulletBodyCount;
 
-        // contact pointers for simplified parallel-for access.
-        // - parallel-for collide with no gaps, includes touching and non-touching
-        public ArraySegment<B2ContactSim> contactSims;
+        // Graph color spans for the narrow-phase, includes non-touching contacts as well.
+        public B2ContactCollideSpan[] collideSpans;
 
         // Flat view of the wide contact constraint array used by prepare and store.
         // prepareSpans has activeColorCount + 1 entries, the last being a sentinel

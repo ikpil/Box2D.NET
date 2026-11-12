@@ -60,6 +60,9 @@ namespace Box2D.NET
         public B2Array<B2Shape> shapes;
         public B2Array<B2ChainShape> chainShapes;
 
+        // Shape enlarged bounds (hot data split).
+        public B2Array<B2AABB> fatAABBs;
+
         // This is a dense array of sensor data.
         public B2Array<B2Sensor> sensors;
 
@@ -192,6 +195,7 @@ namespace Box2D.NET
 
             shapes = new B2Array<B2Shape>();
             chainShapes = new B2Array<B2ChainShape>();
+            fatAABBs = new B2Array<B2AABB>();
 
             sensors = new B2Array<B2Sensor>();
 

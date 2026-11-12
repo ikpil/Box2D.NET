@@ -94,20 +94,31 @@ namespace Box2D.NET
             }
         }
 
-        public static void b2RemoveBodySim(ref B2Array<B2BodySim> bodySims, ref B2Array<B2Body> bodies, int localIndex)
+        // Refresh the body sim index on associated contact sims.
+        public static void b2RefreshBodyContactIndices(B2World world, B2Body body)
         {
-            B2_ASSERT(0 <= localIndex && localIndex < bodySims.count);
-            int lastIndex = bodySims.count - 1;
-            bodySims.data[localIndex].CopyFrom(bodySims.data[lastIndex]);
-            B2Body movedBody = b2Array_Get(ref bodies, bodySims.data[localIndex].bodyId);
-            B2_ASSERT(movedBody.localIndex == lastIndex);
-            movedBody.localIndex = localIndex;
-            if (localIndex != lastIndex)
-            {
-                bodySims.data[lastIndex] = new B2BodySim();
-            }
+            int encodedIndex = b2EncodeBodySimIndex(body);
 
-            bodySims.count -= 1;
+            int contactKey = body.headContactKey;
+            while (contactKey != B2_NULL_INDEX)
+            {
+                int contactId = contactKey >> 1;
+                int edgeIndex = contactKey & 1;
+
+                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                B2ContactSim contactSim = b2GetContactSim(world, contact);
+
+                if (edgeIndex == 0)
+                {
+                    contactSim.encodedBodySimA = encodedIndex;
+                }
+                else
+                {
+                    contactSim.encodedBodySimB = encodedIndex;
+                }
+
+                contactKey = contact.edges[edgeIndex].nextKey;
+            }
         }
 
         // Get a validated body from a world using an id.
@@ -157,19 +168,56 @@ namespace Box2D.NET
             return null;
         }
 
+        // Sync the body flags when something external changes them,
+        // such as the user changing the motion locks.
         public static void b2SyncBodyFlags(B2World world, B2Body body)
         {
-            // Never sync transient flags
-            uint flags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
-
             B2BodySim bodySim = b2GetBodySim(world, body);
-            bodySim.flags = flags;
+
+            // Preserve the fast flag for contact recycling.
+            bodySim.flags = body.flags & ~(uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact);
 
             B2BodyState bodyState = b2GetBodyState(world, body);
             if (bodyState != null)
             {
-                bodyState.flags = flags;
+                bodyState.flags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
             }
+        }
+
+        // This encodes the body sim index for storage in the contact sim. This helps
+        // avoid a lookup and cache miss in the narrow phase.
+        public static int b2EncodeBodySimIndex(B2Body body)
+        {
+            if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
+            {
+                return body.localIndex;
+            }
+
+            if (body.setIndex == (int)B2SolverSetType.b2_staticSet)
+            {
+                return -(body.localIndex + 2);
+            }
+
+            return B2_NULL_INDEX;
+        }
+
+        public static bool b2IsStaticSimIndex(int encodedBodySimIndex)
+        {
+            return encodedBodySimIndex < B2_NULL_INDEX;
+        }
+
+        // In the contact solver a static body sim is expected to have null index.
+        public static int b2DecodeAwakeIndex(int encodedBodySimIndex)
+        {
+            return encodedBodySimIndex >= 0 ? encodedBodySimIndex : B2_NULL_INDEX;
+        }
+
+        // When a body goes to sleep the contact sim has a null index for it. This
+        // also handles the case where the body is static and has an encoded
+        // sim index of -2 or less.
+        public static int b2SleepBodySimIndex(int encodedIndex)
+        {
+            return encodedIndex >= 0 ? B2_NULL_INDEX : encodedIndex;
         }
 
         public static void b2CreateIslandForBody(B2World world, int setIndex, B2Body body)
@@ -474,7 +522,11 @@ namespace Box2D.NET
 
             // Remove body sim from solver set that owns it
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
-            b2RemoveBodySim(ref set.bodySims, ref world.bodies, body.localIndex);
+            B2Body movedBody = b2RemoveBodySim(world, set, body.localIndex);
+            if (movedBody != null)
+            {
+                b2RefreshBodyContactIndices(world, movedBody);
+            }
 
             // Remove body state from awake set
             if (body.setIndex == (int)B2SolverSetType.b2_awakeSet)
@@ -827,7 +879,8 @@ namespace Box2D.NET
                 B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
                 shape.aabb = aabb;
 
-                if (b2AABB_Contains(shape.fatAABB, aabb) == false)
+                ref B2AABB shapeFatAABB = ref world.fatAABBs.data[shapeId];
+                if (b2AABB_Contains(shapeFatAABB, aabb) == false)
                 {
                     float margin = shape.aabbMargin;
                     B2AABB fatAABB;
@@ -835,7 +888,7 @@ namespace Box2D.NET
                     fatAABB.lowerBound.Y = aabb.lowerBound.Y - margin;
                     fatAABB.upperBound.X = aabb.upperBound.X + margin;
                     fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
-                    shape.fatAABB = fatAABB;
+                    shapeFatAABB = fatAABB;
 
                     // They body could be disabled
                     if (shape.proxyKey != B2_NULL_INDEX)
@@ -1410,7 +1463,7 @@ namespace Box2D.NET
                 shapeId = shape.nextShapeId;
                 b2DestroyShapeProxy(shape, world.broadPhase);
                 bool forcePairCreation = true;
-                b2CreateShapeProxy(shape, world.broadPhase, type, transform, forcePairCreation);
+                b2CreateShapeProxy(world, shape, type, transform, forcePairCreation);
             }
 
             // Relink all joints
@@ -1943,7 +1996,7 @@ namespace Box2D.NET
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
                 shapeId = shape.nextShapeId;
 
-                b2CreateShapeProxy(shape, world.broadPhase, proxyType, transform, forcePairCreation);
+                b2CreateShapeProxy(world, shape, proxyType, transform, forcePairCreation);
             }
 
             if (setId != (int)B2SolverSetType.b2_staticSet)

@@ -22,8 +22,8 @@ namespace Box2D.NET
 #endif
 
         // Transient body indices
-        public int bodySimIndexA;
-        public int bodySimIndexB;
+        public int encodedBodySimA;
+        public int encodedBodySimB;
 
         public int shapeIdA;
         public int shapeIdB;
@@ -59,8 +59,8 @@ namespace Box2D.NET
             bodyIdB = other.bodyIdB;
 #endif
 
-            bodySimIndexA = other.bodySimIndexA;
-            bodySimIndexB = other.bodySimIndexB;
+            encodedBodySimA = other.encodedBodySimA;
+            encodedBodySimB = other.encodedBodySimB;
 
             shapeIdA = other.shapeIdA;
             shapeIdB = other.shapeIdB;

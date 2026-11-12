@@ -18,6 +18,7 @@
 //#define B2_FORCE_OVERFLOW
 
 using static Box2D.NET.B2Arrays;
+using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2BitSets;
@@ -160,7 +161,7 @@ namespace Box2D.NET
 
             if (typeA == B2BodyType.b2_staticBody)
             {
-                newContact.bodySimIndexA = B2_NULL_INDEX;
+                newContact.encodedBodySimA = b2EncodeBodySimIndex(bodyA);
                 newContact.invMassA = 0.0f;
                 newContact.invIA = 0.0f;
             }
@@ -170,7 +171,7 @@ namespace Box2D.NET
                 B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
 
                 int localIndex = bodyA.localIndex;
-                newContact.bodySimIndexA = localIndex;
+                newContact.encodedBodySimA = localIndex;
 
                 B2BodySim bodySimA = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassA = bodySimA.invMass;
@@ -179,7 +180,7 @@ namespace Box2D.NET
 
             if (typeB == B2BodyType.b2_staticBody)
             {
-                newContact.bodySimIndexB = B2_NULL_INDEX;
+                newContact.encodedBodySimB = b2EncodeBodySimIndex(bodyB);
                 newContact.invMassB = 0.0f;
                 newContact.invIB = 0.0f;
             }
@@ -189,7 +190,7 @@ namespace Box2D.NET
                 B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
 
                 int localIndex = bodyB.localIndex;
-                newContact.bodySimIndexB = localIndex;
+                newContact.encodedBodySimB = localIndex;
 
                 B2BodySim bodySimB = b2Array_Get(ref awakeSet.bodySims, localIndex);
                 newContact.invMassB = bodySimB.invMass;

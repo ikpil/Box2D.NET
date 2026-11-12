@@ -80,7 +80,7 @@ namespace Box2D.NET
                     new B2Vec2(float.NegativeInfinity, float.NegativeInfinity)
                 ),
                 flagIndex = B2_EMPTY_NODE,
-                leafCount = 0,
+                height = 0,
             };
         }
 
@@ -282,9 +282,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int b2GetLeafCount(in B2TreeNode node)
+        private static int b2GetNodeHeight(in B2TreeNode node)
         {
-            return b2IsLeaf(node) ? 1 : node.leafCount;
+            return b2IsLeaf(node) ? 0 : node.height;
         }
 
         // The internal node above a children pair
@@ -297,7 +297,7 @@ namespace Box2D.NET
             B2TreeNode node = new B2TreeNode();
             node.aabb = b2AABB_Union(c1.aabb, c2.aabb);
             node.flagIndex = (uint)pair | ((c1.flagIndex | c2.flagIndex) & B2_MOVED_NODE);
-            node.leafCount = b2GetLeafCount(c1) + b2GetLeafCount(c2);
+            node.height = 1 + b2MaxInt(b2GetNodeHeight(c1), b2GetNodeHeight(c2));
             return node;
         }
 
@@ -792,63 +792,10 @@ namespace Box2D.NET
             return tree.proxies[proxyId].categoryBits;
         }
 
-        /// Get the height of the binary tree. Expensive.
-        // The height is the maximum leaf depth, with the root children at depth one.
-        // Siblings share a depth and child pairs sit one deeper. An explicit stack
-        // keeps this off the call stack, like the query traversals.
+        /// Get the height of the binary tree.
         public static int b2DynamicTree_GetHeight(B2DynamicTree tree)
         {
-            if (tree.proxyCount == 0)
-            {
-                return 0;
-            }
-
-            B2TreeNode[] nodes = tree.nodes;
-            ref readonly B2TreeNode root = ref nodes[B2_ROOT_NODE];
-            if (b2IsLeaf(root))
-            {
-                return 0;
-            }
-
-            Span<int> pairs = stackalloc int[B2_TREE_STACK_SIZE];
-            Span<int> depths = stackalloc int[B2_TREE_STACK_SIZE];
-            int stackCount = 0;
-            pairs[stackCount] = b2GetLeftChild(root);
-            depths[stackCount] = 1;
-            ++stackCount;
-
-            int height = 0;
-            while (stackCount > 0)
-            {
-                --stackCount;
-                int pair = pairs[stackCount];
-                int depth = depths[stackCount];
-                height = b2MaxInt(height, depth);
-
-                for (int i = 0; i < 2; ++i)
-                {
-                    ref readonly B2TreeNode node = ref nodes[pair + i];
-                    if (b2IsLeaf(node))
-                    {
-                        continue;
-                    }
-
-                    int childPair = b2GetLeftChild(node);
-
-                    if (stackCount < B2_TREE_STACK_SIZE)
-                    {
-                        pairs[stackCount] = childPair;
-                        depths[stackCount] = depth + 1;
-                        ++stackCount;
-                    }
-                    else
-                    {
-                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
-                    }
-                }
-            }
-
-            return height;
+            return b2GetNodeHeight(tree.nodes[B2_ROOT_NODE]);
         }
 
         /// Get the ratio of the sum of the internal node areas to the root area.
@@ -897,7 +844,7 @@ namespace Box2D.NET
         }
 
 #if DEBUG
-        private static int b2ValidateSubtree(B2DynamicTree tree, int nodeIndex)
+        private static int b2ValidateSubtree(B2DynamicTree tree, int nodeIndex, ref int leafCount)
         {
             B2_ASSERT(0 <= nodeIndex && nodeIndex < tree.nodeEnd);
             ref readonly B2TreeNode node = ref tree.nodes[nodeIndex];
@@ -909,7 +856,8 @@ namespace Box2D.NET
                 B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
                 B2_ASSERT(tree.proxies[proxyId].node == nodeIndex);
                 B2_ASSERT((int)tree.proxies[proxyId].userData == node.shapeIndex);
-                return 1;
+                leafCount += 1;
+                return 0;
             }
 
             int pair = b2GetLeftChild(node);
@@ -925,9 +873,11 @@ namespace Box2D.NET
             B2_ASSERT(b2IsNodeMoved(node) == (b2IsNodeMoved(c1) || b2IsNodeMoved(c2)));
 
             // A bad tree can stack overflow, but that is validation on its own.
-            int leafCount = b2ValidateSubtree(tree, pair) + b2ValidateSubtree(tree, pair + 1);
-            B2_ASSERT(node.leafCount == leafCount);
-            return leafCount;
+            int height1 = b2ValidateSubtree(tree, pair, ref leafCount);
+            int height2 = b2ValidateSubtree(tree, pair + 1, ref leafCount);
+            int height = 1 + b2MaxInt(height1, height2);
+            B2_ASSERT(node.height == height);
+            return height;
         }
 #endif
 
@@ -973,7 +923,8 @@ namespace Box2D.NET
                 return;
             }
 
-            int leafCount = b2ValidateSubtree(tree, B2_ROOT_NODE);
+            int leafCount = 0;
+            b2ValidateSubtree(tree, B2_ROOT_NODE, ref leafCount);
             B2_ASSERT(leafCount == tree.proxyCount);
 #else
             B2_UNUSED(tree);

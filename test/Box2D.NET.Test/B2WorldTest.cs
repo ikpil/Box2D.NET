@@ -1280,4 +1280,412 @@ public class B2WorldTest
         PairSleepEscape(workerCount, true);
         PairSleepingStatic(workerCount);
     }
+
+    // The contact sim carries a persistent locator for each body sim instead of a copy written by the
+    // collide task every step. These scenarios drive every site that changes a body's set or local index
+    // while its contacts are live, then step under validation so b2ValidateSolverSets and the prepare
+    // asserts are the real check. Worker count parity on the state hash guards the multithreaded paths.
+
+    private static void StepLocatorWorld(B2WorldId worldId, int stepCount)
+    {
+        for (int i = 0; i < stepCount; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+        }
+    }
+
+    private static bool StepUntilAsleep(B2WorldId worldId, B2BodyId bodyId, int maxSteps)
+    {
+        for (int i = 0; i < maxSteps; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+            if (b2Body_IsAwake(bodyId) == false)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static B2WorldId CreateLocatorWorld(int workerCount, bool enableSleep)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = new B2Vec2(0.0f, -10.0f);
+        worldDef.enableSleep = enableSleep;
+        worldDef.workerCount = workerCount;
+        return b2CreateWorld(worldDef);
+    }
+
+    private static B2BodyId CreateLocatorGround(B2WorldId worldId, float x, float halfWidth)
+    {
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Pos(x, -0.5f);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Polygon box = b2MakeBox(halfWidth, 0.5f);
+        b2CreatePolygonShape(bodyId, shapeDef, box);
+        return bodyId;
+    }
+
+    private static B2BodyId CreateLocatorBox(B2WorldId worldId, B2BodyType type, float x, float y)
+    {
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = type;
+        bodyDef.position = new B2Pos(x, y);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Polygon square = b2MakeSquare(0.5f);
+        b2CreatePolygonShape(bodyId, shapeDef, square);
+        return bodyId;
+    }
+
+    // A pile sleeps on static ground and a dropped body wakes it. Covers first touch, the graph add and
+    // the wake of a whole sleeping set.
+    private static ulong LocatorSleepWake(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, true);
+        CreateLocatorGround(worldId, 0.0f, 10.0f);
+
+        B2BodyId[] pile = new B2BodyId[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            pile[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.5f + i);
+        }
+
+        Assert.That(StepUntilAsleep(worldId, pile[0], 600), Is.True);
+        Assert.That(b2Body_IsAwake(pile[2]), Is.False);
+
+        B2BodyId dropper = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 6.0f);
+        Assert.That(b2Body_IsAwake(pile[0]), Is.False);
+
+        StepLocatorWorld(worldId, 60);
+        Assert.That(b2Body_IsAwake(pile[0]), Is.True);
+        Assert.That(b2Body_IsAwake(dropper), Is.True);
+
+        Assert.That(StepUntilAsleep(worldId, dropper, 900), Is.True);
+        Assert.That(b2Body_IsAwake(pile[0]), Is.False);
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // Destroying a body in the middle of the awake set swaps the last awake sim into the hole while that
+    // body's contacts are live.
+    private static ulong LocatorDestroyAwakeBody(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, false);
+        CreateLocatorGround(worldId, 0.0f, 20.0f);
+
+        B2BodyId[] stack = new B2BodyId[4];
+        for (int i = 0; i < 4; ++i)
+        {
+            stack[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.5f + i);
+        }
+
+        // A second stack far away owns the tail of the awake set
+        B2BodyId[] neighbors = new B2BodyId[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            neighbors[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.5f + i);
+        }
+
+        StepLocatorWorld(worldId, 120);
+        float restY = b2Body_GetPosition(neighbors[2]).Y;
+
+        b2DestroyBody(stack[0]);
+        StepLocatorWorld(worldId, 30);
+
+        Assert.That(b2AbsFloat(b2Body_GetPosition(neighbors[2]).Y - restY), Is.LessThanOrEqualTo(0.01f));
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // Destroying a static body swaps the last static sim into the hole. The moved body still has awake
+    // contacts, so its side of them has to be re-encoded or the collide task reads past the static set.
+    private static ulong LocatorDestroyStaticBody(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, false);
+
+        B2BodyId[] platforms = new B2BodyId[3];
+        B2BodyId[] boxes = new B2BodyId[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            float x = 10.0f * i;
+            platforms[i] = CreateLocatorGround(worldId, x, 2.0f);
+            boxes[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, x, 0.5f);
+        }
+
+        StepLocatorWorld(worldId, 60);
+        float restY = b2Body_GetPosition(boxes[2]).Y;
+
+        b2DestroyBody(platforms[0]);
+        StepLocatorWorld(worldId, 40);
+
+        Assert.That(b2AbsFloat(b2Body_GetPosition(boxes[2]).Y - restY), Is.LessThanOrEqualTo(0.01f));
+        Assert.That(b2Body_GetPosition(boxes[0]).Y, Is.LessThan(-1.0f));
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // A kinematic that never sleeps keeps a non touching contact to a body that falls asleep. That
+    // contact stays in the awake set with its sleeping side on the cold path, then the kinematic closes
+    // the gap and wakes it.
+    private static ulong LocatorSleepingNeighbor(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, true);
+        CreateLocatorGround(worldId, 0.0f, 10.0f);
+
+        B2BodyId sleeper = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.5f);
+
+        // The fat boxes overlap across a tenth of a meter, well past the speculative distance
+        B2BodyId mover = CreateLocatorBox(worldId, B2BodyType.b2_kinematicBody, 1.1f, 0.5f);
+        b2Body_EnableSleep(mover, false);
+
+        Assert.That(StepUntilAsleep(worldId, sleeper, 600), Is.True);
+        Assert.That(b2Body_IsAwake(mover), Is.True);
+
+        B2ContactData[] contactData = new B2ContactData[4];
+        Assert.That(b2Body_GetContactCapacity(mover), Is.EqualTo(1));
+        Assert.That(b2Body_GetContactData(mover, contactData, 4), Is.EqualTo(0));
+
+        StepLocatorWorld(worldId, 30);
+        Assert.That(b2Body_IsAwake(sleeper), Is.False);
+
+        b2Body_SetLinearVelocity(mover, new B2Vec2(-2.0f, 0.0f));
+        StepLocatorWorld(worldId, 10);
+        Assert.That(b2Body_IsAwake(sleeper), Is.True);
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // Type change, disable and enable all route through the body transfer, which pulls a body sim out of
+    // the middle of a set while other bodies hold contacts.
+    private static ulong LocatorTypeChange(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, false);
+        CreateLocatorGround(worldId, 0.0f, 20.0f);
+
+        B2BodyId subject = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.5f);
+        CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 1.5f);
+
+        B2BodyId[] neighbors = new B2BodyId[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            neighbors[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.5f + i);
+        }
+
+        StepLocatorWorld(worldId, 120);
+        float restY = b2Body_GetPosition(neighbors[2]).Y;
+
+        b2Body_SetType(subject, B2BodyType.b2_staticBody);
+        StepLocatorWorld(worldId, 30);
+        Assert.That(b2Body_GetType(subject), Is.EqualTo(B2BodyType.b2_staticBody));
+
+        b2Body_SetType(subject, B2BodyType.b2_dynamicBody);
+        StepLocatorWorld(worldId, 30);
+        Assert.That(b2Body_GetType(subject), Is.EqualTo(B2BodyType.b2_dynamicBody));
+
+        b2Body_Disable(subject);
+        StepLocatorWorld(worldId, 10);
+        Assert.That(b2Body_IsEnabled(subject), Is.False);
+
+        b2Body_Enable(subject);
+        StepLocatorWorld(worldId, 30);
+        Assert.That(b2Body_IsEnabled(subject), Is.True);
+
+        Assert.That(b2AbsFloat(b2Body_GetPosition(neighbors[2]).Y - restY), Is.LessThanOrEqualTo(0.01f));
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // A joint between two sleeping bodies merges their sets instead of waking them, while an awake
+    // kinematic holds a non touching contact to one of them across the merge.
+    private static ulong LocatorSetMerge(int workerCount)
+    {
+        B2WorldId worldId = CreateLocatorWorld(workerCount, true);
+        CreateLocatorGround(worldId, 0.0f, 20.0f);
+
+        B2BodyId left = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, -5.0f, 0.5f);
+        B2BodyId right = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 5.0f, 0.5f);
+
+        B2BodyId watcher = CreateLocatorBox(worldId, B2BodyType.b2_kinematicBody, -3.9f, 0.5f);
+        b2Body_EnableSleep(watcher, false);
+
+        Assert.That(StepUntilAsleep(worldId, left, 600), Is.True);
+        Assert.That(b2Body_IsAwake(right), Is.False);
+        Assert.That(b2Body_IsAwake(watcher), Is.True);
+        Assert.That(b2Body_GetContactCapacity(watcher), Is.EqualTo(1));
+
+        B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
+        jointDef.@base.bodyIdA = left;
+        jointDef.@base.bodyIdB = right;
+        jointDef.length = 10.0f;
+        B2JointId jointId = b2CreateDistanceJoint(worldId, jointDef);
+
+        Assert.That(b2Body_IsAwake(left), Is.False);
+        Assert.That(b2Body_IsAwake(right), Is.False);
+
+        StepLocatorWorld(worldId, 30);
+        Assert.That(b2Body_IsAwake(left), Is.False);
+
+        b2Body_SetAwake(left, true);
+        StepLocatorWorld(worldId, 10);
+        Assert.That(b2Body_IsAwake(right), Is.True);
+
+        b2DestroyJoint(jointId);
+        StepLocatorWorld(worldId, 10);
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // A body moving far enough in one step carries the fast flag, which the collide task now reads off
+    // the sim. A public setter mid flight makes sure a flag sync does not drop it.
+    private static ulong LocatorFastBody(int workerCount)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        worldDef.workerCount = workerCount;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        CreateLocatorBox(worldId, B2BodyType.b2_staticBody, 10.0f, 0.0f);
+        B2BodyId bullet = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.0f);
+        b2Body_SetLinearVelocity(bullet, new B2Vec2(40.0f, 0.0f));
+
+        // A step carries it two thirds of a meter, well past half its minimum extent
+        StepLocatorWorld(worldId, 4);
+        Assert.That(b2Body_GetPosition(bullet).X, Is.GreaterThan(2.0f));
+
+        b2Body_EnableSleep(bullet, false);
+        StepLocatorWorld(worldId, 4);
+
+        b2Body_EnableSleep(bullet, true);
+        StepLocatorWorld(worldId, 30);
+
+        // It stopped at the wall instead of tunneling through
+        Assert.That(b2Body_GetPosition(bullet).X, Is.LessThan(9.1f));
+        Assert.That(b2Body_GetPosition(bullet).X, Is.GreaterThan(8.5f));
+
+        ulong hash = b2World_GetStateHash(worldId);
+        b2DestroyWorld(worldId);
+        return hash;
+    }
+
+    // A row of boxes at rest in zero gravity is unaffected by sleeping, so the run that sleeps and wakes
+    // on impact has to land where the run that never sleeps lands. Positions rather than the state hash
+    // because the hash folds in set and local index, which sleeping is entitled to change.
+    private static void LocatorSleepParity(int workerCount)
+    {
+        float[,] finalX = new float[2, 3];
+
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            B2WorldDef worldDef = b2DefaultWorldDef();
+            worldDef.gravity = b2Vec2_zero;
+            worldDef.enableSleep = pass == 0;
+            worldDef.workerCount = workerCount;
+            B2WorldId worldId = b2CreateWorld(worldDef);
+
+            B2BodyId[] boxes = new B2BodyId[3];
+            for (int i = 0; i < 3; ++i)
+            {
+                boxes[i] = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, (float)i, 0.0f);
+            }
+
+            StepLocatorWorld(worldId, 60);
+            Assert.That(b2Body_IsAwake(boxes[0]), Is.EqualTo(pass == 1));
+
+            B2BodyId impactor = CreateLocatorBox(worldId, B2BodyType.b2_dynamicBody, -5.0f, 0.0f);
+            b2Body_SetLinearVelocity(impactor, new B2Vec2(5.0f, 0.0f));
+
+            StepLocatorWorld(worldId, 120);
+            Assert.That(b2Body_IsAwake(boxes[2]), Is.True);
+
+            for (int i = 0; i < 3; ++i)
+            {
+                finalX[pass, i] = b2Body_GetPosition(boxes[i]).X;
+            }
+
+            b2DestroyWorld(worldId);
+        }
+
+        for (int i = 0; i < 3; ++i)
+        {
+            Assert.That(b2AbsFloat(finalX[0, i] - finalX[1, i]), Is.LessThanOrEqualTo(0.01f));
+        }
+    }
+
+    [Test]
+    public void BodySimLocatorTest()
+    {
+        int[] workerCounts = { 1, 4 };
+        ulong[] hashes = new ulong[2];
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorSleepWake(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorDestroyAwakeBody(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorDestroyStaticBody(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorSleepingNeighbor(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorTypeChange(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorSetMerge(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            hashes[i] = LocatorFastBody(workerCounts[i]);
+        }
+
+        Assert.That(hashes[0], Is.EqualTo(hashes[1]));
+
+        for (int i = 0; i < 2; ++i)
+        {
+            LocatorSleepParity(workerCounts[i]);
+        }
+    }
 }

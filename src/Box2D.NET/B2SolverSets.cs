@@ -78,7 +78,8 @@ namespace Box2D.NET
                 state.CopyFrom(b2_identityBodyState);
                 state.flags = body.flags;
 
-                // move non-touching contacts from disabled set to awake set
+                // Move non-touching contacts from disabled set to awake set.
+                int encodedBodySimIndex = body.localIndex;
                 int contactKey = body.headContactKey;
                 while (contactKey != B2_NULL_INDEX)
                 {
@@ -92,6 +93,22 @@ namespace Box2D.NET
                     if (contact.setIndex != (int)B2SolverSetType.b2_disabledSet)
                     {
                         B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet || contact.setIndex == setIndex);
+
+                        // If this contact is awake but not touching I need to fixup the body sim index here.
+                        if (contact.setIndex == (int)B2SolverSetType.b2_awakeSet)
+                        {
+                            B2_ASSERT(contact.colorIndex == B2_NULL_INDEX);
+                            B2ContactSim awakeContactSim2 = b2Array_Get(ref awakeSet.contactSims, contact.localIndex);
+                            if (edgeIndex == 0)
+                            {
+                                awakeContactSim2.encodedBodySimA = encodedBodySimIndex;
+                            }
+                            else
+                            {
+                                awakeContactSim2.encodedBodySimB = encodedBodySimIndex;
+                            }
+                        }
+
                         continue;
                     }
 
@@ -105,6 +122,15 @@ namespace Box2D.NET
                     ref B2ContactSim awakeContactSim = ref b2Array_Emplace(ref awakeSet.contactSims);
                     //memcpy( awakeContactSim, contactSim, sizeof( b2ContactSim ) );
                     awakeContactSim.CopyFrom(contactSim);
+
+                    if (edgeIndex == 0)
+                    {
+                        awakeContactSim.encodedBodySimA = encodedBodySimIndex;
+                    }
+                    else
+                    {
+                        awakeContactSim.encodedBodySimB = encodedBodySimIndex;
+                    }
 
                     int movedLocalIndex = b2Array_RemoveSwap(ref disabledSet.contactSims, localIndex);
                     if (movedLocalIndex != B2_NULL_INDEX)
@@ -221,6 +247,8 @@ namespace Box2D.NET
                     B2_ASSERT(body.islandId == islandId);
                     B2_ASSERT(body.islandIndex == i);
 
+                    body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+
                     // Update the body move event to indicate this body fell asleep
                     // It could happen the body is forced asleep before it ever moves.
                     if (body.bodyMoveIndex != B2_NULL_INDEX)
@@ -234,6 +262,7 @@ namespace Box2D.NET
 
                     int awakeBodyIndex = body.localIndex;
                     B2BodySim awakeSim = b2Array_Get(ref awakeSet.bodySims, awakeBodyIndex);
+                    awakeSim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
 
                     // move body sim to sleep set
                     int sleepBodyIndex = sleepSet.bodySims.count;
@@ -241,9 +270,14 @@ namespace Box2D.NET
                     //memcpy( sleepBodySim, awakeSim, sizeof( b2BodySim ) );
                     sleepBodySim.CopyFrom(awakeSim);
 
-                    b2RemoveBodySim(ref awakeSet.bodySims, ref world.bodies, awakeBodyIndex);
+                    B2Body movedBody = b2RemoveBodySim(world, awakeSet, awakeBodyIndex);
+                    if (movedBody != null && movedBody.islandId != islandId)
+                    {
+                        // Update the contact sims for the moved body.
+                        b2RefreshBodyContactIndices(world, movedBody);
+                    }
 
-                    // destroy state, no need to clone
+                    // Destroy state, no need to clone.
                     b2Array_RemoveSwap(ref awakeSet.bodyStates, awakeBodyIndex);
 
                     body.setIndex = sleepSetId;
@@ -259,20 +293,27 @@ namespace Box2D.NET
 
                         B2Contact contact = b2Array_Get(ref world.contacts, contactId);
 
-                        B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet || contact.setIndex == (int)B2SolverSetType.b2_disabledSet);
-                        contactKey = contact.edges[edgeIndex].nextKey;
+                        B2_ASSERT(contact.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
-                        if (contact.setIndex == (int)B2SolverSetType.b2_disabledSet)
-                        {
-                            // already moved to disabled set by another body in the island
-                            continue;
-                        }
+                        contactKey = contact.edges[edgeIndex].nextKey;
 
                         if (contact.colorIndex != B2_NULL_INDEX)
                         {
                             // contact is touching and will be moved separately
                             B2_ASSERT((contact.flags & (int)B2ContactFlags.b2_contactTouchingFlag) != 0);
                             continue;
+                        }
+
+                        int localIndex = contact.localIndex;
+                        B2ContactSim contactSim = b2Array_Get(ref awakeSet.contactSims, localIndex);
+
+                        if (edgeIndex == 0)
+                        {
+                            contactSim.encodedBodySimA = B2_NULL_INDEX;
+                        }
+                        else
+                        {
+                            contactSim.encodedBodySimB = B2_NULL_INDEX;
                         }
 
                         // the other body may still be awake, it still may go to sleep and then it will be responsible
@@ -284,9 +325,6 @@ namespace Box2D.NET
                         {
                             continue;
                         }
-
-                        int localIndex = contact.localIndex;
-                        B2ContactSim contactSim = b2Array_Get(ref awakeSet.contactSims, localIndex);
 
                         B2_ASSERT(contactSim.manifold.pointCount == 0);
                         B2_ASSERT((contact.flags & (int)B2ContactFlags.b2_contactTouchingFlag) == 0);
@@ -341,6 +379,9 @@ namespace Box2D.NET
                     ref B2ContactSim sleepContactSim = ref b2Array_Emplace(ref sleepSet.contactSims);
                     //memcpy( sleepContactSim, awakeContactSim, sizeof( b2ContactSim ) );
                     sleepContactSim.CopyFrom(awakeContactSim);
+
+                    sleepContactSim.encodedBodySimA = b2SleepBodySimIndex(sleepContactSim.encodedBodySimA);
+                    sleepContactSim.encodedBodySimB = b2SleepBodySimIndex(sleepContactSim.encodedBodySimB);
 
                     int movedLocalIndex = b2Array_RemoveSwap(ref color.contactSims, localIndex);
                     if (movedLocalIndex != B2_NULL_INDEX)
@@ -538,12 +579,38 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
+        // Remove a body from a solver set and return the body swapped into the slot.
+        internal static B2Body b2RemoveBodySim(B2World world, B2SolverSet set, int localIndex)
+        {
+            ref B2Array<B2BodySim> bodySims = ref set.bodySims;
+            B2_ASSERT(0 <= localIndex && localIndex < bodySims.count);
+            int lastIndex = bodySims.count - 1;
+            bodySims.count -= 1;
+
+            if (localIndex == lastIndex)
+            {
+                return null;
+            }
+
+            bodySims.data[localIndex].CopyFrom(bodySims.data[lastIndex]);
+            bodySims.data[lastIndex] = new B2BodySim();
+            B2Body movedBody = b2Array_Get(ref world.bodies, bodySims.data[localIndex].bodyId);
+            B2_ASSERT(movedBody.localIndex == lastIndex);
+            movedBody.localIndex = localIndex;
+
+            return movedBody;
+        }
+
         internal static void b2TransferBody(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Body body)
         {
             if (targetSet == sourceSet)
             {
                 return;
             }
+
+            // The use cases for transfer body (set body type, disable, etc) destroy all the contacts
+            // first. Double check here because this function wouldn't work correctly otherwise.
+            B2_ASSERT(body.headContactKey == B2_NULL_INDEX);
 
             int sourceIndex = body.localIndex;
             B2BodySim sourceSim = b2Array_Get(ref sourceSet.bodySims, sourceIndex);
@@ -558,7 +625,12 @@ namespace Box2D.NET
             targetSim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
 
             // Remove body sim from solver set that owns it
-            b2RemoveBodySim(ref sourceSet.bodySims, ref world.bodies, sourceIndex);
+            B2Body movedBody = b2RemoveBodySim(world, sourceSet, sourceIndex);
+            if (movedBody != null)
+            {
+                // Fixup the moved body's contact sims.
+                b2RefreshBodyContactIndices(world, movedBody);
+            }
 
             if (sourceSet.setIndex == (int)B2SolverSetType.b2_awakeSet)
             {

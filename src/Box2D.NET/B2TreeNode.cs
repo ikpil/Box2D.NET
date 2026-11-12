@@ -25,10 +25,9 @@ namespace Box2D.NET
         [FieldOffset(24)]
         public uint flagIndex;
 
-        /// The total number of leaves below for an internal node.
-        /// todo not used
+        /// The height of an internal node. A leaf has zero height.
         [FieldOffset(28)]
-        public int leafCount;
+        public int height;
 
         /// The shape index for a leaf. Truncated from proxy user data.
         [FieldOffset(28)]

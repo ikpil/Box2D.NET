@@ -18,7 +18,6 @@ namespace Box2D.NET
         public float aabbMargin;
 
         public B2AABB aabb;
-        public B2AABB fatAABB;
         public B2Vec2 localCentroid;
         public int proxyKey;
 
