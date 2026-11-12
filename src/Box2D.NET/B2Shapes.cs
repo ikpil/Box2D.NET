@@ -278,6 +278,28 @@ namespace Box2D.NET
                    b2IsValidVec2(chainSegment.ghost2);
         }
 
+        // Fix degenerate ghost vertices. They get converted to convex corners.
+        internal static void b2FixGhostVertices(ref B2ChainSegment chainSegment)
+        {
+            B2Vec2 p1 = chainSegment.segment.point1;
+            B2Vec2 p2 = chainSegment.segment.point2;
+            float tolSqr = B2_LINEAR_SLOP * B2_LINEAR_SLOP;
+
+            // normal is computed twice in the worst case, but neither should happen normally.
+
+            if (b2DistanceSquared(chainSegment.ghost1, p1) <= tolSqr)
+            {
+                B2Vec2 normal = b2RightPerp(b2Normalize(b2Sub(p2, p1)));
+                chainSegment.ghost1 = b2Sub(p1, normal);
+            }
+
+            if (b2DistanceSquared(chainSegment.ghost2, p2) <= tolSqr)
+            {
+                B2Vec2 normal = b2RightPerp(b2Normalize(b2Sub(p2, p1)));
+                chainSegment.ghost2 = b2Sub(p2, normal);
+            }
+        }
+
         internal static bool b2IsValidPolygon(in B2Polygon polygon)
         {
             if (polygon.count < 1 || polygon.count > B2_MAX_POLYGON_VERTICES)
@@ -410,6 +432,7 @@ namespace Box2D.NET
             // No parent chain shape
             B2ChainSegment local = chainSegment;
             local.chainId = B2_NULL_INDEX;
+            b2FixGhostVertices(ref local);
 
             return b2CreateShape(bodyId, def, local, B2ShapeType.b2_chainSegmentShape);
         }
@@ -1147,7 +1170,19 @@ namespace Box2D.NET
                     result = b2CollideMoverAndSegment(localMover, shape.us.segment);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
+                {
+                    B2Vec2 centroid = b2Lerp(localMover.center1, localMover.center2, 0.5f);
+                    B2Vec2 edge = b2Sub(shape.us.chainSegment.segment.point2, shape.us.chainSegment.segment.point1);
+                    B2Vec2 r = b2Sub(centroid, shape.us.chainSegment.segment.point1);
+
+                    // Skip backside collision.
+                    if (b2Cross(r, edge) < 0.0f)
+                    {
+                        return result;
+                    }
+
                     result = b2CollideMoverAndSegment(localMover, shape.us.chainSegment.segment);
+                }
                     break;
                 default:
                     return result;
@@ -1560,7 +1595,67 @@ namespace Box2D.NET
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
+            if (shape.enablePreSolveEvents == flag)
+            {
+                return;
+            }
+
             shape.enablePreSolveEvents = flag;
+
+            // Refresh the cached flags on contacts.
+            B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
+            int contactKey = body.headContactKey;
+            while (contactKey != B2_NULL_INDEX)
+            {
+                int contactId = contactKey >> 1;
+                int edgeIndex = contactKey & 1;
+
+                B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+
+                if (contact.shapeIdA == shape.id || contact.shapeIdB == shape.id)
+                {
+                    B2Shape shapeA = b2Array_Get(ref world.shapes, contact.shapeIdA);
+                    B2Shape shapeB = b2Array_Get(ref world.shapes, contact.shapeIdB);
+                    B2Body bodyA = b2Array_Get(ref world.bodies, shapeA.bodyId);
+                    B2Body bodyB = b2Array_Get(ref world.bodies, shapeB.bodyId);
+
+                    bool recycle = (bodyA.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0 &&
+                                   (bodyB.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0 &&
+                                   shapeA.enablePreSolveEvents == false &&
+                                   shapeB.enablePreSolveEvents == false;
+
+                    if (recycle)
+                    {
+                        contact.flags |= (uint)B2ContactFlags.b2_contactRecycleFlag;
+                    }
+                    else
+                    {
+                        contact.flags &= ~(uint)B2ContactFlags.b2_contactRecycleFlag;
+                    }
+
+                    B2ContactSim contactSim = b2GetContactSim(world, contact);
+
+                    if (recycle)
+                    {
+                        contactSim.simFlags |= (uint)B2ContactFlags.b2_contactRecycleFlag;
+                    }
+                    else
+                    {
+                        contactSim.simFlags &= ~(uint)B2ContactFlags.b2_contactRecycleFlag;
+                    }
+
+                    if (shapeA.enablePreSolveEvents || shapeB.enablePreSolveEvents)
+                    {
+                        contactSim.simFlags |= (uint)B2ContactFlags.b2_simEnablePreSolveEvents;
+                    }
+                    else
+                    {
+                        contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simEnablePreSolveEvents;
+                    }
+                }
+
+                contactKey = contact.edges[edgeIndex].nextKey;
+            }
         }
         /// Returns true if pre-solve events are enabled
         public static bool b2Shape_ArePreSolveEventsEnabled(B2ShapeId shapeId)
@@ -1757,6 +1852,7 @@ namespace Box2D.NET
 
             shape.us.chainSegment = chainSegment;
             shape.us.chainSegment.chainId = B2_NULL_INDEX;
+            b2FixGhostVertices(ref shape.us.chainSegment);
             shape.type = B2ShapeType.b2_chainSegmentShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 

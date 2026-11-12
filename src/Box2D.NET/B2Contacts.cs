@@ -223,9 +223,10 @@ namespace Box2D.NET
             contact.shapeIdB = shapeIdB;
             contact.flags = 0;
 
-            // Both bodies must enable recycling
+            // Both bodies must enable recycling. Disable for pre-solve.
             if ((bodyA.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0 &&
-                (bodyB.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0)
+                (bodyB.flags & (uint)B2BodyFlags.b2_bodyEnableContactRecycling) != 0 &&
+                shapeA.enablePreSolveEvents == false && shapeB.enablePreSolveEvents == false)
             {
                 contact.flags |= (uint)B2ContactFlags.b2_contactRecycleFlag;
             }

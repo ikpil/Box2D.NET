@@ -1815,4 +1815,78 @@ public class B2WorldTest
 
         Assert.That(minSeparation, Is.GreaterThan(-B2_LINEAR_SLOP));
     }
+
+    private sealed class PreSolveCounter
+    {
+        public int count;
+    }
+
+    private static void CountingPreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
+    {
+        B2_UNUSED(shapeIdA);
+        B2_UNUSED(shapeIdB);
+        PreSolveCounter counter = (PreSolveCounter)context;
+        counter.count += 1;
+    }
+
+    // Contacts latch the recycle and pre-solve flags at creation, and a recycled contact never reaches
+    // pre-solve. Enabling pre-solve mid-simulation must refresh the contacts that already exist,
+    // including a settled contact that recycles every step.
+    [Test]
+    public void PreSolveToggleTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.enableSleep = false;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        PreSolveCounter counter = new PreSolveCounter();
+        b2World_SetPreSolveCallback(worldId, CountingPreSolve, null, counter);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Pos(0.0f, -0.5f);
+        B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+        B2Polygon groundBox = b2MakeBox(10.0f, 0.5f);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        b2CreatePolygonShape(groundId, shapeDef, groundBox);
+
+        float radius = 0.25f;
+        bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Pos(0.0f, radius + 0.2f);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), radius);
+        B2ShapeId ballId = b2CreateCircleShape(bodyId, shapeDef, circle);
+
+        // Let the ball settle so the contact recycles
+        for (int i = 0; i < 60; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+        }
+
+        Assert.That(counter.count, Is.EqualTo(0));
+
+        b2Shape_EnablePreSolveEvents(ballId, true);
+
+        int before = counter.count;
+        for (int i = 0; i < 10; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+        }
+
+        // Pre-solve must fire every step, including on the recycled contact
+        Assert.That(counter.count - before, Is.EqualTo(10));
+
+        b2Shape_EnablePreSolveEvents(ballId, false);
+
+        before = counter.count;
+        for (int i = 0; i < 10; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+        }
+
+        Assert.That(counter.count - before, Is.EqualTo(0));
+
+        b2DestroyWorld(worldId);
+    }
 }

@@ -564,10 +564,13 @@ namespace Box2D.NET
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
+                    bool hadTimeOfImpact = ((bodySimA.flags | bodySimB.flags) & (uint)B2BodyFlags.b2_hadTimeOfImpact) != 0;
+
                     // Contact recycling optimization. Please cite this code if you use this optimization.
                     // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
                     // However, this allows larger relative motion and has fewer tuning parameters (just one).
-                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
+                    if ((hadTimeOfImpact == false || wasTouching) && recycleDistance > 0.0f &&
+                        0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
                         0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_contactRecycleFlag))
                     {
                         B2Rot cachedQA = contactSim.cachedRotationA;
