@@ -419,6 +419,7 @@ namespace Box2D.NET
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
+            B2_VALIDATE(0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isFast));
 
             // Re-center the sweep on the fast body so the TOI and the swept query stay in float precision
             B2Pos @base = fastBodySim.center0;
@@ -496,12 +497,14 @@ namespace Box2D.NET
                 fastBodySim.rotation0 = q;
                 fastBodySim.center0 = fastBodySim.center;
 
-                // Timeloss means there is a lost gravity contribution.
-                // Other forces and torques are ignored for now.
+                // Timeloss means there is a lost gravity contribution. Other forces and torques are ignored for now.
                 B2BodyState fastBodyState = b2Array_Get(ref awakeSet.bodyStates, bodySimIndex);
                 B2Vec2 v = fastBodyState.linearVelocity;
                 float timeLoss = (1.0f - context.fraction) * dt;
-                fastBodyState.linearVelocity = b2MulSub(v, timeLoss * fastBodySim.gravityScale, world.gravity);
+                B2Vec2 dv = b2MulSV(-timeLoss * fastBodySim.gravityScale, world.gravity);
+                dv.X = 0 != (fastBodyState.flags & (uint)B2BodyFlags.b2_lockLinearX) ? 0.0f : dv.X;
+                dv.Y = 0 != (fastBodyState.flags & (uint)B2BodyFlags.b2_lockLinearY) ? 0.0f : dv.Y;
+                fastBodyState.linearVelocity = b2Add(v, dv);
 
                 // Update body move event
                 ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
@@ -686,7 +689,7 @@ namespace Box2D.NET
                 // Clear the transient flags (fast, speed capped, had TOI). These flags are conditionally set
                 // as part of the code below.
                 body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
-                sim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+                sim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_bodyTransientFlags);
 
                 // The body state flag knows about speed capping (used for debug draw).
                 body.flags |= (state.flags & (uint)B2BodyFlags.b2_isSpeedCapped);
@@ -702,7 +705,6 @@ namespace Box2D.NET
                     if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxMotion > safetyFactor * sim.minExtent)
                     {
                         // This flag is used for debug draw and contact recycling.
-                        body.flags |= (uint)B2BodyFlags.b2_isFast;
                         sim.flags |= (uint)B2BodyFlags.b2_isFast;
 
                         // Store fast bullets for processing later.
@@ -755,7 +757,7 @@ namespace Box2D.NET
 
                 // Update shapes AABBs
                 B2WorldTransform transform = sim.transform;
-                bool isFast = (body.flags & (uint)B2BodyFlags.b2_isFast) != 0;
+                bool isFast = (sim.flags & (uint)B2BodyFlags.b2_isFast) != 0;
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
@@ -956,6 +958,14 @@ namespace Box2D.NET
                     {
                         bool useBias = false;
                         b2SolveJointsTask(block, context, useBias, workerIndex);
+                    }
+
+                    break;
+
+                case B2SolverStageType.b2_stageRestitution:
+                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
+                    {
+                        b2ApplyRestitution_Wide(block, context);
                     }
 
                     break;
@@ -1166,7 +1176,7 @@ namespace Box2D.NET
                     {
                         // Overflow constraints have lower priority. Typically these are dynamic-vs-dynamic.
                         b2SolveJoints_Overflow(context, useBias);
-                        b2SolveContacts_Overflow(context, useBias);
+                        b2PushContacts_Overflow(context);
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
@@ -1195,7 +1205,7 @@ namespace Box2D.NET
                     for (int j = 0; j < RELAX_ITERATIONS; ++j)
                     {
                         b2SolveJoints_Overflow(context, useBias);
-                        b2SolveContacts_Overflow(context, useBias);
+                        b2SolveContacts_Overflow(context);
 
                         for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
                         {
@@ -1214,6 +1224,30 @@ namespace Box2D.NET
                 // Advance the stage according to the sub-stepping tasks just completed
                 // integrate velocities / warm start / solve / integrate positions / relax
                 stageIndex += 1 + activeColorCount + ITERATIONS * activeColorCount + 1 + RELAX_ITERATIONS * activeColorCount;
+
+                int restitutionIterations = context.world.restitutionIterations;
+                if (restitutionIterations > 0 && b2AtomicLoadInt(ref context.anyRestitution) != 0)
+                {
+                    for (int j = 0; j < restitutionIterations; ++j)
+                    {
+                        b2ApplyRestitution_Overflow(context);
+
+                        int iterationStageIndex = stageIndex;
+                        for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
+                        {
+                            syncBits = (uint)((graphSyncIndex << 16) | iterationStageIndex);
+                            B2_ASSERT(stages[iterationStageIndex].type == B2SolverStageType.b2_stageRestitution);
+                            b2ExecuteMainStage(stages[iterationStageIndex], context, syncBits);
+                            iterationStageIndex += 1;
+                        }
+
+                        graphSyncIndex += 1;
+                    }
+
+                    profile.relaxImpulses += b2GetMillisecondsAndReset(ref ticks);
+                }
+
+                stageIndex += activeColorCount;
 
                 // Store impulses
                 b2StoreImpulses_Overflow(context);
@@ -1503,6 +1537,8 @@ namespace Box2D.NET
                 stageCount += 1;
                 // b2_stageRelax
                 stageCount += RELAX_ITERATIONS * activeColorCount;
+                // b2_stageRestitution
+                stageCount += activeColorCount;
                 // b2_stageStoreImpulses
                 stageCount += 1;
 
@@ -1572,6 +1608,8 @@ namespace Box2D.NET
                     graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegratePositions, bodyBlocks, bodyDim.count, byte.MaxValue);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRelax, RELAX_ITERATIONS, activeColorCount, graphColorBlocks,
+                    graphBlockCounts, activeColorIndices);
+                stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRestitution, 1, activeColorCount, graphColorBlocks,
                     graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageStoreImpulses, contactBlocks, contactPrepareDim.count, byte.MaxValue);
 

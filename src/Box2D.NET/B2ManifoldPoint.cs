@@ -38,17 +38,15 @@ namespace Box2D.NET
         /// The friction impulse
         public float tangentImpulse;
 
-        /// Velocity for restitution. From the last time step.
-        public float restitutionVelocity;
-
         /// The total normal impulse applied across sub-stepping and restitution. This is important
         /// to identify speculative contact points that had an interaction in the time step.
         /// This includes the warm starting impulse, the sub-step delta impulse, and the restitution
         /// impulse.
         public float totalNormalImpulse;
 
-        /// Relative normal velocity pre-solve. Used for hit events. If the normal impulse is
-        /// zero then there was no hit. Negative means shapes are approaching.
+        /// Relative normal velocity pre-solve. Negative when approaching. This is only
+        /// computed if hit events are enabled. It may be computed otherwise as a side effect
+        /// of SIMD bundling, but that is not guaranteed.
         public float normalVelocity;
 
         /// Cached separation used for contact recycling

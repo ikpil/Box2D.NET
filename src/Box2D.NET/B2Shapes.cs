@@ -249,14 +249,68 @@ namespace Box2D.NET
             return shape;
         }
 
+        internal static bool b2IsValidMaterial(in B2SurfaceMaterial material)
+        {
+            return b2IsValidFloat(material.friction) && material.friction >= 0.0f && b2IsValidFloat(material.restitution) &&
+                   material.restitution >= 0.0f && b2IsValidFloat(material.rollingResistance) &&
+                   material.rollingResistance >= 0.0f && b2IsValidFloat(material.tangentSpeed);
+        }
+
+        internal static bool b2IsValidCircle(in B2Circle circle)
+        {
+            return b2IsValidVec2(circle.center) && b2IsValidFloat(circle.radius) && circle.radius >= 0.0f;
+        }
+
+        internal static bool b2IsValidCapsule(in B2Capsule capsule)
+        {
+            return b2IsValidVec2(capsule.center1) && b2IsValidVec2(capsule.center2) && b2IsValidFloat(capsule.radius) &&
+                   capsule.radius >= 0.0f;
+        }
+
+        internal static bool b2IsValidSegment(in B2Segment segment)
+        {
+            return b2IsValidVec2(segment.point1) && b2IsValidVec2(segment.point2);
+        }
+
+        internal static bool b2IsValidChainSegment(in B2ChainSegment chainSegment)
+        {
+            return b2IsValidVec2(chainSegment.ghost1) && b2IsValidSegment(chainSegment.segment) &&
+                   b2IsValidVec2(chainSegment.ghost2);
+        }
+
+        internal static bool b2IsValidPolygon(in B2Polygon polygon)
+        {
+            if (polygon.count < 1 || polygon.count > B2_MAX_POLYGON_VERTICES)
+            {
+                return false;
+            }
+
+            if (b2IsValidFloat(polygon.radius) == false || polygon.radius < 0.0f)
+            {
+                return false;
+            }
+
+            if (b2IsValidVec2(polygon.centroid) == false)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < polygon.count; ++i)
+            {
+                if (b2IsValidVec2(polygon.vertices[i]) == false || b2IsValidVec2(polygon.normals[i]) == false)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static B2ShapeId b2CreateShape<T>(B2BodyId bodyId, in B2ShapeDef def, in T geometry, B2ShapeType shapeType) where T : struct
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(b2IsValidFloat(def.density) && def.density >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.material.friction) && def.material.friction >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.material.restitution) && def.material.restitution >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.material.rollingResistance) && def.material.rollingResistance >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.material.tangentSpeed));
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.density) && def.density >= 0.0f) == false) return new B2ShapeId();
+            if (B2_CHECK_INPUT(b2IsValidMaterial(def.material)) == false) return new B2ShapeId();
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -290,6 +344,8 @@ namespace Box2D.NET
         /// @return the shape id for accessing the shape
         public static B2ShapeId b2CreateCircleShape(B2BodyId bodyId, in B2ShapeDef def, in B2Circle circle)
         {
+            if (B2_CHECK_INPUT(b2IsValidCircle(circle)) == false) return b2_nullShapeId;
+
             return b2CreateShape(bodyId, def, circle, B2ShapeType.b2_circleShape);
         }
 
@@ -298,6 +354,8 @@ namespace Box2D.NET
         /// @return the shape id for accessing the shape, this will be b2_nullShapeId if the length is too small.
         public static B2ShapeId b2CreateCapsuleShape(B2BodyId bodyId, in B2ShapeDef def, in B2Capsule capsule)
         {
+            if (B2_CHECK_INPUT(b2IsValidCapsule(capsule)) == false) return b2_nullShapeId;
+
             float lengthSqr = b2DistanceSquared(capsule.center1, capsule.center2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
@@ -312,7 +370,7 @@ namespace Box2D.NET
         /// @return the shape id for accessing the shape
         public static B2ShapeId b2CreatePolygonShape(B2BodyId bodyId, in B2ShapeDef def, in B2Polygon polygon)
         {
-            B2_ASSERT(b2IsValidFloat(polygon.radius) && polygon.radius >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidPolygon(polygon)) == false) return b2_nullShapeId;
             return b2CreateShape(bodyId, def, polygon, B2ShapeType.b2_polygonShape);
         }
 
@@ -321,6 +379,8 @@ namespace Box2D.NET
         /// @return the shape id or b2_nullShapeId if the segment is too short.
         public static B2ShapeId b2CreateSegmentShape(B2BodyId bodyId, in B2ShapeDef def, in B2Segment segment)
         {
+            if (B2_CHECK_INPUT(b2IsValidSegment(segment)) == false) return b2_nullShapeId;
+
             float lengthSqr = b2DistanceSquared(segment.point1, segment.point2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
@@ -338,6 +398,8 @@ namespace Box2D.NET
         /// @return the shape id, or b2_nullShapeId if the segment is too short.
         public static B2ShapeId b2CreateChainSegmentShape(B2BodyId bodyId, in B2ShapeDef def, in B2ChainSegment chainSegment)
         {
+            if (B2_CHECK_INPUT(b2IsValidChainSegment(chainSegment)) == false) return b2_nullShapeId;
+
             float lengthSqr = b2DistanceSquared(chainSegment.segment.point1, chainSegment.segment.point2);
             if (lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP)
             {
@@ -460,25 +522,34 @@ namespace Box2D.NET
                 b2UpdateBodyMassData(world, body);
             }
         }
-        private static void b2ValidateMaterial(in B2SurfaceMaterial material)
-        {
-            B2_UNUSED(material);
-            B2_ASSERT(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(material.tangentSpeed));
-        }
 
         /// Create a chain shape
         /// @see b2ChainDef for details
         public static B2ChainId b2CreateChain(B2BodyId bodyId, in B2ChainDef def)
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(def.isLoop ? def.pointCount >= 3 : def.pointCount >= 2);
+            if (B2_CHECK_INPUT(def.isLoop ? def.pointCount >= 3 : def.pointCount >= 2) == false) return new B2ChainId();
 
             int segmentCount = def.isLoop ? def.pointCount : def.pointCount - 1;
 
-            B2_ASSERT(def.materialCount == 1 || def.materialCount == segmentCount);
+            if (B2_CHECK_INPUT(def.materialCount == 1 || def.materialCount == segmentCount) == false) return new B2ChainId();
+
+            for (int i = 0; i < def.pointCount; ++i)
+            {
+                if (B2_CHECK_INPUT(b2IsValidVec2(def.points[i])) == false) return new B2ChainId();
+            }
+
+            for (int i = 0; i < def.materialCount; ++i)
+            {
+                if (B2_CHECK_INPUT(b2IsValidMaterial(def.materials[i])) == false) return new B2ChainId();
+            }
+
+            if (def.isLoop == false)
+            {
+                // These are set to INFINITY in the default def as a sentinel to ensure they are set.
+                if (B2_CHECK_INPUT(b2IsValidVec2(def.ghost1)) == false) return new B2ChainId();
+                if (B2_CHECK_INPUT(b2IsValidVec2(def.ghost2)) == false) return new B2ChainId();
+            }
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -545,7 +616,6 @@ namespace Box2D.NET
                     prevIndex = i;
 
                     int materialIndex = materialCount == 1 ? 0 : i;
-                    b2ValidateMaterial(def.materials[materialIndex]);
                     shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
@@ -554,10 +624,6 @@ namespace Box2D.NET
             }
             else
             {
-                // These are set to infinity in the default def as a sentinel to ensure they are set.
-                B2_ASSERT(b2IsValidVec2(def.ghost1));
-                B2_ASSERT(b2IsValidVec2(def.ghost2));
-
                 B2ChainSegment chainSegment = new B2ChainSegment();
 
                 for (int i = 0; i < n; ++i)
@@ -575,7 +641,6 @@ namespace Box2D.NET
                     chainSegment.chainId = chainId;
 
                     int materialIndex = materialCount == 1 ? 0 : i;
-                    b2ValidateMaterial(def.materials[materialIndex]);
                     shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
@@ -698,7 +763,7 @@ namespace Box2D.NET
         /// Set a chain material by segment index.
         public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, in B2SurfaceMaterial material, int segmentIndex)
         {
-            b2ValidateMaterial(material);
+            if (B2_CHECK_INPUT(b2IsValidMaterial(material)) == false) return;
 
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -716,7 +781,7 @@ namespace Box2D.NET
         /// Set the chain material on all segments.
         public static void b2Chain_SetAllSurfaceMaterials(B2ChainId chainId, in B2SurfaceMaterial material)
         {
-            b2ValidateMaterial(material);
+            if (B2_CHECK_INPUT(b2IsValidMaterial(material)) == false) return;
 
             B2World world = b2GetWorldLocked(chainId.world0);
             if (world == null)
@@ -1237,7 +1302,7 @@ namespace Box2D.NET
         /// @see b2ShapeDef::density, b2Body_UpdateMassFromShapes
         public static void b2Shape_SetDensity(B2ShapeId shapeId, float density, bool updateBodyMass)
         {
-            B2_ASSERT(b2IsValidFloat(density) && density >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(density) && density >= 0.0f) == false) return;
 
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
@@ -1271,7 +1336,7 @@ namespace Box2D.NET
         /// Set the friction on a shape
         public static void b2Shape_SetFriction(B2ShapeId shapeId, float friction)
         {
-            B2_ASSERT(b2IsValidFloat(friction) && friction >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(friction) && friction >= 0.0f) == false) return;
 
             B2World world = b2GetWorld(shapeId.world0);
             B2_ASSERT(world.locked == false);
@@ -1293,7 +1358,7 @@ namespace Box2D.NET
         /// Set the shape restitution (bounciness)
         public static void b2Shape_SetRestitution(B2ShapeId shapeId, float restitution)
         {
-            B2_ASSERT(b2IsValidFloat(restitution) && restitution >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(restitution) && restitution >= 0.0f) == false) return;
 
             B2World world = b2GetWorld(shapeId.world0);
             B2_ASSERT(world.locked == false);
@@ -1346,6 +1411,8 @@ namespace Box2D.NET
         /// Set the shape surface material
         public static void b2Shape_SetSurfaceMaterial(B2ShapeId shapeId, in B2SurfaceMaterial surfaceMaterial)
         {
+            if (B2_CHECK_INPUT(b2IsValidMaterial(surfaceMaterial)) == false) return;
+
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
             shape.material = surfaceMaterial;
@@ -1575,6 +1642,8 @@ namespace Box2D.NET
         /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetCircle(B2ShapeId shapeId, in B2Circle circle)
         {
+            if (B2_CHECK_INPUT(b2IsValidCircle(circle)) == false) return;
+
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
             {
@@ -1594,6 +1663,8 @@ namespace Box2D.NET
         /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetCapsule(B2ShapeId shapeId, in B2Capsule capsule)
         {
+            if (B2_CHECK_INPUT(b2IsValidCapsule(capsule)) == false) return;
+
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
             {
@@ -1617,6 +1688,8 @@ namespace Box2D.NET
         /// Allows you to change a shape to be a segment or update the current segment.
         public static void b2Shape_SetSegment(B2ShapeId shapeId, in B2Segment segment)
         {
+            if (B2_CHECK_INPUT(b2IsValidSegment(segment)) == false) return;
+
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
             {
@@ -1636,6 +1709,8 @@ namespace Box2D.NET
         /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetPolygon(B2ShapeId shapeId, ref B2Polygon polygon)
         {
+            if (B2_CHECK_INPUT(b2IsValidPolygon(polygon)) == false) return;
+
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
             {
@@ -1657,6 +1732,8 @@ namespace Box2D.NET
         /// owned by a b2ChainShape (chainId != B2_NULL_INDEX).
         public static void b2Shape_SetChainSegment(B2ShapeId shapeId, in B2ChainSegment chainSegment)
         {
+            if (B2_CHECK_INPUT(b2IsValidChainSegment(chainSegment)) == false) return;
+
             B2World world = b2GetWorldLocked(shapeId.world0);
             if (world == null)
             {
@@ -1910,6 +1987,10 @@ namespace Box2D.NET
         /// @param wake should this wake the body
         public static void b2Shape_ApplyWind(B2ShapeId shapeId, B2Vec2 wind, float drag, float lift, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(wind)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(drag)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(lift)) == false) return;
+
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)
             {

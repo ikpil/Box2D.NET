@@ -560,7 +560,6 @@ namespace Box2D.NET
                     mp2.tangentImpulse = 0.0f;
                     mp2.totalNormalImpulse = 0.0f;
                     mp2.normalVelocity = 0.0f;
-                    mp2.restitutionVelocity = 0.0f;
                     mp2.persisted = false;
 
                     ushort id2 = mp2.id;
@@ -573,23 +572,6 @@ namespace Box2D.NET
                         {
                             mp2.normalImpulse = mp1.normalImpulse;
                             mp2.tangentImpulse = mp1.tangentImpulse;
-
-                            // Restitution is computed from the approach velocity of the previous time step.
-                            // This could be corrected using the energy balance:
-                            // 0.5*m*v2^2 - 0.5*m*v1^2 = m*g*dot(n,delta_separation)
-                            // This could also be corrected while sub-stepping. Another option is to reduce the
-                            // CCD safety factor. In my opinion none of these extra measures are worthwhile. Box2D
-                            // is not designed to be a restitution simulator. Also these constitutive models are
-                            // fundamentally not physically accurate.
-                            // See: A New Algebraic Rigid Body Collision Law Based On Impulse Space Considerations
-                            // https://en.wikipedia.org/wiki/Constitutive_equation
-                            // https://en.wikipedia.org/wiki/Coefficient_of_restitution
-
-                            if (mp1.totalNormalImpulse > 0.0f && mp1.normalVelocity < -world.restitutionThreshold)
-                            {
-                                mp2.restitutionVelocity = -contactSim.restitution * mp1.normalVelocity;
-                            }
-
                             mp2.persisted = true;
 
                             break;

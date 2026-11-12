@@ -28,6 +28,8 @@ namespace Box2D.NET
         /// Set the desired relative linear velocity in meters per second
         public static void b2MotorJoint_SetLinearVelocity(B2JointId jointId, B2Vec2 velocity)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(velocity)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearVelocity = velocity;
         }
@@ -42,6 +44,8 @@ namespace Box2D.NET
         /// Set the desired relative angular velocity in radians per second
         public static void b2MotorJoint_SetAngularVelocity(B2JointId jointId, float velocity)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(velocity)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularVelocity = velocity;
         }
@@ -56,6 +60,8 @@ namespace Box2D.NET
         /// Set the motor joint maximum force, usually in newtons
         public static void b2MotorJoint_SetMaxVelocityForce(B2JointId jointId, float maxForce)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(maxForce)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxVelocityForce = maxForce;
         }
@@ -70,6 +76,8 @@ namespace Box2D.NET
         /// Set the motor joint maximum torque, usually in newton-meters
         public static void b2MotorJoint_SetMaxVelocityTorque(B2JointId jointId, float maxTorque)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(maxTorque)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxVelocityTorque = maxTorque;
         }
@@ -85,6 +93,8 @@ namespace Box2D.NET
         /// Set the spring linear hertz stiffness
         public static void b2MotorJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearHertz = hertz;
         }
@@ -99,6 +109,8 @@ namespace Box2D.NET
         /// Set the spring linear damping ratio. Use 1.0 for critical damping.
         public static void b2MotorJoint_SetLinearDampingRatio(B2JointId jointId, float damping)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(damping)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.linearDampingRatio = damping;
         }
@@ -113,6 +125,8 @@ namespace Box2D.NET
         /// Set the spring angular hertz stiffness
         public static void b2MotorJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularHertz = hertz;
         }
@@ -127,6 +141,8 @@ namespace Box2D.NET
         /// Set the spring angular damping ratio. Use 1.0 for critical damping.
         public static void b2MotorJoint_SetAngularDampingRatio(B2JointId jointId, float damping)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(damping)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.angularDampingRatio = damping;
         }
@@ -141,6 +157,8 @@ namespace Box2D.NET
         /// Set the maximum spring force in newtons.
         public static void b2MotorJoint_SetMaxSpringForce(B2JointId jointId, float maxForce)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(maxForce)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxSpringForce = b2MaxFloat(0.0f, maxForce);
         }
@@ -155,6 +173,8 @@ namespace Box2D.NET
         /// Set the maximum spring torque in newtons * meters
         public static void b2MotorJoint_SetMaxSpringTorque(B2JointId jointId, float maxTorque)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(maxTorque)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_motorJoint);
             joint.uj.motorJoint.maxSpringTorque = b2MaxFloat(0.0f, maxTorque);
         }

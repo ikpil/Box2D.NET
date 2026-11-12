@@ -8,10 +8,11 @@ namespace Box2D.NET
     {
         public B2Vec2 anchorA, anchorB;
         public float baseSeparation;
-        public float restitutionVelocity;
+        public float relativeVelocity;
         public float normalImpulse;
         public float tangentImpulse;
         public float totalNormalImpulse;
+        public float restitutionImpulse;
         public float normalMass;
         public float tangentMass;
     }

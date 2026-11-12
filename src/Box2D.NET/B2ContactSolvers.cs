@@ -9,6 +9,7 @@ using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2Cores;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Profiling;
+using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2ConstraintGraphs;
@@ -39,6 +40,7 @@ namespace Box2D.NET
 
             int contactCount = color.contactSims.count;
             B2ContactSim[] contacts = color.contactSims.data;
+            B2BodyState[] states = context.states;
 
 #if DEBUG
             B2Body[] bodies = world.bodies.data;
@@ -49,6 +51,7 @@ namespace Box2D.NET
             B2Softness staticSoftness = context.staticSoftness;
 
             float warmStartScale = world.enableWarmStarting ? 1.0f : 0.0f;
+            bool anyRestitution = false;
 
             for (int i = 0; i < contactCount; ++i)
             {
@@ -77,10 +80,36 @@ namespace Box2D.NET
                 constraint.indexB = indexB + 1;
                 constraint.normal = manifold.normal;
                 constraint.friction = contactSim.friction;
+                constraint.restitution = contactSim.restitution;
                 constraint.rollingResistance = contactSim.rollingResistance;
                 constraint.rollingImpulse = warmStartScale * manifold.rollingImpulse;
                 constraint.tangentSpeed = contactSim.tangentSpeed;
                 constraint.pointCount = pointCount;
+
+                bool haveRestitution = contactSim.restitution > 0.0f;
+                bool hitEvents = (contactSim.simFlags & (uint)B2ContactFlags.b2_simEnableHitEvent) != 0;
+                bool sampleVelocity = haveRestitution || hitEvents;
+                anyRestitution = anyRestitution || haveRestitution;
+
+                B2Vec2 vA = b2Vec2_zero;
+                float wA = 0.0f;
+                B2Vec2 vB = b2Vec2_zero;
+                float wB = 0.0f;
+
+                if (sampleVelocity)
+                {
+                    if (indexA != B2_NULL_INDEX)
+                    {
+                        vA = states[indexA].linearVelocity;
+                        wA = states[indexA].angularVelocity;
+                    }
+
+                    if (indexB != B2_NULL_INDEX)
+                    {
+                        vB = states[indexB].linearVelocity;
+                        wB = states[indexB].angularVelocity;
+                    }
+                }
 
                 float mA = contactSim.invMassA;
                 float iA = contactSim.invIA;
@@ -118,6 +147,7 @@ namespace Box2D.NET
                     cp.normalImpulse = warmStartScale * mp.normalImpulse;
                     cp.tangentImpulse = warmStartScale * mp.tangentImpulse;
                     cp.totalNormalImpulse = 0.0f;
+                    cp.restitutionImpulse = 0.0f;
 
                     B2Vec2 rA = mp.anchorA;
                     B2Vec2 rB = mp.anchorB;
@@ -136,8 +166,28 @@ namespace Box2D.NET
                     float kTangent = mA + mB + iA * rtA * rtA + iB * rtB * rtB;
                     cp.tangentMass = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
 
-                    cp.restitutionVelocity = mp.restitutionVelocity;
+                    // Only compute the normal velocity terms if needed.
+                    if (sampleVelocity)
+                    {
+                        B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
+                        B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
+                        float vn = b2Dot(normal, b2Sub(vrB, vrA));
+
+                        cp.relativeVelocity = vn;
+                        mp.normalVelocity = vn;
+                    }
+                    else
+                    {
+                        cp.relativeVelocity = 0.0f;
+                        mp.normalVelocity = 0.0f;
+                    }
                 }
+            }
+
+            if (anyRestitution)
+            {
+                // Check if set first? Store per task context and OR?
+                b2AtomicStoreInt(ref context.anyRestitution, 1);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.prepare_overflow_contact);
@@ -219,10 +269,9 @@ namespace Box2D.NET
 
             b2TracyCZoneEnd(B2TracyCZone.warmstart_overflow_contact);
         }
-
-        internal static void b2SolveContacts_Overflow(B2StepContext context, bool useBias)
+        internal static void b2PushContacts_Overflow(B2StepContext context)
         {
-            b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Overflow Contact", B2HexColor.b2_colorAliceBlue, true);
+            b2TracyCZoneNC(B2TracyCZone.push_contact, "Push Overflow Contact", B2HexColor.b2_colorAliceBlue, true);
 
             ref B2ConstraintGraph graph = ref context.graph;
             ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
@@ -262,13 +311,8 @@ namespace Box2D.NET
                 B2Vec2 dp = b2Sub(stateB.deltaPosition, stateA.deltaPosition);
 
                 B2Vec2 normal = constraint.normal;
-                B2Vec2 tangent = b2RightPerp(normal);
-                float friction = constraint.friction;
                 B2Softness softness = constraint.softness;
-
                 int pointCount = constraint.pointCount;
-                float totalNormalImpulse = 0.0f;
-                bool stopRestitution = true;
 
                 for (int j = 0; j < pointCount; ++j)
                 {
@@ -283,17 +327,19 @@ namespace Box2D.NET
                     B2Vec2 ds = b2Add(dp, b2Sub(b2RotateVector(dqB, rB), b2RotateVector(dqA, rA)));
                     float s = cp.baseSeparation + b2Dot(ds, normal);
 
-                    float velocityBias = 0.0f;
-                    float massScale = 1.0f;
-                    float impulseScale = 0.0f;
+                    float velocityBias;
+                    float massScale;
+                    float impulseScale;
                     if (s > 0.0f)
                     {
-                        // speculative bias - positive
+                        // speculative bias is positive
                         velocityBias = s * inv_h;
+                        massScale = 1.0f;
+                        impulseScale = 0.0f;
                     }
-                    else if (useBias)
+                    else
                     {
-                        // overlap bias - negative
+                        // overlap bias is negative
                         velocityBias = b2MaxFloat(softness.massScale * softness.biasRate * s, -contactSpeed);
                         massScale = softness.massScale;
                         impulseScale = softness.impulseScale;
@@ -304,13 +350,6 @@ namespace Box2D.NET
                     B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
                     float vn = b2Dot(b2Sub(vrB, vrA), normal);
 
-                    // Restitution in the relax phase only.
-                    if (useBias == false && cp.restitutionVelocity > 0.0f)
-                    {
-                        velocityBias = b2MinFloat(velocityBias, -cp.restitutionVelocity);
-                        stopRestitution = stopRestitution && s > 0.0f;
-                    }
-
                     // incremental normal impulse
                     float impulse = -cp.normalMass * (massScale * vn + velocityBias) - impulseScale * cp.normalImpulse;
 
@@ -320,7 +359,108 @@ namespace Box2D.NET
                     cp.normalImpulse = newImpulse;
                     cp.totalNormalImpulse += impulse;
 
-                    // b2Log( "vn %g impulse %g bias %g", vn, newImpulse, velocityBias );
+                    // apply normal impulse
+                    B2Vec2 P = b2MulSV(impulse, normal);
+                    vA = b2MulSub(vA, mA, P);
+                    wA -= iA * b2Cross(rA, P);
+
+                    vB = b2MulAdd(vB, mB, P);
+                    wB += iB * b2Cross(rB, P);
+                }
+
+                if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateA.linearVelocity = vA;
+                    stateA.angularVelocity = wA;
+                }
+
+                if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateB.linearVelocity = vB;
+                    stateB.angularVelocity = wB;
+                }
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.push_contact);
+        }
+
+        // Solve contacts: normal, friction and rolling resistance.
+        internal static void b2SolveContacts_Overflow(B2StepContext context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Overflow Contact", B2HexColor.b2_colorAliceBlue, true);
+
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
+            int contactCount = color.contactSims.count;
+            B2World world = context.world;
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
+            B2BodyState[] states = awakeSet.bodyStates.data;
+
+            float inv_h = context.inv_h;
+
+            // This is a dummy body to represent a static body since static bodies don't have a solver body.
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+
+            for (int i = 0; i < contactCount; ++i)
+            {
+                ref B2ContactConstraint constraint = ref constraints[i];
+                float mA = constraint.invMassA;
+                float iA = constraint.invIA;
+                float mB = constraint.invMassB;
+                float iB = constraint.invIB;
+
+                int indexA = constraint.indexA - 1;
+                int indexB = constraint.indexB - 1;
+
+                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
+                B2Vec2 vA = stateA.linearVelocity;
+                float wA = stateA.angularVelocity;
+                B2Rot dqA = stateA.deltaRotation;
+
+                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
+                B2Vec2 vB = stateB.linearVelocity;
+                float wB = stateB.angularVelocity;
+                B2Rot dqB = stateB.deltaRotation;
+
+                B2Vec2 dp = b2Sub(stateB.deltaPosition, stateA.deltaPosition);
+
+                B2Vec2 normal = constraint.normal;
+                B2Vec2 tangent = b2RightPerp(normal);
+                float friction = constraint.friction;
+
+                int pointCount = constraint.pointCount;
+                float totalNormalImpulse = 0.0f;
+
+                for (int j = 0; j < pointCount; ++j)
+                {
+                    ref B2ContactConstraintPoint cp = ref constraint.points[j];
+
+                    // fixed anchor points
+                    B2Vec2 rA = cp.anchorA;
+                    B2Vec2 rB = cp.anchorB;
+
+                    // compute current separation
+                    // this is subject to round-off error if the anchor is far from the body center of mass
+                    B2Vec2 ds = b2Add(dp, b2Sub(b2RotateVector(dqB, rB), b2RotateVector(dqA, rA)));
+                    float s = cp.baseSeparation + b2Dot(ds, normal);
+
+                    // speculative bias, zero when overlapped
+                    float velocityBias = s > 0.0f ? s * inv_h : 0.0f;
+
+                    // relative normal velocity at contact
+                    B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
+                    B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
+                    float vn = b2Dot(b2Sub(vrB, vrA), normal);
+
+                    // incremental normal impulse
+                    float impulse = -cp.normalMass * (vn + velocityBias);
+
+                    // clamp the accumulated impulse
+                    float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
+                    impulse = newImpulse - cp.normalImpulse;
+                    cp.normalImpulse = newImpulse;
+                    cp.totalNormalImpulse += impulse;
 
                     // This is used for rolling resistance
                     totalNormalImpulse += newImpulse;
@@ -334,62 +474,51 @@ namespace Box2D.NET
                     wB += iB * b2Cross(rB, P);
                 }
 
-                if (useBias == false)
+                // Rolling resistance
                 {
-                    // Stop applying restitution when all points are separated.
-                    if (stopRestitution)
-                    {
-                        constraint.points[0].restitutionVelocity = 0.0f;
-                        constraint.points[1].restitutionVelocity = 0.0f;
-                    }
+                    float deltaLambda = -constraint.rollingMass * (wB - wA);
+                    float lambda = constraint.rollingImpulse;
+                    float maxLambda = constraint.rollingResistance * totalNormalImpulse;
+                    constraint.rollingImpulse = b2ClampFloat(lambda + deltaLambda, -maxLambda, maxLambda);
+                    deltaLambda = constraint.rollingImpulse - lambda;
 
-                    // Rolling resistance
-                    {
-                        float deltaLambda = -constraint.rollingMass * (wB - wA);
-                        float lambda = constraint.rollingImpulse;
-                        float maxLambda = constraint.rollingResistance * totalNormalImpulse;
-                        constraint.rollingImpulse = b2ClampFloat(lambda + deltaLambda, -maxLambda, maxLambda);
-                        deltaLambda = constraint.rollingImpulse - lambda;
+                    wA -= iA * deltaLambda;
+                    wB += iB * deltaLambda;
+                }
 
-                        wA -= iA * deltaLambda;
-                        wB += iB * deltaLambda;
-                    }
+                // Friction
+                for (int j = 0; j < pointCount; ++j)
+                {
+                    ref B2ContactConstraintPoint cp = ref constraint.points[j];
 
-                    // Friction
-                    for (int j = 0; j < pointCount; ++j)
-                    {
-                        ref B2ContactConstraintPoint cp = ref constraint.points[j];
+                    // fixed anchor points
+                    B2Vec2 rA = cp.anchorA;
+                    B2Vec2 rB = cp.anchorB;
 
-                        // fixed anchor points
-                        B2Vec2 rA = cp.anchorA;
-                        B2Vec2 rB = cp.anchorB;
+                    // relative tangent velocity at contact
+                    B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
+                    B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
 
-                        // relative tangent velocity at contact
-                        B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
-                        B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
+                    // vt = dot(vrB - sB * tangent - (vrA + sA * tangent), tangent)
+                    //    = dot(vrB - vrA, tangent) - (sA + sB)
 
-                        // vt = dot(vrB - sB * tangent - (vrA + sA * tangent), tangent)
-                        //    = dot(vrB - vrA, tangent) - (sA + sB)
+                    float vt = b2Dot(b2Sub(vrB, vrA), tangent) - constraint.tangentSpeed;
 
-                        float vt = b2Dot(b2Sub(vrB, vrA), tangent) - constraint.tangentSpeed;
+                    // incremental tangent impulse
+                    float impulse = cp.tangentMass * (-vt);
 
-                        // incremental tangent impulse
-                        float impulse = cp.tangentMass * (-vt);
+                    // clamp the accumulated force
+                    float maxFriction = friction * cp.normalImpulse;
+                    float newImpulse = b2ClampFloat(cp.tangentImpulse + impulse, -maxFriction, maxFriction);
+                    impulse = newImpulse - cp.tangentImpulse;
+                    cp.tangentImpulse = newImpulse;
 
-                        // clamp the accumulated force
-                        float maxFriction = friction * cp.normalImpulse;
-                        float newImpulse = b2ClampFloat(cp.tangentImpulse + impulse, -maxFriction, maxFriction);
-                        impulse = newImpulse - cp.tangentImpulse;
-                        cp.tangentImpulse = newImpulse;
-
-                        // apply tangent impulse
-                        B2Vec2 P = b2MulSV(impulse, tangent);
-                        vA = b2MulSub(vA, mA, P);
-                        wA -= iA * b2Cross(rA, P);
-                        vB = b2MulAdd(vB, mB, P);
-                        wB += iB * b2Cross(rB, P);
-                    }
-
+                    // apply tangent impulse
+                    B2Vec2 P = b2MulSV(impulse, tangent);
+                    vA = b2MulSub(vA, mA, P);
+                    wA -= iA * b2Cross(rA, P);
+                    vB = b2MulAdd(vB, mB, P);
+                    wB += iB * b2Cross(rB, P);
                 }
 
                 if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
@@ -406,6 +535,126 @@ namespace Box2D.NET
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
+        }
+
+        internal static void b2ApplyRestitution_Overflow(B2StepContext context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.overflow_resitution, "Restitution Overflow", B2HexColor.b2_colorViolet, true);
+
+            ref B2ConstraintGraph graph = ref context.graph;
+            ref B2GraphColor color = ref graph.colors[B2_OVERFLOW_INDEX];
+            Span<B2ContactConstraint> constraints = color.overflowConstraints;
+            int contactCount = color.contactSims.count;
+            B2World world = context.world;
+            B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
+            B2BodyState[] states = awakeSet.bodyStates.data;
+
+            float threshold = world.restitutionThreshold;
+            float inv_h = context.inv_h;
+            bool propagate = world.enableRestitutionPropagation;
+
+            B2BodyState dummyState = B2BodyState.Create(b2_identityBodyState);
+
+            for (int i = 0; i < contactCount; ++i)
+            {
+                ref B2ContactConstraint constraint = ref constraints[i];
+                if (propagate == false && constraint.restitution == 0.0f)
+                {
+                    continue;
+                }
+
+                float mA = constraint.invMassA;
+                float iA = constraint.invIA;
+                float mB = constraint.invMassB;
+                float iB = constraint.invIB;
+
+                int indexA = constraint.indexA - 1;
+                int indexB = constraint.indexB - 1;
+
+                B2BodyState stateA = indexA == B2_NULL_INDEX ? dummyState : states[indexA];
+                B2Vec2 vA = stateA.linearVelocity;
+                float wA = stateA.angularVelocity;
+                B2Rot dqA = stateA.deltaRotation;
+
+                B2BodyState stateB = indexB == B2_NULL_INDEX ? dummyState : states[indexB];
+                B2Vec2 vB = stateB.linearVelocity;
+                float wB = stateB.angularVelocity;
+                B2Rot dqB = stateB.deltaRotation;
+
+                B2Vec2 dp = b2Sub(stateB.deltaPosition, stateA.deltaPosition);
+
+                B2Vec2 normal = constraint.normal;
+                float restitution = constraint.restitution;
+                int pointCount = constraint.pointCount;
+
+                for (int j = 0; j < pointCount; ++j)
+                {
+                    ref B2ContactConstraintPoint cp = ref constraint.points[j];
+
+                    B2Vec2 rA = cp.anchorA;
+                    B2Vec2 rB = cp.anchorB;
+
+                    // The total normal impulse is 0 for speculative points.
+                    float compressionImpulse = cp.totalNormalImpulse - cp.restitutionImpulse;
+                    bool armed = restitution > 0.0f && cp.relativeVelocity < -threshold && compressionImpulse > 0.0f;
+
+                    float velocityBias;
+                    if (armed)
+                    {
+                        velocityBias = restitution * cp.relativeVelocity;
+                    }
+                    else
+                    {
+                        B2Vec2 ds = b2Add(dp, b2Sub(b2RotateVector(dqB, rB), b2RotateVector(dqA, rA)));
+                        float s = cp.baseSeparation + b2Dot(ds, normal);
+
+                        velocityBias = s > 0.0f ? s * inv_h : 0.0f;
+                    }
+
+                    B2Vec2 vrA = b2Add(vA, b2CrossSV(wA, rA));
+                    B2Vec2 vrB = b2Add(vB, b2CrossSV(wB, rB));
+                    float vn = b2Dot(b2Sub(vrB, vrA), normal);
+
+                    float impulse = -cp.normalMass * (vn + velocityBias);
+
+                    float newImpulse = b2MaxFloat(cp.normalImpulse + impulse, 0.0f);
+                    impulse = newImpulse - cp.normalImpulse;
+
+                    float approachImpulse = b2MinFloat(b2MaxFloat(-cp.normalMass * vn, 0.0f), b2MaxFloat(impulse, 0.0f));
+
+                    if (armed)
+                    {
+                        // Poisson kinetic restitution guarantees no energy gain.
+                        float allowance = restitution * (compressionImpulse + approachImpulse) - cp.restitutionImpulse;
+                        impulse = b2MinFloat(impulse, approachImpulse + b2MaxFloat(allowance, 0.0f));
+                    }
+
+                    cp.normalImpulse += impulse;
+                    cp.restitutionImpulse += impulse - approachImpulse;
+                    cp.totalNormalImpulse += impulse;
+
+                    B2Vec2 P = b2MulSV(impulse, normal);
+                    vA = b2MulSub(vA, mA, P);
+                    wA -= iA * b2Cross(rA, P);
+
+                    vB = b2MulAdd(vB, mB, P);
+                    wB += iB * b2Cross(rB, P);
+                }
+
+                if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateA.linearVelocity = vA;
+                    stateA.angularVelocity = wA;
+                }
+
+                if (0 != (stateB.flags & (uint)B2BodyFlags.b2_dynamicFlag))
+                {
+                    stateB.linearVelocity = vB;
+                    stateB.angularVelocity = wB;
+                }
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.overflow_resitution);
         }
 
         internal static void b2StoreImpulses_Overflow(B2StepContext context)
@@ -512,18 +761,6 @@ namespace Box2D.NET
             // a = clamp(a, -b, b)
             Vector<float> min = Vector.Min(a, b);
             return Vector.Max(-b, min);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Vector<float> b2OrW(Vector<float> a, Vector<float> b)
-        {
-            Vector<int> aZeroMask = Vector.Equals(a, Vector<float>.Zero);
-            Vector<int> bZeroMask = Vector.Equals(b, Vector<float>.Zero);
-
-            // Zero only where both lanes are zero, matching a != 0 || b != 0
-            Vector<int> zeroMask = aZeroMask & bZeroMask;
-
-            return Vector.ConditionalSelect(zeroMask, Vector<float>.Zero, Vector<float>.One);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -652,25 +889,13 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2OrW(in B2FloatW a, in B2FloatW b)
+        public static B2FloatW b2AndW(in B2FloatW a, in B2FloatW b)
         {
             return new B2FloatW(
-                a.X != 0.0f || b.X != 0.0f ? 1.0f : 0.0f,
-                a.Y != 0.0f || b.Y != 0.0f ? 1.0f : 0.0f,
-                a.Z != 0.0f || b.Z != 0.0f ? 1.0f : 0.0f,
-                a.W != 0.0f || b.W != 0.0f ? 1.0f : 0.0f
-            );
-        }
-
-        // a & ~b
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2AndNotW(in B2FloatW a, in B2FloatW b)
-        {
-            return new B2FloatW(
-                a.X != 0.0f && b.X == 0.0f ? 1.0f : 0.0f,
-                a.Y != 0.0f && b.Y == 0.0f ? 1.0f : 0.0f,
-                a.Z != 0.0f && b.Z == 0.0f ? 1.0f : 0.0f,
-                a.W != 0.0f && b.W == 0.0f ? 1.0f : 0.0f
+                a.X != 0.0f && b.X != 0.0f ? 1.0f : 0.0f,
+                a.Y != 0.0f && b.Y != 0.0f ? 1.0f : 0.0f,
+                a.Z != 0.0f && b.Z != 0.0f ? 1.0f : 0.0f,
+                a.W != 0.0f && b.W != 0.0f ? 1.0f : 0.0f
             );
         }
 
@@ -695,6 +920,23 @@ namespace Box2D.NET
                 a.Z == b.Z ? 1.0f : 0.0f,
                 a.W == b.W ? 1.0f : 0.0f
             );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2FloatW b2LessThanW(in B2FloatW a, in B2FloatW b)
+        {
+            return new B2FloatW(
+                a.X < b.X ? 1.0f : 0.0f,
+                a.Y < b.Y ? 1.0f : 0.0f,
+                a.Z < b.Z ? 1.0f : 0.0f,
+                a.W < b.W ? 1.0f : 0.0f
+            );
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2AnyTrueW(in B2FloatW mask)
+        {
+            return mask.X != 0.0f || mask.Y != 0.0f || mask.Z != 0.0f || mask.W != 0.0f;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -1222,6 +1464,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
         {
             b2TracyCZoneNC(B2TracyCZone.prepare_contact, "Prepare Contact", B2HexColor.b2_colorYellow, true);
             B2World world = context.world;
+            B2BodyState[] states = context.states;
             B2ContactPrepareSpan[] spans = context.contactPrepareSpans;
             Span<B2ContactConstraintWide> wideBase = context.wideContactConstraints;
 
@@ -1229,8 +1472,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2Body[] bodies = world.bodies.data;
 #endif
 
+            B2FloatW zeroW = b2ZeroW();
             B2FloatW oneW = b2SplatW(1.0f);
-            B2FloatW warmStartScale = world.enableWarmStarting ? oneW : b2ZeroW();
+            B2FloatW warmStartScale = world.enableWarmStarting ? oneW : zeroW;
+            bool anyRestitution = false;
 
             int wideIndex = block.startIndex;
             int endWideIndex = block.startIndex + block.count;
@@ -1260,6 +1505,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 {
                     ref B2ContactConstraintWide cw = ref wideBase[wideIndex];
                     int localWideIndex = wideIndex - colorWideStart;
+                    uint hitEvents = 0;
 
                     for (int laneIndex = 0; laneIndex < B2_SIMD_WIDTH; ++laneIndex)
                     {
@@ -1271,6 +1517,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             // index base-1
                             cw.indexA[laneIndex] = b2DecodeAwakeIndex(c.encodedBodySimA) + 1;
                             cw.indexB[laneIndex] = b2DecodeAwakeIndex(c.encodedBodySimB) + 1;
+                            hitEvents |= (c.simFlags & (uint)B2ContactFlags.b2_simEnableHitEvent);
 
 #if DEBUG
                             B2Body bodyA = bodies[c.bodyIdA];
@@ -1299,11 +1546,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     cw.rollingImpulse = b2SetW(l0.manifold.rollingImpulse, l1.manifold.rollingImpulse, l2.manifold.rollingImpulse, l3.manifold.rollingImpulse);
                     cw.rollingImpulse = b2MulW(warmStartScale, cw.rollingImpulse);
 
+                    cw.restitution = b2SetW(l0.restitution, l1.restitution, l2.restitution, l3.restitution);
+
                     B2Vec2W tangent = b2RightPerpW(cw.normal);
+
+                    B2FloatW pointCounts = b2SetW(l0.manifold.pointCount, l1.manifold.pointCount, l2.manifold.pointCount, l3.manifold.pointCount);
+                    B2FloatW twoPointMask = b2GreaterThanW(pointCounts, oneW);
 
                     {
                         // Transpose gather of the first manifold point. Matches the upstream layout:
-                        // anchorA, anchorB, separation, normalImpulse, tangentImpulse, restitutionVelocity
+                        // anchorA, anchorB, separation, normalImpulse, tangentImpulse
                         ref B2ManifoldPoint m1 = ref l0.manifold.points[0];
                         ref B2ManifoldPoint m2 = ref l1.manifold.points[0];
                         ref B2ManifoldPoint m3 = ref l2.manifold.points[0];
@@ -1316,14 +1568,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         cw.baseSeparation1 = b2SetW(m1.separation, m2.separation, m3.separation, m4.separation);
                         cw.normalImpulse1 = b2SetW(m1.normalImpulse, m2.normalImpulse, m3.normalImpulse, m4.normalImpulse);
                         cw.tangentImpulse1 = b2SetW(m1.tangentImpulse, m2.tangentImpulse, m3.tangentImpulse, m4.tangentImpulse);
-                        cw.negRestitutionVelocity1 = b2SetW(m1.restitutionVelocity, m2.restitutionVelocity, m3.restitutionVelocity, m4.restitutionVelocity);
+
+                        // separation1 = cw.baseSeparation1;
 
                         B2FloatW offset = b2DotW(b2SubVW(cw.anchorB1, cw.anchorA1), cw.normal);
                         cw.baseSeparation1 = b2SubW(cw.baseSeparation1, offset);
-                        cw.negRestitutionVelocity1 = b2NegW(cw.negRestitutionVelocity1);
                         cw.normalImpulse1 = b2MulW(warmStartScale, cw.normalImpulse1);
                         cw.tangentImpulse1 = b2MulW(warmStartScale, cw.tangentImpulse1);
-                        cw.totalNormalImpulse1 = b2ZeroW();
+                        cw.totalNormalImpulse1 = zeroW;
+                        cw.relativeVelocity1 = zeroW;
+                        cw.restitutionImpulse1 = zeroW;
 
                         // Effective mass along normal.
                         {
@@ -1361,14 +1615,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         cw.baseSeparation2 = b2SetW(m1.separation, m2.separation, m3.separation, m4.separation);
                         cw.normalImpulse2 = b2SetW(m1.normalImpulse, m2.normalImpulse, m3.normalImpulse, m4.normalImpulse);
                         cw.tangentImpulse2 = b2SetW(m1.tangentImpulse, m2.tangentImpulse, m3.tangentImpulse, m4.tangentImpulse);
-                        cw.negRestitutionVelocity2 = b2SetW(m1.restitutionVelocity, m2.restitutionVelocity, m3.restitutionVelocity, m4.restitutionVelocity);
+
+                        // separation2 = cw.baseSeparation2;
 
                         B2FloatW offset = b2DotW(b2SubVW(cw.anchorB2, cw.anchorA2), cw.normal);
                         cw.baseSeparation2 = b2SubW(cw.baseSeparation2, offset);
-                        cw.negRestitutionVelocity2 = b2NegW(cw.negRestitutionVelocity2);
                         cw.normalImpulse2 = b2MulW(warmStartScale, cw.normalImpulse2);
                         cw.tangentImpulse2 = b2MulW(warmStartScale, cw.tangentImpulse2);
-                        cw.totalNormalImpulse2 = b2ZeroW();
+                        cw.totalNormalImpulse2 = zeroW;
+                        cw.relativeVelocity2 = zeroW;
+                        cw.restitutionImpulse2 = zeroW;
 
                         // Effective mass along normal.
                         {
@@ -1393,18 +1649,62 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                         }
 
                         // Zero effective mass on lanes that only have one point.
-                        B2FloatW massScale = b2SetW(
-                            l0.manifold.pointCount > 1 ? 1.0f : 0.0f,
-                            l1.manifold.pointCount > 1 ? 1.0f : 0.0f,
-                            l2.manifold.pointCount > 1 ? 1.0f : 0.0f,
-                            l3.manifold.pointCount > 1 ? 1.0f : 0.0f);
-                        cw.normalMass2 = b2MulW(massScale, cw.normalMass2);
-                        cw.tangentMass2 = b2MulW(massScale, cw.tangentMass2);
+                        cw.normalMass2 = b2BlendW(zeroW, cw.normalMass2, twoPointMask);
+                        cw.tangentMass2 = b2BlendW(zeroW, cw.tangentMass2, twoPointMask);
+                    }
+
+                    // Only sample contact point normal velocity if needed.
+                    B2FloatW restitutionMask = b2GreaterThanW(cw.restitution, zeroW);
+                    bool haveRestitution = b2AnyTrueW(restitutionMask);
+                    anyRestitution = anyRestitution || haveRestitution;
+
+                    if ((hitEvents & (uint)B2ContactFlags.b2_simEnableHitEvent) != 0 || haveRestitution)
+                    {
+                        B2BodyStateW bA = b2GatherBodies(states, cw.indexA.AsSpan());
+                        B2BodyStateW bB = b2GatherBodies(states, cw.indexB.AsSpan());
+
+                        {
+                            B2Vec2W rA = cw.anchorA1;
+                            B2Vec2W rB = cw.anchorB1;
+
+                            // Relative velocity at contact
+                            B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                            B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                            B2FloatW vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
+                            cw.relativeVelocity1 = vn;
+
+                            // Check the point count to avoid a race writing to b2_zeroContactSim.
+                            if (l0.manifold.pointCount > 0) l0.manifold.points[0].normalVelocity = vn.X;
+                            if (l1.manifold.pointCount > 0) l1.manifold.points[0].normalVelocity = vn.Y;
+                            if (l2.manifold.pointCount > 0) l2.manifold.points[0].normalVelocity = vn.Z;
+                            if (l3.manifold.pointCount > 0) l3.manifold.points[0].normalVelocity = vn.W;
+                        }
+
+                        {
+                            B2Vec2W rA = cw.anchorA2;
+                            B2Vec2W rB = cw.anchorB2;
+
+                            // Relative velocity at contact
+                            B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                            B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                            B2FloatW vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
+                            cw.relativeVelocity2 = vn;
+
+                            if (l0.manifold.pointCount > 1) l0.manifold.points[1].normalVelocity = vn.X;
+                            if (l1.manifold.pointCount > 1) l1.manifold.points[1].normalVelocity = vn.Y;
+                            if (l2.manifold.pointCount > 1) l2.manifold.points[1].normalVelocity = vn.Z;
+                            if (l3.manifold.pointCount > 1) l3.manifold.points[1].normalVelocity = vn.W;
+                        }
                     }
                 }
 
                 // Advance to next color
                 colorIndex += 1;
+            }
+
+            if (anyRestitution)
+            {
+                b2AtomicStoreInt(ref context.anyRestitution, 1);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.prepare_contact);
@@ -1622,6 +1922,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
         }
 
+        // Solve the normal constraint, friction, and rolling resistance.
         internal static void b2SolveContacts_Wide(B2SolverBlock block, B2StepContext context)
         {
             b2TracyCZoneNC(B2TracyCZone.solve_contact, "Solve Contact", B2HexColor.b2_colorAliceBlue, true);
@@ -1638,14 +1939,34 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
-                B2FloatW restitutionMask1 = b2GreaterThanW(b2ZeroW(), c.negRestitutionVelocity1);
-                B2FloatW restitutionMask2 = b2GreaterThanW(b2ZeroW(), c.negRestitutionVelocity2);
-                bool haveRestitution = b2AllZeroW(b2OrW(restitutionMask1, restitutionMask2)) == false;
-
-                B2FloatW keepRestitution = b2ZeroW();
                 B2FloatW totalNormalImpulse = b2ZeroW();
 
                 B2Vec2W dp = new B2Vec2W(b2SubW(bB.dp.X, bA.dp.X), b2SubW(bB.dp.Y, bA.dp.Y));
+
+                B2FloatW velocityBias1, velocityBias2;
+                {
+                    // Moving anchors for current separation
+                    B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA1);
+                    B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB1);
+
+                    // compute current separation
+                    // this is subject to round-off error if the anchor is far from the body center of mass
+                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
+                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
+
+                    // Speculative bias, positive if separated and zero if overlapped
+                    velocityBias1 = b2MaxW(b2ZeroW(), b2MulW(s, inv_h));
+                }
+
+                {
+                    B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA2);
+                    B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB2);
+
+                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
+                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation2);
+
+                    velocityBias2 = b2MaxW(b2ZeroW(), b2MulW(s, inv_h));
+                }
 
                 // point1 non-penetration constraint
                 {
@@ -1653,35 +1974,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2Vec2W rA = c.anchorA1;
                     B2Vec2W rB = c.anchorB1;
 
-                    // Moving anchors for current separation
-                    B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
-                    B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
-
-                    // compute current separation
-                    // this is subject to round-off error if the anchor is far from the body center of mass
-                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
-
-                    // Speculative bias - positive if separated
-                    B2FloatW specBias = b2MulW(s, inv_h);
-
-                    // This will be zero if separation <= 0
-                    B2FloatW velocityBias = b2MaxW(b2ZeroW(), specBias);
-
-                    if (haveRestitution)
-                    {
-                        B2FloatW separated = b2GreaterThanW(s, b2ZeroW());
-                        velocityBias = b2BlendW(velocityBias, c.negRestitutionVelocity1, restitutionMask1);
-                        keepRestitution = b2OrW(keepRestitution, b2AndNotW(restitutionMask1, separated));
-                    }
-
                     // Relative velocity at contact
                     B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
                     B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2MulW(c.normalMass1, b2AddW(vn, velocityBias));
+                    B2FloatW negImpulse = b2MulW(c.normalMass1, b2AddW(vn, velocityBias1));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), b2ZeroW());
@@ -1706,27 +2005,6 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                 // second point non-penetration constraint
                 {
-                    // moving anchors for current separation
-                    B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA2);
-                    B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB2);
-
-                    // compute current separation
-                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation2);
-
-                    // Speculative bias - positive if separated
-                    B2FloatW specBias = b2MulW(s, inv_h);
-
-                    // This will be zero if separation <= 0
-                    B2FloatW velocityBias = b2MaxW(b2ZeroW(), specBias);
-
-                    if (haveRestitution)
-                    {
-                        B2FloatW separated = b2GreaterThanW(s, b2ZeroW());
-                        velocityBias = b2BlendW(velocityBias, c.negRestitutionVelocity2, restitutionMask2);
-                        keepRestitution = b2OrW(keepRestitution, b2AndNotW(restitutionMask2, separated));
-                    }
-
                     // fixed anchors for Jacobians
                     B2Vec2W rA = c.anchorA2;
                     B2Vec2W rB = c.anchorB2;
@@ -1737,7 +2015,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
                     // Compute normal impulse
-                    B2FloatW negImpulse = b2MulW(c.normalMass2, b2AddW(vn, velocityBias));
+                    B2FloatW negImpulse = b2MulW(c.normalMass2, b2AddW(vn, velocityBias2));
 
                     // Clamp the accumulated impulse
                     B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), b2ZeroW());
@@ -1759,10 +2037,6 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
                     bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
                 }
-
-                // Turn off restitution when all points become separated on a lane.
-                c.negRestitutionVelocity1 = b2BlendW(b2ZeroW(), c.negRestitutionVelocity1, keepRestitution);
-                c.negRestitutionVelocity2 = b2BlendW(b2ZeroW(), c.negRestitutionVelocity2, keepRestitution);
 
                 // Rolling resistance
                 if (b2AllZeroW(c.rollingResistance) == false)
@@ -1861,6 +2135,134 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             }
 
             b2TracyCZoneEnd(B2TracyCZone.solve_contact);
+        }
+
+        internal static void b2ApplyRestitution_Wide(B2SolverBlock block, B2StepContext context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.restitution, "Restitution", B2HexColor.b2_colorDodgerBlue, true);
+
+            B2BodyState[] states = context.states;
+            Span<B2ContactConstraintWide> constraints = context.graph.colors[block.colorIndex].wideConstraints;
+            B2FloatW inv_h = b2SplatW(context.inv_h);
+            B2FloatW negRestitutionThreshold = b2SplatW(-context.world.restitutionThreshold);
+            B2FloatW zeroW = b2ZeroW();
+            bool propagate = context.world.enableRestitutionPropagation;
+
+            for (int wideIndex = block.startIndex; wideIndex < block.startIndex + block.count; ++wideIndex)
+            {
+                ref B2ContactConstraintWide c = ref constraints[wideIndex];
+                if (propagate == false && b2AllZeroW(c.restitution))
+                {
+                    continue;
+                }
+
+                B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
+                B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
+
+                B2FloatW restitutionMask = b2GreaterThanW(c.restitution, zeroW);
+                B2FloatW normalMass1 = propagate ? c.normalMass1 : b2BlendW(zeroW, c.normalMass1, restitutionMask);
+                B2FloatW normalMass2 = propagate ? c.normalMass2 : b2BlendW(zeroW, c.normalMass2, restitutionMask);
+                B2Vec2W dp = new B2Vec2W(b2SubW(bB.dp.X, bA.dp.X), b2SubW(bB.dp.Y, bA.dp.Y));
+
+                {
+                    B2Vec2W rA = c.anchorA1;
+                    B2Vec2W rB = c.anchorB1;
+
+                    B2FloatW compressionImpulse = b2SubW(c.totalNormalImpulse1, c.restitutionImpulse1);
+                    B2FloatW armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity1, negRestitutionThreshold)),
+                        b2GreaterThanW(compressionImpulse, zeroW));
+
+                    B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
+                    B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
+                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
+                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
+
+                    B2FloatW specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
+                    B2FloatW velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity1), armed);
+
+                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                    B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
+
+                    B2FloatW negImpulse = b2MulW(normalMass1, b2AddW(vn, velocityBias));
+
+                    B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), zeroW);
+                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse1);
+
+                    B2FloatW approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass1, vn)), zeroW), b2MaxW(impulse, zeroW));
+                    B2FloatW allowance =
+                        b2SubW(b2MulW(c.restitution, b2AddW(compressionImpulse, approachImpulse)), c.restitutionImpulse1);
+                    B2FloatW maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
+                    impulse = b2BlendW(impulse, b2MinW(impulse, maxImpulse), armed);
+
+                    c.normalImpulse1 = b2AddW(c.normalImpulse1, impulse);
+                    c.restitutionImpulse1 = b2AddW(c.restitutionImpulse1, b2SubW(impulse, approachImpulse));
+                    c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, impulse);
+
+                    B2FloatW Px = b2MulW(impulse, c.normal.X);
+                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+
+                    bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
+                    bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
+                    bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
+
+                    bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
+                    bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
+                    bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
+                }
+
+                {
+                    B2Vec2W rA = c.anchorA2;
+                    B2Vec2W rB = c.anchorB2;
+
+                    B2FloatW compressionImpulse = b2SubW(c.totalNormalImpulse2, c.restitutionImpulse2);
+                    B2FloatW armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity2, negRestitutionThreshold)),
+                        b2GreaterThanW(compressionImpulse, zeroW));
+
+                    B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
+                    B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
+                    B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
+                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation2);
+
+                    B2FloatW specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
+                    B2FloatW velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity2), armed);
+
+                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                    B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
+
+                    B2FloatW negImpulse = b2MulW(normalMass2, b2AddW(vn, velocityBias));
+
+                    B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), zeroW);
+                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse2);
+
+                    B2FloatW approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass2, vn)), zeroW), b2MaxW(impulse, zeroW));
+                    B2FloatW allowance =
+                        b2SubW(b2MulW(c.restitution, b2AddW(compressionImpulse, approachImpulse)), c.restitutionImpulse2);
+                    B2FloatW maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
+                    impulse = b2BlendW(impulse, b2MinW(impulse, maxImpulse), armed);
+
+                    c.normalImpulse2 = b2AddW(c.normalImpulse2, impulse);
+                    c.restitutionImpulse2 = b2AddW(c.restitutionImpulse2, b2SubW(impulse, approachImpulse));
+                    c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, impulse);
+
+                    B2FloatW Px = b2MulW(impulse, c.normal.X);
+                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+
+                    bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
+                    bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
+                    bA.w = b2MulSubW(bA.w, c.invIA, b2SubW(b2MulW(rA.X, Py), b2MulW(rA.Y, Px)));
+
+                    bB.v.X = b2MulAddW(bB.v.X, c.invMassB, Px);
+                    bB.v.Y = b2MulAddW(bB.v.Y, c.invMassB, Py);
+                    bB.w = b2MulAddW(bB.w, c.invIB, b2SubW(b2MulW(rB.X, Py), b2MulW(rB.Y, Px)));
+                }
+
+                b2ScatterBodies(states, c.indexA.AsSpan(), ref bA);
+                b2ScatterBodies(states, c.indexB.AsSpan(), ref bB);
+            }
+
+            b2TracyCZoneEnd(B2TracyCZone.restitution);
         }
 
         // I tried adding this to the last relax iterations but it was slower.

@@ -44,6 +44,8 @@ namespace Box2D.NET
         public ArraySegment<int> bulletBodies;
         public B2AtomicInt bulletBodyCount;
 
+        public B2AtomicInt anyRestitution;
+
         // Graph color spans for the narrow-phase, includes non-touching contacts as well.
         public B2ContactCollideSpan[] collideSpans;
 

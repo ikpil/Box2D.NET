@@ -16,6 +16,13 @@ namespace Box2D.NET
         /// speed have restitution applied (will bounce).
         public float restitutionThreshold;
 
+        /// Number of iterations of the restitution solver. More iterations can lead to less box spinning.
+        /// @see B2_MAX_RESTITUTION_ITERATIONS
+        public int restitutionIterations;
+
+        /// Enable full contact propagation in the restitution solver. Expensive.
+        public bool enableRestitutionPropagation;
+
         /// Threshold speed for hit events. Usually meters per second.
         public float hitEventThreshold;
 

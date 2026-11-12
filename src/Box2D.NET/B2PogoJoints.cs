@@ -27,6 +27,8 @@ namespace Box2D.NET
         /// @param length The new pogo joint length
         public static void b2PogoJoint_SetRestLength(B2JointId jointId, float length)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(length)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_pogoJoint);
             joint.uj.pogoJoint.restLength = length;
         }
@@ -48,6 +50,8 @@ namespace Box2D.NET
         /// Set the spring stiffness in Hertz
         public static void b2PogoJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_pogoJoint);
             joint.uj.pogoJoint.hertz = hertz;
         }
@@ -55,6 +59,8 @@ namespace Box2D.NET
         /// Set the spring damping ratio, non-dimensional
         public static void b2PogoJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_pogoJoint);
             joint.uj.pogoJoint.dampingRatio = dampingRatio;
         }

@@ -603,6 +603,8 @@ namespace Box2D.NET
 
         internal static void b2TransferBody(B2World world, B2SolverSet targetSet, B2SolverSet sourceSet, B2Body body)
         {
+            B2_ASSERT(body.headContactKey == B2_NULL_INDEX);
+
             if (targetSet == sourceSet)
             {
                 return;
@@ -622,7 +624,7 @@ namespace Box2D.NET
 
             // Clear transient body flags
             body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
-            targetSim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+            targetSim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_bodyTransientFlags);
 
             // Remove body sim from solver set that owns it
             B2Body movedBody = b2RemoveBodySim(world, sourceSet, sourceIndex);

@@ -66,6 +66,9 @@ namespace Box2D.NET
         // The time that a body must be still before it will go to sleep. In seconds.
         public const float B2_TIME_TO_SLEEP = 0.5f;
 
+        /// The maximum number of restitution iterations. Needed to avoid a solver overflow.
+        public const int B2_MAX_RESTITUTION_ITERATIONS = 63;
+
         // solver
         public const int B2_MAX_CONTINUOUS_SENSOR_HITS = 8;
 

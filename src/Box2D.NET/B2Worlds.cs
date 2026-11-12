@@ -204,6 +204,14 @@ namespace Box2D.NET
 
             B2_ASSERT(B2_MAX_WORLDS < ushort.MaxValue, "B2_MAX_WORLDS limit exceeded");
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.gravity)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.restitutionThreshold)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(def.restitutionIterations >= 0) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hitEventThreshold)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.contactHertz)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.contactDampingRatio)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.contactSpeed)) == false) return new B2WorldId(0, 0);
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maximumLinearSpeed) && def.maximumLinearSpeed > 0.0f) == false) return new B2WorldId(0, 0);
 
             int worldId = B2_NULL_INDEX;
             for (int i = 0; i < B2_MAX_WORLDS; ++i)
@@ -301,12 +309,15 @@ namespace Box2D.NET
             world.activeTaskCount = 0;
             world.taskCount = 0;
             world.gravity = def.gravity;
-            world.hitEventThreshold = def.hitEventThreshold;
-            world.restitutionThreshold = def.restitutionThreshold;
+            world.hitEventThreshold = b2ClampFloat(def.hitEventThreshold, 0.0f, float.MaxValue);
+            world.restitutionThreshold = b2ClampFloat(def.restitutionThreshold, 0.0f, float.MaxValue);
+            // Clamp this to avoid overflowing the solver sync flags.
+            world.restitutionIterations = b2ClampInt(def.restitutionIterations, 0, B2_MAX_RESTITUTION_ITERATIONS);
+            world.enableRestitutionPropagation = def.enableRestitutionPropagation;
             world.maxLinearSpeed = def.maximumLinearSpeed;
-            world.contactSpeed = def.contactSpeed;
-            world.contactHertz = def.contactHertz;
-            world.contactDampingRatio = def.contactDampingRatio;
+            world.contactSpeed = b2ClampFloat(def.contactSpeed, 0.0f, float.MaxValue);
+            world.contactHertz = b2ClampFloat(def.contactHertz, 0.0f, float.MaxValue);
+            world.contactDampingRatio = b2ClampFloat(def.contactDampingRatio, 0.0f, float.MaxValue);
             world.contactRecycleDistance = B2_CONTACT_RECYCLE_DISTANCE;
 
 
@@ -511,7 +522,6 @@ namespace Box2D.NET
             B2SolverSet[] solverSets = world.solverSets.data;
             B2BodySim[] awakeSims = solverSets[(int)B2SolverSetType.b2_awakeSet].bodySims.data;
             B2BodySim[] staticSims = solverSets[(int)B2SolverSetType.b2_staticSet].bodySims.data;
-            B2BodyState[] states = solverSets[(int)B2SolverSetType.b2_awakeSet].bodyStates.data;
 
             B2_ASSERT(startIndex < endIndex);
 
@@ -620,32 +630,7 @@ namespace Box2D.NET
                                 B2Vec2 dp = b2Add(dc, b2Sub(rB, rA));
                                 mp.separation = mp.baseSeparation + b2Dot(dp, normal);
 
-                                if (mp.totalNormalImpulse > 0.0f && mp.normalVelocity < -world.restitutionThreshold)
-                                {
-                                    mp.restitutionVelocity = -contactSim.restitution * mp.normalVelocity;
-                                }
-                                else
-                                {
-                                    mp.restitutionVelocity = 0.0f;
-                                }
-
-                                int indexA = b2DecodeAwakeIndex(encodedA);
-                                B2Vec2 vrA = b2Vec2_zero;
-                                if (indexA != B2_NULL_INDEX)
-                                {
-                                    B2BodyState stateA = states[indexA];
-                                    vrA = b2Add(stateA.linearVelocity, b2CrossSV(stateA.angularVelocity, mp.anchorA));
-                                }
-
-                                int indexB = b2DecodeAwakeIndex(encodedB);
-                                B2Vec2 vrB = b2Vec2_zero;
-                                if (indexB != B2_NULL_INDEX)
-                                {
-                                    B2BodyState stateB = states[indexB];
-                                    vrB = b2Add(stateB.linearVelocity, b2CrossSV(stateB.angularVelocity, mp.anchorB));
-                                }
-
-                                mp.normalVelocity = b2Dot(contactSim.manifold.normal, b2Sub(vrB, vrA));
+                                mp.normalVelocity = 0.0f;
                                 mp.persisted = true;
                             }
 
@@ -686,27 +671,9 @@ namespace Box2D.NET
                     {
                         for (int i = 0; i < contactSim.manifold.pointCount; ++i)
                         {
+                            // Cache separation
                             ref B2ManifoldPoint mp = ref contactSim.manifold.points[i];
                             mp.baseSeparation = mp.separation;
-
-                            // Save relative velocity for restitution and hit events reporting.
-                            int indexA = b2DecodeAwakeIndex(encodedA);
-                            B2Vec2 vrA = b2Vec2_zero;
-                            if (indexA != B2_NULL_INDEX)
-                            {
-                                B2BodyState stateA = states[indexA];
-                                vrA = b2Add(stateA.linearVelocity, b2CrossSV(stateA.angularVelocity, mp.anchorA));
-                            }
-
-                            int indexB = b2DecodeAwakeIndex(encodedB);
-                            B2Vec2 vrB = b2Vec2_zero;
-                            if (indexB != B2_NULL_INDEX)
-                            {
-                                B2BodyState stateB = states[indexB];
-                                vrB = b2Add(stateB.linearVelocity, b2CrossSV(stateB.angularVelocity, mp.anchorB));
-                            }
-
-                            mp.normalVelocity = b2Dot(contactSim.manifold.normal, b2Sub(vrB, vrA));
                         }
                     }
 
@@ -980,7 +947,7 @@ namespace Box2D.NET
         /// @param subStepCount The number of sub-steps, increasing the sub-step count can increase accuracy. Usually 4.
         public static void b2World_Step(B2WorldId worldId, float timeStep, int subStepCount)
         {
-            B2_ASSERT(b2IsValidFloat(timeStep));
+            if (B2_CHECK_INPUT(b2IsValidFloat(timeStep)) == false) return;
             B2_ASSERT(0 < subStepCount);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -1230,7 +1197,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorYellow;
                 }
-                else if (0 != (body.flags & (uint)B2BodyFlags.b2_isFast))
+                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isFast))
                 {
                     color = B2HexColor.b2_colorSalmon;
                 }
@@ -2093,6 +2060,8 @@ namespace Box2D.NET
         /// @see b2WorldDef
         public static void b2World_SetRestitutionThreshold(B2WorldId worldId, float value)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(value)) == false) return;
+
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
             if (world.locked)
@@ -2108,11 +2077,56 @@ namespace Box2D.NET
             B2World world = b2GetWorldFromId(worldId);
             return world.restitutionThreshold;
         }
+
+        /// Set the number of restitution iterations. More iterations can lead to less box spinning.
+        /// Clamped to B2_MAX_RESTITUTION_ITERATIONS.
+        public static void b2World_SetRestitutionIterations(B2WorldId worldId, int iterations)
+        {
+            if (B2_CHECK_INPUT(iterations >= 0) == false) return;
+
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+
+            world.restitutionIterations = b2ClampInt(iterations, 0, B2_MAX_RESTITUTION_ITERATIONS);
+        }
+
+        /// Get the number of restitution iterations.
+        public static int b2World_GetRestitutionIterations(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            return world.restitutionIterations;
+        }
+
+        /// Enable full contact propagation in the restitution solver. Expensive.
+        public static void b2World_EnableRestitutionPropagation(B2WorldId worldId, bool flag)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+
+            world.enableRestitutionPropagation = flag;
+        }
+
+        /// Is restitution propagation enabled?
+        public static bool b2World_IsRestitutionPropagationEnabled(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            return world.enableRestitutionPropagation;
+        }
         /// Adjust the hit event threshold. This controls the collision speed needed to generate a b2ContactHitEvent.
         /// Usually in meters per second.
         /// @see b2WorldDef::hitEventThreshold
         public static void b2World_SetHitEventThreshold(B2WorldId worldId, float value)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(value)) == false) return;
+
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
             if (world.locked)
@@ -2136,6 +2150,10 @@ namespace Box2D.NET
         /// @note Advanced feature
         public static void b2World_SetContactTuning(B2WorldId worldId, float hertz, float dampingRatio, float pushSpeed)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(pushSpeed)) == false) return;
+
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
             if (world.locked)
@@ -2152,6 +2170,8 @@ namespace Box2D.NET
         /// Usually in meters.
         public static void b2World_SetContactRecycleDistance(B2WorldId worldId, float recycleDistance)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(recycleDistance)) == false) return;
+
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
             if (world.locked)
@@ -2171,7 +2191,7 @@ namespace Box2D.NET
         /// Set the maximum linear speed. Usually in m/s.
         public static void b2World_SetMaximumLinearSpeed(B2WorldId worldId, float maximumLinearSpeed)
         {
-            B2_ASSERT(b2IsValidFloat(maximumLinearSpeed) && maximumLinearSpeed > 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(maximumLinearSpeed) && maximumLinearSpeed > 0.0f) == false) return;
 
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
@@ -3028,6 +3048,8 @@ void b2World_Dump()
         /// @see b2WorldDef
         public static void b2World_SetGravity(B2WorldId worldId, B2Vec2 gravity)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(gravity)) == false) return;
+
             B2World world = b2GetWorldFromId(worldId);
             world.gravity = gravity;
         }
@@ -3131,10 +3153,10 @@ void b2World_Dump()
             float falloff = explosionDef.falloff;
             float impulsePerLength = explosionDef.impulsePerLength;
 
-            B2_ASSERT(b2IsValidPosition(position));
-            B2_ASSERT(b2IsValidFloat(radius) && radius >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(falloff) && falloff >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(impulsePerLength));
+            if (B2_CHECK_INPUT(b2IsValidPosition(position)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(radius) && radius >= 0.0f) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(falloff) && falloff >= 0.0f) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(impulsePerLength)) == false) return;
 
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
@@ -3336,9 +3358,8 @@ void b2World_Dump()
                             B2_ASSERT(body.setIndex == setIndex);
                             B2_ASSERT(body.localIndex == i);
 
-                            uint syncedFlags = body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+                            uint syncedFlags = body.flags & ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_bodyTransientFlags);
                             B2_ASSERT((bodySim.flags & syncedFlags) == syncedFlags);
-                            B2_ASSERT((bodySim.flags & (uint)B2BodyFlags.b2_isFast) == (body.flags & (uint)B2BodyFlags.b2_isFast));
 
                             B2BodyState bodyState = b2GetBodyState(world, body);
                             if (bodyState != null)

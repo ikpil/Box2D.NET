@@ -55,7 +55,7 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2SetLengthUnitsPerMeter(float lengthUnits)
         {
-            B2_ASSERT(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(lengthUnits) && lengthUnits > 0.0f) == false) return;
             b2_lengthUnitsPerMeter = lengthUnits;
         }
 

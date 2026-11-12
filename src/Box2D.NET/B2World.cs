@@ -112,6 +112,8 @@ namespace Box2D.NET
         public B2Vec2 gravity;
         public float hitEventThreshold;
         public float restitutionThreshold;
+        public int restitutionIterations;
+        public bool enableRestitutionPropagation;
         public float maxLinearSpeed;
         public float contactSpeed;
         public float contactHertz;
@@ -226,6 +228,8 @@ namespace Box2D.NET
             gravity = new B2Vec2();
             hitEventThreshold = 0.0f;
             restitutionThreshold = 0.0f;
+            restitutionIterations = 0;
+            enableRestitutionPropagation = false;
             maxLinearSpeed = 0.0f;
             contactSpeed = 0.0f;
             contactHertz = 0.0f;

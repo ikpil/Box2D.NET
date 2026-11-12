@@ -22,6 +22,8 @@ namespace Box2D.NET
         /// @param length The new distance joint length
         public static void b2DistanceJoint_SetLength(B2JointId jointId, float length)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(length)) == false) return;
+
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
@@ -54,6 +56,9 @@ namespace Box2D.NET
         /// Set the minimum and maximum length parameters of a distance joint
         public static void b2DistanceJoint_SetLengthRange(B2JointId jointId, float minLength, float maxLength)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(minLength)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(maxLength)) == false) return;
+
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
@@ -117,10 +122,13 @@ namespace Box2D.NET
         /// Set the force range for the spring.
         public static void b2DistanceJoint_SetSpringForceRange(B2JointId jointId, float lowerForce, float upperForce)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(lowerForce)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(upperForce)) == false) return;
+
             B2_ASSERT(lowerForce <= upperForce);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
-            @base.uj.distanceJoint.lowerSpringForce = lowerForce;
-            @base.uj.distanceJoint.upperSpringForce = upperForce;
+            @base.uj.distanceJoint.lowerSpringForce = b2MinFloat(lowerForce, upperForce);
+            @base.uj.distanceJoint.upperSpringForce = b2MaxFloat(lowerForce, upperForce);
         }
 
         /// Get the force range for the spring.
@@ -134,12 +142,16 @@ namespace Box2D.NET
         /// Set the spring stiffness in Hertz
         public static void b2DistanceJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.hertz = hertz;
         }
         /// Set the spring damping ratio, non-dimensional
         public static void b2DistanceJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             @base.uj.distanceJoint.dampingRatio = dampingRatio;
         }
@@ -190,6 +202,8 @@ namespace Box2D.NET
         /// Set the distance joint motor speed, usually in meters per second
         public static void b2DistanceJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             joint.uj.distanceJoint.motorSpeed = motorSpeed;
         }
@@ -209,6 +223,8 @@ namespace Box2D.NET
         /// Set the distance joint maximum motor force, usually in newtons
         public static void b2DistanceJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(force)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             joint.uj.distanceJoint.maxMotorForce = force;
         }

@@ -36,6 +36,8 @@ namespace Box2D.NET
         public B2FloatW tangentSpeed;
         public B2FloatW rollingResistance;
         public B2FloatW tangentMass1, tangentMass2;
-        public B2FloatW negRestitutionVelocity1, negRestitutionVelocity2;
+        public B2FloatW restitution;
+        public B2FloatW relativeVelocity1, relativeVelocity2;
+        public B2FloatW restitutionImpulse1, restitutionImpulse2;
     }
 }

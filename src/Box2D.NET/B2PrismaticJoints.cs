@@ -37,6 +37,8 @@ namespace Box2D.NET
         /// runs at 60Hz then the joint stiffness should be 15Hz or less.
         public static void b2PrismaticJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.hertz = hertz;
         }
@@ -49,6 +51,8 @@ namespace Box2D.NET
         /// Set the prismatic joint damping ratio (non-dimensional)
         public static void b2PrismaticJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.dampingRatio = dampingRatio;
         }
@@ -62,6 +66,8 @@ namespace Box2D.NET
         /// Set the prismatic joint spring target angle, usually in meters
         public static void b2PrismaticJoint_SetTargetTranslation(B2JointId jointId, float translation)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(translation)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.targetTranslation = translation;
         }
@@ -104,6 +110,9 @@ namespace Box2D.NET
         /// Set the prismatic joint limits
         public static void b2PrismaticJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(lower)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(upper)) == false) return;
+
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
@@ -129,6 +138,8 @@ namespace Box2D.NET
         /// Set the prismatic joint motor speed, usually in meters per second
         public static void b2PrismaticJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.motorSpeed = motorSpeed;
         }
@@ -148,6 +159,8 @@ namespace Box2D.NET
         /// Set the prismatic joint maximum motor force, usually in newtons
         public static void b2PrismaticJoint_SetMaxMotorForce(B2JointId jointId, float force)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(force)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             joint.uj.prismaticJoint.maxMotorForce = force;
         }

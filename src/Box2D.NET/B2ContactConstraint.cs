@@ -14,6 +14,7 @@ namespace Box2D.NET
         public float invMassA, invMassB;
         public float invIA, invIB;
         public float friction;
+        public float restitution;
         public float tangentSpeed;
         public float rollingResistance;
         public float rollingMass;

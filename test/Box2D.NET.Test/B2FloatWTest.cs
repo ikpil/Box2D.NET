@@ -135,17 +135,6 @@ public class B2FloatWTest
             Assert.That(b.W, Is.EqualTo(v[3]));
         }
 
-        // or
-        {
-            B2FloatW b = b2OrW(b1, b2);
-            Vector<float> v = b2OrW(v1, v2);
-
-            Assert.That(b.X, Is.EqualTo(v[0]));
-            Assert.That(b.Y, Is.EqualTo(v[1]));
-            Assert.That(b.Z, Is.EqualTo(v[2]));
-            Assert.That(b.W, Is.EqualTo(v[3]));
-        }
-
         // greater than
         {
             B2FloatW b = b2GreaterThanW(b1, b2);

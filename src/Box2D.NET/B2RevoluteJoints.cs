@@ -47,6 +47,8 @@ namespace Box2D.NET
         /// Set the revolute joint spring stiffness in Hertz
         public static void b2RevoluteJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.hertz = hertz;
         }
@@ -59,6 +61,8 @@ namespace Box2D.NET
         /// Set the revolute joint spring damping ratio, non-dimensional
         public static void b2RevoluteJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.dampingRatio = dampingRatio;
         }
@@ -72,6 +76,8 @@ namespace Box2D.NET
         /// Set the revolute joint spring target angle, radians
         public static void b2RevoluteJoint_SetTargetAngle(B2JointId jointId, float angle)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(angle)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.targetAngle = angle;
         }
@@ -130,6 +136,9 @@ namespace Box2D.NET
         /// and that -0.99 * B2_PI <= lower && upper <= -0.99 * B2_PI.
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(lower)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(upper)) == false) return;
+
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -157,6 +166,8 @@ namespace Box2D.NET
         /// Set the revolute joint motor speed in radians per second
         public static void b2RevoluteJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.motorSpeed = motorSpeed;
         }
@@ -176,6 +187,8 @@ namespace Box2D.NET
         /// Set the revolute joint maximum motor torque, usually in newton-meters
         public static void b2RevoluteJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(torque)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             joint.uj.revoluteJoint.maxMotorTorque = torque;
         }

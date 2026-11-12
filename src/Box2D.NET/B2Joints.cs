@@ -224,6 +224,15 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
+        internal static bool b2IsValidJointDef(in B2JointDef def)
+        {
+            return b2IsValidTransform(def.localFrameA) && b2IsValidTransform(def.localFrameB) &&
+                   b2IsValidFloat(def.forceThreshold) && def.forceThreshold >= 0.0f && b2IsValidFloat(def.torqueThreshold) &&
+                   def.torqueThreshold >= 0.0f && b2IsValidFloat(def.constraintHertz) && def.constraintHertz >= 0.0f &&
+                   b2IsValidFloat(def.constraintDampingRatio) && def.constraintDampingRatio >= 0.0f &&
+                   b2IsValidFloat(def.drawScale);
+        }
+
         public static B2JointPair b2CreateJoint(B2World world, in B2JointDef def, B2JointType type)
         {
             B2_ASSERT(b2IsValidTransform(def.localFrameA));
@@ -423,6 +432,18 @@ namespace Box2D.NET
         public static B2JointId b2CreateDistanceJoint(B2WorldId worldId, in B2DistanceJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.length) && def.length > 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.dampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.minLength)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxLength)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxMotorForce)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.motorSpeed)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.lowerSpringForce)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.upperSpringForce)) == false) return new B2JointId();
+            B2_ASSERT(def.lowerSpringForce <= def.upperSpringForce);
+
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -431,9 +452,6 @@ namespace Box2D.NET
             {
                 return new B2JointId();
             }
-
-            B2_ASSERT(b2IsValidFloat(def.length) && def.length > 0.0f);
-            B2_ASSERT(def.lowerSpringForce <= def.upperSpringForce);
 
             B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_distanceJoint);
 
@@ -449,8 +467,8 @@ namespace Box2D.NET
             joint.uj.distanceJoint.maxMotorForce = def.maxMotorForce;
             joint.uj.distanceJoint.motorSpeed = def.motorSpeed;
             joint.uj.distanceJoint.enableSpring = def.enableSpring;
-            joint.uj.distanceJoint.lowerSpringForce = def.lowerSpringForce;
-            joint.uj.distanceJoint.upperSpringForce = def.upperSpringForce;
+            joint.uj.distanceJoint.lowerSpringForce = b2MinFloat(def.lowerSpringForce, def.upperSpringForce);
+            joint.uj.distanceJoint.upperSpringForce = b2MaxFloat(def.lowerSpringForce, def.upperSpringForce);
             joint.uj.distanceJoint.enableLimit = def.enableLimit;
             joint.uj.distanceJoint.enableMotor = def.enableMotor;
             joint.uj.distanceJoint.impulse = 0.0f;
@@ -467,6 +485,18 @@ namespace Box2D.NET
         public static B2JointId b2CreateMotorJoint(B2WorldId worldId, in B2MotorJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.linearVelocity)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxVelocityForce)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularVelocity)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxVelocityTorque)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.linearHertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.linearDampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxSpringForce)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularHertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularDampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxSpringTorque)) == false) return new B2JointId();
+
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -508,6 +538,8 @@ namespace Box2D.NET
         public static B2JointId b2CreateFilterJoint(B2WorldId worldId, in B2FilterJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -529,6 +561,10 @@ namespace Box2D.NET
         public static B2JointId b2CreateMoverJoint(B2WorldId worldId, in B2MoverJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.linearVelocity)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.maxVelocityForce)) == false) return new B2JointId();
+
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -554,11 +590,15 @@ namespace Box2D.NET
         public static B2JointId b2CreatePogoJoint(B2WorldId worldId, in B2PogoJointDef def)
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(b2IsValidFloat(def.restLength) && def.restLength >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.hertz) && def.hertz >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.dampingRatio) && def.dampingRatio >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.maxTensionForce) && def.maxTensionForce >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.maxCompressionForce) && def.maxCompressionForce >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.normal)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.restLength) && def.restLength >= 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hertz) && def.hertz >= 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.dampingRatio) && def.dampingRatio >= 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxTensionForce) && def.maxTensionForce >= 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxCompressionForce) && def.maxCompressionForce >= 0.0f) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.impulse)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.velocity)) == false) return new B2JointId();
 
             B2World world = b2GetWorldFromId(worldId);
 
@@ -592,6 +632,14 @@ namespace Box2D.NET
         public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, in B2PrismaticJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.dampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.targetTranslation)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.lowerTranslation)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.upperTranslation)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxMotorForce)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.motorSpeed)) == false) return new B2JointId();
             B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -611,8 +659,8 @@ namespace Box2D.NET
             joint.uj.prismaticJoint.hertz = def.hertz;
             joint.uj.prismaticJoint.dampingRatio = def.dampingRatio;
             joint.uj.prismaticJoint.targetTranslation = def.targetTranslation;
-            joint.uj.prismaticJoint.lowerTranslation = def.lowerTranslation;
-            joint.uj.prismaticJoint.upperTranslation = def.upperTranslation;
+            joint.uj.prismaticJoint.lowerTranslation = b2MinFloat(def.lowerTranslation, def.upperTranslation);
+            joint.uj.prismaticJoint.upperTranslation = b2MaxFloat(def.lowerTranslation, def.upperTranslation);
             joint.uj.prismaticJoint.maxMotorForce = def.maxMotorForce;
             joint.uj.prismaticJoint.motorSpeed = def.motorSpeed;
             joint.uj.prismaticJoint.enableSpring = def.enableSpring;
@@ -627,6 +675,14 @@ namespace Box2D.NET
         public static B2JointId b2CreateRevoluteJoint(B2WorldId worldId, in B2RevoluteJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.targetAngle)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.dampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.lowerAngle)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.upperAngle)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxMotorTorque)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.motorSpeed)) == false) return new B2JointId();
             B2_ASSERT(def.lowerAngle <= def.upperAngle);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -668,6 +724,12 @@ namespace Box2D.NET
         public static B2JointId b2CreateWeldJoint(B2WorldId worldId, in B2WeldJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.linearHertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularHertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.linearDampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularDampingRatio)) == false) return new B2JointId();
+
             B2World world = b2GetWorldFromId(worldId);
 
             B2_ASSERT(world.locked == false);
@@ -698,6 +760,13 @@ namespace Box2D.NET
         public static B2JointId b2CreateWheelJoint(B2WorldId worldId, in B2WheelJointDef def)
         {
             B2_CHECK_DEF(def);
+            if (B2_CHECK_INPUT(b2IsValidJointDef(def.@base)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.hertz)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.dampingRatio)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.lowerTranslation)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.upperTranslation)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.maxMotorTorque)) == false) return new B2JointId();
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.motorSpeed)) == false) return new B2JointId();
             B2_ASSERT(def.lowerTranslation <= def.upperTranslation);
 
             B2World world = b2GetWorldFromId(worldId);
@@ -719,8 +788,8 @@ namespace Box2D.NET
             joint.uj.wheelJoint.motorImpulse = 0.0f;
             joint.uj.wheelJoint.lowerImpulse = 0.0f;
             joint.uj.wheelJoint.upperImpulse = 0.0f;
-            joint.uj.wheelJoint.lowerTranslation = def.lowerTranslation;
-            joint.uj.wheelJoint.upperTranslation = def.upperTranslation;
+            joint.uj.wheelJoint.lowerTranslation = b2MinFloat(def.lowerTranslation, def.upperTranslation);
+            joint.uj.wheelJoint.upperTranslation = b2MaxFloat(def.lowerTranslation, def.upperTranslation);
             joint.uj.wheelJoint.maxMotorTorque = def.maxMotorTorque;
             joint.uj.wheelJoint.motorSpeed = def.motorSpeed;
             joint.uj.wheelJoint.hertz = def.hertz;
@@ -884,7 +953,7 @@ namespace Box2D.NET
         /// Set the local frame on bodyA
         public static void b2Joint_SetLocalFrameA(B2JointId jointId, in B2Transform localFrame)
         {
-            B2_ASSERT(b2IsValidTransform(localFrame));
+            if (B2_CHECK_INPUT(b2IsValidTransform(localFrame)) == false) return;
 
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -904,7 +973,7 @@ namespace Box2D.NET
         /// Set the local frame on bodyB
         public static void b2Joint_SetLocalFrameB(B2JointId jointId, in B2Transform localFrame)
         {
-            B2_ASSERT(b2IsValidTransform(localFrame));
+            if (B2_CHECK_INPUT(b2IsValidTransform(localFrame)) == false) return;
 
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -1376,8 +1445,8 @@ namespace Box2D.NET
         /// @param dampingRatio the non-dimensional damping ratio (one for critical damping)
         public static void b2Joint_SetConstraintTuning(B2JointId jointId, float hertz, float dampingRatio)
         {
-            B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz) && hertz >= 0.0f) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f) == false) return;
 
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -1399,7 +1468,7 @@ namespace Box2D.NET
         /// Set the force threshold for joint events (Newtons)
         public static void b2Joint_SetForceThreshold(B2JointId jointId, float threshold)
         {
-            B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(threshold) && threshold >= 0.0f) == false) return;
 
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);
@@ -1419,7 +1488,7 @@ namespace Box2D.NET
         /// Set the torque threshold for joint events (N-m)
         public static void b2Joint_SetTorqueThreshold(B2JointId jointId, float threshold)
         {
-            B2_ASSERT(b2IsValidFloat(threshold) && threshold >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(threshold) && threshold >= 0.0f) == false) return;
 
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);

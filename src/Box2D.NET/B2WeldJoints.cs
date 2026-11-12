@@ -82,6 +82,8 @@ namespace Box2D.NET
         /// Set the weld joint linear stiffness in Hertz. 0 is rigid.
         public static void b2WeldJoint_SetLinearHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearHertz = hertz;
@@ -95,6 +97,8 @@ namespace Box2D.NET
         /// Set the weld joint linear damping ratio (non-dimensional)
         public static void b2WeldJoint_SetLinearDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.linearDampingRatio = dampingRatio;
@@ -108,6 +112,8 @@ namespace Box2D.NET
         /// Set the weld joint angular stiffness in Hertz. 0 is rigid.
         public static void b2WeldJoint_SetAngularHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2_ASSERT(b2IsValidFloat(hertz) && hertz >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularHertz = hertz;
@@ -121,6 +127,8 @@ namespace Box2D.NET
         /// Set weld joint angular damping ratio, non-dimensional
         public static void b2WeldJoint_SetAngularDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2_ASSERT(b2IsValidFloat(dampingRatio) && dampingRatio >= 0.0f);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_weldJoint);
             joint.uj.weldJoint.angularDampingRatio = dampingRatio;

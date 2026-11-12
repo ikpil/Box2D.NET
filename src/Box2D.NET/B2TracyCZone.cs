@@ -12,6 +12,7 @@ namespace Box2D.NET
         create_contacts,
         prepare_overflow_contact,
         warmstart_overflow_contact,
+        push_contact,
         solve_contact,
         overflow_resitution,
         prepare_contact,

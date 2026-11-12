@@ -24,6 +24,8 @@ namespace Box2D.NET
         /// Set the desired relative linear velocity in meters per second
         public static void b2MoverJoint_SetLinearVelocity(B2JointId jointId, B2Vec2 velocity)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(velocity)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_moverJoint);
             joint.uj.moverJoint.linearVelocity = velocity;
         }
@@ -38,6 +40,8 @@ namespace Box2D.NET
         /// Set the motor joint maximum force, usually in newtons
         public static void b2MoverJoint_SetMaxVelocityForce(B2JointId jointId, B2Vec2 maxForce)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(maxForce)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_moverJoint);
             joint.uj.moverJoint.maxVelocityForce = maxForce;
         }

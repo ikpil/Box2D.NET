@@ -15,6 +15,7 @@ namespace Box2D.NET
         b2_stageSolve,
         b2_stageIntegratePositions,
         b2_stageRelax,
+        b2_stageRestitution,
         b2_stageStoreImpulses
     }
 }

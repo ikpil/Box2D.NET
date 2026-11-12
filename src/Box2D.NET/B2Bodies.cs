@@ -175,7 +175,7 @@ namespace Box2D.NET
             B2BodySim bodySim = b2GetBodySim(world, body);
 
             // Preserve the fast flag for contact recycling.
-            bodySim.flags = body.flags & ~(uint)(B2BodyFlags.b2_isSpeedCapped | B2BodyFlags.b2_hadTimeOfImpact);
+            bodySim.flags = (bodySim.flags & (uint)B2BodyFlags.b2_isFast) | (body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags);
 
             B2BodyState bodyState = b2GetBodyState(world, body);
             if (bodyState != null)
@@ -296,15 +296,15 @@ namespace Box2D.NET
         public static B2BodyId b2CreateBody(B2WorldId worldId, in B2BodyDef def)
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(b2IsValidPosition(def.position));
-            B2_ASSERT(b2IsValidRotation(def.rotation));
-            B2_ASSERT(b2IsValidVec2(def.linearVelocity));
-            B2_ASSERT(b2IsValidFloat(def.angularVelocity));
-            B2_ASSERT(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.angularDamping) && def.angularDamping >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.sleepThreshold) && def.sleepThreshold >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.safetyFactor) && def.safetyFactor >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(def.gravityScale));
+            if (B2_CHECK_INPUT(b2IsValidPosition(def.position)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidRotation(def.rotation)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidVec2(def.linearVelocity)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularVelocity)) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.angularDamping) && def.angularDamping >= 0.0f) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.sleepThreshold) && def.sleepThreshold >= 0.0f) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.safetyFactor) && def.safetyFactor >= 0.0f) == false) return b2_nullBodyId;
+            if (B2_CHECK_INPUT(b2IsValidFloat(def.gravityScale)) == false) return b2_nullBodyId;
 
             B2World world = b2GetWorldFromId(worldId);
             B2_ASSERT(world.locked == false);
@@ -851,8 +851,8 @@ namespace Box2D.NET
         /// @see b2BodyDef::position and b2BodyDef::rotation
         public static void b2Body_SetTransform(B2BodyId bodyId, B2Pos position, B2Rot rotation)
         {
-            B2_ASSERT(b2IsValidPosition(position));
-            B2_ASSERT(b2IsValidRotation(rotation));
+            if (B2_CHECK_INPUT(b2IsValidPosition(position)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidRotation(rotation)) == false) return;
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
             B2_ASSERT(world.locked == false);
@@ -929,6 +929,8 @@ namespace Box2D.NET
         /// Set the linear velocity of a body. Usually in meters per second.
         public static void b2Body_SetLinearVelocity(B2BodyId bodyId, B2Vec2 linearVelocity)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(linearVelocity)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -954,6 +956,8 @@ namespace Box2D.NET
         /// Set the angular velocity of a body in radians per second
         public static void b2Body_SetAngularVelocity(B2BodyId bodyId, float angularVelocity)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(angularVelocity)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -986,6 +990,9 @@ namespace Box2D.NET
         /// @param wake Option to wake the body or not
         public static void b2Body_SetTargetTransform(B2BodyId bodyId, in B2WorldTransform target, float timeStep, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidWorldTransform(target)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(timeStep)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1086,6 +1093,9 @@ namespace Box2D.NET
         /// @param wake Option to wake up the body
         public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Pos point, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(force)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPosition(point)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1114,6 +1124,8 @@ namespace Box2D.NET
         /// @param wake also wake up the body
         public static void b2Body_ApplyForceToCenter(B2BodyId bodyId, B2Vec2 force, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(force)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1141,6 +1153,8 @@ namespace Box2D.NET
         /// @param wake also wake up the body
         public static void b2Body_ApplyTorque(B2BodyId bodyId, float torque, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(torque)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1187,6 +1201,9 @@ namespace Box2D.NET
         /// use a force instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Pos point, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(impulse)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidPosition(point)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1222,6 +1239,8 @@ namespace Box2D.NET
         /// use a force instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyLinearImpulseToCenter(B2BodyId bodyId, B2Vec2 impulse, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidVec2(impulse)) == false) return;
+
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
 
@@ -1256,6 +1275,8 @@ namespace Box2D.NET
         /// use a torque instead, which will work better with the sub-stepping solver.
         public static void b2Body_ApplyAngularImpulse(B2BodyId bodyId, float impulse, bool wake)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(impulse)) == false) return;
+
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1571,9 +1592,9 @@ namespace Box2D.NET
         /// rotational inertia remains fixed at zero.
         public static void b2Body_SetMassData(B2BodyId bodyId, B2MassData massData)
         {
-            B2_ASSERT(b2IsValidFloat(massData.mass) && massData.mass >= 0.0f);
-            B2_ASSERT(b2IsValidFloat(massData.rotationalInertia) && massData.rotationalInertia >= 0.0f);
-            B2_ASSERT(b2IsValidVec2(massData.center));
+            if (B2_CHECK_INPUT(b2IsValidFloat(massData.mass) && massData.mass >= 0.0f) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(massData.rotationalInertia) && massData.rotationalInertia >= 0.0f) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidVec2(massData.center)) == false) return;
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1672,7 +1693,7 @@ namespace Box2D.NET
         /// Adjust the linear damping. Normally this is set in b2BodyDef before creation.
         public static void b2Body_SetLinearDamping(B2BodyId bodyId, float linearDamping)
         {
-            B2_ASSERT(b2IsValidFloat(linearDamping) && linearDamping >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(linearDamping) && linearDamping >= 0.0f) == false) return;
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1695,7 +1716,7 @@ namespace Box2D.NET
         /// Adjust the angular damping. Normally this is set in b2BodyDef before creation.
         public static void b2Body_SetAngularDamping(B2BodyId bodyId, float angularDamping)
         {
-            B2_ASSERT(b2IsValidFloat(angularDamping) && angularDamping >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(angularDamping) && angularDamping >= 0.0f) == false) return;
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1720,7 +1741,7 @@ namespace Box2D.NET
         public static void b2Body_SetGravityScale(B2BodyId bodyId, float gravityScale)
         {
             B2_ASSERT(b2Body_IsValid(bodyId));
-            B2_ASSERT(b2IsValidFloat(gravityScale));
+            if (B2_CHECK_INPUT(b2IsValidFloat(gravityScale)) == false) return;
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -1829,6 +1850,8 @@ namespace Box2D.NET
         /// Set the sleep threshold, usually in meters per second
         public static void b2Body_SetSleepThreshold(B2BodyId bodyId, float sleepThreshold)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(sleepThreshold) && sleepThreshold >= 0.0f) == false) return;
+
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
             {
@@ -1849,7 +1872,7 @@ namespace Box2D.NET
         /// Set the continuous collision safety factor. Smaller is safer but can lead to hitching. Recommended range [0.01, 0.5]. Non-dimensional.
         public static void b2Body_SetSafetyFactor(B2BodyId bodyId, float safetyFactor)
         {
-            B2_ASSERT(b2IsValidFloat(safetyFactor) && safetyFactor >= 0.0f);
+            if (B2_CHECK_INPUT(b2IsValidFloat(safetyFactor) && safetyFactor >= 0.0f) == false) return;
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
             {

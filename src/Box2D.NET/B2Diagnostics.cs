@@ -69,6 +69,19 @@ namespace Box2D.NET
             }
         }
 
+        // Used to validate API inputs. Returns false if the input is rejected, so the caller can return.
+        public static bool B2_CHECK_INPUT(bool condition, [CallerArgumentExpression("condition")] string message = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
+        {
+            if (condition)
+            {
+                return true;
+            }
+
+            b2Log($"invalid input: {message} in {memberName}\n");
+            B2_ASSERT(condition, message, fileName, lineNumber, memberName);
+            return false;
+        }
+
         [Conditional("DEBUG")]
         public static void B2_VALIDATE(bool condition, string message = "", [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string memberName = "")
         {
@@ -102,7 +115,7 @@ namespace Box2D.NET
             return b2AssertHandler(condition, fileName, lineNumber);
         }
 
-        static void b2DefaultLogFcn(in string message)
+        public static void b2DefaultLogFcn(in string message)
         {
             Console.WriteLine($"Box2D: {message}");
         }

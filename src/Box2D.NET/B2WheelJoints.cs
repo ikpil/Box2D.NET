@@ -35,6 +35,8 @@ namespace Box2D.NET
         /// Set the wheel joint stiffness in Hertz
         public static void b2WheelJoint_SetSpringHertz(B2JointId jointId, float hertz)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(hertz)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.hertz = hertz;
         }
@@ -47,6 +49,8 @@ namespace Box2D.NET
         /// Set the wheel joint damping ratio, non-dimensional
         public static void b2WheelJoint_SetSpringDampingRatio(B2JointId jointId, float dampingRatio)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(dampingRatio)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.dampingRatio = dampingRatio;
         }
@@ -88,6 +92,9 @@ namespace Box2D.NET
         /// Set the wheel joint limits
         public static void b2WheelJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(lower)) == false) return;
+            if (B2_CHECK_INPUT(b2IsValidFloat(upper)) == false) return;
+
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
@@ -113,6 +120,8 @@ namespace Box2D.NET
         /// Set the wheel joint motor speed in radians per second
         public static void b2WheelJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.motorSpeed = motorSpeed;
         }
@@ -132,6 +141,8 @@ namespace Box2D.NET
         /// Set the wheel joint maximum motor torque, usually in newton-meters
         public static void b2WheelJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
+            if (B2_CHECK_INPUT(b2IsValidFloat(torque)) == false) return;
+
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             joint.uj.wheelJoint.maxMotorTorque = torque;
         }
