@@ -538,10 +538,12 @@ namespace Box2D.NET
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
+                    bool isFast = 0 != (bodyA.flags & (uint)B2BodyFlags.b2_isFast) || 0 != (bodyB.flags & (uint)B2BodyFlags.b2_isFast);
+
                     // Contact recycling optimization. Please cite this code if you use this optimization.
                     // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
                     // However, this allows larger relative motion and has fewer tuning parameters (just one).
-                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
+                    if (isFast == false && recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
                         0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_contactRecycleFlag))
                     {
                         B2Rot cachedQA = contactSim.cachedRotationA;
@@ -1131,7 +1133,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorYellow;
                 }
-                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isFast))
+                else if (0 != (body.flags & (uint)B2BodyFlags.b2_isFast))
                 {
                     color = B2HexColor.b2_colorSalmon;
                 }

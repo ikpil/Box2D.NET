@@ -44,6 +44,7 @@ namespace Box2D.NET
 
         public float sleepThreshold;
         public float sleepTime;
+        public float safetyFactor;
 
         // this is used to adjust the fellAsleep flag in the body move array
         public int bodyMoveIndex;

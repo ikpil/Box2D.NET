@@ -554,7 +554,8 @@ namespace Box2D.NET
             targetSim.CopyFrom(sourceSim);
 
             // Clear transient body flags
-            targetSim.flags &= ~((uint)B2BodyFlags.b2_isFast | (uint)B2BodyFlags.b2_isSpeedCapped | (uint)B2BodyFlags.b2_hadTimeOfImpact);
+            body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
+            targetSim.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;
 
             // Remove body sim from solver set that owns it
             b2RemoveBodySim(ref sourceSet.bodySims, ref world.bodies, sourceIndex);

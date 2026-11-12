@@ -41,6 +41,7 @@ namespace Box2D.NET
             B2BodyDef def = new B2BodyDef();
             def.type = B2BodyType.b2_staticBody;
             def.rotation = b2Rot_identity;
+            def.safetyFactor = 0.5f;
             def.sleepThreshold = 0.05f * b2GetLengthUnitsPerMeter();
             def.gravityScale = 1.0f;
             def.enableSleep = true;

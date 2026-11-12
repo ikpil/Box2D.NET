@@ -420,7 +420,6 @@ namespace Box2D.NET
 
             B2SolverSet awakeSet = b2Array_Get(ref world.solverSets, (int)B2SolverSetType.b2_awakeSet);
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
-            B2_ASSERT(0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isFast));
 
             // Re-center the sweep on the fast body so the TOI and the swept query stay in float precision
             B2Pos @base = fastBodySim.center0;
@@ -672,12 +671,12 @@ namespace Box2D.NET
                     // Body is not sleepy
                     body.sleepTime = 0.0f;
 
-                    const float safetyFactor = 0.5f;
+                    float safetyFactor = body.safetyFactor;
                     float maxMotion = b2MaxFloat(maxDeltaPosition, maxVelocity * timeStep);
                     if (body.type == B2BodyType.b2_dynamicBody && enableContinuous && maxMotion > safetyFactor * sim.minExtent)
                     {
-                        // This flag is only retained for debug draw
-                        sim.flags |= (uint)B2BodyFlags.b2_isFast;
+                        // This flag is used for debug draw and contact recycling.
+                        body.flags |= (uint)B2BodyFlags.b2_isFast;
 
                         // Store in fast array for the continuous collision stage
                         // This is deterministic because the order of TOI sweeps doesn't matter
@@ -729,7 +728,7 @@ namespace Box2D.NET
 
                 // Update shapes AABBs
                 B2WorldTransform transform = sim.transform;
-                bool isFast = (sim.flags & (uint)B2BodyFlags.b2_isFast) != 0;
+                bool isFast = (body.flags & (uint)B2BodyFlags.b2_isFast) != 0;
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
                 {
@@ -1919,7 +1918,7 @@ namespace Box2D.NET
                             B2Body body = bodyArray[bodySim.bodyId];
 
                             int shapeId = body.headShapeId;
-                            if ((bodySim.flags & ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast)) == ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast))
+                            if ((body.flags & ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast)) == ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast))
                             {
                                 // Fast bullet bodies don't have their final AABB yet
                                 while (shapeId != B2_NULL_INDEX)

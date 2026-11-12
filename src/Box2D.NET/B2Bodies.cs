@@ -255,6 +255,7 @@ namespace Box2D.NET
             B2_ASSERT(b2IsValidFloat(def.linearDamping) && def.linearDamping >= 0.0f);
             B2_ASSERT(b2IsValidFloat(def.angularDamping) && def.angularDamping >= 0.0f);
             B2_ASSERT(b2IsValidFloat(def.sleepThreshold) && def.sleepThreshold >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.safetyFactor) && def.safetyFactor >= 0.0f);
             B2_ASSERT(b2IsValidFloat(def.gravityScale));
 
             B2World world = b2GetWorldFromId(worldId);
@@ -375,6 +376,7 @@ namespace Box2D.NET
             body.mass = 0.0f;
             body.inertia = 0.0f;
             body.sleepThreshold = def.sleepThreshold;
+            body.safetyFactor = def.safetyFactor;
             body.sleepTime = 0.0f;
             body.type = def.type;
             body.flags = bodySim.flags;
@@ -1684,7 +1686,12 @@ namespace Box2D.NET
         /// Wake bodies touching this body. Works for static bodies.
         public static void b2Body_WakeTouching(B2BodyId bodyId)
         {
-            B2World world = b2GetWorld(bodyId.world0);
+            B2World world = b2GetWorldLocked(bodyId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
 
             int contactKey = body.headContactKey;
@@ -1728,7 +1735,12 @@ namespace Box2D.NET
         /// Set the sleep threshold, usually in meters per second
         public static void b2Body_SetSleepThreshold(B2BodyId bodyId, float sleepThreshold)
         {
-            B2World world = b2GetWorld(bodyId.world0);
+            B2World world = b2GetWorldLocked(bodyId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
             B2Body body = b2GetBodyFullId(world, bodyId);
             body.sleepThreshold = sleepThreshold;
         }
@@ -1738,6 +1750,28 @@ namespace Box2D.NET
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
             return body.sleepThreshold;
+        }
+
+        /// Set the continuous collision safety factor. Smaller is safer but can lead to hitching. Recommended range [0.01, 0.5]. Non-dimensional.
+        public static void b2Body_SetSafetyFactor(B2BodyId bodyId, float safetyFactor)
+        {
+            B2_ASSERT(b2IsValidFloat(safetyFactor) && safetyFactor >= 0.0f);
+            B2World world = b2GetWorldLocked(bodyId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            body.safetyFactor = safetyFactor;
+        }
+
+        /// Get the continuous collision safety factor. Non-dimensional.
+        public static float b2Body_GetSafetyFactor(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            return body.safetyFactor;
         }
         /// Enable or disable sleeping for this body. If sleeping is disabled the body will wake (and the entire island).
         public static void b2Body_EnableSleep(B2BodyId bodyId, bool enableSleep)
