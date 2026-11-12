@@ -312,7 +312,7 @@ namespace Box2D.NET
         // - a body changes type from dynamic to kinematic or static
         // - a shape is destroyed
         // - contact filtering is modified
-        public static void b2DestroyContact(B2World world, B2Contact contact, bool wakeBodies)
+        public static void b2DestroyContact(B2World world, B2Contact contact)
         {
             // Remove pair from set
             ulong pairKey = B2_SHAPE_PAIR_KEY(contact.shapeIdA, contact.shapeIdB);
@@ -435,7 +435,7 @@ namespace Box2D.NET
             contact.localIndex = B2_NULL_INDEX;
             b2FreeId(world.contactIdPool, contactId);
 
-            if (wakeBodies && touching)
+            if (touching)
             {
                 b2WakeBody(world, bodyA);
                 b2WakeBody(world, bodyB);
@@ -516,29 +516,12 @@ namespace Box2D.NET
                 B2ShapeId shapeIdA = new B2ShapeId(shapeA.id + 1, world.worldId, shapeA.generation);
                 B2ShapeId shapeIdB = new B2ShapeId(shapeB.id + 1, world.worldId, shapeB.generation);
 
-                ref B2Manifold manifold = ref contactSim.manifold;
-                float bestSeparation = manifold.points[0].separation;
-                B2Pos bestPoint = b2OffsetPos(transformA.p, manifold.points[0].anchorA);
+                // This call assumes thread safety.
+                world.preSolveFcn(shapeIdA, shapeIdB, ref contactSim.manifold, world.preSolveContext);
 
-                // Get deepest point
-                for (int i = 1; i < manifold.pointCount; ++i)
-                {
-                    float separation = manifold.points[i].separation;
-                    if (separation < bestSeparation)
-                    {
-                        bestSeparation = separation;
-                        bestPoint = b2OffsetPos(transformA.p, manifold.points[i].anchorA);
-                    }
-                }
-
-                // this call assumes thread safety
-                touching = world.preSolveFcn(shapeIdA, shapeIdB, bestPoint, manifold.normal, world.preSolveContext);
-                if (touching == false)
-                {
-                    // disable contact
-                    pointCount = 0;
-                    manifold.pointCount = 0;
-                }
+                // Keep these current.
+                pointCount = contactSim.manifold.pointCount;
+                touching = pointCount > 0;
             }
 
             // This flag is for testing

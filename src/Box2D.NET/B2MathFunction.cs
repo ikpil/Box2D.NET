@@ -25,6 +25,9 @@ namespace Box2D.NET
 
         public const float FLT_EPSILON = 1.1920929e-7f;
 
+        /// Smallest positive normalized float (C FLT_MIN)
+        public const float FLT_MIN = 1.17549435e-38f;
+
         public static readonly B2Vec2 b2Vec2_zero = new B2Vec2(0.0f, 0.0f);
         public static readonly B2Rot b2Rot_identity = new B2Rot(1.0f, 0.0f);
         public static readonly B2Transform b2Transform_identity = new B2Transform(new B2Vec2(0.0f, 0.0f), new B2Rot(1.0f, 0.0f));
@@ -257,17 +260,17 @@ namespace Box2D.NET
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector.
         /// todo MSVC is not inlining this function in several places per warning 4710
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2Normalize(in B2Vec2 v)
+        public static B2Vec2 b2Normalize(in B2Vec2 a)
         {
-            float length = MathF.Sqrt(v.X * v.X + v.Y * v.Y);
-            if (length < FLT_EPSILON)
+            float lengthSquared = a.X * a.X + a.Y * a.Y;
+            if (lengthSquared > 1000.0f * FLT_MIN)
             {
-                return new B2Vec2(0.0f, 0.0f);
+                float s = 1.0f / MathF.Sqrt(lengthSquared);
+                B2Vec2 u = new B2Vec2(s * a.X, s * a.Y);
+                return u;
             }
 
-            float invLength = 1.0f / length;
-            B2Vec2 n = new B2Vec2(invLength * v.X, invLength * v.Y);
-            return n;
+            return new B2Vec2(0.0f, 0.0f);
         }
 
         /// Determines if the provided vector is normalized (norm(a) == 1).
@@ -281,17 +284,19 @@ namespace Box2D.NET
         /// Convert a vector into a unit vector if possible, otherwise returns the zero vector. Also
         /// outputs the length.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2Vec2 b2GetLengthAndNormalize(ref float length, in B2Vec2 v)
+        public static B2Vec2 b2GetLengthAndNormalize(ref float length, in B2Vec2 a)
         {
-            length = MathF.Sqrt(v.X * v.X + v.Y * v.Y);
-            if (length < FLT_EPSILON)
+            float lengthSquared = a.X * a.X + a.Y * a.Y;
+            if (lengthSquared > 1000.0f * FLT_MIN)
             {
-                return new B2Vec2(0.0f, 0.0f);
+                length = MathF.Sqrt(lengthSquared);
+                float s = 1.0f / length;
+                B2Vec2 u = new B2Vec2(s * a.X, s * a.Y);
+                return u;
             }
 
-            float invLength = 1.0f / length;
-            B2Vec2 n = new B2Vec2(invLength * v.X, invLength * v.Y);
-            return n;
+            length = 0.0f;
+            return new B2Vec2(0.0f, 0.0f);
         }
 
         /// Normalize rotation
@@ -475,8 +480,19 @@ namespace Box2D.NET
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float b2UnwindAngle(float radians)
         {
-            // Assuming this is deterministic
-            return (float)Math.IEEERemainder(radians, 2.0f * B2_PI);
+            // This function can be implemented using remainderf.
+            // However that is a libc dependency not present in WASM.
+            // This function doesn't work well with huge angles. So unwind your angles regularly.
+            B2_VALIDATE(b2AbsFloat(radians) < 1.0e4f);
+            float x = b2ClampFloat(radians, -1.0e6f, 1.0e6f);
+
+            // Work in doubles. Adding and removing this constant rounds to the nearest integer.
+            // https://stackoverflow.com/questions/17035464/a-fast-method-to-round-a-double-to-a-32-bit-int-explained
+            double twoPi = 2.0f * B2_PI;
+            double roundToNearest = 6755399441055744.0;
+            double a = x;
+            double k = (a / twoPi + roundToNearest) - roundToNearest;
+            return (float)(a - k * twoPi);
         }
 
         /// Rotate a vector
@@ -620,7 +636,7 @@ namespace Box2D.NET
 
         /// Convert a local transform B into world space using world transform A.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2WorldTransform b2OffsetWorldTransform(in B2WorldTransform A, in B2Transform B)
+        public static B2WorldTransform b2MulWorldTransforms(in B2WorldTransform A, in B2Transform B)
         {
             B2WorldTransform C;
             C.q = b2MulRot(A.q, B.q);

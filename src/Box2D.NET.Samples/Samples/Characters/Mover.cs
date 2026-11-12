@@ -445,9 +445,9 @@ public class Mover : Sample
 
             m_totalIterations += result.iterationCount;
 
-            float fraction = b2World_CastMover(m_worldId, b2Pos_zero, mover, result.translation, castFilter);
+            float fraction = b2World_CastMover(m_worldId, b2Pos_zero, mover, result.delta, castFilter);
 
-            B2Vec2 delta = fraction * result.translation;
+            B2Vec2 delta = fraction * result.delta;
             m_transform.p += delta;
 
             if (b2LengthSquared(delta) < tolerance * tolerance)

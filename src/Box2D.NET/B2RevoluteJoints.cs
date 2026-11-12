@@ -131,17 +131,12 @@ namespace Box2D.NET
         public static void b2RevoluteJoint_SetLimits(B2JointId jointId, float lower, float upper)
         {
             B2_ASSERT(lower <= upper);
-            B2_ASSERT(lower >= -0.99f * B2_PI);
-            B2_ASSERT(upper <= 0.99f * B2_PI);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            if (lower != joint.uj.revoluteJoint.lowerAngle || upper != joint.uj.revoluteJoint.upperAngle)
-            {
-                joint.uj.revoluteJoint.lowerAngle = b2MinFloat(lower, upper);
-                joint.uj.revoluteJoint.upperAngle = b2MaxFloat(lower, upper);
-                joint.uj.revoluteJoint.lowerImpulse = 0.0f;
-                joint.uj.revoluteJoint.upperImpulse = 0.0f;
-            }
+            float lowerAngle = b2MinFloat(lower, upper);
+            float upperAngle = b2MaxFloat(lower, upper);
+            joint.uj.revoluteJoint.lowerAngle = b2ClampFloat(lowerAngle, -0.99f * B2_PI, 0.99f * B2_PI);
+            joint.uj.revoluteJoint.upperAngle = b2ClampFloat(upperAngle, -0.99f * B2_PI, 0.99f * B2_PI);
         }
         /// Enable/disable a revolute joint motor
         public static void b2RevoluteJoint_EnableMotor(B2JointId jointId, bool enableMotor)
@@ -518,8 +513,8 @@ namespace Box2D.NET
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
-            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
-            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2MulWorldTransforms(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2MulWorldTransforms(transformB, @base.localFrameB);
 
             float radius = 0.25f * drawScale;
             draw.DrawCircleFcn(frameB.p, radius, B2HexColor.b2_colorGray, draw.context);

@@ -4,18 +4,18 @@
 
 namespace Box2D.NET
 {
-    /// Result returned by b2SolvePlanes
+    /// Result returned by b2SolvePlanes.
     public struct B2PlaneSolverResult
     {
-        /// The translation of the mover
-        public B2Vec2 translation;
+        /// The final relative translation.
+        public B2Vec2 delta;
         
         /// The number of iterations used by the plane solver. For diagnostics.
         public int iterationCount;
 
-        public B2PlaneSolverResult(B2Vec2 translation, int iterationCount)
+        public B2PlaneSolverResult(B2Vec2 delta, int iterationCount)
         {
-            this.translation = translation;
+            this.delta = delta;
             this.iterationCount = iterationCount;
         }
     }

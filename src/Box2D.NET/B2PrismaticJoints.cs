@@ -107,14 +107,8 @@ namespace Box2D.NET
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            // TODO: @ikpil, check epsilon
-            if (lower != joint.uj.prismaticJoint.lowerTranslation || upper != joint.uj.prismaticJoint.upperTranslation)
-            {
-                joint.uj.prismaticJoint.lowerTranslation = b2MinFloat(lower, upper);
-                joint.uj.prismaticJoint.upperTranslation = b2MaxFloat(lower, upper);
-                joint.uj.prismaticJoint.lowerImpulse = 0.0f;
-                joint.uj.prismaticJoint.upperImpulse = 0.0f;
-            }
+            joint.uj.prismaticJoint.lowerTranslation = b2MinFloat(lower, upper);
+            joint.uj.prismaticJoint.upperTranslation = b2MaxFloat(lower, upper);
         }
         /// Enable/disable a prismatic joint motor
         public static void b2PrismaticJoint_EnableMotor(B2JointId jointId, bool enableMotor)
@@ -688,8 +682,8 @@ namespace Box2D.NET
 
             ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
-            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
-            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2MulWorldTransforms(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2MulWorldTransforms(transformB, @base.localFrameB);
             B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
             draw.DrawLineFcn(frameA.p, frameB.p, B2HexColor.b2_colorDimGray, draw.context);

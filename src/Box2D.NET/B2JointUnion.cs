@@ -14,6 +14,12 @@ namespace Box2D.NET
         
         [FieldOffset(0)]
         public B2MotorJoint motorJoint;
+
+        [FieldOffset(0)]
+        public B2MoverJoint moverJoint;
+
+        [FieldOffset(0)]
+        public B2PogoJoint pogoJoint;
         
         [FieldOffset(0)]
         public B2RevoluteJoint revoluteJoint;

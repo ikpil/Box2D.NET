@@ -353,7 +353,7 @@ namespace Box2D.NET
         }
 
         // Destroy a shape on a body. This doesn't need to be called when destroying a body.
-        public static void b2DestroyShapeInternal(B2World world, B2Shape shape, B2Body body, bool wakeBodies)
+        public static void b2DestroyShapeInternal(B2World world, B2Shape shape, B2Body body)
         {
             int shapeId = shape.id;
 
@@ -392,7 +392,7 @@ namespace Box2D.NET
 
                 if (contact.shapeIdA == shapeId || contact.shapeIdB == shapeId)
                 {
-                    b2DestroyContact(world, contact, wakeBodies);
+                    b2DestroyContact(world, contact);
                 }
             }
 
@@ -452,10 +452,8 @@ namespace Box2D.NET
                 return;
             }
 
-            // need to wake bodies because this might be a static body
-            bool wakeBodies = true;
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
-            b2DestroyShapeInternal(world, shape, body, wakeBodies);
+            b2DestroyShapeInternal(world, shape, body);
 
             if (updateBodyMass == true)
             {
@@ -663,8 +661,7 @@ namespace Box2D.NET
             {
                 int shapeId = chain.shapeIndices[i];
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                bool wakeBodies = true;
-                b2DestroyShapeInternal(world, shape, body, wakeBodies);
+                b2DestroyShapeInternal(world, shape, body);
             }
 
             b2FreeChainData(chain);
@@ -1328,7 +1325,7 @@ namespace Box2D.NET
             return shape.filter;
         }
 
-        internal static void b2ResetProxy(B2World world, B2Shape shape, bool wakeBodies, bool destroyProxy)
+        internal static void b2ResetProxy(B2World world, B2Shape shape, bool destroyProxy)
         {
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
 
@@ -1346,7 +1343,7 @@ namespace Box2D.NET
 
                 if (contact.shapeIdA == shapeId || contact.shapeIdB == shapeId)
                 {
-                    b2DestroyContact(world, contact, wakeBodies);
+                    b2DestroyContact(world, contact);
                 }
             }
 
@@ -1402,9 +1399,7 @@ namespace Box2D.NET
 
             shape.filter = filter;
 
-            // need to wake bodies because a filter change may destroy contacts
-            bool wakeBodies = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
 
             // note: this does not immediately update sensor overlaps. Instead sensor
             // overlaps are updated the next time step
@@ -1557,10 +1552,8 @@ namespace Box2D.NET
             shape.type = B2ShapeType.b2_circleShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 
-            // need to wake bodies so they can react to the shape change
-            bool wakeBodies = true;
             bool destroyProxy = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
         }
         /// Allows you to change a shape to be a capsule or update the current capsule.
         /// This does not modify the mass properties.
@@ -1584,10 +1577,8 @@ namespace Box2D.NET
             shape.type = B2ShapeType.b2_capsuleShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 
-            // need to wake bodies so they can react to the shape change
-            bool wakeBodies = true;
             bool destroyProxy = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
         }
         /// Allows you to change a shape to be a segment or update the current segment.
         public static void b2Shape_SetSegment(B2ShapeId shapeId, in B2Segment segment)
@@ -1603,10 +1594,8 @@ namespace Box2D.NET
             shape.type = B2ShapeType.b2_segmentShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 
-            // need to wake bodies so they can react to the shape change
-            bool wakeBodies = true;
             bool destroyProxy = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
         }
         /// Allows you to change a shape to be a polygon or update the current polygon.
         /// This does not modify the mass properties.
@@ -1624,10 +1613,8 @@ namespace Box2D.NET
             shape.type = B2ShapeType.b2_polygonShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 
-            // need to wake bodies so they can react to the shape change
-            bool wakeBodies = true;
             bool destroyProxy = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
         }
 
         /// Allows you to change a shape to be an orphaned chain segment or update the current chain
@@ -1662,9 +1649,8 @@ namespace Box2D.NET
             shape.type = B2ShapeType.b2_chainSegmentShape;
             shape.aabbMargin = b2ComputeShapeMargin(shape);
 
-            bool wakeBodies = true;
             bool destroyProxy = true;
-            b2ResetProxy(world, shape, wakeBodies, destroyProxy);
+            b2ResetProxy(world, shape, destroyProxy);
         }
 
         /// Get the parent chain id if the shape type is a chain segment, otherwise

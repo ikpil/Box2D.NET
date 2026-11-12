@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -48,7 +48,7 @@ public class Platform : Sample
             m_camera.zoom = 25.0f * 0.4f;
         }
 
-        b2World_SetPreSolveCallback(m_worldId, PreSolveStatic, this);
+        b2World_SetPreSolveCallback(m_worldId, PreSolveStatic, PreContinuousStatic, this);
 
         // Ground
         {
@@ -116,16 +116,25 @@ public class Platform : Sample
         m_jumping = false;
     }
 
-    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context)
+    private static void PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
     {
         Platform self = context as Platform;
-        return self.PreSolve(shapeIdA, shapeIdB, point, normal);
+        if (self.PreSolve(shapeIdA, shapeIdB, manifold.normal) == false)
+        {
+            manifold.pointCount = 0;
+        }
+    }
+
+    private static bool PreContinuousStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context)
+    {
+        Platform self = context as Platform;
+        return self.PreSolve(shapeIdA, shapeIdB, normal);
     }
 
     // This callback must be thread-safe. It may be called multiple times simultaneously.
     // Notice how this method is constant and doesn't change any data. It also
     // does not try to access any values in the world that may be changing, such as contact data.
-    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal)
+    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 normal)
     {
         B2_ASSERT(b2Shape_IsValid(shapeIdA));
         B2_ASSERT(b2Shape_IsValid(shapeIdB));

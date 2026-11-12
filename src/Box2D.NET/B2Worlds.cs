@@ -801,7 +801,7 @@ namespace Box2D.NET
                     if (0 != (simFlags & (uint)B2ContactFlags.b2_simDisjoint))
                     {
                         // Bounding boxes no longer overlap
-                        b2DestroyContact(world, contact, false);
+                        b2DestroyContact(world, contact);
                         contact = null;
                         contactSim = null;
                     }
@@ -990,6 +990,7 @@ namespace Box2D.NET
                 world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
                 world.userTreeTask = null;
                 world.activeTaskCount -= 1;
+                b2ValidateNoEnlarged(world.broadPhase);
             }
 
             // Update sensors
@@ -1452,6 +1453,214 @@ namespace Box2D.NET
 
             b2ComputeWorldBounds(world, out B2AABB bounds);
             return bounds;
+        }
+
+        private const ulong B2_SNAP_FNV_INIT = 14695981039346656037UL;
+        private const ulong B2_SNAP_FNV_PRIME = 1099511628211UL;
+
+        private static ulong b2FnvMixFloat(ulong hash, float f)
+        {
+            uint bits = (uint)BitConverter.SingleToInt32Bits(f);
+            return (hash ^ bits) * B2_SNAP_FNV_PRIME;
+        }
+
+        private static ulong b2FnvMixInt(ulong hash, int v)
+        {
+            return (hash ^ (uint)v) * B2_SNAP_FNV_PRIME;
+        }
+
+        // Equivalent to hashing the bytes of a b2Vec2 one at a time (little-endian)
+        private static ulong b2FnvMixVec2Bytes(ulong hash, B2Vec2 v)
+        {
+            uint bx = (uint)BitConverter.SingleToInt32Bits(v.X);
+            uint by = (uint)BitConverter.SingleToInt32Bits(v.Y);
+            for (int i = 0; i < 4; ++i)
+            {
+                hash = (hash ^ ((bx >> (8 * i)) & 0xFF)) * B2_SNAP_FNV_PRIME;
+            }
+
+            for (int i = 0; i < 4; ++i)
+            {
+                hash = (hash ^ ((by >> (8 * i)) & 0xFF)) * B2_SNAP_FNV_PRIME;
+            }
+
+            return hash;
+        }
+
+        private static ulong b2FnvMixPosition(ulong hash, B2Pos p)
+        {
+            ulong bx = (uint)BitConverter.SingleToInt32Bits(p.X);
+            ulong by = (uint)BitConverter.SingleToInt32Bits(p.Y);
+            hash = (hash ^ bx) * B2_SNAP_FNV_PRIME;
+            hash = (hash ^ by) * B2_SNAP_FNV_PRIME;
+            return hash;
+        }
+
+        internal static ulong b2HashWorldStateDeep(B2World world)
+        {
+            ulong hash = B2_SNAP_FNV_INIT;
+
+            // Bodies: sparse array, skip free slots
+            int bodyCount = world.bodies.count;
+            for (int i = 0; i < bodyCount; ++i)
+            {
+                B2Body body = world.bodies.data[i];
+                if (body.id != i)
+                {
+                    continue;
+                }
+
+                B2BodySim sim = b2GetBodySim(world, body);
+
+                hash = b2FnvMixPosition(hash, sim.transform.p);
+                hash = b2FnvMixFloat(hash, sim.transform.q.c);
+                hash = b2FnvMixFloat(hash, sim.transform.q.s);
+
+                B2BodyState state = b2GetBodyState(world, body);
+                if (state != null)
+                {
+                    hash = b2FnvMixFloat(hash, state.linearVelocity.X);
+                    hash = b2FnvMixFloat(hash, state.linearVelocity.Y);
+                    hash = b2FnvMixFloat(hash, state.angularVelocity);
+                }
+
+                // Index bookkeeping
+                hash = b2FnvMixInt(hash, body.setIndex);
+                hash = b2FnvMixInt(hash, body.localIndex);
+            }
+
+            // Contacts: sparse array, skip free slots
+            int contactCount = world.contacts.count;
+            for (int i = 0; i < contactCount; ++i)
+            {
+                B2Contact contact = world.contacts.data[i];
+                if (contact.contactId != i)
+                {
+                    continue;
+                }
+
+                hash = b2FnvMixInt(hash, contact.setIndex);
+                hash = b2FnvMixInt(hash, contact.colorIndex);
+                hash = b2FnvMixInt(hash, contact.localIndex);
+
+                // Manifold points + impulses from the contact sim
+                B2ContactSim sim = b2GetContactSim(world, contact);
+                if (sim != null)
+                {
+                    ref B2Manifold m = ref sim.manifold;
+                    hash = b2FnvMixInt(hash, m.pointCount);
+                    for (int p = 0; p < m.pointCount; ++p)
+                    {
+                        hash = b2FnvMixFloat(hash, m.points[p].normalImpulse);
+                        hash = b2FnvMixFloat(hash, m.points[p].tangentImpulse);
+                        hash = b2FnvMixFloat(hash, m.points[p].totalNormalImpulse);
+                    }
+                }
+            }
+
+            // Joints: sparse array, skip free slots
+            int jointCount = world.joints.count;
+            for (int i = 0; i < jointCount; ++i)
+            {
+                B2Joint joint = world.joints.data[i];
+                if (joint.jointId != i)
+                {
+                    continue;
+                }
+
+                hash = b2FnvMixInt(hash, joint.setIndex);
+                hash = b2FnvMixInt(hash, joint.colorIndex);
+                hash = b2FnvMixInt(hash, joint.localIndex);
+
+                B2JointSim sim = b2GetJointSim(world, joint);
+                if (sim != null)
+                {
+                    // Hash accumulated impulses per joint type
+                    switch (sim.type)
+                    {
+                        case B2JointType.b2_distanceJoint:
+                            hash = b2FnvMixFloat(hash, sim.uj.distanceJoint.impulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.distanceJoint.lowerImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.distanceJoint.upperImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.distanceJoint.motorImpulse);
+                            break;
+                        case B2JointType.b2_moverJoint:
+                            hash = b2FnvMixFloat(hash, sim.uj.moverJoint.linearVelocityImpulse.X);
+                            hash = b2FnvMixFloat(hash, sim.uj.moverJoint.linearVelocityImpulse.Y);
+                            break;
+                        case B2JointType.b2_motorJoint:
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.linearVelocityImpulse.X);
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.linearVelocityImpulse.Y);
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.angularVelocityImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.linearSpringImpulse.X);
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.linearSpringImpulse.Y);
+                            hash = b2FnvMixFloat(hash, sim.uj.motorJoint.angularSpringImpulse);
+                            break;
+                        case B2JointType.b2_pogoJoint:
+                            hash = b2FnvMixFloat(hash, sim.uj.pogoJoint.impulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.pogoJoint.velocity);
+                            break;
+                        case B2JointType.b2_prismaticJoint:
+                            hash = b2FnvMixVec2Bytes(hash, sim.uj.prismaticJoint.impulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.prismaticJoint.springImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.prismaticJoint.motorImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.prismaticJoint.lowerImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.prismaticJoint.upperImpulse);
+                            break;
+                        case B2JointType.b2_revoluteJoint:
+                            hash = b2FnvMixVec2Bytes(hash, sim.uj.revoluteJoint.linearImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.revoluteJoint.springImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.revoluteJoint.motorImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.revoluteJoint.lowerImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.revoluteJoint.upperImpulse);
+                            break;
+                        case B2JointType.b2_weldJoint:
+                            hash = b2FnvMixVec2Bytes(hash, sim.uj.weldJoint.linearImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.weldJoint.angularImpulse);
+                            break;
+                        case B2JointType.b2_wheelJoint:
+                            hash = b2FnvMixFloat(hash, sim.uj.wheelJoint.perpImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.wheelJoint.motorImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.wheelJoint.springImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.wheelJoint.lowerImpulse);
+                            hash = b2FnvMixFloat(hash, sim.uj.wheelJoint.upperImpulse);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            // 7 id pools: nextIndex + count
+            hash = b2FnvMixInt(hash, world.bodyIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.bodyIdPool));
+            hash = b2FnvMixInt(hash, world.shapeIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.shapeIdPool));
+            hash = b2FnvMixInt(hash, world.chainIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.chainIdPool));
+            hash = b2FnvMixInt(hash, world.contactIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.contactIdPool));
+            hash = b2FnvMixInt(hash, world.jointIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.jointIdPool));
+            hash = b2FnvMixInt(hash, world.islandIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.islandIdPool));
+            hash = b2FnvMixInt(hash, world.solverSetIdPool.nextIndex);
+            hash = b2FnvMixInt(hash, b2GetIdCount(world.solverSetIdPool));
+
+            // Solver set count
+            hash = b2FnvMixInt(hash, world.solverSets.count);
+
+            return hash;
+        }
+
+        /// Compute a deterministic hash of the simulation state: body transforms and velocities, contact and
+        /// joint impulses, and the index bookkeeping that drives the solve. Reproduces exactly across worker
+        /// counts and ignores struct padding and free slots, so two worlds that simulate identically always
+        /// agree. Use this to detect desyncs (for example rollback resimulation).
+        public static ulong b2World_GetStateHash(B2WorldId worldId)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            return b2HashWorldStateDeep(world);
         }
 
         /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
@@ -2260,21 +2469,17 @@ namespace Box2D.NET
             }
 
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
-            B2WorldTransform xf = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform bodyTransform = b2GetBodyTransformQuick(world, body);
+            B2Transform transform = b2ToRelativeTransform(bodyTransform, worldContext.origin);
 
-            // Re-center on the body so the per-shape cast stays in float precision far from the origin.
-            // The tree traversal already used the truncated origin in input. Here we re-difference in full
-            // precision against the body position.
-            B2Pos @base = xf.p;
-            B2Transform transform = b2ToRelativeTransform(xf, @base);
             B2RayCastInput localInput = input;
-            localInput.origin = b2SubPos(worldContext.origin, @base);
+            localInput.origin = b2Vec2_zero;
             B2CastOutput output = b2RayCastShape(localInput, shape, transform);
 
             if (output.hit)
             {
                 B2ShapeId id = new B2ShapeId(shapeId + 1, world.worldId, shape.generation);
-                B2Pos point = b2OffsetPos(@base, output.point);
+                B2Pos point = b2OffsetPos(worldContext.origin, output.point);
                 float fraction = worldContext.fcn(id, point, output.normal, output.fraction, ref worldContext.userContext);
 
                 // The user may return -1 to skip this shape
@@ -2467,9 +2672,7 @@ namespace Box2D.NET
             worldContext.input.maxFraction = 1.0f;
             worldContext.userContext = context;
 
-            // Bound the proxy in origin relative space then lift to a conservative world float box. The
-            // tree node boxes use the same directed rounding, so the swept box never clips a shape far
-            // from the origin. Per shape casts re-difference at full precision against the carried origin.
+            // Create a conservative world space box from the proxy and origin.
             B2AABB localBox = b2MakeAABB(proxy.points.AsSpan(), proxy.count, proxy.radius);
             B2AABB box = b2OffsetAABB(localBox, origin);
             B2BoxCastInput treeInput = new B2BoxCastInput();
@@ -2719,11 +2922,13 @@ void b2World_Dump()
             world.customFilterFcn = fcn;
             world.customFilterContext = context;
         }
-        /// Register the pre-solve callback. This is optional.
-        public static void b2World_SetPreSolveCallback(B2WorldId worldId, b2PreSolveFcn fcn, object context)
+        /// Register the pre-solve and pre-continuous callback. This is optional.
+        public static void b2World_SetPreSolveCallback(B2WorldId worldId, b2PreSolveFcn preSolveFcn, b2PreContinuousFcn preContinuousFcn, object context)
         {
             B2World world = b2GetWorldFromId(worldId);
-            world.preSolveFcn = fcn;
+
+            world.preSolveFcn = preSolveFcn;
+            world.preContinuousFcn = preContinuousFcn;
             world.preSolveContext = context;
         }
         /// Set the gravity vector for the entire world. Box2D has no concept of an up direction and this

@@ -125,6 +125,7 @@ namespace Box2D.NET
         public B2Capacity maxCapacity;
 
         public b2PreSolveFcn preSolveFcn;
+        public b2PreContinuousFcn preContinuousFcn;
         public object preSolveContext;
 
         public b2CustomFilterFcn customFilterFcn;
@@ -239,6 +240,7 @@ namespace Box2D.NET
             maxCapacity = new B2Capacity();
 
             preSolveFcn = null;
+            preContinuousFcn = null;
             preSolveContext = null;
 
             customFilterFcn = null;

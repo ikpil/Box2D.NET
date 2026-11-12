@@ -91,13 +91,8 @@ namespace Box2D.NET
             B2_ASSERT(lower <= upper);
 
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
-            if (lower != joint.uj.wheelJoint.lowerTranslation || upper != joint.uj.wheelJoint.upperTranslation)
-            {
-                joint.uj.wheelJoint.lowerTranslation = b2MinFloat(lower, upper);
-                joint.uj.wheelJoint.upperTranslation = b2MaxFloat(lower, upper);
-                joint.uj.wheelJoint.lowerImpulse = 0.0f;
-                joint.uj.wheelJoint.upperImpulse = 0.0f;
-            }
+            joint.uj.wheelJoint.lowerTranslation = b2MinFloat(lower, upper);
+            joint.uj.wheelJoint.upperTranslation = b2MaxFloat(lower, upper);
         }
         /// Enable/disable the wheel joint motor
         public static void b2WheelJoint_EnableMotor(B2JointId jointId, bool enableMotor)
@@ -541,8 +536,8 @@ namespace Box2D.NET
 
             ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
-            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
-            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2MulWorldTransforms(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2MulWorldTransforms(transformB, @base.localFrameB);
             B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
             B2HexColor c1 = B2HexColor.b2_colorGray;

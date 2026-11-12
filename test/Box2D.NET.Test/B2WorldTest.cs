@@ -292,14 +292,12 @@ public class B2WorldTest
         return true;
     }
 
-    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context)
+    public static void PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
-        B2_UNUSED(point);
-        B2_UNUSED(normal);
-        Assert.That(context, Is.EqualTo(null));
-        return false;
+        B2_UNUSED(manifold);
+        B2_UNUSED(context);
     }
 
     // This test is here to ensure all API functions link correctly.
@@ -332,7 +330,7 @@ public class B2WorldTest
         Assert.That(value, Is.EqualTo(100.0f));
 
         b2World_SetCustomFilterCallback(worldId, CustomFilter, null);
-        b2World_SetPreSolveCallback(worldId, PreSolveStatic, null);
+        b2World_SetPreSolveCallback(worldId, PreSolveStatic, null, null);
 
         B2Vec2 g = new B2Vec2(1.0f, 2.0f);
         b2World_SetGravity(worldId, g);

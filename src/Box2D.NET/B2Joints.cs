@@ -14,6 +14,8 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2DistanceJoints;
 using static Box2D.NET.B2MotorJoints;
+using static Box2D.NET.B2MoverJoints;
+using static Box2D.NET.B2PogoJoints;
 using static Box2D.NET.B2PrismaticJoints;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.B2WeldJoints;
@@ -72,6 +74,26 @@ namespace Box2D.NET
         public static B2FilterJointDef b2DefaultFilterJointDef()
         {
             B2FilterJointDef def = new B2FilterJointDef();
+            def.@base = b2DefaultJointDef();
+            def.internalValue = B2_SECRET_COOKIE;
+            return def;
+        }
+
+        /// Use this to initialize your joint definition
+        /// @ingroup mover_joint
+        public static B2MoverJointDef b2DefaultMoverJointDef()
+        {
+            B2MoverJointDef def = new B2MoverJointDef();
+            def.@base = b2DefaultJointDef();
+            def.internalValue = B2_SECRET_COOKIE;
+            return def;
+        }
+
+        /// Use this to initialize your joint definition
+        /// @ingroup pogo_joint
+        public static B2PogoJointDef b2DefaultPogoJointDef()
+        {
+            B2PogoJointDef def = new B2PogoJointDef();
             def.@base = b2DefaultJointDef();
             def.internalValue = B2_SECRET_COOKIE;
             return def;
@@ -181,8 +203,6 @@ namespace Box2D.NET
                 otherBodyId = bodyA.id;
             }
 
-            // no need to wake bodies when a joint removes collision between them
-            bool wakeBodies = false;
 
             // destroy the contacts
             while (contactKey != B2_NULL_INDEX)
@@ -197,7 +217,7 @@ namespace Box2D.NET
                 if (contact.edges[otherEdgeIndex].bodyId == otherBodyId)
                 {
                     // Careful, this removes the contact from the current doubly linked list
-                    b2DestroyContact(world, contact, wakeBodies);
+                    b2DestroyContact(world, contact);
                 }
             }
 
@@ -214,6 +234,13 @@ namespace Box2D.NET
 
             B2Body bodyA = b2GetBodyFullId(world, def.bodyIdA);
             B2Body bodyB = b2GetBodyFullId(world, def.bodyIdB);
+
+            // If the joint prevents collisions, then destroy all contacts between attached bodies.
+            // Do this first so world arrays are not disturbed in the following code.
+            if (def.collideConnected == false)
+            {
+                b2DestroyContactsBetweenBodies(world, bodyA, bodyB);
+            }
 
             int bodyIdA = bodyA.id;
             int bodyIdB = bodyB.id;
@@ -387,12 +414,6 @@ namespace Box2D.NET
                 b2LinkJoint(world, joint);
             }
 
-            // If the joint prevents collisions, then destroy all contacts between attached bodies
-            if (def.collideConnected == false)
-            {
-                b2DestroyContactsBetweenBodies(world, bodyA, bodyB);
-            }
-
             b2ValidateSolverSets(world);
 
             return new B2JointPair(joint, jointSim);
@@ -503,6 +524,69 @@ namespace Box2D.NET
             B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
             return jointId;
         }
+        /// Create a mover joint
+        /// @see b2MoverJointDef for details
+        public static B2JointId b2CreateMoverJoint(B2WorldId worldId, in B2MoverJointDef def)
+        {
+            B2_CHECK_DEF(def);
+            B2World world = b2GetWorldFromId(worldId);
+
+            B2_ASSERT(world.locked == false);
+
+            if (world.locked)
+            {
+                return new B2JointId();
+            }
+
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_moverJoint);
+            B2JointSim joint = pair.jointSim;
+
+            joint.uj.moverJoint = new B2MoverJoint();
+            joint.uj.moverJoint.linearVelocity = def.linearVelocity;
+            joint.uj.moverJoint.maxVelocityForce = def.maxVelocityForce;
+
+            B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+            return jointId;
+        }
+
+        /// Create a pogo joint
+        /// @see b2PogoJointDef for details
+        public static B2JointId b2CreatePogoJoint(B2WorldId worldId, in B2PogoJointDef def)
+        {
+            B2_CHECK_DEF(def);
+            B2_ASSERT(b2IsValidFloat(def.restLength) && def.restLength >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.hertz) && def.hertz >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.dampingRatio) && def.dampingRatio >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.maxTensionForce) && def.maxTensionForce >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(def.maxCompressionForce) && def.maxCompressionForce >= 0.0f);
+
+            B2World world = b2GetWorldFromId(worldId);
+
+            B2_ASSERT(world.locked == false);
+
+            if (world.locked)
+            {
+                return new B2JointId();
+            }
+
+            B2JointPair pair = b2CreateJoint(world, def.@base, B2JointType.b2_pogoJoint);
+
+            B2JointSim joint = pair.jointSim;
+
+            joint.uj.pogoJoint = new B2PogoJoint();
+            joint.uj.pogoJoint.restLength = def.restLength;
+            joint.uj.pogoJoint.hertz = def.hertz;
+            joint.uj.pogoJoint.dampingRatio = def.dampingRatio;
+            joint.uj.pogoJoint.maxTensionForce = def.maxTensionForce;
+            joint.uj.pogoJoint.maxCompressionForce = def.maxCompressionForce;
+            joint.uj.pogoJoint.normal = def.normal;
+            joint.uj.pogoJoint.impulse = def.impulse;
+            joint.uj.pogoJoint.velocity = def.velocity;
+
+            B2JointId jointId = new B2JointId(joint.jointId + 1, world.worldId, pair.joint.generation);
+            return jointId;
+        }
+
         /// Create a prismatic (slider) joint.
         /// @see b2PrismaticJointDef for details
         public static B2JointId b2CreatePrismaticJoint(B2WorldId worldId, in B2PrismaticJointDef def)
@@ -544,8 +628,6 @@ namespace Box2D.NET
         {
             B2_CHECK_DEF(def);
             B2_ASSERT(def.lowerAngle <= def.upperAngle);
-            B2_ASSERT(def.lowerAngle >= -0.99f * B2_PI);
-            B2_ASSERT(def.upperAngle <= 0.99f * B2_PI);
 
             B2World world = b2GetWorldFromId(worldId);
 
@@ -566,8 +648,12 @@ namespace Box2D.NET
             joint.uj.revoluteJoint.targetAngle = b2ClampFloat(def.targetAngle, -B2_PI, B2_PI);
             joint.uj.revoluteJoint.hertz = def.hertz;
             joint.uj.revoluteJoint.dampingRatio = def.dampingRatio;
-            joint.uj.revoluteJoint.lowerAngle = def.lowerAngle;
-            joint.uj.revoluteJoint.upperAngle = def.upperAngle;
+
+            float lowerAngle = b2MinFloat(def.lowerAngle, def.upperAngle);
+            float upperAngle = b2MaxFloat(def.lowerAngle, def.upperAngle);
+            joint.uj.revoluteJoint.lowerAngle = b2ClampFloat(lowerAngle, -0.99f * B2_PI, 0.99f * B2_PI);
+            joint.uj.revoluteJoint.upperAngle = b2ClampFloat(upperAngle, -0.99f * B2_PI, 0.99f * B2_PI);
+
             joint.uj.revoluteJoint.maxMotorTorque = def.maxMotorTorque;
             joint.uj.revoluteJoint.motorSpeed = def.motorSpeed;
             joint.uj.revoluteJoint.enableSpring = def.enableSpring;
@@ -647,7 +733,7 @@ namespace Box2D.NET
             return jointId;
         }
 
-        public static void b2DestroyJointInternal(B2World world, B2Joint joint, bool wakeBodies)
+        public static void b2DestroyJointInternal(B2World world, B2Joint joint)
         {
             int jointId = joint.jointId;
 
@@ -745,17 +831,14 @@ namespace Box2D.NET
             joint.jointId = B2_NULL_INDEX;
             b2FreeId(world.jointIdPool, jointId);
 
-            if (wakeBodies)
-            {
-                b2WakeBody(world, bodyA);
-                b2WakeBody(world, bodyB);
-            }
+            b2WakeBody(world, bodyA);
+            b2WakeBody(world, bodyB);
 
             b2ValidateSolverSets(world);
         }
 
-        /// Destroy a joint. Optionally wake attached bodies.
-        public static void b2DestroyJoint(B2JointId jointId, bool wakeAttached)
+        /// Destroy a joint.
+        public static void b2DestroyJoint(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2_ASSERT(world.locked == false);
@@ -767,7 +850,7 @@ namespace Box2D.NET
 
             B2Joint joint = b2GetJointFullId(world, jointId);
 
-            b2DestroyJointInternal(world, joint, wakeAttached);
+            b2DestroyJointInternal(world, joint);
         }
         /// Get the joint type
         public static B2JointType b2Joint_GetType(B2JointId jointId)
@@ -942,6 +1025,20 @@ namespace Box2D.NET
                 }
                     break;
 
+                case B2JointType.b2_moverJoint:
+                {
+                    ref B2MoverJoint joint = ref sim.uj.moverJoint;
+                    linearImpulse = b2Length(joint.linearVelocityImpulse);
+                }
+                    break;
+
+                case B2JointType.b2_pogoJoint:
+                {
+                    ref B2PogoJoint joint = ref sim.uj.pogoJoint;
+                    linearImpulse = b2AbsFloat(joint.impulse);
+                }
+                    break;
+
                 case B2JointType.b2_prismaticJoint:
                 {
                     ref B2PrismaticJoint joint = ref sim.uj.prismaticJoint;
@@ -999,8 +1096,14 @@ namespace Box2D.NET
                 case B2JointType.b2_motorJoint:
                     return b2GetMotorJointForce(world, @base);
 
+                case B2JointType.b2_moverJoint:
+                    return b2GetMoverJointForce(world, @base);
+
                 case B2JointType.b2_filterJoint:
                     return b2Vec2_zero;
+
+                case B2JointType.b2_pogoJoint:
+                    return b2GetPogoJointForce(world, @base);
 
                 case B2JointType.b2_prismaticJoint:
                     return b2GetPrismaticJointForce(world, @base);
@@ -1338,7 +1441,15 @@ namespace Box2D.NET
                     b2PrepareMotorJoint(joint, context);
                     break;
 
+                case B2JointType.b2_moverJoint:
+                    b2PrepareMoverJoint(joint, context);
+                    break;
+
                 case B2JointType.b2_filterJoint:
+                    break;
+
+                case B2JointType.b2_pogoJoint:
+                    b2PreparePogoJoint(joint, context);
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1375,7 +1486,15 @@ namespace Box2D.NET
                     b2WarmStartMotorJoint(joint, context);
                     break;
 
+                case B2JointType.b2_moverJoint:
+                    b2WarmStartMoverJoint(joint, context);
+                    break;
+
                 case B2JointType.b2_filterJoint:
+                    break;
+
+                case B2JointType.b2_pogoJoint:
+                    b2WarmStartPogoJoint(joint, context);
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1412,7 +1531,15 @@ namespace Box2D.NET
                     b2SolveMotorJoint(joint, context);
                     break;
 
+                case B2JointType.b2_moverJoint:
+                    b2SolveMoverJoint(joint, context);
+                    break;
+
                 case B2JointType.b2_filterJoint:
+                    break;
+
+                case B2JointType.b2_pogoJoint:
+                    b2SolvePogoJoint(joint, context, useBias);
                     break;
 
                 case B2JointType.b2_prismaticJoint:
@@ -1610,6 +1737,14 @@ namespace Box2D.NET
                 case B2JointType.b2_motorJoint:
                     draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
                     draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
+                    draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
+                    break;
+
+                case B2JointType.b2_moverJoint:
+                    draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
+                    break;
+
+                case B2JointType.b2_pogoJoint:
                     draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
                     break;
 

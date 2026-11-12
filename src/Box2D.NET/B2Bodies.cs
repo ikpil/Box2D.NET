@@ -222,7 +222,7 @@ namespace Box2D.NET
             body.islandIndex = B2_NULL_INDEX;
         }
 
-        public static void b2DestroyBodyContacts(B2World world, B2Body body, bool wakeBodies)
+        public static void b2DestroyBodyContacts(B2World world, B2Body body)
         {
             // Destroy the attached contacts
             int edgeKey = body.headContactKey;
@@ -233,7 +233,7 @@ namespace Box2D.NET
 
                 B2Contact contact = b2Array_Get(ref world.contacts, contactId);
                 edgeKey = contact.edges[edgeIndex].nextKey;
-                b2DestroyContact(world, contact, wakeBodies);
+                b2DestroyContact(world, contact);
             }
 
             b2ValidateSolverSets(world);
@@ -415,8 +415,6 @@ namespace Box2D.NET
 
             B2Body body = b2GetBodyFullId(world, bodyId);
 
-            // Wake bodies attached to this body, even if this body is static.
-            bool wakeBodies = true;
 
             // Destroy the attached joints
             int edgeKey = body.headJointKey;
@@ -429,11 +427,11 @@ namespace Box2D.NET
                 edgeKey = joint.edges[edgeIndex].nextKey;
 
                 // Careful because this modifies the list being traversed
-                b2DestroyJointInternal(world, joint, wakeBodies);
+                b2DestroyJointInternal(world, joint);
             }
 
             // Destroy all contacts attached to this body.
-            b2DestroyBodyContacts(world, body, wakeBodies);
+            b2DestroyBodyContacts(world, body);
 
             // Destroy the attached shapes and their broad-phase proxies.
             int shapeId = body.headShapeId;
@@ -683,7 +681,7 @@ namespace Box2D.NET
 
             B2_ASSERT(body.inertia >= 0.0f);
 
-            if (body.inertia > 0.0f)
+            if (body.inertia > 0.0f && (body.flags & (uint)B2BodyFlags.b2_fixedRotation) == 0)
             {
                 bodySim.invInertia = 1.0f / body.inertia;
             }
@@ -1281,9 +1279,8 @@ namespace Box2D.NET
                 return;
             }
 
-            // Stage 2: destroy all contacts but don't wake bodies (because we don't need to)
-            bool wakeBodies = false;
-            b2DestroyBodyContacts(world, body, wakeBodies);
+            // Stage 2: destroy all contacts
+            b2DestroyBodyContacts(world, body);
 
             // Stage 3: wake this body (does nothing if body is static), otherwise it will also wake
             // all bodies in the same sleeping solver set.
@@ -1499,6 +1496,8 @@ namespace Box2D.NET
         /// Override the body's mass properties. Normally this is computed automatically using the
         /// shape geometry and density. This information is lost if a shape is added or removed or if the
         /// body type changes.
+        /// If motion locks are used to fix rotation then the rotational inertia value is ignored and
+        /// rotational inertia remains fixed at zero.
         public static void b2Body_SetMassData(B2BodyId bodyId, B2MassData massData)
         {
             B2_ASSERT(b2IsValidFloat(massData.mass) && massData.mass >= 0.0f);
@@ -1524,6 +1523,28 @@ namespace Box2D.NET
 
             bodySim.invMass = body.mass > 0.0f ? 1.0f / body.mass : 0.0f;
             bodySim.invInertia = body.inertia > 0.0f ? 1.0f / body.inertia : 0.0f;
+
+            // Update extents using supplied mass center.
+            bodySim.minExtent = B2_HUGE;
+            bodySim.maxExtent = 0.0f;
+            int shapeId = body.headShapeId;
+            while (shapeId != B2_NULL_INDEX)
+            {
+                B2Shape s = b2Array_Get(ref world.shapes, shapeId);
+                B2ShapeExtent extent = b2ComputeShapeExtent(s, massData.center);
+                bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
+                bodySim.maxExtent = b2MaxFloat(bodySim.maxExtent, extent.maxExtent);
+                shapeId = s.nextShapeId;
+            }
+
+            // Motion locks take priority over mass data.
+            if (0 != (body.flags & (uint)B2BodyFlags.b2_fixedRotation))
+            {
+                body.inertia = 0.0f;
+                bodySim.invInertia = 0.0f;
+            }
+
+            body.flags &= ~(uint)B2BodyFlags.b2_dirtyMass;
         }
         /// Get the mass data for a body
         public static B2MassData b2Body_GetMassData(B2BodyId bodyId)
@@ -1763,8 +1784,7 @@ namespace Box2D.NET
 
             // Destroy contacts and wake bodies touching this body. This avoid floating bodies.
             // This is necessary even for static bodies.
-            bool wakeBodies = true;
-            b2DestroyBodyContacts(world, body, wakeBodies);
+            b2DestroyBodyContacts(world, body);
 
             // The current solver set of the body
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
@@ -1907,7 +1927,8 @@ namespace Box2D.NET
             b2ValidateSolverSets(world);
         }
 
-        /// Set the motion locks on this body.
+        /// Set the motion locks on this body. This causes mass properties to be recomputed because
+        /// fixed rotation sets the rotational inertia to zero.
         public static void b2Body_SetMotionLocks(B2BodyId bodyId, B2MotionLocks locks)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
@@ -1948,6 +1969,9 @@ namespace Box2D.NET
                         state.angularVelocity = 0.0f;
                     }
                 }
+
+                // Motion locks can affect mass properties.
+                b2UpdateBodyMassData(world, body);
             }
         }
 

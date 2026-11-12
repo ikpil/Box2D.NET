@@ -77,7 +77,7 @@ public class DistanceJoint : Sample
     {
         for (int i = 0; i < m_count; ++i)
         {
-            b2DestroyJoint(m_jointIds[i], false);
+            b2DestroyJoint(m_jointIds[i]);
             m_jointIds[i] = b2_nullJointId;
         }
 

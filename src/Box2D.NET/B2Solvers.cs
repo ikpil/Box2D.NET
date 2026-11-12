@@ -392,14 +392,14 @@ namespace Box2D.NET
                     }
                 }
 
-                if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preSolveFcn != null)
+                if (didHit && (shape.enablePreSolveEvents || fastShape.enablePreSolveEvents) && world.preContinuousFcn != null)
                 {
                     B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                     B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
 
                     // TOI runs in the base frame, lift the hit point back to world for the callback
                     B2Pos worldPoint = b2OffsetPos(continuousContext.@base, output.point);
-                    didHit = world.preSolveFcn(shapeIdA, shapeIdB, worldPoint, output.normal, world.preSolveContext);
+                    didHit = world.preContinuousFcn(shapeIdA, shapeIdB, worldPoint, output.normal, world.preSolveContext);
                 }
 
                 if (didHit)
@@ -550,6 +550,10 @@ namespace Box2D.NET
                     if (b2AABB_Contains(shape.fatAABB, shape.aabb) == false)
                     {
                         float margin = shape.aabbMargin;
+
+                        // Note: far from the origin the margin can be snapped to the nearest ULP.
+                        // This relevant for DP mode. So we lose the broad-phase hysteresis.
+                        // todo consider using b2Expand to ensure at least one ULP of margin.
                         B2AABB fatAABB;
                         fatAABB.lowerBound.X = shape.aabb.lowerBound.X - margin;
                         fatAABB.lowerBound.Y = shape.aabb.lowerBound.Y - margin;
@@ -1313,7 +1317,6 @@ namespace Box2D.NET
             int awakeBodyCount = awakeSet.bodySims.count;
             if (awakeBodyCount == 0)
             {
-                b2ValidateNoEnlarged(world.broadPhase);
                 return;
             }
 

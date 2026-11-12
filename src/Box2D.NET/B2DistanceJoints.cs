@@ -61,9 +61,6 @@ namespace Box2D.NET
             maxLength = b2ClampFloat(maxLength, B2_LINEAR_SLOP, B2_HUGE);
             joint.minLength = b2MinFloat(minLength, maxLength);
             joint.maxLength = b2MaxFloat(minLength, maxLength);
-            joint.impulse = 0.0f;
-            joint.lowerImpulse = 0.0f;
-            joint.upperImpulse = 0.0f;
         }
         /// Get the distance joint minimum length
         public static float b2DistanceJoint_GetMinLength(B2JointId jointId)
@@ -212,10 +209,10 @@ namespace Box2D.NET
         {
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
-            // Relative to body A so the difference stays in float precision far from the origin
-            B2WorldTransform wxfA = b2GetBodyTransform(world, @base.bodyIdA);
-            B2Transform transformA = b2ToRelativeTransform(wxfA, wxfA.p);
-            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransform(world, @base.bodyIdB), wxfA.p);
+            B2WorldTransform worldTransformA = b2GetBodyTransform(world, @base.bodyIdA);
+            B2Transform transformA = b2ToRelativeTransform(worldTransformA, worldTransformA.p);
+            B2WorldTransform worldTransformB = b2GetBodyTransform(world, @base.bodyIdB);
+            B2Transform transformB = b2ToRelativeTransform(worldTransformB, worldTransformA.p);
 
             B2Vec2 pA = b2TransformPoint(transformA, @base.localFrameA.p);
             B2Vec2 pB = b2TransformPoint(transformB, @base.localFrameB.p);
@@ -385,13 +382,13 @@ namespace Box2D.NET
                 {
                     // Cdot = dot(u, v + cross(w, r))
                     B2Vec2 vr = b2Add(b2Sub(vB, vA), b2Sub(b2CrossSV(wB, rB), b2CrossSV(wA, rA)));
-                    float Cdot = b2Dot(axis, vr);
-                    float C = length - joint.length;
-                    float bias = joint.distanceSoftness.biasRate * C;
+                    float cdot = b2Dot(axis, vr);
+                    float c = length - joint.length;
+                    float bias = joint.distanceSoftness.biasRate * c;
 
                     float m = joint.distanceSoftness.massScale * joint.axialMass;
                     float oldImpulse = joint.impulse;
-                    float impulse = -m * (Cdot + bias) - joint.distanceSoftness.impulseScale * oldImpulse;
+                    float impulse = -m * (cdot + bias) - joint.distanceSoftness.impulseScale * oldImpulse;
 
                     float h = context.h;
                     joint.impulse = b2ClampFloat(joint.impulse + impulse, joint.lowerSpringForce * h, joint.upperSpringForce * h);
@@ -426,26 +423,26 @@ namespace Box2D.NET
                     // lower limit
                     {
                         B2Vec2 vr = b2Add(b2Sub(vB, vA), b2Sub(b2CrossSV(wB, rB), b2CrossSV(wA, rA)));
-                        float Cdot = b2Dot(axis, vr);
+                        float cdot = b2Dot(axis, vr);
 
-                        float C = length - joint.minLength;
+                        float c = length - joint.minLength;
 
                         float bias = 0.0f;
-                        float massCoeff = 1.0f;
-                        float impulseCoeff = 0.0f;
-                        if (C > 0.0f)
+                        float massScale = 1.0f;
+                        float impulseScale = 0.0f;
+                        if (c > 0.0f)
                         {
                             // speculative
-                            bias = C * context.inv_h;
+                            bias = c * context.inv_h;
                         }
                         else if (useBias)
                         {
-                            bias = @base.constraintSoftness.biasRate * C;
-                            massCoeff = @base.constraintSoftness.massScale;
-                            impulseCoeff = @base.constraintSoftness.impulseScale;
+                            bias = @base.constraintSoftness.biasRate * c;
+                            massScale = @base.constraintSoftness.massScale;
+                            impulseScale = @base.constraintSoftness.impulseScale;
                         }
 
-                        float impulse = -massCoeff * joint.axialMass * (Cdot + bias) - impulseCoeff * joint.lowerImpulse;
+                        float impulse = -massScale * joint.axialMass * (cdot + bias) - impulseScale * joint.lowerImpulse;
                         float newImpulse = b2MaxFloat(0.0f, joint.lowerImpulse + impulse);
                         impulse = newImpulse - joint.lowerImpulse;
                         joint.lowerImpulse = newImpulse;

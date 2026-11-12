@@ -545,8 +545,10 @@ namespace Box2D.NET
                 if (simplex.count == 3)
                 {
                     // Overlap
+                    cache = b2MakeSimplexCache(simplex);
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
                     b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
+                    output.distance = 0.0f;
                     output.pointA = localPointA;
                     output.pointB = localPointB;
                     return output;
@@ -562,7 +564,7 @@ namespace Box2D.NET
 
 
                 // Ensure the search direction is numerically fit.
-                if (b2Dot(d, d) < FLT_EPSILON * FLT_EPSILON)
+                if (b2Dot(d, d) < 1000.0f * FLT_MIN)
                 {
                     // This is unlikely but could lead to bad cycling.
                     // The branch predictor seems to make this check have low cost.
@@ -570,9 +572,12 @@ namespace Box2D.NET
                     // The origin is probably contained by a line segment
                     // or triangle. Thus the shapes are overlapped.
 
+                    cache = b2MakeSimplexCache(simplex);
+
                     // Must return overlap due to invalid normal.
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
                     b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
+                    output.distance = 0.0f;
                     output.pointA = localPointA;
                     output.pointB = localPointB;
                     return output;

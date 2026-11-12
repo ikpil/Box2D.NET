@@ -235,7 +235,7 @@ public class JointEvent : Sample
                 var userData = @event.userData.GetSigned(-1);
                 var index = userData;
                 B2_ASSERT(0 <= index && index < e_count);
-                b2DestroyJoint(@event.jointId, true);
+                b2DestroyJoint(@event.jointId);
                 m_jointIds[index] = b2_nullJointId;
             }
         }

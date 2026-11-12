@@ -492,8 +492,8 @@ namespace Box2D.NET
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
-            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
-            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2MulWorldTransforms(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2MulWorldTransforms(transformB, @base.localFrameB);
 
             B2Polygon box = b2MakeBox(0.25f * drawScale, 0.125f * drawScale);
             draw.DrawPolygonFcn(frameA, box.vertices.AsSpan(), 4, B2HexColor.b2_colorDarkOrange, draw.context);

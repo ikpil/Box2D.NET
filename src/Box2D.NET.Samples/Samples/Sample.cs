@@ -778,7 +778,7 @@ public class Sample : IDisposable
     {
         if (B2_IS_NON_NULL(m_mouseJointId) && button == (int)MouseButton.Left)
         {
-            b2DestroyJoint(m_mouseJointId, true);
+            b2DestroyJoint(m_mouseJointId);
             m_mouseJointId = b2_nullJointId;
 
             b2DestroyBody(m_mouseBodyId);
