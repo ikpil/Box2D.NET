@@ -118,7 +118,7 @@ namespace Box2D.NET
             return joint.uj.wheelJoint.enableMotor;
         }
         /// Set the wheel joint motor speed in radians per second
-        public static void b2WheelJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
+        public static void b2WheelJoint_SetTargetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
 
@@ -126,13 +126,13 @@ namespace Box2D.NET
             joint.uj.wheelJoint.motorSpeed = motorSpeed;
         }
         /// Get the wheel joint motor speed in radians per second
-        public static float b2WheelJoint_GetMotorSpeed(B2JointId jointId)
+        public static float b2WheelJoint_GetTargetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);
             return joint.uj.wheelJoint.motorSpeed;
         }
         /// Get the wheel joint current motor torque, usually in newton-meters
-        public static float b2WheelJoint_GetMotorTorque(B2JointId jointId)
+        public static float b2WheelJoint_GetCurrentMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_wheelJoint);

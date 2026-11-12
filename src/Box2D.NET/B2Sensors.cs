@@ -99,7 +99,7 @@ namespace Box2D.NET
             input.transform = b2InvMulWorldTransforms(queryContext.transform, otherTransform);
             input.useRadii = true;
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             bool overlaps = output.distance < 10.0f * FLT_EPSILON;
             if (overlaps == false)
@@ -187,9 +187,9 @@ namespace Box2D.NET
                 B2AABB queryBounds = sensorShape.aabb;
 
                 // Query all trees
-                b2DynamicTree_Query(trees[0], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
-                b2DynamicTree_Query(trees[1], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
-                b2DynamicTree_Query(trees[2], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
+                b2DynamicTree_OverlapAABB(trees[0], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
+                b2DynamicTree_OverlapAABB(trees[1], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
+                b2DynamicTree_OverlapAABB(trees[2], queryBounds, sensorShape.filter.maskBits, b2SensorQueryCallback, ref queryContext);
 
                 // Sort the overlaps to enable finding begin and end events.
                 Array.Sort(sensor.overlaps2.data, 0, sensor.overlaps2.count, B2ShapeRefComparer.Shared);

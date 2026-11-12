@@ -165,7 +165,7 @@ public class B2BroadPhasesTests
 
         b2BroadPhase_MoveProxy(bp, proxyKey, aabb2);
 
-        Assert.That(b2DynamicTree_GetAABB(tree, proxyId), Is.EqualTo(aabb2));
+        Assert.That(b2DynamicTree_GetProxyBounds(tree, proxyId), Is.EqualTo(aabb2));
         Assert.That(IsMoved(bp, proxyKey), Is.True);
         Assert.That(b2HasTreeMoved(tree), Is.True);
     }
@@ -187,12 +187,12 @@ public class B2BroadPhasesTests
         b2BroadPhase_MarkProxyMovedSerial(bp, proxyKeyA);
         Assert.That(IsMoved(bp, proxyKeyA), Is.True);
         Assert.That(IsMoved(bp, proxyKeyB), Is.False);
-        Assert.That(b2DynamicTree_GetAABB(bp.trees[(int)B2BodyType.b2_staticBody], B2_PROXY_ID(proxyKeyA)), Is.EqualTo(aabb1));
+        Assert.That(b2DynamicTree_GetProxyBounds(bp.trees[(int)B2BodyType.b2_staticBody], B2_PROXY_ID(proxyKeyA)), Is.EqualTo(aabb1));
 
         // The enlarging mark stores the fat box in the leaf
         b2BroadPhase_MarkProxyMoved(bp, proxyKeyB, aabb2);
         Assert.That(IsMoved(bp, proxyKeyB), Is.True);
-        Assert.That(b2DynamicTree_GetAABB(bp.trees[(int)B2BodyType.b2_staticBody], B2_PROXY_ID(proxyKeyB)), Is.EqualTo(aabb2));
+        Assert.That(b2DynamicTree_GetProxyBounds(bp.trees[(int)B2BodyType.b2_staticBody], B2_PROXY_ID(proxyKeyB)), Is.EqualTo(aabb2));
     }
 
     [Test]

@@ -109,7 +109,7 @@ public class WheelJoint : Sample
 
             if (ImGui.SliderFloat("Speed", ref m_motorSpeed, -20.0f, 20.0f, "%.0f"))
             {
-                b2WheelJoint_SetMotorSpeed(m_jointId, m_motorSpeed);
+                b2WheelJoint_SetTargetMotorSpeed(m_jointId, m_motorSpeed);
             }
             ImGui.PopItemWidth();
         }
@@ -141,7 +141,7 @@ public class WheelJoint : Sample
     {
         base.Draw();
 
-        float torque = b2WheelJoint_GetMotorTorque(m_jointId);
+        float torque = b2WheelJoint_GetCurrentMotorTorque(m_jointId);
         DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque = {torque,4:F1}"));
     }
 }

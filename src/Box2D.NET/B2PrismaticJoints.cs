@@ -136,7 +136,7 @@ namespace Box2D.NET
             return joint.uj.prismaticJoint.enableMotor;
         }
         /// Set the prismatic joint motor speed, usually in meters per second
-        public static void b2PrismaticJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
+        public static void b2PrismaticJoint_SetTargetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
 
@@ -144,13 +144,13 @@ namespace Box2D.NET
             joint.uj.prismaticJoint.motorSpeed = motorSpeed;
         }
         /// Get the prismatic joint motor speed, usually in meters per second
-        public static float b2PrismaticJoint_GetMotorSpeed(B2JointId jointId)
+        public static float b2PrismaticJoint_GetTargetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
             return joint.uj.prismaticJoint.motorSpeed;
         }
         /// Get the prismatic joint current motor force, usually in newtons
-        public static float b2PrismaticJoint_GetMotorForce(B2JointId jointId)
+        public static float b2PrismaticJoint_GetCurrentMotorForce(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
@@ -171,7 +171,7 @@ namespace Box2D.NET
             return joint.uj.prismaticJoint.maxMotorForce;
         }
         /// Get the current joint translation, usually in meters.
-        public static float b2PrismaticJoint_GetTranslation(B2JointId jointId)
+        public static float b2PrismaticJoint_GetCurrentTranslation(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
@@ -189,7 +189,7 @@ namespace Box2D.NET
             return translation;
         }
         /// Get the current joint translation speed, usually in meters per second.
-        public static float b2PrismaticJoint_GetSpeed(B2JointId jointId)
+        public static float b2PrismaticJoint_GetCurrentSpeed(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2Joint joint = b2GetJointFullId(world, jointId);

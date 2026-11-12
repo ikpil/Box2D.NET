@@ -122,7 +122,7 @@ public class BenchmarkShapeDistance : Sample
             {
                 B2SimplexCache cache = new B2SimplexCache();
                 input.transform = b2InvMulTransforms(m_transformAs[i], m_transformBs[i]);
-                m_outputs[i] = b2ShapeDistance(ref input, ref cache, null, 0);
+                m_outputs[i] = b2ComputeShapeDistance(ref input, ref cache, null, 0);
                 totalIterations += m_outputs[i].iterations;
             }
 

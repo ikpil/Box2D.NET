@@ -423,7 +423,7 @@ public class DynamicTree : Sample
 
             B2AABB box = new B2AABB(b2Min(m_startPoint, m_endPoint), b2Max(m_startPoint, m_endPoint));
 
-            b2DynamicTree_Query(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
+            b2DynamicTree_OverlapAABB(m_tree, box, B2_DEFAULT_MASK_BITS, QueryCallback, ref dynamicTreeContext);
 
             DrawBounds(m_draw, box, B2HexColor.b2_colorWhite);
         }

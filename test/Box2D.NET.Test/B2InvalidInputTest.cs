@@ -308,11 +308,11 @@ public class B2InvalidInputTest
             Rejects(() => b2RevoluteJoint_SetTargetAngle(jointId, bad), "b2RevoluteJoint_SetTargetAngle");
             Rejects(() => b2RevoluteJoint_SetLimits(jointId, bad, 1.0f), "b2RevoluteJoint_SetLimits lower");
             Rejects(() => b2RevoluteJoint_SetLimits(jointId, -1.0f, bad), "b2RevoluteJoint_SetLimits upper");
-            Rejects(() => b2RevoluteJoint_SetMotorSpeed(jointId, bad), "b2RevoluteJoint_SetMotorSpeed");
+            Rejects(() => b2RevoluteJoint_SetTargetMotorSpeed(jointId, bad), "b2RevoluteJoint_SetMotorSpeed");
             Rejects(() => b2RevoluteJoint_SetMaxMotorTorque(jointId, bad), "b2RevoluteJoint_SetMaxMotorTorque");
         }
 
-        Accepts(() => b2RevoluteJoint_SetMotorSpeed(jointId, 2.0f), "b2RevoluteJoint_SetMotorSpeed");
+        Accepts(() => b2RevoluteJoint_SetTargetMotorSpeed(jointId, 2.0f), "b2RevoluteJoint_SetMotorSpeed");
 
         for (int i = 0; i < 30; ++i)
         {

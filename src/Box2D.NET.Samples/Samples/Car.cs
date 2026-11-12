@@ -130,8 +130,8 @@ public struct Car
 
     public void SetSpeed(float speed)
     {
-        b2WheelJoint_SetMotorSpeed(m_rearAxleId, speed);
-        b2WheelJoint_SetMotorSpeed(m_frontAxleId, speed);
+        b2WheelJoint_SetTargetMotorSpeed(m_rearAxleId, speed);
+        b2WheelJoint_SetTargetMotorSpeed(m_frontAxleId, speed);
         b2Joint_WakeBodies(m_rearAxleId);
     }
 

@@ -1034,19 +1034,19 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(shape.us.capsule, localInput);
+                    output = b2CastRayCapsule(shape.us.capsule, localInput);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(shape.us.circle, localInput);
+                    output = b2CastRayCircle(shape.us.circle, localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref shape.us.polygon, localInput);
+                    output = b2CastRayPolygon(ref shape.us.polygon, localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(shape.us.segment, localInput, false);
+                    output = b2CastRaySegment(shape.us.segment, localInput, false);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(shape.us.chainSegment.segment, localInput, true);
+                    output = b2CastRaySegment(shape.us.chainSegment.segment, localInput, true);
                     break;
                 default:
                     return output;
@@ -1080,16 +1080,16 @@ namespace Box2D.NET
             switch (shape.type)
             {
                 case B2ShapeType.b2_capsuleShape:
-                    output = b2ShapeCastCapsule(shape.us.capsule, localInput);
+                    output = b2CastShapeCapsule(shape.us.capsule, localInput);
                     break;
                 case B2ShapeType.b2_circleShape:
-                    output = b2ShapeCastCircle(shape.us.circle, localInput);
+                    output = b2CastShapeCircle(shape.us.circle, localInput);
                     break;
                 case B2ShapeType.b2_polygonShape:
-                    output = b2ShapeCastPolygon(shape.us.polygon, localInput);
+                    output = b2CastShapePolygon(shape.us.polygon, localInput);
                     break;
                 case B2ShapeType.b2_segmentShape:
-                    output = b2ShapeCastSegment(shape.us.segment, localInput);
+                    output = b2CastShapeSegment(shape.us.segment, localInput);
                     break;
                 case B2ShapeType.b2_chainSegmentShape:
                 {
@@ -1111,7 +1111,7 @@ namespace Box2D.NET
                         return output;
                     }
 
-                    output = b2ShapeCastSegment(shape.us.chainSegment.segment, localInput);
+                    output = b2CastShapeSegment(shape.us.chainSegment.segment, localInput);
                 }
                     break;
                 default:
@@ -1967,7 +1967,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             return b2TransformWorldPoint(transform, output.pointA);
         }

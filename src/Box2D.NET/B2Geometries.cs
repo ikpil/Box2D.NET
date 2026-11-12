@@ -585,13 +585,13 @@ namespace Box2D.NET
             input.useRadii = false;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             return output.distance <= shape.radius;
         }
 
         /// Ray cast versus circle shape in local space.
-        public static B2CastOutput b2RayCastCircle(in B2Circle shape, in B2RayCastInput input)
+        public static B2CastOutput b2CastRayCircle(in B2Circle shape, in B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(input));
 
@@ -668,7 +668,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus capsule shape in local space.
-        public static B2CastOutput b2RayCastCapsule(in B2Capsule shape, in B2RayCastInput input)
+        public static B2CastOutput b2CastRayCapsule(in B2Capsule shape, in B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(input));
 
@@ -686,7 +686,7 @@ namespace Box2D.NET
             {
                 // Capsule is really a circle
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(circle, input);
+                return b2CastRayCircle(circle, input);
             }
 
             B2Vec2 p1 = input.origin;
@@ -708,14 +708,14 @@ namespace Box2D.NET
                 {
                     // start point behind capsule segment
                     B2Circle circle = new B2Circle(v1, shape.radius);
-                    return b2RayCastCircle(circle, input);
+                    return b2CastRayCircle(circle, input);
                 }
 
                 if (qa > capsuleLength)
                 {
                     // start point ahead of capsule segment
                     B2Circle circle = new B2Circle(v2, shape.radius);
-                    return b2RayCastCircle(circle, input);
+                    return b2CastRayCircle(circle, input);
                 }
 
                 // ray starts inside capsule . no hit
@@ -784,13 +784,13 @@ namespace Box2D.NET
             {
                 // ray passes behind capsule segment
                 B2Circle circle = new B2Circle(v1, shape.radius);
-                return b2RayCastCircle(circle, input);
+                return b2CastRayCircle(circle, input);
             }
             else if (capsuleLength < s1)
             {
                 // ray passes ahead of capsule segment
                 B2Circle circle = new B2Circle(v2, shape.radius);
-                return b2RayCastCircle(circle, input);
+                return b2CastRayCircle(circle, input);
             }
             else
             {
@@ -805,7 +805,7 @@ namespace Box2D.NET
 
         /// Ray cast versus segment shape in local space. Optionally treat the segment as one-sided with hits from
         /// the left side being treated as a miss.
-        public static B2CastOutput b2RayCastSegment(in B2Segment shape, in B2RayCastInput input, bool oneSided)
+        public static B2CastOutput b2CastRaySegment(in B2Segment shape, in B2RayCastInput input, bool oneSided)
         {
             if (oneSided)
             {
@@ -887,7 +887,7 @@ namespace Box2D.NET
         }
 
         /// Ray cast versus polygon shape in local space.
-        public static B2CastOutput b2RayCastPolygon(ref B2Polygon shape, in B2RayCastInput input)
+        public static B2CastOutput b2CastRayPolygon(ref B2Polygon shape, in B2RayCastInput input)
         {
             B2_ASSERT(b2IsValidRay(input));
 
@@ -977,11 +977,11 @@ namespace Box2D.NET
             castInput.translationB = input.translation;
             castInput.maxFraction = input.maxFraction;
             castInput.canEncroach = false;
-            return b2ShapeCast(castInput);
+            return b2CastShape(castInput);
         }
 
         /// Shape cast versus a circle.
-        public static B2CastOutput b2ShapeCastCircle(in B2Circle shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2CastShapeCircle(in B2Circle shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
@@ -991,11 +991,11 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            return b2ShapeCast(pairInput);
+            return b2CastShape(pairInput);
         }
 
         /// Shape cast versus a capsule.
-        public static B2CastOutput b2ShapeCastCapsule(in B2Capsule shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2CastShapeCapsule(in B2Capsule shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
@@ -1005,11 +1005,11 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            return b2ShapeCast(pairInput);
+            return b2CastShape(pairInput);
         }
 
         /// Shape cast versus a line segment.
-        public static B2CastOutput b2ShapeCastSegment(in B2Segment shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2CastShapeSegment(in B2Segment shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
@@ -1019,11 +1019,11 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            return b2ShapeCast(pairInput);
+            return b2CastShape(pairInput);
         }
 
         /// Shape cast versus a convex polygon.
-        public static B2CastOutput b2ShapeCastPolygon(in B2Polygon shape, in B2ShapeCastInput input)
+        public static B2CastOutput b2CastShapePolygon(in B2Polygon shape, in B2ShapeCastInput input)
         {
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsReadOnlySpan(), shape.count, shape.radius);
@@ -1033,7 +1033,7 @@ namespace Box2D.NET
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            return b2ShapeCast(pairInput);
+            return b2CastShape(pairInput);
         }
 
         internal static B2PlaneResult b2CollideMoverAndCircle(in B2Capsule mover, in B2Circle shape)
@@ -1047,7 +1047,7 @@ namespace Box2D.NET
             float totalRadius = mover.radius + shape.radius;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+            B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
             if (distanceOutput.distance <= totalRadius)
             {
@@ -1069,7 +1069,7 @@ namespace Box2D.NET
             float totalRadius = mover.radius + shape.radius;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+            B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
             if (distanceOutput.distance <= totalRadius)
             {
@@ -1091,7 +1091,7 @@ namespace Box2D.NET
             float totalRadius = mover.radius + shape.radius;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+            B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
             if (distanceOutput.distance <= totalRadius)
             {
@@ -1113,7 +1113,7 @@ namespace Box2D.NET
             float totalRadius = mover.radius;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+            B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
             if (distanceOutput.distance <= totalRadius)
             {

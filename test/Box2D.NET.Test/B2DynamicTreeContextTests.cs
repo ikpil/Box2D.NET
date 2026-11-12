@@ -43,7 +43,7 @@ public class B2DynamicTreeContextTests
             b2CreateTreeProxy(tree, bounds, ulong.MaxValue, 1);
 
             var context = new CallbackContext();
-            b2DynamicTree_Query(tree, bounds, ulong.MaxValue, QueryCallback, ref context);
+            b2DynamicTree_OverlapAABB(tree, bounds, ulong.MaxValue, QueryCallback, ref context);
             Assert.That(context.Visits, Is.EqualTo(1));
 
             context.Visits = 0;

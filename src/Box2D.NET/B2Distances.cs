@@ -44,7 +44,7 @@ namespace Box2D.NET
         }
 
         /// Compute the distance between two line segments, clamping at the end points if needed.
-        public static B2SegmentDistanceResult b2SegmentDistance(B2Vec2 p1, B2Vec2 q1, B2Vec2 p2, B2Vec2 q2)
+        public static B2SegmentDistanceResult b2ComputeSegmentDistance(B2Vec2 p1, B2Vec2 q1, B2Vec2 p2, B2Vec2 q2)
         {
             B2SegmentDistanceResult result = new B2SegmentDistanceResult();
 
@@ -466,7 +466,7 @@ namespace Box2D.NET
         /// Compute the closest points between two shapes represented as point clouds.
         /// b2SimplexCache cache is input/output. On the first call set b2SimplexCache.count to zero.
         /// The underlying GJK algorithm may be debugged by passing in debug simplexes and capacity. You may pass in NULL and 0 for these.
-        public static B2DistanceOutput b2ShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, Span<B2Simplex> simplexes, int simplexCapacity)
+        public static B2DistanceOutput b2ComputeShapeDistance(ref B2DistanceInput input, ref B2SimplexCache cache, Span<B2Simplex> simplexes, int simplexCapacity)
         {
             B2_UNUSED(simplexes, simplexCapacity);
             B2_ASSERT(input.proxyA.count > 0 && input.proxyB.count > 0);
@@ -663,7 +663,7 @@ namespace Box2D.NET
 
         /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
         /// Initially touching shapes are treated as a miss.
-        public static B2CastOutput b2ShapeCast(in B2ShapeCastPairInput input)
+        public static B2CastOutput b2CastShape(in B2ShapeCastPairInput input)
         {
             // Compute tolerance
             float linearSlop = B2_LINEAR_SLOP;
@@ -696,7 +696,7 @@ namespace Box2D.NET
             {
                 output.iterations += 1;
 
-                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+                B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
                 if (distanceOutput.distance < target + tolerance)
                 {
@@ -1174,7 +1174,7 @@ namespace Box2D.NET
         /// a fraction between [0,tMax]. This uses a swept separating axis and may miss some intermediate,
         /// non-tunneling collisions. If you change the time interval, you should call this function
         /// again.
-        public static B2TOIOutput b2TimeOfImpact(in B2TOIInput input)
+        public static B2TOIOutput b2ComputeTimeOfImpact(in B2TOIInput input)
         {
 #if B2_SNOOP_TOI_COUNTERS
             ulong ticks = b2GetTicks();
@@ -1224,7 +1224,7 @@ namespace Box2D.NET
                 B2Transform xfA = b2GetSweepTransform(sweepA, t1);
                 B2Transform xfB = b2GetSweepTransform(sweepB, t1);
                 distanceInput.transform = b2InvMulTransforms(xfA, xfB);
-                B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+                B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
 
                 // The distance query runs in frame A, project the witness data back to world
                 B2Vec2 worldNormal = b2RotateVector(xfA.q, distanceOutput.normal);

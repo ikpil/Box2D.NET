@@ -90,7 +90,7 @@ namespace Box2D.NET
         }
         /// Get the revolute joint current angle in radians relative to the reference angle
         /// @see b2RevoluteJointDef::referenceAngle
-        public static float b2RevoluteJoint_GetAngle(B2JointId jointId)
+        public static float b2RevoluteJoint_GetCurrentAngle(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
@@ -164,7 +164,7 @@ namespace Box2D.NET
             return joint.uj.revoluteJoint.enableMotor;
         }
         /// Set the revolute joint motor speed in radians per second
-        public static void b2RevoluteJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
+        public static void b2RevoluteJoint_SetTargetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
 
@@ -172,13 +172,13 @@ namespace Box2D.NET
             joint.uj.revoluteJoint.motorSpeed = motorSpeed;
         }
         /// Get the revolute joint motor speed in radians per second
-        public static float b2RevoluteJoint_GetMotorSpeed(B2JointId jointId)
+        public static float b2RevoluteJoint_GetTargetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.motorSpeed;
         }
         /// Get the revolute joint current motor torque, usually in newton-meters
-        public static float b2RevoluteJoint_GetMotorTorque(B2JointId jointId)
+        public static float b2RevoluteJoint_GetCurrentMotorTorque(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);

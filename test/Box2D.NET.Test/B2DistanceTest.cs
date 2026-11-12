@@ -19,7 +19,7 @@ public class B2DistanceTest
         B2Vec2 p2 = new B2Vec2(2.0f, 0.0f);
         B2Vec2 q2 = new B2Vec2(1.0f, 0.0f);
 
-        B2SegmentDistanceResult result = b2SegmentDistance(p1, q1, p2, q2);
+        B2SegmentDistanceResult result = b2ComputeSegmentDistance(p1, q1, p2, q2);
 
         Assert.That(result.fraction1 - 0.5f, Is.LessThan(FLT_EPSILON));
         Assert.That(result.fraction2 - 1.0f, Is.LessThan(FLT_EPSILON));
@@ -53,7 +53,7 @@ public class B2DistanceTest
         input.useRadii = false;
 
         B2SimplexCache cache = new B2SimplexCache();
-        B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+        B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
         Assert.That(output.distance - 1.0f, Is.LessThan(FLT_EPSILON));
     }
@@ -83,7 +83,7 @@ public class B2DistanceTest
         input.maxFraction = 1.0f;
         input.canEncroach = false;
 
-        B2CastOutput output = b2ShapeCast(input);
+        B2CastOutput output = b2CastShape(input);
 
         Assert.That(output.hit);
         Assert.That(output.fraction - 0.5f, Is.LessThan(0.005f));
@@ -118,7 +118,7 @@ public class B2DistanceTest
         input.useRadii = false;
 
         B2SimplexCache cache = new B2SimplexCache();
-        B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+        B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
         Assert.That(output.distance, Is.GreaterThan(0.0f));
         Assert.That(b2IsNormalized(output.normal));
@@ -149,7 +149,7 @@ public class B2DistanceTest
         input.sweepB = new B2Sweep(b2Vec2_zero, b2Vec2_zero, new B2Vec2(-2.0f, 0.0f), b2Rot_identity, b2Rot_identity);
         input.maxFraction = 1.0f;
 
-        B2TOIOutput output = b2TimeOfImpact(input);
+        B2TOIOutput output = b2ComputeTimeOfImpact(input);
 
         Assert.That(output.state, Is.EqualTo(B2TOIState.b2_toiStateHit));
         Assert.That(output.fraction - 0.5f, Is.LessThan(0.005f));

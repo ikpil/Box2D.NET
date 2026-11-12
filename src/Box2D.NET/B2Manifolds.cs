@@ -819,7 +819,7 @@ namespace Box2D.NET
                 B2Vec2 v21 = localPolyB.vertices[i21];
                 B2Vec2 v22 = localPolyB.vertices[i22];
 
-                B2SegmentDistanceResult result = b2SegmentDistance(v11, v12, v21, v22);
+                B2SegmentDistanceResult result = b2ComputeSegmentDistance(v11, v12, v21, v22);
                 B2_ASSERT(result.distanceSquared > 0.0f);
                 float distance = MathF.Sqrt(result.distanceSquared);
                 float separation = distance - radius;
@@ -1326,7 +1326,7 @@ namespace Box2D.NET
             input.transform = b2Transform_identity;
             input.useRadii = false;
 
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             if (output.distance > radiusB + B2_SPECULATIVE_DISTANCE)
             {

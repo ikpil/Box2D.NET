@@ -224,7 +224,7 @@ public class ScissorLift : Sample
 
         if (ImGui.SliderFloat("Speed", ref m_motorSpeed, -0.3f, 0.3f, "%.2f"))
         {
-            b2DistanceJoint_SetMotorSpeed(m_liftJointId, m_motorSpeed);
+            b2DistanceJoint_SetTargetMotorSpeed(m_liftJointId, m_motorSpeed);
             b2Joint_WakeBodies(m_liftJointId);
         }
         ImGui.PopItemWidth();

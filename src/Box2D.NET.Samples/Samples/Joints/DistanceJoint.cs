@@ -139,7 +139,7 @@ public class DistanceJoint : Sample
         {
             for (int i = 0; i < m_count; ++i)
             {
-                b2DistanceJoint_SetLength(m_jointIds[i], m_length);
+                b2DistanceJoint_SetRestLength(m_jointIds[i], m_length);
                 b2Joint_WakeBodies(m_jointIds[i]);
             }
         }
@@ -208,7 +208,7 @@ public class DistanceJoint : Sample
             {
                 for (int i = 0; i < m_count; ++i)
                 {
-                    b2DistanceJoint_SetLengthRange(m_jointIds[i], m_minLength, m_maxLength);
+                    b2DistanceJoint_SetLimits(m_jointIds[i], m_minLength, m_maxLength);
                     b2Joint_WakeBodies(m_jointIds[i]);
                 }
             }
@@ -217,7 +217,7 @@ public class DistanceJoint : Sample
             {
                 for (int i = 0; i < m_count; ++i)
                 {
-                    b2DistanceJoint_SetLengthRange(m_jointIds[i], m_minLength, m_maxLength);
+                    b2DistanceJoint_SetLimits(m_jointIds[i], m_minLength, m_maxLength);
                     b2Joint_WakeBodies(m_jointIds[i]);
                 }
             }

@@ -16,10 +16,10 @@ public class B2PublicApiTests
         yield return PublicApi(typeof(B2Cores), nameof(B2Cores.b2SetLengthUnitsPerMeter), typeof(void), 1, false);
         yield return PublicApi(typeof(B2Cores), nameof(B2Cores.b2GetLengthUnitsPerMeter), typeof(float), 0, false);
         yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2IsValidRay), typeof(bool), 1, false);
-        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastCircle), typeof(B2CastOutput), 2, false);
-        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastCapsule), typeof(B2CastOutput), 2, false);
-        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastSegment), typeof(B2CastOutput), 2, false);
-        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastPolygon), typeof(B2CastOutput), 2, false);
+        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2CastShapeCircle), typeof(B2CastOutput), 2, false);
+        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2CastShapeCapsule), typeof(B2CastOutput), 2, false);
+        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2CastShapeSegment), typeof(B2CastOutput), 2, false);
+        yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2CastShapePolygon), typeof(B2CastOutput), 2, false);
         yield return PublicApi(typeof(B2DynamicTrees), nameof(B2DynamicTrees.b2DynamicTree_CastBox), typeof(B2TreeStats), 5, true);
         yield return PublicApi(typeof(B2Worlds), nameof(B2Worlds.b2World_GetBounds), typeof(B2AABB), 1, false);
     }

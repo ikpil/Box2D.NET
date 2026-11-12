@@ -73,7 +73,7 @@ namespace Box2D.NET
         }
 
         /// Get the current length of the pogo.
-        public static float b2PogoJoint_GetLength(B2JointId jointId)
+        public static float b2PogoJoint_GetCurrentLength(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_pogoJoint);
@@ -100,7 +100,7 @@ namespace Box2D.NET
         }
 
         /// Get the internal pogo velocity.
-        public static float b2PogoJoint_GetVelocity(B2JointId jointId)
+        public static float b2PogoJoint_GetCurrentSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_pogoJoint);
             return joint.uj.pogoJoint.velocity;

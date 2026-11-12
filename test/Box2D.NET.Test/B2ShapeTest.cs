@@ -134,7 +134,7 @@ public class B2ShapeTest
         B2RayCastInput input = new B2RayCastInput(new B2Vec2(-4.0f, 0.0f), new B2Vec2(8.0f, 0.0f), 1.0f);
 
         {
-            B2CastOutput output = b2RayCastCircle(circle, input);
+            B2CastOutput output = b2CastRayCircle(circle, input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -142,7 +142,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastPolygon(ref box, input);
+            B2CastOutput output = b2CastRayPolygon(ref box, input);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));
@@ -150,7 +150,7 @@ public class B2ShapeTest
         }
 
         {
-            B2CastOutput output = b2RayCastSegment(segment, input, true);
+            B2CastOutput output = b2CastRaySegment(segment, input, true);
             Assert.That(output.hit);
             Assert.That(output.normal.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(output.normal.Y, Is.LessThan(FLT_EPSILON));

@@ -358,7 +358,7 @@ public class ShapeCast : Sample
         input.maxFraction = 1.0f;
         input.canEncroach = m_encroach;
 
-        output = b2ShapeCast(input);
+        output = b2CastShape(input);
 
         B2Transform transform;
         transform.q = m_transform.q;
@@ -371,7 +371,7 @@ public class ShapeCast : Sample
         distanceInput.useRadii = false;
         B2SimplexCache distanceCache = new B2SimplexCache();
         distanceCache.count = 0;
-        B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref distanceCache, null, 0);
+        B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref distanceCache, null, 0);
 
 
         inputTransform = transform;

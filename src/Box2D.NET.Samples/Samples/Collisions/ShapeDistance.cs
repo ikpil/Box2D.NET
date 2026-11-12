@@ -369,7 +369,7 @@ public class ShapeDistance : Sample
             m_cache.count = 0;
         }
 
-        B2DistanceOutput output = b2ShapeDistance(ref input, ref m_cache, m_simplexes, m_simplexCapacity);
+        B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref m_cache, m_simplexes, m_simplexCapacity);
 
         m_simplexCount = output.simplexCount;
         _outputPointA = output.pointA;

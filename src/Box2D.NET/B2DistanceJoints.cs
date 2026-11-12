@@ -20,7 +20,7 @@ namespace Box2D.NET
         /// Set the rest length of a distance joint
         /// @param jointId The id for a distance joint
         /// @param length The new distance joint length
-        public static void b2DistanceJoint_SetLength(B2JointId jointId, float length)
+        public static void b2DistanceJoint_SetRestLength(B2JointId jointId, float length)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(length)) == false) return;
 
@@ -33,7 +33,7 @@ namespace Box2D.NET
             joint.upperImpulse = 0.0f;
         }
         /// Get the rest length of a distance joint
-        public static float b2DistanceJoint_GetLength(B2JointId jointId)
+        public static float b2DistanceJoint_GetRestLength(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
@@ -54,7 +54,7 @@ namespace Box2D.NET
             return joint.uj.distanceJoint.enableLimit;
         }
         /// Set the minimum and maximum length parameters of a distance joint
-        public static void b2DistanceJoint_SetLengthRange(B2JointId jointId, float minLength, float maxLength)
+        public static void b2DistanceJoint_SetLimits(B2JointId jointId, float minLength, float maxLength)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(minLength)) == false) return;
             if (B2_CHECK_INPUT(b2IsValidFloat(maxLength)) == false) return;
@@ -68,14 +68,14 @@ namespace Box2D.NET
             joint.maxLength = b2MaxFloat(minLength, maxLength);
         }
         /// Get the distance joint minimum length
-        public static float b2DistanceJoint_GetMinLength(B2JointId jointId)
+        public static float b2DistanceJoint_GetLowerLimit(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.minLength;
         }
         /// Get the distance joint maximum length
-        public static float b2DistanceJoint_GetMaxLength(B2JointId jointId)
+        public static float b2DistanceJoint_GetUpperLimit(B2JointId jointId)
         {
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
@@ -200,7 +200,7 @@ namespace Box2D.NET
             return joint.uj.distanceJoint.enableMotor;
         }
         /// Set the distance joint motor speed, usually in meters per second
-        public static void b2DistanceJoint_SetMotorSpeed(B2JointId jointId, float motorSpeed)
+        public static void b2DistanceJoint_SetTargetMotorSpeed(B2JointId jointId, float motorSpeed)
         {
             if (B2_CHECK_INPUT(b2IsValidFloat(motorSpeed)) == false) return;
 
@@ -208,13 +208,13 @@ namespace Box2D.NET
             joint.uj.distanceJoint.motorSpeed = motorSpeed;
         }
         /// Get the distance joint motor speed, usually in meters per second
-        public static float b2DistanceJoint_GetMotorSpeed(B2JointId jointId)
+        public static float b2DistanceJoint_GetTargetMotorSpeed(B2JointId jointId)
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
             return joint.uj.distanceJoint.motorSpeed;
         }
         /// Get the distance joint current motor force, usually in newtons
-        public static float b2DistanceJoint_GetMotorForce(B2JointId jointId)
+        public static float b2DistanceJoint_GetCurrentMotorForce(B2JointId jointId)
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);

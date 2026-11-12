@@ -175,13 +175,13 @@ public class Pinball : Sample
 
         if (GetKey(Keys.Space) == InputAction.Press)
         {
-            b2RevoluteJoint_SetMotorSpeed(m_leftJointId, 20.0f);
-            b2RevoluteJoint_SetMotorSpeed(m_rightJointId, -20.0f);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_leftJointId, 20.0f);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_rightJointId, -20.0f);
         }
         else
         {
-            b2RevoluteJoint_SetMotorSpeed(m_leftJointId, -10.0f);
-            b2RevoluteJoint_SetMotorSpeed(m_rightJointId, 10.0f);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_leftJointId, -10.0f);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_rightJointId, 10.0f);
         }
     }
 }

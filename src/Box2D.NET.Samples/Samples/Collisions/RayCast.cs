@@ -231,7 +231,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCircle(m_circle, input);
+            B2CastOutput localOutput = b2CastRayCircle(m_circle, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -254,7 +254,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastCapsule(m_capsule, input);
+            B2CastOutput localOutput = b2CastRayCapsule(m_capsule, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -275,7 +275,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref m_box, input);
+            B2CastOutput localOutput = b2CastRayPolygon(ref m_box, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -296,7 +296,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastPolygon(ref m_triangle, input);
+            B2CastOutput localOutput = b2CastRayPolygon(ref m_triangle, input);
             if (localOutput.hit)
             {
                 output = localOutput;
@@ -320,7 +320,7 @@ public class RayCast : Sample
             B2Vec2 translation = b2InvRotateVector(transform.q, b2Sub(m_rayEnd, m_rayStart));
             B2RayCastInput input = new B2RayCastInput(start, translation, maxFraction);
 
-            B2CastOutput localOutput = b2RayCastSegment(m_segment, input, false);
+            B2CastOutput localOutput = b2CastRaySegment(m_segment, input, false);
             if (localOutput.hit)
             {
                 output = localOutput;

@@ -170,7 +170,7 @@ public class RevoluteJoint : Sample
 
             if (ImGui.SliderFloat("Speed", ref m_motorSpeed, -20.0f, 20.0f, "%.0f"))
             {
-                b2RevoluteJoint_SetMotorSpeed(m_jointId1, m_motorSpeed);
+                b2RevoluteJoint_SetTargetMotorSpeed(m_jointId1, m_motorSpeed);
                 b2Joint_WakeBodies(m_jointId1);
             }
             ImGui.PopItemWidth();
@@ -213,14 +213,14 @@ public class RevoluteJoint : Sample
     {
         base.Draw();
 
-        float angle1 = b2RevoluteJoint_GetAngle(m_jointId1);
+        float angle1 = b2RevoluteJoint_GetCurrentAngle(m_jointId1);
         DrawScreenTextLine(System.FormattableString.Invariant($"Angle (Deg) 1 = {angle1,2:F1}"));
 
 
-        float torque1 = b2RevoluteJoint_GetMotorTorque(m_jointId1);
+        float torque1 = b2RevoluteJoint_GetCurrentMotorTorque(m_jointId1);
         DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque 1 = {torque1,4:F1}"));
 
-        float torque2 = b2RevoluteJoint_GetMotorTorque(m_jointId2);
+        float torque2 = b2RevoluteJoint_GetCurrentMotorTorque(m_jointId2);
         DrawScreenTextLine(System.FormattableString.Invariant($"Motor Torque 2 = {torque2,4:F1}"));
     }
 }

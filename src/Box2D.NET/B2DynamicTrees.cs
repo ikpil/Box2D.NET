@@ -1007,7 +1007,7 @@ namespace Box2D.NET
         }
 
         /// Get the AABB of a proxy
-        public static B2AABB b2DynamicTree_GetAABB(B2DynamicTree tree, int proxyId)
+        public static B2AABB b2DynamicTree_GetProxyBounds(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
             int nodeIndex = tree.proxies[proxyId].node;
@@ -1017,7 +1017,7 @@ namespace Box2D.NET
 
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         ///	@return performance data
-        public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        public static B2TreeStats b2DynamicTree_OverlapAABB<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
@@ -1082,7 +1082,7 @@ namespace Box2D.NET
         /// No filtering is performed.
         ///	@return performance data
         // This ignores the category bits. Useful for debug draw.
-        public static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
+        public static B2TreeStats b2DynamicTree_OverlapAABBAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 

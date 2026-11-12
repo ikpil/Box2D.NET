@@ -1250,7 +1250,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_QueryAll(world.broadPhase.trees[i], draw.drawingBounds, DrawQueryCallback, ref drawContext);
+                b2DynamicTree_OverlapAABBAll(world.broadPhase.trees[i], draw.drawingBounds, DrawQueryCallback, ref drawContext);
             }
 
 
@@ -2460,7 +2460,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], worldBox, filter.maskBits, TreeQueryCallback, ref worldContext);
+                    b2DynamicTree_OverlapAABB(world.broadPhase.trees[i], worldBox, filter.maskBits, TreeQueryCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2497,7 +2497,7 @@ namespace Box2D.NET
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             float tolerance = 0.1f * B2_LINEAR_SLOP;
             if (output.distance > tolerance)
@@ -2534,7 +2534,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
+                    b2DynamicTree_OverlapAABB(world.broadPhase.trees[i], aabb, filter.maskBits, TreeOverlapCallback, ref worldContext);
 
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
@@ -2937,7 +2937,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_Query(world.broadPhase.trees[i], aabb, filter.maskBits, TreeCollideCallback, ref worldContext);
+                b2DynamicTree_OverlapAABB(world.broadPhase.trees[i], aabb, filter.maskBits, TreeCollideCallback, ref worldContext);
             }
         }
 
@@ -3066,7 +3066,7 @@ void b2World_Dump()
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
+            B2DistanceOutput output = b2ComputeShapeDistance(ref input, ref cache, null, 0);
 
             float radius = explosionContext.radius;
             float falloff = explosionContext.falloff;
@@ -3151,7 +3151,7 @@ void b2World_Dump()
             B2AABB localBox = new B2AABB(new B2Vec2(-extent, -extent), new B2Vec2(extent, extent));
             B2AABB aabb = b2OffsetAABB(localBox, position);
 
-            b2DynamicTree_Query(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, ref explosionContext);
+            b2DynamicTree_OverlapAABB(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, ref explosionContext);
         }
         /// This is for internal testing
         // This is for internal testing. Not optimized.

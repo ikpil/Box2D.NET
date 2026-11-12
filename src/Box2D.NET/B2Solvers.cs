@@ -342,7 +342,7 @@ namespace Box2D.NET
             input.sweepB = continuousContext.sweep;
             input.maxFraction = continuousContext.fraction;
 
-            B2TOIOutput output = b2TimeOfImpact(input);
+            B2TOIOutput output = b2ComputeTimeOfImpact(input);
             if (isSensor)
             {
                 // Only accept a sensor hit that is sooner than the current solid hit.
@@ -377,7 +377,7 @@ namespace Box2D.NET
                     B2ShapeExtent extent = b2ComputeShapeExtent(fastShape, centroid);
                     float radius = B2_CORE_FRACTION * extent.minExtent;
                     input.proxyB = b2MakeProxy(centroid, 1, radius);
-                    output = b2TimeOfImpact(input);
+                    output = b2ComputeTimeOfImpact(input);
                     if (0.0f < output.fraction && output.fraction < continuousContext.fraction)
                     {
                         hitFraction = output.fraction;
@@ -465,12 +465,12 @@ namespace Box2D.NET
                 }
 
                 B2AABB sweptBox = b2AABB_Union(box1, box2);
-                b2DynamicTree_Query(staticTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                b2DynamicTree_OverlapAABB(staticTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
 
                 if (isBullet)
                 {
-                    b2DynamicTree_Query(kinematicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
-                    b2DynamicTree_Query(dynamicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                    b2DynamicTree_OverlapAABB(kinematicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
+                    b2DynamicTree_OverlapAABB(dynamicTree, sweptBox, B2_DEFAULT_MASK_BITS, b2ContinuousQueryCallback, ref context);
                 }
             }
 
@@ -1972,7 +1972,7 @@ namespace Box2D.NET
                         int proxyId = B2_PROXY_ID(proxyKey);
                         B2_VALIDATE(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
-                        B2AABB treeAABB = b2DynamicTree_GetAABB(dynamicTree, proxyId);
+                        B2AABB treeAABB = b2DynamicTree_GetProxyBounds(dynamicTree, proxyId);
                         B2AABB shapeFatAABB = world.fatAABBs.data[shapeId];
 
                         // Double check containment because a bullet can have multiple

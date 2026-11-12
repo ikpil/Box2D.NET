@@ -67,7 +67,7 @@ public class TimeOfImpact : Sample
         _input.sweepB = _sweepB;
         _input.maxFraction = 1.0f;
 
-        _output = b2TimeOfImpact(_input);
+        _output = b2ComputeTimeOfImpact(_input);
     }
 
     public override void Draw()
@@ -126,7 +126,7 @@ public class TimeOfImpact : Sample
                 b2GetSweepTransform(_sweepB, _output.fraction));
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
-            B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+            B2DistanceOutput distanceOutput = b2ComputeShapeDistance(ref distanceInput, ref cache, null, 0);
             DrawScreenTextLine($"distance = {FormatFloat(distanceOutput.distance)}");
             
         }

@@ -118,7 +118,7 @@ public class PrismaticJoint : Sample
 
             if (ImGui.SliderFloat("Speed", ref m_motorSpeed, -40.0f, 40.0f, "%.0f"))
             {
-                b2PrismaticJoint_SetMotorSpeed(m_jointId, m_motorSpeed);
+                b2PrismaticJoint_SetTargetMotorSpeed(m_jointId, m_motorSpeed);
                 b2Joint_WakeBodies(m_jointId);
             }
             ImGui.PopItemWidth();
@@ -160,15 +160,15 @@ public class PrismaticJoint : Sample
     {
         base.Draw();
 
-        float force = b2PrismaticJoint_GetMotorForce(m_jointId);
+        float force = b2PrismaticJoint_GetCurrentMotorForce(m_jointId);
         DrawScreenTextLine(System.FormattableString.Invariant($"Motor Force = {force,4:F1}"));
 
 
-        float translation = b2PrismaticJoint_GetTranslation(m_jointId);
+        float translation = b2PrismaticJoint_GetCurrentTranslation(m_jointId);
         DrawScreenTextLine(System.FormattableString.Invariant($"Translation = {translation,4:F1}"));
 
 
-        float speed = b2PrismaticJoint_GetSpeed(m_jointId);
+        float speed = b2PrismaticJoint_GetCurrentSpeed(m_jointId);
         DrawScreenTextLine(System.FormattableString.Invariant($"Speed = {speed,4:F8}"));
     }
 }

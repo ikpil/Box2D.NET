@@ -441,7 +441,7 @@ namespace Box2D.NET.Shared
             B2_UNUSED(worldId);
             B2_UNUSED(stepCount);
 
-            return b2RevoluteJoint_GetAngle(spinnerData.spinnerId);
+            return b2RevoluteJoint_GetCurrentAngle(spinnerData.spinnerId);
         }
 
         public static void CreateSmash(B2WorldId worldId, int rows, int columns, List<B2BodyId> bodyIds)

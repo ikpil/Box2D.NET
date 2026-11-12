@@ -314,7 +314,7 @@ public class GearLift : Sample
 
         if (ImGui.SliderFloat("Speed", ref m_motorSpeed, -0.3f, 0.3f, "%.2f"))
         {
-            b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }
         ImGui.PopItemWidth();
@@ -327,14 +327,14 @@ public class GearLift : Sample
         if (InputAction.Release == GetKey(Keys.A))
         {
             m_motorSpeed = b2MaxFloat(-0.3f, m_motorSpeed - 0.01f);
-            b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }
 
         if (InputAction.Release == GetKey(Keys.D))
         {
             m_motorSpeed = b2MinFloat(0.3f, m_motorSpeed + 0.01f);
-            b2RevoluteJoint_SetMotorSpeed(m_driverId, m_motorSpeed);
+            b2RevoluteJoint_SetTargetMotorSpeed(m_driverId, m_motorSpeed);
             b2Joint_WakeBodies(m_driverId);
         }
 

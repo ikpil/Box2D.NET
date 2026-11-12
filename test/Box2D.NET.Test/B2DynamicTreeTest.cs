@@ -348,7 +348,7 @@ public class B2DynamicTreeTest
         B2AABB queryA = new B2AABB(lowerBound: new B2Vec2(-2.0f, -2.0f), upperBound: new B2Vec2(2.0f, 2.0f));
 
         B2FixedArray32<int> foundFlags = new B2FixedArray32<int>();
-        B2TreeStats stats = b2DynamicTree_Query(tree, queryA, 0xFFFFFFFFul, QueryCollectCallback, ref foundFlags);
+        B2TreeStats stats = b2DynamicTree_OverlapAABB(tree, queryA, 0xFFFFFFFFul, QueryCollectCallback, ref foundFlags);
 
         // We expect at least the middle proxy to be visited.
         Assert.That(foundFlags[id2] == 1);
@@ -356,7 +356,7 @@ public class B2DynamicTreeTest
 
         // Test QueryAll using list collector
         int[] list = new int[16]; // list[0] holds count, following entries are ids
-        B2TreeStats allStats = b2DynamicTree_QueryAll(tree, queryA, QueryCollectListCallback, ref list);
+        B2TreeStats allStats = b2DynamicTree_OverlapAABBAll(tree, queryA, QueryCollectListCallback, ref list);
         Assert.That(list[0] >= 1); // at least one proxy should be collected
         Assert.That(allStats.leafVisits >= 1);
 
@@ -376,7 +376,7 @@ public class B2DynamicTreeTest
         B2AABB moved = new B2AABB(lowerBound: new B2Vec2(10.0f, 10.0f), upperBound: new B2Vec2(11.0f, 11.0f));
         b2DynamicTree_MoveProxyInternal(tree, id, moved, false);
 
-        B2AABB got = b2DynamicTree_GetAABB(tree, id);
+        B2AABB got = b2DynamicTree_GetProxyBounds(tree, id);
         Assert.That(got.lowerBound.X == moved.lowerBound.X);
         Assert.That(got.lowerBound.Y == moved.lowerBound.Y);
         Assert.That(got.upperBound.X == moved.upperBound.X);
@@ -386,7 +386,7 @@ public class B2DynamicTreeTest
         B2AABB enlarge = new B2AABB(lowerBound: new B2Vec2(9.5f, 9.5f), upperBound: new B2Vec2(11.5f, 11.5f));
         b2DynamicTree_EnlargeProxy(tree, id, enlarge);
 
-        B2AABB got2 = b2DynamicTree_GetAABB(tree, id);
+        B2AABB got2 = b2DynamicTree_GetProxyBounds(tree, id);
         Assert.That(got2.lowerBound.X <= enlarge.lowerBound.X + 1e-6f);
         Assert.That(got2.upperBound.X >= enlarge.upperBound.X - 1e-6f);
 
@@ -495,7 +495,7 @@ public class B2DynamicTreeTest
         {
             for (int j = 0; j < GRID_COUNT; ++j)
             {
-                B2AABB a = b2DynamicTree_GetAABB(tree, proxyIds[index]);
+                B2AABB a = b2DynamicTree_GetProxyBounds(tree, proxyIds[index]);
                 a.lowerBound = b2Add(a.lowerBound, offset);
                 a.upperBound = b2Add(a.upperBound, offset);
                 b2DynamicTree_MoveProxyInternal(tree, proxyIds[index], a, false);
@@ -573,14 +573,14 @@ public class B2DynamicTreeTest
     private static void CompareQuery(B2DynamicTree tree, int[] proxyIds, int proxyCount, B2AABB box)
     {
         TreeHitSet hits = new TreeHitSet();
-        b2DynamicTree_Query(tree, box, B2_DEFAULT_MASK_BITS, CollectHitCallback, ref hits);
+        b2DynamicTree_OverlapAABB(tree, box, B2_DEFAULT_MASK_BITS, CollectHitCallback, ref hits);
         Assert.That(hits.bad, Is.False);
 
         int expectedCount = 0;
         for (int i = 0; i < proxyCount; ++i)
         {
             int proxyId = proxyIds[i];
-            bool overlaps = b2AABB_Overlaps(b2DynamicTree_GetAABB(tree, proxyId), box);
+            bool overlaps = b2AABB_Overlaps(b2DynamicTree_GetProxyBounds(tree, proxyId), box);
             Assert.That(hits.hit[proxyId], Is.EqualTo(overlaps));
             expectedCount += overlaps ? 1 : 0;
         }
@@ -621,7 +621,7 @@ public class B2DynamicTreeTest
     // matches the brute force bit for bit
     private static float ClosestRayCallback(in B2RayCastInput input, int proxyId, ulong userData, ref TreeCastHit hit)
     {
-        float fraction = RayBoxFraction(b2DynamicTree_GetAABB(hit.tree, proxyId), input.origin, input.translation);
+        float fraction = RayBoxFraction(b2DynamicTree_GetProxyBounds(hit.tree, proxyId), input.origin, input.translation);
         if (fraction < 0.0f)
         {
             return -1.0f;
@@ -638,7 +638,7 @@ public class B2DynamicTreeTest
 
     private static float ClosestBoxCallback(in B2BoxCastInput input, int proxyId, ulong userData, ref TreeCastHit hit)
     {
-        float fraction = BoxCastFraction(b2DynamicTree_GetAABB(hit.tree, proxyId), input);
+        float fraction = BoxCastFraction(b2DynamicTree_GetProxyBounds(hit.tree, proxyId), input);
         if (fraction < 0.0f)
         {
             return -1.0f;
@@ -666,7 +666,7 @@ public class B2DynamicTreeTest
         for (int i = 0; i < proxyCount; ++i)
         {
             int proxyId = proxyIds[i];
-            float fraction = RayBoxFraction(b2DynamicTree_GetAABB(tree, proxyId), origin, translation);
+            float fraction = RayBoxFraction(b2DynamicTree_GetProxyBounds(tree, proxyId), origin, translation);
             if (fraction < 0.0f)
             {
                 continue;
@@ -706,7 +706,7 @@ public class B2DynamicTreeTest
         for (int i = 0; i < proxyCount; ++i)
         {
             int proxyId = proxyIds[i];
-            float fraction = BoxCastFraction(b2DynamicTree_GetAABB(tree, proxyId), input);
+            float fraction = BoxCastFraction(b2DynamicTree_GetProxyBounds(tree, proxyId), input);
             if (fraction < 0.0f)
             {
                 continue;
@@ -788,7 +788,7 @@ public class B2DynamicTreeTest
         Assert.That(b2DynamicTree_GetHeight(tree), Is.EqualTo(0));
         Assert.That(b2DynamicTree_GetUserData(tree, proxyId), Is.EqualTo(7));
         Assert.That(b2DynamicTree_GetCategoryBits(tree, proxyId), Is.EqualTo(1));
-        Assert.That(BoxEquals(b2DynamicTree_GetAABB(tree, proxyId), box));
+        Assert.That(BoxEquals(b2DynamicTree_GetProxyBounds(tree, proxyId), box));
         Assert.That(BoxEquals(b2DynamicTree_GetRootBounds(tree), box));
 
         B2AABB inside = new B2AABB(new B2Vec2(0.4f, 0.4f), new B2Vec2(0.6f, 0.6f));
@@ -824,7 +824,7 @@ public class B2DynamicTreeTest
         Assert.That(RootMarked(tree));
         b2DynamicTree_Refit(tree);
         b2DynamicTree_Validate(tree);
-        Assert.That(BoxEquals(b2DynamicTree_GetAABB(tree, proxyId), enlarged));
+        Assert.That(BoxEquals(b2DynamicTree_GetProxyBounds(tree, proxyId), enlarged));
         Assert.That(BoxEquals(b2DynamicTree_GetRootBounds(tree), enlarged));
         Assert.That(b2DynamicTree_Rebuild(tree, false), Is.EqualTo(1));
         Assert.That(RootMarked(tree), Is.False);
@@ -1004,7 +1004,7 @@ public class B2DynamicTreeTest
         for (int i = 0; i < TREE_TEST_PROXY_COUNT; i += 3)
         {
             int proxyId = proxyIds[i];
-            enlarged[proxyId] = EnlargeTreeBox(b2DynamicTree_GetAABB(tree, proxyId), 0.5f);
+            enlarged[proxyId] = EnlargeTreeBox(b2DynamicTree_GetProxyBounds(tree, proxyId), 0.5f);
             b2DynamicTree_MarkProxyMoved(tree, proxyId, enlarged[proxyId]);
             marked[proxyId] = true;
         }
@@ -1018,7 +1018,7 @@ public class B2DynamicTreeTest
         {
             if (marked[i])
             {
-                Assert.That(BoxEquals(b2DynamicTree_GetAABB(tree, i), enlarged[i]));
+                Assert.That(BoxEquals(b2DynamicTree_GetProxyBounds(tree, i), enlarged[i]));
             }
         }
 
@@ -1050,7 +1050,7 @@ public class B2DynamicTreeTest
 
         // A single deep leaf still marks the whole path to the root
         int loneId = proxyIds[TREE_TEST_PROXY_COUNT / 2];
-        enlarged[loneId] = EnlargeTreeBox(b2DynamicTree_GetAABB(tree, loneId), 0.5f);
+        enlarged[loneId] = EnlargeTreeBox(b2DynamicTree_GetProxyBounds(tree, loneId), 0.5f);
         b2DynamicTree_MarkProxyMoved(tree, loneId, enlarged[loneId]);
         marked[loneId] = true;
         CheckMarks(tree, B2_ROOT_NODE, marked, out markedBelow);
@@ -1108,7 +1108,7 @@ public class B2DynamicTreeTest
         Assert.That(tree.pairFreeList, Is.Not.EqualTo(B2_NULL_INDEX));
         b2DynamicTree_Validate(tree);
 
-        B2AABB enlarged = EnlargeTreeBox(b2DynamicTree_GetAABB(tree, proxyIds[10]), 0.5f);
+        B2AABB enlarged = EnlargeTreeBox(b2DynamicTree_GetProxyBounds(tree, proxyIds[10]), 0.5f);
         b2DynamicTree_MarkProxyMoved(tree, proxyIds[10], enlarged);
         Assert.That(RootMarked(tree));
         b2DynamicTree_Refit(tree);
@@ -1136,7 +1136,7 @@ public class B2DynamicTreeTest
         b2DynamicTree_Validate(tree);
 
         // The refit falls back to a descent on an unordered array
-        enlarged = EnlargeTreeBox(b2DynamicTree_GetAABB(tree, proxyIds[10]), 0.5f);
+        enlarged = EnlargeTreeBox(b2DynamicTree_GetProxyBounds(tree, proxyIds[10]), 0.5f);
         b2DynamicTree_MarkProxyMoved(tree, proxyIds[10], enlarged);
         b2DynamicTree_Refit(tree);
         b2DynamicTree_Validate(tree);
