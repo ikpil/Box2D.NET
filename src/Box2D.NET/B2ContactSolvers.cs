@@ -845,69 +845,69 @@ namespace Box2D.NET
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2ZeroW()
+        public static Vector4 b2ZeroW()
         {
-            return new B2FloatW(0.0f, 0.0f, 0.0f, 0.0f);
+            return new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SplatW(float scalar)
+        public static Vector4 b2SplatW(float scalar)
         {
-            return new B2FloatW(scalar, scalar, scalar, scalar);
+            return new Vector4(scalar, scalar, scalar, scalar);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SetW(float a, float b, float c, float d)
+        public static Vector4 b2SetW(float a, float b, float c, float d)
         {
-            return new B2FloatW(a, b, c, d);
+            return new Vector4(a, b, c, d);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2NegW(in B2FloatW a)
+        public static Vector4 b2NegW(in Vector4 a)
         {
-            return new B2FloatW(-a.X, -a.Y, -a.Z, -a.W);
+            return new Vector4(-a.X, -a.Y, -a.Z, -a.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2AddW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2AddW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
+            return new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SubW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2SubW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
+            return new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2MulW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
+            return new Vector4(a.X * b.X, a.Y * b.Y, a.Z * b.Z, a.W * b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2DivW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2DivW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W);
+            return new Vector4(a.X / b.X, a.Y / b.Y, a.Z / b.Z, a.W / b.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulAddW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
+        public static Vector4 b2MulAddW(in Vector4 a, in Vector4 b, in Vector4 c)
         {
-            return new B2FloatW(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
+            return new Vector4(a.X + b.X * c.X, a.Y + b.Y * c.Y, a.Z + b.Z * c.Z, a.W + b.W * c.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MulSubW(in B2FloatW a, in B2FloatW b, in B2FloatW c)
+        public static Vector4 b2MulSubW(in Vector4 a, in Vector4 b, in Vector4 c)
         {
-            return new B2FloatW(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
+            return new Vector4(a.X - b.X * c.X, a.Y - b.Y * c.Y, a.Z - b.Z * c.Z, a.W - b.W * c.W);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MinW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2MinW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(
+            return new Vector4(
                 a.X <= b.X ? a.X : b.X,
                 a.Y <= b.Y ? a.Y : b.Y,
                 a.Z <= b.Z ? a.Z : b.Z,
@@ -916,9 +916,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2MaxW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2MaxW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(
+            return new Vector4(
                 a.X >= b.X ? a.X : b.X,
                 a.Y >= b.Y ? a.Y : b.Y,
                 a.Z >= b.Z ? a.Z : b.Z,
@@ -928,10 +928,10 @@ namespace Box2D.NET
 
         // a = clamp(a, -b, b)
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SymClampW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2SymClampW(in Vector4 a, in Vector4 b)
         {
             // a = clamp(a, -b, b)
-            return new B2FloatW(
+            return new Vector4(
                 b2ClampFloat(a.X, -b.X, b.X),
                 b2ClampFloat(a.Y, -b.Y, b.Y),
                 b2ClampFloat(a.Z, -b.Z, b.Z),
@@ -940,9 +940,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2AndW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2AndW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(
+            return new Vector4(
                 a.X != 0.0f && b.X != 0.0f ? 1.0f : 0.0f,
                 a.Y != 0.0f && b.Y != 0.0f ? 1.0f : 0.0f,
                 a.Z != 0.0f && b.Z != 0.0f ? 1.0f : 0.0f,
@@ -951,9 +951,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2GreaterThanW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2GreaterThanW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(
+            return new Vector4(
                 a.X > b.X ? 1.0f : 0.0f,
                 a.Y > b.Y ? 1.0f : 0.0f,
                 a.Z > b.Z ? 1.0f : 0.0f,
@@ -962,10 +962,10 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2EqualsW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2EqualsW(in Vector4 a, in Vector4 b)
         {
             // TODO: @ikpil check float equal
-            return new B2FloatW(
+            return new Vector4(
                 a.X == b.X ? 1.0f : 0.0f,
                 a.Y == b.Y ? 1.0f : 0.0f,
                 a.Z == b.Z ? 1.0f : 0.0f,
@@ -974,9 +974,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2LessThanW(in B2FloatW a, in B2FloatW b)
+        public static Vector4 b2LessThanW(in Vector4 a, in Vector4 b)
         {
-            return new B2FloatW(
+            return new Vector4(
                 a.X < b.X ? 1.0f : 0.0f,
                 a.Y < b.Y ? 1.0f : 0.0f,
                 a.Z < b.Z ? 1.0f : 0.0f,
@@ -985,23 +985,23 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2AnyTrueW(in B2FloatW mask)
+        public static bool b2AnyTrueW(in Vector4 mask)
         {
             return mask.X != 0.0f || mask.Y != 0.0f || mask.Z != 0.0f || mask.W != 0.0f;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool b2AllZeroW(in B2FloatW a)
+        public static bool b2AllZeroW(in Vector4 a)
         {
             return a.X == 0.0f && a.Y == 0.0f && a.Z == 0.0f && a.W == 0.0f;
         }
 
         // component-wise returns mask ? b : a
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2BlendW(in B2FloatW a, in B2FloatW b, in B2FloatW mask)
+        public static Vector4 b2BlendW(in Vector4 a, in Vector4 b, in Vector4 mask)
         {
             // component-wise returns mask ? b : a
-            return new B2FloatW()
+            return new Vector4()
             {
                 X = mask.X != 0.0f ? b.X : a.X,
                 Y = mask.Y != 0.0f ? b.Y : a.Y,
@@ -1011,9 +1011,9 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2SoftMaskW(ReadOnlySpan<int> indexA, ReadOnlySpan<int> indexB)
+        public static Vector4 b2SoftMaskW(ReadOnlySpan<int> indexA, ReadOnlySpan<int> indexB)
         {
-            return new B2FloatW(
+            return new Vector4(
                 indexA[0] == 0 || indexB[0] == 0 ? 1.0f : 0.0f,
                 indexA[1] == 0 || indexB[1] == 0 ? 1.0f : 0.0f,
                 indexA[2] == 0 || indexB[2] == 0 ? 1.0f : 0.0f,
@@ -1035,13 +1035,13 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2DotW(in B2Vec2W a, in B2Vec2W b)
+        public static Vector4 b2DotW(in B2Vec2W a, in B2Vec2W b)
         {
             return b2AddW(b2MulW(a.X, b.X), b2MulW(a.Y, b.Y));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static B2FloatW b2CrossW(in B2Vec2W a, in B2Vec2W b)
+        public static Vector4 b2CrossW(in B2Vec2W a, in B2Vec2W b)
         {
             return b2SubW(b2MulW(a.X, b.Y), b2MulW(a.Y, b.X));
         }
@@ -1448,14 +1448,14 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState s4 = i4 == B2_NULL_INDEX ? identity : states[i4];
 
             B2BodyStateW simdBody = new B2BodyStateW();
-            simdBody.v.X = new B2FloatW(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
-            simdBody.v.Y = new B2FloatW(s1.linearVelocity.Y, s2.linearVelocity.Y, s3.linearVelocity.Y, s4.linearVelocity.Y);
-            simdBody.w = new B2FloatW(s1.angularVelocity, s2.angularVelocity, s3.angularVelocity, s4.angularVelocity);
-            simdBody.flags = new B2FloatW((float)s1.flags, (float)s2.flags, (float)s3.flags, (float)s4.flags);
-            simdBody.dp.X = new B2FloatW(s1.deltaPosition.X, s2.deltaPosition.X, s3.deltaPosition.X, s4.deltaPosition.X);
-            simdBody.dp.Y = new B2FloatW(s1.deltaPosition.Y, s2.deltaPosition.Y, s3.deltaPosition.Y, s4.deltaPosition.Y);
-            simdBody.dq.C = new B2FloatW(s1.deltaRotation.c, s2.deltaRotation.c, s3.deltaRotation.c, s4.deltaRotation.c);
-            simdBody.dq.S = new B2FloatW(s1.deltaRotation.s, s2.deltaRotation.s, s3.deltaRotation.s, s4.deltaRotation.s);
+            simdBody.v.X = new Vector4(s1.linearVelocity.X, s2.linearVelocity.X, s3.linearVelocity.X, s4.linearVelocity.X);
+            simdBody.v.Y = new Vector4(s1.linearVelocity.Y, s2.linearVelocity.Y, s3.linearVelocity.Y, s4.linearVelocity.Y);
+            simdBody.w = new Vector4(s1.angularVelocity, s2.angularVelocity, s3.angularVelocity, s4.angularVelocity);
+            simdBody.flags = new Vector4((float)s1.flags, (float)s2.flags, (float)s3.flags, (float)s4.flags);
+            simdBody.dp.X = new Vector4(s1.deltaPosition.X, s2.deltaPosition.X, s3.deltaPosition.X, s4.deltaPosition.X);
+            simdBody.dp.Y = new Vector4(s1.deltaPosition.Y, s2.deltaPosition.Y, s3.deltaPosition.Y, s4.deltaPosition.Y);
+            simdBody.dq.C = new Vector4(s1.deltaRotation.c, s2.deltaRotation.c, s3.deltaRotation.c, s4.deltaRotation.c);
+            simdBody.dq.S = new Vector4(s1.deltaRotation.s, s2.deltaRotation.s, s3.deltaRotation.s, s4.deltaRotation.s);
 
             return simdBody;
         }
@@ -1523,9 +1523,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2Body[] bodies = world.bodies.data;
 #endif
 
-            B2FloatW zeroW = b2ZeroW();
-            B2FloatW oneW = b2SplatW(1.0f);
-            B2FloatW warmStartScale = world.enableWarmStarting ? oneW : zeroW;
+            Vector4 zeroW = b2ZeroW();
+            Vector4 oneW = b2SplatW(1.0f);
+            Vector4 warmStartScale = world.enableWarmStarting ? oneW : zeroW;
             bool anyRestitution = false;
 
             int wideIndex = block.startIndex;
@@ -1601,8 +1601,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                     B2Vec2W tangent = b2RightPerpW(cw.normal);
 
-                    B2FloatW pointCounts = b2SetW(l0.manifold.pointCount, l1.manifold.pointCount, l2.manifold.pointCount, l3.manifold.pointCount);
-                    B2FloatW twoPointMask = b2GreaterThanW(pointCounts, oneW);
+                    Vector4 pointCounts = b2SetW(l0.manifold.pointCount, l1.manifold.pointCount, l2.manifold.pointCount, l3.manifold.pointCount);
+                    Vector4 twoPointMask = b2GreaterThanW(pointCounts, oneW);
 
                     {
                         // Transpose gather of the first manifold point. Matches the upstream layout:
@@ -1622,7 +1622,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         // separation1 = cw.baseSeparation1;
 
-                        B2FloatW offset = b2DotW(b2SubVW(cw.anchorB1, cw.anchorA1), cw.normal);
+                        Vector4 offset = b2DotW(b2SubVW(cw.anchorB1, cw.anchorA1), cw.normal);
                         cw.baseSeparation1 = b2SubW(cw.baseSeparation1, offset);
                         cw.normalImpulse1 = b2MulW(warmStartScale, cw.normalImpulse1);
                         cw.tangentImpulse1 = b2MulW(warmStartScale, cw.tangentImpulse1);
@@ -1632,23 +1632,23 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         // Effective mass along normal.
                         {
-                            B2FloatW rnA = b2CrossW(cw.anchorA1, cw.normal);
-                            B2FloatW rnB = b2CrossW(cw.anchorB1, cw.normal);
-                            B2FloatW k = b2AddW(cw.invMassA, cw.invMassB);
+                            Vector4 rnA = b2CrossW(cw.anchorA1, cw.normal);
+                            Vector4 rnB = b2CrossW(cw.anchorB1, cw.normal);
+                            Vector4 k = b2AddW(cw.invMassA, cw.invMassB);
                             k = b2MulAddW(k, cw.invIA, b2MulW(rnA, rnA));
                             k = b2MulAddW(k, cw.invIB, b2MulW(rnB, rnB));
-                            B2FloatW test = b2GreaterThanW(k, b2ZeroW());
+                            Vector4 test = b2GreaterThanW(k, b2ZeroW());
                             cw.normalMass1 = b2BlendW(b2ZeroW(), b2DivW(oneW, k), test);
                         }
 
                         // Effective mass along tangent.
                         {
-                            B2FloatW rtA = b2CrossW(cw.anchorA1, tangent);
-                            B2FloatW rtB = b2CrossW(cw.anchorB1, tangent);
-                            B2FloatW k = b2AddW(cw.invMassA, cw.invMassB);
+                            Vector4 rtA = b2CrossW(cw.anchorA1, tangent);
+                            Vector4 rtB = b2CrossW(cw.anchorB1, tangent);
+                            Vector4 k = b2AddW(cw.invMassA, cw.invMassB);
                             k = b2MulAddW(k, cw.invIA, b2MulW(rtA, rtA));
                             k = b2MulAddW(k, cw.invIB, b2MulW(rtB, rtB));
-                            B2FloatW test = b2GreaterThanW(k, b2ZeroW());
+                            Vector4 test = b2GreaterThanW(k, b2ZeroW());
                             cw.tangentMass1 = b2BlendW(b2ZeroW(), b2DivW(oneW, k), test);
                         }
                     }
@@ -1669,7 +1669,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         // separation2 = cw.baseSeparation2;
 
-                        B2FloatW offset = b2DotW(b2SubVW(cw.anchorB2, cw.anchorA2), cw.normal);
+                        Vector4 offset = b2DotW(b2SubVW(cw.anchorB2, cw.anchorA2), cw.normal);
                         cw.baseSeparation2 = b2SubW(cw.baseSeparation2, offset);
                         cw.normalImpulse2 = b2MulW(warmStartScale, cw.normalImpulse2);
                         cw.tangentImpulse2 = b2MulW(warmStartScale, cw.tangentImpulse2);
@@ -1679,23 +1679,23 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         // Effective mass along normal.
                         {
-                            B2FloatW rnA = b2CrossW(cw.anchorA2, cw.normal);
-                            B2FloatW rnB = b2CrossW(cw.anchorB2, cw.normal);
-                            B2FloatW k = b2AddW(cw.invMassA, cw.invMassB);
+                            Vector4 rnA = b2CrossW(cw.anchorA2, cw.normal);
+                            Vector4 rnB = b2CrossW(cw.anchorB2, cw.normal);
+                            Vector4 k = b2AddW(cw.invMassA, cw.invMassB);
                             k = b2MulAddW(k, cw.invIA, b2MulW(rnA, rnA));
                             k = b2MulAddW(k, cw.invIB, b2MulW(rnB, rnB));
-                            B2FloatW test = b2GreaterThanW(k, b2ZeroW());
+                            Vector4 test = b2GreaterThanW(k, b2ZeroW());
                             cw.normalMass2 = b2BlendW(b2ZeroW(), b2DivW(oneW, k), test);
                         }
 
                         // Effective mass along tangent.
                         {
-                            B2FloatW rtA = b2CrossW(cw.anchorA2, tangent);
-                            B2FloatW rtB = b2CrossW(cw.anchorB2, tangent);
-                            B2FloatW k = b2AddW(cw.invMassA, cw.invMassB);
+                            Vector4 rtA = b2CrossW(cw.anchorA2, tangent);
+                            Vector4 rtB = b2CrossW(cw.anchorB2, tangent);
+                            Vector4 k = b2AddW(cw.invMassA, cw.invMassB);
                             k = b2MulAddW(k, cw.invIA, b2MulW(rtA, rtA));
                             k = b2MulAddW(k, cw.invIB, b2MulW(rtB, rtB));
-                            B2FloatW test = b2GreaterThanW(k, b2ZeroW());
+                            Vector4 test = b2GreaterThanW(k, b2ZeroW());
                             cw.tangentMass2 = b2BlendW(b2ZeroW(), b2DivW(oneW, k), test);
                         }
 
@@ -1705,7 +1705,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     }
 
                     // Only sample contact point normal velocity if needed.
-                    B2FloatW restitutionMask = b2GreaterThanW(cw.restitution, zeroW);
+                    Vector4 restitutionMask = b2GreaterThanW(cw.restitution, zeroW);
                     bool haveRestitution = b2AnyTrueW(restitutionMask);
                     anyRestitution = anyRestitution || haveRestitution;
 
@@ -1719,9 +1719,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2W rB = cw.anchorB1;
 
                             // Relative velocity at contact
-                            B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                            B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                            B2FloatW vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
+                            Vector4 dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                            Vector4 dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                            Vector4 vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
                             cw.relativeVelocity1 = vn;
 
                             // Check the point count to avoid a race writing to b2_zeroContactSim.
@@ -1736,9 +1736,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                             B2Vec2W rB = cw.anchorB2;
 
                             // Relative velocity at contact
-                            B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                            B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                            B2FloatW vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
+                            Vector4 dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                            Vector4 dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                            Vector4 vn = b2AddW(b2MulW(dvx, cw.normal.X), b2MulW(dvy, cw.normal.Y));
                             cw.relativeVelocity2 = vn;
 
                             if (l0.manifold.pointCount > 1) l0.manifold.points[1].normalVelocity = vn.X;
@@ -1775,8 +1775,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
-                B2FloatW tangentX = c.normal.Y;
-                B2FloatW tangentY = b2SubW(b2ZeroW(), c.normal.X);
+                Vector4 tangentX = c.normal.Y;
+                Vector4 tangentY = b2SubW(b2ZeroW(), c.normal.X);
 
                 {
                     // fixed anchors
@@ -1831,17 +1831,17 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState[] states = context.states;
             int colorIndex = block.colorIndex;
             Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
-            B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW contactSpeed = b2SplatW(-context.world.contactSpeed);
-            B2FloatW oneW = b2SplatW(1.0f);
-            B2FloatW zeroW = b2ZeroW();
+            Vector4 inv_h = b2SplatW(context.inv_h);
+            Vector4 contactSpeed = b2SplatW(-context.world.contactSpeed);
+            Vector4 oneW = b2SplatW(1.0f);
+            Vector4 zeroW = b2ZeroW();
 
-            B2FloatW dynamicBiasRate = b2SplatW(context.contactSoftness.massScale * context.contactSoftness.biasRate);
-            B2FloatW dynamicMassScale = b2SplatW(context.contactSoftness.massScale);
-            B2FloatW dynamicImpulseScale = b2SplatW(context.contactSoftness.impulseScale);
-            B2FloatW staticBiasRate = b2SplatW(context.staticSoftness.massScale * context.staticSoftness.biasRate);
-            B2FloatW staticMassScale = b2SplatW(context.staticSoftness.massScale);
-            B2FloatW staticImpulseScale = b2SplatW(context.staticSoftness.impulseScale);
+            Vector4 dynamicBiasRate = b2SplatW(context.contactSoftness.massScale * context.contactSoftness.biasRate);
+            Vector4 dynamicMassScale = b2SplatW(context.contactSoftness.massScale);
+            Vector4 dynamicImpulseScale = b2SplatW(context.contactSoftness.impulseScale);
+            Vector4 staticBiasRate = b2SplatW(context.staticSoftness.massScale * context.staticSoftness.biasRate);
+            Vector4 staticMassScale = b2SplatW(context.staticSoftness.massScale);
+            Vector4 staticImpulseScale = b2SplatW(context.staticSoftness.impulseScale);
 
             for (int wideIndex = block.startIndex; wideIndex < block.startIndex + block.count; ++wideIndex)
             {
@@ -1850,15 +1850,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
-                B2FloatW softMask = b2SoftMaskW(c.indexA.AsSpan(), c.indexB.AsSpan());
-                B2FloatW biasRate = b2BlendW(dynamicBiasRate, staticBiasRate, softMask);
-                B2FloatW massScale = b2BlendW(dynamicMassScale, staticMassScale, softMask);
-                B2FloatW impulseScale = b2BlendW(dynamicImpulseScale, staticImpulseScale, softMask);
+                Vector4 softMask = b2SoftMaskW(c.indexA.AsSpan(), c.indexB.AsSpan());
+                Vector4 biasRate = b2BlendW(dynamicBiasRate, staticBiasRate, softMask);
+                Vector4 massScale = b2BlendW(dynamicMassScale, staticMassScale, softMask);
+                Vector4 impulseScale = b2BlendW(dynamicImpulseScale, staticImpulseScale, softMask);
 
                 B2Vec2W normal = c.normal;
                 B2Vec2W dp = new B2Vec2W(b2SubW(bB.dp.X, bA.dp.X), b2SubW(bB.dp.Y, bA.dp.Y));
 
-                B2FloatW velocityBias1, massScale1, impulseScale1;
+                Vector4 velocityBias1, massScale1, impulseScale1;
                 {
                     // Moving anchors for current separation
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA1);
@@ -1867,17 +1867,17 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     // compute current separation
                     // this is subject to round-off error if the anchor is far from the body center of mass
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(normal, ds), c.baseSeparation1);
+                    Vector4 s = b2AddW(b2DotW(normal, ds), c.baseSeparation1);
 
                     // Apply speculative bias if separation is greater than zero, otherwise apply soft constraint bias
                     // The contactSpeed is meant to limit stiffness, not increase it.
-                    B2FloatW separated = b2GreaterThanW(s, zeroW);
+                    Vector4 separated = b2GreaterThanW(s, zeroW);
 
                     // Speculative bias - positive
-                    B2FloatW specBias = b2MulW(s, inv_h);
+                    Vector4 specBias = b2MulW(s, inv_h);
 
                     // Overlap bias - negative when overlapped
-                    B2FloatW overlapBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
+                    Vector4 overlapBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
 
                     // velocity bias = s > 0 ? spec : overlap
                     velocityBias1 = b2BlendW(overlapBias, specBias, separated);
@@ -1886,55 +1886,55 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     impulseScale1 = b2BlendW(impulseScale, zeroW, separated);
                 }
 
-                B2FloatW velocityBias2, massScale2, impulseScale2;
+                Vector4 velocityBias2, massScale2, impulseScale2;
                 {
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA2);
                     B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB2);
 
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(normal, ds), c.baseSeparation2);
+                    Vector4 s = b2AddW(b2DotW(normal, ds), c.baseSeparation2);
 
-                    B2FloatW separated = b2GreaterThanW(s, zeroW);
-                    B2FloatW specBias = b2MulW(s, inv_h);
-                    B2FloatW overlapBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
+                    Vector4 separated = b2GreaterThanW(s, zeroW);
+                    Vector4 specBias = b2MulW(s, inv_h);
+                    Vector4 overlapBias = b2MaxW(b2MulW(biasRate, s), contactSpeed);
                     velocityBias2 = b2BlendW(overlapBias, specBias, separated);
 
                     massScale2 = b2BlendW(massScale, oneW, separated);
                     impulseScale2 = b2BlendW(impulseScale, zeroW, separated);
                 }
 
-                B2FloatW rnA1 = b2CrossW(c.anchorA1, normal);
-                B2FloatW rnB1 = b2CrossW(c.anchorB1, normal);
-                B2FloatW rnA2 = b2CrossW(c.anchorA2, normal);
-                B2FloatW rnB2 = b2CrossW(c.anchorB2, normal);
+                Vector4 rnA1 = b2CrossW(c.anchorA1, normal);
+                Vector4 rnB1 = b2CrossW(c.anchorB1, normal);
+                Vector4 rnA2 = b2CrossW(c.anchorA2, normal);
+                Vector4 rnB2 = b2CrossW(c.anchorB2, normal);
 
                 // Coupling of point 2 normal velocity to point 1 normal impulse
-                B2FloatW k21 = b2AddW(b2AddW(c.invMassA, c.invMassB),
+                Vector4 k21 = b2AddW(b2AddW(c.invMassA, c.invMassB),
                     b2AddW(b2MulW(b2MulW(c.invIA, rnA1), rnA2), b2MulW(b2MulW(c.invIB, rnB1), rnB2)));
 
-                B2FloatW dn = b2DotW(b2SubVW(bB.v, bA.v), normal);
-                B2FloatW vn1 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB1), b2MulW(bA.w, rnA1)));
-                B2FloatW vn2 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB2), b2MulW(bA.w, rnA2)));
+                Vector4 dn = b2DotW(b2SubVW(bB.v, bA.v), normal);
+                Vector4 vn1 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB1), b2MulW(bA.w, rnA1)));
+                Vector4 vn2 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB2), b2MulW(bA.w, rnA2)));
 
-                B2FloatW negImpulse1 = b2AddW(b2MulW(c.normalMass1, b2AddW(b2MulW(massScale1, vn1), velocityBias1)),
+                Vector4 negImpulse1 = b2AddW(b2MulW(c.normalMass1, b2AddW(b2MulW(massScale1, vn1), velocityBias1)),
                     b2MulW(impulseScale1, c.normalImpulse1));
-                B2FloatW impulse1 = b2MaxW(b2NegW(negImpulse1), b2NegW(c.normalImpulse1));
+                Vector4 impulse1 = b2MaxW(b2NegW(negImpulse1), b2NegW(c.normalImpulse1));
                 c.normalImpulse1 = b2AddW(c.normalImpulse1, impulse1);
                 c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, impulse1);
 
                 vn2 = b2MulAddW(vn2, k21, impulse1);
 
-                B2FloatW negImpulse2 = b2AddW(b2MulW(c.normalMass2, b2AddW(b2MulW(massScale2, vn2), velocityBias2)),
+                Vector4 negImpulse2 = b2AddW(b2MulW(c.normalMass2, b2AddW(b2MulW(massScale2, vn2), velocityBias2)),
                     b2MulW(impulseScale2, c.normalImpulse2));
-                B2FloatW impulse2 = b2MaxW(b2NegW(negImpulse2), b2NegW(c.normalImpulse2));
+                Vector4 impulse2 = b2MaxW(b2NegW(negImpulse2), b2NegW(c.normalImpulse2));
                 c.normalImpulse2 = b2AddW(c.normalImpulse2, impulse2);
                 c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, impulse2);
 
-                B2FloatW impulse = b2AddW(impulse1, impulse2);
-                B2FloatW Px = b2MulW(impulse, normal.X);
-                B2FloatW Py = b2MulW(impulse, normal.Y);
-                B2FloatW angularA = b2AddW(b2MulW(impulse1, rnA1), b2MulW(impulse2, rnA2));
-                B2FloatW angularB = b2AddW(b2MulW(impulse1, rnB1), b2MulW(impulse2, rnB2));
+                Vector4 impulse = b2AddW(impulse1, impulse2);
+                Vector4 Px = b2MulW(impulse, normal.X);
+                Vector4 Py = b2MulW(impulse, normal.Y);
+                Vector4 angularA = b2AddW(b2MulW(impulse1, rnA1), b2MulW(impulse2, rnA2));
+                Vector4 angularB = b2AddW(b2MulW(impulse1, rnB1), b2MulW(impulse2, rnB2));
 
                 bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                 bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
@@ -1959,8 +1959,8 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
             B2BodyState[] states = context.states;
             int colorIndex = block.colorIndex;
             Span<B2ContactConstraintWide> constraints = context.graph.colors[colorIndex].wideConstraints;
-            B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW zeroW = b2ZeroW();
+            Vector4 inv_h = b2SplatW(context.inv_h);
+            Vector4 zeroW = b2ZeroW();
 
             for (int wideIndex = block.startIndex; wideIndex < block.startIndex + block.count; ++wideIndex)
             {
@@ -1973,7 +1973,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2Vec2W tangent = b2RightPerpW(normal);
                 B2Vec2W dp = new B2Vec2W(b2SubW(bB.dp.X, bA.dp.X), b2SubW(bB.dp.Y, bA.dp.Y));
 
-                B2FloatW velocityBias1, velocityBias2;
+                Vector4 velocityBias1, velocityBias2;
                 {
                     // Moving anchors for current separation
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, c.anchorA1);
@@ -1982,7 +1982,7 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     // compute current separation
                     // this is subject to round-off error if the anchor is far from the body center of mass
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(normal, ds), c.baseSeparation1);
+                    Vector4 s = b2AddW(b2DotW(normal, ds), c.baseSeparation1);
 
                     // Speculative bias, positive if separated and zero if overlapped
                     velocityBias1 = b2MaxW(zeroW, b2MulW(s, inv_h));
@@ -1993,53 +1993,53 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2Vec2W rsB = b2RotateVectorW(bB.dq, c.anchorB2);
 
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(normal, ds), c.baseSeparation2);
+                    Vector4 s = b2AddW(b2DotW(normal, ds), c.baseSeparation2);
 
                     velocityBias2 = b2MaxW(zeroW, b2MulW(s, inv_h));
                 }
 
-                B2FloatW rnA1 = b2CrossW(c.anchorA1, normal);
-                B2FloatW rnB1 = b2CrossW(c.anchorB1, normal);
-                B2FloatW rnA2 = b2CrossW(c.anchorA2, normal);
-                B2FloatW rnB2 = b2CrossW(c.anchorB2, normal);
-                B2FloatW rtA1 = b2CrossW(c.anchorA1, tangent);
-                B2FloatW rtB1 = b2CrossW(c.anchorB1, tangent);
-                B2FloatW rtA2 = b2CrossW(c.anchorA2, tangent);
-                B2FloatW rtB2 = b2CrossW(c.anchorB2, tangent);
+                Vector4 rnA1 = b2CrossW(c.anchorA1, normal);
+                Vector4 rnB1 = b2CrossW(c.anchorB1, normal);
+                Vector4 rnA2 = b2CrossW(c.anchorA2, normal);
+                Vector4 rnB2 = b2CrossW(c.anchorB2, normal);
+                Vector4 rtA1 = b2CrossW(c.anchorA1, tangent);
+                Vector4 rtB1 = b2CrossW(c.anchorB1, tangent);
+                Vector4 rtA2 = b2CrossW(c.anchorA2, tangent);
+                Vector4 rtB2 = b2CrossW(c.anchorB2, tangent);
 
-                B2FloatW wnA1 = b2MulW(c.invIA, rnA1);
-                B2FloatW wnB1 = b2MulW(c.invIB, rnB1);
-                B2FloatW wnA2 = b2MulW(c.invIA, rnA2);
-                B2FloatW wnB2 = b2MulW(c.invIB, rnB2);
-                B2FloatW wtA1 = b2MulW(c.invIA, rtA1);
-                B2FloatW wtB1 = b2MulW(c.invIB, rtB1);
+                Vector4 wnA1 = b2MulW(c.invIA, rnA1);
+                Vector4 wnB1 = b2MulW(c.invIB, rnB1);
+                Vector4 wnA2 = b2MulW(c.invIA, rnA2);
+                Vector4 wnB2 = b2MulW(c.invIB, rnB2);
+                Vector4 wtA1 = b2MulW(c.invIA, rtA1);
+                Vector4 wtB1 = b2MulW(c.invIB, rtB1);
 
                 // Couplings between the sequential impulses: rows are (n1, n2, t1, t2)
-                B2FloatW invMass = b2AddW(c.invMassA, c.invMassB);
-                B2FloatW k21 = b2AddW(invMass, b2AddW(b2MulW(wnA1, rnA2), b2MulW(wnB1, rnB2)));
-                B2FloatW k31 = b2AddW(b2MulW(wnA1, rtA1), b2MulW(wnB1, rtB1));
-                B2FloatW k32 = b2AddW(b2MulW(wnA2, rtA1), b2MulW(wnB2, rtB1));
-                B2FloatW k41 = b2AddW(b2MulW(wnA1, rtA2), b2MulW(wnB1, rtB2));
-                B2FloatW k42 = b2AddW(b2MulW(wnA2, rtA2), b2MulW(wnB2, rtB2));
-                B2FloatW k43 = b2AddW(invMass, b2AddW(b2MulW(wtA1, rtA2), b2MulW(wtB1, rtB2)));
+                Vector4 invMass = b2AddW(c.invMassA, c.invMassB);
+                Vector4 k21 = b2AddW(invMass, b2AddW(b2MulW(wnA1, rnA2), b2MulW(wnB1, rnB2)));
+                Vector4 k31 = b2AddW(b2MulW(wnA1, rtA1), b2MulW(wnB1, rtB1));
+                Vector4 k32 = b2AddW(b2MulW(wnA2, rtA1), b2MulW(wnB2, rtB1));
+                Vector4 k41 = b2AddW(b2MulW(wnA1, rtA2), b2MulW(wnB1, rtB2));
+                Vector4 k42 = b2AddW(b2MulW(wnA2, rtA2), b2MulW(wnB2, rtB2));
+                Vector4 k43 = b2AddW(invMass, b2AddW(b2MulW(wtA1, rtA2), b2MulW(wtB1, rtB2)));
 
                 B2Vec2W dv = b2SubVW(bB.v, bA.v);
-                B2FloatW dn = b2DotW(dv, normal);
-                B2FloatW dt = b2SubW(b2DotW(dv, tangent), c.tangentSpeed);
+                Vector4 dn = b2DotW(dv, normal);
+                Vector4 dt = b2SubW(b2DotW(dv, tangent), c.tangentSpeed);
 
-                B2FloatW vn1 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB1), b2MulW(bA.w, rnA1)));
-                B2FloatW vn2 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB2), b2MulW(bA.w, rnA2)));
-                B2FloatW vt1 = b2AddW(dt, b2SubW(b2MulW(bB.w, rtB1), b2MulW(bA.w, rtA1)));
-                B2FloatW vt2 = b2AddW(dt, b2SubW(b2MulW(bB.w, rtB2), b2MulW(bA.w, rtA2)));
+                Vector4 vn1 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB1), b2MulW(bA.w, rnA1)));
+                Vector4 vn2 = b2AddW(dn, b2SubW(b2MulW(bB.w, rnB2), b2MulW(bA.w, rnA2)));
+                Vector4 vt1 = b2AddW(dt, b2SubW(b2MulW(bB.w, rtB1), b2MulW(bA.w, rtA1)));
+                Vector4 vt2 = b2AddW(dt, b2SubW(b2MulW(bB.w, rtB2), b2MulW(bA.w, rtA2)));
 
-                B2FloatW normalImpulse1 = b2MaxW(b2NegW(b2MulW(c.normalMass1, b2AddW(vn1, velocityBias1))),
+                Vector4 normalImpulse1 = b2MaxW(b2NegW(b2MulW(c.normalMass1, b2AddW(vn1, velocityBias1))),
                     b2NegW(c.normalImpulse1));
                 c.normalImpulse1 = b2AddW(c.normalImpulse1, normalImpulse1);
                 c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, normalImpulse1);
 
                 vn2 = b2MulAddW(vn2, k21, normalImpulse1);
 
-                B2FloatW normalImpulse2 = b2MaxW(b2NegW(b2MulW(c.normalMass2, b2AddW(vn2, velocityBias2))),
+                Vector4 normalImpulse2 = b2MaxW(b2NegW(b2MulW(c.normalMass2, b2AddW(vn2, velocityBias2))),
                     b2NegW(c.normalImpulse2));
                 c.normalImpulse2 = b2AddW(c.normalImpulse2, normalImpulse2);
                 c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, normalImpulse2);
@@ -2047,24 +2047,24 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 vt1 = b2MulAddW(b2MulAddW(vt1, k31, normalImpulse1), k32, normalImpulse2);
                 vt2 = b2MulAddW(b2MulAddW(vt2, k41, normalImpulse1), k42, normalImpulse2);
 
-                B2FloatW angularA = b2AddW(b2MulW(normalImpulse1, rnA1), b2MulW(normalImpulse2, rnA2));
-                B2FloatW angularB = b2AddW(b2MulW(normalImpulse1, rnB1), b2MulW(normalImpulse2, rnB2));
+                Vector4 angularA = b2AddW(b2MulW(normalImpulse1, rnA1), b2MulW(normalImpulse2, rnA2));
+                Vector4 angularB = b2AddW(b2MulW(normalImpulse1, rnB1), b2MulW(normalImpulse2, rnB2));
 
                 // Rolling resistance
                 if (b2AllZeroW(c.rollingResistance) == false)
                 {
-                    B2FloatW relativeW = b2SubW(b2SubW(bA.w, bB.w), b2AddW(b2MulW(b2AddW(wnA1, wnB1), normalImpulse1),
+                    Vector4 relativeW = b2SubW(b2SubW(bA.w, bB.w), b2AddW(b2MulW(b2AddW(wnA1, wnB1), normalImpulse1),
                         b2MulW(b2AddW(wnA2, wnB2), normalImpulse2)));
-                    B2FloatW k = b2AddW(c.invIA, c.invIB);
-                    B2FloatW mask = b2GreaterThanW(k, zeroW);
-                    B2FloatW deltaLambda = b2BlendW(zeroW, b2DivW(relativeW, k), mask);
-                    B2FloatW lambda = c.rollingImpulse;
-                    B2FloatW maxLambda = b2MulW(c.rollingResistance, b2AddW(c.normalImpulse1, c.normalImpulse2));
+                    Vector4 k = b2AddW(c.invIA, c.invIB);
+                    Vector4 mask = b2GreaterThanW(k, zeroW);
+                    Vector4 deltaLambda = b2BlendW(zeroW, b2DivW(relativeW, k), mask);
+                    Vector4 lambda = c.rollingImpulse;
+                    Vector4 maxLambda = b2MulW(c.rollingResistance, b2AddW(c.normalImpulse1, c.normalImpulse2));
                     c.rollingImpulse = b2SymClampW(b2AddW(lambda, deltaLambda), maxLambda);
                     deltaLambda = b2SubW(c.rollingImpulse, lambda);
 
-                    B2FloatW wtA2 = b2MulW(c.invIA, rtA2);
-                    B2FloatW wtB2 = b2MulW(c.invIB, rtB2);
+                    Vector4 wtA2 = b2MulW(c.invIA, rtA2);
+                    Vector4 wtB2 = b2MulW(c.invIB, rtB2);
                     vt1 = b2MulAddW(vt1, b2AddW(wtA1, wtB1), deltaLambda);
                     vt2 = b2MulAddW(vt2, b2AddW(wtA2, wtB2), deltaLambda);
 
@@ -2072,16 +2072,16 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     angularB = b2AddW(angularB, deltaLambda);
                 }
 
-                B2FloatW maxFriction1 = b2MulW(c.friction, c.normalImpulse1);
-                B2FloatW tangentImpulse1 = b2NegW(b2MulW(c.tangentMass1, vt1));
+                Vector4 maxFriction1 = b2MulW(c.friction, c.normalImpulse1);
+                Vector4 tangentImpulse1 = b2NegW(b2MulW(c.tangentMass1, vt1));
                 tangentImpulse1 = b2MaxW(b2SubW(b2NegW(maxFriction1), c.tangentImpulse1),
                     b2MinW(tangentImpulse1, b2SubW(maxFriction1, c.tangentImpulse1)));
                 c.tangentImpulse1 = b2AddW(c.tangentImpulse1, tangentImpulse1);
 
                 vt2 = b2MulAddW(vt2, k43, tangentImpulse1);
 
-                B2FloatW maxFriction2 = b2MulW(c.friction, c.normalImpulse2);
-                B2FloatW tangentImpulse2 = b2NegW(b2MulW(c.tangentMass2, vt2));
+                Vector4 maxFriction2 = b2MulW(c.friction, c.normalImpulse2);
+                Vector4 tangentImpulse2 = b2NegW(b2MulW(c.tangentMass2, vt2));
                 tangentImpulse2 = b2MaxW(b2SubW(b2NegW(maxFriction2), c.tangentImpulse2),
                     b2MinW(tangentImpulse2, b2SubW(maxFriction2, c.tangentImpulse2)));
                 c.tangentImpulse2 = b2AddW(c.tangentImpulse2, tangentImpulse2);
@@ -2089,10 +2089,10 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 angularA = b2AddW(angularA, b2AddW(b2MulW(tangentImpulse1, rtA1), b2MulW(tangentImpulse2, rtA2)));
                 angularB = b2AddW(angularB, b2AddW(b2MulW(tangentImpulse1, rtB1), b2MulW(tangentImpulse2, rtB2)));
 
-                B2FloatW normalImpulse = b2AddW(normalImpulse1, normalImpulse2);
-                B2FloatW tangentImpulse = b2AddW(tangentImpulse1, tangentImpulse2);
-                B2FloatW Px = b2AddW(b2MulW(normalImpulse, normal.X), b2MulW(tangentImpulse, tangent.X));
-                B2FloatW Py = b2AddW(b2MulW(normalImpulse, normal.Y), b2MulW(tangentImpulse, tangent.Y));
+                Vector4 normalImpulse = b2AddW(normalImpulse1, normalImpulse2);
+                Vector4 tangentImpulse = b2AddW(tangentImpulse1, tangentImpulse2);
+                Vector4 Px = b2AddW(b2MulW(normalImpulse, normal.X), b2MulW(tangentImpulse, tangent.X));
+                Vector4 Py = b2AddW(b2MulW(normalImpulse, normal.Y), b2MulW(tangentImpulse, tangent.Y));
 
                 bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                 bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
@@ -2115,9 +2115,9 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
             B2BodyState[] states = context.states;
             Span<B2ContactConstraintWide> constraints = context.graph.colors[block.colorIndex].wideConstraints;
-            B2FloatW inv_h = b2SplatW(context.inv_h);
-            B2FloatW negRestitutionThreshold = b2SplatW(-context.world.restitutionThreshold);
-            B2FloatW zeroW = b2ZeroW();
+            Vector4 inv_h = b2SplatW(context.inv_h);
+            Vector4 negRestitutionThreshold = b2SplatW(-context.world.restitutionThreshold);
+            Vector4 zeroW = b2ZeroW();
             bool propagate = context.world.enableRestitutionPropagation;
 
             for (int wideIndex = block.startIndex; wideIndex < block.startIndex + block.count; ++wideIndex)
@@ -2131,48 +2131,48 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 B2BodyStateW bA = b2GatherBodies(states, c.indexA.AsSpan());
                 B2BodyStateW bB = b2GatherBodies(states, c.indexB.AsSpan());
 
-                B2FloatW restitutionMask = b2GreaterThanW(c.restitution, zeroW);
-                B2FloatW normalMass1 = propagate ? c.normalMass1 : b2BlendW(zeroW, c.normalMass1, restitutionMask);
-                B2FloatW normalMass2 = propagate ? c.normalMass2 : b2BlendW(zeroW, c.normalMass2, restitutionMask);
+                Vector4 restitutionMask = b2GreaterThanW(c.restitution, zeroW);
+                Vector4 normalMass1 = propagate ? c.normalMass1 : b2BlendW(zeroW, c.normalMass1, restitutionMask);
+                Vector4 normalMass2 = propagate ? c.normalMass2 : b2BlendW(zeroW, c.normalMass2, restitutionMask);
                 B2Vec2W dp = new B2Vec2W(b2SubW(bB.dp.X, bA.dp.X), b2SubW(bB.dp.Y, bA.dp.Y));
 
                 {
                     B2Vec2W rA = c.anchorA1;
                     B2Vec2W rB = c.anchorB1;
 
-                    B2FloatW compressionImpulse = b2SubW(c.totalNormalImpulse1, c.restitutionImpulse1);
-                    B2FloatW armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity1, negRestitutionThreshold)),
+                    Vector4 compressionImpulse = b2SubW(c.totalNormalImpulse1, c.restitutionImpulse1);
+                    Vector4 armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity1, negRestitutionThreshold)),
                         b2GreaterThanW(compressionImpulse, zeroW));
 
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
                     B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
+                    Vector4 s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation1);
 
-                    B2FloatW specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
-                    B2FloatW velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity1), armed);
+                    Vector4 specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
+                    Vector4 velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity1), armed);
 
-                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                    B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
+                    Vector4 dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                    Vector4 dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                    Vector4 vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
-                    B2FloatW negImpulse = b2MulW(normalMass1, b2AddW(vn, velocityBias));
+                    Vector4 negImpulse = b2MulW(normalMass1, b2AddW(vn, velocityBias));
 
-                    B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), zeroW);
-                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse1);
+                    Vector4 newImpulse = b2MaxW(b2SubW(c.normalImpulse1, negImpulse), zeroW);
+                    Vector4 impulse = b2SubW(newImpulse, c.normalImpulse1);
 
-                    B2FloatW approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass1, vn)), zeroW), b2MaxW(impulse, zeroW));
-                    B2FloatW allowance =
+                    Vector4 approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass1, vn)), zeroW), b2MaxW(impulse, zeroW));
+                    Vector4 allowance =
                         b2SubW(b2MulW(c.restitution, b2AddW(compressionImpulse, approachImpulse)), c.restitutionImpulse1);
-                    B2FloatW maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
+                    Vector4 maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
                     impulse = b2BlendW(impulse, b2MinW(impulse, maxImpulse), armed);
 
                     c.normalImpulse1 = b2AddW(c.normalImpulse1, impulse);
                     c.restitutionImpulse1 = b2AddW(c.restitutionImpulse1, b2SubW(impulse, approachImpulse));
                     c.totalNormalImpulse1 = b2AddW(c.totalNormalImpulse1, impulse);
 
-                    B2FloatW Px = b2MulW(impulse, c.normal.X);
-                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+                    Vector4 Px = b2MulW(impulse, c.normal.X);
+                    Vector4 Py = b2MulW(impulse, c.normal.Y);
 
                     bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                     bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
@@ -2187,39 +2187,39 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                     B2Vec2W rA = c.anchorA2;
                     B2Vec2W rB = c.anchorB2;
 
-                    B2FloatW compressionImpulse = b2SubW(c.totalNormalImpulse2, c.restitutionImpulse2);
-                    B2FloatW armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity2, negRestitutionThreshold)),
+                    Vector4 compressionImpulse = b2SubW(c.totalNormalImpulse2, c.restitutionImpulse2);
+                    Vector4 armed = b2AndW(b2AndW(restitutionMask, b2LessThanW(c.relativeVelocity2, negRestitutionThreshold)),
                         b2GreaterThanW(compressionImpulse, zeroW));
 
                     B2Vec2W rsA = b2RotateVectorW(bA.dq, rA);
                     B2Vec2W rsB = b2RotateVectorW(bB.dq, rB);
                     B2Vec2W ds = new B2Vec2W(b2AddW(dp.X, b2SubW(rsB.X, rsA.X)), b2AddW(dp.Y, b2SubW(rsB.Y, rsA.Y)));
-                    B2FloatW s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation2);
+                    Vector4 s = b2AddW(b2DotW(c.normal, ds), c.baseSeparation2);
 
-                    B2FloatW specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
-                    B2FloatW velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity2), armed);
+                    Vector4 specBias = b2MaxW(zeroW, b2MulW(s, inv_h));
+                    Vector4 velocityBias = b2BlendW(specBias, b2MulW(c.restitution, c.relativeVelocity2), armed);
 
-                    B2FloatW dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
-                    B2FloatW dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
-                    B2FloatW vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
+                    Vector4 dvx = b2SubW(b2SubW(bB.v.X, b2MulW(bB.w, rB.Y)), b2SubW(bA.v.X, b2MulW(bA.w, rA.Y)));
+                    Vector4 dvy = b2SubW(b2AddW(bB.v.Y, b2MulW(bB.w, rB.X)), b2AddW(bA.v.Y, b2MulW(bA.w, rA.X)));
+                    Vector4 vn = b2AddW(b2MulW(dvx, c.normal.X), b2MulW(dvy, c.normal.Y));
 
-                    B2FloatW negImpulse = b2MulW(normalMass2, b2AddW(vn, velocityBias));
+                    Vector4 negImpulse = b2MulW(normalMass2, b2AddW(vn, velocityBias));
 
-                    B2FloatW newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), zeroW);
-                    B2FloatW impulse = b2SubW(newImpulse, c.normalImpulse2);
+                    Vector4 newImpulse = b2MaxW(b2SubW(c.normalImpulse2, negImpulse), zeroW);
+                    Vector4 impulse = b2SubW(newImpulse, c.normalImpulse2);
 
-                    B2FloatW approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass2, vn)), zeroW), b2MaxW(impulse, zeroW));
-                    B2FloatW allowance =
+                    Vector4 approachImpulse = b2MinW(b2MaxW(b2NegW(b2MulW(normalMass2, vn)), zeroW), b2MaxW(impulse, zeroW));
+                    Vector4 allowance =
                         b2SubW(b2MulW(c.restitution, b2AddW(compressionImpulse, approachImpulse)), c.restitutionImpulse2);
-                    B2FloatW maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
+                    Vector4 maxImpulse = b2AddW(approachImpulse, b2MaxW(allowance, zeroW));
                     impulse = b2BlendW(impulse, b2MinW(impulse, maxImpulse), armed);
 
                     c.normalImpulse2 = b2AddW(c.normalImpulse2, impulse);
                     c.restitutionImpulse2 = b2AddW(c.restitutionImpulse2, b2SubW(impulse, approachImpulse));
                     c.totalNormalImpulse2 = b2AddW(c.totalNormalImpulse2, impulse);
 
-                    B2FloatW Px = b2MulW(impulse, c.normal.X);
-                    B2FloatW Py = b2MulW(impulse, c.normal.Y);
+                    Vector4 Px = b2MulW(impulse, c.normal.X);
+                    Vector4 Py = b2MulW(impulse, c.normal.Y);
 
                     bA.v.X = b2MulSubW(bA.v.X, c.invMassA, Px);
                     bA.v.Y = b2MulSubW(bA.v.Y, c.invMassA, Py);
@@ -2277,13 +2277,13 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
                 for (; wideIndex < colorWideEndIndex; ++wideIndex)
                 {
                     ref readonly B2ContactConstraintWide c = ref wideBase[wideIndex];
-                    ref readonly B2FloatW rollingImpulse = ref c.rollingImpulse;
-                    ref readonly B2FloatW normalImpulse1 = ref c.normalImpulse1;
-                    ref readonly B2FloatW normalImpulse2 = ref c.normalImpulse2;
-                    ref readonly B2FloatW tangentImpulse1 = ref c.tangentImpulse1;
-                    ref readonly B2FloatW tangentImpulse2 = ref c.tangentImpulse2;
-                    ref readonly B2FloatW totalNormalImpulse1 = ref c.totalNormalImpulse1;
-                    ref readonly B2FloatW totalNormalImpulse2 = ref c.totalNormalImpulse2;
+                    ref readonly Vector4 rollingImpulse = ref c.rollingImpulse;
+                    ref readonly Vector4 normalImpulse1 = ref c.normalImpulse1;
+                    ref readonly Vector4 normalImpulse2 = ref c.normalImpulse2;
+                    ref readonly Vector4 tangentImpulse1 = ref c.tangentImpulse1;
+                    ref readonly Vector4 tangentImpulse2 = ref c.tangentImpulse2;
+                    ref readonly Vector4 totalNormalImpulse1 = ref c.totalNormalImpulse1;
+                    ref readonly Vector4 totalNormalImpulse2 = ref c.totalNormalImpulse2;
 
                     int localWideIndex = wideIndex - colorWideStart;
                     int baseIndex = B2_SIMD_WIDTH * localWideIndex;
@@ -2298,15 +2298,15 @@ static void b2ScatterBodies( b2BodyState* states, int* indices, const b2BodyStat
 
                         B2ContactSim contactSim = contactSims[contactIndex];
                         ref B2Manifold m = ref contactSim.manifold;
-                        m.rollingImpulse = rollingImpulse[laneIndex];
+                        m.rollingImpulse = rollingImpulse.GetAt(laneIndex);
 
-                        m.points[0].normalImpulse = normalImpulse1[laneIndex];
-                        m.points[0].tangentImpulse = tangentImpulse1[laneIndex];
-                        m.points[0].totalNormalImpulse = totalNormalImpulse1[laneIndex];
+                        m.points[0].normalImpulse = normalImpulse1.GetAt(laneIndex);
+                        m.points[0].tangentImpulse = tangentImpulse1.GetAt(laneIndex);
+                        m.points[0].totalNormalImpulse = totalNormalImpulse1.GetAt(laneIndex);
 
-                        m.points[1].normalImpulse = normalImpulse2[laneIndex];
-                        m.points[1].tangentImpulse = tangentImpulse2[laneIndex];
-                        m.points[1].totalNormalImpulse = totalNormalImpulse2[laneIndex];
+                        m.points[1].normalImpulse = normalImpulse2.GetAt(laneIndex);
+                        m.points[1].tangentImpulse = tangentImpulse2.GetAt(laneIndex);
+                        m.points[1].totalNormalImpulse = totalNormalImpulse2.GetAt(laneIndex);
 
                         // Check for hit events to speed up serial processing later in the step
                         if ((contactSim.simFlags & (uint)B2ContactFlags.b2_simEnableHitEvent) != 0)

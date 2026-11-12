@@ -9,9 +9,9 @@ using static Box2D.NET.B2ContactSolvers;
 
 namespace Box2D.NET.Test;
 
-public class B2FloatWTest
+public class Vector4Test
 {
-    public static void Source(out Vector<float> v1, out Vector<float> v2, out Vector<float> v3, out B2FloatW b1, out B2FloatW b2, out B2FloatW b3)
+    public static void Source(out Vector<float> v1, out Vector<float> v2, out Vector<float> v3, out Vector4 b1, out Vector4 b2, out Vector4 b3)
     {
         var random = new Random((int)(DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond));
         var source = new float[Vector<float>.Count * 3];
@@ -37,9 +37,9 @@ public class B2FloatWTest
         v3 = new Vector<float>(c);
 
         // for b2
-        b1 = new B2FloatW(a[0], a[1], a[2], a[3]);
-        b2 = new B2FloatW(b[0], b[1], b[2], b[3]);
-        b3 = new B2FloatW(c[0], c[1], c[2], c[3]);
+        b1 = new Vector4(a[0], a[1], a[2], a[3]);
+        b2 = new Vector4(b[0], b[1], b[2], b[3]);
+        b3 = new Vector4(c[0], c[1], c[2], c[3]);
     }
 
     [Test]
@@ -49,7 +49,7 @@ public class B2FloatWTest
 
         // add
         {
-            B2FloatW b = b2AddW(b1, b2);
+            Vector4 b = b2AddW(b1, b2);
             Vector<float> v = b2AddW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -60,7 +60,7 @@ public class B2FloatWTest
 
         // sub
         {
-            B2FloatW b = b2SubW(b1, b2);
+            Vector4 b = b2SubW(b1, b2);
             Vector<float> v = b2SubW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -71,7 +71,7 @@ public class B2FloatWTest
 
         // mul
         {
-            B2FloatW b = b2MulW(b1, b2);
+            Vector4 b = b2MulW(b1, b2);
             Vector<float> v = b2MulW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -82,7 +82,7 @@ public class B2FloatWTest
 
         // mul and add
         {
-            B2FloatW b = b2MulAddW(b1, b2, b3);
+            Vector4 b = b2MulAddW(b1, b2, b3);
             Vector<float> v = b2MulAddW(v1, v2, v3);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -93,7 +93,7 @@ public class B2FloatWTest
 
         // mul and sub
         {
-            B2FloatW b = b2MulSubW(b1, b2, b3);
+            Vector4 b = b2MulSubW(b1, b2, b3);
             Vector<float> v = b2MulSubW(v1, v2, v3);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -104,7 +104,7 @@ public class B2FloatWTest
 
         // min
         {
-            B2FloatW b = b2MinW(b1, b2);
+            Vector4 b = b2MinW(b1, b2);
             Vector<float> v = b2MinW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -115,7 +115,7 @@ public class B2FloatWTest
 
         // max 
         {
-            B2FloatW b = b2MaxW(b1, b2);
+            Vector4 b = b2MaxW(b1, b2);
             Vector<float> v = b2MaxW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -126,7 +126,7 @@ public class B2FloatWTest
 
         // clamp
         {
-            B2FloatW b = b2SymClampW(b1, b2);
+            Vector4 b = b2SymClampW(b1, b2);
             Vector<float> v = b2SymClampW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -137,7 +137,7 @@ public class B2FloatWTest
 
         // greater than
         {
-            B2FloatW b = b2GreaterThanW(b1, b2);
+            Vector4 b = b2GreaterThanW(b1, b2);
             Vector<float> v = b2GreaterThanW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -148,7 +148,7 @@ public class B2FloatWTest
 
         // equals
         {
-            B2FloatW b = b2EqualsW(b1, b2);
+            Vector4 b = b2EqualsW(b1, b2);
             Vector<float> v = b2EqualsW(v1, v2);
 
             Assert.That(b.X, Is.EqualTo(v[0]));
@@ -159,7 +159,7 @@ public class B2FloatWTest
 
         // blend
         {
-            B2FloatW b = b2BlendW(b1, b2, b3);
+            Vector4 b = b2BlendW(b1, b2, b3);
             Vector<float> v = b2BlendW(v1, v2, v3);
 
             Assert.That(b.X, Is.EqualTo(v[0]));

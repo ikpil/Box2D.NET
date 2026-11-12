@@ -16,7 +16,7 @@ public static partial class Draws
         uint hex = (uint)color;
 
         // b2HexColor packs as 0xRRGGBB; matches MakeRGBA8's byte order. Force alpha to opaque.
-        uint col = ImGui.ColorConvertFloat4ToU32(new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f,
+        uint col = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f,
             (hex & 0xFF) / 255.0f, 1.0f));
 
         // Old STB path treated y as the text baseline; ImGui::AddText treats y as the top of the

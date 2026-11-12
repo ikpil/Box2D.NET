@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Runtime.InteropServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Cores;
 
@@ -26,8 +25,6 @@ namespace Box2D.NET
 
             // check union series
             CheckUnionSeries();
-
-            CheckB2FloatW();
 
             CheckB2Simplex();
 
@@ -169,20 +166,6 @@ namespace Box2D.NET
                 int nodeSize = B2SizeOf<B2TreeNode>.Size;
                 ThrowIf(nodeSize == 32, "B2TreeNode size is not 32 bytes, indicating potential memory misalignment.");
             }
-        }
-
-        private void CheckB2FloatW()
-        {
-            var temp = new B2FloatW();
-            temp.X = TestFloat();
-            temp.Y = temp.X + 1;
-            temp.Z = temp.Y + 1;
-            temp.W = temp.Z + 1;
-
-            ThrowIf(temp.X.Equals(temp[0]), "B2FloatW indexer does not return expected values.");
-            ThrowIf(temp.Y.Equals(temp[1]), "B2FloatW indexer does not return expected values.");
-            ThrowIf(temp.Z.Equals(temp[2]), "B2FloatW indexer does not return expected values.");
-            ThrowIf(temp.W.Equals(temp[3]), "B2FloatW indexer does not return expected values.");
         }
 
         private void CheckB2Simplex()

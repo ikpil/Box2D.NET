@@ -14,7 +14,7 @@ namespace Box2D.NET.Samples.Helpers;
 internal sealed class FilePicker
 {
     // Bright ANSI blue, the conventional `ls` color for directories on a dark terminal.
-    private static readonly Vector4 DirectoryColor = new Vector4(0.33f, 0.48f, 1.0f, 1.0f);
+    private static readonly System.Numerics.Vector4 DirectoryColor = new System.Numerics.Vector4(0.33f, 0.48f, 1.0f, 1.0f);
 
     internal readonly struct Filter
     {
@@ -177,9 +177,9 @@ internal sealed class FilePicker
                                        ImGuiWindowFlags.NoScrollWithMouse;
         // The sample theme makes resize grips nearly transparent. Keep this dialog's grip obvious so
         // users can discover that the file browser is resizable.
-        ImGui.PushStyleColor(ImGuiCol.ResizeGrip, new Vector4(0.32f, 0.50f, 0.78f, 0.70f));
-        ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, new Vector4(0.38f, 0.62f, 1.0f, 0.90f));
-        ImGui.PushStyleColor(ImGuiCol.ResizeGripActive, new Vector4(0.25f, 0.55f, 1.0f, 1.0f));
+        ImGui.PushStyleColor(ImGuiCol.ResizeGrip, new System.Numerics.Vector4(0.32f, 0.50f, 0.78f, 0.70f));
+        ImGui.PushStyleColor(ImGuiCol.ResizeGripHovered, new System.Numerics.Vector4(0.38f, 0.62f, 1.0f, 0.90f));
+        ImGui.PushStyleColor(ImGuiCol.ResizeGripActive, new System.Numerics.Vector4(0.25f, 0.55f, 1.0f, 1.0f));
         // No close-button pointer: this modal is dismissed only by Open or Cancel. This also keeps
         // navigation clicks from ever being interpreted as a request to close the picker.
         if (ImGui.BeginPopupModal(m_popupName, windowFlags))
@@ -232,7 +232,7 @@ internal sealed class FilePicker
 
             if (m_message.Length > 0)
             {
-                ImGui.TextColored(new Vector4(0.9f, 0.45f, 0.35f, 1.0f), m_message);
+                ImGui.TextColored(new System.Numerics.Vector4(0.9f, 0.45f, 0.35f, 1.0f), m_message);
             }
             else
             {

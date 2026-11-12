@@ -171,9 +171,9 @@ public class Sample : IDisposable
     {
         public readonly string name;
         public readonly int indent;
-        public readonly Vector4 color;
+        public readonly System.Numerics.Vector4 color;
 
-        public RowDef(string name, int indent, Vector4 color)
+        public RowDef(string name, int indent, System.Numerics.Vector4 color)
         {
             this.name = name;
             this.indent = indent;
@@ -181,7 +181,7 @@ public class Sample : IDisposable
         }
     }
 
-    private static float AddSegment(ImDrawListPtr dl, float availWidth, float t, float stepNow, Vector4 col, float x,
+    private static float AddSegment(ImDrawListPtr dl, float availWidth, float t, float stepNow, System.Numerics.Vector4 col, float x,
         Vector2 cursor, float barHeight)
     {
         float w = availWidth * (t / stepNow);
@@ -301,13 +301,13 @@ public class Sample : IDisposable
                     }
                 }
 
-                Vector4 colorStep = new Vector4(102.0f / 255.0f, 153.0f / 255.0f, 1.0f, 1.0f);
-                Vector4 colorPairs = new Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
-                Vector4 colorCollide = new Vector4(1.0f, 140.0f / 255.0f, 51.0f / 255.0f, 1.0f);
-                Vector4 colorSolve = new Vector4(102.0f / 255.0f, 204.0f / 255.0f, 102.0f / 255.0f, 1.0f);
-                Vector4 colorSensors = new Vector4(200.0f / 255.0f, 120.0f / 255.0f, 220.0f / 255.0f, 1.0f);
-                Vector4 colorOther = new Vector4(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
-                Vector4 colorDefault = new Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorStep = new System.Numerics.Vector4(102.0f / 255.0f, 153.0f / 255.0f, 1.0f, 1.0f);
+                System.Numerics.Vector4 colorPairs = new System.Numerics.Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorCollide = new System.Numerics.Vector4(1.0f, 140.0f / 255.0f, 51.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorSolve = new System.Numerics.Vector4(102.0f / 255.0f, 204.0f / 255.0f, 102.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorSensors = new System.Numerics.Vector4(200.0f / 255.0f, 120.0f / 255.0f, 220.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorOther = new System.Numerics.Vector4(90.0f / 255.0f, 90.0f / 255.0f, 90.0f / 255.0f, 1.0f);
+                System.Numerics.Vector4 colorDefault = new System.Numerics.Vector4(220.0f / 255.0f, 220.0f / 255.0f, 220.0f / 255.0f, 1.0f);
 
                 RowDef[] rows =
                 [
@@ -551,7 +551,7 @@ public class Sample : IDisposable
 
                     Vector2 cursor = ImGui.GetCursorScreenPos();
                     drawList.AddRectFilled(cursor, new Vector2(cursor.X + availableWidth, cursor.Y + barHeight),
-                        ImGui.ColorConvertFloat4ToU32(new Vector4(40.0f / 255.0f, 40.0f / 255.0f, 40.0f / 255.0f, 1.0f)));
+                        ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(40.0f / 255.0f, 40.0f / 255.0f, 40.0f / 255.0f, 1.0f)));
                     if (normalCount > 0)
                     {
                         float x = cursor.X;
@@ -573,7 +573,7 @@ public class Sample : IDisposable
 
                     ImGui.Spacing();
                     float overflowFraction = totalCount > 0 ? (float)overflowCount / totalCount : 0.0f;
-                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, new Vector4(220.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 1.0f));
+                    ImGui.PushStyleColor(ImGuiCol.PlotHistogram, new System.Numerics.Vector4(220.0f / 255.0f, 60.0f / 255.0f, 60.0f / 255.0f, 1.0f));
                     ImGui.ProgressBar(overflowFraction, new Vector2(-float.Epsilon, 0.0f), $"overflow {overflowCount}");
                     ImGui.PopStyleColor();
 
@@ -607,12 +607,12 @@ public class Sample : IDisposable
         Vector2 max = canvasPos + canvasSize - new Vector2(12.0f, 28.0f);
         Vector2 plotSize = max - min;
         ImDrawListPtr drawList = ImGui.GetWindowDrawList();
-        uint borderColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.35f, 0.35f, 0.35f, 1.0f));
-        uint gridColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.20f, 0.20f, 0.20f, 1.0f));
-        uint textColor = ImGui.ColorConvertFloat4ToU32(new Vector4(0.85f, 0.85f, 0.85f, 1.0f));
-        Vector4 stepColor = new Vector4(0.20f, 0.70f, 1.00f, 1.0f);
-        Vector4 collideColor = new Vector4(0.95f, 0.65f, 0.20f, 1.0f);
-        Vector4 solveColor = new Vector4(0.30f, 0.85f, 0.45f, 1.0f);
+        uint borderColor = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0.35f, 0.35f, 0.35f, 1.0f));
+        uint gridColor = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0.20f, 0.20f, 0.20f, 1.0f));
+        uint textColor = ImGui.ColorConvertFloat4ToU32(new System.Numerics.Vector4(0.85f, 0.85f, 0.85f, 1.0f));
+        System.Numerics.Vector4 stepColor = new System.Numerics.Vector4(0.20f, 0.70f, 1.00f, 1.0f);
+        System.Numerics.Vector4 collideColor = new System.Numerics.Vector4(0.95f, 0.65f, 0.20f, 1.0f);
+        System.Numerics.Vector4 solveColor = new System.Numerics.Vector4(0.30f, 0.85f, 0.45f, 1.0f);
 
         drawList.AddRect(min, max, borderColor);
         for (int i = 1; i < 4; ++i)
@@ -641,7 +641,7 @@ public class Sample : IDisposable
         DrawProfileLegendItem(drawList, legend, "solve", solveColor, textColor);
     }
 
-    private static Vector2 DrawProfileLegendItem(ImDrawListPtr drawList, Vector2 position, string name, Vector4 color, uint textColor)
+    private static Vector2 DrawProfileLegendItem(ImDrawListPtr drawList, Vector2 position, string name, System.Numerics.Vector4 color, uint textColor)
     {
         uint lineColor = ImGui.ColorConvertFloat4ToU32(color);
         float centerY = position.Y + 0.5f * ImGui.GetFontSize();
@@ -653,7 +653,7 @@ public class Sample : IDisposable
     }
 
     private void DrawProfileSeries(ImDrawListPtr drawList, Vector2 origin, Vector2 size, int count, float maxValue, float maxTime,
-        Func<B2Profile, float> selector, Vector4 color)
+        Func<B2Profile, float> selector, System.Numerics.Vector4 color)
     {
         if (count < 2)
         {
@@ -975,7 +975,7 @@ public class Sample : IDisposable
     private static void TextLinkOpenURL(string label, string url)
     {
         // ImGui.NET 1.90 does not expose TextLinkOpenURL, so preserve the same appearance and click behavior here.
-        Vector4 color = new Vector4(0.26f, 0.59f, 0.98f, 1.0f);
+        System.Numerics.Vector4 color = new System.Numerics.Vector4(0.26f, 0.59f, 0.98f, 1.0f);
         ImGui.PushStyleColor(ImGuiCol.Text, color);
         ImGui.TextUnformatted(label);
         ImGui.PopStyleColor();
@@ -1361,10 +1361,10 @@ public class Sample : IDisposable
             FormattableString.Invariant($"{1000.0f * frameTime:0.0} ms  step {context.sample.m_stepCount}"));
     }
 
-    private static Vector4 MakeColor(B2HexColor color)
+    private static System.Numerics.Vector4 MakeColor(B2HexColor color)
     {
         uint hex = (uint)color;
-        return new Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
+        return new System.Numerics.Vector4(((hex >> 16) & 0xFF) / 255.0f, ((hex >> 8) & 0xFF) / 255.0f, (hex & 0xFF) / 255.0f, 1.0f);
     }
 
     private static void DrawRightPanel(SampleContext context, float frameTime)

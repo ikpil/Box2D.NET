@@ -2,12 +2,14 @@
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Numerics;
+
 namespace Box2D.NET
 {
     // Wide rotation
     public struct B2RotW
     {
-        public B2FloatW C;
-        public B2FloatW S;
+        public Vector4 C;
+        public Vector4 S;
     }
 }
