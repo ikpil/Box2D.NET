@@ -299,10 +299,25 @@ namespace Box2D.NET
             contactSim.manifold = new B2Manifold();
 
             // These get updated in the narrow phase, but these are needed for first touch
-            contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
-                shapeB.material.friction, shapeB.material.userMaterialId);
-            contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
-                shapeB.material.restitution, shapeB.material.userMaterialId);
+            if (world.frictionCallback == null)
+            {
+                contactSim.friction = b2MixFriction(shapeA.material.friction, shapeB.material.friction);
+            }
+            else
+            {
+                contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
+                    shapeB.material.friction, shapeB.material.userMaterialId);
+            }
+
+            if (world.restitutionCallback == null)
+            {
+                contactSim.restitution = b2MixRestitution(shapeA.material.restitution, shapeB.material.restitution);
+            }
+            else
+            {
+                contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
+                    shapeB.material.restitution, shapeB.material.userMaterialId);
+            }
 
             contactSim.tangentSpeed = 0.0f;
             contactSim.simFlags = contact.flags;
@@ -496,10 +511,25 @@ namespace Box2D.NET
             }
 
             // Keep these updated in case the values on the shapes are modified
-            contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
-                shapeB.material.friction, shapeB.material.userMaterialId);
-            contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
-                shapeB.material.restitution, shapeB.material.userMaterialId);
+            if (world.frictionCallback == null)
+            {
+                contactSim.friction = b2MixFriction(shapeA.material.friction, shapeB.material.friction);
+            }
+            else
+            {
+                contactSim.friction = world.frictionCallback(shapeA.material.friction, shapeA.material.userMaterialId,
+                    shapeB.material.friction, shapeB.material.userMaterialId);
+            }
+
+            if (world.restitutionCallback == null)
+            {
+                contactSim.restitution = b2MixRestitution(shapeA.material.restitution, shapeB.material.restitution);
+            }
+            else
+            {
+                contactSim.restitution = world.restitutionCallback(shapeA.material.restitution, shapeA.material.userMaterialId,
+                    shapeB.material.restitution, shapeB.material.userMaterialId);
+            }
 
             if (shapeA.material.rollingResistance > 0.0f || shapeB.material.rollingResistance > 0.0f)
             {
@@ -628,6 +658,17 @@ namespace Box2D.NET
 
             return touching;
         }
+
+        internal static float b2MixFriction(float frictionA, float frictionB)
+        {
+            return System.MathF.Sqrt(frictionA * frictionB);
+        }
+
+        internal static float b2MixRestitution(float restitutionA, float restitutionB)
+        {
+            return b2MaxFloat(restitutionA, restitutionB);
+        }
+
         // Contacts and determinism
         // A deterministic simulation requires contacts to exist in the same order in b2Island no matter the thread count.
         // The order must reproduce from run to run. This is necessary because the Gauss-Seidel constraint solver is order dependent.

@@ -739,15 +739,18 @@ namespace Box2D.NET
                 localPolyB.normals[i] = b2RotateVector(xfs.q, polygonB.normals[i]);
             }
 
+            float radius = localPolyA.radius + localPolyB.radius;
+
             int edgeA = 0;
             float separationA = b2FindMaxSeparation(ref edgeA, ref localPolyA, localPolyB);
+            if (separationA > speculativeDistance + radius)
+            {
+                return new B2LocalManifold();
+            }
 
             int edgeB = 0;
             float separationB = b2FindMaxSeparation(ref edgeB, ref localPolyB, localPolyA);
-
-            float radius = localPolyA.radius + localPolyB.radius;
-
-            if (separationA > speculativeDistance + radius || separationB > speculativeDistance + radius)
+            if (separationB > speculativeDistance + radius)
             {
                 return new B2LocalManifold();
             }

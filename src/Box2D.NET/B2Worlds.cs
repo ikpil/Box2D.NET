@@ -112,18 +112,6 @@ namespace Box2D.NET
             B2_UNUSED(userTask, userContext);
         }
 
-        internal static float b2DefaultFrictionCallback(float frictionA, ulong materialA, float frictionB, ulong materialB)
-        {
-            B2_UNUSED(materialA, materialB);
-            return MathF.Sqrt(frictionA * frictionB);
-        }
-
-        internal static float b2DefaultRestitutionCallback(float restitutionA, ulong materialA, float restitutionB, ulong materialB)
-        {
-            B2_UNUSED(materialA, materialB);
-            return b2MaxFloat(restitutionA, restitutionB);
-        }
-
         private static void b2CreateWorkerContexts(B2World world)
         {
             world.taskContexts = b2Array_Create<B2TaskContext>(world.workerCount);
@@ -321,20 +309,12 @@ namespace Box2D.NET
             world.contactRecycleDistance = B2_CONTACT_RECYCLE_DISTANCE;
 
 
-            if (def.frictionCallback == null)
-            {
-                world.frictionCallback = b2DefaultFrictionCallback;
-            }
-            else
+            if (def.frictionCallback != null)
             {
                 world.frictionCallback = def.frictionCallback;
             }
 
-            if (def.restitutionCallback == null)
-            {
-                world.restitutionCallback = b2DefaultRestitutionCallback;
-            }
-            else
+            if (def.restitutionCallback != null)
             {
                 world.restitutionCallback = def.restitutionCallback;
             }
@@ -2314,14 +2294,7 @@ namespace Box2D.NET
                 return;
             }
 
-            if (callback != null)
-            {
-                world.frictionCallback = callback;
-            }
-            else
-            {
-                world.frictionCallback = b2DefaultFrictionCallback;
-            }
+            world.frictionCallback = callback;
         }
         /// Set the restitution callback. Passing NULL resets to default.
         public static void b2World_SetRestitutionCallback(B2WorldId worldId, b2RestitutionCallback callback)
@@ -2332,14 +2305,7 @@ namespace Box2D.NET
                 return;
             }
 
-            if (callback != null)
-            {
-                world.restitutionCallback = callback;
-            }
-            else
-            {
-                world.restitutionCallback = b2DefaultRestitutionCallback;
-            }
+            world.restitutionCallback = callback;
         }
         /// Dump memory stats to box2d_memory.txt
         public static void b2World_DumpMemoryStats(B2WorldId worldId)
