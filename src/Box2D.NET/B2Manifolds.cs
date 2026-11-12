@@ -924,7 +924,7 @@ namespace Box2D.NET
                 B2Vec2 v21 = localPolyB.vertices[i21];
                 B2Vec2 v22 = localPolyB.vertices[i22];
 
-                B2SegmentDistanceResult result = b2SegmentDistance(v11, v12, v21, v22);
+                B2SegmentDistanceResult result = b2ComputeSegmentDistance(v11, v12, v21, v22);
 
                 if (result.fraction1 == 0.0f && result.fraction2 == 0.0f)
                 {

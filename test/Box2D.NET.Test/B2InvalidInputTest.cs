@@ -99,7 +99,7 @@ public class B2InvalidInputTest
             Rejects(() => b2World_SetRestitutionThreshold(worldId, bad), "b2World_SetRestitutionThreshold");
             Rejects(() => b2World_SetHitEventThreshold(worldId, bad), "b2World_SetHitEventThreshold");
             Rejects(() => b2World_SetContactRecycleDistance(worldId, bad), "b2World_SetContactRecycleDistance");
-            Rejects(() => b2World_SetMaxLinearSpeed(worldId, bad), "b2World_SetMaximumLinearSpeed");
+            Rejects(() => b2World_SetMaxLinearSpeed(worldId, bad), "b2World_SetMaxLinearSpeed");
             Rejects(() => b2World_SetContactTuning(worldId, bad, 10.0f, 3.0f), "b2World_SetContactTuning hertz");
             Rejects(() => b2World_SetContactTuning(worldId, 30.0f, bad, 3.0f), "b2World_SetContactTuning damping");
             Rejects(() => b2World_SetContactTuning(worldId, 30.0f, 10.0f, bad), "b2World_SetContactTuning speed");
