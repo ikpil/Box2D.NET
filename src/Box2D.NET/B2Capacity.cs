@@ -23,5 +23,8 @@ namespace Box2D.NET
 
         /// Number of expected contacts.
         public int contactCount;
+
+        /// Reserve arena allocator space, used for temporary allocations.
+        public int arenaByteCount;
     }
 }

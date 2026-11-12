@@ -136,7 +136,7 @@ namespace Box2D.NET
             }
 
             int bigIslandId = bigIsland.islandId;
-            b2Array_Reserve(ref bigIsland.bodies, bigIsland.bodies.count + smallIsland.bodies.count);
+            b2Array_Grow(ref bigIsland.bodies, bigIsland.bodies.count + smallIsland.bodies.count);
 
             // Move bodies from smaller island to larger island
             for (int i = 0; i < smallIsland.bodies.count; ++i)
@@ -152,7 +152,7 @@ namespace Box2D.NET
             // Migrate contacts from smaller island to larger island
             if (smallIsland.contacts.count > 0)
             {
-                b2Array_Reserve(ref bigIsland.contacts, bigIsland.contacts.count + smallIsland.contacts.count);
+                b2Array_Grow(ref bigIsland.contacts, bigIsland.contacts.count + smallIsland.contacts.count);
 
                 for (int i = 0; i < smallIsland.contacts.count; ++i)
                 {
@@ -167,7 +167,7 @@ namespace Box2D.NET
             // Migrate joints from smaller island to larger island
             if (smallIsland.joints.count > 0)
             {
-                b2Array_Reserve(ref bigIsland.joints, bigIsland.joints.count + smallIsland.joints.count);
+                b2Array_Grow(ref bigIsland.joints, bigIsland.joints.count + smallIsland.joints.count);
 
                 for (int i = 0; i < smallIsland.joints.count; ++i)
                 {

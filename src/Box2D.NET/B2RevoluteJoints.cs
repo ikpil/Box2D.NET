@@ -88,18 +88,6 @@ namespace Box2D.NET
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.targetAngle;
         }
-        /// Get the revolute joint current angle in radians relative to the reference angle
-        /// @see b2RevoluteJointDef::referenceAngle
-        public static float b2RevoluteJoint_GetCurrentAngle(B2JointId jointId)
-        {
-            B2World world = b2GetWorld(jointId.world0);
-            B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            B2Rot qA = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdA).q, jointSim.localFrameA.q);
-            B2Rot qB = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdB).q, jointSim.localFrameB.q);
-
-            float angle = b2RelativeAngle(qA, qB);
-            return angle;
-        }
         /// Enable/disable the revolute joint limit
         public static void b2RevoluteJoint_EnableLimit(B2JointId jointId, bool enableLimit)
         {
@@ -177,13 +165,6 @@ namespace Box2D.NET
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.motorSpeed;
         }
-        /// Get the revolute joint current motor torque, usually in newton-meters
-        public static float b2RevoluteJoint_GetCurrentMotorTorque(B2JointId jointId)
-        {
-            B2World world = b2GetWorld(jointId.world0);
-            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            return world.inv_h * joint.uj.revoluteJoint.motorImpulse;
-        }
         /// Set the revolute joint maximum motor torque, usually in newton-meters
         public static void b2RevoluteJoint_SetMaxMotorTorque(B2JointId jointId, float torque)
         {
@@ -197,6 +178,44 @@ namespace Box2D.NET
         {
             B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
             return joint.uj.revoluteJoint.maxMotorTorque;
+        }
+
+        /// Get the revolute joint current angle in radians relative to the reference angle
+        /// @see b2RevoluteJointDef::referenceAngle
+        public static float b2RevoluteJoint_GetCurrentAngle(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
+            B2Rot qA = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdA).q, jointSim.localFrameA.q);
+            B2Rot qB = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdB).q, jointSim.localFrameB.q);
+
+            float angle = b2RelativeAngle(qA, qB);
+            return angle;
+        }
+
+        /// Get the revolute joint current relative angular speed in radians per second
+        public static float b2RevoluteJoint_GetCurrentSpeed(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
+
+            B2Body bodyA = b2Array_Get(ref world.bodies, @base.bodyIdA);
+            B2Body bodyB = b2Array_Get(ref world.bodies, @base.bodyIdB);
+            B2BodyState bodyStateA = b2GetBodyState(world, bodyA);
+            B2BodyState bodyStateB = b2GetBodyState(world, bodyB);
+
+            float wA = bodyStateA != null ? bodyStateA.angularVelocity : 0.0f;
+            float wB = bodyStateB != null ? bodyStateB.angularVelocity : 0.0f;
+
+            return wB - wA;
+        }
+
+        /// Get the revolute joint current motor torque, usually in newton-meters
+        public static float b2RevoluteJoint_GetCurrentMotorTorque(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2JointSim joint = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
+            return world.inv_h * joint.uj.revoluteJoint.motorImpulse;
         }
 
         internal static B2Vec2 b2GetRevoluteJointForce(B2World world, B2JointSim @base)
@@ -338,7 +357,16 @@ namespace Box2D.NET
             B2Rot qB = b2MulRot(stateB.deltaRotation, joint.frameB.q);
             B2Rot relQ = b2InvMulRot(qA, qB);
 
-            bool fixedRotation = (iA + iB == 0.0f);
+            B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
+            B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
+
+            // Constraint velocities, updated as the axial impulse accumulates
+            B2Vec2 linearCdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
+            float angularCdot = wB - wA;
+            float axialImpulse = 0.0f;
+
+            float k = iA + iB;
+            bool fixedRotation = (k == 0.0f);
 
             // Solve spring.
             if (joint.enableSpring && fixedRotation == false)
@@ -351,26 +379,25 @@ namespace Box2D.NET
                 float massScale = joint.springSoftness.massScale;
                 float impulseScale = joint.springSoftness.impulseScale;
 
-                float Cdot = wB - wA;
+                float Cdot = angularCdot;
                 float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * joint.springImpulse;
                 joint.springImpulse += impulse;
 
-                wA -= iA * impulse;
-                wB += iB * impulse;
+                angularCdot += k * impulse;
+                axialImpulse += impulse;
             }
 
             // Solve motor constraint.
             if (joint.enableMotor && fixedRotation == false)
             {
-                float Cdot = wB - wA - joint.motorSpeed;
-                float impulse = -joint.axialMass * Cdot;
+                float Cdot = angularCdot - joint.motorSpeed;
                 float oldImpulse = joint.motorImpulse;
                 float maxImpulse = context.h * joint.maxMotorTorque;
-                joint.motorImpulse = b2ClampFloat(joint.motorImpulse + impulse, -maxImpulse, maxImpulse);
-                impulse = joint.motorImpulse - oldImpulse;
+                float impulse = b2ClampFloat(-joint.axialMass * Cdot, -maxImpulse - oldImpulse, maxImpulse - oldImpulse);
+                joint.motorImpulse = oldImpulse + impulse;
 
-                wA -= iA * impulse;
-                wB += iB * impulse;
+                angularCdot += k * impulse;
+                axialImpulse += impulse;
             }
 
             if (joint.enableLimit && fixedRotation == false)
@@ -395,14 +422,13 @@ namespace Box2D.NET
                         impulseScale = @base.constraintSoftness.impulseScale;
                     }
 
-                    float Cdot = wB - wA;
+                    float Cdot = angularCdot;
                     float oldImpulse = joint.lowerImpulse;
-                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse;
-                    joint.lowerImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
-                    impulse = joint.lowerImpulse - oldImpulse;
+                    float impulse = b2MaxFloat(-massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse, -oldImpulse);
+                    joint.lowerImpulse = oldImpulse + impulse;
 
-                    wA -= iA * impulse;
-                    wB += iB * impulse;
+                    angularCdot += k * impulse;
+                    axialImpulse += impulse;
                 }
 
                 // Upper limit
@@ -426,15 +452,13 @@ namespace Box2D.NET
                     }
 
                     // sign flipped on Cdot
-                    float Cdot = wA - wB;
+                    float Cdot = -angularCdot;
                     float oldImpulse = joint.upperImpulse;
-                    float impulse = -massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse;
-                    joint.upperImpulse = b2MaxFloat(oldImpulse + impulse, 0.0f);
-                    impulse = joint.upperImpulse - oldImpulse;
+                    float impulse = b2MaxFloat(-massScale * joint.axialMass * (Cdot + bias) - impulseScale * oldImpulse, -oldImpulse);
+                    joint.upperImpulse = oldImpulse + impulse;
 
                     // sign flipped on applied impulse
-                    wA += iA * impulse;
-                    wB -= iB * impulse;
+                    axialImpulse -= impulse;
                 }
             }
 
@@ -445,11 +469,8 @@ namespace Box2D.NET
                 // K = [ mA+r1y^2*iA+mB+r2y^2*iB,  -r1y*iA*r1x-r2y*iB*r2x]
                 //     [  -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB]
 
-                // current anchors
-                B2Vec2 rA = b2RotateVector(stateA.deltaRotation, joint.frameA.p);
-                B2Vec2 rB = b2RotateVector(stateB.deltaRotation, joint.frameB.p);
-
-                B2Vec2 Cdot = b2Sub(b2Add(vB, b2CrossSV(wB, rB)), b2Add(vA, b2CrossSV(wA, rA)));
+                // Include the effect of the axial impulse that has not been applied yet
+                B2Vec2 Cdot = b2MulAdd(linearCdot, axialImpulse, b2Add(b2CrossSV(iA, rA), b2CrossSV(iB, rB)));
 
                 B2Vec2 bias = b2Vec2_zero;
                 float massScale = 1.0f;
@@ -479,9 +500,9 @@ namespace Box2D.NET
                 joint.linearImpulse.Y += impulse.Y;
 
                 vA = b2MulSub(vA, mA, impulse);
-                wA -= iA * b2Cross(rA, impulse);
+                wA -= iA * (b2Cross(rA, impulse) + axialImpulse);
                 vB = b2MulAdd(vB, mB, impulse);
-                wB += iB * b2Cross(rB, impulse);
+                wB += iB * (b2Cross(rB, impulse) + axialImpulse);
             }
 
             if (0 != (stateA.flags & (uint)B2BodyFlags.b2_dynamicFlag))

@@ -560,6 +560,12 @@ namespace Box2D.NET
                 // Keep these current.
                 pointCount = contactSim.manifold.pointCount;
                 touching = pointCount > 0;
+
+                // Mark recycling dirty.
+                if (touching == false)
+                {
+                    contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simRelativeTransformValid;
+                }
             }
 
             if (touching && (shapeA.enableHitEvents || shapeB.enableHitEvents))

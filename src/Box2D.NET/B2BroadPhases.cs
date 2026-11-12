@@ -512,6 +512,63 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.cross_pairs);
         }
 
+        // LSD radix sort. Faster than qsort when count is large and fast enough otherwise.
+        // https://en.wikipedia.org/wiki/Radix_sort
+        public static void b2RadixSortKeys(Span<ulong> keys, Span<ulong> tempKeys, int count)
+        {
+            Span<int> digitCounts = stackalloc int[8 * 256];
+            digitCounts.Clear();
+            for (int i = 0; i < count; ++i)
+            {
+                ulong key = keys[i];
+                for (int digit = 0; digit < 8; ++digit)
+                {
+                    digitCounts[digit * 256 + (int)((key >> (8 * digit)) & 0xFF)] += 1;
+                }
+            }
+
+            Span<ulong> source = keys;
+            Span<ulong> target = tempKeys;
+            bool sourceIsKeys = true;
+
+            for (int digit = 0; digit < 8; ++digit)
+            {
+                int shift = 8 * digit;
+                Span<int> offsets = digitCounts.Slice(digit * 256, 256);
+
+                if (offsets[(int)((source[0] >> shift) & 0xFF)] == count)
+                {
+                    // All keys have the same value for this digit. Common for shape pair keys.
+                    continue;
+                }
+
+                int sum = 0;
+                for (int i = 0; i < 256; ++i)
+                {
+                    int digitCount = offsets[i];
+                    offsets[i] = sum;
+                    sum += digitCount;
+                }
+
+                for (int i = 0; i < count; ++i)
+                {
+                    ulong key = source[i];
+                    target[offsets[(int)((key >> shift) & 0xFF)]++] = key;
+                }
+
+                // Swap for the next pass
+                Span<ulong> swap = source;
+                source = target;
+                target = swap;
+                sourceIsKeys = !sourceIsKeys;
+            }
+
+            if (sourceIsKeys == false)
+            {
+                source.Slice(0, count).CopyTo(keys);
+            }
+        }
+
         public static void b2UpdateTreesTask(object context)
         {
             b2TracyCZoneNC(B2TracyCZone.tree_task, "Rebuild BVH", B2HexColor.b2_colorFireBrick, true);
@@ -623,8 +680,12 @@ namespace Box2D.NET
 
             B2_ASSERT(keyCount == pairCount);
 
-            // The keys are unique, so any sort gives the same order.
-            Array.Sort(pairKeys.Array, pairKeys.Offset, pairCount);
+            if (pairCount > 1)
+            {
+                ArraySegment<ulong> tempKeys = b2StackAlloc<ulong>(alloc, pairCount, "temp keys");
+                b2RadixSortKeys(pairKeys.AsSpan(0, pairCount), tempKeys.AsSpan(0, pairCount), pairCount);
+                b2StackFree(alloc, tempKeys);
+            }
 
             for (int i = 0; i < keyCount; ++i)
             {

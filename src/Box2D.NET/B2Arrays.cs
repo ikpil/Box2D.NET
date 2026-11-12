@@ -181,6 +181,17 @@ namespace Box2D.NET
             return a;
         }
 
+        // Grow geometrically to hold at least n elements
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void b2Array_Grow<T>(ref B2Array<T> a, int n) where T : new()
+        {
+            if (a.capacity < n)
+            {
+                int newCapacity = 2 * a.capacity > n ? 2 * a.capacity : n;
+                b2Array_Reserve(ref a, newCapacity);
+            }
+        }
+
         /* Reserve */
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2Array_Reserve<T>(ref B2Array<T> a, int newCapacity) where T : new()

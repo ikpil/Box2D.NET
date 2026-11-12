@@ -343,6 +343,8 @@ public class B2WorldTest
         b2World_Explode(worldId, explosionDef);
 
         b2World_SetContactTuning(worldId, 10.0f, 2.0f, 4.0f);
+        b2World_GetContactTuning(worldId, out float hertz, out float dampingRatio, out float pushSpeed);
+        Assert.That(hertz == 10.0f && dampingRatio == 2.0f && pushSpeed == 4.0f, Is.True);
 
         b2World_SetMaxLinearSpeed(worldId, 10.0f);
         value = b2World_GetMaxLinearSpeed(worldId);
@@ -1749,5 +1751,68 @@ public class B2WorldTest
         Assert.That(b2GetJointFullId(world, revoluteId).setIndex, Is.EqualTo((int)B2SolverSetType.b2_staticSet));
 
         b2DestroyWorld(worldId);
+    }
+
+    private sealed class RejectFlag
+    {
+        public bool reject;
+    }
+
+    private static void PreSolveReject(B2ShapeId shapeIdA, B2ShapeId shapeIdB, ref B2Manifold manifold, object context)
+    {
+        B2_UNUSED(shapeIdA);
+        B2_UNUSED(shapeIdB);
+        RejectFlag flag = (RejectFlag)context;
+        if (flag.reject)
+        {
+            manifold.pointCount = 0;
+        }
+    }
+
+    // A rejected pre-solve empties the manifold while the shapes may already touch. The next step must
+    // rebuild the contact and ask again instead of recycling the empty pair. Box3D discussion #175.
+    [Test]
+    public void PreSolveRejectRecycleTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.enableSleep = false;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        RejectFlag flag = new RejectFlag { reject = true };
+        b2World_SetPreSolveCallback(worldId, PreSolveReject, null, flag);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Pos(0.0f, -0.5f);
+        B2BodyId groundId = b2CreateBody(worldId, bodyDef);
+        B2Polygon groundBox = b2MakeBox(10.0f, 0.5f);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        b2CreatePolygonShape(groundId, shapeDef, groundBox);
+
+        float radius = 0.25f;
+        bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Pos(0.0f, radius);
+        B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
+
+        shapeDef.enablePreSolveEvents = true;
+        B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), radius);
+        b2CreateCircleShape(bodyId, shapeDef, circle);
+
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        flag.reject = false;
+
+        float minSeparation = float.MaxValue;
+        for (int i = 0; i < 30; ++i)
+        {
+            b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+            B2Pos p = b2Body_GetPosition(bodyId);
+            minSeparation = b2MinFloat(minSeparation, (float)p.Y - radius);
+        }
+
+        b2DestroyWorld(worldId);
+
+        Assert.That(minSeparation, Is.GreaterThan(-B2_LINEAR_SLOP));
     }
 }

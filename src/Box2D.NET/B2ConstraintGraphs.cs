@@ -37,6 +37,13 @@ namespace Box2D.NET
         public const int B2_DYNAMIC_COLOR_COUNT = (B2_GRAPH_COLOR_COUNT - 4);
 
 
+        private static int b2GetLinearShare(int total, int rampCount, int rampIndex)
+        {
+            long weight = rampCount - rampIndex;
+            long weightSum = (long)rampCount * (rampCount + 1) / 2;
+            return (int)(total * weight / weightSum);
+        }
+
         public static void b2CreateGraph(ref B2ConstraintGraph graph, in B2Capacity capacity)
         {
             B2_ASSERT(B2_GRAPH_COLOR_COUNT >= 2, "must have at least two constraint graph colors");
@@ -48,6 +55,13 @@ namespace Box2D.NET
 
             int bodyCapacity = b2MaxInt(capacity.staticBodyCount + capacity.dynamicBodyCount, 16);
 
+            // Contacts fill the low colors first and static contacts fill from the top, so the expected
+            // contact count is spread over linear ramps at both ends.
+            int staticContactCount = capacity.contactCount / 8;
+            int dynamicContactCount = capacity.contactCount - staticContactCount;
+            int dynamicRampCount = B2_DYNAMIC_COLOR_COUNT / 2;
+            int staticRampCount = B2_GRAPH_COLOR_COUNT - B2_DYNAMIC_COLOR_COUNT;
+
             // Initialize graph color bit set.
             // No bitset for overflow color.
             for (int i = 0; i < B2_OVERFLOW_INDEX; ++i)
@@ -55,8 +69,20 @@ namespace Box2D.NET
                 ref B2GraphColor color = ref graph.colors[i];
                 color.bodySet = b2CreateBitSet(bodyCapacity);
                 b2SetBitCountAndClear(ref color.bodySet, bodyCapacity);
-                
-                b2Array_Reserve(ref color.contactSims, 16);
+
+                int contactCapacity = 0;
+                if (i < dynamicRampCount)
+                {
+                    contactCapacity += b2GetLinearShare(dynamicContactCount, dynamicRampCount, i);
+                }
+
+                int staticRampIndex = B2_OVERFLOW_INDEX - 1 - i;
+                if (staticRampIndex < staticRampCount)
+                {
+                    contactCapacity += b2GetLinearShare(staticContactCount, staticRampCount, staticRampIndex);
+                }
+
+                b2Array_Reserve(ref color.contactSims, b2MaxInt(16, contactCapacity));
             }
         }
 

@@ -226,7 +226,7 @@ namespace Box2D.NET
             world.generation = generation;
             world.inUse = true;
 
-            world.stack = b2CreateStackAllocator(2048);
+            world.stack = b2CreateStackAllocator(b2MaxInt(2048, def.capacity.arenaByteCount));
             b2CreateBroadPhase(ref world.broadPhase, def.capacity);
             b2CreateGraph(ref world.constraintGraph, def.capacity);
 
@@ -564,12 +564,10 @@ namespace Box2D.NET
                     contactSim.invMassB = bodySimB.invMass;
                     contactSim.invIB = bodySimB.invInertia;
 
-                    bool isFast = ((bodySimA.flags | bodySimB.flags) & (uint)B2BodyFlags.b2_isFast) != 0;
-
                     // Contact recycling optimization. Please cite this code if you use this optimization.
                     // This is inspired by persistent contact manifolds used in some physics engines, such as PhysX.
                     // However, this allows larger relative motion and has fewer tuning parameters (just one).
-                    if (isFast == false && recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
+                    if (recycleDistance > 0.0f && 0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_simRelativeTransformValid) &&
                         0 != (contactSim.simFlags & (uint)B2ContactFlags.b2_contactRecycleFlag))
                     {
                         B2Rot cachedQA = contactSim.cachedRotationA;
@@ -1049,6 +1047,8 @@ namespace Box2D.NET
             world.profile.step = b2GetMilliseconds(stepTicks);
 
             B2_ASSERT(b2GetStackAllocation(world.stack) == 0);
+
+            world.maxCapacity.arenaByteCount = b2MaxInt(world.maxCapacity.arenaByteCount, b2GetMaxStackAllocation(world.stack));
 
             // Ensure stack is large enough
             b2GrowStack(world.stack);
@@ -2157,6 +2157,15 @@ namespace Box2D.NET
             world.contactHertz = b2ClampFloat(hertz, 0.0f, float.MaxValue);
             world.contactDampingRatio = b2ClampFloat(dampingRatio, 0.0f, float.MaxValue);
             world.contactSpeed = b2ClampFloat(pushSpeed, 0.0f, float.MaxValue);
+        }
+
+        /// Get the contact tuning.
+        public static void b2World_GetContactTuning(B2WorldId worldId, out float hertz, out float dampingRatio, out float pushSpeed)
+        {
+            B2World world = b2GetWorldFromId(worldId);
+            hertz = world.contactHertz;
+            dampingRatio = world.contactDampingRatio;
+            pushSpeed = world.contactSpeed;
         }
 
         /// Set the contact point recycling distance. Setting this to zero disables contact point recycling.
