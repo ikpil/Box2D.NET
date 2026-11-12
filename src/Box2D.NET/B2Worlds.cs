@@ -220,8 +220,6 @@ namespace Box2D.NET
                 return new B2WorldId(0, 0);
             }
 
-            b2InitializeContactRegisters();
-
             B2World world = b2_worlds[worldId];
             ushort generation = world.generation;
 

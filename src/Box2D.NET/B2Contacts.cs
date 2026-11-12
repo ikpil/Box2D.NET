@@ -38,9 +38,6 @@ namespace Box2D.NET
         // - The state changes are ordered using a bit array that encompasses all contacts
         // - As long as contacts are created in deterministic order, island link order is deterministic.
         // - This keeps the order of contacts in islands deterministic
-        private static readonly B2ContactRegister[,] s_registers = new B2ContactRegister[(int)B2ShapeType.b2_shapeTypeCount, (int)B2ShapeType.b2_shapeTypeCount];
-        private static bool s_initialized = false;
-
         internal static B2LocalManifold b2CircleManifold(B2Shape shapeA, B2Shape shapeB, in B2Transform xf, ref B2SimplexCache cache)
         {
             B2_UNUSED(cache);
@@ -111,44 +108,55 @@ namespace Box2D.NET
             return b2CollideChainSegmentAndPolygon(shapeA.us.chainSegment, shapeB.us.polygon, xf, ref cache);
         }
 
-        internal static void b2AddType(b2ManifoldFcn fcn, B2ShapeType type1, B2ShapeType type2)
+        // This works with DLL hot reloading.
+        // Rows and columns are indexed by B2ShapeType: circle, capsule, segment, polygon, chainSegment.
+        private static readonly B2ContactRegister[,] b2_contactRegistry = new B2ContactRegister[,]
         {
-            B2_ASSERT(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
-            B2_ASSERT(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
-
-            s_registers[(int)type1, (int)type2].fcn = fcn;
-            s_registers[(int)type1, (int)type2].primary = true;
-
-            if (type1 != type2)
+            // b2_circleShape
             {
-                s_registers[(int)type2, (int)type1].fcn = fcn;
-                s_registers[(int)type2, (int)type1].primary = false;
-            }
-        }
-
-        internal static void b2InitializeContactRegisters()
-        {
-            if (s_initialized == false)
+                new B2ContactRegister { fcn = b2CircleManifold, primary = true },
+                new B2ContactRegister { fcn = b2CapsuleAndCircleManifold, primary = false },
+                new B2ContactRegister { fcn = b2SegmentAndCircleManifold, primary = false },
+                new B2ContactRegister { fcn = b2PolygonAndCircleManifold, primary = false },
+                new B2ContactRegister { fcn = b2ChainSegmentAndCircleManifold, primary = false }
+            },
+            // b2_capsuleShape
             {
-                b2AddType(b2CircleManifold, B2ShapeType.b2_circleShape, B2ShapeType.b2_circleShape);
-                b2AddType(b2CapsuleAndCircleManifold, B2ShapeType.b2_capsuleShape, B2ShapeType.b2_circleShape);
-                b2AddType(b2CapsuleManifold, B2ShapeType.b2_capsuleShape, B2ShapeType.b2_capsuleShape);
-                b2AddType(b2PolygonAndCircleManifold, B2ShapeType.b2_polygonShape, B2ShapeType.b2_circleShape);
-                b2AddType(b2PolygonAndCapsuleManifold, B2ShapeType.b2_polygonShape, B2ShapeType.b2_capsuleShape);
-                b2AddType(b2PolygonManifold, B2ShapeType.b2_polygonShape, B2ShapeType.b2_polygonShape);
-                b2AddType(b2SegmentAndCircleManifold, B2ShapeType.b2_segmentShape, B2ShapeType.b2_circleShape);
-                b2AddType(b2SegmentAndCapsuleManifold, B2ShapeType.b2_segmentShape, B2ShapeType.b2_capsuleShape);
-                b2AddType(b2SegmentAndPolygonManifold, B2ShapeType.b2_segmentShape, B2ShapeType.b2_polygonShape);
-                b2AddType(b2ChainSegmentAndCircleManifold, B2ShapeType.b2_chainSegmentShape, B2ShapeType.b2_circleShape);
-                b2AddType(b2ChainSegmentAndCapsuleManifold, B2ShapeType.b2_chainSegmentShape, B2ShapeType.b2_capsuleShape);
-                b2AddType(b2ChainSegmentAndPolygonManifold, B2ShapeType.b2_chainSegmentShape, B2ShapeType.b2_polygonShape);
-                s_initialized = true;
+                new B2ContactRegister { fcn = b2CapsuleAndCircleManifold, primary = true },
+                new B2ContactRegister { fcn = b2CapsuleManifold, primary = true },
+                new B2ContactRegister { fcn = b2SegmentAndCapsuleManifold, primary = false },
+                new B2ContactRegister { fcn = b2PolygonAndCapsuleManifold, primary = false },
+                new B2ContactRegister { fcn = b2ChainSegmentAndCapsuleManifold, primary = false }
+            },
+            // b2_segmentShape
+            {
+                new B2ContactRegister { fcn = b2SegmentAndCircleManifold, primary = true },
+                new B2ContactRegister { fcn = b2SegmentAndCapsuleManifold, primary = true },
+                default,
+                new B2ContactRegister { fcn = b2SegmentAndPolygonManifold, primary = true },
+                default
+            },
+            // b2_polygonShape
+            {
+                new B2ContactRegister { fcn = b2PolygonAndCircleManifold, primary = true },
+                new B2ContactRegister { fcn = b2PolygonAndCapsuleManifold, primary = true },
+                new B2ContactRegister { fcn = b2SegmentAndPolygonManifold, primary = false },
+                new B2ContactRegister { fcn = b2PolygonManifold, primary = true },
+                new B2ContactRegister { fcn = b2ChainSegmentAndPolygonManifold, primary = false }
+            },
+            // b2_chainSegmentShape
+            {
+                new B2ContactRegister { fcn = b2ChainSegmentAndCircleManifold, primary = true },
+                new B2ContactRegister { fcn = b2ChainSegmentAndCapsuleManifold, primary = true },
+                default,
+                new B2ContactRegister { fcn = b2ChainSegmentAndPolygonManifold, primary = true },
+                default
             }
-        }
+        };
 
         internal static bool b2CanCollide(B2ShapeType typeA, B2ShapeType typeB)
         {
-            return s_registers[(int)typeA, (int)typeB].fcn != null;
+            return b2_contactRegistry[(int)typeA, (int)typeB].fcn != null;
         }
         // WARNING: this should never fail to create a contact because the pair already exists in the pairSet.
         public static void b2CreateContact(B2World world, B2Shape shapeA, B2Shape shapeB)
@@ -159,13 +167,13 @@ namespace Box2D.NET
             B2_ASSERT(0 <= type1 && type1 < B2ShapeType.b2_shapeTypeCount);
             B2_ASSERT(0 <= type2 && type2 < B2ShapeType.b2_shapeTypeCount);
 
-            if (s_registers[(int)type1, (int)type2].fcn == null)
+            if (b2_contactRegistry[(int)type1, (int)type2].fcn == null)
             {
                 // For example, no segment vs segment collision
                 return;
             }
 
-            if (s_registers[(int)type1, (int)type2].primary == false)
+            if (b2_contactRegistry[(int)type1, (int)type2].primary == false)
             {
                 // flip order
                 b2CreateContact(world, shapeB, shapeA);
@@ -470,7 +478,7 @@ namespace Box2D.NET
             // so precision is retained far from the origin.
             // anchorB = worldPoint - pB = rot(qA, localAnchorA) + pA - pB = anchorA + (pA - pB)
             B2Transform relativeTransform = b2InvMulWorldTransforms(transformA, transformB);
-            b2ManifoldFcn fcn = s_registers[(int)shapeA.type, (int)shapeB.type].fcn;
+            b2ManifoldFcn fcn = b2_contactRegistry[(int)shapeA.type, (int)shapeB.type].fcn;
             B2LocalManifold local = fcn(shapeA, shapeB, relativeTransform, ref contactSim.cache);
 
             contactSim.manifold = new B2Manifold();

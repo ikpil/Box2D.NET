@@ -157,6 +157,20 @@ namespace Box2D.NET
             ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
             return joint.dampingRatio;
         }
+
+        /// Get the current spring force.
+        public static float b2DistanceJoint_GetSpringForce(B2JointId jointId)
+        {
+            B2World world = b2GetWorld(jointId.world0);
+            B2JointSim @base = b2GetJointSimCheckType(jointId, B2JointType.b2_distanceJoint);
+            ref B2DistanceJoint joint = ref @base.uj.distanceJoint;
+            if (joint.enableSpring)
+            {
+                return joint.impulse * world.inv_h;
+            }
+
+            return 0.0f;
+        }
         /// Enable/disable the distance joint motor
         public static void b2DistanceJoint_EnableMotor(B2JointId jointId, bool enableMotor)
         {
