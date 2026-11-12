@@ -62,7 +62,7 @@ public class JointSeparation : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
@@ -72,8 +72,8 @@ public class JointSeparation : Sample
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot1));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot2));
             jointDef.length = length;
             jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateDistanceJoint(m_worldId, jointDef);
@@ -86,7 +86,7 @@ public class JointSeparation : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
@@ -94,8 +94,8 @@ public class JointSeparation : Sample
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreatePrismaticJoint(m_worldId, jointDef);
         }
@@ -107,7 +107,7 @@ public class JointSeparation : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
@@ -115,8 +115,8 @@ public class JointSeparation : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateRevoluteJoint(m_worldId, jointDef);
         }
@@ -128,7 +128,7 @@ public class JointSeparation : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
@@ -136,8 +136,8 @@ public class JointSeparation : Sample
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.@base.collideConnected = true;
             m_jointIds[index] = b2CreateWeldJoint(m_worldId, jointDef);
         }
@@ -149,7 +149,7 @@ public class JointSeparation : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
 
@@ -157,8 +157,8 @@ public class JointSeparation : Sample
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.hertz = 1.0f;
             jointDef.dampingRatio = 0.7f;
             jointDef.lowerTranslation = -1.0f;
@@ -209,8 +209,8 @@ public class JointSeparation : Sample
         {
             for (int i = 0; i < e_count; ++i)
             {
-                B2Vec2 p = b2Body_GetWorldPoint(m_bodyIds[i], new B2Vec2(1.0f, 1.0f));
-                b2Body_ApplyLinearImpulse(m_bodyIds[i], new B2Vec2(m_impulse, -m_impulse), p, true);
+                B2Vec2 p = b2ToVec2(b2Body_GetWorldPoint(m_bodyIds[i], new B2Vec2(1.0f, 1.0f)));
+                b2Body_ApplyLinearImpulse(m_bodyIds[i], new B2Vec2(m_impulse, -m_impulse), b2ToPos(p), true);
             }
         }
 

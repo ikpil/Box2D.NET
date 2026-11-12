@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -64,7 +65,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -74,8 +75,8 @@ public class JointEvent : Sample
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot1));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot2));
             jointDef.length = length;
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
@@ -91,7 +92,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -115,7 +116,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -123,8 +124,8 @@ public class JointEvent : Sample
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
@@ -139,7 +140,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -147,8 +148,8 @@ public class JointEvent : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.@base.forceThreshold = forceThreshold;
             jointDef.@base.torqueThreshold = torqueThreshold;
             jointDef.@base.collideConnected = true;
@@ -163,7 +164,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -171,8 +172,8 @@ public class JointEvent : Sample
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.angularHertz = 2.0f;
             jointDef.angularDampingRatio = 0.5f;
             jointDef.@base.forceThreshold = forceThreshold;
@@ -189,7 +190,7 @@ public class JointEvent : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
@@ -197,8 +198,8 @@ public class JointEvent : Sample
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.hertz = 1.0f;
             jointDef.dampingRatio = 0.7f;
             jointDef.lowerTranslation = -1.0f;

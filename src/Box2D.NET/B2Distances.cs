@@ -481,12 +481,11 @@ namespace Box2D.NET
             // This is still a performance gain at 8 points.
             B2ShapeProxy localProxyB = new B2ShapeProxy();
             {
-                B2Transform transform = b2InvMulTransforms(input.transformA, input.transformB);
                 localProxyB.count = input.proxyB.count;
                 localProxyB.radius = input.proxyB.radius;
                 for (int i = 0; i < localProxyB.count; ++i)
                 {
-                    localProxyB.points[i] = b2TransformPoint(transform, input.proxyB.points[i]);
+                    localProxyB.points[i] = b2TransformPoint(input.transform, input.proxyB.points[i]);
                 }
             }
 
@@ -548,8 +547,8 @@ namespace Box2D.NET
                     // Overlap
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
                     b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
-                    output.pointA = b2TransformPoint(input.transformA, localPointA);
-                    output.pointB = b2TransformPoint(input.transformA, localPointB);
+                    output.pointA = localPointA;
+                    output.pointB = localPointB;
                     return output;
                 }
 
@@ -574,8 +573,8 @@ namespace Box2D.NET
                     // Must return overlap due to invalid normal.
                     B2Vec2 localPointA = new B2Vec2(), localPointB = new B2Vec2();
                     b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
-                    output.pointA = b2TransformPoint(input.transformA, localPointA);
-                    output.pointB = b2TransformPoint(input.transformA, localPointB);
+                    output.pointA = localPointA;
+                    output.pointB = localPointB;
                     return output;
                 }
 
@@ -623,10 +622,9 @@ namespace Box2D.NET
             }
 #endif
 
-            // Prepare output
+            // Prepare output in frame A
             B2Vec2 normal = b2Normalize(nonUnitNormal);
             B2_ASSERT(b2IsNormalized(normal));
-            normal = b2RotateVector(input.transformA.q, normal);
 
             {
                 B2Vec2 localPointA = new B2Vec2();
@@ -634,8 +632,8 @@ namespace Box2D.NET
                 b2ComputeWitnessPoints(simplex, ref localPointA, ref localPointB);
                 output.normal = normal;
                 output.distance = b2Distance(localPointA, localPointB);
-                output.pointA = b2TransformPoint(input.transformA, localPointA);
-                output.pointB = b2TransformPoint(input.transformA, localPointB);
+                output.pointA = localPointA;
+                output.pointB = localPointB;
                 output.iterations = iteration;
                 output.simplexCount = simplexIndex;
             }
@@ -678,9 +676,11 @@ namespace Box2D.NET
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = input.proxyA;
             distanceInput.proxyB = input.proxyB;
-            distanceInput.transformA = input.transformA;
-            distanceInput.transformB = input.transformB;
             distanceInput.useRadii = false;
+
+            // The whole cast runs in frame A. Advance the relative pose of B in float each iteration,
+            // which keeps the math near the local origin and avoids re-relativizing world poses.
+            distanceInput.transform = input.transform;
 
             B2Vec2 delta2 = input.translationB;
             B2CastOutput output = new B2CastOutput();
@@ -744,7 +744,7 @@ namespace Box2D.NET
                     return output;
                 }
 
-                distanceInput.transformB.p = b2MulAdd(input.transformB.p, fraction, delta2);
+                distanceInput.transform.p = b2MulAdd(input.transform.p, fraction, delta2);
             }
 
             // Failure!
@@ -752,6 +752,7 @@ namespace Box2D.NET
         }
 
 
+// Note: the code below is experimental and probably broken
 #if FALSE
         static inline b2Vec2 b2ComputeSimplexClosestPoint( const b2Simplex* s )
         {
@@ -800,7 +801,7 @@ namespace Box2D.NET
 
             b2ShapeProxy proxyA = input->proxyA;
 
-            b2Transform xf = b2InvMulTransforms( input->transformA, input->transformB );
+            b2Transform xf = input->transform;
 
             // Put proxyB in proxyA's frame to reduce round-off error
             b2ShapeProxy proxyB;
@@ -815,7 +816,7 @@ namespace Box2D.NET
 
             float radius = proxyA.radius + proxyB.radius;
 
-            b2Vec2 r = b2RotateVector( xf.q, input->translationB );
+            b2Vec2 r = input->translationB;
             float lambda = 0.0f;
             float maxFraction = input->maxFraction;
 
@@ -957,8 +958,9 @@ namespace Box2D.NET
             b2Vec2 n = b2Normalize( b2Neg( v ) );
             b2Vec2 point = { pointA.x + proxyA.radius * n.x, pointA.y + proxyA.radius * n.y };
 
-            output.point = b2TransformPoint( input->transformA, point );
-            output.normal = b2RotateVector( input->transformA.q, n );
+            // Results stay in frame A, matching b2ShapeCast
+            output.point = point;
+            output.normal = n;
             output.fraction = lambda;
             output.iterations = iteration;
             output.hit = true;
@@ -1214,9 +1216,15 @@ namespace Box2D.NET
             for (;;)
             {
                 // Get the distance between shapes. We can also use the results to get a separating axis.
-                distanceInput.transformA = b2GetSweepTransform(sweepA, t1);
-                distanceInput.transformB = b2GetSweepTransform(sweepB, t1);
+                B2Transform xfA = b2GetSweepTransform(sweepA, t1);
+                B2Transform xfB = b2GetSweepTransform(sweepB, t1);
+                distanceInput.transform = b2InvMulTransforms(xfA, xfB);
                 B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);
+
+                // The distance query runs in frame A, project the witness data back to world
+                B2Vec2 worldNormal = b2RotateVector(xfA.q, distanceOutput.normal);
+                B2Vec2 worldPointA = b2TransformPoint(xfA, distanceOutput.pointA);
+                B2Vec2 worldPointB = b2TransformPoint(xfA, distanceOutput.pointB);
 
                 // Progressive time of impact. This handles slender geometry well but introduces
                 // significant time loss.
@@ -1258,10 +1266,10 @@ namespace Box2D.NET
                     b2_toiHitCount += 1;
 #endif
                     // Averaged hit point
-                    B2Vec2 pA = b2MulAdd(distanceOutput.pointA, proxyA.radius, distanceOutput.normal);
-                    B2Vec2 pB = b2MulAdd(distanceOutput.pointB, -proxyB.radius, distanceOutput.normal);
+                    B2Vec2 pA = b2MulAdd(worldPointA, proxyA.radius, worldNormal);
+                    B2Vec2 pB = b2MulAdd(worldPointB, -proxyB.radius, worldNormal);
                     output.point = b2Lerp(pA, pB, 0.5f);
-                    output.normal = distanceOutput.normal;
+                    output.normal = worldNormal;
                     output.fraction = t1;
                     break;
                 }
@@ -1350,10 +1358,10 @@ namespace Box2D.NET
                         b2_toiHitCount += 1;
 #endif
                         // Averaged hit point
-                        B2Vec2 pA = b2MulAdd(distanceOutput.pointA, proxyA.radius, distanceOutput.normal);
-                        B2Vec2 pB = b2MulAdd(distanceOutput.pointB, -proxyB.radius, distanceOutput.normal);
+                        B2Vec2 pA = b2MulAdd(worldPointA, proxyA.radius, worldNormal);
+                        B2Vec2 pB = b2MulAdd(worldPointB, -proxyB.radius, worldNormal);
                         output.point = b2Lerp(pA, pB, 0.5f);
-                        output.normal = distanceOutput.normal;
+                        output.normal = worldNormal;
                         output.fraction = t1;
                         done = true;
                         break;
@@ -1436,10 +1444,10 @@ namespace Box2D.NET
                     b2_toiFailedCount += 1;
 #endif
                     // Averaged hit point
-                    B2Vec2 pA = b2MulAdd(distanceOutput.pointA, proxyA.radius, distanceOutput.normal);
-                    B2Vec2 pB = b2MulAdd(distanceOutput.pointB, -proxyB.radius, distanceOutput.normal);
+                    B2Vec2 pA = b2MulAdd(worldPointA, proxyA.radius, worldNormal);
+                    B2Vec2 pB = b2MulAdd(worldPointB, -proxyB.radius, worldNormal);
                     output.point = b2Lerp(pA, pB, 0.5f);
-                    output.normal = distanceOutput.normal;
+                    output.normal = worldNormal;
                     output.fraction = t1;
                     break;
                 }

@@ -62,7 +62,7 @@ public class MotorJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
-            bodyDef.position = m_transform.p;
+            bodyDef.position = b2ToPos(m_transform.p);
             m_targetId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -70,7 +70,7 @@ public class MotorJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = m_transform.p;
+            bodyDef.position = b2ToPos(m_transform.p);
             m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 0.5f);
@@ -97,7 +97,7 @@ public class MotorJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-2.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-2.0f, 2.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeSquare(0.5f);
@@ -107,7 +107,7 @@ public class MotorJoint : Sample
             B2MotorJointDef jointDef = b2DefaultMotorJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Add(bodyDef.position, new B2Vec2(0.25f, 0.25f));
+            jointDef.@base.localFrameA.p = b2Add(b2ToVec2(bodyDef.position), new B2Vec2(0.25f, 0.25f));
             jointDef.@base.localFrameB.p = new B2Vec2(0.25f, 0.25f);
             jointDef.linearHertz = 7.5f;
             jointDef.linearDampingRatio = 0.7f;
@@ -175,7 +175,7 @@ public class MotorJoint : Sample
             m_transform = new B2Transform(linearOffset, b2MakeRot(angularOffset));
 
             bool wake = true;
-            b2Body_SetTargetTransform(m_targetId, m_transform, timeStep, wake);
+            b2Body_SetTargetTransform(m_targetId, b2MakeWorldTransform(m_transform), timeStep, wake);
         }
 
         DrawTransform(m_draw, m_transform, 1.0f);

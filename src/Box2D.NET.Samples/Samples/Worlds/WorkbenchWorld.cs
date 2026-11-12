@@ -5,6 +5,7 @@
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Worlds;
 
@@ -33,7 +34,7 @@ public class WorkbenchWorld : Sample
     {
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = position;
+        bodyDef.position = b2ToPos(position);
         bodyDef.gravityScale = 0.0f;
         var bodyIdA = b2CreateBody(worldId, bodyDef);
 

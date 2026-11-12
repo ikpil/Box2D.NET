@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -27,7 +27,7 @@ public class B2DynamicTreeContextTests
         return 0.0f;
     }
 
-    private static float ShapeCallback(in B2ShapeCastInput input, int proxyId, ulong userData, ref CallbackContext context)
+    private static float BoxCallback(in B2BoxCastInput input, int proxyId, ulong userData, ref CallbackContext context)
     {
         context.Visits += 1;
         return 0.0f;
@@ -53,13 +53,13 @@ public class B2DynamicTreeContextTests
 
             context.Visits = 0;
             var point = new B2Vec2(-2.0f, 0.0f);
-            var shapeCast = new B2ShapeCastInput
+            var boxCast = new B2BoxCastInput
             {
-                proxy = b2MakeProxy(point, 1, 0.0f),
+                box = new B2AABB(point, point),
                 translation = new B2Vec2(4.0f, 0.0f),
                 maxFraction = 1.0f,
             };
-            b2DynamicTree_ShapeCast(tree, shapeCast, ulong.MaxValue, ShapeCallback, ref context);
+            b2DynamicTree_BoxCast(tree, boxCast, ulong.MaxValue, BoxCallback, ref context);
             Assert.That(context.Visits, Is.EqualTo(1));
         }
         finally

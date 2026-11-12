@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -8,6 +8,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -58,7 +59,7 @@ public class CustomFilter : Sample
 
             for (int i = 0; i < e_count; ++i)
             {
-                bodyDef.position = new B2Vec2(x, 5.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(x, 5.0f));
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.userData = B2UserData.Signed(i + 1);
@@ -105,7 +106,7 @@ public class CustomFilter : Sample
 
         for (int i = 0; i < e_count; ++i)
         {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[i]);
+            B2Vec2 p = b2ToVec2(b2Body_GetPosition(m_bodyIds[i]));
             DrawWorldString(m_draw, m_camera, new B2Vec2(p.X, p.Y), B2HexColor.b2_colorWhite, $"{i}");
         }
     }

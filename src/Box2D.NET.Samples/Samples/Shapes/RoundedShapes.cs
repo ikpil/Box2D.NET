@@ -65,7 +65,7 @@ public class RoundedShapes : Sample
                 float x = -5.0f;
                 for (int j = 0; j < xcount; ++j)
                 {
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     B2Polygon poly = RandomPolygon(0.5f);

@@ -5,6 +5,9 @@
 using NUnit.Framework;
 using static Box2D.NET.B2AABBs;
 using static Box2D.NET.B2MathFunction;
+using System;
+using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2Manifolds;
 
 namespace Box2D.NET.Test;
 
@@ -194,5 +197,41 @@ public class B2CollisionTest
             Assert.That(output.point.X - 2.0f, Is.LessThanOrEqualTo(FLT_EPSILON));
             Assert.That(output.point.Y - 4.0f, Is.LessThanOrEqualTo(FLT_EPSILON));
         }
+    }
+
+    // The narrow phase differences the two world positions in double then works in frame A, so a
+    // manifold far from the origin must match the same manifold at the origin. Box2D.NET is single
+    // precision only, so only the origin half of the upstream test is ported.
+    [Test]
+    public void LargeWorldManifoldTest()
+    {
+        B2Polygon boxA = b2MakeBox(0.5f, 0.5f);
+        B2Polygon boxB = b2MakeBox(0.5f, 0.5f);
+
+        // Centers 0.9 apart so the boxes overlap by 0.1 along x
+        B2Vec2 sep = new B2Vec2(0.9f, 0.0f);
+
+        B2WorldTransform xfAo = b2WorldTransform_identity;
+        B2WorldTransform xfBo = new B2WorldTransform(b2OffsetPos(b2Pos_zero, sep), b2Rot_identity);
+        B2Manifold mOrigin = b2CollidePolygons(boxA, xfAo, boxB, xfBo);
+
+        Assert.That(mOrigin.pointCount, Is.EqualTo(2));
+        Assert.That(MathF.Abs(mOrigin.points[0].separation + 0.1f), Is.LessThanOrEqualTo(0.01f));
+        Assert.That(MathF.Abs(mOrigin.points[1].separation + 0.1f), Is.LessThanOrEqualTo(0.01f));
+    }
+
+    // Broad-phase AABBs are built in double and narrowed to float with directed outward rounding.
+    // Only the origin half of the upstream test applies to single precision.
+    [Test]
+    public void LargeWorldAABBTest()
+    {
+        // Rounded box: 0.5 half extents plus 0.1 radius, so the tight extent is 0.6 each way
+        B2Polygon box = b2MakeRoundedBox(0.5f, 0.5f, 0.1f);
+
+        B2AABB aabbOrigin = b2ComputePolygonAABB(box, b2WorldTransform_identity);
+        Assert.That(MathF.Abs(aabbOrigin.lowerBound.X + 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
+        Assert.That(MathF.Abs(aabbOrigin.lowerBound.Y + 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
+        Assert.That(MathF.Abs(aabbOrigin.upperBound.X - 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
+        Assert.That(MathF.Abs(aabbOrigin.upperBound.Y - 0.6f), Is.LessThanOrEqualTo(FLT_EPSILON));
     }
 }

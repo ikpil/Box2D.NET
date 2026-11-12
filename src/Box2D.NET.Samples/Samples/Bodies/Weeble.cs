@@ -55,7 +55,7 @@ public class Weeble : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 3.0f));
             bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
             m_weebleId = b2CreateBody(m_worldId, bodyDef);
 
@@ -96,13 +96,13 @@ public class Weeble : Sample
 
         if (ImGui.Button("Teleport"))
         {
-            b2Body_SetTransform(m_weebleId, new B2Vec2(0.0f, 5.0f), b2MakeRot(0.95f * B2_PI));
+            b2Body_SetTransform(m_weebleId, b2ToPos(new B2Vec2(0.0f, 5.0f)), b2MakeRot(0.95f * B2_PI));
         }
 
         if (ImGui.Button("Explode"))
         {
             B2ExplosionDef def = b2DefaultExplosionDef();
-            def.position = m_explosionPosition;
+            def.position = b2ToPos(m_explosionPosition);
             def.radius = m_explosionRadius;
             def.falloff = 0.1f;
             def.impulsePerLength = m_explosionMagnitude;
@@ -127,10 +127,10 @@ public class Weeble : Sample
 
         // This shows how to get the velocity of a point on a body
         B2Vec2 localPoint = new B2Vec2(0.0f, 2.0f);
-        B2Vec2 worldPoint = b2Body_GetWorldPoint(m_weebleId, localPoint);
+        B2Vec2 worldPoint = b2ToVec2(b2Body_GetWorldPoint(m_weebleId, localPoint));
 
         B2Vec2 v1 = b2Body_GetLocalPointVelocity(m_weebleId, localPoint);
-        B2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, worldPoint);
+        B2Vec2 v2 = b2Body_GetWorldPointVelocity(m_weebleId, b2ToPos(worldPoint));
 
         B2Vec2 offset = new B2Vec2(0.05f, 0.0f);
         DrawLine(m_draw, worldPoint, worldPoint + v1, B2HexColor.b2_colorRed);

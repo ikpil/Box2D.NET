@@ -10,7 +10,7 @@ namespace Box2D.NET
     public class B2RayResult
     {
         public B2ShapeId shapeId;
-        public B2Vec2 point;
+        public B2Pos point;
         public B2Vec2 normal;
         public float fraction;
         public int nodeVisits;

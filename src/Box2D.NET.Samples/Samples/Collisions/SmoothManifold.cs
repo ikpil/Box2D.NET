@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -225,7 +225,7 @@ public class SmoothManifold : Sample
         {
             ref B2ManifoldPoint mp = ref manifold.points[i];
 
-            B2Vec2 p1 = mp.clipPoint;
+            B2Vec2 p1 = mp.anchorA;
             B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
             DrawLine(m_draw, p1, p2, B2HexColor.b2_colorWhite);
 
@@ -282,7 +282,7 @@ public class SmoothManifold : Sample
             for (int i = 0; i < m_count; ++i)
             {
                 ref readonly B2ChainSegment segment = ref m_segments[i];
-                B2Manifold m = b2CollideChainSegmentAndCircle(segment, transform1, circle, transform2);
+                B2Manifold m = b2CollideChainSegmentAndCircle(segment, b2MakeWorldTransform(transform1), circle, b2MakeWorldTransform(transform2));
                 DrawManifold(m);
             }
         }
@@ -296,7 +296,7 @@ public class SmoothManifold : Sample
             {
                 ref readonly B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, transform1, rox, transform2, ref cache);
+                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, b2MakeWorldTransform(transform1), rox, b2MakeWorldTransform(transform2), ref cache);
                 DrawManifold(m);
             }
         }

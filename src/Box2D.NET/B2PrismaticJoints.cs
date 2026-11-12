@@ -168,8 +168,10 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_prismaticJoint);
-            B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
-            B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
+            // Relative to body A so the difference stays in float precision far from the origin
+            B2WorldTransform wxfA = b2GetBodyTransform(world, jointSim.bodyIdA);
+            B2Transform transformA = b2ToRelativeTransform(wxfA, wxfA.p);
+            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransform(world, jointSim.bodyIdB), wxfA.p);
 
             B2Vec2 localAxisA = b2RotateVector(jointSim.localFrameA.q, new B2Vec2(1.0f, 0.0f));
             B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
@@ -195,17 +197,17 @@ namespace Box2D.NET
             B2BodyState bodyStateA = b2GetBodyState(world, bodyA);
             B2BodyState bodyStateB = b2GetBodyState(world, bodyB);
 
-            B2Transform transformA = bodySimA.transform;
-            B2Transform transformB = bodySimB.transform;
+            B2Rot qA = bodySimA.transform.q;
+            B2Rot qB = bodySimB.transform.q;
 
             B2Vec2 localAxisA = b2RotateVector(@base.localFrameA.q, new B2Vec2(1.0f, 0.0f));
-            B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
-            B2Vec2 cA = bodySimA.center;
-            B2Vec2 cB = bodySimB.center;
-            B2Vec2 rA = b2RotateVector(transformA.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
-            B2Vec2 rB = b2RotateVector(transformB.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
+            B2Vec2 axisA = b2RotateVector(qA, localAxisA);
+            B2Vec2 rA = b2RotateVector(qA, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
+            B2Vec2 rB = b2RotateVector(qB, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
-            B2Vec2 d = b2Add(b2Sub(cB, cA), b2Sub(rB, rA));
+            // Difference the centers in double so the speed stays exact far from the origin
+            B2Vec2 dc = b2SubPos(bodySimB.center, bodySimA.center);
+            B2Vec2 d = b2Add(dc, b2Sub(rB, rA));
 
             B2Vec2 vA = null != bodyStateA ? bodyStateA.linearVelocity : b2Vec2_zero;
             B2Vec2 vB = null != bodyStateB ? bodyStateB.linearVelocity : b2Vec2_zero;
@@ -219,13 +221,12 @@ namespace Box2D.NET
 
         internal static B2Vec2 b2GetPrismaticJointForce(B2World world, B2JointSim @base)
         {
-            int idA = @base.bodyIdA;
-            B2Transform transformA = b2GetBodyTransform(world, idA);
+            B2Rot qA = b2GetBodyTransform(world, @base.bodyIdA).q;
 
             ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
             B2Vec2 localAxisA = b2RotateVector(@base.localFrameA.q, new B2Vec2(1.0f, 0.0f));
-            B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
+            B2Vec2 axisA = b2RotateVector(qA, localAxisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
 
             float inv_h = world.inv_h;
@@ -329,7 +330,7 @@ namespace Box2D.NET
             joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
             // Compute the initial center delta. Incremental position updates are relative to this.
-            joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
+            joint.deltaCenter = b2SubPos(bodySimB.center, bodySimA.center);
 
             joint.springSoftness = b2MakeSoft(joint.hertz, joint.dampingRatio, context.h);
 

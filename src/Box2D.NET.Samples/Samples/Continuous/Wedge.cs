@@ -5,6 +5,7 @@
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -40,7 +41,7 @@ public class Wedge : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-0.45f, 10.75f);
+            bodyDef.position = b2ToPos(new B2Vec2(-0.45f, 10.75f));
             bodyDef.linearVelocity = new B2Vec2(0.0f, -200.0f);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);

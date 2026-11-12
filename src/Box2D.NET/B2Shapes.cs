@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -128,17 +128,13 @@ namespace Box2D.NET
         }
 
 
-        internal static void b2UpdateShapeAABBs(B2Shape shape, in B2Transform transform, B2BodyType proxyType)
+        internal static void b2UpdateShapeAABBs(B2Shape shape, in B2WorldTransform transform, B2BodyType proxyType)
         {
             // Compute a bounding box with a speculative margin
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
             float aabbMargin = shape.aabbMargin;
 
-            B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-            aabb.lowerBound.X -= speculativeDistance;
-            aabb.lowerBound.Y -= speculativeDistance;
-            aabb.upperBound.X += speculativeDistance;
-            aabb.upperBound.Y += speculativeDistance;
+            B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
             shape.aabb = aabb;
 
             // Smaller margin for static bodies. Cannot be zero due to TOI tolerance.
@@ -151,7 +147,7 @@ namespace Box2D.NET
             shape.fatAABB = fatAABB;
         }
 
-        public static B2Shape b2CreateShapeInternal<T>(B2World world, B2Body body, in B2Transform transform, in B2ShapeDef def, in T geometry, B2ShapeType shapeType) where T : struct
+        public static B2Shape b2CreateShapeInternal<T>(B2World world, B2Body body, in B2WorldTransform transform, in B2ShapeDef def, in T geometry, B2ShapeType shapeType) where T : struct
         {
             int shapeId = b2AllocId(world.shapeIdPool);
 
@@ -269,7 +265,7 @@ namespace Box2D.NET
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
 
             B2Shape shape = b2CreateShapeInternal(world, body, transform, def, geometry, shapeType);
 
@@ -481,7 +477,7 @@ namespace Box2D.NET
             }
 
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
 
             int chainId = b2AllocId(world.chainIdPool);
 
@@ -720,7 +716,7 @@ namespace Box2D.NET
             return count;
         }
 
-        internal static B2AABB b2ComputeShapeAABB(B2Shape shape, in B2Transform xf)
+        internal static B2AABB b2ComputeShapeAABB(B2Shape shape, in B2WorldTransform xf)
         {
             switch (shape.type)
             {
@@ -737,7 +733,7 @@ namespace Box2D.NET
                 default:
                 {
                     B2_ASSERT(false);
-                    B2AABB empty = new B2AABB(xf.p, xf.p);
+                    B2AABB empty = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f));
                     return empty;
                 }
             }
@@ -962,6 +958,8 @@ namespace Box2D.NET
                     return output;
             }
 
+            // The output point stays in the frame of the input transform, a caller chosen frame that is
+            // typically re-centered near the origin.
             output.point = b2TransformPoint(transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
@@ -1026,6 +1024,7 @@ namespace Box2D.NET
                     return output;
             }
 
+            // Same frame contract as b2RayCastShape, the point stays in the input transform frame
             output.point = b2TransformPoint(transform, output.point);
             output.normal = b2RotateVector(transform.q, output.normal);
             return output;
@@ -1070,7 +1069,7 @@ namespace Box2D.NET
         }
 
 
-        public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, in B2Transform transform, bool forcePairCreation)
+        public static void b2CreateShapeProxy(B2Shape shape, B2BroadPhase bp, B2BodyType type, in B2WorldTransform transform, bool forcePairCreation)
         {
             B2_ASSERT(shape.proxyKey == B2_NULL_INDEX);
 
@@ -1152,13 +1151,13 @@ namespace Box2D.NET
             return shape.sensorIndex != B2_NULL_INDEX;
         }
         /// Test a point for overlap with a shape
-        public static bool b2Shape_TestPoint(B2ShapeId shapeId, B2Vec2 point)
+        public static bool b2Shape_TestPoint(B2ShapeId shapeId, B2Pos point)
         {
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
 
-            B2Transform transform = b2GetBodyTransform(world, shape.bodyId);
-            B2Vec2 localPoint = b2InvTransformPoint(transform, point);
+            B2WorldTransform transform = b2GetBodyTransform(world, shape.bodyId);
+            B2Vec2 localPoint = b2InvTransformWorldPoint(transform, point);
 
             switch (shape.type)
             {
@@ -1176,55 +1175,30 @@ namespace Box2D.NET
             }
         }
 
-        // todo_erin untested
-        /// Ray cast a shape directly
-        public static B2CastOutput b2Shape_RayCast(B2ShapeId shapeId, in B2RayCastInput input)
+        /// Ray cast a single shape. The ray starts at the origin and extends by the translation. The output
+        /// point is a world position.
+        public static B2WorldCastOutput b2Shape_RayCast(B2ShapeId shapeId, B2Pos origin, B2Vec2 translation)
         {
+            B2_ASSERT(b2IsValidPosition(origin));
+            B2_ASSERT(b2IsValidVec2(translation));
+
             B2World world = b2GetWorld(shapeId.world0);
             B2Shape shape = b2GetShape(world, shapeId);
 
-            B2Transform transform = b2GetBodyTransform(world, shape.bodyId);
+            // Re-center on the origin so the cast runs in float precision
+            B2Transform transform = b2ToRelativeTransform(b2GetBodyTransform(world, shape.bodyId), origin);
 
-            // input in local coordinates
-            B2RayCastInput localInput;
-            localInput.origin = b2InvTransformPoint(transform, input.origin);
-            localInput.translation = b2InvRotateVector(transform.q, input.translation);
-            localInput.maxFraction = input.maxFraction;
+            // The ray starts at the origin, so its origin in the re-centered frame is zero
+            B2RayCastInput input = new B2RayCastInput(b2Vec2_zero, translation, 1.0f);
 
-            B2CastOutput output = new B2CastOutput();
-            switch (shape.type)
-            {
-                case B2ShapeType.b2_capsuleShape:
-                    output = b2RayCastCapsule(shape.us.capsule, localInput);
-                    break;
-
-                case B2ShapeType.b2_circleShape:
-                    output = b2RayCastCircle(shape.us.circle, localInput);
-                    break;
-
-                case B2ShapeType.b2_segmentShape:
-                    output = b2RayCastSegment(shape.us.segment, localInput, false);
-                    break;
-
-                case B2ShapeType.b2_polygonShape:
-                    output = b2RayCastPolygon(ref shape.us.polygon, localInput);
-                    break;
-
-                case B2ShapeType.b2_chainSegmentShape:
-                    output = b2RayCastSegment(shape.us.chainSegment.segment, localInput, true);
-                    break;
-
-                default:
-                    B2_ASSERT(false);
-                    return output;
-            }
-
-            if (output.hit)
-            {
-                // convert to world coordinates
-                output.normal = b2RotateVector(transform.q, output.normal);
-                output.point = b2TransformPoint(transform, output.point);
-            }
+            // Lift the re-centered float result back to a world position
+            B2CastOutput local = b2RayCastShape(input, shape, transform);
+            B2WorldCastOutput output;
+            output.normal = local.normal;
+            output.point = b2OffsetPos(origin, local.point);
+            output.fraction = local.fraction;
+            output.iterations = local.iterations;
+            output.hit = local.hit;
 
             return output;
         }
@@ -1376,7 +1350,7 @@ namespace Box2D.NET
                 }
             }
 
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             if (shape.proxyKey != B2_NULL_INDEX)
             {
                 B2BodyType proxyType = B2_PROXY_TYPE(shape.proxyKey);
@@ -1920,31 +1894,35 @@ namespace Box2D.NET
             B2Shape shape = b2GetShape(world, shapeId);
             return b2ComputeShapeMass(shape);
         }
-        /// Get the closest point on a shape to a target point. Target and result are in world space.
+        /// Get the closest point on a shape to a target point. Target and result are world positions.
         /// todo need sample
-        public static B2Vec2 b2Shape_GetClosestPoint(B2ShapeId shapeId, B2Vec2 target)
+        public static B2Pos b2Shape_GetClosestPoint(B2ShapeId shapeId, B2Pos target)
         {
             B2World world = b2GetWorld(shapeId.world0);
             if (world == null)
             {
-                return new B2Vec2();
+                return b2Pos_zero;
             }
 
             B2Shape shape = b2GetShape(world, shapeId);
             B2Body body = b2Array_Get(ref world.bodies, shape.bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
+
+            // The target rides in as the frame of proxy B, so the relative pose is differenced in double
+            // and the result stays exact far from the origin
+            B2Vec2 zero = b2Vec2_zero;
+            B2WorldTransform targetTransform = new B2WorldTransform(target, b2Rot_identity);
 
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeShapeDistanceProxy(shape);
-            input.proxyB = b2MakeProxy(target, 1, 0.0f);
-            input.transformA = transform;
-            input.transformB = b2Transform_identity;
+            input.proxyB = b2MakeProxy(zero, 1, 0.0f);
+            input.transform = b2InvMulWorldTransforms(transform, targetTransform);
             input.useRadii = true;
 
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
 
-            return output.pointA;
+            return b2TransformWorldPoint(transform, output.pointA);
         }
 
         // https://en.wikipedia.org/wiki/Density_of_air
@@ -1999,7 +1977,7 @@ namespace Box2D.NET
             B2_ASSERT(body.setIndex == (int)B2SolverSetType.b2_awakeSet);
 
             B2BodyState state = b2GetBodyState(world, body);
-            B2Transform transform = sim.transform;
+            B2WorldTransform transform = sim.transform;
 
             float lengthUnits = b2GetLengthUnitsPerMeter();
             float volumeUnits = lengthUnits * lengthUnits * lengthUnits;

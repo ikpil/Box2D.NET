@@ -70,6 +70,16 @@ namespace Box2D.NET.Shared
             return v;
         }
 
+        // Random position with coordinates in range [lo, hi]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Pos RandomPos(float lo, float hi)
+        {
+            B2Pos v;
+            v.X = RandomFloatRange(lo, hi);
+            v.Y = RandomFloatRange(lo, hi);
+            return v;
+        }
+
         // Random rotation with angle in range [-pi, pi]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Rot RandomRot()

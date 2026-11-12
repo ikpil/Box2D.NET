@@ -9,12 +9,9 @@ namespace Box2D.NET
         public B2World world;
         public B2QueryFilter filter;
         public float fraction;
+        public B2Pos origin;
 
-        public B2WorldMoverCastContext(B2World world, in B2QueryFilter filter, float fraction)
-        {
-            this.world = world;
-            this.filter = filter;
-            this.fraction = fraction;
-        }
+        // origin relative input
+        public B2ShapeCastInput input;
     }
 }

@@ -39,7 +39,7 @@ public class RestitutionThreshold : Sample
         {
             B2BodyDef block0BodyDef = b2DefaultBodyDef();
             block0BodyDef.type = B2BodyType.b2_staticBody;
-            block0BodyDef.position = new B2Vec2(205.0f / pixelsPerMeter, 120.0f / pixelsPerMeter);
+            block0BodyDef.position = b2ToPos(new B2Vec2(205.0f / pixelsPerMeter, 120.0f / pixelsPerMeter));
             block0BodyDef.rotation = b2MakeRot(70.0f * 3.14f / 180.0f);
             B2BodyId block0BodyId = b2CreateBody(m_worldId, block0BodyDef);
             B2Polygon block0Shape = b2MakeBox(50.0f / pixelsPerMeter, 5.0f / pixelsPerMeter);
@@ -52,7 +52,7 @@ public class RestitutionThreshold : Sample
             // Make a ball
             B2BodyDef ballBodyDef = b2DefaultBodyDef();
             ballBodyDef.type = B2BodyType.b2_dynamicBody;
-            ballBodyDef.position = new B2Vec2(200.0f / pixelsPerMeter, 250.0f / pixelsPerMeter);
+            ballBodyDef.position = b2ToPos(new B2Vec2(200.0f / pixelsPerMeter, 250.0f / pixelsPerMeter));
             m_ballId = b2CreateBody(m_worldId, ballBodyDef);
 
             B2Circle ballShape = new B2Circle(new B2Vec2(), 0.0f);
@@ -79,7 +79,7 @@ public class RestitutionThreshold : Sample
     {
         base.Draw();
 
-        B2Vec2 p = b2Body_GetPosition(m_ballId);
+        B2Vec2 p = b2ToVec2(b2Body_GetPosition(m_ballId));
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
         DrawScreenTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
     }

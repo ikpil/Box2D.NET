@@ -116,7 +116,7 @@ public class LargeWorld : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(xbase - 3.0f, 10.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(xbase - 3.0f, 10.0f));
 
                 B2ShapeDef shapeDef = b2DefaultShapeDef();
                 B2Polygon box = b2MakeBox(0.3f, 0.2f);
@@ -140,7 +140,7 @@ public class LargeWorld : Sample
                 for (int i = 0; i < 5; ++i)
                 {
                     Human human = new Human();
-                    CreateHuman(ref human, m_worldId, position, 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, B2UserData.Empty, false);
+                    CreateHuman(ref human, m_worldId, b2ToPos(position), 1.5f, 0.05f, 0.0f, 0.0f, humanIndex + 1, B2UserData.Empty, false);
                     humanIndex += 1;
                     position.X += 1.0f;
                 }
@@ -215,7 +215,7 @@ public class LargeWorld : Sample
             m_explosionPosition.X = (0.5f + m_cycleIndex) * m_period - span;
 
             B2ExplosionDef def = b2DefaultExplosionDef();
-            def.position = m_explosionPosition;
+            def.position = b2ToPos(m_explosionPosition);
             def.radius = radius;
             def.falloff = 0.1f;
             def.impulsePerLength = 1.0f;

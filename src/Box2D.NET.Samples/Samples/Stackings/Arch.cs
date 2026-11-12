@@ -110,7 +110,7 @@ public class Arch : Sample
             for (int i = 0; i < 4; ++i)
             {
                 B2Polygon box = b2MakeBox(2.0f, 0.5f);
-                bodyDef.position = new B2Vec2(0.0f, 0.5f + ps2[8].Y + 1.0f * i);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.5f + ps2[8].Y + 1.0f * i));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, shapeDef, box);
             }

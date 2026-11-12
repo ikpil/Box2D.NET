@@ -24,6 +24,13 @@ namespace Box2D.NET
             );
         }
 
+        /// @return true if the library was built with BOX2D_DOUBLE_PRECISION (large world mode).
+        /// Box2D.NET is always single precision.
+        public static bool b2IsDoublePrecision()
+        {
+            return false;
+        }
+
         // This allows the user to change the length units at runtime
         internal static float b2_lengthUnitsPerMeter = 1.0f;
 

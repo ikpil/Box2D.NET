@@ -7,6 +7,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -35,7 +36,7 @@ public class TiltedStack : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, -1.0f));
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(1000.0f, 1.0f);
@@ -70,7 +71,7 @@ public class TiltedStack : Sample
 
                     int n = j * m_rows + i;
 
-                    bodyDef.position = new B2Vec2(x + offset * i, 0.5f + 1.0f * i);
+                    bodyDef.position = b2ToPos(new B2Vec2(x + offset * i, 0.5f + 1.0f * i));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     m_bodies[n] = bodyId;

@@ -50,7 +50,7 @@ public class Cart : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, -1.0f));
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -98,7 +98,7 @@ public class Cart : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, yBase);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, yBase));
         m_chassisId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -112,11 +112,11 @@ public class Cart : Sample
         shapeDef.density = 50.0f;
 
         B2Circle circle = new B2Circle(b2Vec2_zero, 0.1f);
-        bodyDef.position = new B2Vec2(-0.9f, yBase - 0.15f);
+        bodyDef.position = b2ToPos(new B2Vec2(-0.9f, yBase - 0.15f));
         m_wheelId1 = b2CreateBody(m_worldId, bodyDef);
         b2CreateCircleShape(m_wheelId1, shapeDef, circle);
 
-        bodyDef.position = new B2Vec2(0.9f, yBase - 0.15f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.9f, yBase - 0.15f));
         m_wheelId2 = b2CreateBody(m_worldId, bodyDef);
         b2CreateCircleShape(m_wheelId2, shapeDef, circle);
 

@@ -7,6 +7,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Hulls;
 using static Box2D.NET.B2Geometries;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -39,7 +40,7 @@ public class SpeculativeSliver : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 12.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 12.0f));
             bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 

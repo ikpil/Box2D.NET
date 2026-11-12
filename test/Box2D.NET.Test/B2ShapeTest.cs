@@ -81,7 +81,7 @@ public class B2ShapeTest
     public void ShapeAABBTest()
     {
         {
-            B2AABB b = b2ComputeCircleAABB(circle, b2Transform_identity);
+            B2AABB b = b2ComputeCircleAABB(circle, b2WorldTransform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 2.0f, Is.LessThan(FLT_EPSILON));
@@ -89,7 +89,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputePolygonAABB(box, b2Transform_identity);
+            B2AABB b = b2ComputePolygonAABB(box, b2WorldTransform_identity);
             Assert.That(b.lowerBound.X + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X - 1.0f, Is.LessThan(FLT_EPSILON));
@@ -97,7 +97,7 @@ public class B2ShapeTest
         }
 
         {
-            B2AABB b = b2ComputeSegmentAABB(segment, b2Transform_identity);
+            B2AABB b = b2ComputeSegmentAABB(segment, b2WorldTransform_identity);
             Assert.That(b.lowerBound.X, Is.LessThan(FLT_EPSILON));
             Assert.That(b.lowerBound.Y + 1.0f, Is.LessThan(FLT_EPSILON));
             Assert.That(b.upperBound.X, Is.LessThan(FLT_EPSILON));

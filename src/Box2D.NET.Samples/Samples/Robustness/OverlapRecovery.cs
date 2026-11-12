@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Robustness;
 
@@ -85,7 +86,7 @@ public class OverlapRecovery : Sample
             float x = fraction * m_extent * (i - m_baseCount);
             for (int j = i; j < m_baseCount; ++j)
             {
-                bodyDef.position = new B2Vec2(x, y);
+                bodyDef.position = b2ToPos(new B2Vec2(x, y));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, shapeDef, box);

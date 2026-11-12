@@ -30,6 +30,10 @@ namespace Box2D.NET
         public static readonly B2Transform b2Transform_identity = new B2Transform(new B2Vec2(0.0f, 0.0f), new B2Rot(1.0f, 0.0f));
         public static readonly B2Mat22 b2Mat22_zero = new B2Mat22(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f));
 
+        // Initializers valid in both modes
+        public static readonly B2Pos b2Pos_zero = new B2Pos(0.0f, 0.0f);
+        public static readonly B2WorldTransform b2WorldTransform_identity = new B2WorldTransform(new B2Pos(0.0f, 0.0f), new B2Rot(1.0f, 0.0f));
+
         /// @return the minimum of two integers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2MinInt(int a, int b)
@@ -534,6 +538,106 @@ namespace Box2D.NET
             return C;
         }
 
+        /// Convert a vector to a world position. no-op in single precision.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Pos b2ToPos(in B2Vec2 v)
+        {
+            return new B2Pos(v.X, v.Y);
+        }
+
+        /// Lossy conversion of a world position to a float vector. no-op in single precision.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 b2ToVec2(in B2Pos p)
+        {
+            return new B2Vec2(p.X, p.Y);
+        }
+
+        /// Narrow a world coordinate to float, rounding toward negative infinity. Use with
+        /// b2RoundUpFloat to build a conservative float box that always contains double bounds.
+        /// With large world mode off (always the case in Box2D.NET) this is a plain conversion.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float b2RoundDownFloat(double x)
+        {
+            return (float)x;
+        }
+
+        /// Narrow a world coordinate to float, rounding toward positive infinity.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float b2RoundUpFloat(double x)
+        {
+            return (float)x;
+        }
+
+        /// a - b, demoted to float. The primary precision boundary operation.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 b2SubPos(in B2Pos a, in B2Pos b)
+        {
+            return new B2Vec2(a.X - b.X, a.Y - b.Y);
+        }
+
+        /// p + d
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Pos b2OffsetPos(in B2Pos p, in B2Vec2 d)
+        {
+            return new B2Pos(p.X + d.X, p.Y + d.Y);
+        }
+
+        /// World position interpolation for sweeps and sampling.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Pos b2LerpPosition(in B2Pos a, in B2Pos b, float t)
+        {
+            return new B2Pos((1.0f - t) * a.X + t * b.X, (1.0f - t) * a.Y + t * b.Y);
+        }
+
+        /// Transform a local point to a world position. Rotation in float, translation in double.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Pos b2TransformWorldPoint(in B2WorldTransform t, in B2Vec2 p)
+        {
+            float rx = t.q.c * p.X - t.q.s * p.Y;
+            float ry = t.q.s * p.X + t.q.c * p.Y;
+            return new B2Pos(t.p.X + rx, t.p.Y + ry);
+        }
+
+        /// Transform a world position to a local point. One double subtraction, then float.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Vec2 b2InvTransformWorldPoint(in B2WorldTransform t, in B2Pos p)
+        {
+            float vx = p.X - t.p.X;
+            float vy = p.Y - t.p.Y;
+            return new B2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
+        }
+
+        /// Relative transform of frame B in frame A. The narrow phase boundary.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Transform b2InvMulWorldTransforms(in B2WorldTransform A, in B2WorldTransform B)
+        {
+            B2Transform C;
+            C.q = b2InvMulRot(A.q, B.q);
+            B2Vec2 d = new B2Vec2(B.p.X - A.p.X, B.p.Y - A.p.Y);
+            C.p = b2InvRotateVector(A.q, d);
+            return C;
+        }
+
+        /// Shift a world transform into the frame of a base position.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2Transform b2ToRelativeTransform(in B2WorldTransform t, in B2Pos @base)
+        {
+            B2Transform r;
+            r.q = t.q;
+            r.p = new B2Vec2(t.p.X - @base.X, t.p.Y - @base.Y);
+            return r;
+        }
+
+        /// Promote a float transform to a world transform. Lossless.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2WorldTransform b2MakeWorldTransform(in B2Transform t)
+        {
+            B2WorldTransform w;
+            w.p = b2ToPos(t.p);
+            w.q = t.q;
+            return w;
+        }
+
         /// Multiply a 2-by-2 matrix times a 2D vector
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Vec2 b2MulMV(in B2Mat22 A, in B2Vec2 v)
@@ -723,6 +827,33 @@ namespace Box2D.NET
         public static bool b2IsValidTransform(in B2Transform t)
         {
             if (b2IsValidVec2(t.p) == false)
+            {
+                return false;
+            }
+
+            return b2IsValidRotation(t.q);
+        }
+
+        /// Is this a valid world position? Not NaN or infinity.
+        public static bool b2IsValidPosition(in B2Pos p)
+        {
+            if (float.IsNaN(p.X) || float.IsNaN(p.Y))
+            {
+                return false;
+            }
+
+            if (float.IsInfinity(p.X) || float.IsInfinity(p.Y))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// Is this a valid world transform? Not NaN or infinity. Rotation is normalized.
+        public static bool b2IsValidWorldTransform(in B2WorldTransform t)
+        {
+            if (b2IsValidPosition(t.p) == false)
             {
                 return false;
             }

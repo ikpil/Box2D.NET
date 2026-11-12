@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -14,6 +14,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.Samples.Graphics.Draws;
 using static Box2D.NET.Samples.SampleText;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -133,7 +134,7 @@ public class CircleImpulse : Sample
         {
             ref readonly B2ContactHitEvent @event = ref events.hitEvents[i];
 
-            DrawPoint(m_draw, @event.point, 10.0f, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, b2ToVec2(@event.point), 10.0f, B2HexColor.b2_colorWhite);
 
             B2ContactData data = b2Contact_GetData(@event.contactId);
 

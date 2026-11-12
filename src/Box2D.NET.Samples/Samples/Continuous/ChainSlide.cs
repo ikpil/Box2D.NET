@@ -5,6 +5,7 @@
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -73,7 +74,7 @@ public class ChainSlide : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.linearVelocity = new B2Vec2(100.0f, 0.0f);
-            bodyDef.position = new B2Vec2(-19.5f, 0.0f + 0.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(-19.5f, 0.0f + 0.5f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();

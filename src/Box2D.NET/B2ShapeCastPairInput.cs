@@ -9,9 +9,8 @@ namespace Box2D.NET
     {
         public B2ShapeProxy proxyA; // The proxy for shape A
         public B2ShapeProxy proxyB; // The proxy for shape B
-        public B2Transform transformA; // The world transform for shape A
-        public B2Transform transformB; // The world transform for shape B
-        public B2Vec2 translationB; // The translation of shape B
+        public B2Transform transform; // Transform of shape B in shape A's frame, the relative pose B in A
+        public B2Vec2 translationB; // The translation of shape B, in A's frame
         public float maxFraction; // The fraction of the translation to consider, typically 1
         public bool canEncroach; // Allows shapes with a radius to move slightly closer if already touching
     }

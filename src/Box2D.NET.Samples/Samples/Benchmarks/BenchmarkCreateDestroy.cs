@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Timers;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Samples.SampleText;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Benchmarks;
 
@@ -104,7 +105,7 @@ public class BenchmarkCreateDestroy : Sample
             for (int j = i; j < count; ++j)
             {
                 float x = 0.5f * i * shift + (j - i) * shift - centerx;
-                bodyDef.position = new B2Vec2(x, y);
+                bodyDef.position = b2ToPos(new B2Vec2(x, y));
 
                 B2_ASSERT(index < e_maxBodyCount);
                 m_bodies[index] = b2CreateBody(m_worldId, bodyDef);

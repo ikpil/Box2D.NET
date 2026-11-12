@@ -23,7 +23,7 @@ namespace Box2D.NET.Shared
         {
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
-                bodyDef.position = new B2Vec2(0.0f, -1.0f);
+                bodyDef.position = new B2Pos(0.0f, -1.0f);
                 B2BodyId groundId = b2CreateBody(worldId, bodyDef);
 
                 B2Polygon box = b2MakeBox(40.0f, 1.0f);
@@ -134,8 +134,8 @@ namespace Box2D.NET.Shared
                     Span<byte> bxf = stackalloc byte[B2SizeOf<float>.Size * 4];
                     for (int i = 0; i < data.bodyCount; ++i)
                     {
-                        B2Transform xf = b2Body_GetTransform(data.bodyIds[i]);
-                        xf.TryWriteBytes(bxf);
+                        B2WorldTransform transform = b2Body_GetTransform(data.bodyIds[i]);
+                        transform.TryWriteBytes(bxf);
                         data.hash = b2Hash(data.hash, bxf, bxf.Length);
                     }
 

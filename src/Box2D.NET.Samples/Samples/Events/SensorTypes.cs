@@ -12,6 +12,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -72,7 +73,7 @@ public class SensorTypes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "static sensor";
             bodyDef.type = B2BodyType.b2_staticBody;
-            bodyDef.position = new B2Vec2(-3.0f, 0.8f);
+            bodyDef.position = b2ToPos(new B2Vec2(-3.0f, 0.8f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -87,7 +88,7 @@ public class SensorTypes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "kinematic sensor";
             bodyDef.type = B2BodyType.b2_kinematicBody;
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             bodyDef.linearVelocity = new B2Vec2(0.0f, 1.0f);
             m_kinematicBodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -103,7 +104,7 @@ public class SensorTypes : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "dynamic sensor";
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(3.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(3.0f, 1.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -124,7 +125,7 @@ public class SensorTypes : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.name = "ball_01";
-            bodyDef.position = new B2Vec2(-5.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-5.0f, 1.0f));
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -203,7 +204,7 @@ public class SensorTypes : Sample
 
     public override void Step()
     {
-        B2Vec2 position = b2Body_GetPosition(m_kinematicBodyId);
+        B2Vec2 position = b2ToVec2(b2Body_GetPosition(m_kinematicBodyId));
         if (position.Y < 0.0f)
         {
             b2Body_SetLinearVelocity(m_kinematicBodyId, new B2Vec2(0.0f, 1.0f));
@@ -227,12 +228,12 @@ public class SensorTypes : Sample
 
         B2Vec2 origin = new B2Vec2(5.0f, 1.0f);
         B2Vec2 translation = new B2Vec2(-10.0f, 0.0f);
-        B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, b2DefaultQueryFilter());
+        B2RayResult result = b2World_CastRayClosest(m_worldId, b2ToPos(origin), translation, b2DefaultQueryFilter());
         DrawLine(m_draw, origin, origin + translation, B2HexColor.b2_colorDimGray);
 
         if (result.hit)
         {
-            DrawPoint(m_draw, result.point, 10.0f, B2HexColor.b2_colorCyan);
+            DrawPoint(m_draw, b2ToVec2(result.point), 10.0f, B2HexColor.b2_colorCyan);
         }
     }
 }

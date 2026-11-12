@@ -19,10 +19,11 @@ namespace Box2D.NET
         /// @see b2Contact_IsValid
         public B2ContactId contactId;
         
-        /// Point where the shapes hit at the beginning of the time step.
-        /// This is a mid-point between the two surfaces. It could be at speculative
-        /// point where the two shapes were not touching at the beginning of the time step.
-        public B2Vec2 point;
+        /// Point where the shapes hit. This is a mid-point between the two surfaces. It could be
+        /// a speculative point where the shapes were not touching at the beginning of the time
+        /// step. The point is reconstructed after the step, so when both bodies are moving it may
+        /// trail the impact by up to one step of motion.
+        public B2Pos point;
 
         /// Normal vector pointing from shape A to shape B
         public B2Vec2 normal;

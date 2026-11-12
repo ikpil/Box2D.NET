@@ -54,7 +54,7 @@ public class ModifyGeometry : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 4.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 4.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             B2Polygon box = b2MakeBox(1.0f, 1.0f);
@@ -68,7 +68,7 @@ public class ModifyGeometry : Sample
             m_us.circle = circle; // todo : @ikpil, fix it!!
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
-            bodyDef.position = new B2Vec2(0.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 1.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             m_shapeId = b2CreateCircleShape(bodyId, shapeDef, circle); // todo : @ikpil, fix it!!

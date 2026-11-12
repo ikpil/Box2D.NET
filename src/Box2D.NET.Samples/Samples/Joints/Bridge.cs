@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -13,6 +13,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -78,7 +79,7 @@ public class Bridge : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(xbase + 0.5f + 1.0f * i, 20.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(xbase + 0.5f + 1.0f * i, 20.0f));
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.angularDamping = 0.1f;
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
@@ -87,8 +88,8 @@ public class Bridge : Sample
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * i, 20.0f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = m_bodyIds[i];
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = m_bodyIds[i];
@@ -98,8 +99,8 @@ public class Bridge : Sample
                 B2Vec2 pivot = new B2Vec2(xbase + 1.0f * m_count, 20.0f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = groundId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 m_jointIds[jointIndex++] = b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 B2_ASSERT(jointIndex == m_count + 1);
@@ -118,7 +119,7 @@ public class Bridge : Sample
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-8.0f + 8.0f * i, 22.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-8.0f + 8.0f * i, 22.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, triangle);
         }
@@ -132,7 +133,7 @@ public class Bridge : Sample
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-6.0f + 6.0f * i, 25.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-6.0f + 6.0f * i, 25.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }

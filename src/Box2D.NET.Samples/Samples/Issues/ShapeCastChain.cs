@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -81,7 +81,7 @@ public class ShapeCastChain : Sample
 
         // "Character" Body & Shape
         B2BodyDef characterBodyDef = b2DefaultBodyDef();
-        characterBodyDef.position = new B2Vec2(0.0f, 0.103f);
+        characterBodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.103f));
         characterBodyDef.rotation = b2MakeRot(0.0f);
         characterBodyDef.linearDamping = 0.0f;
         characterBodyDef.angularDamping = 0.0f;
@@ -185,11 +185,11 @@ public class ShapeCastChain : Sample
             }
         }
 
-        B2Vec2 characterPos = b2Body_GetPosition(characterBodyId_);
+        B2Vec2 characterPos = b2ToVec2(b2Body_GetPosition(characterBodyId_));
         B2Vec2 newCharacterPos = characterPos;
         newCharacterPos.X += characterVelocity_.X * timeStep;
         newCharacterPos.Y += characterVelocity_.Y * timeStep;
-        b2Body_SetTransform(characterBodyId_, newCharacterPos, b2Rot_identity);
+        b2Body_SetTransform(characterBodyId_, b2ToPos(newCharacterPos), b2Rot_identity);
 
         PhysicsHitQueryResult2D hitResult = new PhysicsHitQueryResult2D();
         B2ShapeProxy shapeProxy = b2MakeProxy(characterBox_.vertices.AsSpan(), characterBox_.count, characterBox_.radius);
@@ -223,7 +223,7 @@ public class ShapeCastChain : Sample
         CastContext_Single context = new CastContext_Single();
         context.startPos = start;
         context.translation = new B2Vec2(translation.X, translation.Y);
-        b2World_CastShape(m_worldId, ref transformedShape, translation, filter, b2CastResult_Closest, context);
+        b2World_CastShape(m_worldId, b2Pos_zero, ref transformedShape, translation, filter, b2CastResult_Closest, context);
 
         if (context.hit)
         {
@@ -234,7 +234,7 @@ public class ShapeCastChain : Sample
         return false;
     }
 
-    private static float b2CastResult_Closest(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext_Single c)
+    private static float b2CastResult_Closest(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastContext_Single c)
     {
         CastContext_Single context = c;
 
@@ -242,7 +242,7 @@ public class ShapeCastChain : Sample
             return -1.0f;
 
         context.result.shapeId = shapeId;
-        context.result.point = point;
+        context.result.point = b2ToVec2(point);
         context.result.normal = normal;
         context.result.endPos = context.startPos + context.translation * fraction;
         context.result.fraction = fraction;

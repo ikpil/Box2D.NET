@@ -55,7 +55,7 @@ public class ScaleRagdoll : Sample
         float jointFrictionTorque = 0.03f;
         float jointHertz = 1.0f;
         float jointDampingRatio = 0.5f;
-        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 5.0f), m_scale, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, false);
+        CreateHuman(ref m_human, m_worldId, b2ToPos(new B2Vec2(0.0f, 5.0f)), m_scale, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, false);
         Human_ApplyRandomAngularImpulse(ref m_human, 0.1f);
     }
 

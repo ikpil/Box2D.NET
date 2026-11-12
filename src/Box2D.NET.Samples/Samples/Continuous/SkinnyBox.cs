@@ -79,7 +79,7 @@ public class SkinnyBox : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 8.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 8.0f));
         bodyDef.angularVelocity = m_angularVelocity;
         bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
 
@@ -104,7 +104,7 @@ public class SkinnyBox : Sample
         {
             B2Polygon polygon = b2MakeBox(0.25f, 0.25f);
             m_x = RandomFloatRange(-1.0f, 1.0f);
-            bodyDef.position = new B2Vec2(m_x, 10.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(m_x, 10.0f));
             bodyDef.linearVelocity = new B2Vec2(0.0f, -50.0f);
             m_bulletId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(m_bulletId, shapeDef, polygon);

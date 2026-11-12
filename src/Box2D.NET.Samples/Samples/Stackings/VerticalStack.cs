@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -12,6 +12,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -58,7 +59,7 @@ public class VerticalStack : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             //B2Polygon box = b2MakeBox(100.0f, 1.0f);
@@ -137,7 +138,7 @@ public class VerticalStack : Sample
                 int n = j * m_rowCount + i;
 
                 float shift = (i % 2 == 0 ? -offset : offset);
-                bodyDef.position = new B2Vec2(x + shift, 0.5f + 1.0f * i);
+                bodyDef.position = b2ToPos(new B2Vec2(x + shift, 0.5f + 1.0f * i));
                 // bodyDef.position = {x + shift, 1.0f + 1.51f * i};
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -199,7 +200,7 @@ public class VerticalStack : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-26.7f - i, 6.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-26.7f - i, 6.0f));
             float speed = RandomFloatRange(200.0f, 300.0f);
             bodyDef.linearVelocity = new B2Vec2(speed, 0.0f);
             bodyDef.isBullet = true;

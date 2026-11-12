@@ -430,63 +430,114 @@ namespace Box2D.NET
             return massData;
         }
 
-        /// Compute the bounding box of a transformed circle
-        public static B2AABB b2ComputeCircleAABB(in B2Circle shape, in B2Transform xf)
-        {
-            B2Vec2 p = b2TransformPoint(xf, shape.center);
-            float r = shape.radius;
+        // AABBs are built in double and narrowed to float once. In large world mode the narrowing rounds
+        // outward so the box always contains the shape, and the inflation (speculative margin) folds into
+        // the double step, otherwise it vanishes into a float ULP far from the origin. In float mode the
+        // rounding helpers are plain casts.
 
-            B2AABB aabb = new B2AABB(new B2Vec2(p.X - r, p.Y - r), new B2Vec2(p.X + r, p.Y + r));
+        private static B2AABB b2ComputeCircleFatAABB(in B2Circle shape, in B2WorldTransform xf, float extra)
+        {
+            B2Pos c = b2TransformWorldPoint(xf, shape.center);
+            double r = (double)shape.radius + (double)extra;
+            B2AABB aabb = new B2AABB(
+                new B2Vec2(b2RoundDownFloat(c.X - r), b2RoundDownFloat(c.Y - r)),
+                new B2Vec2(b2RoundUpFloat(c.X + r), b2RoundUpFloat(c.Y + r))
+            );
             return aabb;
         }
 
-        /// Compute the bounding box of a transformed capsule
-        public static B2AABB b2ComputeCapsuleAABB(in B2Capsule shape, in B2Transform xf)
+        private static B2AABB b2ComputeCapsuleFatAABB(in B2Capsule shape, in B2WorldTransform xf, float extra)
         {
-            B2Vec2 v1 = b2TransformPoint(xf, shape.center1);
-            B2Vec2 v2 = b2TransformPoint(xf, shape.center2);
-
-            B2Vec2 r = new B2Vec2(shape.radius, shape.radius);
-            B2Vec2 lower = b2Sub(b2Min(v1, v2), r);
-            B2Vec2 upper = b2Add(b2Max(v1, v2), r);
-
-            B2AABB aabb = new B2AABB(lower, upper);
+            B2Pos v1 = b2TransformWorldPoint(xf, shape.center1);
+            B2Pos v2 = b2TransformWorldPoint(xf, shape.center2);
+            double r = (double)shape.radius + (double)extra;
+            B2AABB aabb = new B2AABB(
+                new B2Vec2(b2RoundDownFloat((v1.X < v2.X ? v1.X : v2.X) - r), b2RoundDownFloat((v1.Y < v2.Y ? v1.Y : v2.Y) - r)),
+                new B2Vec2(b2RoundUpFloat((v1.X > v2.X ? v1.X : v2.X) + r), b2RoundUpFloat((v1.Y > v2.Y ? v1.Y : v2.Y) + r))
+            );
             return aabb;
         }
 
-        /// Compute the bounding box of a transformed polygon
-        public static B2AABB b2ComputePolygonAABB(in B2Polygon shape, in B2Transform xf)
+        private static B2AABB b2ComputePolygonFatAABB(in B2Polygon shape, in B2WorldTransform xf, float extra)
         {
             B2_ASSERT(shape.count > 0);
-            B2Vec2 lower = b2TransformPoint(xf, shape.vertices[0]);
-            B2Vec2 upper = lower;
+            B2Pos v = b2TransformWorldPoint(xf, shape.vertices[0]);
+            double lx = v.X, ly = v.Y, ux = v.X, uy = v.Y;
 
             for (int i = 1; i < shape.count; ++i)
             {
-                B2Vec2 v = b2TransformPoint(xf, shape.vertices[i]);
-                lower = b2Min(lower, v);
-                upper = b2Max(upper, v);
+                v = b2TransformWorldPoint(xf, shape.vertices[i]);
+                lx = v.X < lx ? v.X : lx;
+                ly = v.Y < ly ? v.Y : ly;
+                ux = v.X > ux ? v.X : ux;
+                uy = v.Y > uy ? v.Y : uy;
             }
 
-            B2Vec2 r = new B2Vec2(shape.radius, shape.radius);
-            lower = b2Sub(lower, r);
-            upper = b2Add(upper, r);
-
-            B2AABB aabb = new B2AABB(lower, upper);
+            double r = (double)shape.radius + (double)extra;
+            B2AABB aabb = new B2AABB(
+                new B2Vec2(b2RoundDownFloat(lx - r), b2RoundDownFloat(ly - r)),
+                new B2Vec2(b2RoundUpFloat(ux + r), b2RoundUpFloat(uy + r))
+            );
             return aabb;
         }
 
-        /// Compute the bounding box of a transformed line segment
-        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, in B2Transform xf)
+        private static B2AABB b2ComputeSegmentFatAABB(in B2Segment shape, in B2WorldTransform xf, float extra)
         {
-            B2Vec2 v1 = b2TransformPoint(xf, shape.point1);
-            B2Vec2 v2 = b2TransformPoint(xf, shape.point2);
-
-            B2Vec2 lower = b2Min(v1, v2);
-            B2Vec2 upper = b2Max(v1, v2);
-
-            B2AABB aabb = new B2AABB(lower, upper);
+            B2Pos v1 = b2TransformWorldPoint(xf, shape.point1);
+            B2Pos v2 = b2TransformWorldPoint(xf, shape.point2);
+            double e = (double)extra;
+            B2AABB aabb = new B2AABB(
+                new B2Vec2(b2RoundDownFloat((v1.X < v2.X ? v1.X : v2.X) - e), b2RoundDownFloat((v1.Y < v2.Y ? v1.Y : v2.Y) - e)),
+                new B2Vec2(b2RoundUpFloat((v1.X > v2.X ? v1.X : v2.X) + e), b2RoundUpFloat((v1.Y > v2.Y ? v1.Y : v2.Y) + e))
+            );
             return aabb;
+        }
+
+        /// Compute the bounding box of a transformed circle
+        public static B2AABB b2ComputeCircleAABB(in B2Circle shape, in B2WorldTransform xf)
+        {
+            return b2ComputeCircleFatAABB(shape, xf, 0.0f);
+        }
+
+        /// Compute the bounding box of a transformed capsule
+        public static B2AABB b2ComputeCapsuleAABB(in B2Capsule shape, in B2WorldTransform xf)
+        {
+            return b2ComputeCapsuleFatAABB(shape, xf, 0.0f);
+        }
+
+        /// Compute the bounding box of a transformed polygon
+        public static B2AABB b2ComputePolygonAABB(in B2Polygon shape, in B2WorldTransform xf)
+        {
+            return b2ComputePolygonFatAABB(shape, xf, 0.0f);
+        }
+
+        /// Compute the bounding box of a transformed line segment
+        public static B2AABB b2ComputeSegmentAABB(in B2Segment shape, in B2WorldTransform xf)
+        {
+            return b2ComputeSegmentFatAABB(shape, xf, 0.0f);
+        }
+
+        internal static B2AABB b2ComputeFatShapeAABB(B2Shape shape, in B2WorldTransform xf, float extra)
+        {
+            switch (shape.type)
+            {
+                case B2ShapeType.b2_capsuleShape:
+                    return b2ComputeCapsuleFatAABB(shape.us.capsule, xf, extra);
+                case B2ShapeType.b2_circleShape:
+                    return b2ComputeCircleFatAABB(shape.us.circle, xf, extra);
+                case B2ShapeType.b2_polygonShape:
+                    return b2ComputePolygonFatAABB(shape.us.polygon, xf, extra);
+                case B2ShapeType.b2_segmentShape:
+                    return b2ComputeSegmentFatAABB(shape.us.segment, xf, extra);
+                case B2ShapeType.b2_chainSegmentShape:
+                    return b2ComputeSegmentFatAABB(shape.us.chainSegment.segment, xf, extra);
+                default:
+                {
+                    B2_ASSERT(false);
+                    B2AABB empty = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f));
+                    return empty;
+                }
+            }
         }
 
         /// Test a point for overlap with a circle in local space
@@ -530,8 +581,7 @@ namespace Box2D.NET
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, 0.0f);
             input.proxyB = b2MakeProxy(point, 1, 0.0f);
-            input.transformA = b2Transform_identity;
-            input.transformB = b2Transform_identity;
+            input.transform = b2Transform_identity;
             input.useRadii = false;
 
             B2SimplexCache cache = new B2SimplexCache();
@@ -923,8 +973,7 @@ namespace Box2D.NET
             B2ShapeCastPairInput castInput = new B2ShapeCastPairInput();
             castInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
             castInput.proxyB = b2MakeProxy(input.origin, 1, 0.0f);
-            castInput.transformA = b2Transform_identity;
-            castInput.transformB = b2Transform_identity;
+            castInput.transform = b2Transform_identity;
             castInput.translationB = input.translation;
             castInput.maxFraction = input.maxFraction;
             castInput.canEncroach = false;
@@ -937,14 +986,12 @@ namespace Box2D.NET
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center, 1, shape.radius);
             pairInput.proxyB = input.proxy;
-            pairInput.transformA = b2Transform_identity;
-            pairInput.transformB = b2Transform_identity;
+            pairInput.transform = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(pairInput);
-            return output;
+            return b2ShapeCast(pairInput);
         }
 
         /// Shape cast versus a capsule.
@@ -953,14 +1000,12 @@ namespace Box2D.NET
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, shape.radius);
             pairInput.proxyB = input.proxy;
-            pairInput.transformA = b2Transform_identity;
-            pairInput.transformB = b2Transform_identity;
+            pairInput.transform = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(pairInput);
-            return output;
+            return b2ShapeCast(pairInput);
         }
 
         /// Shape cast versus a line segment.
@@ -969,14 +1014,12 @@ namespace Box2D.NET
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
             pairInput.proxyB = input.proxy;
-            pairInput.transformA = b2Transform_identity;
-            pairInput.transformB = b2Transform_identity;
+            pairInput.transform = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(pairInput);
-            return output;
+            return b2ShapeCast(pairInput);
         }
 
         /// Shape cast versus a convex polygon.
@@ -985,14 +1028,12 @@ namespace Box2D.NET
             B2ShapeCastPairInput pairInput = new B2ShapeCastPairInput();
             pairInput.proxyA = b2MakeProxy(shape.vertices.AsReadOnlySpan(), shape.count, shape.radius);
             pairInput.proxyB = input.proxy;
-            pairInput.transformA = b2Transform_identity;
-            pairInput.transformB = b2Transform_identity;
+            pairInput.transform = b2Transform_identity;
             pairInput.translationB = input.translation;
             pairInput.maxFraction = input.maxFraction;
             pairInput.canEncroach = input.canEncroach;
 
-            B2CastOutput output = b2ShapeCast(pairInput);
-            return output;
+            return b2ShapeCast(pairInput);
         }
 
         internal static B2PlaneResult b2CollideMoverAndCircle(in B2Capsule mover, in B2Circle shape)
@@ -1000,8 +1041,7 @@ namespace Box2D.NET
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center, 1, 0.0f);
             distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
-            distanceInput.transformA = b2Transform_identity;
-            distanceInput.transformB = b2Transform_identity;
+            distanceInput.transform = b2Transform_identity;
             distanceInput.useRadii = false;
 
             float totalRadius = mover.radius + shape.radius;
@@ -1023,8 +1063,7 @@ namespace Box2D.NET
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.center1, shape.center2, 2, 0.0f);
             distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
-            distanceInput.transformA = b2Transform_identity;
-            distanceInput.transformB = b2Transform_identity;
+            distanceInput.transform = b2Transform_identity;
             distanceInput.useRadii = false;
 
             float totalRadius = mover.radius + shape.radius;
@@ -1046,8 +1085,7 @@ namespace Box2D.NET
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.vertices.AsSpan(), shape.count, shape.radius);
             distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
-            distanceInput.transformA = b2Transform_identity;
-            distanceInput.transformB = b2Transform_identity;
+            distanceInput.transform = b2Transform_identity;
             distanceInput.useRadii = false;
 
             float totalRadius = mover.radius + shape.radius;
@@ -1069,8 +1107,7 @@ namespace Box2D.NET
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = b2MakeProxy(shape.point1, shape.point2, 2, 0.0f);
             distanceInput.proxyB = b2MakeProxy(mover.center1, mover.center2, 2, mover.radius);
-            distanceInput.transformA = b2Transform_identity;
-            distanceInput.transformB = b2Transform_identity;
+            distanceInput.transform = b2Transform_identity;
             distanceInput.useRadii = false;
 
             float totalRadius = mover.radius;

@@ -54,7 +54,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-4.0f, 3.0f + 2.0f * i);
+            bodyDef.position = b2ToPos(new B2Vec2(-4.0f, 3.0f + 2.0f * i));
             bodyDef.isAwake = false;
             bodyDef.enableSleep = true;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -74,7 +74,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 3.0f));
             bodyDef.isAwake = false;
             bodyDef.enableSleep = false;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -88,7 +88,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(5.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(5.0f, 3.0f));
             bodyDef.isAwake = true;
             bodyDef.enableSleep = false;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -102,7 +102,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(5.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(5.0f, 1.0f));
             bodyDef.isAwake = false;
             bodyDef.enableSleep = true;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -116,7 +116,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 100.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 100.0f));
             bodyDef.angularDamping = 0.5f;
             bodyDef.sleepThreshold = 0.05f;
             m_pendulumId = b2CreateBody(m_worldId, bodyDef);
@@ -125,12 +125,12 @@ public class Sleep : Sample
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreateCapsuleShape(m_pendulumId, shapeDef, capsule);
 
-            B2Vec2 pivot = bodyDef.position;
+            B2Vec2 pivot = b2ToVec2(bodyDef.position);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_pendulumId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
@@ -138,7 +138,7 @@ public class Sleep : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-10.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-10.0f, 1.0f));
             bodyDef.isAwake = false;
             bodyDef.enableSleep = true;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -156,7 +156,7 @@ public class Sleep : Sample
         if (B2_IS_NULL(m_staticBodyId))
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(-10.5f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-10.5f, 3.0f));
             m_staticBodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(2.0f, 0.1f, new B2Vec2(0.0f, 0.0f), b2MakeRot(0.25f * B2_PI));

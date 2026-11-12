@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -706,7 +706,7 @@ public class Sample : IDisposable
             return true;
         }
 
-        bool overlap = b2Shape_TestPoint(shapeId, queryContext.point);
+        bool overlap = b2Shape_TestPoint(shapeId, b2ToPos(queryContext.point));
         if (overlap)
         {
             // found shape
@@ -740,20 +740,20 @@ public class Sample : IDisposable
 
             // Query the world for overlapping shapes.
             QueryContext queryContext = new QueryContext(p, b2_nullBodyId);
-            b2World_OverlapAABB(m_worldId, box, b2DefaultQueryFilter(), QueryCallback, queryContext);
+            b2World_OverlapAABB(m_worldId, b2Pos_zero, box, b2DefaultQueryFilter(), QueryCallback, queryContext);
 
             if (B2_IS_NON_NULL(queryContext.bodyId))
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_kinematicBody;
-                bodyDef.position = m_mousePoint;
+                bodyDef.position = b2ToPos(m_mousePoint);
                 bodyDef.enableSleep = false;
                 m_mouseBodyId = b2CreateBody(m_worldId, bodyDef);
 
                 B2MotorJointDef jointDef = b2DefaultMotorJointDef();
                 jointDef.@base.bodyIdA = m_mouseBodyId;
                 jointDef.@base.bodyIdB = queryContext.bodyId;
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(queryContext.bodyId, p);
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(queryContext.bodyId, b2ToPos(p));
                 jointDef.linearHertz = 7.5f;
                 jointDef.linearDampingRatio = 1.0f;
 
@@ -852,7 +852,7 @@ public class Sample : IDisposable
         if (B2_IS_NON_NULL(m_mouseBodyId) && timeStep > 0.0f)
         {
             bool wake = true;
-            b2Body_SetTargetTransform(m_mouseBodyId, new B2Transform(m_mousePoint, b2Rot_identity), timeStep, wake);
+            b2Body_SetTargetTransform(m_mouseBodyId, b2MakeWorldTransform(new B2Transform(m_mousePoint, b2Rot_identity)), timeStep, wake);
         }
 
         b2World_EnableSleeping(m_worldId, m_context.enableSleep);

@@ -49,7 +49,7 @@ public class Pivot : Sample
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 3.0f));
             bodyDef.gravityScale = 1.0f;
             bodyDef.linearVelocity = v;
 

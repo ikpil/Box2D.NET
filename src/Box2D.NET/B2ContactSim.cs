@@ -11,8 +11,10 @@ namespace Box2D.NET
     {
         public int contactId;
 
-        public B2Transform cachedTransformA;
-        public B2Transform cachedTransformB;
+        // Cache for contact recycling.
+        public B2Rot cachedRotationA;
+        public B2Rot cachedRotationB;
+        public B2Transform cachedRelativePose;
 
 #if DEBUG
         public int bodyIdA;
@@ -48,8 +50,9 @@ namespace Box2D.NET
         public void CopyFrom(B2ContactSim other)
         {
             contactId = other.contactId;
-            cachedTransformA = other.cachedTransformA;
-            cachedTransformB = other.cachedTransformB;
+            cachedRotationA = other.cachedRotationA;
+            cachedRotationB = other.cachedRotationB;
+            cachedRelativePose = other.cachedRelativePose;
 
 #if DEBUG
             bodyIdA = other.bodyIdA;

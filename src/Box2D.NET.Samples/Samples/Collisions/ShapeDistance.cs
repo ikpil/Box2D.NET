@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -361,8 +361,7 @@ public class ShapeDistance : Sample
         B2DistanceInput input = new B2DistanceInput();
         input.proxyA = m_proxyA;
         input.proxyB = m_proxyB;
-        input.transformA = b2Transform_identity;
-        input.transformB = m_transform;
+        input.transform = m_transform;
         input.useRadii = m_radiusA > 0.0f || m_radiusB > 0.0f;
 
         if (m_useCache == false)

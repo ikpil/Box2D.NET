@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -115,7 +115,7 @@ public class BenchmarkCast : Sample
                 float fillTest = RandomFloatRange(0.0f, 1.0f);
                 if (fillTest <= m_fill)
                 {
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     float ratio = RandomFloatRange(1.0f, m_ratio);
@@ -164,10 +164,10 @@ public class BenchmarkCast : Sample
         m_minTime = 1e6f;
     }
 
-    static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastResult context)
+    static float CastCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastResult context)
     {
         CastResult result = context;
-        result.point = point;
+        result.point = b2ToVec2(point);
         result.fraction = fraction;
         result.hit = true;
         return fraction;
@@ -211,7 +211,7 @@ public class BenchmarkCast : Sample
                 B2Vec2 origin = m_origins[i];
                 B2Vec2 translation = m_translations[i];
 
-                B2RayResult result = b2World_CastRayClosest(m_worldId, origin, translation, filter);
+                B2RayResult result = b2World_CastRayClosest(m_worldId, b2ToPos(origin), translation, filter);
 
                 if (i == m_drawIndex)
                 {
@@ -234,7 +234,7 @@ public class BenchmarkCast : Sample
             DrawPoint(m_draw, p2, 5.0f, B2HexColor.b2_colorRed);
             if (drawResult.hit)
             {
-                DrawPoint(m_draw, drawResult.point, 5.0f, B2HexColor.b2_colorWhite);
+                DrawPoint(m_draw, b2ToVec2(drawResult.point), 5.0f, B2HexColor.b2_colorWhite);
             }
         }
         else if (m_queryType == QueryType.e_circleCast)
@@ -250,7 +250,7 @@ public class BenchmarkCast : Sample
                 B2Vec2 translation = m_translations[i];
 
                 CastResult result = new CastResult();
-                B2TreeStats traversalResult = b2World_CastShape(m_worldId, ref proxy, translation, filter, CastCallback, result);
+                B2TreeStats traversalResult = b2World_CastShape(m_worldId, b2Pos_zero, ref proxy, translation, filter, CastCallback, result);
 
                 if (i == m_drawIndex)
                 {
@@ -292,7 +292,7 @@ public class BenchmarkCast : Sample
                 B2AABB aabb = new B2AABB(origin - extent, origin + extent);
 
                 result.count = 0;
-                B2TreeStats traversalResult = b2World_OverlapAABB(m_worldId, aabb, filter, OverlapCallback, result);
+                B2TreeStats traversalResult = b2World_OverlapAABB(m_worldId, b2Pos_zero, aabb, filter, OverlapCallback, result);
 
                 if (i == m_drawIndex)
                 {

@@ -51,7 +51,7 @@ public class RollingResistance : Sample
             b2CreateSegmentShape(groundId, shapeDef, segment);
 
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-39.5f, 2.0f * i + 0.75f);
+            bodyDef.position = b2ToPos(new B2Vec2(-39.5f, 2.0f * i + 0.75f));
             bodyDef.angularVelocity = -10.0f;
             bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
 

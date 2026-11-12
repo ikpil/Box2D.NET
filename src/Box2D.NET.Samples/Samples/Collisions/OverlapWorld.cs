@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -171,7 +171,7 @@ public class OverlapWorld : Sample
         float y = RandomFloatRange(0.0f, 20.0f);
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new B2Vec2(x, y);
+        bodyDef.position = b2ToPos(new B2Vec2(x, y));
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
         m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
@@ -362,7 +362,7 @@ public class OverlapWorld : Sample
             DrawPolygon(m_draw, box.vertices.AsSpan(), box.count, B2HexColor.b2_colorWhite);
         }
 
-        b2World_OverlapShape(m_worldId, ref proxy, b2DefaultQueryFilter(), OverlapResultFcn, this);
+        b2World_OverlapShape(m_worldId, b2Pos_zero, ref proxy, b2DefaultQueryFilter(), OverlapResultFcn, this);
 
 
         for (int i = 0; i < m_doomCount; ++i)
@@ -394,7 +394,7 @@ public class OverlapWorld : Sample
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            B2Vec2 p = b2ToVec2(b2Body_GetPosition(m_bodyIds[m_ignoreIndex]));
             p.X -= 0.2f;
             DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, "skip");
         }

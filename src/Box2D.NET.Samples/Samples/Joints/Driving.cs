@@ -106,7 +106,7 @@ public class Driving : Sample
         // Teeter
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(140.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(140.0f, 1.0f));
             bodyDef.angularVelocity = 1.0f;
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -115,12 +115,12 @@ public class Driving : Sample
             B2Polygon box = b2MakeBox(10.0f, 0.25f);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            B2Vec2 pivot = bodyDef.position;
+            B2Vec2 pivot = b2ToVec2(bodyDef.position);
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.lowerAngle = -8.0f * B2_PI / 180.0f;
             jointDef.upperAngle = 8.0f * B2_PI / 180.0f;
             jointDef.enableLimit = true;
@@ -140,15 +140,15 @@ public class Driving : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(161.0f + 2.0f * i, -0.125f);
+                bodyDef.position = b2ToPos(new B2Vec2(161.0f + 2.0f * i, -0.125f));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * i, -0.125f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = bodyId;
@@ -158,8 +158,8 @@ public class Driving : Sample
                 B2Vec2 pivot = new B2Vec2(160.0f + 2.0f * N, -0.125f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = groundId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = 50.0f;
                 b2CreateRevoluteJoint(m_worldId, jointDef);
@@ -180,23 +180,23 @@ public class Driving : Sample
             shapeDef.material.restitution = 0.25f;
             shapeDef.density = 0.25f;
 
-            bodyDef.position = new B2Vec2(230.0f, 0.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(230.0f, 0.5f));
             bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            bodyDef.position = new B2Vec2(230.0f, 1.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(230.0f, 1.5f));
             bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            bodyDef.position = new B2Vec2(230.0f, 2.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(230.0f, 2.5f));
             bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            bodyDef.position = new B2Vec2(230.0f, 3.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(230.0f, 3.5f));
             bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            bodyDef.position = new B2Vec2(230.0f, 4.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(230.0f, 4.5f));
             bodyId = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId, shapeDef, box);
         }
@@ -279,7 +279,7 @@ public class Driving : Sample
         DrawScreenTextLine($"speed in kph: {FormatFloat(kph, 2)}");
 
 
-        B2Vec2 carPosition = b2Body_GetPosition(m_car.m_chassisId);
+        B2Vec2 carPosition = b2ToVec2(b2Body_GetPosition(m_car.m_chassisId));
         m_camera.center.X = carPosition.X;
     }
 }

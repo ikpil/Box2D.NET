@@ -14,6 +14,8 @@ using static Box2D.NET.B2Profiling;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2AABBs;
+using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Worlds;
@@ -289,7 +291,7 @@ namespace Box2D.NET
             // Early out on fast parallel movement over a chain shape.
             if (shape.type == B2ShapeType.b2_chainSegmentShape)
             {
-                B2Transform transform = bodySim.transform;
+                B2Transform transform = b2ToRelativeTransform(bodySim.transform, continuousContext.@base);
                 B2Vec2 p1 = b2TransformPoint(transform, shape.us.chainSegment.segment.point1);
                 B2Vec2 p2 = b2TransformPoint(transform, shape.us.chainSegment.segment.point2);
                 B2Vec2 e = b2Sub(p2, p1);
@@ -343,7 +345,7 @@ namespace Box2D.NET
             B2TOIInput input = new B2TOIInput();
             input.proxyA = b2MakeShapeDistanceProxy(shape);
             input.proxyB = b2MakeShapeDistanceProxy(fastShape);
-            input.sweepA = b2MakeSweep(bodySim);
+            input.sweepA = b2MakeRelativeSweep(bodySim, continuousContext.@base);
             input.sweepB = continuousContext.sweep;
             input.maxFraction = continuousContext.fraction;
 
@@ -394,7 +396,10 @@ namespace Box2D.NET
                 {
                     B2ShapeId shapeIdA = new B2ShapeId(shape.id + 1, world.worldId, shape.generation);
                     B2ShapeId shapeIdB = new B2ShapeId(fastShape.id + 1, world.worldId, fastShape.generation);
-                    didHit = world.preSolveFcn(shapeIdA, shapeIdB, output.point, output.normal, world.preSolveContext);
+
+                    // TOI runs in the base frame, lift the hit point back to world for the callback
+                    B2Pos worldPoint = b2OffsetPos(continuousContext.@base, output.point);
+                    didHit = world.preSolveFcn(shapeIdA, shapeIdB, worldPoint, output.normal, world.preSolveContext);
                 }
 
                 if (didHit)
@@ -417,7 +422,9 @@ namespace Box2D.NET
             B2BodySim fastBodySim = b2Array_Get(ref awakeSet.bodySims, bodySimIndex);
             B2_ASSERT(0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isFast));
 
-            B2Sweep sweep = b2MakeSweep(fastBodySim);
+            // Re-center the sweep on the fast body so the TOI and the swept query stay in float precision
+            B2Pos @base = fastBodySim.center0;
+            B2Sweep sweep = b2MakeRelativeSweep(fastBodySim, @base);
 
             B2Transform xf1;
             xf1.q = sweep.q1;
@@ -435,6 +442,7 @@ namespace Box2D.NET
             B2ContinuousContext context = new B2ContinuousContext();
             context.world = world;
             context.sweep = sweep;
+            context.@base = @base;
             context.fastBodySim = fastBodySim;
             context.fraction = 1.0f;
 
@@ -451,7 +459,9 @@ namespace Box2D.NET
                 context.centroid2 = b2TransformPoint(xf2, fastShape.localCentroid);
 
                 B2AABB box1 = fastShape.aabb;
-                B2AABB box2 = b2ComputeShapeAABB(fastShape, xf2);
+
+                // xf2 is in the base frame, compute the tight box near the origin then lift to world
+                B2AABB box2 = b2OffsetAABB(b2ComputeShapeAABB(fastShape, b2MakeWorldTransform(xf2)), @base);
 
                 // Store this to avoid double computation in the case there is no impact event
                 fastShape.aabb = box2;
@@ -481,16 +491,16 @@ namespace Box2D.NET
                 B2Vec2 c = b2Lerp(sweep.c1, sweep.c2, context.fraction);
                 B2Vec2 origin = b2Sub(c, b2RotateVector(q, sweep.localCenter));
 
-                // Advance body
-                B2Transform transform = new B2Transform(origin, q);
-                fastBodySim.transform = transform;
-                fastBodySim.center = c;
+                // Advance body, lifting the base frame result back to world
+                fastBodySim.transform.q = q;
+                fastBodySim.transform.p = b2OffsetPos(@base, origin);
+                fastBodySim.center = b2OffsetPos(@base, c);
                 fastBodySim.rotation0 = q;
-                fastBodySim.center0 = c;
+                fastBodySim.center0 = fastBodySim.center;
 
                 // Update body move event
                 ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
-                @event.transform = transform;
+                @event.transform = fastBodySim.transform;
 
                 // Prepare AABBs for broad-phase.
                 // Even though a body is fast, it may not move much. So the AABB may not need enlargement.
@@ -501,11 +511,7 @@ namespace Box2D.NET
                     B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
 
                     // Must recompute aabb at the interpolated transform
-                    B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-                    aabb.lowerBound.X -= speculativeDistance;
-                    aabb.lowerBound.Y -= speculativeDistance;
-                    aabb.upperBound.X += speculativeDistance;
-                    aabb.upperBound.Y += speculativeDistance;
+                    B2AABB aabb = b2ComputeFatShapeAABB(shape, fastBodySim.transform, speculativeDistance);
                     shape.aabb = aabb;
 
                     if (b2AABB_Contains(shape.fatAABB, aabb) == false)
@@ -617,7 +623,7 @@ namespace Box2D.NET
                 B2_ASSERT(b2IsValidVec2(v));
                 B2_ASSERT(b2IsValidFloat(w));
 
-                sim.center = b2Add(sim.center, state.deltaPosition);
+                sim.center = b2OffsetPos(sim.center, state.deltaPosition);
                 sim.transform.q = b2NormalizeRot(b2MulRot(state.deltaRotation, sim.transform.q));
 
                 // Use the velocity of the farthest point on the body to account for rotation.
@@ -634,7 +640,7 @@ namespace Box2D.NET
                 state.deltaPosition = b2Vec2_zero;
                 state.deltaRotation = b2Rot_identity;
 
-                sim.transform.p = b2Sub(sim.center, b2RotateVector(sim.transform.q, sim.localCenter));
+                sim.transform.p = b2OffsetPos(sim.center, b2Neg(b2RotateVector(sim.transform.q, sim.localCenter)));
 
                 // cache miss here, however I need the shape list below
                 B2Body body = bodies[sim.bodyId];
@@ -718,7 +724,7 @@ namespace Box2D.NET
                 }
 
                 // Update shapes AABBs
-                B2Transform transform = sim.transform;
+                B2WorldTransform transform = sim.transform;
                 bool isFast = (sim.flags & (uint)B2BodyFlags.b2_isFast) != 0;
                 int shapeId = body.headShapeId;
                 while (shapeId != B2_NULL_INDEX)
@@ -736,11 +742,7 @@ namespace Box2D.NET
                     }
                     else
                     {
-                        B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-                        aabb.lowerBound.X -= speculativeDistance;
-                        aabb.lowerBound.Y -= speculativeDistance;
-                        aabb.upperBound.X += speculativeDistance;
-                        aabb.upperBound.Y += speculativeDistance;
+                        B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
                         shape.aabb = aabb;
 
                         B2_ASSERT(shape.enlargedAABB == false);
@@ -1800,7 +1802,7 @@ namespace Box2D.NET
                             B2ContactHitEvent @event = new B2ContactHitEvent();
                             @event.approachSpeed = threshold;
 
-                            bool hit = false;
+                            int bestPointIndex = B2_NULL_INDEX;
                             int pointCount = contactSim.manifold.pointCount;
                             for (int j = 0; j < pointCount; ++j)
                             {
@@ -1811,20 +1813,36 @@ namespace Box2D.NET
                                 if (approachSpeed > @event.approachSpeed && mp.totalNormalImpulse > 0.0f)
                                 {
                                     @event.approachSpeed = approachSpeed;
-                                    // Using the clip point here is somewhat questionable
-                                    @event.point = mp.clipPoint;
-                                    hit = true;
+                                    bestPointIndex = j;
                                 }
                             }
 
-                            B2_VALIDATE(hit);
+                            B2_VALIDATE(bestPointIndex != B2_NULL_INDEX);
 
-                            if (hit == true)
+                            if (bestPointIndex != B2_NULL_INDEX)
                             {
+                                ref B2ManifoldPoint bestPoint = ref contactSim.manifold.points[bestPointIndex];
                                 @event.normal = contactSim.manifold.normal;
 
                                 B2Shape shapeA = shapeArray[contactSim.shapeIdA];
                                 B2Shape shapeB = shapeArray[contactSim.shapeIdB];
+
+                                // World contact point reconstructed from a body center of mass and the matching
+                                // anchor. The anchors were built with the manifold, so a body that has moved since
+                                // drags the point with it. A static body has not moved, prefer one so the common
+                                // case of a fast body striking the world stays exact.
+                                B2Body bodyA = b2Array_Get(ref world.bodies, shapeA.bodyId);
+                                B2Body bodyB = b2Array_Get(ref world.bodies, shapeB.bodyId);
+                                if (bodyA.type != B2BodyType.b2_staticBody && bodyB.type == B2BodyType.b2_staticBody)
+                                {
+                                    B2BodySim bodySimB = b2GetBodySim(world, bodyB);
+                                    @event.point = b2OffsetPos(bodySimB.center, bestPoint.anchorB);
+                                }
+                                else
+                                {
+                                    B2BodySim bodySimA = b2GetBodySim(world, bodyA);
+                                    @event.point = b2OffsetPos(bodySimA.center, bestPoint.anchorA);
+                                }
 
                                 @event.shapeIdA = new B2ShapeId(shapeA.id + 1, worldId, shapeA.generation);
                                 @event.shapeIdB = new B2ShapeId(shapeB.id + 1, worldId, shapeB.generation);

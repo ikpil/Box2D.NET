@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -12,6 +12,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -92,7 +93,7 @@ public class BounceHouse : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.linearVelocity = new B2Vec2(10.0f, 20.0f);
-        bodyDef.position = new B2Vec2(0.0f, 0.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
         bodyDef.gravityScale = 0.0f;
         bodyDef.isBullet = true;
 
@@ -165,7 +166,7 @@ public class BounceHouse : Sample
                 }
             }
 
-            e.point = @event.point;
+            e.point = b2ToVec2(@event.point);
             e.speed = @event.approachSpeed;
             e.stepIndex = m_stepCount;
         }

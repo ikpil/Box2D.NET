@@ -88,11 +88,8 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(jointId.world0);
             B2JointSim jointSim = b2GetJointSimCheckType(jointId, B2JointType.b2_revoluteJoint);
-            B2Transform transformA = b2GetBodyTransform(world, jointSim.bodyIdA);
-            B2Transform transformB = b2GetBodyTransform(world, jointSim.bodyIdB);
-
-            B2Rot qA = b2MulRot(transformA.q, jointSim.localFrameA.q);
-            B2Rot qB = b2MulRot(transformB.q, jointSim.localFrameB.q);
+            B2Rot qA = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdA).q, jointSim.localFrameA.q);
+            B2Rot qB = b2MulRot(b2GetBodyTransform(world, jointSim.bodyIdB).q, jointSim.localFrameB.q);
 
             float angle = b2RelativeAngle(qA, qB);
             return angle;
@@ -256,7 +253,7 @@ namespace Box2D.NET
             joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
             // Compute the initial center delta. Incremental position updates are relative to this.
-            joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
+            joint.deltaCenter = b2SubPos(bodySimB.center, bodySimA.center);
 
             float k = iA + iB;
             joint.axialMass = k > 0.0f ? 1.0f / k : 0.0f;

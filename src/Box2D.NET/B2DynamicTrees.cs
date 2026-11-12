@@ -1366,38 +1366,26 @@ namespace Box2D.NET
             return result;
         }
 
-        /// Ray cast against the proxies in the tree. This relies on the callback
-        /// to perform a exact ray cast in the case were the proxy contains a shape.
-        /// The callback also performs the any collision filtering. This has performance
-        /// roughly equal to k * log(n), where k is the number of collisions and n is the
-        /// number of proxies in the tree.
-        /// @param tree the dynamic tree to ray cast
-        /// @param input the ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).
+        /// Cast a swept AABB through the tree. This has performance roughly equal to k * log(n),
+        /// where k is the number of collisions and n is the number of proxies in the tree.
+        /// @param tree the dynamic tree to cast through
+        /// @param input the AABB cast input. The box sweeps from its origin to origin + maxFraction * translation.
         /// @param maskBits filter bits: `bool accept = (maskBits & node.categoryBits) != 0;`
-        /// @param callback a callback class that is called for each proxy that is hit by the shape
+        /// @param callback a callback that is called for each proxy the swept box may hit
         /// @param context user context that is passed to the callback
         /// @return performance data
-        public static B2TreeStats b2DynamicTree_ShapeCast<T>(B2DynamicTree tree, in B2ShapeCastInput input, ulong maskBits,
-            b2TreeShapeCastCallbackFcn<T> callback, ref T context)
+        public static B2TreeStats b2DynamicTree_BoxCast<T>(B2DynamicTree tree, in B2BoxCastInput input, ulong maskBits,
+            b2TreeBoxCastCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats stats = new B2TreeStats();
 
-            if (tree.nodeCount == 0 || input.proxy.count == 0)
+            if (tree.nodeCount == 0)
             {
                 return stats;
             }
 
-            B2AABB originAABB = new B2AABB(input.proxy.points[0], input.proxy.points[0]);
-            for (int i = 1; i < input.proxy.count; ++i)
-            {
-                originAABB.lowerBound = b2Min(originAABB.lowerBound, input.proxy.points[i]);
-                originAABB.upperBound = b2Max(originAABB.upperBound, input.proxy.points[i]);
-            }
-
-            B2Vec2 radius = new B2Vec2(input.proxy.radius, input.proxy.radius);
-
-            originAABB.lowerBound = b2Sub(originAABB.lowerBound, radius);
-            originAABB.upperBound = b2Add(originAABB.upperBound, radius);
+            // The caller folds the shape radius into the box
+            B2AABB originAABB = input.box;
 
             B2Vec2 p1 = b2AABB_Center(originAABB);
             B2Vec2 extension = b2AABB_Extents(originAABB);
@@ -1412,7 +1400,7 @@ namespace Box2D.NET
 
             float maxFraction = input.maxFraction;
 
-            // Build total box for the shape cast
+            // Build total box for the cast
             B2Vec2 t = b2MulSV(maxFraction, input.translation);
             B2AABB totalAABB = new B2AABB
             {
@@ -1420,8 +1408,8 @@ namespace Box2D.NET
                 upperBound = b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t)),
             };
 
-            //b2ShapeCastInput subInput = *input;
-            B2ShapeCastInput subInput = input;
+            //b2BoxCastInput subInput = *input;
+            B2BoxCastInput subInput = input;
             B2TreeNode[] nodes = tree.nodes;
 
             //int[] stack = new int[B2_TREE_STACK_SIZE];

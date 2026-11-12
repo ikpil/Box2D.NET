@@ -6,6 +6,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -39,7 +40,7 @@ public class ConveyorBelt : Sample
         // Platform
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(-5.0f, 5.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-5.0f, 5.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeRoundedBox(10.0f, 0.25f, 0.25f);
@@ -59,7 +60,7 @@ public class ConveyorBelt : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(-10.0f + 2.0f * i, 7.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(-10.0f + 2.0f * i, 7.0f));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 b2CreatePolygonShape(bodyId, shapeDef, cube);

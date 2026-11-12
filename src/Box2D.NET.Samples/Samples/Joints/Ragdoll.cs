@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.Humans;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -57,7 +58,7 @@ public class Ragdoll : Sample
 
     void Spawn()
     {
-        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 25.0f), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, B2UserData.Empty, false);
+        CreateHuman(ref m_human, m_worldId, b2ToPos(new B2Vec2(0.0f, 25.0f)), 1.0f, m_jointFrictionTorque, m_jointHertz, m_jointDampingRatio, 1, B2UserData.Empty, false);
         //Human_ApplyRandomAngularImpulse(ref m_human, 10.0f);
     }
 

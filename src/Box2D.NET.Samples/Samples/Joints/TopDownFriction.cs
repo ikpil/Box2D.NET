@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -12,6 +12,7 @@ using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Shared.RandomSupports;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -74,7 +75,7 @@ public class TopDownFriction : Sample
             {
                 for (int j = 0; j < n; ++j)
                 {
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     int remainder = (n * i + j) % 4;
@@ -116,13 +117,13 @@ public class TopDownFriction : Sample
         if (ImGui.Button("Explode"))
         {
             B2ExplosionDef def = b2DefaultExplosionDef();
-            def.position = new B2Vec2(0.0f, 10.0f);
+            def.position = b2ToPos(new B2Vec2(0.0f, 10.0f));
             def.radius = 10.0f;
             def.falloff = 5.0f;
             def.impulsePerLength = 10.0f;
             b2World_Explode(m_worldId, def);
 
-            DrawCircle(m_draw, def.position, 10.0f, B2HexColor.b2_colorWhite);
+            DrawCircle(m_draw, b2ToVec2(def.position), 10.0f, B2HexColor.b2_colorWhite);
         }
 
 

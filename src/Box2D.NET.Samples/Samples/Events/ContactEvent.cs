@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -113,7 +113,7 @@ public class ContactEvent : Sample
         // Debris
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(RandomFloatRange(-38.0f, 38.0f), RandomFloatRange(-38.0f, 38.0f));
+        bodyDef.position = b2ToPos(new B2Vec2(RandomFloatRange(-38.0f, 38.0f), RandomFloatRange(-38.0f, 38.0f)));
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
         bodyDef.linearVelocity = new B2Vec2(RandomFloatRange(-5.0f, 5.0f), RandomFloatRange(-5.0f, 5.0f));
         bodyDef.angularVelocity = RandomFloatRange(-1.0f, 1.0f);
@@ -155,26 +155,26 @@ public class ContactEvent : Sample
 
     public override void Step()
     {
-        B2Vec2 position = b2Body_GetPosition(m_playerId);
+        B2Vec2 position = b2ToVec2(b2Body_GetPosition(m_playerId));
 
         if (GetKey(Keys.A) == InputAction.Press)
         {
-            b2Body_ApplyForce(m_playerId, new B2Vec2(-m_force, 0.0f), position, true);
+            b2Body_ApplyForce(m_playerId, new B2Vec2(-m_force, 0.0f), b2ToPos(position), true);
         }
 
         if (GetKey(Keys.D) == InputAction.Press)
         {
-            b2Body_ApplyForce(m_playerId, new B2Vec2(m_force, 0.0f), position, true);
+            b2Body_ApplyForce(m_playerId, new B2Vec2(m_force, 0.0f), b2ToPos(position), true);
         }
 
         if (GetKey(Keys.W) == InputAction.Press)
         {
-            b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, m_force), position, true);
+            b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, m_force), b2ToPos(position), true);
         }
 
         if (GetKey(Keys.S) == InputAction.Press)
         {
-            b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, -m_force), position, true);
+            b2Body_ApplyForce(m_playerId, new B2Vec2(0.0f, -m_force), b2ToPos(position), true);
         }
 
         base.Step();
@@ -223,12 +223,17 @@ public class ContactEvent : Sample
                         B2Manifold manifold = contactData[j].manifold;
                         B2Vec2 normal = manifold.normal;
                         B2_ASSERT(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
+                        B2BodyId bidA = b2Shape_GetBody(idA);
 
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            DrawLine(m_draw, point.clipPoint, point.clipPoint + point.totalNormalImpulse * normal, B2HexColor.b2_colorBlueViolet);
-                            DrawPoint(m_draw, point.clipPoint, 10.0f, B2HexColor.b2_colorWhite);
+                            B2Pos posA = b2Body_GetWorldCenter(bidA);
+                            B2Pos p1 = posA + point.anchorA;
+                            B2Pos p2 = p1 + point.totalNormalImpulse * normal;
+
+                            DrawLine(m_draw, b2ToVec2(p1), b2ToVec2(p2), B2HexColor.b2_colorBlueViolet);
+                            DrawPoint(m_draw, b2ToVec2(p1), 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -253,12 +258,17 @@ public class ContactEvent : Sample
                         B2Manifold manifold = contactData[j].manifold;
                         B2Vec2 normal = manifold.normal;
                         B2_ASSERT(b2AbsFloat(b2Length(normal) - 1.0f) < 4.0f * FLT_EPSILON);
+                        B2BodyId bidA = b2Shape_GetBody(idA);
 
                         for (int k = 0; k < manifold.pointCount; ++k)
                         {
                             B2ManifoldPoint point = manifold.points[k];
-                            DrawLine(m_draw, point.clipPoint, point.clipPoint + point.totalNormalImpulse * normal, B2HexColor.b2_colorYellowGreen);
-                            DrawPoint(m_draw, point.clipPoint, 10.0f, B2HexColor.b2_colorWhite);
+                            B2Pos posA = b2Body_GetWorldCenter(bidA);
+                            B2Pos p1 = posA + point.anchorA;
+                            B2Pos p2 = p1 + point.totalNormalImpulse * normal;
+
+                            DrawLine(m_draw, b2ToVec2(p1), b2ToVec2(p2), B2HexColor.b2_colorYellowGreen);
+                            DrawPoint(m_draw, b2ToVec2(p1), 10.0f, B2HexColor.b2_colorWhite);
                         }
                     }
                 }
@@ -344,8 +354,8 @@ public class ContactEvent : Sample
                 continue;
             }
 
-            B2Transform playerTransform = b2Body_GetTransform(m_playerId);
-            B2Transform debrisTransform = b2Body_GetTransform(debrisId);
+            B2Transform playerTransform = b2ToRelativeTransform(b2Body_GetTransform(m_playerId), b2Pos_zero);
+            B2Transform debrisTransform = b2ToRelativeTransform(b2Body_GetTransform(debrisId), b2Pos_zero);
             B2Transform relativeTransform = b2InvMulTransforms(playerTransform, debrisTransform);
 
             int shapeCount = b2Body_GetShapeCount(debrisId);

@@ -12,23 +12,25 @@ namespace Box2D.NET
         public b2CastResultFcn<T> fcn;
         public B2QueryFilter filter;
         public float fraction;
+        public B2Pos origin;
         public T userContext;
 
-        internal B2WorldRayCastContext(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, T userContext)
+        internal B2WorldRayCastContext(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, in B2Pos origin, T userContext)
         {
             this.world = world;
             this.fcn = fcn;
             this.filter = filter;
             this.fraction = fraction;
+            this.origin = origin;
             this.userContext = userContext;
         }
     }
 
     public struct B2WorldRayCastContext
     {
-        public static B2WorldRayCastContext<T> Create<T>(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, T userContext) where T : class
+        public static B2WorldRayCastContext<T> Create<T>(B2World world, b2CastResultFcn<T> fcn, in B2QueryFilter filter, float fraction, in B2Pos origin, T userContext) where T : class
         {
-            return new B2WorldRayCastContext<T>(world, fcn, filter, fraction, userContext);
+            return new B2WorldRayCastContext<T>(world, fcn, filter, fraction, origin, userContext);
         }
     }
 }

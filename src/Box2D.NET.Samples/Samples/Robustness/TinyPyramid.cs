@@ -58,7 +58,7 @@ public class TinyPyramid : Sample
                 for (int j = i; j < baseCount; ++j)
                 {
                     float x = (i + 1.0f) * m_extent + 2.0f * (j - i) * m_extent - baseCount * m_extent;
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
 
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, box);

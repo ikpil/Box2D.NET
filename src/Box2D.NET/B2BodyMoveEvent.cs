@@ -17,7 +17,7 @@ namespace Box2D.NET
     public struct B2BodyMoveEvent
     {
         public B2UserData userData;
-        public B2Transform transform;
+        public B2WorldTransform transform;
         public B2BodyId bodyId;
         public bool fellAsleep;
     }

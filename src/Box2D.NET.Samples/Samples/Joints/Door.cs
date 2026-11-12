@@ -46,7 +46,7 @@ public class Door : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             groundId = b2CreateBody(m_worldId, bodyDef);
         }
 
@@ -59,7 +59,7 @@ public class Door : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 1.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 1.5f));
             bodyDef.gravityScale = 0.0f;
 
             m_doorId = b2CreateBody(m_worldId, bodyDef);
@@ -98,8 +98,8 @@ public class Door : Sample
 
         if (ImGui.Button("impulse"))
         {
-            B2Vec2 p = b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f));
-            b2Body_ApplyLinearImpulse(m_doorId, new B2Vec2(m_impulse, 0.0f), p, true);
+            B2Vec2 p = b2ToVec2(b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f)));
+            b2Body_ApplyLinearImpulse(m_doorId, new B2Vec2(m_impulse, 0.0f), b2ToPos(p), true);
             m_translationError = 0.0f;
         }
 
@@ -131,7 +131,7 @@ public class Door : Sample
     {
         base.Draw();
 
-        B2Vec2 p = b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f));
+        B2Vec2 p = b2ToVec2(b2Body_GetWorldPoint(m_doorId, new B2Vec2(0.0f, 1.5f)));
         DrawPoint(m_draw, p, 5.0f, B2HexColor.b2_colorDarkKhaki);
 
         float translationError = b2Joint_GetLinearSeparation(m_jointId);

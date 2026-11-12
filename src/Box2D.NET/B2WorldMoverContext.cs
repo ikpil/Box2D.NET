@@ -10,6 +10,7 @@ namespace Box2D.NET
         public b2PlaneResultFcn fcn;
         public B2QueryFilter filter;
         public B2Capsule mover;
+        public B2Pos origin;
         public object userContext;
     }
 }

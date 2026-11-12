@@ -65,7 +65,7 @@ public class Truck
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = b2Add(new B2Vec2(0.0f, 1.0f * scale), position);
+        bodyDef.position = b2ToPos(b2Add(new B2Vec2(0.0f, 1.0f * scale), position));
         m_chassisId = b2CreateBody(worldId, bodyDef);
         b2CreatePolygonShape(m_chassisId, shapeDef, chassis);
 
@@ -82,16 +82,16 @@ public class Truck
         shapeDef.material.customColor = (uint)B2HexColor.b2_colorSilver;
 
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.4f * scale);
-        bodyDef.position = b2Add(new B2Vec2(-2.75f * scale, 0.3f * scale), position);
+        bodyDef.position = b2ToPos(b2Add(new B2Vec2(-2.75f * scale, 0.3f * scale), position));
         m_rearWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_rearWheelId, shapeDef, circle);
 
-        bodyDef.position = b2Add(new B2Vec2(0.8f * scale, 0.3f * scale), position);
+        bodyDef.position = b2ToPos(b2Add(new B2Vec2(0.8f * scale, 0.3f * scale), position));
         m_frontWheelId = b2CreateBody(worldId, bodyDef);
         b2CreateCircleShape(m_frontWheelId, shapeDef, circle);
 
         B2Vec2 axis = new B2Vec2(0.0f, 1.0f);
-        B2Vec2 pivot = b2Body_GetPosition(m_rearWheelId);
+        B2Vec2 pivot = b2ToVec2(b2Body_GetPosition(m_rearWheelId));
 
         // float throttle = 0.0f;
         // float speed = 35.0f;
@@ -104,8 +104,8 @@ public class Truck
         jointDef.@base.bodyIdA = m_chassisId;
         jointDef.@base.bodyIdB = m_rearWheelId;
         jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
-        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
         jointDef.motorSpeed = 0.0f;
         jointDef.maxMotorTorque = torque;
         jointDef.enableMotor = true;
@@ -116,12 +116,12 @@ public class Truck
         jointDef.enableLimit = true;
         m_rearAxleId = b2CreateWheelJoint(worldId, jointDef);
 
-        pivot = b2Body_GetPosition(m_frontWheelId);
+        pivot = b2ToVec2(b2Body_GetPosition(m_frontWheelId));
         jointDef.@base.bodyIdA = m_chassisId;
         jointDef.@base.bodyIdB = m_frontWheelId;
         jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
-        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+        jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+        jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
         jointDef.motorSpeed = 0.0f;
         jointDef.maxMotorTorque = torque;
         jointDef.enableMotor = true;

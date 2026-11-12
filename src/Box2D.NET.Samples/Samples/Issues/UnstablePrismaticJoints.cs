@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -6,6 +6,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Issues;
 
@@ -41,7 +42,7 @@ public class UnstablePrismaticJoints : Sample
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody;
-            bd.position = new B2Vec2(0, 3);
+            bd.position = b2ToPos(new B2Vec2(0, 3));
             centerId = b2CreateBody(m_worldId, bd);
 
             B2ShapeDef sd = b2DefaultShapeDef();
@@ -64,7 +65,7 @@ public class UnstablePrismaticJoints : Sample
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody;
-            bd.position = new B2Vec2(-3.5f, 3);
+            bd.position = b2ToPos(new B2Vec2(-3.5f, 3));
 
             B2BodyId leftId = b2CreateBody(m_worldId, bd);
 
@@ -84,7 +85,7 @@ public class UnstablePrismaticJoints : Sample
         {
             B2BodyDef bd = b2DefaultBodyDef();
             bd.type = B2BodyType.b2_dynamicBody;
-            bd.position = new B2Vec2(3.5f, 3);
+            bd.position = b2ToPos(new B2Vec2(3.5f, 3));
             B2BodyId rightId = b2CreateBody(m_worldId, bd);
 
             B2ShapeDef sd = b2DefaultShapeDef();

@@ -149,11 +149,10 @@ namespace Box2D.NET
 
         internal static B2Vec2 b2GetWheelJointForce(B2World world, B2JointSim @base)
         {
-            int idA = @base.bodyIdA;
-            B2Transform transformA = b2GetBodyTransform(world, idA);
+            B2Rot qA = b2GetBodyTransform(world, @base.bodyIdA).q;
 
             B2Vec2 localAxisA = b2RotateVector(@base.localFrameA.q, new B2Vec2(1.0f, 0.0f));
-            B2Vec2 axisA = b2RotateVector(transformA.q, localAxisA);
+            B2Vec2 axisA = b2RotateVector(qA, localAxisA);
             B2Vec2 perpA = b2LeftPerp(axisA);
 
             ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
@@ -230,7 +229,7 @@ namespace Box2D.NET
             joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
             // Compute the initial center delta. Incremental position updates are relative to this.
-            joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
+            joint.deltaCenter = b2SubPos(bodySimB.center, bodySimA.center);
 
             B2Vec2 rA = joint.frameA.p;
             B2Vec2 rB = joint.frameB.p;

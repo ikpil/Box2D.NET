@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -8,6 +8,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -103,7 +104,7 @@ public class CircleStack : Sample
             int indexA = (int)userDataA.GetSigned(-1);
             int indexB = (int)userDataB.GetSigned(-1);
 
-            DrawPoint(m_draw, @event.point, 10.0f, B2HexColor.b2_colorWhite);
+            DrawPoint(m_draw, b2ToVec2(@event.point), 10.0f, B2HexColor.b2_colorWhite);
 
             m_events.Add(new Event(indexA, indexB));
         }

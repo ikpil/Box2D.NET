@@ -52,7 +52,7 @@ public class CompoundShapes : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-15.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-15.0f, 1.0f));
             m_table1Id = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -69,7 +69,7 @@ public class CompoundShapes : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-5.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-5.0f, 1.0f));
             m_table2Id = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -86,7 +86,7 @@ public class CompoundShapes : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(5.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(5.0f, 1.0f));
             m_ship1Id = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -112,7 +112,7 @@ public class CompoundShapes : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(15.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(15.0f, 1.0f));
             m_ship2Id = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();

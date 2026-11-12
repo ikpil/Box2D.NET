@@ -17,20 +17,15 @@ namespace Box2D.NET
     /// the time step.
     public struct B2ManifoldPoint
     {
-        /// Location of the contact point in world space when first clipped. Subject to precision
-        /// loss at large coordinates. This point lags behind when contact recycling is used.
-        /// @note Should only be used for debugging. Use anchorA and/or anchorB for game logic.
-        public B2Vec2 clipPoint;
-
-        /// Location of the contact point relative to shapeA's origin in world space.
+        /// Location of the contact point relative to bodyA's center of mass in world space.
         /// This can be converted to a world point using:
-        /// b2Vec2 worldPointA = b2Add(b2Body_GetCenter(myBodyIdA), anchorA);
+        /// b2Pos worldPointA = b2OffsetPos(b2Body_GetWorldCenter(myBodyIdA), anchorA);
         /// @note When used internally to the Box2D solver, this is relative to the body center of mass.
         public B2Vec2 anchorA;
 
-        /// Location of the contact point relative to shapeB's origin in world space
+        /// Location of the contact point relative to bodyB's center of mass in world space.
         /// This can be converted to a world point using:
-        /// b2Vec2 worldPointB = b2Add(b2Body_GetCenter(myBodyIdB), anchorB);
+        /// b2Pos worldPointB = b2OffsetPos(b2Body_GetWorldCenter(myBodyIdB), anchorB);
         /// @note When used internally to the Box2D solver, this is relative to the body center of mass.
         public B2Vec2 anchorB;
 

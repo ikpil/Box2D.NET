@@ -127,7 +127,7 @@ public class SensorFunnel : Sample
             float y = 14.0f;
             for (int i = 0; i < 3; ++i)
             {
-                bodyDef.position = new B2Vec2(0.0f, y);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, y));
                 bodyDef.type = B2BodyType.b2_dynamicBody;
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -143,7 +143,7 @@ public class SensorFunnel : Sample
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
                 revoluteDef.@base.bodyIdA = groundId;
                 revoluteDef.@base.bodyIdB = bodyId;
-                revoluteDef.@base.localFrameA.p = bodyDef.position;
+                revoluteDef.@base.localFrameA.p = b2ToVec2(bodyDef.position);
                 revoluteDef.@base.localFrameB.p = b2Vec2_zero;
                 revoluteDef.maxMotorTorque = 200.0f;
                 revoluteDef.motorSpeed = 2.0f * sign;
@@ -216,7 +216,7 @@ public class SensorFunnel : Sample
             float jointHertz = 6.0f;
             float jointDamping = 0.5f;
             bool colorize = true;
-            CreateHuman(ref human, m_worldId, center, scale, jointFriction, jointHertz, jointDamping,
+            CreateHuman(ref human, m_worldId, b2ToPos(center), scale, jointFriction, jointHertz, jointDamping,
                 index + 1, B2UserData.Signed(index), colorize);
             Human_EnableSensorEvents(ref human, true);
         }

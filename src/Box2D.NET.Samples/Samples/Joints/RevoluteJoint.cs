@@ -47,7 +47,7 @@ public class RevoluteJoint : Sample
         B2BodyId groundId = b2_nullBodyId;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, -1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, -1.0f));
             groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(40.0f, 1.0f);
@@ -68,7 +68,7 @@ public class RevoluteJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-10.0f, 20.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-10.0f, 20.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -82,8 +82,8 @@ public class RevoluteJoint : Sample
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.q = b2MakeRot(0.5f * B2_PI);
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.targetAngle = B2_PI * m_targetDegrees / 180.0f;
             jointDef.enableSpring = m_enableSpring;
             jointDef.hertz = m_hertz;
@@ -106,7 +106,7 @@ public class RevoluteJoint : Sample
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(5.0f, 30.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(5.0f, 30.0f));
             m_ball = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -117,7 +117,7 @@ public class RevoluteJoint : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(20.0f, 10.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(20.0f, 10.0f));
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId body = b2CreateBody(m_worldId, bodyDef);
 
@@ -130,8 +130,8 @@ public class RevoluteJoint : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = body;
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.lowerAngle = -0.25f * B2_PI;
             jointDef.upperAngle = 0.0f * B2_PI;
             jointDef.enableLimit = true;

@@ -235,7 +235,7 @@ namespace Box2D.NET
             joint.frameB.p = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
 
             // Compute the initial center delta. Incremental position updates are relative to this.
-            joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
+            joint.deltaCenter = b2SubPos(bodySimB.center, bodySimA.center);
 
             B2Vec2 rA = joint.frameA.p;
             B2Vec2 rB = joint.frameB.p;

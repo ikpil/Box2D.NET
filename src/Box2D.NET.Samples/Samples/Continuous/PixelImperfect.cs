@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -7,6 +7,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Continuous;
 
@@ -35,7 +36,7 @@ public class PixelImperfect : Sample
         {
             B2BodyDef block4BodyDef = b2DefaultBodyDef();
             block4BodyDef.type = B2BodyType.b2_staticBody;
-            block4BodyDef.position = new B2Vec2(175.0f / pixelsPerMeter, 150.0f / pixelsPerMeter);
+            block4BodyDef.position = b2ToPos(new B2Vec2(175.0f / pixelsPerMeter, 150.0f / pixelsPerMeter));
             B2BodyId block4BodyId = b2CreateBody(m_worldId, block4BodyDef);
             B2Polygon block4Shape = b2MakeBox(20.0f / pixelsPerMeter, 10.0f / pixelsPerMeter);
             B2ShapeDef block4ShapeDef = b2DefaultShapeDef();
@@ -46,7 +47,7 @@ public class PixelImperfect : Sample
         {
             B2BodyDef ballBodyDef = b2DefaultBodyDef();
             ballBodyDef.type = B2BodyType.b2_dynamicBody;
-            ballBodyDef.position = new B2Vec2(200.0f / pixelsPerMeter, 275.0f / pixelsPerMeter);
+            ballBodyDef.position = b2ToPos(new B2Vec2(200.0f / pixelsPerMeter, 275.0f / pixelsPerMeter));
             ballBodyDef.gravityScale = 0.0f;
 
             m_ballId = b2CreateBody(m_worldId, ballBodyDef);
@@ -74,7 +75,7 @@ public class PixelImperfect : Sample
     {
         base.Draw();
 
-        B2Vec2 p = b2Body_GetPosition(m_ballId);
+        B2Vec2 p = b2ToVec2(b2Body_GetPosition(m_ballId));
         B2Vec2 v = b2Body_GetLinearVelocity(m_ballId);
         DrawScreenTextLine($"p.x = {p.X:F9}, v.y = {v.Y:F9}");
     }

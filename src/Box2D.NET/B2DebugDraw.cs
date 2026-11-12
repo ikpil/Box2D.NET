@@ -73,6 +73,11 @@ namespace Box2D.NET
         /// Option to draw islands as bounding boxes
         public bool drawIslands;
 
+        /// World point that drawn coordinates are relative to. In large world mode set this to the
+        /// camera position each frame so callbacks receive float coordinates near the origin. Defaults
+        /// to zero, which is bit identical to passing world coordinates directly.
+        public B2Pos origin;
+
         /// User context that is passed as an argument to drawing callback functions
         public object context;
     }

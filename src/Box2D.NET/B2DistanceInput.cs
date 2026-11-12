@@ -13,11 +13,9 @@ namespace Box2D.NET
         /// The proxy for shape B
         public B2ShapeProxy proxyB;
 
-        /// The world transform for shape A
-        public B2Transform transformA;
-
-        /// The world transform for shape B
-        public B2Transform transformB;
+        /// Transform of shape B in shape A's frame, the relative pose B in A
+        /// (b2InvMulTransforms( worldA, worldB )). The query is origin independent and runs in frame A.
+        public B2Transform transform;
 
         /// Should the proxy radius be considered?
         public bool useRadii;

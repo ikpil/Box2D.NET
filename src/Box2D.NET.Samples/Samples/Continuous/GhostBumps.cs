@@ -241,7 +241,7 @@ public class GhostBumps : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(-28.0f, 18.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(-28.0f, 18.0f));
         bodyDef.linearVelocity = new B2Vec2(0.0f, 0.0f);
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 

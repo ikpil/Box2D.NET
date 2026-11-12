@@ -170,7 +170,7 @@ public class Drop : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 4.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 4.0f));
         bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
 
         B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -191,7 +191,7 @@ public class Drop : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 4.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 4.0f));
         bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
         bodyDef.linearVelocity = new B2Vec2(0.0f, 0.0f);
         bodyDef.angularVelocity = -0.5f;
@@ -216,7 +216,7 @@ public class Drop : Sample
         float jointHertz = 1.0f;
         float jointDampingRatio = 0.5f;
 
-        CreateHuman(ref m_human, m_worldId, new B2Vec2(0.0f, 40.0f), 1.0f, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, true);
+        CreateHuman(ref m_human, m_worldId, b2ToPos(new B2Vec2(0.0f, 40.0f)), 1.0f, jointFrictionTorque, jointHertz, jointDampingRatio, 1, B2UserData.Empty, true);
 
         m_frameCount = 1;
     }
@@ -239,7 +239,7 @@ public class Drop : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
             float shift = (i % 2 == 0 ? -offset : offset);
-            bodyDef.position = new B2Vec2(2.5f + shift, a + 2.0f * a * i);
+            bodyDef.position = b2ToPos(new B2Vec2(2.5f + shift, a + 2.0f * a * i));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             m_bodyIds.Add(bodyId);
@@ -252,7 +252,7 @@ public class Drop : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-7.7f, 1.9f);
+            bodyDef.position = b2ToPos(new B2Vec2(-7.7f, 1.9f));
             bodyDef.linearVelocity = new B2Vec2(200.0f, 0.0f);
             bodyDef.isBullet = true;
 

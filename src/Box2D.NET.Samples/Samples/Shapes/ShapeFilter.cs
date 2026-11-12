@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -9,6 +9,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -61,13 +62,13 @@ public class ShapeFilter : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
-            bodyDef.position = new B2Vec2(0.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 2.0f));
             m_player1Id = b2CreateBody(m_worldId, bodyDef);
 
-            bodyDef.position = new B2Vec2(0.0f, 5.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 5.0f));
             m_player2Id = b2CreateBody(m_worldId, bodyDef);
 
-            bodyDef.position = new B2Vec2(0.0f, 8.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 8.0f));
             m_player3Id = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(2.0f, 1.0f);
@@ -205,13 +206,13 @@ public class ShapeFilter : Sample
     {
         base.Draw();
 
-        B2Vec2 p1 = b2Body_GetPosition(m_player1Id);
+        B2Vec2 p1 = b2ToVec2(b2Body_GetPosition(m_player1Id));
         DrawWorldString(m_draw, m_camera, new B2Vec2(p1.X - 0.5f, p1.Y), B2HexColor.b2_colorWhite, "player 1");
 
-        B2Vec2 p2 = b2Body_GetPosition(m_player2Id);
+        B2Vec2 p2 = b2ToVec2(b2Body_GetPosition(m_player2Id));
         DrawWorldString(m_draw, m_camera, new B2Vec2(p2.X - 0.5f, p2.Y), B2HexColor.b2_colorWhite, "player 2");
 
-        B2Vec2 p3 = b2Body_GetPosition(m_player3Id);
+        B2Vec2 p3 = b2ToVec2(b2Body_GetPosition(m_player3Id));
         DrawWorldString(m_draw, m_camera, new B2Vec2(p3.X - 0.5f, p3.Y), B2HexColor.b2_colorWhite, "player 3");
     }
 }

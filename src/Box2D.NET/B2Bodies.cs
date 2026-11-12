@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2023 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Worlds;
@@ -71,11 +72,13 @@ namespace Box2D.NET
             deltaRotation = new B2Rot(1.0f, 0.0f),
         };
 
-        public static B2Sweep b2MakeSweep(B2BodySim bodySim)
+        // Build a sweep relative to a base position so continuous collision keeps float precision far
+        // from the origin. The base cancels out of the relative motion the TOI actually solves.
+        public static B2Sweep b2MakeRelativeSweep(B2BodySim bodySim, in B2Pos @base)
         {
             B2Sweep s = new B2Sweep();
-            s.c1 = bodySim.center0;
-            s.c2 = bodySim.center;
+            s.c1 = b2SubPos(bodySim.center0, @base);
+            s.c2 = b2SubPos(bodySim.center, @base);
             s.q1 = bodySim.rotation0;
             s.q2 = bodySim.transform.q;
             s.localCenter = bodySim.localCenter;
@@ -116,14 +119,14 @@ namespace Box2D.NET
             return b2Array_Get(ref world.bodies, bodyId.index1 - 1);
         }
 
-        public static B2Transform b2GetBodyTransformQuick(B2World world, B2Body body)
+        public static B2WorldTransform b2GetBodyTransformQuick(B2World world, B2Body body)
         {
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
             B2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
             return bodySim.transform;
         }
 
-        public static B2Transform b2GetBodyTransform(B2World world, int bodyId)
+        public static B2WorldTransform b2GetBodyTransform(B2World world, int bodyId)
         {
             B2Body body = b2Array_Get(ref world.bodies, bodyId);
             return b2GetBodyTransformQuick(world, body);
@@ -245,7 +248,7 @@ namespace Box2D.NET
         public static B2BodyId b2CreateBody(B2WorldId worldId, in B2BodyDef def)
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(b2IsValidVec2(def.position));
+            B2_ASSERT(b2IsValidPosition(def.position));
             B2_ASSERT(b2IsValidRotation(def.rotation));
             B2_ASSERT(b2IsValidVec2(def.linearVelocity));
             B2_ASSERT(b2IsValidFloat(def.angularVelocity));
@@ -566,8 +569,11 @@ namespace Box2D.NET
             B2Body body = b2GetBodyFullId(world, bodyId);
             if (body.headShapeId == B2_NULL_INDEX)
             {
-                B2Transform transform = b2GetBodyTransform(world, body.id);
-                return new B2AABB(transform.p, transform.p);
+                // No shapes, bracket the body origin so the box still contains the true position far away
+                B2WorldTransform transform = b2GetBodyTransform(world, body.id);
+                B2Vec2 lower = new B2Vec2(b2RoundDownFloat(transform.p.X), b2RoundDownFloat(transform.p.Y));
+                B2Vec2 upper = new B2Vec2(b2RoundUpFloat(transform.p.X), b2RoundUpFloat(transform.p.Y));
+                return new B2AABB(lower, upper);
             }
 
             B2Shape shape = b2Array_Get(ref world.shapes, body.headShapeId);
@@ -688,16 +694,16 @@ namespace Box2D.NET
             }
 
             // Move center of mass.
-            B2Vec2 oldCenter = bodySim.center;
+            B2Pos oldCenter = bodySim.center;
             bodySim.localCenter = localCenter;
-            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformWorldPoint(bodySim.transform, bodySim.localCenter);
             bodySim.center0 = bodySim.center;
 
             // Update center of mass velocity
             B2BodyState state = b2GetBodyState(world, body);
             if (state != null)
             {
-                B2Vec2 deltaLinear = b2CrossSV(state.angularVelocity, b2Sub(bodySim.center, oldCenter));
+                B2Vec2 deltaLinear = b2CrossSV(state.angularVelocity, b2SubPos(bodySim.center, oldCenter));
                 state.linearVelocity = b2Add(state.linearVelocity, deltaLinear);
             }
 
@@ -715,11 +721,11 @@ namespace Box2D.NET
             }
         }
         /// Get the world position of a body. This is the location of the body origin.
-        public static B2Vec2 b2Body_GetPosition(B2BodyId bodyId)
+        public static B2Pos b2Body_GetPosition(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             return transform.p;
         }
         /// Get the world rotation of a body as a cosine/sine pair (complex number)
@@ -727,31 +733,31 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             return transform.q;
         }
         /// Get the world transform of a body.
-        public static B2Transform b2Body_GetTransform(B2BodyId bodyId)
+        public static B2WorldTransform b2Body_GetTransform(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
             return b2GetBodyTransformQuick(world, body);
         }
         /// Get a local point on a body given a world point
-        public static B2Vec2 b2Body_GetLocalPoint(B2BodyId bodyId, B2Vec2 worldPoint)
+        public static B2Vec2 b2Body_GetLocalPoint(B2BodyId bodyId, B2Pos worldPoint)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
-            return b2InvTransformPoint(transform, worldPoint);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
+            return b2InvTransformWorldPoint(transform, worldPoint);
         }
         /// Get a world point on a body given a local point
-        public static B2Vec2 b2Body_GetWorldPoint(B2BodyId bodyId, B2Vec2 localPoint)
+        public static B2Pos b2Body_GetWorldPoint(B2BodyId bodyId, B2Vec2 localPoint)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
-            return b2TransformPoint(transform, localPoint);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
+            return b2TransformWorldPoint(transform, localPoint);
         }
 
         /// Get a local vector on a body given a world vector
@@ -759,7 +765,7 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             return b2InvRotateVector(transform.q, worldVector);
         }
 
@@ -768,16 +774,16 @@ namespace Box2D.NET
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             return b2RotateVector(transform.q, localVector);
         }
 
         /// Set the world transform of a body. This acts as a teleport and is fairly expensive.
         /// @note Generally you should create a body with then intended transform.
         /// @see b2BodyDef::position and b2BodyDef::rotation
-        public static void b2Body_SetTransform(B2BodyId bodyId, B2Vec2 position, B2Rot rotation)
+        public static void b2Body_SetTransform(B2BodyId bodyId, B2Pos position, B2Rot rotation)
         {
-            B2_ASSERT(b2IsValidVec2(position));
+            B2_ASSERT(b2IsValidPosition(position));
             B2_ASSERT(b2IsValidRotation(rotation));
             B2_ASSERT(b2Body_IsValid(bodyId));
             B2World world = b2GetWorld(bodyId.world0);
@@ -788,25 +794,21 @@ namespace Box2D.NET
 
             bodySim.transform.p = position;
             bodySim.transform.q = rotation;
-            bodySim.center = b2TransformPoint(bodySim.transform, bodySim.localCenter);
+            bodySim.center = b2TransformWorldPoint(bodySim.transform, bodySim.localCenter);
 
             bodySim.rotation0 = bodySim.transform.q;
             bodySim.center0 = bodySim.center;
 
             B2BroadPhase broadPhase = world.broadPhase;
 
-            B2Transform transform = bodySim.transform;
+            B2WorldTransform transform = bodySim.transform;
             float speculativeDistance = B2_SPECULATIVE_DISTANCE;
 
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
                 B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                B2AABB aabb = b2ComputeShapeAABB(shape, transform);
-                aabb.lowerBound.X -= speculativeDistance;
-                aabb.lowerBound.Y -= speculativeDistance;
-                aabb.upperBound.X += speculativeDistance;
-                aabb.upperBound.Y += speculativeDistance;
+                B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
                 shape.aabb = aabb;
 
                 if (b2AABB_Contains(shape.fatAABB, aabb) == false)
@@ -913,7 +915,7 @@ namespace Box2D.NET
         /// @param target The target transform for the body
         /// @param timeStep The time step of the next call to b2World_Step
         /// @param wake Option to wake the body or not
-        public static void b2Body_SetTargetTransform(B2BodyId bodyId, in B2Transform target, float timeStep, bool wake)
+        public static void b2Body_SetTargetTransform(B2BodyId bodyId, in B2WorldTransform target, float timeStep, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -935,11 +937,10 @@ namespace Box2D.NET
 
             B2BodySim sim = b2GetBodySim(world, body);
 
-            // Compute linear velocity
-            B2Vec2 center1 = sim.center;
-            B2Vec2 center2 = b2TransformPoint(target, sim.localCenter);
+            // Compute linear velocity. The center difference is taken in world precision then demoted
+            B2Vec2 delta = b2SubPos(b2TransformWorldPoint(target, sim.localCenter), sim.center);
             float invTimeStep = 1.0f / timeStep;
-            B2Vec2 linearVelocity = b2MulSV(invTimeStep, b2Sub(center2, center1));
+            B2Vec2 linearVelocity = b2MulSV(invTimeStep, delta);
 
             // Compute angular velocity
             B2Rot q1 = sim.transform.q;
@@ -989,7 +990,7 @@ namespace Box2D.NET
         }
 
         /// Get the linear velocity of a world point attached to a body. Usually in meters per second.
-        public static B2Vec2 b2Body_GetWorldPointVelocity(B2BodyId bodyId, B2Vec2 worldPoint)
+        public static B2Vec2 b2Body_GetWorldPointVelocity(B2BodyId bodyId, B2Pos worldPoint)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1002,7 +1003,7 @@ namespace Box2D.NET
             B2SolverSet set = b2Array_Get(ref world.solverSets, body.setIndex);
             B2BodySim bodySim = b2Array_Get(ref set.bodySims, body.localIndex);
 
-            B2Vec2 r = b2Sub(worldPoint, bodySim.center);
+            B2Vec2 r = b2SubPos(worldPoint, bodySim.center);
             B2Vec2 v = b2Add(state.linearVelocity, b2CrossSV(state.angularVelocity, r));
             return v;
         }
@@ -1014,7 +1015,7 @@ namespace Box2D.NET
         /// @param force The world force vector, usually in newtons (N)
         /// @param point The world position of the point of application
         /// @param wake Option to wake up the body
-        public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Vec2 point, bool wake)
+        public static void b2Body_ApplyForce(B2BodyId bodyId, B2Vec2 force, B2Pos point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1033,7 +1034,7 @@ namespace Box2D.NET
             {
                 B2BodySim bodySim = b2GetBodySim(world, body);
                 bodySim.force = b2Add(bodySim.force, force);
-                bodySim.torque += b2Cross(b2Sub(point, bodySim.center), force);
+                bodySim.torque += b2Cross(b2SubPos(point, bodySim.center), force);
             }
         }
 
@@ -1115,7 +1116,7 @@ namespace Box2D.NET
         /// @param wake also wake up the body
         /// @warning This should be used for one-shot impulses. If you need a steady force,
         /// use a force instead, which will work better with the sub-stepping solver.
-        public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Vec2 point, bool wake)
+        public static void b2Body_ApplyLinearImpulse(B2BodyId bodyId, B2Vec2 impulse, B2Pos point, bool wake)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1137,7 +1138,7 @@ namespace Box2D.NET
                 B2BodyState state = b2Array_Get(ref set.bodyStates, localIndex);
                 B2BodySim bodySim = b2Array_Get(ref set.bodySims, localIndex);
                 state.linearVelocity = b2MulAdd(state.linearVelocity, bodySim.invMass, impulse);
-                state.angularVelocity += bodySim.invInertia * b2Cross(b2Sub(point, bodySim.center), impulse);
+                state.angularVelocity += bodySim.invInertia * b2Cross(b2SubPos(point, bodySim.center), impulse);
 
                 b2LimitVelocity(state, world.maxLinearSpeed);
             }
@@ -1386,7 +1387,7 @@ namespace Box2D.NET
             }
 
             // Recreate shape proxies in broadphase
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
             int shapeId = body.headShapeId;
             while (shapeId != B2_NULL_INDEX)
             {
@@ -1480,7 +1481,7 @@ namespace Box2D.NET
             return body.inertia;
         }
         /// Get the center of mass position of the body in local space
-        public static B2Vec2 b2Body_GetLocalCenterOfMass(B2BodyId bodyId)
+        public static B2Vec2 b2Body_GetLocalCenter(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1488,7 +1489,7 @@ namespace Box2D.NET
             return bodySim.localCenter;
         }
         /// Get the center of mass position of the body in world space
-        public static B2Vec2 b2Body_GetWorldCenterOfMass(B2BodyId bodyId)
+        public static B2Pos b2Body_GetWorldCenter(B2BodyId bodyId)
         {
             B2World world = b2GetWorld(bodyId.world0);
             B2Body body = b2GetBodyFullId(world, bodyId);
@@ -1517,7 +1518,7 @@ namespace Box2D.NET
             body.inertia = massData.rotationalInertia;
             bodySim.localCenter = massData.center;
 
-            B2Vec2 center = b2TransformPoint(bodySim.transform, massData.center);
+            B2Pos center = b2TransformWorldPoint(bodySim.transform, massData.center);
             bodySim.center = center;
             bodySim.center0 = center;
 
@@ -1836,7 +1837,7 @@ namespace Box2D.NET
 
             b2TransferBody(world, targetSet, disabledSet, body);
 
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
+            B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
 
             // Add shapes to broad-phase
             B2BodyType proxyType = body.type;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2022 Erin Catto
+﻿// SPDX-FileCopyrightText: 2022 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -93,10 +93,10 @@ public class Mover : Sample
         return new Mover(context);
     }
 
-    private static float CastCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastResult context)
+    private static float CastCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastResult context)
     {
         CastResult result = context;
-        result.point = point;
+        result.point = b2ToVec2(point);
         result.normal = normal;
         result.bodyId = b2Shape_GetBody(shapeId);
         result.fraction = fraction;
@@ -120,7 +120,7 @@ public class Mover : Sample
         B2BodyId groundId1;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             groundId1 = b2CreateBody(m_worldId, bodyDef);
 
             const string path =
@@ -148,7 +148,7 @@ public class Mover : Sample
         B2BodyId groundId2;
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(98.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(98.0f, 0.0f));
             groundId2 = b2CreateBody(m_worldId, bodyDef);
 
             const string path =
@@ -195,7 +195,7 @@ public class Mover : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(xBase + 0.5f + 1.0f * i, yBase);
+                bodyDef.position = b2ToPos(new B2Vec2(xBase + 0.5f + 1.0f * i, yBase));
                 bodyDef.angularDamping = 0.2f;
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, shapeDef, box);
@@ -203,8 +203,8 @@ public class Mover : Sample
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * i, yBase);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 b2CreateRevoluteJoint(m_worldId, jointDef);
 
                 prevBodyId = bodyId;
@@ -214,15 +214,15 @@ public class Mover : Sample
                 B2Vec2 pivot = new B2Vec2(xBase + 1.0f * count, yBase);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = groundId2;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 b2CreateRevoluteJoint(m_worldId, jointDef);
             }
         }
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(32.0f, 4.5f);
+            bodyDef.position = b2ToPos(new B2Vec2(32.0f, 4.5f));
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             m_friendlyShape.maxPush = 0.025f;
@@ -237,7 +237,7 @@ public class Mover : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(7.0f, 7.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(7.0f, 7.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -252,7 +252,7 @@ public class Mover : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
-            bodyDef.position = new B2Vec2(m_elevatorBase.X, m_elevatorBase.Y - m_elevatorAmplitude);
+            bodyDef.position = b2ToPos(new B2Vec2(m_elevatorBase.X, m_elevatorBase.Y - m_elevatorAmplitude));
             m_elevatorId = b2CreateBody(m_worldId, bodyDef);
 
             m_elevatorShape = new ShapeUserData
@@ -362,7 +362,7 @@ public class Mover : Sample
             translation = new B2Vec2(0.0f, -rayLength);
         }
 
-        b2World_CastShape(m_worldId, ref proxy, translation, pogoFilter, CastCallback, castResult);
+        b2World_CastShape(m_worldId, b2Pos_zero, ref proxy, translation, pogoFilter, CastCallback, castResult);
 
         // Avoid snapping to ground if still going up
         if (m_onGround == false)
@@ -417,7 +417,7 @@ public class Mover : Sample
                 DrawLine(m_draw, segment.point1 + delta, segment.point2 + delta, B2HexColor.b2_colorPlum);
             }
 
-            b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), castResult.point, true);
+            b2Body_ApplyForce(castResult.bodyId, new B2Vec2(0.0f, -50.0f), b2ToPos(castResult.point), true);
         }
 
         B2Vec2 target = m_transform.p + timeStep * m_velocity + timeStep * m_pogoVelocity * new B2Vec2(0.0f, 1.0f);
@@ -440,12 +440,12 @@ public class Mover : Sample
             mover.center2 = b2TransformPoint(m_transform, m_capsule.center2);
             mover.radius = m_capsule.radius;
 
-            b2World_CollideMover(m_worldId, mover, collideFilter, PlaneResultFcn, this);
+            b2World_CollideMover(m_worldId, b2Pos_zero, mover, collideFilter, PlaneResultFcn, this);
             B2PlaneSolverResult result = b2SolvePlanes(target - m_transform.p, m_planes, m_planeCount);
 
             m_totalIterations += result.iterationCount;
 
-            float fraction = b2World_CastMover(m_worldId, mover, result.translation, castFilter);
+            float fraction = b2World_CastMover(m_worldId, b2Pos_zero, mover, result.translation, castFilter);
 
             B2Vec2 delta = fraction * result.translation;
             m_transform.p += delta;
@@ -528,7 +528,7 @@ public class Mover : Sample
             return true;
         }
 
-        B2Vec2 center = b2Body_GetWorldCenterOfMass(bodyId);
+        B2Vec2 center = b2ToVec2(b2Body_GetWorldCenter(bodyId));
         B2Vec2 direction = b2Normalize(center - self.m_transform.p);
         B2Vec2 impulse = new B2Vec2(2.0f * direction.X, 2.0f);
         b2Body_ApplyLinearImpulseToCenter(bodyId, impulse, true);
@@ -544,7 +544,7 @@ public class Mover : Sample
             B2Circle circle = new B2Circle(point, 0.5f);
             B2ShapeProxy proxy = b2MakeProxy(circle.center, 1, circle.radius);
             B2QueryFilter filter = new B2QueryFilter(MoverBit, DebrisBit);
-            b2World_OverlapShape(m_worldId, ref proxy, filter, Kick, this);
+            b2World_OverlapShape(m_worldId, b2Pos_zero, ref proxy, filter, Kick, this);
             DrawCircle(m_draw, circle.center, circle.radius, B2HexColor.b2_colorGoldenRod);
         }
 
@@ -574,7 +574,7 @@ public class Mover : Sample
             point.Y = m_elevatorAmplitude * MathF.Cos(1.0f * m_time + B2_PI) + m_elevatorBase.Y;
 
             bool wake = true;
-            b2Body_SetTargetTransform(m_elevatorId, new B2Transform(point, b2Rot_identity), timeStep, wake);
+            b2Body_SetTargetTransform(m_elevatorId, b2MakeWorldTransform(new B2Transform(point, b2Rot_identity)), timeStep, wake);
         }
 
         m_time += timeStep;

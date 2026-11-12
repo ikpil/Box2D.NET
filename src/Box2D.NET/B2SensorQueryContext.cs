@@ -10,6 +10,6 @@ namespace Box2D.NET
         public B2SensorTaskContext taskContext;
         public B2Sensor sensor;
         public B2Shape sensorShape;
-        public B2Transform transform;
+        public B2WorldTransform transform;
     }
 }

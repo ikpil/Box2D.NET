@@ -64,7 +64,7 @@ public class Platform : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_staticBody;
-            bodyDef.position = new B2Vec2(-6.0f, 6.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-6.0f, 6.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -80,7 +80,7 @@ public class Platform : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_kinematicBody;
-            bodyDef.position = new B2Vec2(0.0f, 6.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 6.0f));
             bodyDef.linearVelocity = new B2Vec2(2.0f, 0.0f);
             m_movingPlatformId = b2CreateBody(m_worldId, bodyDef);
 
@@ -99,7 +99,7 @@ public class Platform : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.motionLocks.angularZ = true;
             bodyDef.linearDamping = 0.5f;
-            bodyDef.position = new B2Vec2(0.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 1.0f));
             m_playerId = b2CreateBody(m_worldId, bodyDef);
 
             m_radius = 0.5f;
@@ -116,7 +116,7 @@ public class Platform : Sample
         m_jumping = false;
     }
 
-    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
+    private static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context)
     {
         Platform self = context as Platform;
         return self.PreSolve(shapeIdA, shapeIdB, point, normal);
@@ -125,7 +125,7 @@ public class Platform : Sample
     // This callback must be thread-safe. It may be called multiple times simultaneously.
     // Notice how this method is constant and doesn't change any data. It also
     // does not try to access any values in the world that may be changing, such as contact data.
-    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal)
+    public bool PreSolve(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal)
     {
         B2_ASSERT(b2Shape_IsValid(shapeIdA));
         B2_ASSERT(b2Shape_IsValid(shapeIdB));
@@ -198,7 +198,7 @@ public class Platform : Sample
 
         // A kinematic body is moved by setting its velocity. This
         // ensure friction works correctly.
-        B2Vec2 platformPosition = b2Body_GetPosition(m_movingPlatformId);
+        B2Vec2 platformPosition = b2ToVec2(b2Body_GetPosition(m_movingPlatformId));
         if (platformPosition.X < -15.0f)
         {
             b2Body_SetLinearVelocity(m_movingPlatformId, new B2Vec2(2.0f, 0.0f));

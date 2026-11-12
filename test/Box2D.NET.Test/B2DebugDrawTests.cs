@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2026 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Worlds;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Test;
 
@@ -36,7 +37,7 @@ public class B2DebugDrawTests
 
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 0.9f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.9f));
             B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             shapeDef.density = 1.0f;

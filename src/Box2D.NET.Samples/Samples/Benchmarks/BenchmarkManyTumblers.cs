@@ -71,7 +71,7 @@ public class BenchmarkManyTumblers : Sample
     {
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_kinematicBody;
-        bodyDef.position = new B2Vec2(position.X, position.Y);
+        bodyDef.position = b2ToPos(new B2Vec2(position.X, position.Y));
         bodyDef.angularVelocity = (B2_PI / 180.0f) * m_angularSpeed;
         B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
         m_tumblerIds[index] = bodyId;
@@ -183,7 +183,7 @@ public class BenchmarkManyTumblers : Sample
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = m_positions[i];
+                bodyDef.position = b2ToPos(m_positions[i]);
                 m_bodyIds[m_bodyIndex] = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(m_bodyIds[m_bodyIndex], shapeDef, capsule);
 

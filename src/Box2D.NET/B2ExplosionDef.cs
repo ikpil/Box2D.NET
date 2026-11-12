@@ -13,7 +13,7 @@ namespace Box2D.NET
         public ulong maskBits;
 
         /// The center of the explosion in world space
-        public B2Vec2 position;
+        public B2Pos position;
 
         /// The radius of the explosion
         public float radius;

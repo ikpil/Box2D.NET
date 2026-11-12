@@ -146,7 +146,7 @@ public class ChainShape : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(-55.0f, 13.5f);
+        bodyDef.position = b2ToPos(new B2Vec2(-55.0f, 13.5f));
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();

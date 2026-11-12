@@ -136,7 +136,7 @@ public class BenchmarkSensor : Sample
         {
             // stagger bodies to avoid bunching up events into a single update
             float yOffset = RandomFloatRange(-1.0f, 1.0f);
-            bodyDef.position = new B2Vec2(shift * i - xCenter, y + yOffset);
+            bodyDef.position = b2ToPos(new B2Vec2(shift * i - xCenter, y + yOffset));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             b2CreateCircleShape(bodyId, shapeDef, circle);

@@ -56,7 +56,7 @@ public class SpeculativeFallback : Sample
             float offset = 8.0f;
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(offset, 12.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(offset, 12.0f));
             bodyDef.linearVelocity = new B2Vec2(0.0f, -100.0f);
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 

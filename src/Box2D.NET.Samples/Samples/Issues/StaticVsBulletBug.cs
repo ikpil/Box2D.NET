@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Hulls;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Issues;
 
@@ -52,7 +53,7 @@ public class StaticVsBulletBug : Sample
 
         {
             B2BodyDef bd = b2DefaultBodyDef();
-            bd.position = new B2Vec2(58.9243050f, 77.5401459f);
+            bd.position = b2ToPos(new B2Vec2(58.9243050f, 77.5401459f));
             bd.type = B2BodyType.b2_dynamicBody;
             bd.motionLocks.angularZ = true;
             bd.linearVelocity = new B2Vec2(104.868881f, -281.073883f);

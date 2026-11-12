@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -6,6 +6,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -64,21 +65,21 @@ public class ChainLink : Sample
         B2ShapeDef shapeDef = b2DefaultShapeDef();
 
         {
-            bodyDef.position = new B2Vec2(-5.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-5.0f, 2.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
             b2CreateCircleShape(bodyId, shapeDef, circle);
         }
 
         {
-            bodyDef.position = new B2Vec2(0.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 2.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2Capsule capsule = new B2Capsule(new B2Vec2(-0.5f, 0.0f), new B2Vec2(0.5f, 0.0f), 0.25f);
             b2CreateCapsuleShape(bodyId, shapeDef, capsule);
         }
 
         {
-            bodyDef.position = new B2Vec2(5.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(5.0f, 2.0f));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             float h = 0.5f;
             B2Polygon box = b2MakeBox(h, h);

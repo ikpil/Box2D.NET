@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -7,6 +7,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.Samples.SampleText;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -43,7 +44,7 @@ public class SingleBox : Sample
         bodyDef.type = B2BodyType.b2_dynamicBody;
 
         B2Polygon box = b2MakeBox(extent, extent);
-        bodyDef.position = new B2Vec2(0.0f, 1.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 1.0f));
         bodyDef.linearVelocity = new B2Vec2(5.0f, 0.0f);
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
         b2CreatePolygonShape(m_bodyId, shapeDef, box);
@@ -56,7 +57,7 @@ public class SingleBox : Sample
 
         // m_context.g_draw.DrawCircle({0.0f, 2.0f}, 1.0f, b2HexColor.b2_colorWhite);
 
-        B2Vec2 position = b2Body_GetPosition(m_bodyId);
+        B2Vec2 position = b2ToVec2(b2Body_GetPosition(m_bodyId));
         DrawScreenTextLine($"(x, y) = ({FormatFloat(position.X, 2)}, {FormatFloat(position.Y, 2)})");
     }
 }

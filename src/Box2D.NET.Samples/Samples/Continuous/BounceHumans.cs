@@ -84,7 +84,7 @@ public class BounceHumans : Sample
             float jointHertz = 1.0f;
             float jointDampingRatio = 0.1f;
 
-            CreateHuman(ref m_humans[m_humanCount], m_worldId, new B2Vec2(0.0f, 5.0f), 1.0f, jointFrictionTorque, jointHertz,
+            CreateHuman(ref m_humans[m_humanCount], m_worldId, b2ToPos(new B2Vec2(0.0f, 5.0f)), 1.0f, jointFrictionTorque, jointHertz,
                 jointDampingRatio, 1, B2UserData.Empty, true);
             // Human_SetVelocity( m_humans + m_humanCount, { 10.0f - 5.0f * m_humanCount, -20.0f + 5.0f * m_humanCount } );
 

@@ -7,6 +7,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -41,14 +42,14 @@ public class FilterJoint : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-4.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-4.0f, 2.0f));
             B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeSquare(2.0f);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(bodyId1, shapeDef, box);
 
-            bodyDef.position = new B2Vec2(4.0f, 2.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(4.0f, 2.0f));
             B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
             b2CreatePolygonShape(bodyId2, shapeDef, box);
 

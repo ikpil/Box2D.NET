@@ -8,15 +8,15 @@ namespace Box2D.NET
     // Transform data used for collision and solver preparation.
     public class B2BodySim
     {
-        // transform for body origin
-        public B2Transform transform;
+        // transform for body origin, double translation in large world mode
+        public B2WorldTransform transform;
 
         // center of mass position in world space
-        public B2Vec2 center;
+        public B2Pos center;
 
         // previous rotation and COM for TOI
         public B2Rot rotation0;
-        public B2Vec2 center0;
+        public B2Pos center0;
 
         // location of center of mass relative to the body origin
         public B2Vec2 localCenter;
@@ -42,12 +42,12 @@ namespace Box2D.NET
 
         public void Clear()
         {
-            transform = new B2Transform();
+            transform = new B2WorldTransform();
 
-            center = new B2Vec2();
+            center = new B2Pos();
 
             rotation0 = new B2Rot();
-            center0 = new B2Vec2();
+            center0 = new B2Pos();
 
             localCenter = new B2Vec2();
 

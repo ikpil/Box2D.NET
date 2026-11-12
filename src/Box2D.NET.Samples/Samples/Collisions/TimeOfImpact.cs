@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -122,8 +122,8 @@ public class TimeOfImpact : Sample
             B2DistanceInput distanceInput = new B2DistanceInput();
             distanceInput.proxyA = _input.proxyA;
             distanceInput.proxyB = _input.proxyB;
-            distanceInput.transformA = b2GetSweepTransform(_sweepA, _output.fraction);
-            distanceInput.transformB = b2GetSweepTransform(_sweepB, _output.fraction);
+            distanceInput.transform = b2InvMulTransforms(b2GetSweepTransform(_sweepA, _output.fraction),
+                b2GetSweepTransform(_sweepB, _output.fraction));
             distanceInput.useRadii = false;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput distanceOutput = b2ShapeDistance(ref distanceInput, ref cache, null, 0);

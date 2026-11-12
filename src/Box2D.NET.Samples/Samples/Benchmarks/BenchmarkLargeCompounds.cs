@@ -85,7 +85,7 @@ public class BenchmarkLargeCompounds : Sample
                 for (int n = 0; n < count; ++n)
                 {
                     float xbody = -0.5f * grid * count * span + n * span * grid;
-                    bodyDef.position = new B2Vec2(xbody, ybody);
+                    bodyDef.position = b2ToPos(new B2Vec2(xbody, ybody));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                     for (int i = 0; i < span; ++i)

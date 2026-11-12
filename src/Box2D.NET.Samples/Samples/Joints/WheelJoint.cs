@@ -56,7 +56,7 @@ public class WheelJoint : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 10.25f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 10.25f));
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -70,8 +70,8 @@ public class WheelJoint : Sample
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = bodyId;
             jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector(axis);
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.motorSpeed = m_motorSpeed;
             jointDef.maxMotorTorque = m_motorTorque;
             jointDef.enableMotor = m_enableMotor;

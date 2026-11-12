@@ -29,7 +29,7 @@ public class CardHouse : Sample
         }
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new B2Vec2(0.0f, -2.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, -2.0f));
         B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -58,21 +58,21 @@ public class CardHouse : Sample
             {
                 if (i != Nb - 1)
                 {
-                    bodyDef.position = new B2Vec2(z + 0.25f, y + cardHeight - 0.015f);
+                    bodyDef.position = b2ToPos(new B2Vec2(z + 0.25f, y + cardHeight - 0.015f));
                     bodyDef.rotation = b2MakeRot(angle2);
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);
                 }
 
                 {
-                    bodyDef.position = new B2Vec2(z, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(z, y));
                     bodyDef.rotation = b2MakeRot(angle1);
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);
 
                     z += 0.175f;
 
-                    bodyDef.position = new B2Vec2(z, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(z, y));
                     bodyDef.rotation = b2MakeRot(angle0);
                     bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreatePolygonShape(bodyId, shapeDef, cardBox);

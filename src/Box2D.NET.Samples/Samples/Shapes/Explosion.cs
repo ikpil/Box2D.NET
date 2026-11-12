@@ -63,13 +63,13 @@ public class Explosion : Sample
         for (float angle = 0.0f; angle < 360.0f; angle += 30.0f)
         {
             B2CosSin cosSin = b2ComputeCosSin(angle * B2_PI / 180.0f);
-            bodyDef.position = new B2Vec2(r * cosSin.cosine, r * cosSin.sine);
+            bodyDef.position = b2ToPos(new B2Vec2(r * cosSin.cosine, r * cosSin.sine));
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeBox(1.0f, 0.1f);
             b2CreatePolygonShape(bodyId, shapeDef, box);
 
-            weldDef.@base.localFrameA.p = bodyDef.position;
+            weldDef.@base.localFrameA.p = b2ToVec2(bodyDef.position);
             weldDef.@base.bodyIdB = bodyId;
 
             B2JointId jointId = b2CreateWeldJoint(m_worldId, weldDef);
@@ -88,7 +88,7 @@ public class Explosion : Sample
         if (ImGui.Button("Explode"))
         {
             B2ExplosionDef def = b2DefaultExplosionDef();
-            def.position = b2Vec2_zero;
+            def.position = b2Pos_zero;
             def.radius = m_radius;
             def.falloff = m_falloff;
             def.impulsePerLength = m_impulse;

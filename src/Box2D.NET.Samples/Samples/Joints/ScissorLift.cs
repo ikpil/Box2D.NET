@@ -72,12 +72,12 @@ public class ScissorLift : Sample
 
             for (int i = 0; i < N; ++i)
             {
-                bodyDef.position = new B2Vec2(0.0f, y);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, y));
                 bodyDef.rotation = b2MakeRot(0.15f);
                 B2BodyId bodyId1 = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId1, shapeDef, capsule);
 
-                bodyDef.position = new B2Vec2(0.0f, y);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, y));
                 bodyDef.rotation = b2MakeRot(-0.15f);
 
                 B2BodyId bodyId2 = b2CreateBody(m_worldId, bodyDef);
@@ -147,7 +147,7 @@ public class ScissorLift : Sample
                 y += 1.0f;
             }
 
-            bodyDef.position = new B2Vec2(0.0f, y);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, y));
             bodyDef.rotation = b2Rot_identity;
             B2BodyId platformId = b2CreateBody(m_worldId, bodyDef);
 

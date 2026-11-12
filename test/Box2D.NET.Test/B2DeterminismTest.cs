@@ -14,8 +14,8 @@ namespace Box2D.NET.Test;
 
 public class B2DeterminismTest
 {
-    private const int EXPECTED_SLEEP_STEP = 328;
-    private const uint EXPECTED_HASH = 0x26E08AEE;
+    private const int EXPECTED_SLEEP_STEP = 327;
+    private const uint EXPECTED_HASH = 0x5F0C8CAC;
 
     // todo_erin move this to shared
     public static int SingleMultithreadingTest(int workerCount)

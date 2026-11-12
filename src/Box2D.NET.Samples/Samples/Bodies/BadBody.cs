@@ -43,7 +43,7 @@ public class BadBody : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(0.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 3.0f));
             bodyDef.angularVelocity = 0.5f;
             bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
 
@@ -61,7 +61,7 @@ public class BadBody : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(2.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(2.0f, 3.0f));
             bodyDef.rotation = b2MakeRot(0.25f * B2_PI);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);

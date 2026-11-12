@@ -38,7 +38,7 @@ public class ChainDrop : Sample
         //b2World_SetContactTuning( m_worldId, 30.0f, 1.0f, 100.0f );
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new B2Vec2(0.0f, -6.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, -6.0f));
         B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
         B2Vec2[] points = new B2Vec2[4] { new B2Vec2(-10.0f, -2.0f), new B2Vec2(10.0f, -2.0f), new B2Vec2(10.0f, 1.0f), new B2Vec2(-10.0f, 1.0f) };
@@ -67,7 +67,7 @@ public class ChainDrop : Sample
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.linearVelocity = new B2Vec2(0.0f, m_speed);
-        bodyDef.position = new B2Vec2(0.0f, 10.0f + m_yOffset);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 10.0f + m_yOffset));
         bodyDef.rotation = b2MakeRot(0.5f * B2_PI);
         bodyDef.motionLocks.angularZ = true;
         m_bodyId = b2CreateBody(m_worldId, bodyDef);

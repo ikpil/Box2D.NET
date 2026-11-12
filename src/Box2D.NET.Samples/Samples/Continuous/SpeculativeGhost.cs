@@ -45,7 +45,7 @@ public class SpeculativeGhost : Sample
             bodyDef.type = B2BodyType.b2_dynamicBody;
 
             // The speculative distance is 0.02 meters, so this avoid it
-            bodyDef.position = new B2Vec2(0.015f, 2.515f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.015f, 2.515f));
             bodyDef.linearVelocity = new B2Vec2(0.1f * 1.25f * m_context.hertz, -0.1f * 1.25f * m_context.hertz);
             bodyDef.gravityScale = 0.0f;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -6,6 +6,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Bodies;
 
@@ -42,7 +43,7 @@ public class MixedLocks : Sample
 
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
-                bodyDef.position = new B2Vec2(2.0f, 1.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(2.0f, 1.0f));
                 bodyDef.name = "static";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -52,7 +53,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(1.0f, 1.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(1.0f, 1.0f));
                 bodyDef.name = "free";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -62,7 +63,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(1.0f, 3.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(1.0f, 3.0f));
                 bodyDef.name = "free";
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -72,7 +73,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(-1.0f, 1.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(-1.0f, 1.0f));
                 bodyDef.motionLocks.angularZ = true;
                 bodyDef.name = "angular z";
 
@@ -83,7 +84,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(-2.0f, 2.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(-2.0f, 2.0f));
                 bodyDef.motionLocks.linearX = true;
                 bodyDef.name = "linear x";
 
@@ -94,7 +95,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(-1.0f, 2.5f);
+                bodyDef.position = b2ToPos(new B2Vec2(-1.0f, 2.5f));
                 bodyDef.motionLocks.linearY = true;
                 bodyDef.motionLocks.angularZ = true;
                 bodyDef.name = "lin y ang z";
@@ -106,7 +107,7 @@ public class MixedLocks : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(0.0f, 1.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, 1.0f));
                 bodyDef.motionLocks.linearX = true;
                 bodyDef.motionLocks.linearY = true;
                 bodyDef.motionLocks.angularZ = true;

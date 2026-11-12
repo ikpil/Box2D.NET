@@ -41,7 +41,7 @@ public class DisableCrash : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-2.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-2.0f, 3.0f));
             bodyDef.isEnabled = m_isEnabled;
             m_attachmentId = b2CreateBody(m_worldId, bodyDef);
 
@@ -53,7 +53,7 @@ public class DisableCrash : Sample
         // Define platform
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(-4.0f, 5.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-4.0f, 5.0f));
             m_platformId = b2CreateBody(m_worldId, bodyDef);
 
             B2Polygon box = b2MakeOffsetBox(0.5f, 4.0f, new B2Vec2(4.0f, 0.0f), b2MakeRot(0.5f * B2_PI));
@@ -65,8 +65,8 @@ public class DisableCrash : Sample
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
             revoluteDef.@base.bodyIdA = m_attachmentId;
             revoluteDef.@base.bodyIdB = m_platformId;
-            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_attachmentId, pivot);
-            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_attachmentId, b2ToPos(pivot));
+            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, b2ToPos(pivot));
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
             b2CreateRevoluteJoint(m_worldId, revoluteDef);

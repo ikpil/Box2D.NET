@@ -19,7 +19,7 @@ namespace Box2D.NET.Shared
 {
     public static class Humans
     {
-        public static void CreateHuman(ref Human human, B2WorldId worldId, B2Vec2 position, float scale, float frictionTorque, float hertz, float dampingRatio,
+        public static void CreateHuman(ref Human human, B2WorldId worldId, B2Pos position, float scale, float frictionTorque, float hertz, float dampingRatio,
             int groupIndex, B2UserData userData, bool colorize)
         {
             B2_ASSERT(human.isSpawned == false);
@@ -80,7 +80,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_hip];
                 bone.parentIndex = -1;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.95f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.95f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "hip";
 
@@ -100,7 +100,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_torso];
                 bone.parentIndex = (int)BoneId.bone_hip;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 1.2f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 1.2f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "torso";
 
@@ -117,7 +117,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.135f * s), new B2Vec2(0.0f, 0.135f * s), 0.09f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.0f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.0f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -141,7 +141,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_head];
                 bone.parentIndex = (int)BoneId.bone_torso;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f * s, 1.475f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f * s, 1.475f * s));
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.name = "head";
 
@@ -160,7 +160,7 @@ namespace Box2D.NET.Shared
                 // capsule = { { 0.0f, -0.12f * s }, { 0.0f, -0.08f * s }, 0.05f * s };
                 // b2CreateCapsuleShape( bone.bodyId, &shapeDef, &capsule );
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.4f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.4f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -184,7 +184,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_upperLeftLeg];
                 bone.parentIndex = (int)BoneId.bone_hip;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.775f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_left_leg";
 
@@ -199,7 +199,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 0.9f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -232,7 +232,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_lowerLeftLeg];
                 bone.parentIndex = (int)BoneId.bone_upperLeftLeg;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.475f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "lower_left_leg";
 
@@ -255,7 +255,7 @@ namespace Box2D.NET.Shared
 
                 b2CreatePolygonShape(bone.bodyId, footShapeDef, footPolygon);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 0.625f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -279,7 +279,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_upperRightLeg];
                 bone.parentIndex = (int)BoneId.bone_hip;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.775f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.775f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_right_leg";
 
@@ -294,7 +294,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.06f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.9f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 0.9f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -318,7 +318,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_lowerRightLeg];
                 bone.parentIndex = (int)BoneId.bone_upperRightLeg;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.475f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.475f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "lower_right_leg";
 
@@ -341,7 +341,7 @@ namespace Box2D.NET.Shared
 
                 b2CreatePolygonShape(bone.bodyId, footShapeDef, footPolygon);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 0.625f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 0.625f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -366,7 +366,7 @@ namespace Box2D.NET.Shared
                 bone.parentIndex = (int)BoneId.bone_torso;
                 bone.frictionScale = 0.5f;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 1.225f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_left_arm";
 
@@ -380,7 +380,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.35f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -404,7 +404,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_lowerLeftArm];
                 bone.parentIndex = (int)BoneId.bone_upperLeftArm;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.975f * s));
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.name = "lower_left_arm";
 
@@ -419,7 +419,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.1f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -444,7 +444,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_upperRightArm];
                 bone.parentIndex = (int)BoneId.bone_torso;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 1.225f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 1.225f * s));
                 bodyDef.linearDamping = 0.0f;
                 bodyDef.name = "upper_right_arm";
 
@@ -459,7 +459,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.035f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.35f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.35f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -483,7 +483,7 @@ namespace Box2D.NET.Shared
                 ref Bone bone = ref human.bones[(int)BoneId.bone_lowerRightArm];
                 bone.parentIndex = (int)BoneId.bone_upperRightArm;
 
-                bodyDef.position = b2Add(new B2Vec2(0.0f, 0.975f * s), position);
+                bodyDef.position = b2OffsetPos(position, new B2Vec2(0.0f, 0.975f * s));
                 bodyDef.linearDamping = 0.1f;
                 bodyDef.name = "lower_right_arm";
 
@@ -498,7 +498,7 @@ namespace Box2D.NET.Shared
                 B2Capsule capsule = new B2Capsule(new B2Vec2(0.0f, -0.125f * s), new B2Vec2(0.0f, 0.125f * s), 0.03f * s);
                 b2CreateCapsuleShape(bone.bodyId, shapeDef, capsule);
 
-                B2Vec2 pivot = b2Add(new B2Vec2(0.0f, 1.1f * s), position);
+                B2Pos pivot = b2OffsetPos(position, new B2Vec2(0.0f, 1.1f * s));
                 B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
                 jointDef.@base.bodyIdA = human.bones[bone.parentIndex].bodyId;
                 jointDef.@base.bodyIdB = bone.bodyId;
@@ -649,7 +649,7 @@ namespace Box2D.NET.Shared
             float originalRatio = scale / human.originalScale;
             float frictionTorque = (originalRatio * originalRatio * originalRatio) * human.frictionTorque;
 
-            B2Vec2 origin = b2Body_GetPosition(human.bones[0].bodyId);
+            B2Pos origin = b2Body_GetPosition(human.bones[0].bodyId);
 
             for (int boneIndex = 0; boneIndex < (int)BoneId.bone_count; ++boneIndex)
             {
@@ -657,9 +657,10 @@ namespace Box2D.NET.Shared
 
                 if (boneIndex > 0)
                 {
-                    B2Transform transform = b2Body_GetTransform(bone.bodyId);
-                    transform.p = b2MulAdd(origin, ratio, b2Sub(transform.p, origin));
-                    b2Body_SetTransform(bone.bodyId, transform.p, transform.q);
+                    // Scale the bone offset from the root in float, the offset is bone scale
+                    B2WorldTransform worldTransform = b2Body_GetTransform(bone.bodyId);
+                    B2Vec2 d = b2MulSV(ratio, b2SubPos(worldTransform.p, origin));
+                    b2Body_SetTransform(bone.bodyId, b2OffsetPos(origin, d), worldTransform.q);
 
                     B2Transform localFrameA = b2Joint_GetLocalFrameA(bone.jointId);
                     B2Transform localFrameB = b2Joint_GetLocalFrameB(bone.jointId);

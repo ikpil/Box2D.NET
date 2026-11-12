@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -12,6 +12,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -60,7 +61,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -71,8 +72,8 @@ public class MotionLocks : Sample
             B2DistanceJointDef jointDef = b2DefaultDistanceJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot1);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot2);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot1));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot2));
             jointDef.length = length;
             b2CreateDistanceJoint(m_worldId, jointDef);
         }
@@ -84,7 +85,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -105,7 +106,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -114,8 +115,8 @@ public class MotionLocks : Sample
             B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             b2CreatePrismaticJoint(m_worldId, jointDef);
         }
 
@@ -126,7 +127,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -135,8 +136,8 @@ public class MotionLocks : Sample
             B2RevoluteJointDef jointDef = b2DefaultRevoluteJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             b2CreateRevoluteJoint(m_worldId, jointDef);
         }
 
@@ -147,7 +148,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -156,8 +157,8 @@ public class MotionLocks : Sample
             B2WeldJointDef jointDef = b2DefaultWeldJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.angularHertz = 1.0f;
             jointDef.angularDampingRatio = 0.5f;
             jointDef.linearHertz = 1.0f;
@@ -172,7 +173,7 @@ public class MotionLocks : Sample
         {
             B2_ASSERT(index < e_count);
 
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
             m_bodyIds[index] = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
             b2CreatePolygonShape(m_bodyIds[index], shapeDef, box);
@@ -181,8 +182,8 @@ public class MotionLocks : Sample
             B2WheelJointDef jointDef = b2DefaultWheelJointDef();
             jointDef.@base.bodyIdA = groundId;
             jointDef.@base.bodyIdB = m_bodyIds[index];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
             jointDef.hertz = 1.0f;
             jointDef.dampingRatio = 0.7f;
             jointDef.lowerTranslation = -1.0f;

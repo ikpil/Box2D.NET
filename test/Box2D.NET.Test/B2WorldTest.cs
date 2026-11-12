@@ -36,7 +36,7 @@ public class B2WorldTest
 
         // Define the ground body.
         B2BodyDef groundBodyDef = b2DefaultBodyDef();
-        groundBodyDef.position = new B2Vec2(0.0f, -10.0f);
+        groundBodyDef.position = b2ToPos(new B2Vec2(0.0f, -10.0f));
 
         // Call the body factory which allocates memory for the ground body
         // from a pool and creates the ground box shape (also from a pool).
@@ -54,7 +54,7 @@ public class B2WorldTest
         // Define the dynamic body. We set its position and call the body factory.
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 4.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 4.0f));
 
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
 
@@ -79,7 +79,7 @@ public class B2WorldTest
         float timeStep = 1.0f / 60.0f;
         int subStepCount = 4;
 
-        B2Vec2 position = b2Body_GetPosition(bodyId);
+        B2Pos position = b2Body_GetPosition(bodyId);
         B2Rot rotation = b2Body_GetRotation(bodyId);
 
         // This is our little game loop.
@@ -145,7 +145,7 @@ public class B2WorldTest
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 4.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 4.0f));
 
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         b2CreatePolygonShape(bodyId, shapeDef, b2MakeBox(0.5f, 0.5f));
@@ -292,7 +292,7 @@ public class B2WorldTest
         return true;
     }
 
-    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context)
+    public static bool PreSolveStatic(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context)
     {
         B2_UNUSED(shapeIdA);
         B2_UNUSED(shapeIdB);
@@ -387,7 +387,7 @@ public class B2WorldTest
         bodyDef.type = B2BodyType.b2_dynamicBody;
         bodyDef.isBullet = true;
         bodyDef.gravityScale = 0.0f;
-        bodyDef.position = new B2Vec2(7.39814f, 4.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(7.39814f, 4.0f));
         bodyDef.linearVelocity = new B2Vec2(-20.0f, 0.0f);
         B2BodyId bulletId = b2CreateBody(worldId, bodyDef);
         shapeDef = b2DefaultShapeDef();
@@ -405,7 +405,7 @@ public class B2WorldTest
             int subStepCount = 4;
             b2World_Step(worldId, timeStep, subStepCount);
 
-            B2Vec2 bulletPos = b2Body_GetPosition(bulletId);
+            B2Pos bulletPos = b2Body_GetPosition(bulletId);
             //Console.Write( "Bullet pos: %g %g\n", bulletPos.x, bulletPos.y );
 
             B2SensorEvents events = b2World_GetSensorEvents(worldId);
@@ -511,7 +511,7 @@ public class B2WorldTest
 
         B2BodyDef dynamicDef = b2DefaultBodyDef();
         dynamicDef.type = B2BodyType.b2_dynamicBody;
-        dynamicDef.position = new B2Vec2(0.0f, 2.0f);
+        dynamicDef.position = b2ToPos(new B2Vec2(0.0f, 2.0f));
         B2BodyId circleBodyId = b2CreateBody(worldId, dynamicDef);
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
         B2ShapeDef circleShapeDef = b2DefaultShapeDef();
@@ -522,7 +522,7 @@ public class B2WorldTest
             b2World_Step(worldId, 1.0f / 60.0f, 4);
         }
 
-        B2Vec2 circlePos = b2Body_GetPosition(circleBodyId);
+        B2Pos circlePos = b2Body_GetPosition(circleBodyId);
         Assert.That(circlePos.Y, Is.GreaterThan(0.0f));
 
         B2ChainSegment cs2 = new B2ChainSegment();
@@ -700,14 +700,14 @@ public class B2WorldTest
         Assert.That(empty.upperBound.X, Is.EqualTo(0.0f));
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new B2Vec2(-10.0f, 0.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(-10.0f, 0.0f));
         B2BodyId staticId = b2CreateBody(worldId, bodyDef);
         B2ShapeDef shapeDef = b2DefaultShapeDef();
         B2Polygon box = b2MakeBox(1.0f, 1.0f);
         b2CreatePolygonShape(staticId, shapeDef, box);
 
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(10.0f, 5.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(10.0f, 5.0f));
         B2BodyId dynamicId = b2CreateBody(worldId, bodyDef);
         b2CreatePolygonShape(dynamicId, shapeDef, box);
 

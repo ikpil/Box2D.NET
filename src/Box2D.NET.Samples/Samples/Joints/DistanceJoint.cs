@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2DistanceJoints;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -113,7 +114,7 @@ public class DistanceJoint : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
             bodyDef.angularDamping = 1.0f;
-            bodyDef.position = new B2Vec2(m_length * (i + 1.0f), yOffset);
+            bodyDef.position = b2ToPos(new B2Vec2(m_length * (i + 1.0f), yOffset));
             m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
             b2CreateCircleShape(m_bodyIds[i], shapeDef, circle);
 
@@ -121,8 +122,8 @@ public class DistanceJoint : Sample
             B2Vec2 pivotB = new B2Vec2(m_length * (i + 1.0f), yOffset);
             jointDef.@base.bodyIdA = prevBodyId;
             jointDef.@base.bodyIdB = m_bodyIds[i];
-            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivotA);
-            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivotB);
+            jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivotA));
+            jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivotB));
             m_jointIds[i] = b2CreateDistanceJoint(m_worldId, jointDef);
 
             prevBodyId = m_bodyIds[i];

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -9,6 +9,7 @@ using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Worlds;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.Samples.Graphics.Draws;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Events;
 
@@ -57,7 +58,7 @@ public class PersistentContact : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-8.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-8.0f, 1.0f));
             bodyDef.linearVelocity = new B2Vec2(2.0f, 0.0f);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
@@ -98,7 +99,8 @@ public class PersistentContact : Sample
             for (int i = 0; i < data.manifold.pointCount; ++i)
             {
                 ref readonly B2ManifoldPoint manifoldPoint = ref data.manifold.points[i];
-                B2Vec2 p1 = manifoldPoint.clipPoint;
+                B2BodyId bodyIdA = b2Shape_GetBody(data.shapeIdA);
+                B2Vec2 p1 = b2ToVec2(b2Body_GetWorldCenter(bodyIdA) + manifoldPoint.anchorA);
                 B2Vec2 p2 = p1 + manifoldPoint.totalNormalImpulse * data.manifold.normal;
                 DrawLine(m_draw, p1, p2, B2HexColor.b2_colorCrimson);
                 DrawPoint(m_draw, p1, 6.0f, B2HexColor.b2_colorCrimson);

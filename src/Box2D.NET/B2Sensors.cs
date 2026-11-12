@@ -90,13 +90,13 @@ namespace Box2D.NET
                 }
             }
 
-            B2Transform otherTransform = b2GetBodyTransform(world, otherShape.bodyId);
+            // The relative pose is differenced in double so sensor overlap stays exact far from the origin
+            B2WorldTransform otherTransform = b2GetBodyTransform(world, otherShape.bodyId);
 
             B2DistanceInput input = new B2DistanceInput();
             input.proxyA = b2MakeShapeDistanceProxy(sensorShape);
             input.proxyB = b2MakeShapeDistanceProxy(otherShape);
-            input.transformA = queryContext.transform;
-            input.transformB = otherTransform;
+            input.transform = b2InvMulWorldTransforms(queryContext.transform, otherTransform);
             input.useRadii = true;
             B2SimplexCache cache = new B2SimplexCache();
             B2DistanceOutput output = b2ShapeDistance(ref input, ref cache, null, 0);
@@ -172,7 +172,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                B2Transform transform = b2GetBodyTransformQuick(world, body);
+                B2WorldTransform transform = b2GetBodyTransformQuick(world, body);
 
                 B2SensorQueryContext queryContext = new B2SensorQueryContext()
                 {

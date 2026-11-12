@@ -1075,8 +1075,10 @@ namespace Box2D.NET
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim @base = b2GetJointSim(world, joint);
 
-            B2Transform xfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
-            B2Transform xfB = b2GetBodyTransform(world, joint.edges[1].bodyId);
+            // Relative to body A so the difference stays in float precision far from the origin
+            B2WorldTransform wxfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
+            B2Transform xfA = b2ToRelativeTransform(wxfA, wxfA.p);
+            B2Transform xfB = b2ToRelativeTransform(b2GetBodyTransform(world, joint.edges[1].bodyId), wxfA.p);
 
             B2Vec2 pA = b2TransformPoint(xfA, @base.localFrameA.p);
             B2Vec2 pB = b2TransformPoint(xfB, @base.localFrameB.p);
@@ -1194,9 +1196,9 @@ namespace Box2D.NET
             B2Joint joint = b2GetJointFullId(world, jointId);
             B2JointSim @base = b2GetJointSim(world, joint);
 
-            B2Transform xfA = b2GetBodyTransform(world, joint.edges[0].bodyId);
-            B2Transform xfB = b2GetBodyTransform(world, joint.edges[1].bodyId);
-            float relativeAngle = b2RelativeAngle(xfA.q, xfB.q);
+            B2Rot qA = b2GetBodyTransform(world, joint.edges[0].bodyId).q;
+            B2Rot qB = b2GetBodyTransform(world, joint.edges[1].bodyId).q;
+            float relativeAngle = b2RelativeAngle(qA, qB);
 
             switch (joint.type)
             {
@@ -1585,8 +1587,8 @@ namespace Box2D.NET
 
             B2JointSim jointSim = b2GetJointSim(world, joint);
 
-            B2Transform transformA = b2GetBodyTransformQuick(world, bodyA);
-            B2Transform transformB = b2GetBodyTransformQuick(world, bodyB);
+            B2Transform transformA = b2ToRelativeTransform(b2GetBodyTransformQuick(world, bodyA), draw.origin);
+            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransformQuick(world, bodyB), draw.origin);
             B2Vec2 pA = b2TransformPoint(transformA, jointSim.localFrameA.p);
             B2Vec2 pB = b2TransformPoint(transformB, jointSim.localFrameB.p);
 

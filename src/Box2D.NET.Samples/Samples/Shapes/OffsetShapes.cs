@@ -30,7 +30,7 @@ public class OffsetShapes : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(-1.0f, 1.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-1.0f, 1.0f));
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -41,7 +41,7 @@ public class OffsetShapes : Sample
         {
             B2Capsule capsule = new B2Capsule(new B2Vec2(-5.0f, 1.0f), new B2Vec2(-4.0f, 1.0f), 0.25f);
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(13.5f, -0.75f);
+            bodyDef.position = b2ToPos(new B2Vec2(13.5f, -0.75f));
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -51,7 +51,7 @@ public class OffsetShapes : Sample
         {
             B2Polygon box = b2MakeOffsetBox(0.75f, 0.5f, new B2Vec2(9.0f, 2.0f), b2MakeRot(0.5f * B2_PI));
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             bodyDef.type = B2BodyType.b2_dynamicBody;
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
             B2ShapeDef shapeDef = b2DefaultShapeDef();

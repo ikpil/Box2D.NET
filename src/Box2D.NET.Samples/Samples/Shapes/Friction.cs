@@ -65,7 +65,7 @@ public class Friction : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2(-15.0f + 4.0f * i, 28.0f);
+                bodyDef.position = b2ToPos(new B2Vec2(-15.0f + 4.0f * i, 28.0f));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.material.friction = friction[i];

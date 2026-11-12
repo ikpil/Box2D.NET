@@ -89,7 +89,7 @@ public class GearLift : Sample
             B2Vec2 position = gearPosition1;
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -123,7 +123,7 @@ public class GearLift : Sample
 
             revoluteDef.@base.bodyIdA = groundId;
             revoluteDef.@base.bodyIdB = bodyId;
-            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, position);
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, b2ToPos(position));
             revoluteDef.@base.localFrameB.p = b2Vec2_zero;
             revoluteDef.enableMotor = m_enableMotor;
             revoluteDef.maxMotorTorque = m_motorTorque;
@@ -137,7 +137,7 @@ public class GearLift : Sample
             B2Vec2 position = gearPosition2;
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = position;
+            bodyDef.position = b2ToPos(position);
 
             followerId = b2CreateBody(m_worldId, bodyDef);
 
@@ -167,7 +167,7 @@ public class GearLift : Sample
 
             revoluteDef.@base.bodyIdA = groundId;
             revoluteDef.@base.bodyIdB = followerId;
-            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, position);
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, b2ToPos(position));
             revoluteDef.@base.localFrameA.q = b2MakeRot(0.25f * B2_PI);
             revoluteDef.@base.localFrameB.p = b2Vec2_zero;
             revoluteDef.enableMotor = true;
@@ -198,7 +198,7 @@ public class GearLift : Sample
             B2BodyId prevBodyId = followerId;
             for (int i = 0; i < count; ++i)
             {
-                bodyDef.position = position;
+                bodyDef.position = b2ToPos(position);
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId, shapeDef, capsule);
@@ -206,8 +206,8 @@ public class GearLift : Sample
                 B2Vec2 pivot = new B2Vec2(position.X, position.Y + linkHalfLength);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 jointDef.@base.drawScale = 0.2f;
                 b2CreateRevoluteJoint(m_worldId, jointDef);
 
@@ -221,7 +221,7 @@ public class GearLift : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = doorPosition;
+            bodyDef.position = b2ToPos(doorPosition);
 
             B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -236,7 +236,7 @@ public class GearLift : Sample
                 B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
                 revoluteDef.@base.bodyIdA = lastLinkId;
                 revoluteDef.@base.bodyIdB = bodyId;
-                revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(lastLinkId, pivot);
+                revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(lastLinkId, b2ToPos(pivot));
                 revoluteDef.@base.localFrameB.p = new B2Vec2(0.0f, doorHalfHeight);
                 revoluteDef.enableMotor = true;
                 revoluteDef.maxMotorTorque = 0.05f;
@@ -248,7 +248,7 @@ public class GearLift : Sample
                 B2PrismaticJointDef jointDef = b2DefaultPrismaticJointDef();
                 jointDef.@base.bodyIdA = groundId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, doorPosition);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, b2ToPos(doorPosition));
                 jointDef.@base.localFrameA.q = b2MakeRotFromUnitVector(localAxis);
                 jointDef.@base.localFrameB.p = b2Vec2_zero;
                 jointDef.@base.localFrameB.q = b2MakeRotFromUnitVector(localAxis);
@@ -277,7 +277,7 @@ public class GearLift : Sample
                 float x = -3.15f;
                 for (int j = 0; j < xCount; ++j)
                 {
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     B2Polygon poly = RandomPolygon(0.1f);
                     poly.radius = RandomFloatRange(0.01f, 0.02f);

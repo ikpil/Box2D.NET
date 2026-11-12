@@ -223,7 +223,7 @@ public class BenchmarkBarrel : Sample
             {
                 float y = j * (shift + extray) + centery + yStart;
 
-                bodyDef.position = new B2Vec2(x + side, y);
+                bodyDef.position = b2ToPos(new B2Vec2(x + side, y));
                 side = -side;
 
                 if (m_shapeType == ShapeType.e_circleShape)

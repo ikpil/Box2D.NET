@@ -83,7 +83,7 @@ public class Kinematic : Sample
             DrawPoint(m_draw, point, 10.0f, B2HexColor.b2_colorPlum);
 
             bool wake = true;
-            b2Body_SetTargetTransform(m_bodyId, new B2Transform(point, rotation), m_timeStep, wake);
+            b2Body_SetTargetTransform(m_bodyId, b2MakeWorldTransform(new B2Transform(point, rotation)), m_timeStep, wake);
         }
     }
 }

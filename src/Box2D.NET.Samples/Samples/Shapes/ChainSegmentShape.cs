@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ using static Box2D.NET.B2Geometries;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2Types;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Shapes;
 
@@ -89,7 +90,7 @@ public class ChainSegmentShape : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(-18.0f, 5.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(-18.0f, 5.0f));
         m_bodyId = b2CreateBody(m_worldId, bodyDef);
 
         B2ShapeDef shapeDef = b2DefaultShapeDef();

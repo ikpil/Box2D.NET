@@ -5,6 +5,7 @@
 using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Stackings;
 
@@ -70,7 +71,7 @@ public class Confined : Sample
                     float x = -8.75f + m_column * 18.0f / m_gridCount;
                     float y = 1.5f + m_row * 18.0f / m_gridCount;
 
-                    bodyDef.position = new B2Vec2(x, y);
+                    bodyDef.position = b2ToPos(new B2Vec2(x, y));
                     B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                     b2CreateCircleShape(bodyId, shapeDef, circle);
 

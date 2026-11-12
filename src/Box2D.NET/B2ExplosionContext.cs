@@ -7,12 +7,12 @@ namespace Box2D.NET
     public struct B2ExplosionContext
     {
         public B2World world;
-        public B2Vec2 position;
+        public B2Pos position;
         public float radius;
         public float falloff;
         public float impulsePerLength;
 
-        public B2ExplosionContext(B2World world, B2Vec2 position, float radius, float falloff, float impulsePerLength)
+        public B2ExplosionContext(B2World world, B2Pos position, float radius, float falloff, float impulsePerLength)
         {
             this.world = world;
             this.position = position;

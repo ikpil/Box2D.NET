@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -42,7 +42,7 @@ class ProjectileEvent : Sample
 
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
-            bodyDef.position = new B2Vec2(0.0f, 0.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
             B2ShapeDef shapeDef = b2DefaultShapeDef();
@@ -76,7 +76,7 @@ class ProjectileEvent : Sample
             for (int i = 0; i < 8; ++i)
             {
                 float shift = (i % 2 == 0 ? -offset : offset);
-                bodyDef.position = new B2Vec2(x + shift, 0.5f + 1.0f * i);
+                bodyDef.position = b2ToPos(new B2Vec2(x + shift, 0.5f + 1.0f * i));
 
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
@@ -94,7 +94,7 @@ class ProjectileEvent : Sample
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = m_point1;
+        bodyDef.position = b2ToPos(m_point1);
         bodyDef.linearVelocity = 4.0f * (m_point2 - m_point1);
         bodyDef.isBullet = true;
 
@@ -157,7 +157,8 @@ class ProjectileEvent : Sample
                     if (data.manifold.pointCount > 0)
                     {
                         B2ExplosionDef explosionDef = b2DefaultExplosionDef();
-                        explosionDef.position = data.manifold.points[0].clipPoint;
+                        explosionDef.position =
+                            b2Body_GetWorldCenter(b2Shape_GetBody(data.shapeIdA)) + data.manifold.points[0].anchorA;
                         explosionDef.radius = 1.0f;
                         explosionDef.impulsePerLength = 20.0f;
                         b2World_Explode(m_worldId, explosionDef);

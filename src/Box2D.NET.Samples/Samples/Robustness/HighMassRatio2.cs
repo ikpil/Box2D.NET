@@ -46,19 +46,19 @@ public class HighMassRatio2 : Sample
             B2Polygon bigBox = b2MakeBox(10.0f * extent, 10.0f * extent);
 
             {
-                bodyDef.position = new B2Vec2(-9.0f * extent, 0.5f * extent);
+                bodyDef.position = b2ToPos(new B2Vec2(-9.0f * extent, 0.5f * extent));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, shapeDef, smallBox);
             }
 
             {
-                bodyDef.position = new B2Vec2(9.0f * extent, 0.5f * extent);
+                bodyDef.position = b2ToPos(new B2Vec2(9.0f * extent, 0.5f * extent));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, shapeDef, smallBox);
             }
 
             {
-                bodyDef.position = new B2Vec2(0.0f, (10.0f + 16.0f) * extent);
+                bodyDef.position = b2ToPos(new B2Vec2(0.0f, (10.0f + 16.0f) * extent));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreatePolygonShape(bodyId, shapeDef, bigBox);
             }

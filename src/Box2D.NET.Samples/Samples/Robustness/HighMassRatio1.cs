@@ -57,7 +57,7 @@ public class HighMassRatio1 : Sample
                         float coeff = i - 0.5f * count;
 
                         float yy = count == 1 ? y + 2.0f : y;
-                        bodyDef.position = new B2Vec2(2.0f * coeff * extent + offset, yy);
+                        bodyDef.position = b2ToPos(new B2Vec2(2.0f * coeff * extent + offset, yy));
                         B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                         shapeDef.density = count == 1 ? (j + 1.0f) * 100.0f : 1.0f;

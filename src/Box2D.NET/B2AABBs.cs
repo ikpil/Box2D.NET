@@ -167,5 +167,19 @@ namespace Box2D.NET
             output.hit = true;
             return output;
         }
+
+        // Translate a relative AABB into world space, rounding outward so the float box always contains
+        // the true box far from the origin where a float coordinate cannot resolve the shape extent.
+        // The broadphase pair order rides on the deterministic directed rounding.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2AABB b2OffsetAABB(in B2AABB box, in B2Pos origin)
+        {
+            B2AABB result;
+            result.lowerBound.X = b2RoundDownFloat(origin.X + (double)box.lowerBound.X);
+            result.lowerBound.Y = b2RoundDownFloat(origin.Y + (double)box.lowerBound.Y);
+            result.upperBound.X = b2RoundUpFloat(origin.X + (double)box.upperBound.X);
+            result.upperBound.Y = b2RoundUpFloat(origin.Y + (double)box.upperBound.Y);
+            return result;
+        }
     }
 }

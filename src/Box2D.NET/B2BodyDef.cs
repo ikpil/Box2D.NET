@@ -17,7 +17,7 @@ namespace Box2D.NET
         /// The initial world position of the body. Bodies should be created with the desired position.
         /// @note Creating bodies at the origin and then moving them nearly doubles the cost of body creation, especially
         /// if the body is moved after shapes have been added.
-        public B2Vec2 position;
+        public B2Pos position;
 
         /// The initial world rotation of the body. Use b2MakeRot() if you have an angle.
         public B2Rot rotation;

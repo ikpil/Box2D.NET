@@ -30,7 +30,7 @@ public class B2BodiesTest
         // Create a dynamic body
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 0.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId));
 
@@ -82,7 +82,7 @@ public class B2BodiesTest
         // Create a dynamic body
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(0.0f, 0.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(0.0f, 0.0f));
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         Assert.That(b2Body_IsValid(bodyId), "Body should be valid after creation");
 
@@ -122,14 +122,14 @@ public class B2BodiesTest
         // Create a dynamic body with initial position
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(1.0f, 2.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(1.0f, 2.0f));
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
         B2Body body = b2GetBodyFullId(world, bodyId);
 
         // Test case 1: Get transform for a valid body and verify initial values
         {
-            B2Transform transform = b2GetBodyTransformQuick(world, body);
-            B2Transform transform2 = b2GetBodyTransform(world, body.id);
+            B2Transform transform = b2ToRelativeTransform(b2GetBodyTransformQuick(world, body), b2Pos_zero);
+            B2Transform transform2 = b2ToRelativeTransform(b2GetBodyTransform(world, body.id), b2Pos_zero);
 
             //
             Assert.That(transform.p.X, Is.EqualTo(1.0f), "Initial position X should match body definition");
@@ -195,7 +195,7 @@ public class B2BodiesTest
         // Create a dynamic body with initial position and velocity
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(1.0f, 2.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(1.0f, 2.0f));
         bodyDef.linearVelocity = new B2Vec2(3.0f, 4.0f);
         bodyDef.angularVelocity = 5.0f;
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);
@@ -236,7 +236,7 @@ public class B2BodiesTest
         // Create a dynamic body with initial position and velocity
         B2BodyDef bodyDef = b2DefaultBodyDef();
         bodyDef.type = B2BodyType.b2_dynamicBody;
-        bodyDef.position = new B2Vec2(1.0f, 2.0f);
+        bodyDef.position = b2ToPos(new B2Vec2(1.0f, 2.0f));
         bodyDef.linearVelocity = new B2Vec2(3.0f, 4.0f);
         bodyDef.angularVelocity = 5.0f;
         B2BodyId bodyId = b2CreateBody(worldId, bodyDef);

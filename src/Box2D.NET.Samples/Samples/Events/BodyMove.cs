@@ -93,7 +93,7 @@ public class BodyMove : Sample
         float x = -5.0f, y = 10.0f;
         for (int i = 0; i < 10 && m_count < e_count; ++i)
         {
-            bodyDef.position = new B2Vec2(x, y);
+            bodyDef.position = b2ToPos(new B2Vec2(x, y));
             bodyDef.isBullet = (m_count % 12 == 0);
             bodyDef.userData = B2UserData.Signed(m_count);
             m_bodyIds[m_count] = b2CreateBody(m_worldId, bodyDef);
@@ -147,9 +147,9 @@ public class BodyMove : Sample
             }
 
             // draw the transform of every body that moved (not sleeping)
-            DrawTransform(m_draw, @event.transform, 1.0f);
+            DrawTransform(m_draw, b2ToRelativeTransform(@event.transform, b2Pos_zero), 1.0f);
 
-            B2Transform transform = b2Body_GetTransform(@event.bodyId);
+            B2Transform transform = b2ToRelativeTransform(b2Body_GetTransform(@event.bodyId), b2Pos_zero);
             B2_ASSERT(transform.p.X == @event.transform.p.X);
             B2_ASSERT(transform.p.Y == @event.transform.p.Y);
             B2_ASSERT(transform.q.c == @event.transform.q.c);
@@ -184,7 +184,7 @@ public class BodyMove : Sample
         if (ImGui.Button("Explode"))
         {
             B2ExplosionDef def = b2DefaultExplosionDef();
-            def.position = m_explosionPosition;
+            def.position = b2ToPos(m_explosionPosition);
             def.radius = m_explosionRadius;
             def.falloff = 0.1f;
             def.impulsePerLength = m_explosionMagnitude;

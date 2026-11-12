@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -121,8 +121,7 @@ public class BenchmarkShapeDistance : Sample
             for (int i = 0; i < m_count; ++i)
             {
                 B2SimplexCache cache = new B2SimplexCache();
-                input.transformA = m_transformAs[i];
-                input.transformB = m_transformBs[i];
+                input.transform = b2InvMulTransforms(m_transformAs[i], m_transformBs[i]);
                 m_outputs[i] = b2ShapeDistance(ref input, ref cache, null, 0);
                 totalIterations += m_outputs[i].iterations;
             }
@@ -151,10 +150,15 @@ public class BenchmarkShapeDistance : Sample
         B2DistanceOutput output = m_outputs[m_drawIndex];
         DrawSolidPolygon(m_draw, xfA, m_polygonA.vertices.AsSpan(), m_polygonA.count, m_polygonA.radius, B2HexColor.b2_colorBox2DGreen);
         DrawSolidPolygon(m_draw, xfB, m_polygonB.vertices.AsSpan(), m_polygonB.count, m_polygonB.radius, B2HexColor.b2_colorBox2DBlue);
-        DrawLine(m_draw, output.pointA, output.pointB, B2HexColor.b2_colorDimGray);
-        DrawPoint(m_draw, output.pointA, 10.0f, B2HexColor.b2_colorWhite);
-        DrawPoint(m_draw, output.pointB, 10.0f, B2HexColor.b2_colorWhite);
-        DrawLine(m_draw, output.pointA, output.pointA + 0.5f * output.normal, B2HexColor.b2_colorYellow);
+        // The query returns frame A results, project to world for drawing
+        B2Vec2 worldPointA = b2TransformPoint(xfA, output.pointA);
+        B2Vec2 worldPointB = b2TransformPoint(xfA, output.pointB);
+        B2Vec2 worldNormal = b2RotateVector(xfA.q, output.normal);
+
+        DrawLine(m_draw, worldPointA, worldPointB, B2HexColor.b2_colorDimGray);
+        DrawPoint(m_draw, worldPointA, 10.0f, B2HexColor.b2_colorWhite);
+        DrawPoint(m_draw, worldPointB, 10.0f, B2HexColor.b2_colorWhite);
+        DrawLine(m_draw, worldPointA, worldPointA + 0.5f * worldNormal, B2HexColor.b2_colorYellow);
         DrawScreenTextLine($"distance = {FormatFloat(output.distance)}");
     }
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -353,8 +353,7 @@ public class ShapeCast : Sample
         B2ShapeCastPairInput input = new B2ShapeCastPairInput();
         input.proxyA = m_proxyA;
         input.proxyB = m_proxyB;
-        input.transformA = b2Transform_identity;
-        input.transformB = m_transform;
+        input.transform = m_transform;
         input.translationB = m_translation;
         input.maxFraction = 1.0f;
         input.canEncroach = m_encroach;
@@ -368,8 +367,7 @@ public class ShapeCast : Sample
         B2DistanceInput distanceInput;
         distanceInput.proxyA = m_proxyA;
         distanceInput.proxyB = m_proxyB;
-        distanceInput.transformA = b2Transform_identity;
-        distanceInput.transformB = transform;
+        distanceInput.transform = transform;
         distanceInput.useRadii = false;
         B2SimplexCache distanceCache = new B2SimplexCache();
         distanceCache.count = 0;

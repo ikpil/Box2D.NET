@@ -54,7 +54,7 @@ public class Crash01 : Sample
         {
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = B2BodyType.b2_dynamicBody;
-            bodyDef.position = new B2Vec2(-2.0f, 3.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-2.0f, 3.0f));
             bodyDef.name = "attach1";
             m_attachmentId = b2CreateBody(m_worldId, bodyDef);
 
@@ -69,7 +69,7 @@ public class Crash01 : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             bodyDef.type = m_type;
             bodyDef.isEnabled = m_isEnabled;
-            bodyDef.position = new B2Vec2(-4.0f, 5.0f);
+            bodyDef.position = b2ToPos(new B2Vec2(-4.0f, 5.0f));
             bodyDef.name = "platform";
             m_platformId = b2CreateBody(m_worldId, bodyDef);
 
@@ -83,8 +83,8 @@ public class Crash01 : Sample
             B2Vec2 pivot = new B2Vec2(-2.0f, 5.0f);
             revoluteDef.@base.bodyIdA = m_attachmentId;
             revoluteDef.@base.bodyIdB = m_platformId;
-            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_attachmentId, pivot);
-            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, pivot);
+            revoluteDef.@base.localFrameA.p = b2Body_GetLocalPoint(m_attachmentId, b2ToPos(pivot));
+            revoluteDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, b2ToPos(pivot));
             revoluteDef.maxMotorTorque = 50.0f;
             revoluteDef.enableMotor = true;
             b2CreateRevoluteJoint(m_worldId, revoluteDef);
@@ -93,8 +93,8 @@ public class Crash01 : Sample
             B2Vec2 anchor = new B2Vec2(0.0f, 5.0f);
             prismaticDef.@base.bodyIdA = groundId;
             prismaticDef.@base.bodyIdB = m_platformId;
-            prismaticDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, anchor);
-            prismaticDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, anchor);
+            prismaticDef.@base.localFrameA.p = b2Body_GetLocalPoint(groundId, b2ToPos(anchor));
+            prismaticDef.@base.localFrameB.p = b2Body_GetLocalPoint(m_platformId, b2ToPos(anchor));
             prismaticDef.maxMotorForce = 1000.0f;
             prismaticDef.motorSpeed = 0.0f;
             prismaticDef.enableMotor = true;

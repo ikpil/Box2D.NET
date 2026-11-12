@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -90,12 +90,12 @@ public class UserConstraint : Sample
 
         B2Vec2 vB = b2Body_GetLinearVelocity(m_bodyId);
         float omegaB = b2Body_GetAngularVelocity(m_bodyId);
-        B2Vec2 pB = b2Body_GetWorldCenterOfMass(m_bodyId);
+        B2Vec2 pB = b2ToVec2(b2Body_GetWorldCenter(m_bodyId));
 
         for (int i = 0; i < 2; ++i)
         {
             B2Vec2 anchorA = new B2Vec2(3.0f, 0.0f);
-            B2Vec2 anchorB = b2Body_GetWorldPoint(m_bodyId, localAnchors[i]);
+            B2Vec2 anchorB = b2ToVec2(b2Body_GetWorldPoint(m_bodyId, localAnchors[i]));
 
             B2Vec2 deltaAnchor = b2Sub(anchorB, anchorA);
 

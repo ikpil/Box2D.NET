@@ -77,7 +77,7 @@ namespace Box2D.NET
     /// Return false if you want to disable the contact this step
     /// @warning Do not attempt to modify the world inside this callback
     /// @ingroup world
-    public delegate bool b2PreSolveFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Vec2 point, B2Vec2 normal, object context);
+    public delegate bool b2PreSolveFcn(B2ShapeId shapeIdA, B2ShapeId shapeIdB, B2Pos point, B2Vec2 normal, object context);
 
     /// Prototype callback for overlap queries.
     /// Called for each shape found in the query.
@@ -102,7 +102,7 @@ namespace Box2D.NET
     /// @return -1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue
     /// @see b2World_CastRay
     /// @ingroup world
-    public delegate float b2CastResultFcn<T>(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref T context);
+    public delegate float b2CastResultFcn<T>(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref T context);
 
     // Used to collect collision planes for character movers.
     // Return true to continue gathering planes.
@@ -122,7 +122,7 @@ namespace Box2D.NET
     // Third:
     // The user may call the manifold functions directly and they should be easy to use and have easy to use
     // results.
-    public delegate B2Manifold b2ManifoldFcn(B2Shape shapeA, in B2Transform xfA, B2Shape shapeB, in B2Transform xfB, ref B2SimplexCache cache);
+    public delegate B2Manifold b2ManifoldFcn(B2Shape shapeA, in B2WorldTransform xfA, B2Shape shapeB, in B2WorldTransform xfB, ref B2SimplexCache cache);
 
     /// This function receives proxies found in the AABB query.
     /// @return true if the query should continue
@@ -135,12 +135,12 @@ namespace Box2D.NET
     /// - return a value of input->maxFraction to continue the ray cast without clipping
     public delegate float b2TreeRayCastCallbackFcn<T>(in B2RayCastInput input, int proxyId, ulong userData, ref T context);
 
-    /// This function receives clipped ray cast input for a proxy. The function
-    /// returns the new ray fraction.
-    /// - return a value of 0 to terminate the ray cast
-    /// - return a value less than input->maxFraction to clip the ray
-    /// - return a value of input->maxFraction to continue the ray cast without clipping
-    public delegate float b2TreeShapeCastCallbackFcn<T>(in B2ShapeCastInput input, int proxyId, ulong userData, ref T context);
+    /// This function receives clipped AABB cast input for a proxy. The function
+    /// returns the new cast fraction.
+    /// - return a value of 0 to terminate the cast
+    /// - return a value less than input->maxFraction to clip the cast
+    /// - return a value of input->maxFraction to continue the cast without clipping
+    public delegate float b2TreeBoxCastCallbackFcn<T>(in B2BoxCastInput input, int proxyId, ulong userData, ref T context);
 
     // -----------------------------------------------------------------------------------------------------------------
     // Draw

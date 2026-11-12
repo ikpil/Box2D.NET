@@ -91,8 +91,10 @@ namespace Box2D.NET
                 return 0.0f;
             }
 
-            B2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
-            B2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
+            // Relative to body A so the difference stays in float precision far from the origin
+            B2WorldTransform wxfA = b2GetBodyTransform(world, @base.bodyIdA);
+            B2Transform transformA = b2ToRelativeTransform(wxfA, wxfA.p);
+            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransform(world, @base.bodyIdB), wxfA.p);
 
             B2Vec2 pA = b2TransformPoint(transformA, @base.localFrameA.p);
             B2Vec2 pB = b2TransformPoint(transformB, @base.localFrameB.p);
@@ -210,8 +212,10 @@ namespace Box2D.NET
         {
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
-            B2Transform transformA = b2GetBodyTransform(world, @base.bodyIdA);
-            B2Transform transformB = b2GetBodyTransform(world, @base.bodyIdB);
+            // Relative to body A so the difference stays in float precision far from the origin
+            B2WorldTransform wxfA = b2GetBodyTransform(world, @base.bodyIdA);
+            B2Transform transformA = b2ToRelativeTransform(wxfA, wxfA.p);
+            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransform(world, @base.bodyIdB), wxfA.p);
 
             B2Vec2 pA = b2TransformPoint(transformA, @base.localFrameA.p);
             B2Vec2 pB = b2TransformPoint(transformB, @base.localFrameB.p);
@@ -276,7 +280,7 @@ namespace Box2D.NET
             // initial anchors in world space
             joint.anchorA = b2RotateVector(bodySimA.transform.q, b2Sub(@base.localFrameA.p, bodySimA.localCenter));
             joint.anchorB = b2RotateVector(bodySimB.transform.q, b2Sub(@base.localFrameB.p, bodySimB.localCenter));
-            joint.deltaCenter = b2Sub(bodySimB.center, bodySimA.center);
+            joint.deltaCenter = b2SubPos(bodySimB.center, bodySimA.center);
 
             B2Vec2 rA = joint.anchorA;
             B2Vec2 rB = joint.anchorB;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -10,6 +10,7 @@ using static Box2D.NET.B2Types;
 using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2WeldJoints;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -74,15 +75,15 @@ public class Cantilever : Sample
             B2BodyId prevBodyId = groundId;
             for (int i = 0; i < e_count; ++i)
             {
-                bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, 0.0f);
+                bodyDef.position = b2ToPos(new B2Vec2((1.0f + 2.0f * i) * hx, 0.0f));
                 m_bodyIds[i] = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(m_bodyIds[i], shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, 0.0f);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = m_bodyIds[i];
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 jointDef.linearHertz = m_linearHertz;
                 jointDef.linearDampingRatio = m_linearDampingRatio;
                 jointDef.angularHertz = m_angularHertz;
@@ -163,7 +164,7 @@ public class Cantilever : Sample
     {
         base.Draw();
 
-        B2Vec2 tipPosition = b2Body_GetPosition(m_tipId);
+        B2Vec2 tipPosition = b2ToVec2(b2Body_GetPosition(m_tipId));
         DrawScreenTextLine(System.FormattableString.Invariant($"tip-y = {tipPosition.Y:F2}"));
     }
 }

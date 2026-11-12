@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -173,7 +173,7 @@ public class CastWorld : Sample
         float y = RandomFloatRange(0.0f, 20.0f);
 
         B2BodyDef bodyDef = b2DefaultBodyDef();
-        bodyDef.position = new B2Vec2(x, y);
+        bodyDef.position = b2ToPos(new B2Vec2(x, y));
         bodyDef.rotation = b2MakeRot(RandomFloatRange(-B2_PI, B2_PI));
 
         int mod = m_bodyIndex % 3;
@@ -385,15 +385,15 @@ public class CastWorld : Sample
         if (m_simple)
         {
             // This version doesn't have a callback, but it doesn't skip the ignored shape
-            B2RayResult result = b2World_CastRayClosest(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter());
+            B2RayResult result = b2World_CastRayClosest(m_worldId, b2ToPos(m_rayStart), rayTranslation, b2DefaultQueryFilter());
 
             if (result.hit == true && result.fraction > 0.0f)
             {
                 B2Vec2 c = b2MulAdd(m_rayStart, result.fraction, rayTranslation);
-                DrawPoint(m_draw, result.point, 5.0f, color1);
+                DrawPoint(m_draw, b2ToVec2(result.point), 5.0f, color1);
                 DrawLine(m_draw, m_rayStart, c, color2);
-                B2Vec2 head = b2MulAdd(result.point, 0.5f, result.normal);
-                DrawLine(m_draw, result.point, head, color3);
+                B2Vec2 head = b2MulAdd(b2ToVec2(result.point), 0.5f, result.normal);
+                DrawLine(m_draw, b2ToVec2(result.point), head, color3);
             }
             else
             {
@@ -426,7 +426,7 @@ public class CastWorld : Sample
             B2ShapeProxy proxy = new B2ShapeProxy();
             if (m_castType == CastType.e_rayCast)
             {
-                b2World_CastRay(m_worldId, m_rayStart, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                b2World_CastRay(m_worldId, b2ToPos(m_rayStart), rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
             }
             else
             {
@@ -443,7 +443,7 @@ public class CastWorld : Sample
                     proxy = b2MakeProxy(box.vertices.AsSpan(), box.count, box.radius);
                 }
 
-                b2World_CastShape(m_worldId, ref proxy, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
+                b2World_CastShape(m_worldId, b2Pos_zero, ref proxy, rayTranslation, b2DefaultQueryFilter(), modeFcn, context);
             }
 
             if (context.count > 0)
@@ -543,7 +543,7 @@ public class CastWorld : Sample
 
         if (B2_IS_NON_NULL(m_bodyIds[m_ignoreIndex]))
         {
-            B2Vec2 p = b2Body_GetPosition(m_bodyIds[m_ignoreIndex]);
+            B2Vec2 p = b2ToVec2(b2Body_GetPosition(m_bodyIds[m_ignoreIndex]));
             p.X -= 0.2f;
             DrawWorldString(m_draw, m_camera, p, B2HexColor.b2_colorWhite, "ign");
         }
@@ -551,7 +551,7 @@ public class CastWorld : Sample
 
 
     // This callback finds the closest hit. This is the most common callback used in games.
-    static float RayCastClosestCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
+    static float RayCastClosestCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastContext context)
     {
         CastContext rayContext = context;
 
@@ -565,7 +565,7 @@ public class CastWorld : Sample
             return -1.0f;
         }
 
-        rayContext.points[0] = point;
+        rayContext.points[0] = b2ToVec2(point);
         rayContext.normals[0] = normal;
         rayContext.fractions[0] = fraction;
         rayContext.count = 1;
@@ -579,7 +579,7 @@ public class CastWorld : Sample
     // This callback finds any hit. For this type of query we are usually just checking for obstruction,
     // so the hit data is not relevant.
     // NOTE: shape hits are not ordered, so this may not return the closest hit
-    static float RayCastAnyCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
+    static float RayCastAnyCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastContext context)
     {
         CastContext rayContext = context;
 
@@ -593,7 +593,7 @@ public class CastWorld : Sample
             return -1.0f;
         }
 
-        rayContext.points[0] = point;
+        rayContext.points[0] = b2ToVec2(point);
         rayContext.normals[0] = normal;
         rayContext.fractions[0] = fraction;
         rayContext.count = 1;
@@ -609,7 +609,7 @@ public class CastWorld : Sample
     // NOTE: shape hits are not ordered, so this may return hits in any order. This means that
     // if you limit the number of results, you may discard the closest hit. You can see this
     // behavior in the sample.
-    static float RayCastMultipleCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
+    static float RayCastMultipleCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastContext context)
     {
         CastContext rayContext = context;
 
@@ -626,7 +626,7 @@ public class CastWorld : Sample
         int count = rayContext.count;
         B2_ASSERT(count < 3);
 
-        rayContext.points[count] = point;
+        rayContext.points[count] = b2ToVec2(point);
         rayContext.normals[count] = normal;
         rayContext.fractions[count] = fraction;
         rayContext.count = count + 1;
@@ -643,7 +643,7 @@ public class CastWorld : Sample
     }
 
     // This ray cast collects multiple hits along the ray and sorts them.
-    static float RayCastSortedCallback(B2ShapeId shapeId, B2Vec2 point, B2Vec2 normal, float fraction, ref CastContext context)
+    static float RayCastSortedCallback(B2ShapeId shapeId, B2Pos point, B2Vec2 normal, float fraction, ref CastContext context)
     {
         CastContext rayContext = context;
 
@@ -687,7 +687,7 @@ public class CastWorld : Sample
             rayContext.fractions[j] = rayContext.fractions[j - 1];
         }
 
-        rayContext.points[index] = point;
+        rayContext.points[index] = b2ToVec2(point);
         rayContext.normals[index] = normal;
         rayContext.fractions[index] = fraction;
         rayContext.count = count < 3 ? count + 1 : 3;

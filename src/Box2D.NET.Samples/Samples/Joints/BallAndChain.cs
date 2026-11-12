@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2025 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -11,6 +11,7 @@ using static Box2D.NET.B2Bodies;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2RevoluteJoints;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
 
 namespace Box2D.NET.Samples.Samples.Joints;
 
@@ -62,15 +63,15 @@ public class BallAndChain : Sample
             {
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2((1.0f + 2.0f * i) * hx, m_count * hx);
+                bodyDef.position = b2ToPos(new B2Vec2((1.0f + 2.0f * i) * hx, m_count * hx));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
                 b2CreateCapsuleShape(bodyId, shapeDef, capsule);
 
                 B2Vec2 pivot = new B2Vec2((2.0f * i) * hx, m_count * hx);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 jointDef.enableSpring = i > 0;
@@ -85,7 +86,7 @@ public class BallAndChain : Sample
 
                 B2BodyDef bodyDef = b2DefaultBodyDef();
                 bodyDef.type = B2BodyType.b2_dynamicBody;
-                bodyDef.position = new B2Vec2((1.0f + 2.0f * m_count) * hx + circle.radius - hx, m_count * hx);
+                bodyDef.position = b2ToPos(new B2Vec2((1.0f + 2.0f * m_count) * hx + circle.radius - hx, m_count * hx));
                 B2BodyId bodyId = b2CreateBody(m_worldId, bodyDef);
 
                 shapeDef.filter.categoryBits = 0x2;
@@ -95,8 +96,8 @@ public class BallAndChain : Sample
                 B2Vec2 pivot = new B2Vec2((2.0f * m_count) * hx, m_count * hx);
                 jointDef.@base.bodyIdA = prevBodyId;
                 jointDef.@base.bodyIdB = bodyId;
-                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, pivot);
-                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, pivot);
+                jointDef.@base.localFrameA.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdA, b2ToPos(pivot));
+                jointDef.@base.localFrameB.p = b2Body_GetLocalPoint(jointDef.@base.bodyIdB, b2ToPos(pivot));
                 jointDef.enableMotor = true;
                 jointDef.maxMotorTorque = m_frictionTorque;
                 jointDef.enableSpring = true;
