@@ -108,7 +108,7 @@ public class GhostBumps : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = 20;
+            chainDef.pointCount = 20;
             chainDef.isLoop = true;
             chainDef.materials = new[] { material };
             chainDef.materialCount = 1;

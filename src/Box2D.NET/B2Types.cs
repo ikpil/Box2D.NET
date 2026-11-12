@@ -102,6 +102,11 @@ namespace Box2D.NET
             B2ChainDef def = new B2ChainDef();
             def.materials = new B2SurfaceMaterial[] { defaultMaterial };
             def.materialCount = 1;
+            // using infinity as a sentinel
+            def.ghost1.X = float.PositiveInfinity;
+            def.ghost1.Y = float.PositiveInfinity;
+            def.ghost2.X = float.PositiveInfinity;
+            def.ghost2.Y = float.PositiveInfinity;
             def.filter = b2DefaultFilter();
             def.internalValue = B2_SECRET_COOKIE;
             return def;

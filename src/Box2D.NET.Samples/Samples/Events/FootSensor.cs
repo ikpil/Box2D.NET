@@ -51,9 +51,9 @@ public class FootSensor : Sample
             B2BodyDef bodyDef = b2DefaultBodyDef();
             B2BodyId groundId = b2CreateBody(m_worldId, bodyDef);
 
-            B2Vec2[] points = new B2Vec2[20];
-            float x = 10.0f;
-            for (int i = 0; i < 20; ++i)
+            B2Vec2[] points = new B2Vec2[18];
+            float x = 9.0f;
+            for (int i = 0; i < 18; ++i)
             {
                 points[i] = new B2Vec2(x, 0.0f);
                 x -= 1.0f;
@@ -61,7 +61,9 @@ public class FootSensor : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = 20;
+            chainDef.pointCount = 18;
+            chainDef.ghost1 = new B2Vec2(10.0f, 0.0f);
+            chainDef.ghost2 = new B2Vec2(-9.0f, 0.0f);
             chainDef.filter.categoryBits = GROUND;
             chainDef.filter.maskBits = FOOT | PLAYER;
             chainDef.isLoop = false;

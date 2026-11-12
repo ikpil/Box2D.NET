@@ -78,7 +78,7 @@ public class Driving : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = 25;
+            chainDef.pointCount = 25;
             chainDef.isLoop = true;
             b2CreateChain(groundId, chainDef);
 

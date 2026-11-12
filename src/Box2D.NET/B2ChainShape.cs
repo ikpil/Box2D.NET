@@ -9,10 +9,8 @@ namespace Box2D.NET
         public int id;
         public int bodyId;
         public int nextChainId;
-        public int count;
-        public int materialCount;
-        public int[] shapeIndices;
-        public B2SurfaceMaterial[] materials;
+        public int segmentCount;
         public ushort generation;
+        public int[] shapeIndices;
     }
 }

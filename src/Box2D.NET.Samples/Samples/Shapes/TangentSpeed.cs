@@ -76,7 +76,7 @@ public class TangentSpeed : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = count;
+            chainDef.pointCount = count;
             chainDef.isLoop = true;
             chainDef.materials = materials;
             chainDef.materialCount = count;

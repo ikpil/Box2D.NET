@@ -87,7 +87,7 @@ public class ChainShape : Sample
             new B2Vec2(51.5935059f, -16.2057514f), new B2Vec2(43.6559982f, -10.9139996f), new B2Vec2(35.7184982f, -10.9139996f), new B2Vec2(27.7809982f, -10.9139996f),
             new B2Vec2(21.1664963f, -14.2212505f), new B2Vec2(11.9059982f, -16.2057514f), new B2Vec2(0, -16.2057514f), new B2Vec2(-10.5835037f, -14.8827496f),
             new B2Vec2(-17.1980019f, -13.5597477f), new B2Vec2(-21.1665001f, -12.2370014f), new B2Vec2(-25.1355019f, -9.5909977f), new B2Vec2(-31.75f, -3.63799858f),
-            new B2Vec2(-38.3644981f, 6.2840004f), new B2Vec2(-42.3334999f, 9.59125137f), new B2Vec2(-47.625f, 11.5755005f), new B2Vec2(-56.885498f, 12.8985004f),
+            new B2Vec2(-38.3644981f, 6.2840004f), new B2Vec2(-42.3334999f, 9.59125137f), new B2Vec2(-47.625f, 11.5755005f),
         };
 
         int count = points.Length;
@@ -126,7 +126,7 @@ public class ChainShape : Sample
 
         B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
-        chainDef.count = count;
+        chainDef.pointCount = count;
         chainDef.materials = [m_material];
         chainDef.materialCount = 1;
         chainDef.isLoop = true;
@@ -199,7 +199,7 @@ public class ChainShape : Sample
         if (ImGui.SliderFloat("Friction", ref m_material.friction, 0.0f, 1.0f, "%.2f"))
         {
             b2Shape_SetSurfaceMaterial(m_shapeId, m_material);
-            b2Chain_SetSurfaceMaterial(m_chainId, m_material, 0);
+            b2Chain_SetAllSurfaceMaterials(m_chainId, m_material);
         }
 
         if (ImGui.SliderFloat("Restitution", ref m_material.restitution, 0.0f, 2.0f, "%.1f"))

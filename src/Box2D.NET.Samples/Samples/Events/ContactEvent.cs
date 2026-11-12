@@ -57,7 +57,7 @@ public class ContactEvent : Sample
             B2Vec2[] points = new B2Vec2[] { new B2Vec2(40.0f, -40.0f), new B2Vec2(-40.0f, -40.0f), new B2Vec2(-40.0f, 40.0f), new B2Vec2(40.0f, 40.0f) };
 
             B2ChainDef chainDef = b2DefaultChainDef();
-            chainDef.count = 4;
+            chainDef.pointCount = 4;
             chainDef.points = points;
             chainDef.isLoop = true;
 

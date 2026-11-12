@@ -139,7 +139,7 @@ public class Mover : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = count;
+            chainDef.pointCount = count;
             chainDef.isLoop = true;
 
             b2CreateChain(groundId1, chainDef);
@@ -169,7 +169,7 @@ public class Mover : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = count;
+            chainDef.pointCount = count;
             chainDef.isLoop = true;
 
             b2CreateChain(groundId2, chainDef);

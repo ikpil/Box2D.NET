@@ -30,13 +30,11 @@ public class ChainLink : Sample
 
         B2Vec2[] points1 = new B2Vec2[]
         {
-            new B2Vec2(40.0f, 1.0f), new B2Vec2(0.0f, 0.0f), new B2Vec2(-40.0f, 0.0f),
-            new B2Vec2(-40.0f, -1.0f), new B2Vec2(0.0f, -1.0f), new B2Vec2(40.0f, -1.0f),
+            new B2Vec2(0.0f, 0.0f), new B2Vec2(-40.0f, 0.0f), new B2Vec2(-40.0f, -1.0f), new B2Vec2(0.0f, -1.0f),
         };
         B2Vec2[] points2 = new B2Vec2[]
         {
-            new B2Vec2(-40.0f, -1.0f), new B2Vec2(0.0f, -1.0f), new B2Vec2(40.0f, -1.0f),
-            new B2Vec2(40.0f, 0.0f), new B2Vec2(0.0f, 0.0f), new B2Vec2(-40.0f, 0.0f),
+            new B2Vec2(0.0f, -1.0f), new B2Vec2(40.0f, -1.0f), new B2Vec2(40.0f, 0.0f), new B2Vec2(0.0f, 0.0f),
         };
 
         int count1 = points1.Length;
@@ -48,7 +46,11 @@ public class ChainLink : Sample
         {
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points1;
-            chainDef.count = count1;
+            chainDef.pointCount = count1;
+
+            // The other chain carries on past both ends of this one
+            chainDef.ghost1 = new B2Vec2(40.0f, 1.0f);
+            chainDef.ghost2 = new B2Vec2(40.0f, -1.0f);
             chainDef.isLoop = false;
             b2CreateChain(groundId, chainDef);
         }
@@ -56,7 +58,9 @@ public class ChainLink : Sample
         {
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points2;
-            chainDef.count = count2;
+            chainDef.pointCount = count2;
+            chainDef.ghost1 = new B2Vec2(-40.0f, -1.0f);
+            chainDef.ghost2 = new B2Vec2(-40.0f, 0.0f);
             chainDef.isLoop = false;
             b2CreateChain(groundId, chainDef);
         }

@@ -71,7 +71,7 @@ public class ShapeCastChain : Sample
         B2ChainDef worldChainDef = b2DefaultChainDef();
         worldChainDef.userData = B2UserData.Empty;
         worldChainDef.points = points;
-        worldChainDef.count = 4;
+        worldChainDef.pointCount = 4;
         worldChainDef.filter.categoryBits = 0x1;
         worldChainDef.filter.maskBits = 0x1;
         worldChainDef.filter.groupIndex = 0;

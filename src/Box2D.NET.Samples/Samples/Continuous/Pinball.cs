@@ -55,7 +55,7 @@ public class Pinball : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = vs;
-            chainDef.count = 5;
+            chainDef.pointCount = 5;
             chainDef.isLoop = true;
             b2CreateChain(groundId, chainDef);
         }

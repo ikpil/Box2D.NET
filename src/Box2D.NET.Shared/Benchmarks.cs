@@ -354,7 +354,7 @@ namespace Box2D.NET.Shared
 
                 B2ChainDef chainDef = b2DefaultChainDef();
                 chainDef.points = points;
-                chainDef.count = SPINNER_POINT_COUNT;
+                chainDef.pointCount = SPINNER_POINT_COUNT;
                 chainDef.isLoop = true;
                 chainDef.materials = new[] { material };
                 chainDef.materialCount = 1;

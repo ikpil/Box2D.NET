@@ -459,13 +459,25 @@ namespace Box2D.NET
                 b2UpdateBodyMassData(world, body);
             }
         }
+        private static void b2ValidateMaterial(in B2SurfaceMaterial material)
+        {
+            B2_UNUSED(material);
+            B2_ASSERT(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
+            B2_ASSERT(b2IsValidFloat(material.tangentSpeed));
+        }
+
         /// Create a chain shape
         /// @see b2ChainDef for details
         public static B2ChainId b2CreateChain(B2BodyId bodyId, in B2ChainDef def)
         {
             B2_CHECK_DEF(def);
-            B2_ASSERT(def.count >= 4);
-            B2_ASSERT(def.materialCount == 1 || def.materialCount == def.count);
+            B2_ASSERT(def.isLoop ? def.pointCount >= 3 : def.pointCount >= 2);
+
+            int segmentCount = def.isLoop ? def.pointCount : def.pointCount - 1;
+
+            B2_ASSERT(def.materialCount == 1 || def.materialCount == segmentCount);
 
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)
@@ -492,22 +504,10 @@ namespace Box2D.NET
             chainShape.id = chainId;
             chainShape.bodyId = body.id;
             chainShape.nextChainId = body.headChainId;
+            chainShape.segmentCount = segmentCount;
             chainShape.generation += 1;
 
             int materialCount = def.materialCount;
-            chainShape.materialCount = materialCount;
-            chainShape.materials = b2Alloc<B2SurfaceMaterial>(materialCount);
-
-            for (int i = 0; i < materialCount; ++i)
-            {
-                ref readonly B2SurfaceMaterial material = ref def.materials[i];
-                B2_ASSERT(b2IsValidFloat(material.friction) && material.friction >= 0.0f);
-                B2_ASSERT(b2IsValidFloat(material.restitution) && material.restitution >= 0.0f);
-                B2_ASSERT(b2IsValidFloat(material.rollingResistance) && material.rollingResistance >= 0.0f);
-                B2_ASSERT(b2IsValidFloat(material.tangentSpeed));
-
-                chainShape.materials[i] = material;
-            }
 
             body.headChainId = chainId;
 
@@ -519,77 +519,62 @@ namespace Box2D.NET
             shapeDef.enableHitEvents = false;
 
             ref readonly B2Vec2[] points = ref def.points;
-            int n = def.count;
+            int n = segmentCount;
+            chainShape.shapeIndices = b2Alloc<int>(n);
+
+            float tolSqr = B2_LINEAR_SLOP * B2_LINEAR_SLOP;
+            B2_UNUSED(tolSqr);
 
             if (def.isLoop)
             {
-                chainShape.count = n;
-                chainShape.shapeIndices = b2Alloc<int>(chainShape.count);
-
                 B2ChainSegment chainSegment = new B2ChainSegment();
 
                 int prevIndex = n - 1;
-                for (int i = 0; i < n - 2; ++i)
+                for (int i = 0; i < n; ++i)
                 {
                     chainSegment.ghost1 = points[prevIndex];
                     chainSegment.segment.point1 = points[i];
-                    chainSegment.segment.point2 = points[i + 1];
-                    chainSegment.ghost2 = points[i + 2];
+                    chainSegment.segment.point2 = points[(i + 1) % n];
+                    chainSegment.ghost2 = points[(i + 2) % n];
+
+                    B2_ASSERT(b2DistanceSquared(chainSegment.ghost1, chainSegment.segment.point1) > tolSqr);
+                    B2_ASSERT(b2DistanceSquared(chainSegment.segment.point1, chainSegment.segment.point2) > tolSqr);
+
                     chainSegment.chainId = chainId;
                     prevIndex = i;
 
                     int materialIndex = materialCount == 1 ? 0 : i;
+                    b2ValidateMaterial(def.materials[materialIndex]);
                     shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
                     chainShape.shapeIndices[i] = shape.id;
                 }
-
-                {
-                    chainSegment.ghost1 = points[n - 3];
-                    chainSegment.segment.point1 = points[n - 2];
-                    chainSegment.segment.point2 = points[n - 1];
-                    chainSegment.ghost2 = points[0];
-                    chainSegment.chainId = chainId;
-
-                    int materialIndex = materialCount == 1 ? 0 : n - 2;
-                    shapeDef.material = def.materials[materialIndex];
-
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
-                    chainShape.shapeIndices[n - 2] = shape.id;
-                }
-
-                {
-                    chainSegment.ghost1 = points[n - 2];
-                    chainSegment.segment.point1 = points[n - 1];
-                    chainSegment.segment.point2 = points[0];
-                    chainSegment.ghost2 = points[1];
-                    chainSegment.chainId = chainId;
-
-                    int materialIndex = materialCount == 1 ? 0 : n - 1;
-                    shapeDef.material = def.materials[materialIndex];
-
-                    B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
-                    chainShape.shapeIndices[n - 1] = shape.id;
-                }
             }
             else
             {
-                chainShape.count = n - 3;
-                chainShape.shapeIndices = b2Alloc<int>(chainShape.count);
+                // These are set to infinity in the default def as a sentinel to ensure they are set.
+                B2_ASSERT(b2IsValidVec2(def.ghost1));
+                B2_ASSERT(b2IsValidVec2(def.ghost2));
 
                 B2ChainSegment chainSegment = new B2ChainSegment();
 
-                for (int i = 0; i < n - 3; ++i)
+                for (int i = 0; i < n; ++i)
                 {
-                    chainSegment.ghost1 = points[i];
-                    chainSegment.segment.point1 = points[i + 1];
-                    chainSegment.segment.point2 = points[i + 2];
-                    chainSegment.ghost2 = points[i + 3];
+                    B2_ASSERT(i + 1 < def.pointCount);
+                    chainSegment.ghost1 = i == 0 ? def.ghost1 : points[i - 1];
+                    chainSegment.segment.point1 = points[i + 0];
+                    chainSegment.segment.point2 = points[i + 1];
+                    chainSegment.ghost2 = i == n - 1 ? def.ghost2 : points[i + 2];
+
+                    B2_ASSERT(b2DistanceSquared(chainSegment.ghost1, chainSegment.segment.point1) > tolSqr);
+                    B2_ASSERT(b2DistanceSquared(chainSegment.segment.point1, chainSegment.segment.point2) > tolSqr);
+                    B2_ASSERT(b2DistanceSquared(chainSegment.segment.point2, chainSegment.ghost2) > tolSqr);
+
                     chainSegment.chainId = chainId;
 
-                    // Material is associated with leading point of solid segment
-                    int materialIndex = materialCount == 1 ? 0 : i + 1;
+                    int materialIndex = materialCount == 1 ? 0 : i;
+                    b2ValidateMaterial(def.materials[materialIndex]);
                     shapeDef.material = def.materials[materialIndex];
 
                     B2Shape shape = b2CreateShapeInternal(world, body, transform, shapeDef, chainSegment, B2ShapeType.b2_chainSegmentShape);
@@ -603,11 +588,8 @@ namespace Box2D.NET
 
         internal static void b2FreeChainData(B2ChainShape chain)
         {
-            b2Free(chain.shapeIndices, chain.count);
+            b2Free(chain.shapeIndices, chain.segmentCount);
             chain.shapeIndices = null;
-
-            b2Free(chain.materials, chain.materialCount);
-            chain.materials = null;
         }
         /// Destroy a chain shape
         public static void b2DestroyChain(B2ChainId chainId)
@@ -655,7 +637,7 @@ namespace Box2D.NET
                 return;
             }
 
-            int count = chain.count;
+            int count = chain.segmentCount;
             for (int i = 0; i < count; ++i)
             {
                 int shapeId = chain.shapeIndices[i];
@@ -687,7 +669,7 @@ namespace Box2D.NET
             }
 
             B2ChainShape chain = b2GetChainShape(world, chainId);
-            return chain.count;
+            return chain.segmentCount;
         }
         /// Fill a user array with chain segment shape ids up to the specified capacity. Returns
         /// the actual number of segments returned.
@@ -701,7 +683,7 @@ namespace Box2D.NET
 
             B2ChainShape chain = b2GetChainShape(world, chainId);
 
-            int count = b2MinInt(chain.count, capacity);
+            int count = b2MinInt(chain.segmentCount, capacity);
             for (int i = 0; i < count; ++i)
             {
                 int shapeId = chain.shapeIndices[i];
@@ -710,6 +692,56 @@ namespace Box2D.NET
             }
 
             return count;
+        }
+
+        /// Set a chain material by segment index.
+        public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, in B2SurfaceMaterial material, int segmentIndex)
+        {
+            b2ValidateMaterial(material);
+
+            B2World world = b2GetWorldLocked(chainId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
+            B2ChainShape chainShape = b2GetChainShape(world, chainId);
+            B2_ASSERT(0 <= segmentIndex && segmentIndex < chainShape.segmentCount);
+            int shapeId = chainShape.shapeIndices[segmentIndex];
+            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+            shape.material = material;
+        }
+
+        /// Set the chain material on all segments.
+        public static void b2Chain_SetAllSurfaceMaterials(B2ChainId chainId, in B2SurfaceMaterial material)
+        {
+            b2ValidateMaterial(material);
+
+            B2World world = b2GetWorldLocked(chainId.world0);
+            if (world == null)
+            {
+                return;
+            }
+
+            B2ChainShape chainShape = b2GetChainShape(world, chainId);
+
+            for (int i = 0; i < chainShape.segmentCount; ++i)
+            {
+                int shapeId = chainShape.shapeIndices[i];
+                B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+                shape.material = material;
+            }
+        }
+
+        /// Get a chain material by segment index.
+        public static B2SurfaceMaterial b2Chain_GetSurfaceMaterial(B2ChainId chainId, int segmentIndex)
+        {
+            B2World world = b2GetWorld(chainId.world0);
+            B2ChainShape chainShape = b2GetChainShape(world, chainId);
+            B2_ASSERT(0 <= segmentIndex && segmentIndex < chainShape.segmentCount);
+            int shapeId = chainShape.shapeIndices[segmentIndex];
+            B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
+            return shape.material;
         }
 
         internal static B2AABB b2ComputeShapeAABB(B2Shape shape, in B2WorldTransform xf)
@@ -1670,56 +1702,6 @@ namespace Box2D.NET
             }
 
             return new B2ChainId();
-        }
-        /// Get the number of materials used on this chain. Must be 1 or the number of segments.
-        public static int b2Chain_GetSurfaceMaterialCount(B2ChainId chainId)
-        {
-            B2World world = b2GetWorld(chainId.world0);
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            return chainShape.materialCount;
-        }
-
-        /// Set a chain material. If the chain has only one material, this material is applied to all
-        /// segments. Otherwise it is applied to a single segment.
-        public static void b2Chain_SetSurfaceMaterial(B2ChainId chainId, in B2SurfaceMaterial material, int materialIndex)
-        {
-            B2World world = b2GetWorldLocked(chainId.world0);
-            if (world == null)
-            {
-                return;
-            }
-
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            B2_ASSERT(0 <= materialIndex && materialIndex < chainShape.materialCount);
-            chainShape.materials[materialIndex] = material;
-
-            B2_ASSERT(chainShape.materialCount == 1 || chainShape.materialCount == chainShape.count);
-            int count = chainShape.count;
-
-            if (chainShape.materialCount == 1)
-            {
-                for (int i = 0; i < count; ++i)
-                {
-                    int shapeId = chainShape.shapeIndices[i];
-                    B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                    shape.material = material;
-                }
-            }
-            else
-            {
-                int shapeId = chainShape.shapeIndices[materialIndex];
-                B2Shape shape = b2Array_Get(ref world.shapes, shapeId);
-                shape.material = material;
-            }
-        }
-
-        /// Get a chain material by index.
-        public static B2SurfaceMaterial b2Chain_GetSurfaceMaterial(B2ChainId chainId, int segmentIndex)
-        {
-            B2World world = b2GetWorld(chainId.world0);
-            B2ChainShape chainShape = b2GetChainShape(world, chainId);
-            B2_ASSERT(0 <= segmentIndex && segmentIndex < chainShape.count);
-            return chainShape.materials[segmentIndex];
         }
         /// Get the maximum capacity required for retrieving all the touching contacts on a shape
         public static int b2Shape_GetContactCapacity(B2ShapeId shapeId)

@@ -416,7 +416,6 @@ namespace Box2D.NET
                 else
                 {
                     B2_ASSERT(chain.shapeIndices == null);
-                    B2_ASSERT(chain.materials == null);
                 }
             }
 

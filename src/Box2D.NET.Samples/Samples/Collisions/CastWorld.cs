@@ -227,7 +227,7 @@ public class CastWorld : Sample
             B2Vec2[] points = [new B2Vec2(1.0f, 0.0f), new B2Vec2(-1.0f, 0.0f), new B2Vec2(-1.0f, -1.0f), new B2Vec2(1.0f, -1.0f)];
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = 4;
+            chainDef.pointCount = 4;
             chainDef.isLoop = true;
             b2CreateChain(m_bodyIds[m_bodyIndex], chainDef);
         }

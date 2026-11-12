@@ -49,7 +49,7 @@ public class PersistentContact : Sample
 
             B2ChainDef chainDef = b2DefaultChainDef();
             chainDef.points = points;
-            chainDef.count = 22;
+            chainDef.pointCount = 22;
             chainDef.isLoop = true;
 
             b2CreateChain(groundId, chainDef);

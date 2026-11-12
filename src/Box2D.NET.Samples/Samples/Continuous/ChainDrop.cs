@@ -45,7 +45,7 @@ public class ChainDrop : Sample
 
         B2ChainDef chainDef = b2DefaultChainDef();
         chainDef.points = points;
-        chainDef.count = 4;
+        chainDef.pointCount = 4;
         chainDef.isLoop = true;
 
         b2CreateChain(groundId, chainDef);

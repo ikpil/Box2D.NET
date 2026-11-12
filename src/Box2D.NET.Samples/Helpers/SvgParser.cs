@@ -5,6 +5,8 @@
 using System;
 using System.Globalization;
 using static Box2D.NET.B2Diagnostics;
+using static Box2D.NET.B2MathFunction;
+using static Box2D.NET.B2Constants;
 
 namespace Box2D.NET.Samples.Helpers;
 
@@ -151,6 +153,12 @@ public static class SvgParser
 
         if (reverseOrder)
         {
+        }
+
+        // Remove the loop point for chain shapes.
+        if (pointCount > 2 && b2Distance(points[0], points[pointCount - 1]) <= B2_LINEAR_SLOP)
+        {
+            pointCount -= 1;
         }
 
         return pointCount;
