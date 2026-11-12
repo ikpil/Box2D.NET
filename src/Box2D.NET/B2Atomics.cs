@@ -10,6 +10,15 @@ namespace Box2D.NET
     public static class B2Atomics
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void b2Pause()
+        {
+            // C uses _mm_pause() / __yield(). Thread.SpinWait(1) emits the same
+            // pause/yield hint on x86 and ARM. Task.Yield() was a no-op here because
+            // the returned awaitable was never awaited.
+            Thread.SpinWait(1);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void b2AtomicStoreInt(ref B2AtomicInt a, int value)
         {
             Interlocked.Exchange(ref a.value, value);

@@ -106,6 +106,35 @@ namespace Box2D.NET
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2OverlapV(in B2AABB a, in B2AABB b)
+        {
+            return a.lowerBound.X <= b.upperBound.X && a.lowerBound.Y <= b.upperBound.Y && b.lowerBound.X <= a.upperBound.X &&
+                   b.lowerBound.Y <= a.upperBound.Y;
+        }
+
+        // Bit (2 * i + j) is set when pairA[i] overlaps pairB[j]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2OverlapPairMask(B2TreeNode[] arrayA, int pairA, B2TreeNode[] arrayB, int pairB)
+        {
+            int mask = 0;
+            mask |= b2OverlapV(arrayA[pairA + 0].aabb, arrayB[pairB + 0].aabb) ? 1 : 0;
+            mask |= b2OverlapV(arrayA[pairA + 0].aabb, arrayB[pairB + 1].aabb) ? 2 : 0;
+            mask |= b2OverlapV(arrayA[pairA + 1].aabb, arrayB[pairB + 0].aabb) ? 4 : 0;
+            mask |= b2OverlapV(arrayA[pairA + 1].aabb, arrayB[pairB + 1].aabb) ? 8 : 0;
+            return mask;
+        }
+
+        // Bit i is set when av overlaps nodes[pair + i]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2OverlapNodePairMask(in B2AABB av, B2TreeNode[] nodes, int pair)
+        {
+            int mask = 0;
+            mask |= b2OverlapNode(av, nodes[pair + 0]) ? 1 : 0;
+            mask |= b2OverlapNode(av, nodes[pair + 1]) ? 2 : 0;
+            return mask;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2UnionV(in B2AABB a, in B2AABB b)
         {
             return b2AABB_Union(a, b);

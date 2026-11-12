@@ -110,7 +110,7 @@ namespace Box2D.NET
             Span<B2Vec2> ps = stackalloc B2Vec2[B2_MAX_POLYGON_VERTICES];
             int n = 0;
             float linearSlop = B2_LINEAR_SLOP;
-            float tolSqr = 16.0f * linearSlop * linearSlop;
+            float tolSqr = 0.25f * linearSlop * linearSlop;
             for (int i = 0; i < count; ++i)
             {
                 aabb.lowerBound = b2Min(aabb.lowerBound, points[i]);
@@ -119,9 +119,9 @@ namespace Box2D.NET
                 B2Vec2 vi = points[i];
 
                 bool unique = true;
-                for (int j = 0; j < i; ++j)
+                for (int j = 0; j < n; ++j)
                 {
-                    B2Vec2 vj = points[j];
+                    B2Vec2 vj = ps[j];
 
                     float distSqr = b2DistanceSquared(vi, vj);
                     if (distSqr < tolSqr)

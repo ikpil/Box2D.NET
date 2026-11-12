@@ -35,6 +35,13 @@ namespace Box2D.NET
             return false;
         }
 
+        /// @return true if the current CPU has the AVX2 instruction set.
+        /// Box2D.NET always solves contacts 4 wide, so the 8 wide AVX2 path is never available.
+        public static bool b2IsAVX2Available()
+        {
+            return false;
+        }
+
         // This allows the user to change the length units at runtime
         internal static float b2_lengthUnitsPerMeter = 1.0f;
 

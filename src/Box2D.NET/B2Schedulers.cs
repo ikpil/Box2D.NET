@@ -13,6 +13,60 @@ namespace Box2D.NET
 {
     public static class B2Schedulers
     {
+        public const float B2_SCHEDULER_SPIN_MILLISECONDS = 0.05f;
+
+        private static bool b2SchedulerHasPending(B2Scheduler scheduler)
+        {
+            int taskCount = b2AtomicLoadInt(ref scheduler.nextSlot);
+            for (int t = 0; t < taskCount; ++t)
+            {
+                if (b2AtomicLoadInt(ref scheduler.tasks[t].status) == (int)B2SchedulerTaskStatus.b2_schedulerPending)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool b2SchedulerSpin(B2Scheduler scheduler)
+        {
+            ulong ticks = b2GetTicks();
+            while (true)
+            {
+                if (b2SchedulerHasPending(scheduler) || b2AtomicLoadInt(ref scheduler.shutdown) != 0)
+                {
+                    return true;
+                }
+
+                if (b2GetMilliseconds(ticks) >= B2_SCHEDULER_SPIN_MILLISECONDS)
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < 8; ++i)
+                {
+                    b2Pause();
+                }
+            }
+        }
+
+        private static bool b2SchedulerTakeSleeper(B2Scheduler scheduler)
+        {
+            int sleeperCount = b2AtomicLoadInt(ref scheduler.sleeperCount);
+            while (sleeperCount > 0)
+            {
+                if (b2AtomicCompareExchangeInt(ref scheduler.sleeperCount, sleeperCount, sleeperCount - 1))
+                {
+                    return true;
+                }
+
+                sleeperCount = b2AtomicLoadInt(ref scheduler.sleeperCount);
+            }
+
+            return false;
+        }
+
         // Try to claim and execute one pending task.
         // Returns true if work was performed, false otherwise.
         private static bool b2SchedulerExecuteOne(B2Scheduler scheduler)
@@ -48,17 +102,30 @@ namespace Box2D.NET
 
             while (true)
             {
-                b2WaitSemaphore(ref scheduler.taskSemaphore);
+                // Claim and execute all available work
+                while (b2SchedulerExecuteOne(scheduler))
+                {
+                }
 
                 if (b2AtomicLoadInt(ref scheduler.shutdown) != 0)
                 {
                     break;
                 }
 
-                // Claim and execute all available work
-                while (b2SchedulerExecuteOne(scheduler))
+                if (b2SchedulerSpin(scheduler))
                 {
+                    continue;
                 }
+
+                b2AtomicFetchAddInt(ref scheduler.sleeperCount, 1);
+
+                if (b2SchedulerHasPending(scheduler) || b2AtomicLoadInt(ref scheduler.shutdown) != 0)
+                {
+                    b2SchedulerTakeSleeper(scheduler);
+                    continue;
+                }
+
+                b2WaitSemaphore(ref scheduler.taskSemaphore);
             }
         }
 
@@ -71,6 +138,7 @@ namespace Box2D.NET
             int threadCount = workerCount - 1;
             scheduler.threadCount = threadCount;
             scheduler.taskSemaphore = b2CreateSemaphore(0);
+            b2AtomicStoreInt(ref scheduler.sleeperCount, 0);
             b2AtomicStoreInt(ref scheduler.shutdown, 0);
             b2AtomicStoreInt(ref scheduler.nextSlot, 0);
 
@@ -139,7 +207,10 @@ namespace Box2D.NET
             b2AtomicStoreInt(ref schedulerTask.status, (int)B2SchedulerTaskStatus.b2_schedulerPending);
 
             // One wake per enqueue is enough: at most one worker picks up each task.
-            b2SignalSemaphore(ref scheduler.taskSemaphore);
+            if (b2SchedulerTakeSleeper(scheduler))
+            {
+                b2SignalSemaphore(ref scheduler.taskSemaphore);
+            }
 
             return schedulerTask;
         }

@@ -2001,6 +2001,19 @@ namespace Box2D.NET
 
             world.enableWarmStarting = flag;
         }
+
+        /// Enable the SSE2 fallback even when AVX2 is present. This is for testing.
+        /// Box2D.NET always solves contacts 4 wide, so this only validates the call.
+        public static void b2World_EnableSSE2Fallback(B2WorldId worldId, bool flag)
+        {
+            B2_UNUSED(flag);
+            B2World world = b2GetWorldFromId(worldId);
+            B2_ASSERT(world.locked == false);
+            if (world.locked)
+            {
+                return;
+            }
+        }
         /// Is constraint warm starting enabled?
         public static bool b2World_IsWarmStartingEnabled(B2WorldId worldId)
         {

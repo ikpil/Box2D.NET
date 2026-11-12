@@ -21,6 +21,7 @@ namespace Box2D.NET
         public B2AtomicInt nextSlot;
 
         public B2Semaphore taskSemaphore;
+        public B2AtomicInt sleeperCount;
         public B2AtomicInt shutdown;
     }
 }

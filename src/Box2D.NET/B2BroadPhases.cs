@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
 using static Box2D.NET.B2DynamicTrees;
+using static Box2D.NET.B2CTZs;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
@@ -288,19 +289,20 @@ namespace Box2D.NET
             while (stackCount > 0)
             {
                 pair = stack[--stackCount];
-                for (int i = 0; i < 2; ++i)
+
+                int movedMask = 3;
+                if (proxyMark == 0)
                 {
+                    movedMask = (b2IsNodeMoved(nodes[pair + 0]) ? 1 : 0) | (b2IsNodeMoved(nodes[pair + 1]) ? 2 : 0);
+                }
+
+                int mask = b2OverlapNodePairMask(boxv, nodes, pair) & movedMask;
+                while (mask != 0)
+                {
+                    int i = (int)b2CTZ32((uint)mask);
+                    mask &= mask - 1;
+
                     ref readonly B2TreeNode node = ref nodes[pair + i];
-                    if (((node.flagIndex | proxyMark) & B2_MOVED_NODE) == 0)
-                    {
-                        continue;
-                    }
-
-                    if (b2OverlapNode(boxv, node) == false)
-                    {
-                        continue;
-                    }
-
                     if (b2IsLeaf(node))
                     {
                         b2AddCandidatePair(shapeId, node.shapeIndex, context);
@@ -320,16 +322,10 @@ namespace Box2D.NET
             }
         }
 
-        // Helper for b2CollideCrossPairs to avoid code duplication.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void b2VisitPair(B2TreeNode[] arrayA, B2TreeNode[] arrayB, in B2TreeNode nodeA, in B2TreeNode nodeB,
+        private static void b2ExpandPair(B2TreeNode[] arrayA, B2TreeNode[] arrayB, in B2TreeNode nodeA, in B2TreeNode nodeB,
             Span<B2IndexPair> stack, ref int stackCount, B2PairContext context)
         {
-            if (b2TestPair(nodeA, nodeB) == false)
-            {
-                return;
-            }
-
             bool leafA = b2IsLeaf(nodeA);
             bool leafB = b2IsLeaf(nodeB);
             if (leafA && leafB)
@@ -376,17 +372,26 @@ namespace Box2D.NET
             int stackCount = 0;
 
             // Seed the stack.
-            b2VisitPair(arrayA, arrayB, subtreeA, subtreeB, stack, ref stackCount, context);
+            if (b2TestPair(subtreeA, subtreeB))
+            {
+                b2ExpandPair(arrayA, arrayB, subtreeA, subtreeB, stack, ref stackCount, context);
+            }
 
             while (stackCount > 0)
             {
                 B2IndexPair pair = stack[--stackCount];
-                for (int i = 0; i < 2; ++i)
+                int pairA = pair.a;
+                int pairB = pair.b;
+
+                int movedA = (b2IsNodeMoved(arrayA[pairA + 0]) ? 0x3 : 0) | (b2IsNodeMoved(arrayA[pairA + 1]) ? 0xC : 0);
+                int movedB = (b2IsNodeMoved(arrayB[pairB + 0]) ? 0x5 : 0) | (b2IsNodeMoved(arrayB[pairB + 1]) ? 0xA : 0);
+
+                int mask = b2OverlapPairMask(arrayA, pairA, arrayB, pairB) & (movedA | movedB);
+                while (mask != 0)
                 {
-                    for (int j = 0; j < 2; ++j)
-                    {
-                        b2VisitPair(arrayA, arrayB, arrayA[pair.a + i], arrayB[pair.b + j], stack, ref stackCount, context);
-                    }
+                    int lane = (int)b2CTZ32((uint)mask);
+                    mask &= mask - 1;
+                    b2ExpandPair(arrayA, arrayB, arrayA[pairA + (lane >> 1)], arrayB[pairB + (lane & 1)], stack, ref stackCount, context);
                 }
             }
         }

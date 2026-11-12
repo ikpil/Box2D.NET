@@ -100,15 +100,6 @@ namespace Box2D.NET
         }
 
 
-        internal static void b2Pause()
-        {
-            // C uses _mm_pause() / __yield(). Thread.SpinWait(1) emits the same
-            // pause/yield hint on x86 and ARM. Task.Yield() was a no-op here because
-            // the returned awaitable was never awaited.
-            Thread.SpinWait(1);
-        }
-
-
         // Integrate velocities and apply damping
         internal static void b2IntegrateVelocitiesTask(B2SolverBlock block, B2StepContext context)
         {
@@ -1011,7 +1002,9 @@ namespace Box2D.NET
             int blockIndex = startIndex;
             for (int i = 0; i < blockCount; ++i)
             {
-                if (b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, previousSyncIndex, syncIndex))
+                // Read before attempting the CAS.
+                if (b2AtomicLoadInt(ref blocks[blockIndex].syncIndex) == previousSyncIndex &&
+                    b2AtomicCompareExchangeInt(ref blocks[blockIndex].syncIndex, previousSyncIndex, syncIndex))
                 {
                     B2_ASSERT(stage.type != B2SolverStageType.b2_stagePrepareContacts || syncIndex < 2);
                     B2_ASSERT(completedCount < blockCount);
