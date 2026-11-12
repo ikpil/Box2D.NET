@@ -1720,8 +1720,6 @@ namespace Box2D.NET
             B2Pos pA = b2TransformWorldPoint(xfA, jointSim.localFrameA.p);
             B2Pos pB = b2TransformWorldPoint(xfB, jointSim.localFrameB.p);
 
-            B2HexColor color = B2HexColor.b2_colorDarkSeaGreen;
-
             float scale = b2MaxFloat(0.0001f, draw.jointScale * joint.drawScale);
 
             switch (joint.type)
@@ -1731,13 +1729,23 @@ namespace Box2D.NET
                     break;
 
                 case B2JointType.b2_filterJoint:
-                    draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
+                    draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorLightSkyBlue, draw.context);
+                    draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorLightSkyBlue, draw.context);
+                    if (draw.drawJointExtras)
+                    {
+                        draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorGold, draw.context);
+                    }
+
                     break;
 
                 case B2JointType.b2_motorJoint:
                     draw.DrawPointFcn(pA, 8.0f, B2HexColor.b2_colorYellowGreen, draw.context);
                     draw.DrawPointFcn(pB, 8.0f, B2HexColor.b2_colorPlum, draw.context);
-                    draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
+                    if (draw.drawJointExtras)
+                    {
+                        draw.DrawLineFcn(pA, pB, B2HexColor.b2_colorLightGray, draw.context);
+                    }
+
                     break;
 
                 case B2JointType.b2_moverJoint:
@@ -1765,9 +1773,6 @@ namespace Box2D.NET
                     break;
 
                 default:
-                    draw.DrawLineFcn(xfA.p, pA, color, draw.context);
-                    draw.DrawLineFcn(pA, pB, color, draw.context);
-                    draw.DrawLineFcn(xfB.p, pB, color, draw.context);
                     break;
             }
 
