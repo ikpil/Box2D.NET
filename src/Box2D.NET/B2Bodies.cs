@@ -174,8 +174,8 @@ namespace Box2D.NET
         {
             B2BodySim bodySim = b2GetBodySim(world, body);
 
-            // Preserve the fast flag for contact recycling.
-            bodySim.flags = (bodySim.flags & (uint)B2BodyFlags.b2_isFast) | (body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags);
+            // Preserve the sim only flags: fast for contact recycling, time of impact for debug draw.
+            bodySim.flags = (bodySim.flags & (uint)(B2BodyFlags.b2_isFast | B2BodyFlags.b2_hadTimeOfImpact)) | (body.flags & ~(uint)B2BodyFlags.b2_bodyTransientFlags);
 
             B2BodyState bodyState = b2GetBodyState(world, body);
             if (bodyState != null)
@@ -1959,7 +1959,7 @@ namespace Box2D.NET
                     continue;
                 }
 
-                B2_ASSERT(joint.setIndex == set.setIndex || set.setIndex == (int)B2SolverSetType.b2_staticSet);
+                B2_ASSERT(joint.setIndex == set.setIndex || set.setIndex == (int)B2SolverSetType.b2_staticSet || joint.setIndex == (int)B2SolverSetType.b2_staticSet);
 
                 // Remove joint from island
                 b2UnlinkJoint(world, joint);
@@ -2052,7 +2052,7 @@ namespace Box2D.NET
 
                 // Transfer joint first
                 int jointSetId;
-                if (bodyA.setIndex == (int)B2SolverSetType.b2_staticSet && bodyB.setIndex == (int)B2SolverSetType.b2_staticSet)
+                if (bodyA.type != B2BodyType.b2_dynamicBody && bodyB.type != B2BodyType.b2_dynamicBody)
                 {
                     jointSetId = (int)B2SolverSetType.b2_staticSet;
                 }

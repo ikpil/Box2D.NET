@@ -1165,7 +1165,7 @@ namespace Box2D.NET
                 {
                     color = B2HexColor.b2_colorWheat;
                 }
-                else if (0 != (body.flags & (uint)B2BodyFlags.b2_hadTimeOfImpact))
+                else if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_hadTimeOfImpact))
                 {
                     color = B2HexColor.b2_colorLime;
                 }

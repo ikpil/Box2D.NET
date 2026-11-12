@@ -259,7 +259,9 @@ namespace Box2D.NET
             B2_ASSERT(body.type == B2BodyType.b2_staticBody || 0 != (fastBodySim.flags & (uint)B2BodyFlags.b2_isBullet));
 
             // Skip bullets
-            if (0 != (bodySim.flags & (uint)B2BodyFlags.b2_isBullet))
+            // Warning: it is only safe to read flags from other bodies, not body sims because there are
+            // body sim flag writes in the continuous solver.
+            if (0 != (body.flags & (uint)B2BodyFlags.b2_isBullet))
             {
                 return true;
             }
@@ -497,6 +499,9 @@ namespace Box2D.NET
                 fastBodySim.rotation0 = q;
                 fastBodySim.center0 = fastBodySim.center;
 
+                // Warning: writing to the body sim flags means we should not read from other body sim flags in this function.
+                fastBodySim.flags |= (uint)B2BodyFlags.b2_hadTimeOfImpact;
+
                 // Timeloss means there is a lost gravity contribution. Other forces and torques are ignored for now.
                 B2BodyState fastBodyState = b2Array_Get(ref awakeSet.bodyStates, bodySimIndex);
                 B2Vec2 v = fastBodyState.linearVelocity;
@@ -509,8 +514,6 @@ namespace Box2D.NET
                 // Update body move event
                 ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
                 @event.transform = fastBodySim.transform;
-
-                fastBody.flags |= (uint)B2BodyFlags.b2_hadTimeOfImpact;
 
                 // Prepare AABBs for broad-phase.
                 // Even though a body is fast, it may not move much. So the AABB may not need enlargement.

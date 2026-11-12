@@ -1688,4 +1688,66 @@ public class B2WorldTest
             LocatorSleepParity(workerCounts[i]);
         }
     }
+
+    // A joint with no dynamic body lives in the static set even when one body is an awake kinematic.
+    // Disabling and enabling that body has to respect this, whether the joint was created that way or
+    // got there through body type changes. Box3D issue #164.
+    [Test]
+    public void NonDynamicJointDisableTest()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        B2BodyId bodyIdA = b2CreateBody(worldId, bodyDef);
+        bodyDef.position = new B2Pos(2.0f, 0.0f);
+        B2BodyId bodyIdB = b2CreateBody(worldId, bodyDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Polygon box = b2MakeBox(0.5f, 0.5f);
+        b2CreatePolygonShape(bodyIdA, shapeDef, box);
+        b2CreatePolygonShape(bodyIdB, shapeDef, box);
+
+        B2WeldJointDef jointDef = b2DefaultWeldJointDef();
+        jointDef.@base.bodyIdA = bodyIdA;
+        jointDef.@base.bodyIdB = bodyIdB;
+        B2JointId weldId = b2CreateWeldJoint(worldId, jointDef);
+
+        b2Body_SetType(bodyIdA, B2BodyType.b2_staticBody);
+        b2Body_SetType(bodyIdB, B2BodyType.b2_kinematicBody);
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+
+        b2Body_Disable(bodyIdB);
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+        b2Body_Enable(bodyIdB);
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+        Assert.That(b2Joint_IsValid(weldId), Is.True);
+
+        B2World world = b2GetWorldFromId(worldId);
+        Assert.That(b2GetJointFullId(world, weldId).setIndex, Is.EqualTo((int)B2SolverSetType.b2_staticSet));
+
+        b2Body_SetType(bodyIdB, B2BodyType.b2_dynamicBody);
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+        Assert.That(b2GetJointFullId(world, weldId).setIndex, Is.EqualTo((int)B2SolverSetType.b2_awakeSet));
+
+        // Created directly between a static and a kinematic body
+        bodyDef.type = B2BodyType.b2_kinematicBody;
+        bodyDef.position = new B2Pos(4.0f, 0.0f);
+        B2BodyId bodyIdC = b2CreateBody(worldId, bodyDef);
+        b2CreatePolygonShape(bodyIdC, shapeDef, box);
+
+        B2RevoluteJointDef revoluteDef = b2DefaultRevoluteJointDef();
+        revoluteDef.@base.bodyIdA = bodyIdA;
+        revoluteDef.@base.bodyIdB = bodyIdC;
+        B2JointId revoluteId = b2CreateRevoluteJoint(worldId, revoluteDef);
+
+        b2Body_Disable(bodyIdC);
+        b2Body_Enable(bodyIdC);
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+        Assert.That(b2GetJointFullId(world, revoluteId).setIndex, Is.EqualTo((int)B2SolverSetType.b2_staticSet));
+
+        b2DestroyWorld(worldId);
+    }
 }

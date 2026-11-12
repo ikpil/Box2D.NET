@@ -960,7 +960,8 @@ public class B2RestitutionTest
 
             // Transient body flags are cleared and rewritten every step
             B2Body ball = b2GetBodyFullId(world, ballId);
-            if (0 != (ball.flags & (uint)B2BodyFlags.b2_hadTimeOfImpact))
+            B2BodySim ballSim = b2GetBodySim(world, ball);
+            if (0 != (ballSim.flags & (uint)B2BodyFlags.b2_hadTimeOfImpact))
             {
                 result.toiSteps += 1;
                 if (measured != 0.0f)

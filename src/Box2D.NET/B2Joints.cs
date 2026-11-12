@@ -147,7 +147,7 @@ namespace Box2D.NET
             return def;
         }
 
-        internal static B2Joint b2GetJointFullId(B2World world, B2JointId jointId)
+        public static B2Joint b2GetJointFullId(B2World world, B2JointId jointId)
         {
             int id = jointId.index1 - 1;
             B2Joint joint = b2Array_Get(ref world.joints, id);
