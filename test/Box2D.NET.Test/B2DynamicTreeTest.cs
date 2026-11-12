@@ -25,13 +25,14 @@ public class B2DynamicTreeTest
             upperBound: new B2Vec2(2.0f, 2.0f)
         );
 
-        B2DynamicTree tree = b2CreateDynamicTree(16);
+        B2DynamicTree tree = new B2DynamicTree();
+        b2CreateDynamicTreeInternal(tree, 16);
         b2CreateTreeProxyInternal(tree, a, 1, 0, false);
 
         Assert.That(tree.nodeEnd == 2);
         Assert.That(tree.proxyCount == 1);
 
-        b2DestroyDynamicTree(tree);
+        b2DestroyDynamicTreeInternal(tree);
 
         Assert.That(tree.nodeEnd == 0);
         Assert.That(tree.proxyCount == 0);

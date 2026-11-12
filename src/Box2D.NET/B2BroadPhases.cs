@@ -55,13 +55,16 @@ namespace Box2D.NET
             bp.pairSet = b2CreateSet(b2MaxInt(32, 2 * capacity.contactCount));
 
             int staticCapacity = b2MaxInt(16, capacity.staticShapeCount);
-            bp.trees[(int)B2BodyType.b2_staticBody] = b2CreateDynamicTree(staticCapacity);
+            bp.trees[(int)B2BodyType.b2_staticBody] = new B2DynamicTree();
+            b2CreateDynamicTreeInternal(bp.trees[(int)B2BodyType.b2_staticBody], staticCapacity);
 
             int kinematicCapacity = 16;
-            bp.trees[(int)B2BodyType.b2_kinematicBody] = b2CreateDynamicTree(kinematicCapacity);
+            bp.trees[(int)B2BodyType.b2_kinematicBody] = new B2DynamicTree();
+            b2CreateDynamicTreeInternal(bp.trees[(int)B2BodyType.b2_kinematicBody], kinematicCapacity);
 
             int dynamicCapacity = b2MaxInt(16, capacity.dynamicShapeCount);
-            bp.trees[(int)B2BodyType.b2_dynamicBody] = b2CreateDynamicTree(dynamicCapacity);
+            bp.trees[(int)B2BodyType.b2_dynamicBody] = new B2DynamicTree();
+            b2CreateDynamicTreeInternal(bp.trees[(int)B2BodyType.b2_dynamicBody], dynamicCapacity);
 
             bp.movedSiblings = null;
             bp.crossSeeds = new B2NodePair[2 * B2_CROSS_SEED_COUNT];
@@ -76,7 +79,7 @@ namespace Box2D.NET
         {
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DestroyDynamicTree(bp.trees[i]);
+                b2DestroyDynamicTreeInternal(bp.trees[i]);
             }
 
             b2DestroySet(ref bp.pairSet);

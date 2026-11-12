@@ -198,12 +198,11 @@ namespace Box2D.NET
             tree.pairFreeList = pair;
         }
 
-        /// Constructing the tree initializes the node pool.
-        public static B2DynamicTree b2CreateDynamicTree(int proxyCapacity = 16)
+        /// Initialize a tree in place. Used for trees embedded in other structures.
+        public static void b2CreateDynamicTreeInternal(B2DynamicTree tree, int proxyCapacity)
         {
             int capacity = b2MaxInt(proxyCapacity, 16);
 
-            B2DynamicTree tree = new B2DynamicTree();
             tree.Clear();
 
             // A tree of n proxies has 2n - 1 nodes plus the empty node beside the root
@@ -243,12 +242,10 @@ namespace Box2D.NET
             tree.leafCenters = null;
             tree.binIndices = null;
             tree.rebuildCapacity = 0;
-
-            return tree;
         }
 
-        /// Destroy the tree, freeing the node pool.
-        public static void b2DestroyDynamicTree(B2DynamicTree tree)
+        /// Destroy a tree initialized in place, freeing the node pool.
+        public static void b2DestroyDynamicTreeInternal(B2DynamicTree tree)
         {
             b2Free(tree.nodes, tree.nodeCapacity);
             b2Free(tree.parents, tree.nodeCapacity);
@@ -261,6 +258,25 @@ namespace Box2D.NET
             b2Free(tree.binIndices, tree.rebuildCapacity);
 
             tree.Clear();
+        }
+
+        /// Constructing the tree initializes the node pool.
+        public static B2DynamicTree b2CreateDynamicTree(int proxyCapacity = 16)
+        {
+            B2DynamicTree tree = new B2DynamicTree();
+            b2CreateDynamicTreeInternal(tree, proxyCapacity);
+            return tree;
+        }
+
+        /// Destroy the tree, freeing the node pool.
+        public static void b2DestroyDynamicTree(B2DynamicTree tree)
+        {
+            if (tree == null)
+            {
+                return;
+            }
+
+            b2DestroyDynamicTreeInternal(tree);
         }
 
         // Allocate a proxy from the pool. Grow the pool if necessary.
