@@ -15,12 +15,16 @@ namespace Box2D.NET
         public const int B2_SIMD_WIDTH = 4;
 
         /// Get the current version of Box2D
+        public const int B2_VERSION_MAJOR = 3;
+        public const int B2_VERSION_MINOR = 2;
+        public const int B2_VERSION_REVISION = 0;
+
         public static B2Version b2GetVersion()
         {
             return new B2Version(
-                major: 3,
-                minor: 2,
-                revision: 0
+                major: B2_VERSION_MAJOR,
+                minor: B2_VERSION_MINOR,
+                revision: B2_VERSION_REVISION
             );
         }
 

@@ -431,6 +431,23 @@ namespace Box2D.NET
             b2TracyCZoneEnd(B2TracyCZone.tree_task);
         }
 
+        // Task that can be done in parallel with the narrow-phase
+        // - rebuild the collision tree for dynamic and kinematic bodies to keep their query performance good
+        private static void b2EnqueueTreeUpdate(B2World world)
+        {
+            if (world.taskCount < B2_MAX_TASKS)
+            {
+                world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, world, world.userTaskContext);
+                world.taskCount += 1;
+                world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
+            }
+            else
+            {
+                world.userTreeTask = null;
+                b2UpdateTreesTask(world);
+            }
+        }
+
         public static void b2UpdateBroadPhasePairs(B2World world)
         {
             B2BroadPhase bp = world.broadPhase;
@@ -441,6 +458,8 @@ namespace Box2D.NET
 
             if (moveCount == 0)
             {
+                // A destroyed shape may lead to no moves, but the tree could still be enlarged.
+                b2EnqueueTreeUpdate(world);
                 return;
             }
 
@@ -467,19 +486,8 @@ namespace Box2D.NET
 
             b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
 
-            // Task that can be done in parallel with the narrow-phase
-            // - rebuild the collision tree for dynamic and kinematic bodies to keep their query performance good
-            if (world.taskCount < B2_MAX_TASKS)
-            {
-                world.userTreeTask = world.enqueueTaskFcn(b2UpdateTreesTask, world, world.userTaskContext);
-                world.taskCount += 1;
-                world.activeTaskCount += world.userTreeTask == null ? 0 : 1;
-            }
-            else
-            {
-                world.userTreeTask = null;
-                b2UpdateTreesTask(world);
-            }
+            // Update stale trees.
+            b2EnqueueTreeUpdate(world);
 
             // Single-threaded work
             // - Clear move flags

@@ -717,4 +717,76 @@ public class B2WorldTest
 
         b2DestroyWorld(worldId);
     }
+
+    private static int CountEnlargedNodes(B2DynamicTree tree)
+    {
+        int count = 0;
+        for (int i = 0; i < tree.nodeCapacity; ++i)
+        {
+            ref readonly B2TreeNode node = ref tree.nodes[i];
+            if ((node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0 && (node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) != 0)
+            {
+                count += 1;
+            }
+        }
+
+        return count;
+    }
+
+    // A proxy can be enlarged in one step and destroyed before the next, which empties the move buffer.
+    // The trees still need a rebuild or the enlarged nodes survive into the next step.
+    private static void EnlargedProxyDestroyed(int workerCount)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        worldDef.workerCount = workerCount;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2World world = b2GetWorldFromId(worldId);
+        B2DynamicTree tree = world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody];
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Circle circle = new B2Circle(b2Vec2_zero, 0.25f);
+
+        // Resting bodies keep the tree deep enough that the mover has an ancestor that outlives it
+        for (int i = 0; i < 8; ++i)
+        {
+            bodyDef.position = new B2Pos(2.0f * i, 0.0f);
+            B2BodyId restingId = b2CreateBody(worldId, bodyDef);
+            b2CreateCircleShape(restingId, shapeDef, circle);
+        }
+
+        // This body outruns its AABB margin every step
+        bodyDef.position = new B2Pos(7.0f, 1.0f);
+        bodyDef.linearVelocity = new B2Vec2(6.0f, 0.0f);
+        B2BodyId moverId = b2CreateBody(worldId, bodyDef);
+        b2CreateCircleShape(moverId, shapeDef, circle);
+
+        float timeStep = 1.0f / 60.0f;
+        b2World_Step(worldId, timeStep, 4);
+
+        Assert.That(CountEnlargedNodes(tree), Is.GreaterThan(0));
+
+        b2DestroyBody(moverId);
+
+        // The mover was the only proxy in the move buffer
+        Assert.That(world.broadPhase.moveArray.count, Is.EqualTo(0));
+        Assert.That(CountEnlargedNodes(tree), Is.GreaterThan(0));
+
+        b2World_Step(worldId, timeStep, 4);
+
+        Assert.That(CountEnlargedNodes(tree), Is.EqualTo(0));
+
+        b2DestroyWorld(worldId);
+    }
+
+    [Test]
+    public void EnlargedProxyDestroyedTest()
+    {
+        EnlargedProxyDestroyed(1);
+        EnlargedProxyDestroyed(4);
+    }
 }

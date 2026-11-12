@@ -571,9 +571,12 @@ namespace Box2D.NET
                             // 0.5*m*v2^2 - 0.5*m*v1^2 = m*g*dot(n,delta_separation)
                             // This could also be corrected while sub-stepping. Another option is to reduce the
                             // CCD safety factor. In my opinion none of these extra measures are worthwhile. Box2D
-                            // is not designed to be a restitution simulator. Also these constituitive models are
+                            // is not designed to be a restitution simulator. Also these constitutive models are
                             // fundamentally not physically accurate.
                             // See: A New Algebraic Rigid Body Collision Law Based On Impulse Space Considerations
+                            // https://en.wikipedia.org/wiki/Constitutive_equation
+                            // https://en.wikipedia.org/wiki/Coefficient_of_restitution
+
                             if (mp1.totalNormalImpulse > 0.0f && mp1.normalVelocity < -world.restitutionThreshold)
                             {
                                 mp2.restitutionVelocity = -contactSim.restitution * mp1.normalVelocity;
