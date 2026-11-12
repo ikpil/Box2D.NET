@@ -156,9 +156,7 @@ namespace Box2D.NET
         public bool enableSleep;
         public bool locked;
         public bool enableWarmStarting;
-        public bool enableContactSoftening;
         public bool enableContinuous;
-        public bool enableSpeculative;
         public bool inUse;
 
         // TODO: @ikpil for b2Solve 
@@ -266,9 +264,7 @@ namespace Box2D.NET
             enableSleep = false;
             locked = false;
             enableWarmStarting = false;
-            enableContactSoftening = false;
             enableContinuous = false;
-            enableSpeculative = false;
             inUse = false;
 
             foreach (var workerContext in tempWorkerContext)

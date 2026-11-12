@@ -46,9 +46,6 @@ namespace Box2D.NET
         /// Enable continuous collision
         public bool enableContinuous;
         
-        /// Contact softening when mass ratios are large. Experimental.
-        public bool enableContactSoftening;
-
         /// Number of workers for multithreading. Box2D performs best when using performance cores and
         /// accessing a single L3 cache (uniform memory). Efficiency cores and SMT provide
         /// little benefit and may even harm performance.

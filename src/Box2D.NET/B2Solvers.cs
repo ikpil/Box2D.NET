@@ -414,7 +414,7 @@ namespace Box2D.NET
         }
 
         // Continuous collision of dynamic versus static
-        internal static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext)
+        internal static void b2SolveContinuous(B2World world, int bodySimIndex, B2TaskContext taskContext, float dt)
         {
             b2TracyCZoneNC(B2TracyCZone.ccd, "CCD", B2HexColor.b2_colorDarkGoldenRod, true);
 
@@ -496,6 +496,13 @@ namespace Box2D.NET
                 fastBodySim.center = b2OffsetPos(@base, c);
                 fastBodySim.rotation0 = q;
                 fastBodySim.center0 = fastBodySim.center;
+
+                // Timeloss means there is a lost gravity contribution.
+                // Other forces and torques are ignored for now.
+                B2BodyState fastBodyState = b2Array_Get(ref awakeSet.bodyStates, bodySimIndex);
+                B2Vec2 v = fastBodyState.linearVelocity;
+                float timeLoss = (1.0f - context.fraction) * dt;
+                fastBodyState.linearVelocity = b2MulSub(v, timeLoss * fastBodySim.gravityScale, world.gravity);
 
                 // Update body move event
                 ref B2BodyMoveEvent @event = ref b2Array_Get(ref world.bodyMoveEvents, bodySimIndex);
@@ -687,7 +694,7 @@ namespace Box2D.NET
                         }
                         else
                         {
-                            b2SolveContinuous(world, simIndex, taskContext);
+                            b2SolveContinuous(world, simIndex, taskContext, stepContext.dt);
                         }
                     }
                     else
@@ -882,7 +889,7 @@ namespace Box2D.NET
                     break;
 
                 case B2SolverStageType.b2_stagePrepareContacts:
-                    b2PrepareContactsTask(block, context);
+                    b2PrepareContacts_Wide(block, context);
                     break;
 
                 case B2SolverStageType.b2_stageIntegrateVelocities:
@@ -892,7 +899,7 @@ namespace Box2D.NET
                 case B2SolverStageType.b2_stageWarmStart:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        b2WarmStartContactsTask(block, context);
+                        b2WarmStartContacts_Wide(block, context);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
@@ -904,8 +911,7 @@ namespace Box2D.NET
                 case B2SolverStageType.b2_stageSolve:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        bool useBias = true;
-                        b2SolveContactsTask(block, context, useBias);
+                        b2PushContacts_Wide(block, context);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
@@ -922,8 +928,7 @@ namespace Box2D.NET
                 case B2SolverStageType.b2_stageRelax:
                     if (blockType == B2SolverBlockType.b2_graphContactBlock)
                     {
-                        bool useBias = false;
-                        b2SolveContactsTask(block, context, useBias);
+                        b2SolveContacts_Wide(block, context);
                     }
                     else if (blockType == B2SolverBlockType.b2_graphJointBlock)
                     {
@@ -933,16 +938,8 @@ namespace Box2D.NET
 
                     break;
 
-                case B2SolverStageType.b2_stageRestitution:
-                    if (blockType == B2SolverBlockType.b2_graphContactBlock)
-                    {
-                        b2ApplyRestitutionTask(block, context);
-                    }
-
-                    break;
-
                 case B2SolverStageType.b2_stageStoreImpulses:
-                    b2StoreImpulsesTask(block, context, workerIndex);
+                    b2StoreImpulses_Wide(block, context, workerIndex);
                     break;
             }
         }
@@ -1196,25 +1193,6 @@ namespace Box2D.NET
                 // integrate velocities / warm start / solve / integrate positions / relax
                 stageIndex += 1 + activeColorCount + ITERATIONS * activeColorCount + 1 + RELAX_ITERATIONS * activeColorCount;
 
-                // Restitution
-                {
-                    b2ApplyRestitution_Overflow(context);
-
-                    int iterStageIndex = stageIndex;
-                    for (int colorIndex = 0; colorIndex < activeColorCount; ++colorIndex)
-                    {
-                        syncBits = (uint)((graphSyncIndex << 16) | iterStageIndex);
-                        B2_ASSERT(stages[iterStageIndex].type == B2SolverStageType.b2_stageRestitution);
-                        b2ExecuteMainStage(stages[iterStageIndex], context, syncBits);
-                        iterStageIndex += 1;
-                    }
-
-                    // graphSyncIndex += 1;
-                    stageIndex += activeColorCount;
-                }
-
-                profile.applyRestitution += b2GetMillisecondsAndReset(ref ticks);
-
                 // Store impulses
                 b2StoreImpulses_Overflow(context);
 
@@ -1298,7 +1276,7 @@ namespace Box2D.NET
             for (int i = startIndex; i < endIndex; ++i)
             {
                 int simIndex = stepContext.bulletBodies[i];
-                b2SolveContinuous(stepContext.world, simIndex, taskContext);
+                b2SolveContinuous(stepContext.world, simIndex, taskContext, stepContext.dt);
             }
 
             b2TracyCZoneEnd(B2TracyCZone.bullet_body_task);
@@ -1503,8 +1481,6 @@ namespace Box2D.NET
                 stageCount += 1;
                 // b2_stageRelax
                 stageCount += RELAX_ITERATIONS * activeColorCount;
-                // b2_stageRestitution
-                stageCount += activeColorCount;
                 // b2_stageStoreImpulses
                 stageCount += 1;
 
@@ -1574,8 +1550,6 @@ namespace Box2D.NET
                     graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageIntegratePositions, bodyBlocks, bodyDim.count, byte.MaxValue);
                 stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRelax, RELAX_ITERATIONS, activeColorCount, graphColorBlocks,
-                    graphBlockCounts, activeColorIndices);
-                stageIdx = b2InitColorStages(stageIdx, stages, B2SolverStageType.b2_stageRestitution, 1, activeColorCount, graphColorBlocks,
                     graphBlockCounts, activeColorIndices);
                 stageIdx = b2InitStage(stageIdx, stages, B2SolverStageType.b2_stageStoreImpulses, contactBlocks, contactPrepareDim.count, byte.MaxValue);
 

@@ -2220,5 +2220,32 @@ namespace Box2D.NET
 
             return true;
         }
+
+        /// The minimum distance from any point on the body shapes to the center of mass.
+        public static float b2Body_GetMinExtent(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            return bodySim.minExtent;
+        }
+
+        /// The maximum distance from any point on the body shapes to the center of mass.
+        public static float b2Body_GetMaxExtent(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            return bodySim.maxExtent;
+        }
+
+        /// The maximum distance from any point on the body shapes to the body origin. Conservative.
+        public static float b2Body_GetMaxExtentOrigin(B2BodyId bodyId)
+        {
+            B2World world = b2GetWorld(bodyId.world0);
+            B2Body body = b2GetBodyFullId(world, bodyId);
+            B2BodySim bodySim = b2GetBodySim(world, body);
+            return bodySim.maxExtent + b2Length(bodySim.localCenter);
+        }
     }
 }

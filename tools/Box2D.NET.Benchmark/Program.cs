@@ -291,7 +291,6 @@ namespace Box2D.NET.PhysicsBenchmark
                 solveImpulses = float.MaxValue,
                 integratePositions = float.MaxValue,
                 relaxImpulses = float.MaxValue,
-                applyRestitution = float.MaxValue,
                 storeImpulses = float.MaxValue,
                 splitIslands = float.MaxValue,
                 transforms = float.MaxValue,

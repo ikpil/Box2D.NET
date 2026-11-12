@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
@@ -524,22 +524,6 @@ namespace Box2D.NET
                 touching = pointCount > 0;
             }
 
-            // This flag is for testing
-            if (world.enableSpeculative == false && pointCount == 2)
-            {
-                if (contactSim.manifold.points[0].separation > 1.5f * B2_LINEAR_SLOP)
-                {
-                    contactSim.manifold.points[0] = contactSim.manifold.points[1];
-                    contactSim.manifold.pointCount = 1;
-                }
-                else if (contactSim.manifold.points[1].separation > 1.5f * B2_LINEAR_SLOP)
-                {
-                    contactSim.manifold.pointCount = 1;
-                }
-
-                pointCount = contactSim.manifold.pointCount;
-            }
-
             if (touching && (shapeA.enableHitEvents || shapeB.enableHitEvents))
             {
                 contactSim.simFlags |= (uint)B2ContactFlags.b2_simEnableHitEvent;
@@ -552,48 +536,60 @@ namespace Box2D.NET
             if (pointCount > 0)
             {
                 contactSim.manifold.rollingImpulse = oldManifold.rollingImpulse;
-            }
 
-            // Match old contact ids to new contact ids and copy the
-            // stored impulses to warm start the solver.
-            int unmatchedCount = 0;
-            for (int i = 0; i < pointCount; ++i)
-            {
-                ref B2ManifoldPoint mp2 = ref contactSim.manifold.points[i];
-
-                // shift anchors to be center of mass relative
-                mp2.anchorA = b2Sub(mp2.anchorA, centerOffsetA);
-                mp2.anchorB = b2Sub(mp2.anchorB, centerOffsetB);
-
-                mp2.normalImpulse = 0.0f;
-                mp2.tangentImpulse = 0.0f;
-                mp2.totalNormalImpulse = 0.0f;
-                mp2.normalVelocity = 0.0f;
-                mp2.persisted = false;
-
-                ushort id2 = mp2.id;
-
-                for (int j = 0; j < oldManifold.pointCount; ++j)
+                // Match old contact ids to new contact ids and copy the
+                // stored impulses to warm start the solver.
+                int unmatchedCount = 0;
+                for (int i = 0; i < pointCount; ++i)
                 {
-                    ref B2ManifoldPoint mp1 = ref oldManifold.points[j];
+                    ref B2ManifoldPoint mp2 = ref contactSim.manifold.points[i];
 
-                    if (mp1.id == id2)
+                    // shift anchors to be center of mass relative
+                    mp2.anchorA = b2Sub(mp2.anchorA, centerOffsetA);
+                    mp2.anchorB = b2Sub(mp2.anchorB, centerOffsetB);
+
+                    mp2.normalImpulse = 0.0f;
+                    mp2.tangentImpulse = 0.0f;
+                    mp2.totalNormalImpulse = 0.0f;
+                    mp2.normalVelocity = 0.0f;
+                    mp2.restitutionVelocity = 0.0f;
+                    mp2.persisted = false;
+
+                    ushort id2 = mp2.id;
+
+                    for (int j = 0; j < oldManifold.pointCount; ++j)
                     {
-                        mp2.normalImpulse = mp1.normalImpulse;
-                        mp2.tangentImpulse = mp1.tangentImpulse;
-                        mp2.persisted = true;
+                        ref B2ManifoldPoint mp1 = ref oldManifold.points[j];
 
-                        // clear old impulse
-                        mp1.normalImpulse = 0.0f;
-                        mp1.tangentImpulse = 0.0f;
-                        break;
+                        if (mp1.id == id2)
+                        {
+                            mp2.normalImpulse = mp1.normalImpulse;
+                            mp2.tangentImpulse = mp1.tangentImpulse;
+
+                            // Restitution is computed from the approach velocity of the previous time step.
+                            // This could be corrected using the energy balance:
+                            // 0.5*m*v2^2 - 0.5*m*v1^2 = m*g*dot(n,delta_separation)
+                            // This could also be corrected while sub-stepping. Another option is to reduce the
+                            // CCD safety factor. In my opinion none of these extra measures are worthwhile. Box2D
+                            // is not designed to be a restitution simulator. Also these constituitive models are
+                            // fundamentally not physically accurate.
+                            // See: A New Algebraic Rigid Body Collision Law Based On Impulse Space Considerations
+                            if (mp1.totalNormalImpulse > 0.0f && mp1.normalVelocity < -world.restitutionThreshold)
+                            {
+                                mp2.restitutionVelocity = -contactSim.restitution * mp1.normalVelocity;
+                            }
+
+                            mp2.persisted = true;
+
+                            break;
+                        }
                     }
+
+                    unmatchedCount += mp2.persisted ? 0 : 1;
                 }
 
-                unmatchedCount += mp2.persisted ? 0 : 1;
+                B2_UNUSED(unmatchedCount);
             }
-
-            B2_UNUSED(unmatchedCount);
 
 #if FALSE
 		// todo I haven't found an improvement from this yet

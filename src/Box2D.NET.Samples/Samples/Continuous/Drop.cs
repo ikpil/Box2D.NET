@@ -289,12 +289,6 @@ public class Drop : Sample
                 m_continuous = !m_continuous;
                 break;
 
-            case Keys.V:
-                Clear();
-                m_speculative = !m_speculative;
-                b2World_EnableSpeculative(m_worldId, m_speculative);
-                break;
-
             case Keys.S:
                 m_frameSkip = m_frameSkip > 0 ? 0 : 60;
                 break;

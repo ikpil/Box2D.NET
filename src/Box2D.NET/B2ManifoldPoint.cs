@@ -32,14 +32,14 @@ namespace Box2D.NET
         /// The separation of the contact point, negative if penetrating
         public float separation;
         
-        /// Cached separation used for contact recycling
-        public float baseSeparation;
-
         /// The impulse along the manifold normal vector.
         public float normalImpulse;
 
         /// The friction impulse
         public float tangentImpulse;
+
+        /// Velocity for restitution. From the last time step.
+        public float restitutionVelocity;
 
         /// The total normal impulse applied across sub-stepping and restitution. This is important
         /// to identify speculative contact points that had an interaction in the time step.
@@ -50,6 +50,9 @@ namespace Box2D.NET
         /// Relative normal velocity pre-solve. Used for hit events. If the normal impulse is
         /// zero then there was no hit. Negative means shapes are approaching.
         public float normalVelocity;
+
+        /// Cached separation used for contact recycling
+        public float baseSeparation;
 
         /// Uniquely identifies a contact point between two shapes
         public ushort id;

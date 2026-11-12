@@ -220,7 +220,7 @@ public class Sample : IDisposable
             {
                 int count = (int)(m_profileWriteIndex - m_profileReadIndex);
 
-                const int kRowCount = 22;
+                const int kRowCount = 21;
                 float[][] histories = new float[kRowCount][];
                 float[] totals = new float[kRowCount];
                 for (int i = 0; i < kRowCount; ++i)
@@ -244,16 +244,15 @@ public class Sample : IDisposable
                     histories[9][i] = p.solveImpulses;
                     histories[10][i] = p.integratePositions;
                     histories[11][i] = p.relaxImpulses;
-                    histories[12][i] = p.applyRestitution;
-                    histories[13][i] = p.storeImpulses;
-                    histories[14][i] = p.splitIslands;
-                    histories[15][i] = p.transforms;
-                    histories[16][i] = p.jointEvents;
-                    histories[17][i] = p.hitEvents;
-                    histories[18][i] = p.refit;
-                    histories[19][i] = p.sleepIslands;
-                    histories[20][i] = p.bullets;
-                    histories[21][i] = p.sensors;
+                    histories[12][i] = p.storeImpulses;
+                    histories[13][i] = p.splitIslands;
+                    histories[14][i] = p.transforms;
+                    histories[15][i] = p.jointEvents;
+                    histories[16][i] = p.hitEvents;
+                    histories[17][i] = p.refit;
+                    histories[18][i] = p.sleepIslands;
+                    histories[19][i] = p.bullets;
+                    histories[20][i] = p.sensors;
                     for (int j = 0; j < kRowCount; ++j)
                     {
                         totals[j] += histories[j][i];
@@ -316,7 +315,7 @@ public class Sample : IDisposable
                     new("solve", 0, colorSolve), new("setup", 1, colorDefault), new("constraints", 1, colorDefault),
                     new("prepare", 2, colorDefault), new("velocities", 2, colorDefault), new("warm start", 2, colorDefault),
                     new("bias", 2, colorDefault), new("positions", 2, colorDefault), new("relax", 2, colorDefault),
-                    new("restitution", 2, colorDefault), new("store", 2, colorDefault), new("split islands", 2, colorDefault),
+                    new("store", 2, colorDefault), new("split islands", 2, colorDefault),
                     new("transforms", 1, colorDefault), new("joint events", 1, colorDefault), new("hit events", 1, colorDefault),
                     new("refit BVH", 1, colorDefault), new("sleep", 1, colorDefault), new("bullets", 1, colorDefault),
                     new("sensors", 0, colorSensors),
