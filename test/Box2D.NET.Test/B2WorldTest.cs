@@ -688,4 +688,35 @@ public class B2WorldTest
 
         b2DestroyWorld(worldId);
     }
+    [Test]
+    public void WorldBounds()
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        // An empty world has no bounds
+        B2AABB empty = b2World_GetBounds(worldId);
+        Assert.That(empty.lowerBound.X, Is.EqualTo(0.0f));
+        Assert.That(empty.upperBound.X, Is.EqualTo(0.0f));
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.position = new B2Vec2(-10.0f, 0.0f);
+        B2BodyId staticId = b2CreateBody(worldId, bodyDef);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        B2Polygon box = b2MakeBox(1.0f, 1.0f);
+        b2CreatePolygonShape(staticId, shapeDef, box);
+
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Vec2(10.0f, 5.0f);
+        B2BodyId dynamicId = b2CreateBody(worldId, bodyDef);
+        b2CreatePolygonShape(dynamicId, shapeDef, box);
+
+        B2AABB bounds = b2World_GetBounds(worldId);
+        Assert.That(bounds.lowerBound.X, Is.LessThanOrEqualTo(-11.0f));
+        Assert.That(bounds.lowerBound.Y, Is.LessThanOrEqualTo(-1.0f));
+        Assert.That(bounds.upperBound.X, Is.GreaterThanOrEqualTo(11.0f));
+        Assert.That(bounds.upperBound.Y, Is.GreaterThanOrEqualTo(6.0f));
+
+        b2DestroyWorld(worldId);
+    }
 }

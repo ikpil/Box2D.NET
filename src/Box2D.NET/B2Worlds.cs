@@ -1431,6 +1431,43 @@ namespace Box2D.NET
             }
         }
 
+        // Union of the broad-phase root bounds across all body types. Returns false when no tree holds a
+        // proxy, so callers don't fold an empty world's origin into a running bounds.
+        internal static bool b2ComputeWorldBounds(B2World world, out B2AABB bounds)
+        {
+            B2AABB worldBounds = new B2AABB();
+            bool haveBounds = false;
+
+            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
+            {
+                B2DynamicTree tree = world.broadPhase.trees[i];
+                if (b2DynamicTree_GetProxyCount(tree) == 0)
+                {
+                    continue;
+                }
+
+                B2AABB treeBounds = b2DynamicTree_GetRootBounds(tree);
+                worldBounds = haveBounds ? b2AABB_Union(worldBounds, treeBounds) : treeBounds;
+                haveBounds = true;
+            }
+
+            bounds = worldBounds;
+            return haveBounds;
+        }
+
+        /// Call this to get the world bounds based on the union of all shape bounds.
+        public static B2AABB b2World_GetBounds(B2WorldId worldId)
+        {
+            B2World world = b2GetUnlockedWorldFromId(worldId);
+            if (world == null)
+            {
+                return new B2AABB();
+            }
+
+            b2ComputeWorldBounds(world, out B2AABB bounds);
+            return bounds;
+        }
+
         /// Get the body events for the current time step. The event data is transient. Do not store a reference to this data.
         public static B2BodyEvents b2World_GetBodyEvents(B2WorldId worldId)
         {
