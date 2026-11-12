@@ -34,6 +34,5 @@ namespace Box2D.NET
         public bool enableCustomFiltering;
         public bool enableHitEvents;
         public bool enablePreSolveEvents;
-        public bool enlargedAABB;
     }
 }

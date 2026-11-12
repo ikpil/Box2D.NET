@@ -1,55 +1,172 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
 using System;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.B2Buffers;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2AABBs;
+using static Box2D.NET.B2Atomics;
 
 namespace Box2D.NET
 {
     public static class B2DynamicTrees
     {
-        public const int B2_TREE_STACK_SIZE = 1024;
+        public const int B2_TREE_STACK_SIZE = 512;
 
-        internal static readonly B2TreeNode b2_defaultTreeNode = new B2TreeNode()
-        {
-            aabb = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(0.0f, 0.0f)),
-            categoryBits = B2_DEFAULT_CATEGORY_BITS,
-            children =
-            {
-                child1 = B2_NULL_INDEX,
-                child2 = B2_NULL_INDEX,
-            },
-            pn =
-            {
-                parent = B2_NULL_INDEX,
-            },
-            height = 0,
-            flags = (ushort)B2TreeNodeFlags.b2_allocatedNode,
-        };
+        // Used to mark a node as being moved such that pairs need to be generated and the tree
+        // may need to be rebuilt. This mark comes from a few sources:
+        // - updating the transform and AABB in the solver from movement
+        // - a joint disabling collision
+        // - creating a proxy
+        // - setting the transform on a body
+        public const uint B2_MOVED_NODE = 1u << 30;
+        public const uint B2_LEAF_NODE = 1u << 31;
+        public const uint B2_NODE_INDEX_MASK = 0xFFFFFFFFu & ~(B2_MOVED_NODE | B2_LEAF_NODE);
+
+        // Used to indicate empty nodes. It also passes as a leaf so that internal node
+        // processing will naturally skip it.
+        public const uint B2_EMPTY_NODE = B2_NODE_INDEX_MASK | B2_LEAF_NODE;
+
+        public const int B2_ROOT_NODE = 0;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2IsLeaf(in B2TreeNode node)
+        public static bool b2IsLeaf(in B2TreeNode node)
         {
-            return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_leafNode);
+            return (node.flagIndex & B2_LEAF_NODE) == B2_LEAF_NODE;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool b2IsAllocated(in B2TreeNode node)
+        public static bool b2IsNodeMoved(in B2TreeNode node)
         {
-            return 0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode);
+            return (node.flagIndex & B2_MOVED_NODE) == B2_MOVED_NODE;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ushort b2MaxUInt16(ushort a, ushort b)
+        public static bool b2IsEmptyNode(in B2TreeNode node)
         {
-            return a > b ? a : b;
+            return node.flagIndex == B2_EMPTY_NODE;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetLeftChild(in B2TreeNode node)
+        {
+            return (int)(node.flagIndex & B2_NODE_INDEX_MASK);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetProxyId(in B2TreeNode node)
+        {
+            return (int)(node.flagIndex & B2_NODE_INDEX_MASK);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int b2GetRootPair(B2TreeNode[] nodes)
+        {
+            ref readonly B2TreeNode root = ref nodes[B2_ROOT_NODE];
+            return b2IsLeaf(root) ? B2_ROOT_NODE : b2GetLeftChild(root);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2TreeNode b2MakeEmptyNode()
+        {
+            return new B2TreeNode
+            {
+                aabb = new B2AABB(
+                    new B2Vec2(float.PositiveInfinity, float.PositiveInfinity),
+                    new B2Vec2(float.NegativeInfinity, float.NegativeInfinity)
+                ),
+                flagIndex = B2_EMPTY_NODE,
+                leafCount = 0,
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2HasTreeMoved(B2DynamicTree tree)
+        {
+            return b2IsNodeMoved(tree.nodes[B2_ROOT_NODE]);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2NeedsRebuild(B2DynamicTree tree)
+        {
+            return b2IsNodeMoved(tree.nodes[B2_ROOT_NODE]) || tree.dfsOrdered == false;
+        }
+
+        // Scalar versions of the AABB SIMD helpers.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool b2OverlapNode(in B2AABB av, in B2TreeNode node)
+        {
+            ref readonly B2AABB bv = ref node.aabb;
+            return av.lowerBound.X <= bv.upperBound.X && av.lowerBound.Y <= bv.upperBound.Y && bv.lowerBound.X <= av.upperBound.X &&
+                   bv.lowerBound.Y <= av.upperBound.Y;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2AABB b2UnionV(in B2AABB a, in B2AABB b)
+        {
+            return b2AABB_Union(a, b);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2AABB b2UnionPairV(B2TreeNode[] nodes, int pair)
+        {
+            return b2AABB_Union(nodes[pair].aabb, nodes[pair + 1].aabb);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void b2StoreAABBV(ref B2AABB aabb, in B2AABB value, bool condition)
+        {
+            if (condition)
+            {
+                aabb = value;
+            }
+        }
+
+        // The free sibling pair list is chained through the parent index of their first node. A pair comes from the
+        // free list when there is one and from the bump pointer otherwise. A rebuild empties the free list, so
+        // allocations can just bump.
+        private static int b2AllocateSiblingPair(B2DynamicTree tree)
+        {
+            // Allocate from free list.
+            if (tree.pairFreeList != B2_NULL_INDEX)
+            {
+                int freePair = tree.pairFreeList;
+                tree.pairFreeList = tree.parents[freePair];
+                return freePair;
+            }
+
+            // Extend the bump allocator if needed.
+            if (tree.nodeEnd + 2 > tree.nodeCapacity)
+            {
+                int oldCapacity = tree.nodeCapacity;
+                int newCapacity = oldCapacity + (oldCapacity >> 1);
+                newCapacity += newCapacity & 1;
+                tree.nodes = b2GrowAllocZeroInit(tree.nodes, oldCapacity, newCapacity);
+                tree.parents = b2GrowAllocZeroInit(tree.parents, oldCapacity, newCapacity);
+                tree.nodeCapacity = newCapacity;
+
+                // The spare has to match, the rebuild allocates it again.
+                b2Free(tree.swapNodes, oldCapacity);
+                tree.swapNodes = null;
+            }
+
+            int pair = tree.nodeEnd;
+            tree.nodeEnd += 2;
+            return pair;
+        }
+
+        private static void b2FreePair(B2DynamicTree tree, int pair)
+        {
+            B2_ASSERT((pair & 1) == 0 && 2 <= pair && pair < tree.nodeEnd);
+            tree.nodes[pair] = b2MakeEmptyNode();
+            tree.nodes[pair + 1] = b2MakeEmptyNode();
+            tree.parents[pair] = tree.pairFreeList;
+            tree.parents[pair + 1] = B2_NULL_INDEX;
+            tree.pairFreeList = pair;
         }
 
         /// Constructing the tree initializes the node pool.
@@ -59,33 +176,40 @@ namespace Box2D.NET
 
             B2DynamicTree tree = new B2DynamicTree();
             tree.Clear();
-            
-            // memset needed for deterministic serialization
-            // memset( &tree, 0, sizeof( b2DynamicTree ) );
 
-            tree.root = B2_NULL_INDEX;
+            // A tree of n proxies has 2n - 1 nodes plus the empty node beside the root
+            tree.nodeCapacity = 2 * capacity;
+            tree.nodes = b2AllocZeroInit<B2TreeNode>(tree.nodeCapacity);
+            tree.parents = b2AllocZeroInit<int>(tree.nodeCapacity);
+            tree.pairFreeList = B2_NULL_INDEX;
 
-            // maximum node count for a full binary tree is 2 * leafCount - 1
-            tree.nodeCapacity = 2 * capacity - 1;
-            tree.nodeCount = 0;
-            tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
-            
-            // todo eliminate this memset
-            //memset( tree.nodes, 0, tree.nodeCapacity * sizeof( b2TreeNode ) );
+            // The root and the empty node always exist
+            tree.nodes[B2_ROOT_NODE] = b2MakeEmptyNode();
+            tree.nodes[B2_ROOT_NODE + 1] = b2MakeEmptyNode();
+            tree.parents[B2_ROOT_NODE] = B2_NULL_INDEX;
+            tree.parents[B2_ROOT_NODE + 1] = B2_NULL_INDEX;
+
+            // This is the bump index.
+            tree.nodeEnd = 2;
+            tree.dfsOrdered = true;
+
+            tree.proxyCapacity = capacity;
+            tree.proxyCount = 0;
+            tree.proxies = b2AllocZeroInit<B2TreeProxy>(tree.proxyCapacity);
 
             // Build a linked list for the free list.
-            // todo use a bump allocation scheme to avoid this work
-            for (int i = 0; i < tree.nodeCapacity - 1; ++i)
+            for (int i = 0; i < tree.proxyCapacity - 1; ++i)
             {
-                tree.nodes[i].pn.next = i + 1;
+                tree.proxies[i].node = B2_NULL_INDEX;
+                tree.proxies[i].next = i + 1;
             }
 
-            tree.nodes[tree.nodeCapacity - 1].pn.next = B2_NULL_INDEX;
-            tree.freeList = 0;
-
-            tree.proxyCount = 0;
+            tree.proxies[tree.proxyCapacity - 1].node = B2_NULL_INDEX;
+            tree.proxies[tree.proxyCapacity - 1].next = B2_NULL_INDEX;
+            tree.proxyFreeList = 0;
 
             tree.leafIndices = null;
+            tree.leafNodes = null;
             tree.leafBoxes = null;
             tree.leafCenters = null;
             tree.binIndices = null;
@@ -98,66 +222,118 @@ namespace Box2D.NET
         public static void b2DynamicTree_Destroy(B2DynamicTree tree)
         {
             b2Free(tree.nodes, tree.nodeCapacity);
+            b2Free(tree.parents, tree.nodeCapacity);
+            b2Free(tree.proxies, tree.proxyCapacity);
+            b2Free(tree.swapNodes, tree.nodeCapacity);
             b2Free(tree.leafIndices, tree.rebuildCapacity);
+            b2Free(tree.leafNodes, tree.rebuildCapacity);
             b2Free(tree.leafBoxes, tree.rebuildCapacity);
             b2Free(tree.leafCenters, tree.rebuildCapacity);
             b2Free(tree.binIndices, tree.rebuildCapacity);
 
-            //memset( tree, 0, sizeof( b2DynamicTree ) );
             tree.Clear();
         }
 
-        // Allocate a node from the pool. Grow the pool if necessary.
-        internal static int b2AllocateNode(B2DynamicTree tree)
+        // Allocate a proxy from the pool. Grow the pool if necessary.
+        private static int b2AllocateProxy(B2DynamicTree tree)
         {
-            // Expand the node pool as needed.
-            if (tree.freeList == B2_NULL_INDEX)
+            // Expand the pool as needed.
+            if (tree.proxyFreeList == B2_NULL_INDEX)
             {
-                B2_ASSERT(tree.nodeCount == tree.nodeCapacity);
+                B2_ASSERT(tree.proxyCount == tree.proxyCapacity);
 
                 // The free list is empty. Rebuild a bigger pool.
-                B2TreeNode[] oldNodes = tree.nodes;
-                int oldCapacity = tree.nodeCapacity;
-                tree.nodeCapacity += oldCapacity >> 1;
-                tree.nodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
-                B2_ASSERT(oldNodes != null);
-                //memcpy( tree.nodes, oldNodes, tree.nodeCount * sizeof( b2TreeNode ) );
-                Array.Copy(oldNodes, 0, tree.nodes, 0, oldCapacity);
+                // A restored pool can have capacity 1, so guarantee strict growth.
+                int oldCapacity = tree.proxyCapacity;
+                tree.proxyCapacity += b2MaxInt(oldCapacity >> 1, 1);
+                tree.proxies = b2GrowAllocZeroInit(tree.proxies, oldCapacity, tree.proxyCapacity);
 
-                // todo eliminate this memset
-                //memset( tree.nodes + tree.nodeCount, 0, ( tree.nodeCapacity - tree.nodeCount ) * sizeof( b2TreeNode ) );
-
-                b2Free(oldNodes, oldCapacity);
-
-                // Build a linked list for the free list. The parent pointer becomes the "next" pointer.
-                // todo avoid building freelist using bump allocator
-                for (int i = tree.nodeCount; i < tree.nodeCapacity - 1; ++i)
+                // Build a linked list for the free list.
+                for (int i = oldCapacity; i < tree.proxyCapacity - 1; ++i)
                 {
-                    tree.nodes[i].pn.next = i + 1;
+                    tree.proxies[i].node = B2_NULL_INDEX;
+                    tree.proxies[i].next = i + 1;
                 }
 
-                tree.nodes[tree.nodeCapacity - 1].pn.next = B2_NULL_INDEX;
-                tree.freeList = tree.nodeCount;
+                tree.proxies[tree.proxyCapacity - 1].node = B2_NULL_INDEX;
+                tree.proxies[tree.proxyCapacity - 1].next = B2_NULL_INDEX;
+                tree.proxyFreeList = oldCapacity;
             }
 
-            // Peel a node off the free list.
-            int nodeIndex = tree.freeList;
-            ref B2TreeNode node = ref tree.nodes[nodeIndex];
-            tree.freeList = node.pn.next;
-            node = b2_defaultTreeNode;
-            ++tree.nodeCount;
-            return nodeIndex;
+            // Peel a proxy off the free list.
+            int proxyIndex = tree.proxyFreeList;
+            tree.proxyFreeList = tree.proxies[proxyIndex].next;
+            tree.proxies[proxyIndex] = new B2TreeProxy();
+            tree.proxies[proxyIndex].node = B2_NULL_INDEX;
+            tree.proxies[proxyIndex].next = B2_NULL_INDEX;
+            ++tree.proxyCount;
+            return proxyIndex;
         }
 
-        // Return a node to the pool.
-        internal static void b2FreeNode(B2DynamicTree tree, int nodeId)
+        // Return a proxy to the pool.
+        private static void b2FreeProxy(B2DynamicTree tree, int proxyId)
         {
-            B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
-            B2_ASSERT(0 < tree.nodeCount);
-            tree.nodes[nodeId].pn.next = tree.freeList;
-            tree.nodes[nodeId].flags = 0;
-            tree.freeList = nodeId;
-            --tree.nodeCount;
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+            B2_ASSERT(0 < tree.proxyCount);
+            tree.proxies[proxyId].node = B2_NULL_INDEX;
+            tree.proxies[proxyId].next = tree.proxyFreeList;
+            tree.proxyFreeList = proxyId;
+            --tree.proxyCount;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int b2GetLeafCount(in B2TreeNode node)
+        {
+            return b2IsLeaf(node) ? 1 : node.leafCount;
+        }
+
+        // The internal node above a children pair
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static B2TreeNode b2MakeInternalNode(B2TreeNode[] nodes, int pair)
+        {
+            ref readonly B2TreeNode c1 = ref nodes[pair];
+            ref readonly B2TreeNode c2 = ref nodes[pair + 1];
+
+            B2TreeNode node = new B2TreeNode();
+            node.aabb = b2AABB_Union(c1.aabb, c2.aabb);
+            node.flagIndex = (uint)pair | ((c1.flagIndex | c2.flagIndex) & B2_MOVED_NODE);
+            node.leafCount = b2GetLeafCount(c1) + b2GetLeafCount(c2);
+            return node;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static B2TreeNode b2MakeLeafNode(in B2AABB aabb, int proxyId, ulong userData, bool moved)
+        {
+            B2TreeNode node = new B2TreeNode();
+            node.aabb = aabb;
+            node.flagIndex = (uint)proxyId | B2_LEAF_NODE | (moved ? B2_MOVED_NODE : 0);
+            node.shapeIndex = (int)(uint)userData;
+            return node;
+        }
+
+        // A node landed at a new index, so tell what hangs below it
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void b2LinkChildren(B2DynamicTree tree, int nodeIndex)
+        {
+            ref readonly B2TreeNode node = ref tree.nodes[nodeIndex];
+            if (b2IsLeaf(node))
+            {
+                tree.proxies[b2GetProxyId(node)].node = nodeIndex;
+            }
+            else
+            {
+                int pair = b2GetLeftChild(node);
+                tree.parents[pair] = nodeIndex;
+                tree.parents[pair + 1] = nodeIndex;
+            }
+        }
+
+        // The sweep refit visits indices from high to low, so it needs every child above its parent
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool b2IsNodeOrdered(B2TreeNode[] nodes, int nodeIndex)
+        {
+            ref readonly B2TreeNode node = ref nodes[nodeIndex];
+            return b2IsLeaf(node) || nodeIndex < b2GetLeftChild(node);
         }
 
         // Greedy algorithm for sibling selection using the SAH
@@ -174,25 +350,23 @@ namespace Box2D.NET
         // The cost for cases 1, 2a, and 3a can be computed using the sibling cost formula.
         // cost of sibling H = area(union(H, D)) + increased area of ancestors
 
-        // Greedy algorithm for sibling selection using the SAH
-        // We have three nodes A-(B,C) and want to add a leaf D, there are three choices.
-        // 1: make a new parent for A and D : E-(A-(B,C), D)
-        // 2: associate D with B
-        //   a: B is a leaf : A-(E-(B,D), C)
-        //   b: B is an internal node: A-(B{D},C)
-        // 3: associate D with C
-        //   a: C is a leaf : A-(B, E-(C,D))
-        //   b: C is an internal node: A-(B, C{D})
-        // All of these have a clear cost except when B or C is an internal node. Hence we need to be greedy.
-        internal static int b2FindBestSibling(B2DynamicTree tree, in B2AABB boxD)
+        // Suppose B (or C) is an internal node, then the lowest cost would be one of two cases:
+        // case1: D becomes a sibling of B
+        // case2: D becomes a descendant of B along with a new internal node of area(D).
+        private static int b2FindBestSibling(B2DynamicTree tree, in B2AABB boxD)
         {
             B2Vec2 centerD = b2AABB_Center(boxD);
             float areaD = b2Perimeter(boxD);
 
             B2TreeNode[] nodes = tree.nodes;
-            int rootIndex = tree.root;
+            int nodeIndex = B2_ROOT_NODE;
 
-            B2AABB rootBox = nodes[rootIndex].aabb;
+            if (b2IsLeaf(nodes[nodeIndex]))
+            {
+                return nodeIndex;
+            }
+
+            B2AABB rootBox = nodes[nodeIndex].aabb;
 
             // Area of current node
             float areaBase = b2Perimeter(rootBox);
@@ -201,15 +375,14 @@ namespace Box2D.NET
             float directCost = b2Perimeter(b2AABB_Union(rootBox, boxD));
             float inheritedCost = 0.0f;
 
-            int bestSibling = rootIndex;
+            int bestSibling = nodeIndex;
             float bestCost = directCost;
 
-            // Descend the tree from root, following a single greedy path.
-            int index = rootIndex;
-            while (nodes[index].height > 0)
+            // Descend the tree, following a single greedy path.
+            for (;;)
             {
-                int child1 = nodes[index].children.child1;
-                int child2 = nodes[index].children.child2;
+                int child1 = b2GetLeftChild(nodes[nodeIndex]);
+                int child2 = child1 + 1;
 
                 // Cost of creating a new parent for this node and the new leaf
                 float cost = directCost + inheritedCost;
@@ -218,15 +391,15 @@ namespace Box2D.NET
                 // This breaks the ties using the centroid distance.
                 if (cost < bestCost)
                 {
-                    bestSibling = index;
+                    bestSibling = nodeIndex;
                     bestCost = cost;
                 }
 
                 // Inheritance cost seen by children
                 inheritedCost += directCost - areaBase;
 
-                bool leaf1 = nodes[child1].height == 0;
-                bool leaf2 = nodes[child2].height == 0;
+                bool leaf1 = b2IsLeaf(nodes[child1]);
+                bool leaf2 = b2IsLeaf(nodes[child2]);
 
                 // Cost of descending into child 1
                 float lowerCost1 = float.MaxValue;
@@ -238,8 +411,6 @@ namespace Box2D.NET
                     // Child 1 is a leaf
                     // Cost of creating new node and increasing area of node P
                     float cost1 = directCost1 + inheritedCost;
-
-                    // Need this here due to while condition above
                     if (cost1 < bestCost)
                     {
                         bestSibling = child1;
@@ -267,7 +438,6 @@ namespace Box2D.NET
                 if (leaf2)
                 {
                     float cost2 = directCost2 + inheritedCost;
-
                     if (cost2 < bestCost)
                     {
                         bestSibling = child2;
@@ -307,535 +477,286 @@ namespace Box2D.NET
                 // Descend
                 if (lowerCost1 < lowerCost2 && leaf1 == false)
                 {
-                    index = child1;
+                    nodeIndex = child1;
                     areaBase = area1;
                     directCost = directCost1;
                 }
                 else
                 {
-                    index = child2;
+                    nodeIndex = child2;
                     areaBase = area2;
                     directCost = directCost2;
                 }
-
-                B2_ASSERT(nodes[index].height > 0);
             }
 
             return bestSibling;
         }
 
+        // Swap a child of A with a grandchild under the other child.
+        // Example swapping B with G:
+        // (A (B (D E) C (F G)) -> (A (G) C (F B (D E))
+        private static void b2SwapNodes(B2DynamicTree tree, int iDown, int iUp)
+        {
+            B2TreeNode[] nodes = tree.nodes;
+            (nodes[iDown], nodes[iUp]) = (nodes[iUp], nodes[iDown]);
+            b2LinkChildren(tree, iDown);
+            b2LinkChildren(tree, iUp);
+
+            if (b2IsNodeOrdered(nodes, iDown) == false || b2IsNodeOrdered(nodes, iUp) == false)
+            {
+                tree.dfsOrdered = false;
+            }
+
+            // The sibling of the node that went down holds a different subtree now
+            int iC = iDown ^ 1;
+            nodes[iC] = b2MakeInternalNode(nodes, b2GetLeftChild(nodes[iC]));
+        }
 
         // Perform a left or right rotation if node A is imbalanced.
-        // Returns the new root index.
-        internal static void b2RotateNodes(B2DynamicTree tree, int iA)
+        // Tree: (A (B (D E) C (F G))
+        private static void b2RotateNodes(B2DynamicTree tree, int iA)
         {
-            B2_ASSERT(iA != B2_NULL_INDEX);
-
             B2TreeNode[] nodes = tree.nodes;
+            ref readonly B2TreeNode A = ref nodes[iA];
+            B2_ASSERT(b2IsLeaf(A) == false);
 
-            ref B2TreeNode A = ref nodes[iA];
-            if (A.height < 2)
+            int iB = b2GetLeftChild(A);
+            int iC = iB + 1;
+            ref readonly B2TreeNode B = ref nodes[iB];
+            ref readonly B2TreeNode C = ref nodes[iC];
+
+            bool leafB = b2IsLeaf(B);
+            bool leafC = b2IsLeaf(C);
+            if (leafB && leafC)
             {
                 return;
             }
 
-            int iB = A.children.child1;
-            int iC = A.children.child2;
-            B2_ASSERT(0 <= iB && iB < tree.nodeCapacity);
-            B2_ASSERT(0 <= iC && iC < tree.nodeCapacity);
+            int bestDown = B2_NULL_INDEX;
+            int bestUp = B2_NULL_INDEX;
+            float bestDelta = 0.0f;
 
-            ref B2TreeNode B = ref nodes[iB];
-            ref B2TreeNode C = ref nodes[iC];
-
-            if (B.height == 0)
+            if (leafC == false)
             {
-                // B is a leaf and C is internal
-                B2_ASSERT(C.height > 0);
-
-                int iF = C.children.child1;
-                int iG = C.children.child2;
-                ref B2TreeNode F = ref nodes[iF];
-                ref B2TreeNode G = ref nodes[iG];
-                B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
-                B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
-
-                // Base cost
-                float costBase = b2Perimeter(C.aabb);
-
-                // Cost of swapping B and F
-                B2AABB aabbBG = b2AABB_Union(B.aabb, G.aabb);
-                float costBF = b2Perimeter(aabbBG);
-
-                // Cost of swapping B and G
-                B2AABB aabbBF = b2AABB_Union(B.aabb, F.aabb);
-                float costBG = b2Perimeter(aabbBF);
-
-                if (costBase < costBF && costBase < costBG)
-                {
-                    // Rotation does not improve cost
-                    return;
-                }
-
-                if (costBF < costBG)
-                {
-                    // Swap B and F
-                    A.children.child1 = iF;
-                    C.children.child1 = iB;
-
-                    B.pn.parent = iC;
-                    F.pn.parent = iA;
-
-                    C.aabb = aabbBG;
-
-                    C.height = (ushort)(1 + b2MaxUInt16(B.height, G.height));
-                    A.height = (ushort)(1 + b2MaxUInt16(C.height, F.height));
-                    C.categoryBits = B.categoryBits | G.categoryBits;
-                    A.categoryBits = C.categoryBits | F.categoryBits;
-                    C.flags |= (ushort)((B.flags | G.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                    A.flags |= (ushort)((C.flags | F.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                }
-                else
-                {
-                    // Swap B and G
-                    A.children.child1 = iG;
-                    C.children.child2 = iB;
-
-                    B.pn.parent = iC;
-                    G.pn.parent = iA;
-
-                    C.aabb = aabbBF;
-
-                    C.height = (ushort)(1 + b2MaxUInt16(B.height, F.height));
-                    A.height = (ushort)(1 + b2MaxUInt16(C.height, G.height));
-                    C.categoryBits = B.categoryBits | F.categoryBits;
-                    A.categoryBits = C.categoryBits | G.categoryBits;
-                    C.flags |= (ushort)((B.flags | F.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                    A.flags |= (ushort)((C.flags | G.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                }
-            }
-            else if (C.height == 0)
-            {
-                // C is a leaf and B is internal
-                B2_ASSERT(B.height > 0);
-
-                int iD = B.children.child1;
-                int iE = B.children.child2;
-                ref B2TreeNode D = ref nodes[iD];
-                ref B2TreeNode E = ref nodes[iE];
-                B2_ASSERT(0 <= iD && iD < tree.nodeCapacity);
-                B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
-
-                // Base cost
-                float costBase = b2Perimeter(B.aabb);
-
-                // Cost of swapping C and D
-                B2AABB aabbCE = b2AABB_Union(C.aabb, E.aabb);
-                float costCD = b2Perimeter(aabbCE);
-
-                // Cost of swapping C and E
-                B2AABB aabbCD = b2AABB_Union(C.aabb, D.aabb);
-                float costCE = b2Perimeter(aabbCD);
-
-                if (costBase < costCD && costBase < costCE)
-                {
-                    // Rotation does not improve cost
-                    return;
-                }
-
-                if (costCD < costCE)
-                {
-                    // Swap C and D
-                    A.children.child2 = iD;
-                    B.children.child1 = iC;
-
-                    C.pn.parent = iB;
-                    D.pn.parent = iA;
-
-                    B.aabb = aabbCE;
-
-                    B.height = (ushort)(1 + b2MaxUInt16(C.height, E.height));
-                    A.height = (ushort)(1 + b2MaxUInt16(B.height, D.height));
-                    B.categoryBits = C.categoryBits | E.categoryBits;
-                    A.categoryBits = B.categoryBits | D.categoryBits;
-                    B.flags |= (ushort)((C.flags | E.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                    A.flags |= (ushort)((B.flags | D.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                }
-                else
-                {
-                    // Swap C and E
-                    A.children.child2 = iE;
-                    B.children.child2 = iC;
-
-                    C.pn.parent = iB;
-                    E.pn.parent = iA;
-
-                    B.aabb = aabbCD;
-                    B.height = (ushort)(1 + b2MaxUInt16(C.height, D.height));
-                    A.height = (ushort)(1 + b2MaxUInt16(B.height, E.height));
-                    B.categoryBits = C.categoryBits | D.categoryBits;
-                    A.categoryBits = B.categoryBits | E.categoryBits;
-                    B.flags |= (ushort)((C.flags | D.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                    A.flags |= (ushort)((B.flags | E.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                }
-            }
-            else
-            {
-                int iD = B.children.child1;
-                int iE = B.children.child2;
-                int iF = C.children.child1;
-                int iG = C.children.child2;
-
-                B2_ASSERT(0 <= iD && iD < tree.nodeCapacity);
-                B2_ASSERT(0 <= iE && iE < tree.nodeCapacity);
-                B2_ASSERT(0 <= iF && iF < tree.nodeCapacity);
-                B2_ASSERT(0 <= iG && iG < tree.nodeCapacity);
-
-                ref B2TreeNode D = ref nodes[iD];
-                ref B2TreeNode E = ref nodes[iE];
-                ref B2TreeNode F = ref nodes[iF];
-                ref B2TreeNode G = ref nodes[iG];
-
-                // Base cost
-                float areaB = b2Perimeter(B.aabb);
+                // Swap B with F or G
+                int iF = b2GetLeftChild(C);
+                int iG = iF + 1;
                 float areaC = b2Perimeter(C.aabb);
-                float costBase = areaB + areaC;
-                B2RotateType bestRotation = B2RotateType.b2_rotateNone;
-                float bestCost = costBase;
 
-                // Cost of swapping B and F
-                B2AABB aabbBG = b2AABB_Union(B.aabb, G.aabb);
-                float costBF = areaB + b2Perimeter(aabbBG);
-                if (costBF < bestCost)
+                // B <-> F then C (B G)
+                float deltaBF = b2Perimeter(b2UnionV(B.aabb, nodes[iG].aabb)) - areaC;
+                if (deltaBF < bestDelta)
                 {
-                    bestRotation = B2RotateType.b2_rotateBF;
-                    bestCost = costBF;
+                    bestDown = iB;
+                    bestUp = iF;
+                    bestDelta = deltaBF;
                 }
 
-                // Cost of swapping B and G
-                B2AABB aabbBF = b2AABB_Union(B.aabb, F.aabb);
-                float costBG = areaB + b2Perimeter(aabbBF);
-                if (costBG < bestCost)
+                // B <-> G then C (F B)
+                float deltaBG = b2Perimeter(b2UnionV(B.aabb, nodes[iF].aabb)) - areaC;
+                if (deltaBG < bestDelta)
                 {
-                    bestRotation = B2RotateType.b2_rotateBG;
-                    bestCost = costBG;
+                    bestDown = iB;
+                    bestUp = iG;
+                    bestDelta = deltaBG;
+                }
+            }
+
+            if (leafB == false)
+            {
+                // Swap C with D or E
+                int iD = b2GetLeftChild(B);
+                int iE = iD + 1;
+                float areaB = b2Perimeter(B.aabb);
+
+                // C <-> D then B (C E)
+                float deltaCD = b2Perimeter(b2UnionV(C.aabb, nodes[iE].aabb)) - areaB;
+                if (deltaCD < bestDelta)
+                {
+                    bestDown = iC;
+                    bestUp = iD;
+                    bestDelta = deltaCD;
                 }
 
-                // Cost of swapping C and D
-                B2AABB aabbCE = b2AABB_Union(C.aabb, E.aabb);
-                float costCD = areaC + b2Perimeter(aabbCE);
-                if (costCD < bestCost)
+                // C <-> E then B (D C)
+                float deltaCE = b2Perimeter(b2UnionV(C.aabb, nodes[iD].aabb)) - areaB;
+                if (deltaCE < bestDelta)
                 {
-                    bestRotation = B2RotateType.b2_rotateCD;
-                    bestCost = costCD;
+                    bestDown = iC;
+                    bestUp = iE;
+                    bestDelta = deltaCE;
                 }
+            }
 
-                // Cost of swapping C and E
-                B2AABB aabbCD = b2AABB_Union(C.aabb, D.aabb);
-                float costCE = areaC + b2Perimeter(aabbCD);
-                if (costCE < bestCost)
-                {
-                    bestRotation = B2RotateType.b2_rotateCE;
-                    // bestCost = costCE;
-                }
-
-                switch (bestRotation)
-                {
-                    case B2RotateType.b2_rotateNone:
-                        break;
-
-                    case B2RotateType.b2_rotateBF:
-                        A.children.child1 = iF;
-                        C.children.child1 = iB;
-
-                        B.pn.parent = iC;
-                        F.pn.parent = iA;
-
-                        C.aabb = aabbBG;
-                        C.height = (ushort)(1 + b2MaxUInt16(B.height, G.height));
-                        A.height = (ushort)(1 + b2MaxUInt16(C.height, F.height));
-                        C.categoryBits = B.categoryBits | G.categoryBits;
-                        A.categoryBits = C.categoryBits | F.categoryBits;
-                        C.flags |= (ushort)((B.flags | G.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        A.flags |= (ushort)((C.flags | F.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        break;
-
-                    case B2RotateType.b2_rotateBG:
-                        A.children.child1 = iG;
-                        C.children.child2 = iB;
-
-                        B.pn.parent = iC;
-                        G.pn.parent = iA;
-
-                        C.aabb = aabbBF;
-                        C.height = (ushort)(1 + b2MaxUInt16(B.height, F.height));
-                        A.height = (ushort)(1 + b2MaxUInt16(C.height, G.height));
-                        C.categoryBits = B.categoryBits | F.categoryBits;
-                        A.categoryBits = C.categoryBits | G.categoryBits;
-                        C.flags |= (ushort)((B.flags | F.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        A.flags |= (ushort)((C.flags | G.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        break;
-
-                    case B2RotateType.b2_rotateCD:
-                        A.children.child2 = iD;
-                        B.children.child1 = iC;
-
-                        C.pn.parent = iB;
-                        D.pn.parent = iA;
-
-                        B.aabb = aabbCE;
-                        B.height = (ushort)(1 + b2MaxUInt16(C.height, E.height));
-                        A.height = (ushort)(1 + b2MaxUInt16(B.height, D.height));
-                        B.categoryBits = C.categoryBits | E.categoryBits;
-                        A.categoryBits = B.categoryBits | D.categoryBits;
-                        B.flags |= (ushort)((C.flags | E.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        A.flags |= (ushort)((B.flags | D.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        break;
-
-                    case B2RotateType.b2_rotateCE:
-                        A.children.child2 = iE;
-                        B.children.child2 = iC;
-
-                        C.pn.parent = iB;
-                        E.pn.parent = iA;
-
-                        B.aabb = aabbCD;
-                        B.height = (ushort)(1 + b2MaxUInt16(C.height, D.height));
-                        A.height = (ushort)(1 + b2MaxUInt16(B.height, E.height));
-                        B.categoryBits = C.categoryBits | D.categoryBits;
-                        A.categoryBits = B.categoryBits | E.categoryBits;
-                        B.flags |= (ushort)((C.flags | D.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        A.flags |= (ushort)((B.flags | E.flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-                        break;
-
-                    default:
-                        B2_ASSERT(false);
-                        break;
-                }
+            if (bestDown != B2_NULL_INDEX)
+            {
+                b2SwapNodes(tree, bestDown, bestUp);
             }
         }
 
-        internal static void b2InsertLeaf(B2DynamicTree tree, int leaf, bool shouldRotate)
+        private static void b2InsertLeaf(B2DynamicTree tree, in B2AABB aabb, int proxyId, bool moved, bool shouldRotate)
         {
-            if (tree.root == B2_NULL_INDEX)
+            B2TreeNode leaf = b2MakeLeafNode(aabb, proxyId, tree.proxies[proxyId].userData, moved);
+
+            if (b2IsEmptyNode(tree.nodes[B2_ROOT_NODE]))
             {
-                tree.root = leaf;
-                tree.nodes[tree.root].pn.parent = B2_NULL_INDEX;
+                tree.nodes[B2_ROOT_NODE] = leaf;
+                tree.proxies[proxyId].node = B2_ROOT_NODE;
                 return;
             }
 
-            // Stage 1: find the best sibling for this node
-            B2AABB leafAABB = tree.nodes[leaf].aabb;
-            int sibling = b2FindBestSibling(tree, leafAABB);
+            int sibling = b2FindBestSibling(tree, aabb);
 
-            // Stage 2: create a new parent for the leaf and sibling
-            int oldParent = tree.nodes[sibling].pn.parent;
-            int newParent = b2AllocateNode(tree);
-
-            // Warning: node pointer can change after allocation
+            // The sibling's position becomes the new parent. The sibling moves down into a new pair
+            // beside the leaf, which puts it below its own children when it is internal.
+            int pair = b2AllocateSiblingPair(tree);
             B2TreeNode[] nodes = tree.nodes;
-            nodes[newParent].pn.parent = oldParent;
-            nodes[newParent].children.userData = ulong.MaxValue;
-            nodes[newParent].aabb = b2AABB_Union(leafAABB, nodes[sibling].aabb);
-            nodes[newParent].categoryBits = nodes[leaf].categoryBits | nodes[sibling].categoryBits;
-            nodes[newParent].height = (ushort)(nodes[sibling].height + 1);
-            nodes[newParent].children.child1 = sibling;
-            nodes[newParent].children.child2 = leaf;
-            nodes[sibling].pn.parent = newParent;
-            nodes[leaf].pn.parent = newParent;
+            int[] parents = tree.parents;
 
-            // Fix grandparent links
-            if (oldParent != B2_NULL_INDEX)
+            nodes[pair] = nodes[sibling];
+            nodes[pair + 1] = leaf;
+            parents[pair] = sibling;
+            parents[pair + 1] = sibling;
+            b2LinkChildren(tree, pair);
+            tree.proxies[proxyId].node = pair + 1;
+
+            nodes[sibling] = b2MakeInternalNode(nodes, pair);
+
+            if (b2IsNodeOrdered(nodes, sibling) == false || b2IsNodeOrdered(nodes, pair) == false)
             {
-                // The sibling was not the root
-                if (nodes[oldParent].children.child1 == sibling)
-                {
-                    nodes[oldParent].children.child1 = newParent;
-                }
-                else
-                {
-                    B2_ASSERT(nodes[oldParent].children.child2 == sibling);
-                    nodes[oldParent].children.child2 = newParent;
-                }
-            }
-            else
-            {
-                // The sibling was the root
-                tree.root = newParent;
+                tree.dfsOrdered = false;
             }
 
-            // Stage 3: walk back up the tree fixing heights and AABBs
-            int index = nodes[leaf].pn.parent;
+            // Walk back up the tree refitting ancestors, the root included.
+            int index = sibling;
             while (index != B2_NULL_INDEX)
             {
-                int child1 = nodes[index].children.child1;
-                int child2 = nodes[index].children.child2;
-
-                B2_ASSERT(child1 != B2_NULL_INDEX);
-                B2_ASSERT(child2 != B2_NULL_INDEX);
-
-                nodes[index].aabb = b2AABB_Union(nodes[child1].aabb, nodes[child2].aabb);
-                nodes[index].categoryBits = nodes[child1].categoryBits | nodes[child2].categoryBits;
-                nodes[index].height = (ushort)(1 + b2MaxUInt16(nodes[child1].height, nodes[child2].height));
-                nodes[index].flags |= (ushort)((nodes[child1].flags | nodes[child2].flags) & (int)B2TreeNodeFlags.b2_enlargedNode);
-
                 if (shouldRotate)
                 {
                     b2RotateNodes(tree, index);
                 }
 
-                index = nodes[index].pn.parent;
+                nodes[index] = b2MakeInternalNode(nodes, b2GetLeftChild(nodes[index]));
+                index = parents[index];
             }
         }
 
-        internal static void b2RemoveLeaf(B2DynamicTree tree, int leaf)
+        private static void b2RemoveLeaf(B2DynamicTree tree, int proxyId)
         {
-            if (leaf == tree.root)
+            B2TreeNode[] nodes = tree.nodes;
+            int[] parents = tree.parents;
+
+            int leaf = tree.proxies[proxyId].node;
+            B2_ASSERT(0 <= leaf && leaf < tree.nodeEnd);
+            B2_ASSERT(b2IsLeaf(nodes[leaf]) && b2GetProxyId(nodes[leaf]) == proxyId);
+
+            if (leaf == B2_ROOT_NODE)
             {
-                tree.root = B2_NULL_INDEX;
+                nodes[B2_ROOT_NODE] = b2MakeEmptyNode();
                 return;
             }
 
-            B2TreeNode[] nodes = tree.nodes;
+            // The sibling takes the parent's position and the pair is freed. This keeps the order,
+            // the sibling only moves down.
+            int parent = parents[leaf];
+            nodes[parent] = nodes[leaf ^ 1];
+            b2LinkChildren(tree, parent);
+            b2FreePair(tree, leaf & ~1);
 
-            int parent = nodes[leaf].pn.parent;
-            int grandParent = nodes[parent].pn.parent;
-            int sibling;
-            if (nodes[parent].children.child1 == leaf)
+            // Update ancestors.
+            int index = parents[parent];
+            while (index != B2_NULL_INDEX)
             {
-                sibling = nodes[parent].children.child2;
+                nodes[index] = b2MakeInternalNode(nodes, b2GetLeftChild(nodes[index]));
+                index = parents[index];
             }
-            else
-            {
-                sibling = nodes[parent].children.child1;
-            }
+        }
 
-            if (grandParent != B2_NULL_INDEX)
-            {
-                // Destroy parent and connect sibling to grandParent.
-                if (nodes[grandParent].children.child1 == parent)
-                {
-                    nodes[grandParent].children.child1 = sibling;
-                }
-                else
-                {
-                    nodes[grandParent].children.child2 = sibling;
-                }
+        // Create a proxy in the tree as a leaf node. We return the index of the node instead of a pointer so that we can grow
+        // the node pool.
+        public static int b2DynamicTree_CreateProxyInternal(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData, bool markMoved)
+        {
+            B2_VALIDATE(b2IsValidAABB(aabb));
 
-                nodes[sibling].pn.parent = grandParent;
-                b2FreeNode(tree, parent);
+            int proxyId = b2AllocateProxy(tree);
 
-                // Adjust ancestor bounds.
-                int index = grandParent;
-                while (index != B2_NULL_INDEX)
-                {
-                    ref B2TreeNode node = ref nodes[index];
-                    ref B2TreeNode child1 = ref nodes[node.children.child1];
-                    ref B2TreeNode child2 = ref nodes[node.children.child2];
+            tree.proxies[proxyId].categoryBits = categoryBits;
+            tree.proxies[proxyId].userData = userData;
 
-                    // Fast union using SSE
-                    //__m128 aabb1 = _mm_load_ps(&child1.aabb.lowerBound.x);
-                    //__m128 aabb2 = _mm_load_ps(&child2.aabb.lowerBound.x);
-                    //__m128 lower = _mm_min_ps(aabb1, aabb2);
-                    //__m128 upper = _mm_max_ps(aabb1, aabb2);
-                    //__m128 aabb = _mm_shuffle_ps(lower, upper, _MM_SHUFFLE(3, 2, 1, 0));
-                    //_mm_store_ps(&node.aabb.lowerBound.x, aabb);
+            bool shouldRotate = true;
+            b2InsertLeaf(tree, aabb, proxyId, markMoved, shouldRotate);
 
-                    node.aabb = b2AABB_Union(child1.aabb, child2.aabb);
-                    node.categoryBits = child1.categoryBits | child2.categoryBits;
-                    node.height = (ushort)(1 + b2MaxUInt16(child1.height, child2.height));
-
-                    index = node.pn.parent;
-                }
-            }
-            else
-            {
-                tree.root = sibling;
-                tree.nodes[sibling].pn.parent = B2_NULL_INDEX;
-                b2FreeNode(tree, parent);
-            }
+            return proxyId;
         }
 
         /// Create a proxy. Provide an AABB and a userData value.
         public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
         {
-            B2_VALIDATE(b2IsValidAABB(aabb));
-
-            int proxyId = b2AllocateNode(tree);
-            ref B2TreeNode node = ref tree.nodes[proxyId];
-
-            node.aabb = aabb;
-            node.children.userData = userData;
-            node.categoryBits = categoryBits;
-            node.height = 0;
-            node.flags = (ushort)(B2TreeNodeFlags.b2_allocatedNode | B2TreeNodeFlags.b2_leafNode);
-
-            bool shouldRotate = true;
-            b2InsertLeaf(tree, proxyId, shouldRotate);
-
-            tree.proxyCount += 1;
-
-            return proxyId;
+            return b2DynamicTree_CreateProxyInternal(tree, aabb, categoryBits, userData, false);
         }
 
         /// Destroy a proxy. This asserts if the id is invalid.
         public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
         {
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
 
             b2RemoveLeaf(tree, proxyId);
-            b2FreeNode(tree, proxyId);
-
-            B2_ASSERT(tree.proxyCount > 0);
-            tree.proxyCount -= 1;
+            b2FreeProxy(tree, proxyId);
         }
 
         /// Get the number of proxies created
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetProxyCount(B2DynamicTree tree)
         {
             return tree.proxyCount;
         }
 
-        /// Move a proxy to a new AABB by removing and reinserting into the tree.
-        public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
+        public static void b2DynamicTree_MoveProxyInternal(B2DynamicTree tree, int proxyId, in B2AABB aabb, bool markMoved)
         {
             B2_VALIDATE(b2IsValidAABB(aabb));
             B2_VALIDATE(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             B2_VALIDATE(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
 
             b2RemoveLeaf(tree, proxyId);
 
-            tree.nodes[proxyId].aabb = aabb;
-
             bool shouldRotate = false;
-            b2InsertLeaf(tree, proxyId, shouldRotate);
+            b2InsertLeaf(tree, aabb, proxyId, markMoved, shouldRotate);
         }
 
-        /// Enlarge a proxy and enlarge ancestors as necessary.
+        /// Move a proxy to a new AABB by removing and reinserting into the tree.
+        public static void b2DynamicTree_MoveProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
+        {
+            b2DynamicTree_MoveProxyInternal(tree, proxyId, aabb, false);
+        }
+
         public static void b2DynamicTree_EnlargeProxy(B2DynamicTree tree, int proxyId, in B2AABB aabb)
         {
-            B2TreeNode[] nodes = tree.nodes;
-
             B2_VALIDATE(b2IsValidAABB(aabb));
             B2_VALIDATE(aabb.upperBound.X - aabb.lowerBound.X < B2_HUGE);
             B2_VALIDATE(aabb.upperBound.Y - aabb.lowerBound.Y < B2_HUGE);
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            B2_ASSERT(b2IsLeaf(tree.nodes[proxyId]));
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+
+            B2TreeNode[] nodes = tree.nodes;
+            int[] parents = tree.parents;
+
+            int index = tree.proxies[proxyId].node;
+            B2_ASSERT(b2IsLeaf(nodes[index]));
 
             // Caller must ensure this
-            B2_VALIDATE(b2AABB_Contains(nodes[proxyId].aabb, aabb) == false);
+            B2_VALIDATE(b2AABB_Contains(nodes[index].aabb, aabb) == false);
 
-            nodes[proxyId].aabb = aabb;
+            nodes[index].aabb = aabb;
+            nodes[index].flagIndex |= B2_MOVED_NODE;
 
-            int parentIndex = nodes[proxyId].pn.parent;
-            while (parentIndex != B2_NULL_INDEX)
+            index = parents[index];
+            while (index != B2_NULL_INDEX)
             {
-                bool changed = b2EnlargeAABB(ref nodes[parentIndex].aabb, aabb);
-                nodes[parentIndex].flags |= (int)B2TreeNodeFlags.b2_enlargedNode;
-                parentIndex = nodes[parentIndex].pn.parent;
+                bool changed = b2EnlargeAABB(ref nodes[index].aabb, aabb);
+
+                // This is marked to ensure the root is marked in this loop or the one below.
+                nodes[index].flagIndex |= B2_MOVED_NODE;
+
+                index = parents[index];
 
                 if (changed == false)
                 {
@@ -843,247 +764,230 @@ namespace Box2D.NET
                 }
             }
 
-            while (parentIndex != B2_NULL_INDEX)
+            // Mark all the way up to the root.
+            while (index != B2_NULL_INDEX)
             {
-                if (0 != (nodes[parentIndex].flags & (int)B2TreeNodeFlags.b2_enlargedNode))
+                if ((nodes[index].flagIndex & B2_MOVED_NODE) != 0)
                 {
-                    // early out because this ancestor was previously ascended and marked as enlarged
+                    // Early out because this ancestor was previously ascended and marked as moved.
                     break;
                 }
 
-                nodes[parentIndex].flags |= (int)B2TreeNodeFlags.b2_enlargedNode;
-                parentIndex = nodes[parentIndex].pn.parent;
+                nodes[index].flagIndex |= B2_MOVED_NODE;
+                index = parents[index];
             }
         }
 
-        /// Modify the category bits on a proxy. This is an expensive operation.
+        /// Modify the category bits on a proxy.
         public static void b2DynamicTree_SetCategoryBits(B2DynamicTree tree, int proxyId, ulong categoryBits)
         {
-            B2TreeNode[] nodes = tree.nodes;
-
-            B2_ASSERT(nodes[proxyId].children.child1 == B2_NULL_INDEX);
-            B2_ASSERT(nodes[proxyId].children.child2 == B2_NULL_INDEX);
-            B2_ASSERT((nodes[proxyId].flags & (ushort)B2TreeNodeFlags.b2_leafNode) == (ushort)B2TreeNodeFlags.b2_leafNode);
-
-            nodes[proxyId].categoryBits = categoryBits;
-
-            // Fix up category bits in ancestor internal nodes
-            int nodeIndex = nodes[proxyId].pn.parent;
-            while (nodeIndex != B2_NULL_INDEX)
-            {
-                ref B2TreeNode node = ref nodes[nodeIndex];
-                int child1 = node.children.child1;
-                B2_ASSERT(child1 != B2_NULL_INDEX);
-                int child2 = node.children.child2;
-                B2_ASSERT(child2 != B2_NULL_INDEX);
-                node.categoryBits = nodes[child1].categoryBits | nodes[child2].categoryBits;
-
-                nodeIndex = node.pn.parent;
-            }
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+            tree.proxies[proxyId].categoryBits = categoryBits;
         }
 
         /// Get the category bits on a proxy.
         public static ulong b2DynamicTree_GetCategoryBits(B2DynamicTree tree, int proxyId)
         {
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            return tree.nodes[proxyId].categoryBits;
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+            return tree.proxies[proxyId].categoryBits;
         }
 
-        /// Get the height of the binary tree.
+        /// Get the height of the binary tree. Expensive.
+        // The height is the maximum leaf depth, with the root children at depth one.
+        // Siblings share a depth and child pairs sit one deeper. An explicit stack
+        // keeps this off the call stack, like the query traversals.
         public static int b2DynamicTree_GetHeight(B2DynamicTree tree)
         {
-            if (tree.root == B2_NULL_INDEX)
+            if (tree.proxyCount == 0)
             {
                 return 0;
             }
 
-            return tree.nodes[tree.root].height;
+            B2TreeNode[] nodes = tree.nodes;
+            ref readonly B2TreeNode root = ref nodes[B2_ROOT_NODE];
+            if (b2IsLeaf(root))
+            {
+                return 0;
+            }
+
+            Span<int> pairs = stackalloc int[B2_TREE_STACK_SIZE];
+            Span<int> depths = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            pairs[stackCount] = b2GetLeftChild(root);
+            depths[stackCount] = 1;
+            ++stackCount;
+
+            int height = 0;
+            while (stackCount > 0)
+            {
+                --stackCount;
+                int pair = pairs[stackCount];
+                int depth = depths[stackCount];
+                height = b2MaxInt(height, depth);
+
+                for (int i = 0; i < 2; ++i)
+                {
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
+                    if (b2IsLeaf(node))
+                    {
+                        continue;
+                    }
+
+                    int childPair = b2GetLeftChild(node);
+
+                    if (stackCount < B2_TREE_STACK_SIZE)
+                    {
+                        pairs[stackCount] = childPair;
+                        depths[stackCount] = depth + 1;
+                        ++stackCount;
+                    }
+                    else
+                    {
+                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                    }
+                }
+            }
+
+            return height;
         }
 
-        /// Get the ratio of the sum of the node areas to the root area.
+        /// Get the ratio of the sum of the internal node areas to the root area.
+        // The area ratio is the thing that SAH seeks to minimize. SAH
+        // cannot do anything about leaf boxes or the root box. It seeks
+        // to minimize the area of all non-root internal nodes. Divide this
+        // by the root area to make the metric non-dimensional.
+        // So this becomes a meaningful measure of tree quality.
         public static float b2DynamicTree_GetAreaRatio(B2DynamicTree tree)
         {
-            if (tree.root == B2_NULL_INDEX)
+            if (tree.proxyCount == 0)
             {
                 return 0.0f;
             }
 
-            ref B2TreeNode root = ref tree.nodes[tree.root];
-            float rootArea = b2Perimeter(root.aabb);
-
-            float totalArea = 0.0f;
-            for (int i = 0; i < tree.nodeCapacity; ++i)
+            B2TreeNode[] nodes = tree.nodes;
+            float rootArea = b2Perimeter(nodes[B2_ROOT_NODE].aabb);
+            if (rootArea <= 0.0f)
             {
-                ref readonly B2TreeNode node = ref tree.nodes[i];
-                if (b2IsAllocated(node) == false || b2IsLeaf(node) || i == tree.root)
-                {
-                    continue;
-                }
-
-                totalArea += b2Perimeter(node.aabb);
+                return 0.0f;
             }
 
-            return totalArea / rootArea;
+            // Free nodes and the empty node are leaf tagged.
+            float internalArea = 0.0f;
+            int nodeEnd = tree.nodeEnd;
+            for (int i = 2; i < nodeEnd; ++i)
+            {
+                if (b2IsLeaf(nodes[i]) == false)
+                {
+                    internalArea += b2Perimeter(nodes[i].aabb);
+                }
+            }
+
+            return internalArea / rootArea;
         }
 
         /// Get the bounding box that contains the entire tree
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2DynamicTree_GetRootBounds(B2DynamicTree tree)
         {
-            if (tree.root != B2_NULL_INDEX)
+            if (tree.proxyCount == 0)
             {
-                return tree.nodes[tree.root].aabb;
+                return new B2AABB(b2Vec2_zero, b2Vec2_zero);
             }
 
-            B2AABB empty = new B2AABB(b2Vec2_zero, b2Vec2_zero);
-            return empty;
+            return tree.nodes[B2_ROOT_NODE].aabb;
         }
 
 #if DEBUG
-        // Compute the height of a sub-tree.
-        internal static int b2ComputeHeight(B2DynamicTree tree, int nodeId)
+        private static int b2ValidateSubtree(B2DynamicTree tree, int nodeIndex)
         {
-            B2_ASSERT(0 <= nodeId && nodeId < tree.nodeCapacity);
-            ref B2TreeNode node = ref tree.nodes[nodeId];
+            B2_ASSERT(0 <= nodeIndex && nodeIndex < tree.nodeEnd);
+            ref readonly B2TreeNode node = ref tree.nodes[nodeIndex];
+            B2_ASSERT(b2IsEmptyNode(node) == false);
 
             if (b2IsLeaf(node))
             {
-                return 0;
+                int proxyId = b2GetProxyId(node);
+                B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+                B2_ASSERT(tree.proxies[proxyId].node == nodeIndex);
+                B2_ASSERT((int)tree.proxies[proxyId].userData == node.shapeIndex);
+                return 1;
             }
 
-            int height1 = b2ComputeHeight(tree, node.children.child1);
-            int height2 = b2ComputeHeight(tree, node.children.child2);
-            return 1 + b2MaxInt(height1, height2);
-        }
+            int pair = b2GetLeftChild(node);
+            B2_ASSERT((pair & 1) == 0 && 2 <= pair && pair < tree.nodeEnd);
+            B2_ASSERT(tree.parents[pair] == nodeIndex);
+            B2_ASSERT(tree.parents[pair + 1] == nodeIndex);
+            B2_ASSERT(tree.dfsOrdered == false || nodeIndex < pair);
 
-        internal static void b2ValidateStructure(B2DynamicTree tree, int index)
-        {
-            if (index == B2_NULL_INDEX)
-            {
-                return;
-            }
+            ref readonly B2TreeNode c1 = ref tree.nodes[pair];
+            ref readonly B2TreeNode c2 = ref tree.nodes[pair + 1];
+            B2_ASSERT(b2AABB_Contains(node.aabb, c1.aabb));
+            B2_ASSERT(b2AABB_Contains(node.aabb, c2.aabb));
+            B2_ASSERT(b2IsNodeMoved(node) == (b2IsNodeMoved(c1) || b2IsNodeMoved(c2)));
 
-            if (index == tree.root)
-            {
-                B2_ASSERT(tree.nodes[index].pn.parent == B2_NULL_INDEX);
-            }
-
-            ref B2TreeNode node = ref tree.nodes[index];
-
-            B2_ASSERT(node.flags == 0 || (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0);
-
-            if (b2IsLeaf(node))
-            {
-                B2_ASSERT(node.height == 0);
-                return;
-            }
-
-            int child1 = node.children.child1;
-            int child2 = node.children.child2;
-
-            B2_ASSERT(0 <= child1 && child1 < tree.nodeCapacity);
-            B2_ASSERT(0 <= child2 && child2 < tree.nodeCapacity);
-
-            B2_ASSERT(tree.nodes[child1].pn.parent == index);
-            B2_ASSERT(tree.nodes[child2].pn.parent == index);
-
-            if (0 != ((tree.nodes[child1].flags | tree.nodes[child2].flags) & (ushort)B2TreeNodeFlags.b2_enlargedNode))
-            {
-                B2_ASSERT(0 != (node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode));
-            }
-
-            b2ValidateStructure(tree, child1);
-            b2ValidateStructure(tree, child2);
-        }
-
-        internal static void b2ValidateMetrics(B2DynamicTree tree, int index)
-        {
-            if (index == B2_NULL_INDEX)
-            {
-                return;
-            }
-
-            ref B2TreeNode node = ref tree.nodes[index];
-
-            if (b2IsLeaf(node))
-            {
-                B2_ASSERT(node.height == 0);
-                return;
-            }
-
-            int child1 = node.children.child1;
-            int child2 = node.children.child2;
-
-            B2_ASSERT(0 <= child1 && child1 < tree.nodeCapacity);
-            B2_ASSERT(0 <= child2 && child2 < tree.nodeCapacity);
-
-            int height1 = tree.nodes[child1].height;
-            int height2 = tree.nodes[child2].height;
-            int height = 1 + b2MaxInt(height1, height2);
-            B2_ASSERT(node.height == height);
-
-            // b2AABB aabb = b2AABB_Union(tree.nodes[child1].aabb, tree.nodes[child2].aabb);
-
-            B2_ASSERT(b2AABB_Contains(node.aabb, tree.nodes[child1].aabb));
-            B2_ASSERT(b2AABB_Contains(node.aabb, tree.nodes[child2].aabb));
-
-            // B2_ASSERT(aabb.lowerBound.x == node.aabb.lowerBound.x);
-            // B2_ASSERT(aabb.lowerBound.y == node.aabb.lowerBound.y);
-            // B2_ASSERT(aabb.upperBound.x == node.aabb.upperBound.x);
-            // B2_ASSERT(aabb.upperBound.y == node.aabb.upperBound.y);
-
-            ulong categoryBits = tree.nodes[child1].categoryBits | tree.nodes[child2].categoryBits;
-            B2_ASSERT(node.categoryBits == categoryBits);
-
-            b2ValidateMetrics(tree, child1);
-            b2ValidateMetrics(tree, child2);
+            // A bad tree can stack overflow, but that is validation on its own.
+            int leafCount = b2ValidateSubtree(tree, pair) + b2ValidateSubtree(tree, pair + 1);
+            B2_ASSERT(node.leafCount == leafCount);
+            return leafCount;
         }
 #endif
 
-        /// Validate this tree. For testing.
+        /// Validate the tree.
         public static void b2DynamicTree_Validate(B2DynamicTree tree)
         {
 #if DEBUG
-            if (tree.root == B2_NULL_INDEX)
+            B2_ASSERT(2 <= tree.nodeEnd && tree.nodeEnd <= tree.nodeCapacity);
+            B2_ASSERT((tree.nodeEnd & 1) == 0);
+            B2_ASSERT(tree.parents[B2_ROOT_NODE] == B2_NULL_INDEX);
+            B2_ASSERT(b2IsEmptyNode(tree.nodes[B2_ROOT_NODE + 1]));
+
+            int freePairCount = 0;
+            int pair = tree.pairFreeList;
+            while (pair != B2_NULL_INDEX)
             {
+                B2_ASSERT((pair & 1) == 0 && 2 <= pair && pair < tree.nodeEnd);
+                B2_ASSERT(b2IsEmptyNode(tree.nodes[pair]));
+                B2_ASSERT(b2IsEmptyNode(tree.nodes[pair + 1]));
+                pair = tree.parents[pair];
+                ++freePairCount;
+                B2_ASSERT(2 * freePairCount < tree.nodeEnd);
+            }
+
+            // Validate proxy free list.
+            int freeProxyCount = 0;
+            int freeIndex = tree.proxyFreeList;
+            while (freeIndex != B2_NULL_INDEX)
+            {
+                B2_ASSERT(0 <= freeIndex && freeIndex < tree.proxyCapacity);
+                B2_ASSERT(tree.proxies[freeIndex].node == B2_NULL_INDEX);
+                freeIndex = tree.proxies[freeIndex].next;
+                ++freeProxyCount;
+            }
+
+            B2_ASSERT(tree.proxyCount + freeProxyCount == tree.proxyCapacity);
+
+            B2_ASSERT(tree.nodeEnd == 2 * b2MaxInt(tree.proxyCount, 1) + 2 * freePairCount);
+
+            if (tree.proxyCount == 0)
+            {
+                B2_ASSERT(b2IsEmptyNode(tree.nodes[B2_ROOT_NODE]));
                 return;
             }
 
-            b2ValidateStructure(tree, tree.root);
-            b2ValidateMetrics(tree, tree.root);
-
-            int freeCount = 0;
-            int freeIndex = tree.freeList;
-            while (freeIndex != B2_NULL_INDEX)
-            {
-                B2_ASSERT(0 <= freeIndex && freeIndex < tree.nodeCapacity);
-                freeIndex = tree.nodes[freeIndex].pn.next;
-                ++freeCount;
-            }
-
-            int height = b2DynamicTree_GetHeight(tree);
-            int computedHeight = b2ComputeHeight(tree, tree.root);
-            B2_ASSERT(height == computedHeight);
-
-            B2_ASSERT(tree.nodeCount + freeCount == tree.nodeCapacity);
+            int leafCount = b2ValidateSubtree(tree, B2_ROOT_NODE);
+            B2_ASSERT(leafCount == tree.proxyCount);
 #else
             B2_UNUSED(tree);
 #endif
         }
 
-        /// Validate this tree has no enlarged AABBs. For testing.
-        public static void b2DynamicTree_ValidateNoEnlarged(B2DynamicTree tree)
+        public static void b2DynamicTree_ValidateNoMoved(B2DynamicTree tree)
         {
 #if DEBUG
-            int capacity = tree.nodeCapacity;
             B2TreeNode[] nodes = tree.nodes;
-            for (int i = 0; i < capacity; ++i)
+            int nodeEnd = tree.nodeEnd;
+            for (int i = 0; i < nodeEnd; ++i)
             {
-                ref readonly B2TreeNode node = ref nodes[i];
-                if (0 != (node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode))
-                {
-                    B2_ASSERT((node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
-                }
+                B2_ASSERT(b2IsNodeMoved(nodes[i]) == false);
             }
 #else
             B2_UNUSED(tree);
@@ -1091,80 +995,101 @@ namespace Box2D.NET
         }
 
         /// Get the number of bytes used by this tree
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int b2DynamicTree_GetByteCount(B2DynamicTree tree)
         {
             // Upstream-compatible logical payload size, not a CLR heap-size estimate.
-            int treeHeaderSize = IntPtr.Size == 8 ? 72 : 44;
-            int size = treeHeaderSize + B2SizeOf<B2TreeNode>.Size * tree.nodeCapacity +
-                       tree.rebuildCapacity * (B2SizeOf<int>.Size + B2SizeOf<B2AABB>.Size + B2SizeOf<B2Vec2>.Size + B2SizeOf<int>.Size);
-            return (int)size;
+            int treeHeaderSize = IntPtr.Size == 8 ? 120 : 80;
+            int size = treeHeaderSize;
+            size += tree.nodeCapacity * B2SizeOf<B2TreeNode>.Size;
+            size += tree.nodeCapacity * B2SizeOf<int>.Size;
+            size += tree.proxyCapacity * B2SizeOf<B2TreeProxy>.Size;
+            size += tree.swapNodes == null ? 0 : tree.nodeCapacity * B2SizeOf<B2TreeNode>.Size;
+
+            // leafIndices
+            size += tree.rebuildCapacity * B2SizeOf<int>.Size;
+            // leafNodes
+            size += tree.rebuildCapacity * B2SizeOf<B2TreeNode>.Size;
+            // leafBoxes
+            size += tree.rebuildCapacity * B2SizeOf<B2AABB>.Size;
+            // leafCenters
+            size += tree.rebuildCapacity * B2SizeOf<B2Vec2>.Size;
+            // binIndices
+            size += tree.rebuildCapacity * B2SizeOf<int>.Size;
+
+            return size;
         }
 
         /// Get proxy user data
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ulong b2DynamicTree_GetUserData(B2DynamicTree tree, int proxyId)
         {
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            return tree.nodes[proxyId].children.userData;
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+            return tree.proxies[proxyId].userData;
         }
 
         /// Get the AABB of a proxy
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2AABB b2DynamicTree_GetAABB(B2DynamicTree tree, int proxyId)
         {
-            B2_ASSERT(0 <= proxyId && proxyId < tree.nodeCapacity);
-            return tree.nodes[proxyId].aabb;
+            B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
+            int nodeIndex = tree.proxies[proxyId].node;
+            B2_ASSERT(0 <= nodeIndex && nodeIndex < tree.nodeEnd);
+            return tree.nodes[nodeIndex].aabb;
         }
 
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
-        /// @return performance data
+        ///	@return performance data
         public static B2TreeStats b2DynamicTree_Query<T>(B2DynamicTree tree, in B2AABB aabb, ulong maskBits, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
-            if (tree.nodeCount == 0)
+            if (tree.proxyCount == 0)
             {
                 return result;
             }
 
-            //int[] stack = stackalloc int[B2_TREE_STACK_SIZE];
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
-            var dummy = new B2FixedArray1024<int>();
-            var stack = dummy.AsSpan();
+            B2TreeNode[] nodes = tree.nodes;
+
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
             int stackCount = 0;
-            stack[stackCount++] = tree.root;
+            stack[stackCount++] = b2GetRootPair(nodes);
+
+            B2AABB boxv = aabb;
 
             while (stackCount > 0)
             {
-                int nodeId = stack[--stackCount];
-
-                ref readonly B2TreeNode node = ref tree.nodes[nodeId];
+                int pair = stack[--stackCount];
                 result.nodeVisits += 1;
 
-                if (b2AABB_Overlaps(node.aabb, aabb) && (node.categoryBits & maskBits) != 0)
+                for (int i = 0; i < 2; ++i)
                 {
-                    if (b2IsLeaf(node))
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
+                    if (b2OverlapNode(boxv, node))
                     {
-                        // callback to user code with proxy id
-                        bool proceed = callback(nodeId, node.children.userData, ref context);
-                        result.leafVisits += 1;
+                        if (b2IsLeaf(node))
+                        {
+                            // callback to user code with proxy id
+                            int proxyId = b2GetProxyId(node);
+                            ref readonly B2TreeProxy proxy = ref tree.proxies[proxyId];
+                            if ((proxy.categoryBits & maskBits) != 0)
+                            {
+                                bool proceed = callback(proxyId, proxy.userData, ref context);
+                                result.leafVisits += 1;
 
-                        if (proceed == false)
-                        {
-                            return result;
-                        }
-                    }
-                    else
-                    {
-                        if (stackCount < B2_TREE_STACK_SIZE - 1)
-                        {
-                            stack[stackCount++] = node.children.child1;
-                            stack[stackCount++] = node.children.child2;
+                                if (proceed == false)
+                                {
+                                    return result;
+                                }
+                            }
                         }
                         else
                         {
-                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                            if (stackCount < B2_TREE_STACK_SIZE - 1)
+                            {
+                                stack[stackCount++] = b2GetLeftChild(node);
+                            }
+                            else
+                            {
+                                B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                            }
                         }
                     }
                 }
@@ -1176,51 +1101,57 @@ namespace Box2D.NET
         /// Query an AABB for overlapping proxies. The callback class is called for each proxy that overlaps the supplied AABB.
         /// No filtering is performed.
         ///	@return performance data
+        // This ignores the category bits. Useful for debug draw.
         public static B2TreeStats b2DynamicTree_QueryAll<T>(B2DynamicTree tree, in B2AABB aabb, b2TreeQueryCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
-            if (tree.nodeCount == 0)
+            if (tree.proxyCount == 0)
             {
                 return result;
             }
 
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
-            var dummy = new B2FixedArray1024<int>();
-            var stack = dummy.AsSpan();
+            B2TreeNode[] nodes = tree.nodes;
+
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
             int stackCount = 0;
-            stack[stackCount++] = tree.root;
+            stack[stackCount++] = b2GetRootPair(nodes);
+
+            B2AABB boxv = aabb;
 
             while (stackCount > 0)
             {
-                int nodeId = stack[--stackCount];
-
-                ref readonly B2TreeNode node = ref tree.nodes[nodeId];
+                int pair = stack[--stackCount];
                 result.nodeVisits += 1;
 
-                if (b2AABB_Overlaps(node.aabb, aabb))
+                for (int i = 0; i < 2; ++i)
                 {
-                    if (b2IsLeaf(node))
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
+                    if (b2OverlapNode(boxv, node))
                     {
-                        // callback to user code with proxy id
-                        bool proceed = callback(nodeId, node.children.userData, ref context);
-                        result.leafVisits += 1;
+                        if (b2IsLeaf(node))
+                        {
+                            // callback to user code with proxy id
+                            int proxyId = b2GetProxyId(node);
+                            ref readonly B2TreeProxy proxy = ref tree.proxies[proxyId];
+                            bool proceed = callback(proxyId, proxy.userData, ref context);
+                            result.leafVisits += 1;
 
-                        if (proceed == false)
-                        {
-                            return result;
-                        }
-                    }
-                    else
-                    {
-                        if (stackCount < B2_TREE_STACK_SIZE - 1)
-                        {
-                            stack[stackCount++] = node.children.child1;
-                            stack[stackCount++] = node.children.child2;
+                            if (proceed == false)
+                            {
+                                return result;
+                            }
                         }
                         else
                         {
-                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                            if (stackCount < B2_TREE_STACK_SIZE - 1)
+                            {
+                                stack[stackCount++] = b2GetLeftChild(node);
+                            }
+                            else
+                            {
+                                B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                            }
                         }
                     }
                 }
@@ -1235,18 +1166,21 @@ namespace Box2D.NET
         /// roughly equal to k * log(n), where k is the number of collisions and n is the
         /// number of proxies in the tree.
         /// Bit-wise filtering using mask bits can greatly improve performance in some scenarios.
-        /// However, this filtering may be approximate, so the user should still apply filtering to results.
+        ///	However, this filtering may be approximate, so the user should still apply filtering to results.
         /// @param tree the dynamic tree to ray cast
         /// @param input the ray cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1)
-        /// @param maskBits mask bit hint: `bool accept = (maskBits & node.categoryBits) != 0;`
+        /// @param maskBits mask bit hint: `bool accept = (maskBits & node->categoryBits) != 0;`
         /// @param callback a callback class that is called for each proxy that is hit by the ray
         /// @param context user context that is passed to the callback
-        /// @return performance data
-        public static B2TreeStats b2DynamicTree_RayCast<T>(B2DynamicTree tree, in B2RayCastInput input, ulong maskBits, b2TreeRayCastCallbackFcn<T> callback, ref T context)
+        ///	@return performance data
+        // A lot of optimization work went into this. It beats the slab test by a significant margin.
+        // It is faster than having category bits in the nodes because of the cache line friendly node
+        // size (64 bytes).
+        public static B2TreeStats b2DynamicTree_CastRay<T>(B2DynamicTree tree, in B2RayCastInput input, ulong maskBits, b2TreeRayCastCallbackFcn<T> callback, ref T context)
         {
             B2TreeStats result = new B2TreeStats();
 
-            if (tree.nodeCount == 0)
+            if (tree.proxyCount == 0)
             {
                 return result;
             }
@@ -1262,7 +1196,6 @@ namespace Box2D.NET
 
             // Separating axis for segment (Gino, p80).
             // |dot(v, p1 - c)| > dot(|v|, h)
-
             float maxFraction = input.maxFraction;
 
             B2Vec2 p2 = b2MulAdd(p1, maxFraction, d);
@@ -1270,92 +1203,111 @@ namespace Box2D.NET
             // Build a bounding box for the segment.
             B2AABB segmentAABB = new B2AABB(b2Min(p1, p2), b2Max(p1, p2));
 
-            //int[] stack = new int[B2_TREE_STACK_SIZE];
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
-            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
-            int stackCount = 0;
-            stack[stackCount++] = tree.root;
+            B2AABB boxv = segmentAABB;
 
             B2TreeNode[] nodes = tree.nodes;
 
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            stack[stackCount++] = b2GetRootPair(nodes);
+
             B2RayCastInput subInput = input;
+
+            Span<int> hit = stackalloc int[2];
+            Span<bool> isLeaf = stackalloc bool[2];
 
             while (stackCount > 0)
             {
-                int nodeId = stack[--stackCount];
-                if (nodeId == B2_NULL_INDEX)
-                {
-                    // todo is this possible?
-                    B2_ASSERT(false);
-                    continue;
-                }
-
-                ref readonly B2TreeNode node = ref nodes[nodeId];
+                int pair = stack[--stackCount];
                 result.nodeVisits += 1;
 
-                B2AABB nodeAABB = node.aabb;
-
-                if ((node.categoryBits & maskBits) == 0 || b2AABB_Overlaps(nodeAABB, segmentAABB) == false)
+                int hitCount = 0;
+                for (int i = 0; i < 2; ++i)
                 {
-                    continue;
-                }
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
 
-                // Separating axis for segment (Gino, p80).
-                // |dot(v, p1 - c)| > dot(|v|, h)
-                // radius extension is added to the node in this case
-                B2Vec2 c = b2AABB_Center(nodeAABB);
-                B2Vec2 h = b2AABB_Extents(nodeAABB);
-                float term1 = b2AbsFloat(b2Dot(v, b2Sub(p1, c)));
-                float term2 = b2Dot(abs_v, h);
-                if (term2 < term1)
-                {
-                    continue;
-                }
-
-                if (b2IsLeaf(node))
-                {
-                    subInput.maxFraction = maxFraction;
-
-                    float value = callback(subInput, nodeId, node.children.userData, ref context);
-                    result.leafVisits += 1;
-
-                    // The user may return -1 to indicate this shape should be skipped
-
-                    if (value == 0.0f)
+                    if (b2OverlapNode(boxv, node) == false)
                     {
-                        // The client has terminated the ray cast.
-                        return result;
+                        continue;
                     }
 
-                    if (0.0f < value && value <= maxFraction)
+                    // Separating axis for segment (Gino, p80).
+                    // |dot(v, p1 - c)| > dot(|v|, h)
+                    B2AABB nodeAABB = node.aabb;
+                    B2Vec2 c = b2AABB_Center(nodeAABB);
+                    B2Vec2 h = b2AABB_Extents(nodeAABB);
+                    float term1 = b2AbsFloat(b2Dot(v, b2Sub(p1, c)));
+                    float term2 = b2Dot(abs_v, h);
+                    if (term2 < term1)
                     {
-                        // Update segment bounding box.
-                        maxFraction = value;
-                        p2 = b2MulAdd(p1, maxFraction, d);
-                        segmentAABB.lowerBound = b2Min(p1, p2);
-                        segmentAABB.upperBound = b2Max(p1, p2);
+                        continue;
+                    }
+
+                    isLeaf[hitCount] = b2IsLeaf(node);
+                    hit[hitCount] = pair + i;
+                    hitCount += 1;
+                }
+
+                if (hitCount == 2 && isLeaf[0] == false && isLeaf[1] == false)
+                {
+                    B2Vec2 center1 = b2AABB_Center(nodes[hit[0]].aabb);
+                    B2Vec2 center2 = b2AABB_Center(nodes[hit[1]].aabb);
+                    float d1 = b2DistanceSquared(center1, p1);
+                    float d2 = b2DistanceSquared(center2, p1);
+
+                    // Want to push the closest one last. Both have the same isLeaf, so they don't swap.
+                    if (d1 < d2)
+                    {
+                        (hit[0], hit[1]) = (hit[1], hit[0]);
                     }
                 }
-                else
+
+                for (int i = 0; i < hitCount; ++i)
                 {
-                    if (stackCount < B2_TREE_STACK_SIZE - 1)
+                    if (isLeaf[i])
                     {
-                        B2Vec2 c1 = b2AABB_Center(nodes[node.children.child1].aabb);
-                        B2Vec2 c2 = b2AABB_Center(nodes[node.children.child2].aabb);
-                        if (b2DistanceSquared(c1, p1) < b2DistanceSquared(c2, p1))
+                        int proxyId = b2GetProxyId(nodes[hit[i]]);
+                        ref readonly B2TreeProxy proxy = ref tree.proxies[proxyId];
+
+                        if ((proxy.categoryBits & maskBits) == 0)
                         {
-                            stack[stackCount++] = node.children.child2;
-                            stack[stackCount++] = node.children.child1;
+                            continue;
                         }
-                        else
+
+                        subInput.maxFraction = maxFraction;
+
+                        float value = callback(subInput, proxyId, proxy.userData, ref context);
+                        result.leafVisits += 1;
+
+                        // The user may return -1 to indicate this shape should be skipped
+
+                        if (value == 0.0f)
                         {
-                            stack[stackCount++] = node.children.child1;
-                            stack[stackCount++] = node.children.child2;
+                            // The client has terminated the ray cast.
+                            return result;
+                        }
+
+                        if (0.0f < value && value <= maxFraction)
+                        {
+                            // Update segment bounding box.
+                            maxFraction = value;
+                            p2 = b2MulAdd(p1, maxFraction, d);
+                            segmentAABB.lowerBound = b2Min(p1, p2);
+                            segmentAABB.upperBound = b2Max(p1, p2);
+
+                            boxv = segmentAABB;
                         }
                     }
                     else
                     {
-                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                        if (stackCount < B2_TREE_STACK_SIZE - 1)
+                        {
+                            stack[stackCount++] = b2GetLeftChild(nodes[hit[i]]);
+                        }
+                        else
+                        {
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                        }
                     }
                 }
             }
@@ -1363,25 +1315,27 @@ namespace Box2D.NET
             return result;
         }
 
-        /// Cast a swept AABB through the tree. This has performance roughly equal to k * log(n),
-        /// where k is the number of collisions and n is the number of proxies in the tree.
-        /// @param tree the dynamic tree to cast through
-        /// @param input the AABB cast input. The box sweeps from its origin to origin + maxFraction * translation.
-        /// @param maskBits filter bits: `bool accept = (maskBits & node.categoryBits) != 0;`
+        /// Cast a box through the tree. This relies on the callback
+        /// to perform an exact cast in the case were the proxy contains a shape.
+        /// The callback also performs the any collision filtering. This has performance
+        /// roughly equal to k * log(n), where k is the number of collisions and n is the
+        /// number of proxies in the tree.
+        /// @param tree the dynamic tree to ray cast
+        /// @param input the box cast input data
+        /// @param maskBits filter bits: `bool accept = (maskBits & node->categoryBits) != 0;`
         /// @param callback a callback that is called for each proxy the swept box may hit
         /// @param context user context that is passed to the callback
-        /// @return performance data
-        public static B2TreeStats b2DynamicTree_BoxCast<T>(B2DynamicTree tree, in B2BoxCastInput input, ulong maskBits,
-            b2TreeBoxCastCallbackFcn<T> callback, ref T context)
+        ///	@return performance data
+        // Follows structure of ray cast with small tweaks to handle a swept box.
+        public static B2TreeStats b2DynamicTree_CastBox<T>(B2DynamicTree tree, in B2BoxCastInput input, ulong maskBits, b2TreeBoxCastCallbackFcn<T> callback, ref T context)
         {
-            B2TreeStats stats = new B2TreeStats();
+            B2TreeStats result = new B2TreeStats();
 
-            if (tree.nodeCount == 0)
+            if (tree.proxyCount == 0)
             {
-                return stats;
+                return result;
             }
 
-            // The caller folds the shape radius into the box
             B2AABB originAABB = input.box;
 
             B2Vec2 p1 = b2AABB_Center(originAABB);
@@ -1399,99 +1353,121 @@ namespace Box2D.NET
 
             // Build total box for the cast
             B2Vec2 t = b2MulSV(maxFraction, input.translation);
-            B2AABB totalAABB = new B2AABB
-            {
-                lowerBound = b2Min(originAABB.lowerBound, b2Add(originAABB.lowerBound, t)),
-                upperBound = b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t)),
-            };
+            B2AABB totalAABB = new B2AABB(
+                b2Min(originAABB.lowerBound, b2Add(originAABB.lowerBound, t)),
+                b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t))
+            );
 
-            //b2BoxCastInput subInput = *input;
-            B2BoxCastInput subInput = input;
+            B2AABB boxv = totalAABB;
+
             B2TreeNode[] nodes = tree.nodes;
 
-            //int[] stack = new int[B2_TREE_STACK_SIZE];
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
-            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
             int stackCount = 0;
-            stack[stackCount++] = tree.root;
+            stack[stackCount++] = b2GetRootPair(nodes);
+
+            B2BoxCastInput subInput = input;
+
+            Span<int> hit = stackalloc int[2];
+            Span<bool> isLeaf = stackalloc bool[2];
 
             while (stackCount > 0)
             {
-                int nodeId = stack[--stackCount];
-                if (nodeId == B2_NULL_INDEX)
+                int pair = stack[--stackCount];
+                result.nodeVisits += 1;
+
+                int hitCount = 0;
+                for (int i = 0; i < 2; ++i)
                 {
-                    // todo is this possible?
-                    B2_ASSERT(false);
-                    continue;
-                }
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
 
-                ref readonly B2TreeNode node = ref nodes[nodeId];
-                stats.nodeVisits += 1;
-
-                if ((node.categoryBits & maskBits) == 0 || b2AABB_Overlaps(node.aabb, totalAABB) == false)
-                {
-                    continue;
-                }
-
-                // Separating axis for segment (Gino, p80).
-                // |dot(v, p1 - c)| > dot(|v|, h)
-                // radius extension is added to the node in this case
-                B2Vec2 c = b2AABB_Center(node.aabb);
-                B2Vec2 h = b2Add(b2AABB_Extents(node.aabb), extension);
-                float term1 = b2AbsFloat(b2Dot(v, b2Sub(p1, c)));
-                float term2 = b2Dot(abs_v, h);
-                if (term2 < term1)
-                {
-                    continue;
-                }
-
-                if (b2IsLeaf(node))
-                {
-                    subInput.maxFraction = maxFraction;
-
-                    float value = callback(subInput, nodeId, node.children.userData, ref context);
-                    stats.leafVisits += 1;
-
-                    if (value == 0.0f)
+                    if (b2OverlapNode(boxv, node) == false)
                     {
-                        // The client has terminated the ray cast.
-                        return stats;
+                        continue;
                     }
 
-                    if (0.0f < value && value < maxFraction)
+                    // Separating axis for segment (Gino, p80).
+                    // |dot(v, p1 - c)| > dot(|v|, h)
+                    // radius extension is added to the node in this case
+                    B2AABB nodeAABB = node.aabb;
+                    B2Vec2 c = b2AABB_Center(nodeAABB);
+                    B2Vec2 h = b2Add(b2AABB_Extents(nodeAABB), extension);
+                    float term1 = b2AbsFloat(b2Dot(v, b2Sub(p1, c)));
+                    float term2 = b2Dot(abs_v, h);
+                    if (term2 < term1)
                     {
-                        // Update segment bounding box.
-                        maxFraction = value;
-                        t = b2MulSV(maxFraction, input.translation);
-                        totalAABB.lowerBound = b2Min(originAABB.lowerBound, b2Add(originAABB.lowerBound, t));
-                        totalAABB.upperBound = b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t));
+                        continue;
+                    }
+
+                    isLeaf[hitCount] = b2IsLeaf(node);
+                    hit[hitCount] = pair + i;
+                    hitCount += 1;
+                }
+
+                if (hitCount == 2 && isLeaf[0] == false && isLeaf[1] == false)
+                {
+                    B2Vec2 center1 = b2AABB_Center(nodes[hit[0]].aabb);
+                    B2Vec2 center2 = b2AABB_Center(nodes[hit[1]].aabb);
+                    float d1 = b2DistanceSquared(center1, p1);
+                    float d2 = b2DistanceSquared(center2, p1);
+
+                    // Want to push the closest one last. Both have the same isLeaf, so they don't swap.
+                    if (d1 < d2)
+                    {
+                        (hit[0], hit[1]) = (hit[1], hit[0]);
                     }
                 }
-                else
+
+                for (int i = 0; i < hitCount; ++i)
                 {
-                    if (stackCount < B2_TREE_STACK_SIZE - 1)
+                    if (isLeaf[i])
                     {
-                        B2Vec2 c1 = b2AABB_Center(nodes[node.children.child1].aabb);
-                        B2Vec2 c2 = b2AABB_Center(nodes[node.children.child2].aabb);
-                        if (b2DistanceSquared(c1, p1) < b2DistanceSquared(c2, p1))
+                        int proxyId = b2GetProxyId(nodes[hit[i]]);
+                        ref readonly B2TreeProxy proxy = ref tree.proxies[proxyId];
+
+                        if ((proxy.categoryBits & maskBits) == 0)
                         {
-                            stack[stackCount++] = node.children.child2;
-                            stack[stackCount++] = node.children.child1;
+                            continue;
                         }
-                        else
+
+                        subInput.maxFraction = maxFraction;
+
+                        float value = callback(subInput, proxyId, proxy.userData, ref context);
+                        result.leafVisits += 1;
+
+                        // The user may return -1 to indicate this shape should be skipped
+
+                        if (value == 0.0f)
                         {
-                            stack[stackCount++] = node.children.child1;
-                            stack[stackCount++] = node.children.child2;
+                            // The client has terminated the ray cast.
+                            return result;
+                        }
+
+                        if (0.0f < value && value < maxFraction)
+                        {
+                            // Update cast bounding box.
+                            maxFraction = value;
+                            t = b2MulSV(maxFraction, input.translation);
+                            totalAABB.lowerBound = b2Min(originAABB.lowerBound, b2Add(originAABB.lowerBound, t));
+                            totalAABB.upperBound = b2Max(originAABB.upperBound, b2Add(originAABB.upperBound, t));
+                            boxv = totalAABB;
                         }
                     }
                     else
                     {
-                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                        if (stackCount < B2_TREE_STACK_SIZE - 1)
+                        {
+                            stack[stackCount++] = b2GetLeftChild(nodes[hit[i]]);
+                        }
+                        else
+                        {
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE - 1);
+                        }
                     }
                 }
             }
 
-            return stats;
+            return result;
         }
 
         // // Median split == 0, Surface area heuristic == 1
@@ -1776,166 +1752,201 @@ namespace Box2D.NET
             }
         }
 
-
-        // Returns root node index
-        internal static int b2BuildTree(B2DynamicTree tree, int leafCount)
+        // Bump allocate a pair of sibling nodes. Returns index to the first one.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int b2BumpPair(B2DynamicTree tree, int parent)
         {
-            B2TreeNode[] nodes = tree.nodes;
-            int[] leafIndices = tree.leafIndices;
+            int pair = tree.nodeEnd;
+            B2_ASSERT(pair + 2 <= tree.nodeCapacity);
+            tree.nodeEnd += 2;
+            tree.parents[pair] = parent;
+            tree.parents[pair + 1] = parent;
+            return pair;
+        }
 
-            if (leafCount == 1)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void b2SetLeftChild(ref B2TreeNode node, int pair)
+        {
+            node.flagIndex = (node.flagIndex & ~B2_NODE_INDEX_MASK) | (uint)pair;
+        }
+
+        // Copy a retained subtree from the old array into the rebuilt DFS array using
+        // a bump allocator.
+        private static void b2CopySubtree(B2DynamicTree tree, B2TreeNode node, int newIndex)
+        {
+            B2TreeNode[] oldNodes = tree.nodes;
+            B2TreeNode[] newNodes = tree.swapNodes;
+            B2TreeProxy[] proxies = tree.proxies;
+
+            if (b2IsLeaf(node))
             {
-                nodes[leafIndices[0]].pn.parent = B2_NULL_INDEX;
-                return leafIndices[0];
+                newNodes[newIndex] = node;
+                proxies[b2GetProxyId(node)].node = newIndex;
+                return;
             }
+
+            Span<B2CopyItem> stack = stackalloc B2CopyItem[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+
+            int oldPair = b2GetLeftChild(node);
+            int newPair = b2BumpPair(tree, newIndex);
+            b2SetLeftChild(ref node, newPair);
+
+            // Copy the subtree root. This can be a left or right sibling (even or odd).
+            newNodes[newIndex] = node;
+
+            for (;;)
+            {
+                // Copy the siblings.
+                newNodes[newPair] = oldNodes[oldPair];
+                newNodes[newPair + 1] = oldNodes[oldPair + 1];
+
+                if (b2IsLeaf(newNodes[newPair + 1]))
+                {
+                    // Hook up proxy on right sibling.
+                    int proxyId = b2GetProxyId(newNodes[newPair + 1]);
+                    proxies[proxyId].node = newPair + 1;
+                }
+                else
+                {
+                    // Push the left child of the right sibling.
+                    B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                    int leftChild = b2GetLeftChild(newNodes[newPair + 1]);
+                    stack[stackCount++] = new B2CopyItem(leftChild, newPair + 1);
+                }
+
+                if (b2IsLeaf(newNodes[newPair]) == false)
+                {
+                    // Descend into left subtree.
+                    int leftIndex = newPair;
+                    oldPair = b2GetLeftChild(newNodes[newPair]);
+                    newPair = b2BumpPair(tree, leftIndex);
+                    b2SetLeftChild(ref newNodes[leftIndex], newPair);
+                    continue;
+                }
+
+                // Hook up proxy on left sibling.
+                proxies[b2GetProxyId(newNodes[newPair])].node = newPair;
+
+                if (stackCount == 0)
+                {
+                    break;
+                }
+
+                // Descend a right subtree that was previously pushed.
+                B2CopyItem item = stack[--stackCount];
+                oldPair = item.oldPair;
+                newPair = b2BumpPair(tree, item.newIndex);
+                b2SetLeftChild(ref newNodes[item.newIndex], newPair);
+            }
+        }
+
+        private static void b2PlaceLeaf(B2DynamicTree tree, in B2TreeNode leaf, int newIndex)
+        {
+            if (b2IsLeaf(leaf))
+            {
+                tree.swapNodes[newIndex] = leaf;
+                tree.proxies[b2GetProxyId(leaf)].node = newIndex;
+            }
+            else
+            {
+                b2CopySubtree(tree, leaf, newIndex);
+            }
+        }
+
+        private static void b2BuildTree(B2DynamicTree tree, int leafCount)
+        {
+            B2TreeNode[] nodes = tree.swapNodes;
+            B2TreeNode[] leaves = tree.leafNodes;
+            int[] leafIndices = tree.leafIndices;
 
             //#if B2_TREE_HEURISTIC == 0
             B2Vec2[] leafCenters = tree.leafCenters;
-            // #else
-            //     b2AABB* leafBoxes = tree.leafBoxes;
-            //     int* binIndices = tree.binIndices;
-            // #endif
+            //#else
+            //B2AABB[] leafBoxes = tree.leafBoxes;
+            //int[] binIndices = tree.binIndices;
+            //#endif
 
-            // todo large stack item
-            //B2RebuildItem[] stack = new B2RebuildItem[B2_TREE_STACK_SIZE];
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<B2RebuildItem>.Size);
-            B2FixedArray1024<B2RebuildItem> stack = new B2FixedArray1024<B2RebuildItem>();
+            // Bump allocation into the swap nodes.
+            tree.nodeEnd = 2;
+            nodes[B2_ROOT_NODE + 1] = b2MakeEmptyNode();
+            tree.parents[B2_ROOT_NODE] = B2_NULL_INDEX;
+            tree.parents[B2_ROOT_NODE + 1] = B2_NULL_INDEX;
+
+            if (leafCount == 1)
+            {
+                b2PlaceLeaf(tree, leaves[leafIndices[0]], B2_ROOT_NODE);
+                return;
+            }
+
+            Span<B2RebuildItem> stack = stackalloc B2RebuildItem[B2_TREE_STACK_SIZE];
             int top = 0;
 
-            stack[0].nodeIndex = b2AllocateNode(tree);
+            stack[0].nodeIndex = B2_ROOT_NODE;
+            stack[0].pair = b2BumpPair(tree, B2_ROOT_NODE);
             stack[0].childCount = -1;
             stack[0].startIndex = 0;
             stack[0].endIndex = leafCount;
             //#if B2_TREE_HEURISTIC == 0
             stack[0].splitIndex = b2PartitionMid(leafIndices, leafCenters, leafCount);
-            // #else
-            //     stack[0].splitIndex = b2PartitionSAH( leafIndices, binIndices, leafBoxes, leafCount );
-            // #endif
+            //#else
+            //stack[0].splitIndex = b2PartitionSAH(leafIndices, binIndices, leafBoxes, leafCount);
+            //#endif
 
             while (true)
             {
                 ref B2RebuildItem item = ref stack[top];
-
                 item.childCount += 1;
 
                 if (item.childCount == 2)
                 {
-                    // This internal node has both children established
-
+                    // Both children written, so the parent node can be finalized.
+                    nodes[item.nodeIndex] = b2MakeInternalNode(nodes, item.pair);
                     if (top == 0)
                     {
-                        // all done
                         break;
                     }
 
-                    ref B2RebuildItem parentItem = ref stack[(top - 1)];
-                    ref B2TreeNode parentNode = ref nodes[parentItem.nodeIndex];
-
-                    if (parentItem.childCount == 0)
-                    {
-                        B2_ASSERT(parentNode.children.child1 == B2_NULL_INDEX);
-                        parentNode.children.child1 = item.nodeIndex;
-                    }
-                    else
-                    {
-                        B2_ASSERT(parentItem.childCount == 1);
-                        B2_ASSERT(parentNode.children.child2 == B2_NULL_INDEX);
-                        parentNode.children.child2 = item.nodeIndex;
-                    }
-
-                    ref B2TreeNode node = ref nodes[item.nodeIndex];
-
-                    B2_ASSERT(node.pn.parent == B2_NULL_INDEX);
-                    node.pn.parent = parentItem.nodeIndex;
-
-                    B2_ASSERT(node.children.child1 != B2_NULL_INDEX);
-                    B2_ASSERT(node.children.child2 != B2_NULL_INDEX);
-                    ref B2TreeNode c1 = ref nodes[node.children.child1];
-                    ref B2TreeNode c2 = ref nodes[node.children.child2];
-
-                    node.aabb = b2AABB_Union(c1.aabb, c2.aabb);
-                    node.height = (ushort)(1 + b2MaxUInt16(c1.height, c2.height));
-                    node.categoryBits = c1.categoryBits | c2.categoryBits;
-
-                    // Pop stack
                     top -= 1;
+                    continue;
                 }
-                else
+
+                int slot = item.childCount;
+                int startIndex = slot == 0 ? item.startIndex : item.splitIndex;
+                int endIndex = slot == 0 ? item.splitIndex : item.endIndex;
+                int count = endIndex - startIndex;
+                B2_ASSERT(count > 0);
+
+                int nodeIndex = item.pair + slot;
+                if (count == 1)
                 {
-                    int startIndex, endIndex;
-                    if (item.childCount == 0)
-                    {
-                        startIndex = item.startIndex;
-                        endIndex = item.splitIndex;
-                    }
-                    else
-                    {
-                        B2_ASSERT(item.childCount == 1);
-                        startIndex = item.splitIndex;
-                        endIndex = item.endIndex;
-                    }
-
-                    int count = endIndex - startIndex;
-
-                    if (count == 1)
-                    {
-                        int childIndex = leafIndices[startIndex];
-                        ref B2TreeNode node = ref nodes[item.nodeIndex];
-
-                        if (item.childCount == 0)
-                        {
-                            B2_ASSERT(node.children.child1 == B2_NULL_INDEX);
-                            node.children.child1 = childIndex;
-                        }
-                        else
-                        {
-                            B2_ASSERT(item.childCount == 1);
-                            B2_ASSERT(node.children.child2 == B2_NULL_INDEX);
-                            node.children.child2 = childIndex;
-                        }
-
-                        ref B2TreeNode childNode = ref nodes[childIndex];
-                        B2_ASSERT(childNode.pn.parent == B2_NULL_INDEX);
-                        childNode.pn.parent = item.nodeIndex;
-                    }
-                    else
-                    {
-                        B2_ASSERT(count > 0);
-                        B2_ASSERT(top < B2_TREE_STACK_SIZE);
-
-                        top += 1;
-                        ref B2RebuildItem newItem = ref stack[top];
-                        newItem.nodeIndex = b2AllocateNode(tree);
-                        newItem.childCount = -1;
-                        newItem.startIndex = startIndex;
-                        newItem.endIndex = endIndex;
-                        // #if B2_TREE_HEURISTIC == 0
-                        newItem.splitIndex = b2PartitionMid(leafIndices.AsSpan(startIndex), leafCenters.AsSpan(startIndex), count);
-                        // #else
-                        //                 newItem.splitIndex =
-                        //                     b2PartitionSAH( leafIndices + startIndex, binIndices + startIndex, leafBoxes + startIndex, count );
-                        // #endif
-                        newItem.splitIndex += startIndex;
-                    }
+                    b2PlaceLeaf(tree, leaves[leafIndices[startIndex]], nodeIndex);
+                    continue;
                 }
+
+                // todo fail gracefully if the stack runs out in release
+                B2_ASSERT(top < B2_TREE_STACK_SIZE - 1);
+
+                top += 1;
+                ref B2RebuildItem newItem = ref stack[top];
+                newItem.nodeIndex = nodeIndex;
+                newItem.pair = b2BumpPair(tree, nodeIndex);
+                newItem.childCount = -1;
+                newItem.startIndex = startIndex;
+                newItem.endIndex = endIndex;
+                newItem.splitIndex = startIndex;
+                //#if B2_TREE_HEURISTIC == 0
+                newItem.splitIndex += b2PartitionMid(leafIndices.AsSpan(startIndex), leafCenters.AsSpan(startIndex), count);
+                //#else
+                //newItem.splitIndex += b2PartitionSAH(leafIndices.AsSpan(startIndex), binIndices.AsSpan(startIndex), leafBoxes.AsSpan(startIndex), count);
+                //#endif
             }
-
-            ref B2TreeNode rootNode = ref nodes[stack[0].nodeIndex];
-            B2_ASSERT(rootNode.pn.parent == B2_NULL_INDEX);
-            B2_ASSERT(rootNode.children.child1 != B2_NULL_INDEX);
-            B2_ASSERT(rootNode.children.child2 != B2_NULL_INDEX);
-
-            ref B2TreeNode child1 = ref nodes[rootNode.children.child1];
-            ref B2TreeNode child2 = ref nodes[rootNode.children.child2];
-
-            rootNode.aabb = b2AABB_Union(child1.aabb, child2.aabb);
-            rootNode.height = (ushort)(1 + b2MaxUInt16(child1.height, child2.height));
-            rootNode.categoryBits = child1.categoryBits | child2.categoryBits;
-
-            return stack[0].nodeIndex;
         }
 
         /// Rebuild the tree while retaining subtrees that haven't changed. Returns the number of boxes sorted.
+        // Rebuild the stale parts of the tree. The entire tree is put into DFS order. This makes
+        // refitting much faster. This is done async with threading, so the cost is hidden.
+        // Not safe to access tree during this operation.
         public static int b2DynamicTree_Rebuild(B2DynamicTree tree, bool fullBuild)
         {
             int proxyCount = tree.proxyCount;
@@ -1944,117 +1955,358 @@ namespace Box2D.NET
                 return 0;
             }
 
-            // Ensure capacity for rebuild space
+            // An unordered tree is rebuilt even when nothing moved, the sweep refit needs the order
+            B2TreeNode[] nodes = tree.nodes;
+            B2TreeNode root = nodes[B2_ROOT_NODE];
+            if (fullBuild == false && b2IsNodeMoved(root) == false && tree.dfsOrdered)
+            {
+                return 0;
+            }
+
+            if (tree.swapNodes == null)
+            {
+                tree.swapNodes = b2Alloc<B2TreeNode>(tree.nodeCapacity);
+            }
+
             if (proxyCount > tree.rebuildCapacity)
             {
+                int oldCapacity = tree.rebuildCapacity;
                 int newCapacity = proxyCount + proxyCount / 2;
 
-                b2Free(tree.leafIndices, tree.rebuildCapacity);
-                tree.leafIndices = b2Alloc<int>(newCapacity);
-
+                tree.leafIndices = b2GrowAlloc(tree.leafIndices, oldCapacity, newCapacity);
+                tree.leafNodes = b2GrowAlloc(tree.leafNodes, oldCapacity, newCapacity);
                 //#if B2_TREE_HEURISTIC == 0
-                b2Free(tree.leafCenters, tree.rebuildCapacity);
-                tree.leafCenters = b2Alloc<B2Vec2>(newCapacity);
-                // #else
-                //         b2Free( tree.leafBoxes, tree.rebuildCapacity * sizeof( b2AABB ) );
-                //         tree.leafBoxes = b2Alloc( newCapacity * sizeof( b2AABB ) );
-                //         b2Free( tree.binIndices, tree.rebuildCapacity * sizeof( int ) );
-                //         tree.binIndices = b2Alloc( newCapacity * sizeof( int ) );
-                // #endif
+                tree.leafCenters = b2GrowAlloc(tree.leafCenters, oldCapacity, newCapacity);
+                //#else
+                //tree.leafBoxes = b2GrowAlloc(tree.leafBoxes, oldCapacity, newCapacity);
+                //tree.binIndices = b2GrowAlloc(tree.binIndices, oldCapacity, newCapacity);
+                //#endif
                 tree.rebuildCapacity = newCapacity;
             }
 
-            int leafCount = 0;
-            //int[] stack = new int[B2_TREE_STACK_SIZE];
-            B2_ASSERT(B2_TREE_STACK_SIZE == B2FixedArray1024<int>.Size);
-            B2FixedArray1024<int> stack = new B2FixedArray1024<int>();
-            int stackCount = 0;
-
-            int nodeIndex = tree.root;
-            B2TreeNode[] nodes = tree.nodes;
-            ref B2TreeNode node = ref nodes[nodeIndex];
-
-            // These are the nodes that get sorted to rebuild the tree.
-            // I'm using indices because the node pool may grow during the build.
             int[] leafIndices = tree.leafIndices;
-
-            // #if B2_TREE_HEURISTIC == 0
+            B2TreeNode[] leaves = tree.leafNodes;
+            //#if B2_TREE_HEURISTIC == 0
             B2Vec2[] leafCenters = tree.leafCenters;
-            // #else
-            //     b2AABB* leafBoxes = tree.leafBoxes;
-            // #endif
+            //#else
+            //B2AABB[] leafBoxes = tree.leafBoxes;
+            //#endif
 
-            // Gather all proxy nodes that have grown and all internal nodes that haven't grown. Both are
-            // considered leaves in the tree rebuild.
-            // Free all internal nodes that have grown.
-            // todo use a node growth metric instead of simply enlarged to reduce rebuild size and frequency
-            // this should be weighed against B2_AABB_MARGIN
-            while (true)
+            // Gather build leaves. A marked internal node is descended and abandoned in the old array.
+            // Everything else is a build leaf, kept subtrees included. A leaf root, or an unmarked root
+            // on an unordered array, is the one build leaf.
+            int leafCount = 0;
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            if (b2IsLeaf(root) == false && (fullBuild || b2IsNodeMoved(root)))
             {
-                if (node.height == 0 || ((node.flags & (int)B2TreeNodeFlags.b2_enlargedNode) == 0 && fullBuild == false))
+                stack[stackCount++] = b2GetLeftChild(root);
+            }
+            else
+            {
+                B2TreeNode node = root;
+                node.flagIndex &= ~B2_MOVED_NODE;
+                leafIndices[0] = 0;
+                leaves[0] = node;
+                //#if B2_TREE_HEURISTIC == 0
+                leafCenters[0] = b2AABB_Center(node.aabb);
+                //#else
+                //leafBoxes[0] = node.aabb;
+                //#endif
+                leafCount = 1;
+            }
+
+            while (stackCount > 0)
+            {
+                int pair = stack[--stackCount];
+                for (int i = 0; i < 2; ++i)
                 {
-                    leafIndices[leafCount] = nodeIndex;
+                    B2TreeNode node = nodes[pair + i];
+                    if (b2IsLeaf(node) == false && (fullBuild || b2IsNodeMoved(node)))
+                    {
+                        // todo fail gracefully if the stack runs out in release
+                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                        stack[stackCount++] = b2GetLeftChild(node);
+                        continue;
+                    }
+
+                    node.flagIndex &= ~B2_MOVED_NODE;
+                    leafIndices[leafCount] = leafCount;
+                    leaves[leafCount] = node;
                     //#if B2_TREE_HEURISTIC == 0
                     leafCenters[leafCount] = b2AABB_Center(node.aabb);
-                    // #else
-                    //             leafBoxes[leafCount] = node.aabb;
-                    // #endif
+                    //#else
+                    //leafBoxes[leafCount] = node.aabb;
+                    //#endif
                     leafCount += 1;
-
-                    // Detach
-                    node.pn.parent = B2_NULL_INDEX;
                 }
-                else
-                {
-                    int doomedNodeIndex = nodeIndex;
+            }
 
-                    // Handle children
-                    nodeIndex = node.children.child1;
+            B2_ASSERT(0 < leafCount && leafCount <= proxyCount);
 
-                    if (stackCount < B2_TREE_STACK_SIZE)
-                    {
-                        stack[stackCount++] = node.children.child2;
-                    }
-                    else
-                    {
-                        B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
-                    }
+            b2BuildTree(tree, leafCount);
 
-                    node = ref nodes[nodeIndex];
+            // The spare is now the tree and the old array is the spare. The build is dense, so the
+            // stale tail of the old array sits above the end and is never read.
+            (tree.nodes, tree.swapNodes) = (tree.swapNodes, tree.nodes);
+            tree.pairFreeList = B2_NULL_INDEX;
+            tree.dfsOrdered = true;
 
-                    // Remove doomed node
-                    b2FreeNode(tree, doomedNodeIndex);
+            b2DynamicTree_Validate(tree);
+            b2DynamicTree_ValidateNoMoved(tree);
 
-                    continue;
-                }
+            return leafCount;
+        }
 
-                if (stackCount == 0)
+        // Set the moved flag on the ancestors of the proxy. Serial use case.
+        public static void b2DynamicTree_MarkProxyMovedSerial(B2DynamicTree tree, int proxyId)
+        {
+            B2_VALIDATE(0 <= proxyId && proxyId < tree.proxyCapacity);
+
+            B2TreeNode[] nodes = tree.nodes;
+            int[] parents = tree.parents;
+
+            int index = tree.proxies[proxyId].node;
+            B2_VALIDATE(0 <= index && index < tree.nodeEnd);
+            B2_VALIDATE(b2IsLeaf(nodes[index]));
+
+            while (index != B2_NULL_INDEX)
+            {
+                nodes[index].flagIndex |= B2_MOVED_NODE;
+                index = parents[index];
+            }
+        }
+
+        // Update a proxy AABB and flag the ancestors as moved. Thread-safe using atomics.
+        public static void b2DynamicTree_MarkProxyMoved(B2DynamicTree tree, int proxyId, in B2AABB aabb)
+        {
+            B2_VALIDATE(0 <= proxyId && proxyId < tree.proxyCapacity);
+
+            B2TreeNode[] nodes = tree.nodes;
+            int[] parents = tree.parents;
+
+            int index = tree.proxies[proxyId].node;
+            B2_VALIDATE(0 <= index && index < tree.nodeEnd);
+
+            ref B2TreeNode node = ref nodes[index];
+            B2_VALIDATE(b2IsLeaf(node));
+            B2_VALIDATE(b2AABB_Contains(node.aabb, aabb) == false);
+
+            // This is not raced since it is the leaf.
+            node.aabb = aabb;
+            node.flagIndex |= B2_MOVED_NODE;
+
+            index = parents[index];
+            while (index != B2_NULL_INDEX)
+            {
+                node = ref nodes[index];
+
+                // Read first to avoid the FetchOr if possible.
+                if ((b2AtomicLoadU32Raw(ref node.flagIndex) & B2_MOVED_NODE) != 0)
                 {
                     break;
                 }
 
-                nodeIndex = stack[--stackCount];
-                node = ref nodes[nodeIndex];
+                uint previousFlags = b2AtomicFetchOrU32(ref node.flagIndex, B2_MOVED_NODE);
+                if ((previousFlags & B2_MOVED_NODE) != 0)
+                {
+                    // Ancestor already visited.
+                    break;
+                }
+
+                index = parents[index];
+            }
+        }
+
+        // Clear the moved flags from the entire tree.
+        public static void b2DynamicTree_ClearMoved(B2DynamicTree tree)
+        {
+            B2TreeNode[] nodes = tree.nodes;
+
+            ref B2TreeNode root = ref nodes[B2_ROOT_NODE];
+            if (b2IsNodeMoved(root) == false)
+            {
+                return;
             }
 
-#if DEBUG
-            int capacity = tree.nodeCapacity;
-            for (int i = 0; i < capacity; ++i)
+            root.flagIndex &= ~B2_MOVED_NODE;
+            if (b2IsLeaf(root))
             {
-                if (0 != (nodes[i].flags & (ushort)B2TreeNodeFlags.b2_allocatedNode))
+                return;
+            }
+
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            stack[stackCount++] = b2GetLeftChild(root);
+
+            while (stackCount > 0)
+            {
+                int pair = stack[--stackCount];
+                for (int i = 0; i < 2; ++i)
                 {
-                    B2_ASSERT((nodes[i].flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) == 0);
+                    ref B2TreeNode node = ref nodes[pair + i];
+                    if ((node.flagIndex & B2_MOVED_NODE) != 0)
+                    {
+                        node.flagIndex &= ~B2_MOVED_NODE;
+                        if (b2IsLeaf(node) == false)
+                        {
+                            if (stackCount < B2_TREE_STACK_SIZE)
+                            {
+                                stack[stackCount++] = b2GetLeftChild(node);
+                            }
+                            else
+                            {
+                                // Bad stuff will happen if the moved flags don't get cleared.
+                                B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                            }
+                        }
+                    }
                 }
             }
-#endif
+        }
 
-            B2_ASSERT(leafCount <= proxyCount);
+        public static int b2DynamicTree_GatherMovedProxies(B2DynamicTree tree, Span<int> proxyIds)
+        {
+            B2TreeNode[] nodes = tree.nodes;
+            ref readonly B2TreeNode root = ref nodes[B2_ROOT_NODE];
+            if (b2IsNodeMoved(root) == false)
+            {
+                return 0;
+            }
 
-            tree.root = b2BuildTree(tree, leafCount);
+            if (b2IsLeaf(root))
+            {
+                proxyIds[0] = b2GetProxyId(root);
+                return 1;
+            }
 
-            b2DynamicTree_Validate(tree);
+            int count = 0;
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            stack[stackCount++] = b2GetLeftChild(root);
 
-            return leafCount;
+            while (stackCount > 0)
+            {
+                int pair = stack[--stackCount];
+                for (int i = 0; i < 2; ++i)
+                {
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
+                    if (b2IsNodeMoved(node) == false)
+                    {
+                        continue;
+                    }
+
+                    if (b2IsLeaf(node))
+                    {
+                        proxyIds[count++] = b2GetProxyId(node);
+                    }
+                    else
+                    {
+                        if (stackCount < B2_TREE_STACK_SIZE)
+                        {
+                            stack[stackCount++] = b2GetLeftChild(node);
+                        }
+                        else
+                        {
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                        }
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        // Slow refit for unit tests.
+        private static void b2RefitSubtree(B2TreeNode[] nodes, int rootIndex)
+        {
+            ref B2TreeNode root = ref nodes[rootIndex];
+            if (b2IsLeaf(root) || b2IsNodeMoved(root) == false)
+            {
+                return;
+            }
+
+            // Negative entries indicate deferred unions. A parent is pushed before its children so the
+            // LIFO order guarantees both children are finished when the union runs.
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            // ~0 == -1
+            stack[stackCount++] = ~rootIndex;
+            stack[stackCount++] = b2GetLeftChild(root);
+            stack[stackCount++] = b2GetLeftChild(root) + 1;
+
+            while (stackCount > 0)
+            {
+                int item = stack[--stackCount];
+                if (item < 0)
+                {
+                    ref B2TreeNode parent = ref nodes[~item];
+                    int pair = b2GetLeftChild(parent);
+                    parent.aabb = b2UnionV(nodes[pair].aabb, nodes[pair + 1].aabb);
+                    continue;
+                }
+
+                ref readonly B2TreeNode node = ref nodes[item];
+                if (b2IsLeaf(node) || b2IsNodeMoved(node) == false)
+                {
+                    continue;
+                }
+
+                if (stackCount + 3 <= B2_TREE_STACK_SIZE)
+                {
+                    int pair = b2GetLeftChild(node);
+                    stack[stackCount++] = ~item;
+                    stack[stackCount++] = pair;
+                    stack[stackCount++] = pair + 1;
+                }
+                else
+                {
+                    B2_ASSERT(stackCount + 3 <= B2_TREE_STACK_SIZE);
+                }
+            }
+        }
+
+        public static void b2DynamicTree_Refit(B2DynamicTree tree)
+        {
+            if (b2HasTreeMoved(tree) == false)
+            {
+                return;
+            }
+
+            B2TreeNode[] nodes = tree.nodes;
+
+            if (tree.dfsOrdered == false)
+            {
+                // This only happens in unit tests.
+                b2RefitSubtree(nodes, B2_ROOT_NODE);
+                return;
+            }
+
+            for (int pair = tree.nodeEnd - 2; pair >= 0; pair -= 2)
+            {
+                uint flags1 = nodes[pair].flagIndex;
+                uint flags2 = nodes[pair + 1].flagIndex;
+
+                // Did either move?
+                if (((flags1 | flags2) & B2_MOVED_NODE) == 0)
+                {
+                    continue;
+                }
+
+                // Is the node internal and moved?
+                bool refit1 = (flags1 & (B2_LEAF_NODE | B2_MOVED_NODE)) == B2_MOVED_NODE;
+                bool refit2 = (flags2 & (B2_LEAF_NODE | B2_MOVED_NODE)) == B2_MOVED_NODE;
+
+                // If the node needs a refit then get the child index. Otherwise use a valid dummy index.
+                // The store function won't actually modify the node at the dummy index. This
+                // avoids an unpredictable branch. SIMD FTW.
+                int children1 = refit1 ? (int)(flags1 & B2_NODE_INDEX_MASK) : pair;
+                int children2 = refit2 ? (int)(flags2 & B2_NODE_INDEX_MASK) : pair;
+
+                // Conditionally store the union.
+                b2StoreAABBV(ref nodes[pair].aabb, b2UnionPairV(nodes, children1), refit1);
+                b2StoreAABBV(ref nodes[pair + 1].aabb, b2UnionPairV(nodes, children2), refit2);
+            }
         }
     }
 }

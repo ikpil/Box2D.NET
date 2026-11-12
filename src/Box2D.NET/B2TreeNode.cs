@@ -1,26 +1,37 @@
-﻿// SPDX-FileCopyrightText: 2025 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System.Runtime.InteropServices;
+
 namespace Box2D.NET
 {
-    // A node in the dynamic tree.
-    // todo externalize this to visualize internal nodes and speed up FindPairs
+    /// A node in the dynamic tree. Siblings sit together at an even index so two nodes fit in
+    /// a 64 byte cache line. The root is at index zero and index one always empty.
+    [StructLayout(LayoutKind.Explicit)]
     public struct B2TreeNode
     {
-        // The node bounding box
-        public B2AABB aabb; // 16
+        /// The node bounding box
+        [FieldOffset(0)]
+        public B2AABB aabb;
 
-        // Category bits for collision filtering
-        public ulong categoryBits; // 8
+        /// In 3D this space is used by the AABB z components.
+        [FieldOffset(16)]
+        public ulong padding;
 
-        // TODO: @ikpil, check union
-        public B2TreeNodeDataUnion children; // 8
-        
-        // TODO: @ikpil, check union
-        public B2TreeNodeConnectionUnion pn;
+        /// bit 31 : 1 for leaf node
+        /// bit 30 : 1 for moved flag
+        /// bits 0-29 : index of the sibling pair node or the proxy id for a leaf
+        [FieldOffset(24)]
+        public uint flagIndex;
 
-        public ushort height; // 2
-        public ushort flags; // 2
+        /// The total number of leaves below for an internal node.
+        /// todo not used
+        [FieldOffset(28)]
+        public int leafCount;
+
+        /// The shape index for a leaf. Truncated from proxy user data.
+        [FieldOffset(28)]
+        public int shapeIndex;
     }
 }

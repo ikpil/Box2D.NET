@@ -12,6 +12,7 @@ using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Ids;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Joints;
+using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.B2Diagnostics;
 using static Box2D.NET.Shared.Benchmarks;
 
@@ -718,23 +719,21 @@ public class B2WorldTest
         b2DestroyWorld(worldId);
     }
 
+    // Counts marked nodes, the root included. Free nodes are never marked.
     private static int CountEnlargedNodes(B2DynamicTree tree)
     {
         int count = 0;
-        for (int i = 0; i < tree.nodeCapacity; ++i)
+        for (int i = 0; i < tree.nodeEnd; ++i)
         {
-            ref readonly B2TreeNode node = ref tree.nodes[i];
-            if ((node.flags & (ushort)B2TreeNodeFlags.b2_allocatedNode) != 0 && (node.flags & (ushort)B2TreeNodeFlags.b2_enlargedNode) != 0)
-            {
-                count += 1;
-            }
+            count += b2IsNodeMoved(tree.nodes[i]) ? 1 : 0;
         }
 
         return count;
     }
 
-    // A proxy can be enlarged in one step and destroyed before the next, which empties the move buffer.
-    // The trees still need a rebuild or the enlarged nodes survive into the next step.
+    // A proxy can be enlarged in one step and destroyed before the next. The remove recomputes the
+    // ancestor marks from the surviving children, so the mover's marks go with it and the next step
+    // starts clean.
     private static void EnlargedProxyDestroyed(int workerCount)
     {
         B2WorldDef worldDef = b2DefaultWorldDef();
@@ -772,9 +771,7 @@ public class B2WorldTest
 
         b2DestroyBody(moverId);
 
-        // The mover was the only proxy in the move buffer
-        Assert.That(world.broadPhase.moveArray.count, Is.EqualTo(0));
-        Assert.That(CountEnlargedNodes(tree), Is.GreaterThan(0));
+        Assert.That(CountEnlargedNodes(tree), Is.EqualTo(0));
 
         b2World_Step(worldId, timeStep, 4);
 
@@ -788,5 +785,499 @@ public class B2WorldTest
     {
         EnlargedProxyDestroyed(1);
         EnlargedProxyDestroyed(4);
+    }
+
+    // Broad phase pair creation through every route that marks a proxy: creation, teleport, a static
+    // shape that asks for contacts, refiltering, collide connected, enable, a type change, a static
+    // rebuild that must keep its pending marks, and the filters that reject a pair.
+    // Bodies never move on their own here, gravity is off and sleep is disabled, so a contact can only
+    // come from the route under test. The count is every live contact, touching or not, which is what
+    // the broad phase decides.
+    private struct PairBox
+    {
+        public B2BodyId bodyId;
+        public B2ShapeId shapeId;
+    }
+
+    private static PairBox CreatePairBox(B2WorldId worldId, B2BodyType type, float x, float y, in B2ShapeDef shapeDef)
+    {
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = type;
+        bodyDef.position = new B2Pos(x, y);
+
+        PairBox box;
+        box.bodyId = b2CreateBody(worldId, bodyDef);
+
+        B2Polygon square = b2MakeSquare(0.5f);
+        box.shapeId = b2CreatePolygonShape(box.bodyId, shapeDef, square);
+        return box;
+    }
+
+    private static B2WorldId CreatePairWorld(int workerCount)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        worldDef.enableSleep = false;
+        worldDef.workerCount = workerCount;
+        return b2CreateWorld(worldDef);
+    }
+
+    private static int PairContactCount(B2WorldId worldId)
+    {
+        return b2World_GetCounters(worldId).contactCount;
+    }
+
+    private static void StepPairWorld(B2WorldId worldId)
+    {
+        b2World_Step(worldId, 1.0f / 60.0f, 4);
+    }
+
+    // Every kind of proxy created over a resting body
+    private static void PairCreation(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        // Dynamic created on static
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.5f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        // Dynamic created on a resting dynamic
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.5f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        // Kinematic created on a resting dynamic, the mark is on the kinematic side
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 20.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        CreatePairBox(worldId, B2BodyType.b2_kinematicBody, 20.5f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(3));
+
+        // A static shape created on a resting dynamic pairs by default and not when told to stay quiet
+        B2ShapeDef quietDef = b2DefaultShapeDef();
+        quietDef.invokeContactCreation = false;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 30.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 30.5f, 0.0f, quietDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(3));
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 29.5f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(4));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A teleport marks the moved proxy, kinematic and static ones included
+    private static void PairTeleport(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+        PairBox mover = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.0f, shapeDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 20.0f, 0.0f, shapeDef);
+        PairBox wall = CreatePairBox(worldId, B2BodyType.b2_staticBody, 30.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Body_SetTransform(mover.bodyId, new B2Pos(0.5f, 0.0f), b2Rot_identity);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_SetTransform(wall.bodyId, new B2Pos(20.5f, 0.0f), b2Rot_identity);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        // Kinematic onto a resting dynamic, the mark is on the kinematic side
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 40.0f, 0.0f, shapeDef);
+        PairBox pusher = CreatePairBox(worldId, B2BodyType.b2_kinematicBody, 50.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        b2Body_SetTransform(pusher.bodyId, new B2Pos(40.5f, 0.0f), b2Rot_identity);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(3));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A filter change must find the pairs the old filter rejected and drop the ones it now rejects
+    private static void PairRefilter(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+
+        B2ShapeDef pickyDef = b2DefaultShapeDef();
+        pickyDef.filter.categoryBits = 2;
+        pickyDef.filter.maskBits = 1;
+
+        B2ShapeDef closedDef = b2DefaultShapeDef();
+        closedDef.filter.categoryBits = 4;
+
+        B2Filter openFilter = b2DefaultFilter();
+        openFilter.categoryBits = 1;
+
+        PairBox ground = CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, closedDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.5f, 0.0f, pickyDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Shape_SetFilter(ground.shapeId, openFilter);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Shape_SetFilter(ground.shapeId, closedDef.filter);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        // Same on a dynamic shape
+        PairBox other = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.0f, closedDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.5f, 0.0f, pickyDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Shape_SetFilter(other.shapeId, openFilter);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // Collide connected is off by default and turning it on must find the pair, static partner too.
+    // The weld frames coincide so the joint does not move anything.
+    private static void PairCollideConnected(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        PairBox boxA = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.0f, shapeDef);
+        PairBox boxB = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.5f, 0.0f, shapeDef);
+
+        B2WeldJointDef jointDef = b2DefaultWeldJointDef();
+        jointDef.@base.bodyIdA = boxA.bodyId;
+        jointDef.@base.bodyIdB = boxB.bodyId;
+        jointDef.@base.localFrameB.p = new B2Vec2(-0.5f, 0.0f);
+        B2JointId jointId = b2CreateWeldJoint(worldId, jointDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Joint_SetCollideConnected(jointId, true);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Joint_SetCollideConnected(jointId, false);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        // Static partner, the mark goes on the dynamic body
+        PairBox wall = CreatePairBox(worldId, B2BodyType.b2_staticBody, 10.0f, 0.0f, shapeDef);
+        PairBox boxC = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.5f, 0.0f, shapeDef);
+        jointDef.@base.bodyIdA = wall.bodyId;
+        jointDef.@base.bodyIdB = boxC.bodyId;
+        B2JointId wallJointId = b2CreateWeldJoint(worldId, jointDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Joint_SetCollideConnected(wallJointId, true);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
+    private static bool RejectTaggedShape(B2ShapeId shapeIdA, B2ShapeId shapeIdB, object context)
+    {
+        return b2Shape_GetUserData(shapeIdA).type == B2UserDataType.None && b2Shape_GetUserData(shapeIdB).type == B2UserDataType.None;
+    }
+
+    // The filters that reject a pair. The benchmarks never exercise these, so this is the only guard.
+    private static void PairFilters(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        b2World_SetCustomFilterCallback(worldId, RejectTaggedShape, null);
+
+        // Category and mask must pass in both directions
+        B2ShapeDef defA = b2DefaultShapeDef();
+        defA.filter.categoryBits = 1;
+        defA.filter.maskBits = 2;
+        B2ShapeDef defB = b2DefaultShapeDef();
+        defB.filter.categoryBits = 2;
+        defB.filter.maskBits = 1;
+        B2ShapeDef defC = b2DefaultShapeDef();
+        defC.filter.categoryBits = 2;
+        defC.filter.maskBits = 4;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.0f, defA);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.5f, 0.0f, defB);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, -0.5f, 0.0f, defC);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        // Group index overrides the bits, negative rejects and positive accepts
+        B2ShapeDef negativeDef = b2DefaultShapeDef();
+        negativeDef.filter.groupIndex = -1;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.0f, 0.0f, negativeDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 10.5f, 0.0f, negativeDef);
+        B2ShapeDef positiveDef = defC;
+        positiveDef.filter.groupIndex = 1;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 20.0f, 0.0f, positiveDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 20.5f, 0.0f, positiveDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        // Custom filter rejects a tagged shape
+        B2ShapeDef customDef = b2DefaultShapeDef();
+        customDef.enableCustomFiltering = true;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 30.0f, 0.0f, customDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 30.5f, 0.0f, customDef);
+        customDef.userData = new B2UserData(1L);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 40.0f, 0.0f, customDef);
+        customDef.userData = B2UserData.Empty;
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 40.5f, 0.0f, customDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(3));
+
+        // Sensors never make contacts
+        B2ShapeDef sensorDef = b2DefaultShapeDef();
+        sensorDef.isSensor = true;
+        B2ShapeDef plainDef = b2DefaultShapeDef();
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 50.0f, 0.0f, sensorDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 50.5f, 0.0f, plainDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(3));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A body that outran its margin on the step it went to sleep still gets its contact.
+    // The marks live in the tree and do not care which set the body is in.
+    private static void PairSleepEscape(int workerCount, bool sleepBeforePairs)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        worldDef.workerCount = workerCount;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+
+        B2BodyDef bodyDef = b2DefaultBodyDef();
+        bodyDef.type = B2BodyType.b2_dynamicBody;
+        bodyDef.position = new B2Pos(-2.0f, 0.0f);
+        bodyDef.linearVelocity = new B2Vec2(58.0f, 0.0f);
+        B2BodyId moverId = b2CreateBody(worldId, bodyDef);
+        B2Polygon square = b2MakeSquare(0.5f);
+        b2CreatePolygonShape(moverId, shapeDef, square);
+
+        // One step carries the mover 0.97, far past its margin and into the fat box of the wall with a
+        // few centimeters to spare, but not into the wall itself
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        if (sleepBeforePairs)
+        {
+            b2Body_SetAwake(moverId, false);
+            Assert.That(b2Body_IsAwake(moverId), Is.False);
+        }
+
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // Enable recreates the proxies with marks, on either side of a resting pair. The fat boxes
+    // overlap across the gap while the shapes do not, so nothing pushes and nothing moves.
+    private static void PairEnable(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        PairBox ground = CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+        PairBox box = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 1.1f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_Disable(box.bodyId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Body_Enable(box.bodyId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        // The static side, the resting box has no mark of its own
+        b2Body_Disable(ground.bodyId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        b2Body_Enable(ground.bodyId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A type change recreates the proxies with marks and must find the resting neighbors again
+    private static void PairSetType(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+        PairBox middle = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 1.1f, 0.0f, shapeDef);
+        CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 2.2f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        // Kinematic drops the static pair and keeps the dynamic one
+        b2Body_SetType(middle.bodyId, B2BodyType.b2_kinematicBody);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_SetType(middle.bodyId, B2BodyType.b2_dynamicBody);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        // Static drops the static pair too and the dynamic pair becomes static versus dynamic
+        b2Body_SetType(middle.bodyId, B2BodyType.b2_staticBody);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_SetType(middle.bodyId, B2BodyType.b2_dynamicBody);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // Bullet is a flag only, the pair must be untouched
+    private static void PairSetBullet(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.0f, shapeDef);
+        PairBox box = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 1.1f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_SetBullet(box.bodyId, true);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2Body_SetBullet(box.bodyId, false);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A static rebuild must keep the pending marks. The resting box has none of its own, so a lost
+    // mark means the pair is never found.
+    private static void PairRebuildStatic(int workerCount)
+    {
+        B2WorldId worldId = CreatePairWorld(workerCount);
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+
+        PairBox box = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.0f, shapeDef);
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 10.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        // No marks to keep
+        b2World_RebuildStaticTree(worldId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(0));
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 1.1f, 0.0f, shapeDef);
+        b2World_RebuildStaticTree(worldId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        // A quiet static shape has no mark to keep
+        B2ShapeDef quietDef = b2DefaultShapeDef();
+        quietDef.invokeContactCreation = false;
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, -1.1f, 0.0f, quietDef);
+        b2World_RebuildStaticTree(worldId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        // Overlapping the resting box, the contact must touch on the first step after the rebuild
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.0f, 0.5f, shapeDef);
+        b2World_RebuildStaticTree(worldId);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(2));
+
+        B2ContactData[] contactData = new B2ContactData[4];
+        int touchingCount = b2Body_GetContactData(box.bodyId, contactData, 4);
+        Assert.That(touchingCount, Is.EqualTo(1));
+        Assert.That(contactData[0].manifold.pointCount, Is.GreaterThan(0));
+
+        b2DestroyWorld(worldId);
+    }
+
+    // A static shape created over a sleeping body still gets its contact, parked with the sleeper
+    // until it wakes. The world counter only sees awake contacts, so this counts on the body.
+    private static void PairSleepingStatic(int workerCount)
+    {
+        B2WorldDef worldDef = b2DefaultWorldDef();
+        worldDef.gravity = b2Vec2_zero;
+        worldDef.workerCount = workerCount;
+        B2WorldId worldId = b2CreateWorld(worldDef);
+
+        B2ShapeDef shapeDef = b2DefaultShapeDef();
+        PairBox sleeper = CreatePairBox(worldId, B2BodyType.b2_dynamicBody, 0.0f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        b2Body_SetAwake(sleeper.bodyId, false);
+        Assert.That(b2Body_IsAwake(sleeper.bodyId), Is.False);
+
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, 0.5f, 0.0f, shapeDef);
+        StepPairWorld(worldId);
+        Assert.That(b2Body_GetContactCapacity(sleeper.bodyId), Is.EqualTo(1));
+        Assert.That(b2Body_IsAwake(sleeper.bodyId), Is.False);
+
+        // The quiet kind never pairs with a sleeper
+        B2ShapeDef quietDef = b2DefaultShapeDef();
+        quietDef.invokeContactCreation = false;
+        CreatePairBox(worldId, B2BodyType.b2_staticBody, -0.5f, 0.0f, quietDef);
+        StepPairWorld(worldId);
+        Assert.That(b2Body_GetContactCapacity(sleeper.bodyId), Is.EqualTo(1));
+
+        // Waking brings the parked contact into the step and it touches at once
+        b2Body_SetAwake(sleeper.bodyId, true);
+        StepPairWorld(worldId);
+        Assert.That(PairContactCount(worldId), Is.EqualTo(1));
+
+        B2ContactData[] contactData = new B2ContactData[4];
+        int touchingCount = b2Body_GetContactData(sleeper.bodyId, contactData, 4);
+        Assert.That(touchingCount, Is.EqualTo(1));
+        Assert.That(contactData[0].manifold.pointCount, Is.GreaterThan(0));
+
+        b2DestroyWorld(worldId);
+    }
+
+    [TestCase(1)]
+    [TestCase(4)]
+    public void BroadPhasePairsTest(int workerCount)
+    {
+        PairCreation(workerCount);
+        PairTeleport(workerCount);
+        PairRefilter(workerCount);
+        PairCollideConnected(workerCount);
+        PairFilters(workerCount);
+        PairEnable(workerCount);
+        PairSetType(workerCount);
+        PairSetBullet(workerCount);
+        PairRebuildStatic(workerCount);
+        PairSleepEscape(workerCount, false);
+        PairSleepEscape(workerCount, true);
+        PairSleepingStatic(workerCount);
     }
 }

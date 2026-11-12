@@ -530,8 +530,14 @@ namespace Box2D.NET
                         fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
                         shape.fatAABB = fatAABB;
 
-                        shape.enlargedAABB = true;
                         fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
+
+                        // Regular bodies mark the hierarchy as enlarged using atomic operations.
+                        // Bullets are handled separately at a later stage.
+                        if (isBullet == false)
+                        {
+                            b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
+                        }
                     }
 
                     shapeId = shape.nextShapeId;
@@ -567,8 +573,14 @@ namespace Box2D.NET
                         fatAABB.upperBound.Y = shape.aabb.upperBound.Y + margin;
                         shape.fatAABB = fatAABB;
 
-                        shape.enlargedAABB = true;
                         fastBodySim.flags |= (uint)B2BodyFlags.b2_enlargeBounds;
+
+                        // Regular bodies mark the hierarchy as enlarged using atomic operations.
+                        // Bullets are handled separately at a later stage.
+                        if (isBullet == false)
+                        {
+                            b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
+                        }
                     }
 
                     shapeId = shape.nextShapeId;
@@ -752,10 +764,10 @@ namespace Box2D.NET
                     }
                     else
                     {
+                        // Update bounds for slow bodies, including slow bullets.
+
                         B2AABB aabb = b2ComputeFatShapeAABB(shape, transform, speculativeDistance);
                         shape.aabb = aabb;
-
-                        B2_ASSERT(shape.enlargedAABB == false);
 
                         if (b2AABB_Contains(shape.fatAABB, aabb) == false)
                         {
@@ -767,7 +779,8 @@ namespace Box2D.NET
                             fatAABB.upperBound.Y = aabb.upperBound.Y + margin;
                             shape.fatAABB = fatAABB;
 
-                            shape.enlargedAABB = true;
+                            // Mark the hierarchy as enlarged using atomic operations.
+                            b2BroadPhase_MarkProxyMoved(world.broadPhase, shape.proxyKey, fatAABB);
 
                             // Bit-set to keep the move array sorted
                             b2SetBit(ref enlargedSimBitSet, simIndex);
@@ -1655,6 +1668,17 @@ namespace Box2D.NET
                     taskContext.splitSleepTime = 0.0f;
                 }
 
+                // Finish the user tree task that was queued earlier in the time step. This must be complete before touching the
+                // broad-phase.
+                if (world.userTreeTask != null)
+                {
+                    world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
+                    world.userTreeTask = null;
+                    world.activeTaskCount -= 1;
+                }
+
+                b2ValidateNoEnlarged(world.broadPhase);
+
                 // Finalize bodies. Must happen after the constraint solver and after island splitting.
                 b2ParallelFor(world, b2FinalizeBodiesTask, awakeBodyCount, 64, stepContext);
 
@@ -1847,90 +1871,9 @@ namespace Box2D.NET
                 b2TracyCZoneNC(B2TracyCZone.refit_bvh, "Refit BVH", B2HexColor.b2_colorFireBrick, true);
                 ulong refitTicks = b2GetTicks();
 
-                // Finish the user tree task that was queued earlier in the time step. This must be complete before touching the
-                // broad-phase.
-                if (world.userTreeTask != null)
-                {
-                    world.finishTaskFcn(world.userTreeTask, world.userTaskContext);
-                    world.userTreeTask = null;
-                    world.activeTaskCount -= 1;
-                }
-
-                b2ValidateNoEnlarged(world.broadPhase);
-
-                // Gather bits for all sim bodies that have enlarged AABBs
-                ref B2BitSet enlargedBodyBitSet = ref world.taskContexts.data[0].enlargedSimBitSet;
-                for (int i = 1; i < world.workerCount; ++i)
-                {
-                    b2InPlaceUnion(ref enlargedBodyBitSet, ref world.taskContexts.data[i].enlargedSimBitSet);
-                }
-
-                // Enlarge broad-phase proxies and build move array
-                // Apply shape AABB changes to broad-phase. This also create the move array which must be
-                // in deterministic order. I'm tracking sim bodies because the number of shape ids can be huge.
-                // This has to happen before bullets are processed.
-                {
-                    B2BroadPhase broadPhase = world.broadPhase;
-                    uint wordCount = (uint)enlargedBodyBitSet.blockCount;
-                    ulong[] bits = enlargedBodyBitSet.bits;
-
-                    // Fast array access is important here
-                    B2Body[] bodyArray = world.bodies.data;
-                    B2BodySim[] bodySimArray = awakeSet.bodySims.data;
-                    B2Shape[] shapeArray = world.shapes.data;
-
-                    for (uint k = 0; k < wordCount; ++k)
-                    {
-                        ulong word = bits[k];
-                        while (word != 0)
-                        {
-                            uint ctz = b2CTZ64(word);
-                            uint bodySimIndex = 64 * k + ctz;
-
-                            B2BodySim bodySim = bodySimArray[bodySimIndex];
-
-                            B2Body body = bodyArray[bodySim.bodyId];
-
-                            int shapeId = body.headShapeId;
-                            if ((body.flags & ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast)) == ((uint)B2BodyFlags.b2_isBullet | (uint)B2BodyFlags.b2_isFast))
-                            {
-                                // Fast bullet bodies don't have their final AABB yet
-                                while (shapeId != B2_NULL_INDEX)
-                                {
-                                    B2Shape shape = shapeArray[shapeId];
-
-                                    // Shape is fast. It's aabb will be enlarged in continuous collision.
-                                    // Update the move array here for determinism because bullets are processed
-                                    // below in non-deterministic order.
-                                    b2BufferMove(broadPhase, shape.proxyKey);
-
-                                    shapeId = shape.nextShapeId;
-                                }
-                            }
-                            else
-                            {
-                                while (shapeId != B2_NULL_INDEX)
-                                {
-                                    B2Shape shape = shapeArray[shapeId];
-
-                                    // The AABB may not have been enlarged, despite the body being flagged as enlarged.
-                                    // For example, a body with multiple shapes may have not have all shapes enlarged.
-                                    // A fast body may have been flagged as enlarged despite having no shapes enlarged.
-                                    if (shape.enlargedAABB)
-                                    {
-                                        b2BroadPhase_EnlargeProxy(broadPhase, shape.proxyKey, shape.fatAABB);
-                                        shape.enlargedAABB = false;
-                                    }
-
-                                    shapeId = shape.nextShapeId;
-                                }
-                            }
-
-                            // Clear the smallest set bit
-                            word = word & (word - 1);
-                        }
-                    }
-                }
+                B2BroadPhase bp = world.broadPhase;
+                b2DynamicTree_Refit(bp.trees[(int)B2BodyType.b2_kinematicBody]);
+                b2DynamicTree_Refit(bp.trees[(int)B2BodyType.b2_dynamicBody]);
 
                 b2ValidateBroadphase(world.broadPhase);
 
@@ -1981,23 +1924,16 @@ namespace Box2D.NET
                     while (shapeId != B2_NULL_INDEX)
                     {
                         B2Shape shape = shapeArray[shapeId];
-                        if (shape.enlargedAABB == false)
-                        {
-                            shapeId = shape.nextShapeId;
-                            continue;
-                        }
-
-                        // Clear flag
-                        shape.enlargedAABB = false;
-
                         int proxyKey = shape.proxyKey;
                         int proxyId = B2_PROXY_ID(proxyKey);
-                        B2_ASSERT(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
+                        B2_VALIDATE(B2_PROXY_TYPE(proxyKey) == B2BodyType.b2_dynamicBody);
 
-                        // all fast bullet shapes should already be in the move buffer
-                        B2_ASSERT(b2GetBit(ref broadPhase.movedProxies[(int)B2BodyType.b2_dynamicBody], proxyId));
+                        B2AABB treeAABB = b2DynamicTree_GetAABB(dynamicTree, proxyId);
 
-                        b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
+                        if (b2AABB_Contains(treeAABB, shape.fatAABB) == false)
+                        {
+                            b2DynamicTree_EnlargeProxy(dynamicTree, proxyId, shape.fatAABB);
+                        }
 
                         shapeId = shape.nextShapeId;
                     }

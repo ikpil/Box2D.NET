@@ -719,6 +719,22 @@ namespace Box2D.NET
 
                 shapeId = s.nextShapeId;
             }
+
+            // When the center of mass changes, any cached contact manifold becomes invalid.
+            {
+                int edgeKey = body.headContactKey;
+                while (edgeKey != B2_NULL_INDEX)
+                {
+                    int contactId = edgeKey >> 1;
+                    int edgeIndex = edgeKey & 1;
+
+                    B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                    B2ContactSim contactSim = b2GetContactSim(world, contact);
+                    contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simRelativeTransformValid;
+
+                    edgeKey = contact.edges[edgeIndex].nextKey;
+                }
+            }
         }
         /// Get the world position of a body. This is the location of the body origin.
         public static B2Pos b2Body_GetPosition(B2BodyId bodyId)
@@ -1519,9 +1535,18 @@ namespace Box2D.NET
             body.inertia = massData.rotationalInertia;
             bodySim.localCenter = massData.center;
 
+            B2Pos oldCenter = bodySim.center;
             B2Pos center = b2TransformWorldPoint(bodySim.transform, massData.center);
             bodySim.center = center;
             bodySim.center0 = center;
+
+            // Update center of mass velocity
+            B2BodyState state = b2GetBodyState(world, body);
+            if (state != null)
+            {
+                B2Vec2 deltaLinear = b2CrossSV(state.angularVelocity, b2SubPos(bodySim.center, oldCenter));
+                state.linearVelocity = b2Add(state.linearVelocity, deltaLinear);
+            }
 
             bodySim.invMass = body.mass > 0.0f ? 1.0f / body.mass : 0.0f;
             bodySim.invInertia = body.inertia > 0.0f ? 1.0f / body.inertia : 0.0f;
@@ -1537,6 +1562,22 @@ namespace Box2D.NET
                 bodySim.minExtent = b2MinFloat(bodySim.minExtent, extent.minExtent);
                 bodySim.maxExtent = b2MaxFloat(bodySim.maxExtent, extent.maxExtent);
                 shapeId = s.nextShapeId;
+            }
+
+            // When the center of mass changes, any cached contact manifold becomes invalid.
+            {
+                int edgeKey = body.headContactKey;
+                while (edgeKey != B2_NULL_INDEX)
+                {
+                    int contactId = edgeKey >> 1;
+                    int edgeIndex = edgeKey & 1;
+
+                    B2Contact contact = b2Array_Get(ref world.contacts, contactId);
+                    B2ContactSim contactSim = b2GetContactSim(world, contact);
+                    contactSim.simFlags &= ~(uint)B2ContactFlags.b2_simRelativeTransformValid;
+
+                    edgeKey = contact.edges[edgeIndex].nextKey;
+                }
             }
 
             // Motion locks take priority over mass data.

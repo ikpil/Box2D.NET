@@ -164,32 +164,10 @@ namespace Box2D.NET
                 ThrowIf(unionSize == maxSize, "B2ShapeUnion size is equal to the maximum shape size, indicating potential memory misalignment.");
             }
 
-            // B2TreeNodeConnectionUnion
+            // B2TreeNode: two nodes fit in a 64 byte cache line
             {
-                int unionSize = B2SizeOf<B2TreeNodeConnectionUnion>.Size;
-
-                int parentSize = B2SizeOf<int>.Size;
-                int nextSize = B2SizeOf<int>.Size;
-
-                int maxSize = 0;
-                maxSize = Math.Max(maxSize, parentSize);
-                maxSize = Math.Max(maxSize, nextSize);
-
-                ThrowIf(unionSize == maxSize, "B2TreeNodeConnectionUnion size is equal to the maximum node size, indicating potential memory misalignment.");
-            }
-
-            // B2TreeNodeDataUnion
-            {
-                var unionSize = B2SizeOf<B2TreeNodeDataUnion>.Size;
-                int child1Size = B2SizeOf<int>.Size;
-                int child2Size = B2SizeOf<int>.Size;
-                int userDataSize = B2SizeOf<ulong>.Size;
-
-                int maxSize = 0;
-                maxSize = Math.Max(maxSize, child1Size + child2Size);
-                maxSize = Math.Max(maxSize, userDataSize);
-
-                ThrowIf(unionSize == maxSize, "B2TreeNodeDataUnion size is equal to the maximum data size, indicating potential memory misalignment.");
+                int nodeSize = B2SizeOf<B2TreeNode>.Size;
+                ThrowIf(nodeSize == 32, "B2TreeNode size is not 32 bytes, indicating potential memory misalignment.");
             }
         }
 

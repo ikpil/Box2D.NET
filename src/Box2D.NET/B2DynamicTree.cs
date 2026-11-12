@@ -26,26 +26,42 @@ namespace Box2D.NET
     /// It is placed here for performance reasons.
     public class B2DynamicTree
     {
-        /// The tree nodes
+        /// Array of nodes. The root is at index zero and index 1 is empty.
+        // Otherwise siblings are paired at even indices. Has holes for free node pairs.
         public B2TreeNode[] nodes;
 
-        /// The root index
-        public int root;
+        /// Parent index per node. The free list is interweaved.
+        public int[] parents;
 
-        /// The number of nodes
-        public int nodeCount;
+        /// Proxy data split from node array as cold data.
+        public B2TreeProxy[] proxies;
+
+        /// Every allocated node has a lower index than this.
+        public int nodeEnd;
 
         /// The allocated node space
         public int nodeCapacity;
 
-        /// Node free list
-        public int freeList;
+        /// Free pairs below nodeEnd
+        public int pairFreeList;
 
         /// Number of proxies created
         public int proxyCount;
 
+        /// The allocated proxy space
+        public int proxyCapacity;
+
+        /// Proxy free list
+        public int proxyFreeList;
+
+        /// Array of nodes for rebuild.
+        public B2TreeNode[] swapNodes;
+
         /// Leaf indices for rebuild
         public int[] leafIndices;
+
+        /// Leaves for the rebuild. May represent a proxy or a retained subtree.
+        public B2TreeNode[] leafNodes;
 
         /// Leaf bounding boxes for rebuild
         public B2AABB[] leafBoxes;
@@ -59,19 +75,29 @@ namespace Box2D.NET
         /// Allocated space for rebuilding
         public int rebuildCapacity;
 
+        /// Rebuild orders the nodes so the children follow parents. Cache friendly for queries
+        /// and refitting. The order can be disrupted by proxy creation.
+        public bool dfsOrdered;
+
         public void Clear()
         {
             nodes = null;
-            root = 0;
-            nodeCount = 0;
+            parents = null;
+            proxies = null;
+            nodeEnd = 0;
             nodeCapacity = 0;
-            freeList = 0;
+            pairFreeList = 0;
             proxyCount = 0;
+            proxyCapacity = 0;
+            proxyFreeList = 0;
+            swapNodes = null;
             leafIndices = null;
+            leafNodes = null;
             leafBoxes = null;
             leafCenters = null;
             binIndices = null;
             rebuildCapacity = 0;
+            dfsOrdered = false;
         }
     }
 }

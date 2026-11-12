@@ -6,7 +6,8 @@ namespace Box2D.NET
 {
     public enum B2TracyCZone
     {
-        pair_task,
+        self_pairs,
+        cross_pairs,
         update_pairs,
         create_contacts,
         prepare_overflow_contact,

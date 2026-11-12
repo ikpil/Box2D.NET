@@ -1,15 +1,13 @@
-﻿// SPDX-FileCopyrightText: 2023 Erin Catto
+﻿// SPDX-FileCopyrightText: 2026 Erin Catto
 // SPDX-FileCopyrightText: 2025 Ikpil Choi(ikpil@naver.com)
 // SPDX-License-Identifier: MIT
 
+using System;
 using System.Runtime.CompilerServices;
 using static Box2D.NET.B2Tables;
 using static Box2D.NET.B2Arrays;
-using static Box2D.NET.B2Atomics;
 using static Box2D.NET.B2DynamicTrees;
 using static Box2D.NET.B2Diagnostics;
-using static Box2D.NET.B2Buffers;
-using static Box2D.NET.B2Profiling;
 using static Box2D.NET.B2Constants;
 using static Box2D.NET.B2Contacts;
 using static Box2D.NET.B2Bodies;
@@ -18,20 +16,14 @@ using static Box2D.NET.B2ArenaAllocators;
 using static Box2D.NET.B2MathFunction;
 using static Box2D.NET.B2Shapes;
 using static Box2D.NET.B2ParallelFors;
-using static Box2D.NET.B2BitSets;
+using static Box2D.NET.B2Profiling;
 
 namespace Box2D.NET
 {
     public static class B2BroadPhases
     {
-        // Warning: writing to these globals significantly slows multithreading performance
-#if B2_SNOOP_PAIR_COUNTERS
-        private static B2TreeStats b2_dynamicStats = new B2TreeStats();
-        private static B2TreeStats b2_kinematicStats = new B2TreeStats();
-        private static B2TreeStats b2_staticStats = new B2TreeStats();
-#endif
-
-        private static B2AtomicInt once = new B2AtomicInt();
+        public const int B2_CANDIDATE_BATCH = 32;
+        public const int B2_CROSS_SEED_COUNT = 64;
 
         // Store the proxy type in the lower 2 bits of the proxy key. This leaves 30 bits for the id.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -52,43 +44,13 @@ namespace Box2D.NET
             return (ID << 2) | (int)TYPE;
         }
 
-
-        // This is what triggers new contact pairs to be created
-        // Warning: this must be called in deterministic order
-        public static void b2BufferMove(B2BroadPhase bp, int queryProxy)
-        {
-            B2BodyType proxyType = B2_PROXY_TYPE(queryProxy);
-            int proxyId = B2_PROXY_ID(queryProxy);
-            ref B2BitSet set = ref bp.movedProxies[(int)proxyType];
-            if (b2GetBit(ref set, proxyId) == false)
-            {
-                b2SetBitGrow(ref set, proxyId);
-                b2Array_Push(ref bp.moveArray, queryProxy);
-            }
-        }
-
-
-        // #include <stdio.h>
         public static void b2CreateBroadPhase(ref B2BroadPhase bp, in B2Capacity capacity)
         {
             B2_ASSERT((int)B2BodyType.b2_bodyTypeCount == 3, "must be three body types");
 
-            // if (s_file == NULL)
-            //{
-            //	s_file = fopen("pairs01.txt", "a");
-            //	fprintf(s_file, "============\n\n");
-            // }
             bp = new B2BroadPhase();
             bp.trees = new B2DynamicTree[(int)B2BodyType.b2_bodyTypeCount];
-            bp.movedProxies = new B2BitSet[(int)B2BodyType.b2_bodyTypeCount];
-            bp.movedProxies[(int)B2BodyType.b2_staticBody] = b2CreateBitSet(b2MaxInt(16, capacity.staticShapeCount));
-            bp.movedProxies[(int)B2BodyType.b2_kinematicBody] = b2CreateBitSet(16);
-            bp.movedProxies[(int)B2BodyType.b2_dynamicBody] = b2CreateBitSet(b2MaxInt(16, capacity.dynamicShapeCount));
-            bp.moveArray = b2Array_Create<int>(b2MaxInt(16, capacity.dynamicShapeCount));
-            bp.moveResults = null;
-            bp.movePairs = null;
-            bp.movePairCapacity = 0;
-            b2AtomicStoreInt(ref bp.movePairIndex, 0);
+
             bp.pairSet = b2CreateSet(b2MaxInt(32, 2 * capacity.contactCount));
 
             int staticCapacity = b2MaxInt(16, capacity.staticShapeCount);
@@ -99,6 +61,9 @@ namespace Box2D.NET
 
             int dynamicCapacity = b2MaxInt(16, capacity.dynamicShapeCount);
             bp.trees[(int)B2BodyType.b2_dynamicBody] = b2DynamicTree_Create(dynamicCapacity);
+
+            bp.movedSiblings = null;
+            bp.crossSeeds = new B2NodePair[2 * B2_CROSS_SEED_COUNT];
         }
 
         public static void b2CreateBroadPhase(ref B2BroadPhase bp)
@@ -113,68 +78,29 @@ namespace Box2D.NET
                 b2DynamicTree_Destroy(bp.trees[i]);
             }
 
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                b2DestroyBitSet(ref bp.movedProxies[i]);
-            }
-            b2Array_Destroy(ref bp.moveArray);
             b2DestroySet(ref bp.pairSet);
 
             //memset( bp, 0, sizeof( b2BroadPhase ) );
             bp.Clear();
-
-            // if (s_file != NULL)
-            //{
-            //	fclose(s_file);
-            //	s_file = NULL;
-            // }
-        }
-
-        public static void b2UnBufferMove(B2BroadPhase bp, int proxyKey)
-        {
-            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
-            int proxyId = B2_PROXY_ID(proxyKey);
-            ref B2BitSet set = ref bp.movedProxies[(int)proxyType];
-
-            if (b2GetBit(ref set, proxyId))
-            {
-                b2ClearBit(ref set, proxyId);
-
-                // Purge from move buffer. Linear search.
-                // todo if I can iterate the move set then I don't need the moveArray
-                int count = bp.moveArray.count;
-                for (int i = 0; i < count; ++i)
-                {
-                    if (bp.moveArray.data[i] == proxyKey)
-                    {
-                        b2Array_RemoveSwap(ref bp.moveArray, i);
-                        break;
-                    }
-                }
-            }
         }
 
         public static int b2BroadPhase_CreateProxy(B2BroadPhase bp, B2BodyType proxyType, in B2AABB aabb, ulong categoryBits, int shapeIndex, bool forcePairCreation)
         {
             B2_ASSERT(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
-            int proxyId = b2DynamicTree_CreateProxy(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex);
-            int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
-            if (proxyType != B2BodyType.b2_staticBody || forcePairCreation)
-            {
-                b2BufferMove(bp, proxyKey);
-            }
 
+            bool mark = (proxyType != B2BodyType.b2_staticBody || forcePairCreation);
+
+            int proxyId = b2DynamicTree_CreateProxyInternal(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex, mark);
+            int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
             return proxyKey;
         }
 
         public static void b2BroadPhase_DestroyProxy(B2BroadPhase bp, int proxyKey)
         {
-            b2UnBufferMove(bp, proxyKey);
-
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            B2_ASSERT(0 <= proxyType && proxyType <= B2BodyType.b2_bodyTypeCount);
+            B2_ASSERT(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
             b2DynamicTree_DestroyProxy(bp.trees[(int)proxyType], proxyId);
         }
 
@@ -183,241 +109,402 @@ namespace Box2D.NET
             B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
 
-            b2DynamicTree_MoveProxy(bp.trees[(int)proxyType], proxyId, aabb);
-            b2BufferMove(bp, proxyKey);
+            bool mark = true;
+            b2DynamicTree_MoveProxyInternal(bp.trees[(int)proxyType], proxyId, aabb, mark);
         }
 
-        public static void b2BroadPhase_EnlargeProxy(B2BroadPhase bp, int proxyKey, in B2AABB aabb)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void b2BroadPhase_MarkProxyMovedSerial(B2BroadPhase bp, int proxyKey)
         {
-            B2_ASSERT(proxyKey != B2_NULL_INDEX);
-            B2BodyType typeIndex = B2_PROXY_TYPE(proxyKey);
+            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
             int proxyId = B2_PROXY_ID(proxyKey);
-
-            B2_ASSERT(typeIndex != B2BodyType.b2_staticBody);
-
-            b2DynamicTree_EnlargeProxy(bp.trees[(int)typeIndex], proxyId, aabb);
-            b2BufferMove(bp, proxyKey);
+            b2DynamicTree_MarkProxyMovedSerial(bp.trees[(int)proxyType], proxyId);
         }
 
-
-        // This is called from b2DynamicTree::Query when we are gathering pairs.
-        public static bool b2PairQueryCallback(int proxyId, ulong userData, ref B2QueryPairContext context)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void b2BroadPhase_MarkProxyMoved(B2BroadPhase bp, int proxyKey, in B2AABB aabb)
         {
-            int shapeId = (int)userData;
-
-            ref B2QueryPairContext queryContext = ref context;
-            B2BroadPhase broadPhase = queryContext.world.broadPhase;
-
-            int proxyKey = B2_PROXY_KEY(proxyId, queryContext.queryTreeType);
-            int queryProxyKey = queryContext.queryProxyKey;
-
-            // A proxy cannot form a pair with itself.
-            if (proxyKey == queryContext.queryProxyKey)
-            {
-                return true;
-            }
-
-            B2BodyType treeType = queryContext.queryTreeType;
-            B2BodyType queryProxyType = B2_PROXY_TYPE(queryProxyKey);
-
-            // De-duplication
-            // It is important to prevent duplicate contacts from being created. Ideally I can prevent duplicates
-            // early and in the worker. Most of the time the movedProxies bit sets contain dynamic and kinematic
-            // proxies, but sometimes static proxies are in there too (b2ShapeDef::invokeContactCreation or a
-            // modified static shape), so we always have to check.
-
-            // Is this proxy also moving?
-            if (queryProxyType == B2BodyType.b2_dynamicBody)
-            {
-                if (treeType == B2BodyType.b2_dynamicBody && proxyKey < queryProxyKey)
-                {
-                    bool moved = b2GetBit(ref broadPhase.movedProxies[(int)treeType], proxyId);
-                    if (moved)
-                    {
-                        // Both proxies are moving. Avoid duplicate pairs.
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                B2_ASSERT(treeType == B2BodyType.b2_dynamicBody);
-                bool moved = b2GetBit(ref broadPhase.movedProxies[(int)treeType], proxyId);
-                if (moved)
-                {
-                    // Both proxies are moving. Avoid duplicate pairs.
-                    return true;
-                }
-            }
-
-            ulong pairKey = B2_SHAPE_PAIR_KEY(shapeId, queryContext.queryShapeIndex);
-            bool pairExists = b2ContainsKey(ref broadPhase.pairSet, pairKey);
-            if (pairExists)
-            {
-                // contact exists
-                return true;
-            }
-
-            int shapeIdA, shapeIdB;
-            if (proxyKey < queryProxyKey)
-            {
-                shapeIdA = shapeId;
-                shapeIdB = queryContext.queryShapeIndex;
-            }
-            else
-            {
-                shapeIdA = queryContext.queryShapeIndex;
-                shapeIdB = shapeId;
-            }
-
-            B2World world = queryContext.world;
-
-            B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
-            B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
-
-            int bodyIdA = shapeA.bodyId;
-            int bodyIdB = shapeB.bodyId;
-
-            // Are the shapes on the same body?
-            if (bodyIdA == bodyIdB)
-            {
-                return true;
-            }
-
-            // Sensors are handled elsewhere
-            if (shapeA.sensorIndex != B2_NULL_INDEX || shapeB.sensorIndex != B2_NULL_INDEX)
-            {
-                return true;
-            }
-
-            if (b2ShouldShapesCollide(shapeA.filter, shapeB.filter) == false)
-            {
-                return true;
-            }
-
-
-            if (b2CanCollide(shapeA.type, shapeB.type) == false)
-            {
-                // For example, no segment vs segment collision
-                return true;
-            }
-
-            // Does a joint override collision?
-            B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
-            B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
-            if (b2ShouldBodiesCollide(world, bodyA, bodyB) == false)
-            {
-                return true;
-            }
-
-            // Custom user filter
-            if (shapeA.enableCustomFiltering || shapeB.enableCustomFiltering)
-            {
-                b2CustomFilterFcn customFilterFcn = queryContext.world.customFilterFcn;
-                if (customFilterFcn != null)
-                {
-                    B2ShapeId idA = new B2ShapeId(shapeIdA + 1, world.worldId, shapeA.generation);
-                    B2ShapeId idB = new B2ShapeId(shapeIdB + 1, world.worldId, shapeB.generation);
-                    bool shouldCollide = customFilterFcn(idA, idB, queryContext.world.customFilterContext);
-                    if (shouldCollide == false)
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            int pairIndex = b2AtomicFetchAddInt(ref broadPhase.movePairIndex, 1);
-
-            B2MovePair pair;
-            if (pairIndex < broadPhase.movePairCapacity)
-            {
-                pair = broadPhase.movePairs[pairIndex];
-                pair.heap = false;
-            }
-            else
-            {
-                if (!b2AtomicCompareExchangeInt(ref once, 0, 1))
-                {
-                    // This means you have too many overlapping objects.
-                    b2Log($"Pair buffer capacity of {broadPhase.movePairCapacity} exceeded, too many overlaps");
-                }
-
-                pair = new B2MovePair();
-                pair.heap = true;
-            }
-
-            pair.shapeIndexA = shapeIdA;
-            pair.shapeIndexB = shapeIdB;
-            pair.next = queryContext.moveResult.pairList;
-            queryContext.moveResult.pairList = pair;
-
-            // continue the query
-            return true;
+            B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
+            int proxyId = B2_PROXY_ID(proxyKey);
+            b2DynamicTree_MarkProxyMoved(bp.trees[(int)proxyType], proxyId, aabb);
         }
 
-
-        public static void b2FindPairsTask(int startIndex, int endIndex, int workerIndex, object context)
+        // Gather the sibling pairs with a moved node. This is done serially it is cache friendly.
+        private static int b2GatherMovedSiblings(B2DynamicTree tree, Span<int> pairIndices)
         {
-            B2_UNUSED(workerIndex);
+            B2TreeNode[] nodes = tree.nodes;
+            int nodeEnd = tree.nodeEnd;
 
-            b2TracyCZoneNC(B2TracyCZone.pair_task, "Pair", B2HexColor.b2_colorMediumSlateBlue, true);
-            B2World world = context as B2World;
+            int count = 0;
+
+            // Skip the root.
+            for (int pair = 2; pair < nodeEnd; pair += 2)
+            {
+                // Push when either sibling moved.
+                if (((nodes[pair].flagIndex | nodes[pair + 1].flagIndex) & B2_MOVED_NODE) != 0)
+                {
+                    pairIndices[count++] = pair;
+                }
+            }
+
+            return count;
+        }
+
+        private static void b2FlushCandidatePairs(B2PairContext context)
+        {
+            B2World world = context.world;
             B2BroadPhase bp = world.broadPhase;
 
-            B2QueryPairContext queryContext = new B2QueryPairContext();
-            queryContext.world = world;
+            int count1 = context.batchCount;
+            context.batchCount = 0;
 
-            for (int i = startIndex; i < endIndex; ++i)
+            // Prefetch hash set entries. Less than 1% gain from this but it might
+            // matter more for Box3D. Also, if I switch to verstable then this might
+            // not be possible.
+            // Note: C# has no prefetch, only the hashes are computed here.
+            Span<ulong> keys = stackalloc ulong[B2_CANDIDATE_BATCH];
+            Span<ulong> hashes = stackalloc ulong[B2_CANDIDATE_BATCH];
+            for (int i = 0; i < count1; ++i)
             {
-                // Initialize move result for this moved proxy
-                queryContext.moveResult = bp.moveResults[i];
-                queryContext.moveResult.pairList = null;
+                ref readonly B2CandidatePair candidate = ref context.batch[i];
+                keys[i] = B2_SHAPE_PAIR_KEY(candidate.shapeIdA, candidate.shapeIdB);
+                hashes[i] = b2KeyHash(keys[i]);
+            }
 
-                int proxyKey = bp.moveArray.data[i];
-                if (proxyKey == B2_NULL_INDEX)
+            // Cull existing pairs.
+            Span<B2CandidatePair> candidates = stackalloc B2CandidatePair[B2_CANDIDATE_BATCH];
+            int count2 = 0;
+            for (int i = 0; i < count1; ++i)
+            {
+                bool pairExists = b2ContainsHashedKey(ref bp.pairSet, keys[i], hashes[i]);
+                if (pairExists == false)
                 {
-                    // proxy was destroyed after it moved
+                    candidates[count2] = context.batch[i];
+                    count2 += 1;
+                }
+            }
+
+            // Filter candidates.
+            ref B2Array<ulong> pairKeys = ref context.taskContext.pairKeys;
+            for (int i = 0; i < count2; ++i)
+            {
+                int shapeIdA = candidates[i].shapeIdA;
+                int shapeIdB = candidates[i].shapeIdB;
+
+                B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+                B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
+
+                int bodyIdA = shapeA.bodyId;
+                int bodyIdB = shapeB.bodyId;
+
+                // Are the shapes on the same body?
+                if (bodyIdA == bodyIdB)
+                {
                     continue;
                 }
 
-                B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
-
-                int proxyId = B2_PROXY_ID(proxyKey);
-                queryContext.queryProxyKey = proxyKey;
-
-                B2DynamicTree baseTree = bp.trees[(int)proxyType];
-
-                // We have to query the tree with the fat AABB so that
-                // we don't fail to create a contact that may touch later.
-                B2AABB fatAABB = b2DynamicTree_GetAABB(baseTree, proxyId);
-                queryContext.queryShapeIndex = (int)b2DynamicTree_GetUserData(baseTree, proxyId);
-
-                // Query trees. Only dynamic proxies collide with kinematic and static proxies.
-                // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
-                B2TreeStats stats = new B2TreeStats();
-                if (proxyType == B2BodyType.b2_dynamicBody)
+                // Sensors are handled elsewhere
+                if (shapeA.sensorIndex != B2_NULL_INDEX || shapeB.sensorIndex != B2_NULL_INDEX)
                 {
-                    // consider using bits = groupIndex > 0 ? B2_DEFAULT_MASK_BITS : maskBits
-                    queryContext.queryTreeType = B2BodyType.b2_kinematicBody;
-                    B2TreeStats statsKinematic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_kinematicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
-                    stats.nodeVisits += statsKinematic.nodeVisits;
-                    stats.leafVisits += statsKinematic.leafVisits;
-
-                    queryContext.queryTreeType = B2BodyType.b2_staticBody;
-                    B2TreeStats statsStatic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_staticBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
-                    stats.nodeVisits += statsStatic.nodeVisits;
-                    stats.leafVisits += statsStatic.leafVisits;
+                    continue;
                 }
 
-                // All proxies collide with dynamic proxies
-                // Using B2_DEFAULT_MASK_BITS so that b2Filter::groupIndex works.
-                queryContext.queryTreeType = B2BodyType.b2_dynamicBody;
-                B2TreeStats statsDynamic = b2DynamicTree_Query(bp.trees[(int)B2BodyType.b2_dynamicBody], fatAABB, B2_DEFAULT_MASK_BITS, b2PairQueryCallback, ref queryContext);
-                stats.nodeVisits += statsDynamic.nodeVisits;
-                stats.leafVisits += statsDynamic.leafVisits;
+                if (b2ShouldShapesCollide(shapeA.filter, shapeB.filter) == false)
+                {
+                    continue;
+                }
+
+                if (b2CanCollide(shapeA.type, shapeB.type) == false)
+                {
+                    // For example, no segment vs segment collision
+                    continue;
+                }
+
+                // Does a joint override collision?
+                B2Body bodyA = b2Array_Get(ref world.bodies, bodyIdA);
+                B2Body bodyB = b2Array_Get(ref world.bodies, bodyIdB);
+                if (b2ShouldBodiesCollide(world, bodyA, bodyB) == false)
+                {
+                    continue;
+                }
+
+                // Custom user filter
+                if (shapeA.enableCustomFiltering || shapeB.enableCustomFiltering)
+                {
+                    b2CustomFilterFcn customFilterFcn = world.customFilterFcn;
+                    if (customFilterFcn != null)
+                    {
+                        B2ShapeId idA = new B2ShapeId(shapeIdA + 1, world.worldId, shapeA.generation);
+                        B2ShapeId idB = new B2ShapeId(shapeIdB + 1, world.worldId, shapeB.generation);
+                        bool shouldCollide = customFilterFcn(idA, idB, world.customFilterContext);
+                        if (shouldCollide == false)
+                        {
+                            continue;
+                        }
+                    }
+                }
+
+                // The pair passed the gauntlet. A new contact will be created.
+                b2Array_Push(ref pairKeys, B2_SHAPE_PAIR_KEY(shapeIdA, shapeIdB));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void b2AddCandidatePair(int shapeIdA, int shapeIdB, B2PairContext context)
+        {
+            // Follow shape index order.
+            ref B2CandidatePair candidate = ref context.batch[context.batchCount];
+            candidate.shapeIdA = b2MinInt(shapeIdA, shapeIdB);
+            candidate.shapeIdB = b2MaxInt(shapeIdA, shapeIdB);
+            context.batchCount += 1;
+            if (context.batchCount == B2_CANDIDATE_BATCH)
+            {
+                b2FlushCandidatePairs(context);
+            }
+        }
+
+        // Did either move and if so do they overlap?
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool b2TestPair(in B2TreeNode a, in B2TreeNode b)
+        {
+            if (((a.flagIndex | b.flagIndex) & B2_MOVED_NODE) == 0)
+            {
+                return false;
             }
 
-            b2TracyCZoneEnd(B2TracyCZone.pair_task);
+            return b2AABB_Overlaps(a.aabb, b.aabb);
+        }
+
+        private static void b2CollideProxyAndSubtree(in B2TreeNode proxy, B2TreeNode[] nodes, int pair, B2PairContext context)
+        {
+            uint proxyMark = proxy.flagIndex & B2_MOVED_NODE;
+            B2AABB boxv = proxy.aabb;
+            int shapeId = proxy.shapeIndex;
+
+            Span<int> stack = stackalloc int[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+            stack[stackCount++] = pair;
+
+            while (stackCount > 0)
+            {
+                pair = stack[--stackCount];
+                for (int i = 0; i < 2; ++i)
+                {
+                    ref readonly B2TreeNode node = ref nodes[pair + i];
+                    if (((node.flagIndex | proxyMark) & B2_MOVED_NODE) == 0)
+                    {
+                        continue;
+                    }
+
+                    if (b2OverlapNode(boxv, node) == false)
+                    {
+                        continue;
+                    }
+
+                    if (b2IsLeaf(node))
+                    {
+                        b2AddCandidatePair(shapeId, node.shapeIndex, context);
+                    }
+                    else
+                    {
+                        if (stackCount < B2_TREE_STACK_SIZE)
+                        {
+                            stack[stackCount++] = b2GetLeftChild(node);
+                        }
+                        else
+                        {
+                            B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Helper for b2CollideCrossPairs to avoid code duplication.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void b2VisitPair(B2TreeNode[] arrayA, B2TreeNode[] arrayB, in B2TreeNode nodeA, in B2TreeNode nodeB,
+            Span<B2IndexPair> stack, ref int stackCount, B2PairContext context)
+        {
+            if (b2TestPair(nodeA, nodeB) == false)
+            {
+                return;
+            }
+
+            bool leafA = b2IsLeaf(nodeA);
+            bool leafB = b2IsLeaf(nodeB);
+            if (leafA && leafB)
+            {
+                b2AddCandidatePair(nodeA.shapeIndex, nodeB.shapeIndex, context);
+            }
+            else if (leafA)
+            {
+                b2CollideProxyAndSubtree(nodeA, arrayB, b2GetLeftChild(nodeB), context);
+            }
+            else if (leafB)
+            {
+                b2CollideProxyAndSubtree(nodeB, arrayA, b2GetLeftChild(nodeA), context);
+            }
+            else
+            {
+                if (stackCount < B2_TREE_STACK_SIZE)
+                {
+                    stack[stackCount] = new B2IndexPair(b2GetLeftChild(nodeA), b2GetLeftChild(nodeB));
+                    stackCount += 1;
+                }
+                else
+                {
+                    B2_ASSERT(stackCount < B2_TREE_STACK_SIZE);
+                }
+            }
+        }
+
+        // This collides two sub-trees against each other. They can live in the same dynamic tree.
+        // This can only generate pairs cross sub-tree, but not within a sub-tree. This fact means
+        // this does not generate duplicate pairs.
+        // For example consider the full binary tree A (B (D  E) C (F G))
+        // Colliding children of A (B and C) can give pairs (D,F) (D,G) (E,F) and (E,G).
+        // Then colliding children of B can give the pair (D,E) and for C (F,G).
+        // So no duplicates even when used for self-collision.
+        // Whenever a proxy is moved, the flag is propagated up the hierarchy to the root. So
+        // self collision gathers all those moved internal nodes and collides their subtrees together.
+        // See Real-time collision detection section 6.3.2. This is faster than querying every moved
+        // proxy against the whole tree. Scaling is linear instead of linear * log.
+        // Many other physics engines do this (Bepu, Rapier, etc). So nothing new here.
+        private static void b2CollideCrossPairs(B2TreeNode[] arrayA, B2TreeNode[] arrayB, in B2TreeNode subtreeA, in B2TreeNode subtreeB, B2PairContext context)
+        {
+            Span<B2IndexPair> stack = stackalloc B2IndexPair[B2_TREE_STACK_SIZE];
+            int stackCount = 0;
+
+            // Seed the stack.
+            b2VisitPair(arrayA, arrayB, subtreeA, subtreeB, stack, ref stackCount, context);
+
+            while (stackCount > 0)
+            {
+                B2IndexPair pair = stack[--stackCount];
+                for (int i = 0; i < 2; ++i)
+                {
+                    for (int j = 0; j < 2; ++j)
+                    {
+                        b2VisitPair(arrayA, arrayB, arrayA[pair.a + i], arrayB[pair.b + j], stack, ref stackCount, context);
+                    }
+                }
+            }
+        }
+
+        // This takes moved internal nodes and collides their sub-trees against each other.
+        private static void b2SelfPairsTask(int startIndex, int endIndex, int workerIndex, object context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.self_pairs, "Self", B2HexColor.b2_colorCoral, true);
+
+            B2World world = context as B2World;
+            B2BroadPhase bp = world.broadPhase;
+            B2DynamicTree tree = bp.trees[(int)B2BodyType.b2_dynamicBody];
+            B2TreeNode[] nodes = tree.nodes;
+            ArraySegment<int> siblingIndices = bp.movedSiblings;
+
+            B2PairContext pairContext = new B2PairContext();
+            pairContext.world = world;
+            pairContext.taskContext = world.taskContexts.data[workerIndex];
+
+            for (int i = startIndex; i < endIndex; ++i)
+            {
+                int nodeIndex = siblingIndices[i];
+                b2CollideCrossPairs(nodes, nodes, nodes[nodeIndex], nodes[nodeIndex + 1], pairContext);
+            }
+
+            b2FlushCandidatePairs(pairContext);
+
+            b2TracyCZoneEnd(B2TracyCZone.self_pairs);
+        }
+
+        // This does a serial cross-tree breadth first search until the queue is full. Then it returns
+        // the queue pairs as seeds for a parallel search.
+        private static int b2GatherCrossSeeds(B2DynamicTree treeA, B2DynamicTree treeB, Span<B2NodePair> seeds)
+        {
+            B2_ASSERT((B2_CROSS_SEED_COUNT & (B2_CROSS_SEED_COUNT - 1)) == 0, "must be power of 2");
+
+            B2TreeNode[] nodesA = treeA.nodes;
+            B2TreeNode[] nodesB = treeB.nodes;
+
+            // Breadth-first search from the two roots as one pair. An empty tree has a sentinel root that
+            // survives nothing.
+            Span<B2NodePair> queue = stackalloc B2NodePair[2 * B2_CROSS_SEED_COUNT];
+            int mask = 2 * B2_CROSS_SEED_COUNT - 1;
+            int head = 0;
+            int tail = 0;
+
+            ref readonly B2TreeNode rootA = ref nodesA[B2_ROOT_NODE];
+            ref readonly B2TreeNode rootB = ref nodesB[B2_ROOT_NODE];
+            if (b2TestPair(rootA, rootB))
+            {
+                queue[tail & mask] = new B2NodePair(rootA, rootB);
+                tail += 1;
+            }
+
+            int seedCount = 0;
+            while (head < tail && seedCount + (tail - head) + 3 < B2_CROSS_SEED_COUNT)
+            {
+                B2NodePair pair = queue[head & mask];
+                head += 1;
+
+                if (b2IsLeaf(pair.a) || b2IsLeaf(pair.b))
+                {
+                    seeds[seedCount++] = pair;
+                    continue;
+                }
+
+                int a = b2GetLeftChild(pair.a);
+                int b = b2GetLeftChild(pair.b);
+
+                // Nodes have two children each, so four combinations.
+                for (int i = 0; i < 2; ++i)
+                {
+                    for (int j = 0; j < 2; ++j)
+                    {
+                        if (b2TestPair(nodesA[a + i], nodesB[b + j]))
+                        {
+                            queue[tail & mask] = new B2NodePair(nodesA[a + i], nodesB[b + j]);
+                            tail += 1;
+                        }
+                    }
+                }
+            }
+
+            while (head < tail)
+            {
+                seeds[seedCount] = queue[head & mask];
+                seedCount += 1;
+                head += 1;
+            }
+
+            return seedCount;
+        }
+
+        private static void b2CrossPairsTask(int startIndex, int endIndex, int workerIndex, object context)
+        {
+            b2TracyCZoneNC(B2TracyCZone.cross_pairs, "Cross", B2HexColor.b2_colorCoral, true);
+
+            B2CrossContext crossContext = context as B2CrossContext;
+            B2World world = crossContext.world;
+            B2BroadPhase bp = world.broadPhase;
+            B2TreeNode[] staticNodes = bp.trees[(int)B2BodyType.b2_staticBody].nodes;
+            B2TreeNode[] kinematicNodes = bp.trees[(int)B2BodyType.b2_kinematicBody].nodes;
+            B2TreeNode[] dynamicNodes = bp.trees[(int)B2BodyType.b2_dynamicBody].nodes;
+
+            B2PairContext pairContext = new B2PairContext();
+            pairContext.world = world;
+            pairContext.taskContext = world.taskContexts.data[workerIndex];
+
+            for (int i = startIndex; i < endIndex; ++i)
+            {
+                B2TreeNode[] nodesB = i < crossContext.staticSeedCount ? staticNodes : kinematicNodes;
+                ref readonly B2NodePair seed = ref crossContext.seeds[i];
+                b2CollideCrossPairs(dynamicNodes, nodesB, seed.a, seed.b, pairContext);
+            }
+
+            b2FlushCandidatePairs(pairContext);
+
+            b2TracyCZoneEnd(B2TracyCZone.cross_pairs);
         }
 
         public static void b2UpdateTreesTask(object context)
@@ -452,14 +539,12 @@ namespace Box2D.NET
         {
             B2BroadPhase bp = world.broadPhase;
 
-            b2ValidateMovedProxies(bp);
+            bool needUpdate = b2HasTreeMoved(bp.trees[(int)B2BodyType.b2_staticBody]);
+            needUpdate = needUpdate || b2NeedsRebuild(bp.trees[(int)B2BodyType.b2_kinematicBody]);
+            needUpdate = needUpdate || b2NeedsRebuild(bp.trees[(int)B2BodyType.b2_dynamicBody]);
 
-            int moveCount = bp.moveArray.count;
-
-            if (moveCount == 0)
+            if (needUpdate == false)
             {
-                // A destroyed shape may lead to no moves, but the tree could still be enlarged.
-                b2EnqueueTreeUpdate(world);
                 return;
             }
 
@@ -467,117 +552,92 @@ namespace Box2D.NET
 
             B2StackAllocator alloc = world.stack;
 
-            // todo these could be in the step context
-            bp.moveResults = b2StackAlloc<B2MoveResult>(alloc, moveCount, "move results");
+            for (int i = 0; i < world.workerCount; ++i)
+            {
+                b2Array_Clear(ref world.taskContexts.data[i].pairKeys);
+            }
 
-            // This capacity can be exceeded if there are many overlapping pairs (e.g. all shapes at the origin)
-            bp.movePairCapacity = 32 * moveCount;
+            // Generate pairs by querying the dynamic body tree against itself and against
+            // the kinematic and static trees.
+            {
+                // Get the sibling pairs of the dynamic body tree that have moved.
+                B2DynamicTree dynamicTree = bp.trees[(int)B2BodyType.b2_dynamicBody];
+                int pairCapacity = dynamicTree.nodeEnd / 2;
+                bp.movedSiblings = b2StackAlloc<int>(alloc, pairCapacity, "moved pairs");
+                int dynamicMoveCount = b2GatherMovedSiblings(dynamicTree, bp.movedSiblings);
 
-            bp.movePairs = b2StackAlloc<B2MovePair>(alloc, bp.movePairCapacity, "move pairs");
-            b2AtomicStoreInt(ref bp.movePairIndex, 0);
+                // Get seeds for colliding against the static and kinematic trees.
+                B2NodePair[] crossSeeds = bp.crossSeeds;
+                int staticSeedCount = b2GatherCrossSeeds(dynamicTree, bp.trees[(int)B2BodyType.b2_staticBody], crossSeeds);
+                B2_ASSERT(staticSeedCount <= B2_CROSS_SEED_COUNT);
+                int kinematicSeedCount = b2GatherCrossSeeds(dynamicTree, bp.trees[(int)B2BodyType.b2_kinematicBody], crossSeeds.AsSpan(staticSeedCount));
+                B2_ASSERT(kinematicSeedCount <= B2_CROSS_SEED_COUNT);
+                int crossMoveCount = staticSeedCount + kinematicSeedCount;
 
-#if B2_SNOOP_TABLE_COUNTERS
-            B2AtomicInt b2_probeCount = new B2AtomicInt();
-            b2AtomicStoreInt(ref b2_probeCount, 0);
-#endif
+                // Collide the dynamic body tree against the static and kinematic trees.
+                B2CrossContext crossContext = new B2CrossContext
+                {
+                    world = world,
+                    seeds = crossSeeds,
+                    staticSeedCount = staticSeedCount,
+                };
+                b2ParallelFor(world, b2CrossPairsTask, crossMoveCount, 1, crossContext);
 
-            int minRange = 64;
-            b2ParallelFor(world, b2FindPairsTask, moveCount, minRange, world);
+                // Collide the dynamic body tree against itself.
+                b2ParallelFor(world, b2SelfPairsTask, dynamicMoveCount, 64, world);
+            }
+
+            b2DynamicTree_ClearMoved(bp.trees[(int)B2BodyType.b2_staticBody]);
+
+            b2TracyCZoneEnd(B2TracyCZone.update_pairs);
 
             b2TracyCZoneNC(B2TracyCZone.create_contacts, "Create Contacts", B2HexColor.b2_colorCoral, true);
 
             // Update stale trees.
             b2EnqueueTreeUpdate(world);
 
-            // Single-threaded work
-            // - Clear move flags
-            // - Create contacts in deterministic order
-            // This is deterministic because the results follow the order of b2BroadPhase::moveArray.
-            for (int i = 0; i < moveCount; ++i)
+            // Pairs arrive in deterministic order but scrambled relative to body and shape order
+            // sorting them here improves solver performance.
+            int pairCount = 0;
+            for (int i = 0; i < world.workerCount; ++i)
             {
-                B2MoveResult result = bp.moveResults[i];
-                B2MovePair pair = result.pairList;
-                while (pair != null)
+                pairCount += world.taskContexts.data[i].pairKeys.count;
+            }
+
+            ArraySegment<ulong> pairKeys = b2StackAlloc<ulong>(alloc, b2MaxInt(pairCount, 1), "pair keys");
+            int keyCount = 0;
+            for (int i = 0; i < world.workerCount; ++i)
+            {
+                ref B2Array<ulong> workerKeys = ref world.taskContexts.data[i].pairKeys;
+                if (workerKeys.count > 0)
                 {
-                    int shapeIdA = pair.shapeIndexA;
-                    int shapeIdB = pair.shapeIndexB;
-
-                    // if (s_file != NULL)
-                    //{
-                    //	fprintf(s_file, "%d %d\n", shapeIdA, shapeIdB);
-                    // }
-
-                    B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
-                    B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
-
-                    b2CreateContact(world, shapeA, shapeB);
-
-                    if (pair.heap)
-                    {
-                        // Note: I tried adding to the pair set in parallel with contact creation
-                        // but that didn't work with with pair heap allocation. I could make it
-                        // work with a task context bump allocator with heap fallback. The perf
-                        // gain was small or zero.
-                        B2MovePair temp = pair;
-                        pair = pair.next;
-                        b2Free(temp, 1);
-                    }
-                    else
-                    {
-                        pair = pair.next;
-                    }
+                    Array.Copy(workerKeys.data, 0, pairKeys.Array, pairKeys.Offset + keyCount, workerKeys.count);
+                    keyCount += workerKeys.count;
                 }
-
-                // if (s_file != NULL)
-                //{
-                //	fprintf(s_file, "\n");
-                // }
             }
 
-            // if (s_file != NULL)
-            //{
-            //	fprintf(s_file, "count = %d\n\n", pairCount);
-            // }
+            B2_ASSERT(keyCount == pairCount);
 
-            // Reset move buffer: clear only the bits that were set this step.
-            // Invariant: bit set in movedProxies[type] iff proxyKey is present in moveArray.
-            for (int i = 0; i < bp.moveArray.count; ++i)
+            // The keys are unique, so any sort gives the same order.
+            Array.Sort(pairKeys.Array, pairKeys.Offset, pairCount);
+
+            for (int i = 0; i < keyCount; ++i)
             {
-                int proxyKey = bp.moveArray.data[i];
-                b2ClearBit(ref bp.movedProxies[(int)B2_PROXY_TYPE(proxyKey)], B2_PROXY_ID(proxyKey));
+                int shapeIdA = (int)(pairKeys[i] >> 32);
+                int shapeIdB = (int)(pairKeys[i] & 0xFFFFFFFF);
+                B2Shape shapeA = b2Array_Get(ref world.shapes, shapeIdA);
+                B2Shape shapeB = b2Array_Get(ref world.shapes, shapeIdB);
+                b2CreateContact(world, shapeA, shapeB);
             }
-            b2Array_Clear(ref bp.moveArray);
 
-            b2StackFree(alloc, bp.movePairs);
-            bp.movePairs = null;
-            b2StackFree(alloc, bp.moveResults);
-            bp.moveResults = null;
+            b2StackFree(alloc, pairKeys);
+
+            b2StackFree(alloc, bp.movedSiblings);
+            bp.movedSiblings = null;
 
             b2ValidateSolverSets(world);
 
             b2TracyCZoneEnd(B2TracyCZone.create_contacts);
-
-            b2TracyCZoneEnd(B2TracyCZone.update_pairs);
-        }
-
-        public static bool b2BroadPhase_TestOverlap(B2BroadPhase bp, int proxyKeyA, int proxyKeyB)
-        {
-            int typeIndexA = (int)B2_PROXY_TYPE(proxyKeyA);
-            int proxyIdA = B2_PROXY_ID(proxyKeyA);
-            int typeIndexB = (int)B2_PROXY_TYPE(proxyKeyB);
-            int proxyIdB = B2_PROXY_ID(proxyKeyB);
-
-            B2AABB aabbA = b2DynamicTree_GetAABB(bp.trees[typeIndexA], proxyIdA);
-            B2AABB aabbB = b2DynamicTree_GetAABB(bp.trees[typeIndexB], proxyIdB);
-            return b2AABB_Overlaps(aabbA, aabbB);
-        }
-
-        public static int b2BroadPhase_GetShapeIndex(B2BroadPhase bp, int proxyKey)
-        {
-            int typeIndex = (int)B2_PROXY_TYPE(proxyKey);
-            int proxyId = B2_PROXY_ID(proxyKey);
-
-            return (int)b2DynamicTree_GetUserData(bp.trees[typeIndex], proxyId);
         }
 
         internal static void b2ValidateBroadphase(B2BroadPhase bp)
@@ -588,37 +648,13 @@ namespace Box2D.NET
             // TODO_ERIN validate every shape AABB is contained in tree AABB
         }
 
-        internal static void b2ValidateMovedProxies(B2BroadPhase bp)
-        {
-#if DEBUG
-            // Invariant: bit set in movedProxies[type] iff proxyKey is present in moveArray.
-            int moveCount = bp.moveArray.count;
-            for (int i = 0; i < moveCount; ++i)
-            {
-                int proxyKey = bp.moveArray.data[i];
-                B2BodyType proxyType = B2_PROXY_TYPE(proxyKey);
-                int proxyId = B2_PROXY_ID(proxyKey);
-                B2_ASSERT(b2GetBit(ref bp.movedProxies[(int)proxyType], proxyId));
-            }
-
-            int totalSetBits = 0;
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                totalSetBits += b2CountSetBits(ref bp.movedProxies[i]);
-            }
-            B2_ASSERT(totalSetBits == moveCount);
-#else
-            B2_UNUSED(bp);
-#endif
-        }
-
         internal static void b2ValidateNoEnlarged(B2BroadPhase bp)
         {
 #if DEBUG
             for (int j = 0; j < (int)B2BodyType.b2_bodyTypeCount; ++j)
             {
                 B2DynamicTree tree = bp.trees[j];
-                b2DynamicTree_ValidateNoEnlarged(tree);
+                b2DynamicTree_ValidateNoMoved(tree);
             }
 #else
             B2_UNUSED(bp);

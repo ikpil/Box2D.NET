@@ -48,7 +48,7 @@ public class B2DynamicTreeContextTests
 
             context.Visits = 0;
             var ray = new B2RayCastInput(new B2Vec2(-2.0f, 0.0f), new B2Vec2(4.0f, 0.0f), 1.0f);
-            b2DynamicTree_RayCast(tree, ray, ulong.MaxValue, RayCallback, ref context);
+            b2DynamicTree_CastRay(tree, ray, ulong.MaxValue, RayCallback, ref context);
             Assert.That(context.Visits, Is.EqualTo(1));
 
             context.Visits = 0;
@@ -59,7 +59,7 @@ public class B2DynamicTreeContextTests
                 translation = new B2Vec2(4.0f, 0.0f),
                 maxFraction = 1.0f,
             };
-            b2DynamicTree_BoxCast(tree, boxCast, ulong.MaxValue, BoxCallback, ref context);
+            b2DynamicTree_CastBox(tree, boxCast, ulong.MaxValue, BoxCallback, ref context);
             Assert.That(context.Visits, Is.EqualTo(1));
         }
         finally

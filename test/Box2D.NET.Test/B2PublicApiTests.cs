@@ -20,8 +20,7 @@ public class B2PublicApiTests
         yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastCapsule), typeof(B2CastOutput), 2, false);
         yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastSegment), typeof(B2CastOutput), 2, false);
         yield return PublicApi(typeof(B2Geometries), nameof(B2Geometries.b2ShapeCastPolygon), typeof(B2CastOutput), 2, false);
-        yield return PublicApi(typeof(B2DynamicTrees), nameof(B2DynamicTrees.b2DynamicTree_BoxCast), typeof(B2TreeStats), 5, true);
-        yield return PublicApi(typeof(B2DynamicTrees), nameof(B2DynamicTrees.b2DynamicTree_ValidateNoEnlarged), typeof(void), 1, false);
+        yield return PublicApi(typeof(B2DynamicTrees), nameof(B2DynamicTrees.b2DynamicTree_CastBox), typeof(B2TreeStats), 5, true);
         yield return PublicApi(typeof(B2Worlds), nameof(B2Worlds.b2World_GetBounds), typeof(B2AABB), 1, false);
     }
 

@@ -135,6 +135,7 @@ namespace Box2D.NET
             for (int i = 0; i < world.workerCount; ++i)
             {
                 world.taskContexts.data[i].sensorHits = b2Array_Create<B2SensorHit>(8);
+                world.taskContexts.data[i].pairKeys = b2Array_Create<ulong>();
                 world.taskContexts.data[i].contactStateBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].hitEventBitSet = b2CreateBitSet(1024);
                 world.taskContexts.data[i].hasHitEvents = false;
@@ -152,6 +153,7 @@ namespace Box2D.NET
             for (int i = 0; i < world.workerCount; ++i)
             {
                 b2Array_Destroy(ref world.taskContexts.data[i].sensorHits);
+                b2Array_Destroy(ref world.taskContexts.data[i].pairKeys);
                 b2DestroyBitSet(ref world.taskContexts.data[i].contactStateBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].hitEventBitSet);
                 b2DestroyBitSet(ref world.taskContexts.data[i].jointStateBitSet);
@@ -2308,13 +2310,6 @@ namespace Box2D.NET
             writer.Write("static tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_staticBody]));
             writer.Write("kinematic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_kinematicBody]));
             writer.Write("dynamic tree: {0}\n", b2DynamicTree_GetByteCount(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody]));
-            int movedBytes = 0;
-            for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
-            {
-                movedBytes += b2GetBitSetBytes(ref world.broadPhase.movedProxies[i]);
-            }
-            writer.Write("movedProxies: {0}\n", movedBytes);
-            writer.Write("moveArray: {0}\n", b2Array_ByteCount(ref world.broadPhase.moveArray));
             ref B2HashSet pairSet = ref world.broadPhase.pairSet;
             writer.Write("pairSet: {0} ({1}, {2})\n", b2GetHashSetBytes(ref pairSet), pairSet.count, pairSet.capacity);
             writer.Write("\n");
@@ -2579,7 +2574,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, ref worldContext);
+                    b2DynamicTree_CastRay(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2634,7 +2629,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_RayCast(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, ref worldContext);
+                    b2DynamicTree_CastRay(world.broadPhase.trees[i], input, filter.maskBits, RayCastCallback, ref worldContext);
                 result.nodeVisits += treeResult.nodeVisits;
                 result.leafVisits += treeResult.leafVisits;
 
@@ -2734,7 +2729,7 @@ namespace Box2D.NET
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
                 B2TreeStats treeResult =
-                    b2DynamicTree_BoxCast(world.broadPhase.trees[i], treeInput, filter.maskBits, ShapeCastCallback, ref worldContext);
+                    b2DynamicTree_CastBox(world.broadPhase.trees[i], treeInput, filter.maskBits, ShapeCastCallback, ref worldContext);
                 treeStats.nodeVisits += treeResult.nodeVisits;
                 treeStats.leafVisits += treeResult.leafVisits;
 
@@ -2820,7 +2815,7 @@ namespace Box2D.NET
 
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_BoxCast(world.broadPhase.trees[i], treeInput, filter.maskBits, MoverCastCallback, ref worldContext);
+                b2DynamicTree_CastBox(world.broadPhase.trees[i], treeInput, filter.maskBits, MoverCastCallback, ref worldContext);
 
                 if (worldContext.fraction == 0.0f)
                 {
@@ -3112,6 +3107,7 @@ void b2World_Dump()
             b2DynamicTree_Query(world.broadPhase.trees[(int)B2BodyType.b2_dynamicBody], aabb, maskBits, ExplosionCallback, ref explosionContext);
         }
         /// This is for internal testing
+        // This is for internal testing. Not optimized.
         public static void b2World_RebuildStaticTree(B2WorldId worldId)
         {
             B2World world = b2GetWorldFromId(worldId);
@@ -3122,7 +3118,28 @@ void b2World_Dump()
             }
 
             B2DynamicTree staticTree = world.broadPhase.trees[(int)B2BodyType.b2_staticBody];
+
+            // Moved proxies must retain the flag in the rebuild.
+            int movedCount = 0;
+            int[] movedProxies = null;
+            int proxyCount = b2DynamicTree_GetProxyCount(staticTree);
+            if (b2HasTreeMoved(staticTree))
+            {
+                movedProxies = b2Alloc<int>(proxyCount);
+                movedCount = b2DynamicTree_GatherMovedProxies(staticTree, movedProxies);
+            }
+
             b2DynamicTree_Rebuild(staticTree, true);
+
+            for (int i = 0; i < movedCount; ++i)
+            {
+                b2DynamicTree_MarkProxyMovedSerial(staticTree, movedProxies[i]);
+            }
+
+            if (movedProxies != null)
+            {
+                b2Free(movedProxies, proxyCount);
+            }
         }
 
 #if DEBUG

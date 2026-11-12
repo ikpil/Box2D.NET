@@ -44,5 +44,28 @@ namespace Box2D.NET
         {
             return (uint)Interlocked.Read(ref a.value);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint b2AtomicLoadU32Raw(ref uint a)
+        {
+            return (uint)Volatile.Read(ref Unsafe.As<uint, int>(ref a));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static uint b2AtomicFetchOrU32(ref uint a, uint mask)
+        {
+            ref int target = ref Unsafe.As<uint, int>(ref a);
+            int current = Volatile.Read(ref target);
+            while (true)
+            {
+                int previous = Interlocked.CompareExchange(ref target, current | (int)mask, current);
+                if (previous == current)
+                {
+                    return (uint)previous;
+                }
+
+                current = previous;
+            }
+        }
     }
 }

@@ -182,8 +182,16 @@ namespace Box2D.NET
         public static bool b2ContainsKey(ref B2HashSet set, ulong key)
         {
             // key of zero is a sentinel
-            B2_ASSERT(key != 0);
+            B2_VALIDATE(key != 0);
             ulong hash = b2KeyHash(key);
+            int index = b2FindSlot(ref set, key, hash);
+            return set.items[index].key == key;
+        }
+
+        public static bool b2ContainsHashedKey(ref B2HashSet set, ulong key, ulong hash)
+        {
+            // key of zero is a sentinel
+            B2_VALIDATE(key != 0);
             int index = b2FindSlot(ref set, key, hash);
             return set.items[index].key == key;
         }
