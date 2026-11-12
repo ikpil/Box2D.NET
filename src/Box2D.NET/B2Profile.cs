@@ -20,6 +20,7 @@ namespace Box2D.NET
         public float solveImpulses;
         public float integratePositions;
         public float relaxImpulses;
+        public float restitution;
         public float storeImpulses;
         public float splitIslands;
         public float transforms;

@@ -1244,7 +1244,7 @@ namespace Box2D.NET
                         graphSyncIndex += 1;
                     }
 
-                    profile.relaxImpulses += b2GetMillisecondsAndReset(ref ticks);
+                    profile.restitution += b2GetMillisecondsAndReset(ref ticks);
                 }
 
                 stageIndex += activeColorCount;
