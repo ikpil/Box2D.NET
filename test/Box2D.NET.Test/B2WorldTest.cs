@@ -585,7 +585,7 @@ public class B2WorldTest
         B2Circle circle = new B2Circle(new B2Vec2(0.0f, 0.0f), 0.5f);
         b2CreateCircleShape(bodyId, shapeDef, circle);
 
-        b2Body_ApplyMassFromShapes(bodyId);
+        b2Body_UpdateMassFromShapes(bodyId);
 
         b2World_Step(worldId, 1.0f / 60.0f, 4);
 

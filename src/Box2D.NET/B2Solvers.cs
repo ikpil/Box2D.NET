@@ -676,7 +676,7 @@ namespace Box2D.NET
                 sim.force = b2Vec2_zero;
                 sim.torque = 0.0f;
 
-                // If you hit this then it means you deferred mass computation but never called b2Body_ApplyMassFromShapes
+                // If you hit this then it means you deferred mass computation but never called b2Body_UpdateMassFromShapes
                 B2_ASSERT((body.flags & (uint)B2BodyFlags.b2_dirtyMass) == 0);
 
                 body.flags &= ~(uint)B2BodyFlags.b2_bodyTransientFlags;

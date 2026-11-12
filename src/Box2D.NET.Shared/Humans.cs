@@ -704,7 +704,7 @@ namespace Box2D.NET.Shared
                     }
                 }
 
-                b2Body_ApplyMassFromShapes(bone.bodyId);
+                b2Body_UpdateMassFromShapes(bone.bodyId);
             }
 
             human.scale = scale;

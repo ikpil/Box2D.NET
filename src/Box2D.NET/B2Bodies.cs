@@ -1605,7 +1605,7 @@ namespace Box2D.NET
         /// You may also use this when automatic mass computation has been disabled.
         /// You should call this regardless of body type.
         /// Note that sensor shapes may have mass.
-        public static void b2Body_ApplyMassFromShapes(B2BodyId bodyId)
+        public static void b2Body_UpdateMassFromShapes(B2BodyId bodyId)
         {
             B2World world = b2GetWorldLocked(bodyId.world0);
             if (world == null)

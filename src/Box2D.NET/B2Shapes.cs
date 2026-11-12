@@ -433,7 +433,7 @@ namespace Box2D.NET
         }
         /// Destroy a shape. You may defer the body mass update which can improve performance if several shapes on a
         /// body are destroyed at once.
-        /// @see b2Body_ApplyMassFromShapes
+        /// @see b2Body_UpdateMassFromShapes
         public static void b2DestroyShape(B2ShapeId shapeId, bool updateBodyMass)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
@@ -1232,7 +1232,7 @@ namespace Box2D.NET
         }
         /// Set the mass density of a shape, usually in kg/m^2.
         /// This will optionally update the mass properties on the parent body.
-        /// @see b2ShapeDef::density, b2Body_ApplyMassFromShapes
+        /// @see b2ShapeDef::density, b2Body_UpdateMassFromShapes
         public static void b2Shape_SetDensity(B2ShapeId shapeId, float density, bool updateBodyMass)
         {
             B2_ASSERT(b2IsValidFloat(density) && density >= 0.0f);
@@ -1569,7 +1569,7 @@ namespace Box2D.NET
         }
         /// Allows you to change a shape to be a circle or update the current circle.
         /// This does not modify the mass properties.
-        /// @see b2Body_ApplyMassFromShapes
+        /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetCircle(B2ShapeId shapeId, in B2Circle circle)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
@@ -1588,7 +1588,7 @@ namespace Box2D.NET
         }
         /// Allows you to change a shape to be a capsule or update the current capsule.
         /// This does not modify the mass properties.
-        /// @see b2Body_ApplyMassFromShapes
+        /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetCapsule(B2ShapeId shapeId, in B2Capsule capsule)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);
@@ -1630,7 +1630,7 @@ namespace Box2D.NET
         }
         /// Allows you to change a shape to be a polygon or update the current polygon.
         /// This does not modify the mass properties.
-        /// @see b2Body_ApplyMassFromShapes
+        /// @see b2Body_UpdateMassFromShapes
         public static void b2Shape_SetPolygon(B2ShapeId shapeId, ref B2Polygon polygon)
         {
             B2World world = b2GetWorldLocked(shapeId.world0);

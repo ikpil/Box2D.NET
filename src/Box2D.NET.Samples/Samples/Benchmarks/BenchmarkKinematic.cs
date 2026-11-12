@@ -60,6 +60,6 @@ public class BenchmarkKinematic : Sample
         }
 
         // All shapes have been added so I can efficiently compute the mass properties.
-        b2Body_ApplyMassFromShapes(bodyId);
+        b2Body_UpdateMassFromShapes(bodyId);
     }
 }

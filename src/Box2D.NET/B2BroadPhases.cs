@@ -54,13 +54,13 @@ namespace Box2D.NET
             bp.pairSet = b2CreateSet(b2MaxInt(32, 2 * capacity.contactCount));
 
             int staticCapacity = b2MaxInt(16, capacity.staticShapeCount);
-            bp.trees[(int)B2BodyType.b2_staticBody] = b2DynamicTree_Create(staticCapacity);
+            bp.trees[(int)B2BodyType.b2_staticBody] = b2CreateDynamicTree(staticCapacity);
 
             int kinematicCapacity = 16;
-            bp.trees[(int)B2BodyType.b2_kinematicBody] = b2DynamicTree_Create(kinematicCapacity);
+            bp.trees[(int)B2BodyType.b2_kinematicBody] = b2CreateDynamicTree(kinematicCapacity);
 
             int dynamicCapacity = b2MaxInt(16, capacity.dynamicShapeCount);
-            bp.trees[(int)B2BodyType.b2_dynamicBody] = b2DynamicTree_Create(dynamicCapacity);
+            bp.trees[(int)B2BodyType.b2_dynamicBody] = b2CreateDynamicTree(dynamicCapacity);
 
             bp.movedSiblings = null;
             bp.crossSeeds = new B2NodePair[2 * B2_CROSS_SEED_COUNT];
@@ -75,7 +75,7 @@ namespace Box2D.NET
         {
             for (int i = 0; i < (int)B2BodyType.b2_bodyTypeCount; ++i)
             {
-                b2DynamicTree_Destroy(bp.trees[i]);
+                b2DestroyDynamicTree(bp.trees[i]);
             }
 
             b2DestroySet(ref bp.pairSet);
@@ -90,7 +90,7 @@ namespace Box2D.NET
 
             bool mark = (proxyType != B2BodyType.b2_staticBody || forcePairCreation);
 
-            int proxyId = b2DynamicTree_CreateProxyInternal(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex, mark);
+            int proxyId = b2CreateTreeProxyInternal(bp.trees[(int)proxyType], aabb, categoryBits, (ulong)shapeIndex, mark);
             int proxyKey = B2_PROXY_KEY(proxyId, proxyType);
             return proxyKey;
         }
@@ -101,7 +101,7 @@ namespace Box2D.NET
             int proxyId = B2_PROXY_ID(proxyKey);
 
             B2_ASSERT(0 <= proxyType && proxyType < B2BodyType.b2_bodyTypeCount);
-            b2DynamicTree_DestroyProxy(bp.trees[(int)proxyType], proxyId);
+            b2DestroyTreeProxy(bp.trees[(int)proxyType], proxyId);
         }
 
         public static void b2BroadPhase_MoveProxy(B2BroadPhase bp, int proxyKey, in B2AABB aabb)

@@ -36,11 +36,11 @@ public class B2DynamicTreeContextTests
     [Test]
     public void QueryRayAndShapeCast_AcceptReferenceTypeContext()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(1);
+        B2DynamicTree tree = b2CreateDynamicTree(1);
         try
         {
             var bounds = new B2AABB(new B2Vec2(-1.0f, -1.0f), new B2Vec2(1.0f, 1.0f));
-            b2DynamicTree_CreateProxy(tree, bounds, ulong.MaxValue, 1);
+            b2CreateTreeProxy(tree, bounds, ulong.MaxValue, 1);
 
             var context = new CallbackContext();
             b2DynamicTree_Query(tree, bounds, ulong.MaxValue, QueryCallback, ref context);
@@ -64,7 +64,7 @@ public class B2DynamicTreeContextTests
         }
         finally
         {
-            b2DynamicTree_Destroy(tree);
+            b2DestroyDynamicTree(tree);
         }
     }
 }

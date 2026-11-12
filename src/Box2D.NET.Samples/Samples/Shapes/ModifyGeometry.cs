@@ -105,7 +105,7 @@ public class ModifyGeometry : Sample
         }
 
         B2BodyId bodyId = b2Shape_GetBody(m_shapeId);
-        b2Body_ApplyMassFromShapes(bodyId);
+        b2Body_UpdateMassFromShapes(bodyId);
     }
 
     public override bool DrawControls()

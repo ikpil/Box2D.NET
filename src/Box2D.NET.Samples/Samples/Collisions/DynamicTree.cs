@@ -113,7 +113,7 @@ public class DynamicTree : Sample
     {
         m_proxies = null;
         m_moveBuffer = null;
-        b2DynamicTree_Destroy(m_tree);
+        b2DestroyDynamicTree(m_tree);
         m_tree = null;
 
         base.Dispose();
@@ -121,7 +121,7 @@ public class DynamicTree : Sample
 
     void BuildTree()
     {
-        b2DynamicTree_Destroy(m_tree);
+        b2DestroyDynamicTree(m_tree);
         m_proxies = null;
         m_moveBuffer = null;
 
@@ -139,7 +139,7 @@ public class DynamicTree : Sample
 
         float y = -4.0f;
 
-        m_tree = b2DynamicTree_Create(16);
+        m_tree = b2CreateDynamicTree(16);
 
         B2Vec2 aabbMargin = new B2Vec2(0.1f, 0.1f);
 
@@ -174,7 +174,7 @@ public class DynamicTree : Sample
                     p.fatBox.lowerBound = b2Sub(p.box.lowerBound, aabbMargin);
                     p.fatBox.upperBound = b2Add(p.box.upperBound, aabbMargin);
 
-                    p.proxyId = b2DynamicTree_CreateProxy(m_tree, p.fatBox, B2_DEFAULT_CATEGORY_BITS, (ulong)m_proxyCount);
+                    p.proxyId = b2CreateTreeProxy(m_tree, p.fatBox, B2_DEFAULT_CATEGORY_BITS, (ulong)m_proxyCount);
                     p.rayStamp = -1;
                     p.queryStamp = -1;
                     p.moved = false;

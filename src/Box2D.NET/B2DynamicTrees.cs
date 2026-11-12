@@ -170,7 +170,7 @@ namespace Box2D.NET
         }
 
         /// Constructing the tree initializes the node pool.
-        public static B2DynamicTree b2DynamicTree_Create(int proxyCapacity = 16)
+        public static B2DynamicTree b2CreateDynamicTree(int proxyCapacity = 16)
         {
             int capacity = b2MaxInt(proxyCapacity, 16);
 
@@ -219,7 +219,7 @@ namespace Box2D.NET
         }
 
         /// Destroy the tree, freeing the node pool.
-        public static void b2DynamicTree_Destroy(B2DynamicTree tree)
+        public static void b2DestroyDynamicTree(B2DynamicTree tree)
         {
             b2Free(tree.nodes, tree.nodeCapacity);
             b2Free(tree.parents, tree.nodeCapacity);
@@ -674,7 +674,7 @@ namespace Box2D.NET
 
         // Create a proxy in the tree as a leaf node. We return the index of the node instead of a pointer so that we can grow
         // the node pool.
-        public static int b2DynamicTree_CreateProxyInternal(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData, bool markMoved)
+        public static int b2CreateTreeProxyInternal(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData, bool markMoved)
         {
             B2_VALIDATE(b2IsValidAABB(aabb));
 
@@ -690,13 +690,13 @@ namespace Box2D.NET
         }
 
         /// Create a proxy. Provide an AABB and a userData value.
-        public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
+        public static int b2CreateTreeProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
         {
-            return b2DynamicTree_CreateProxyInternal(tree, aabb, categoryBits, userData, false);
+            return b2CreateTreeProxyInternal(tree, aabb, categoryBits, userData, false);
         }
 
         /// Destroy a proxy. This asserts if the id is invalid.
-        public static void b2DynamicTree_DestroyProxy(B2DynamicTree tree, int proxyId)
+        public static void b2DestroyTreeProxy(B2DynamicTree tree, int proxyId)
         {
             B2_ASSERT(0 <= proxyId && proxyId < tree.proxyCapacity);
 

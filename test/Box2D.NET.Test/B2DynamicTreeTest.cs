@@ -25,13 +25,13 @@ public class B2DynamicTreeTest
             upperBound: new B2Vec2(2.0f, 2.0f)
         );
 
-        B2DynamicTree tree = b2DynamicTree_Create(16);
-        b2DynamicTree_CreateProxyInternal(tree, a, 1, 0, false);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
+        b2CreateTreeProxyInternal(tree, a, 1, 0, false);
 
         Assert.That(tree.nodeEnd == 2);
         Assert.That(tree.proxyCount == 1);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
 
         Assert.That(tree.nodeEnd == 0);
         Assert.That(tree.proxyCount == 0);
@@ -52,8 +52,8 @@ public class B2DynamicTreeTest
     {
         // Test AABB centered at origin with bounds [-1, -1] to [1, 1]
         B2AABB a = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
-        B2DynamicTree tree = b2DynamicTree_Create(16);
-        int proxyId = b2DynamicTree_CreateProxyInternal(tree, a, 1, 0, false);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
+        int proxyId = b2CreateTreeProxyInternal(tree, a, 1, 0, false);
 
         B2RayCastInput input = new B2RayCastInput();
         input.maxFraction = 1.0f;
@@ -231,7 +231,7 @@ public class B2DynamicTreeTest
         // An off center box catches an axis aligned ray tested against the wrong axis, which the origin
         // centered box above cannot. Two leaves also give the root a child pair.
         B2AABB b = new B2AABB(lowerBound: new B2Vec2(10.0f, 4.0f), upperBound: new B2Vec2(11.0f, 6.0f));
-        int proxyIdB = b2DynamicTree_CreateProxyInternal(tree, b, 1, 1, false);
+        int proxyIdB = b2CreateTreeProxyInternal(tree, b, 1, 1, false);
 
         // Test 14: Horizontal ray through the off center box
         {
@@ -285,7 +285,7 @@ public class B2DynamicTreeTest
             Assert.That(proxyHit == -1);
         }
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     private static bool QueryCollectCallback(int proxyId, ulong userData, ref B2FixedArray32<int> context)
@@ -309,15 +309,15 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeMultipleProxiesTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         B2AABB a1 = new B2AABB(lowerBound: new B2Vec2(-5.0f, -1.0f), upperBound: new B2Vec2(-3.0f, 1.0f));
         B2AABB a2 = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
         B2AABB a3 = new B2AABB(lowerBound: new B2Vec2(3.0f, -1.0f), upperBound: new B2Vec2(5.0f, 1.0f));
 
-        int id1 = b2DynamicTree_CreateProxyInternal(tree, a1, 0x1ul, 42, false);
-        int id2 = b2DynamicTree_CreateProxyInternal(tree, a2, 0x2ul, 43, false);
-        int id3 = b2DynamicTree_CreateProxyInternal(tree, a3, 0x4ul, 44, false);
+        int id1 = b2CreateTreeProxyInternal(tree, a1, 0x1ul, 42, false);
+        int id2 = b2CreateTreeProxyInternal(tree, a2, 0x2ul, 43, false);
+        int id3 = b2CreateTreeProxyInternal(tree, a3, 0x4ul, 44, false);
 
         Assert.That(b2DynamicTree_GetProxyCount(tree) == 3);
 
@@ -329,21 +329,21 @@ public class B2DynamicTreeTest
         Assert.That(b2DynamicTree_GetCategoryBits(tree, id2) == 0x2ul);
         Assert.That(b2DynamicTree_GetCategoryBits(tree, id3) == 0x4ul);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeQueryTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         B2AABB a1 = new B2AABB(lowerBound: new B2Vec2(-5.0f, -1.0f), upperBound: new B2Vec2(-3.0f, 1.0f));
         B2AABB a2 = new B2AABB(lowerBound: new B2Vec2(-1.0f, -1.0f), upperBound: new B2Vec2(1.0f, 1.0f));
         B2AABB a3 = new B2AABB(lowerBound: new B2Vec2(3.0f, -1.0f), upperBound: new B2Vec2(5.0f, 1.0f));
 
-        int id1 = b2DynamicTree_CreateProxyInternal(tree, a1, 0xFFul, 0, false);
-        int id2 = b2DynamicTree_CreateProxyInternal(tree, a2, 0xFFul, 0, false);
-        int id3 = b2DynamicTree_CreateProxyInternal(tree, a3, 0xFFul, 0, false);
+        int id1 = b2CreateTreeProxyInternal(tree, a1, 0xFFul, 0, false);
+        int id2 = b2CreateTreeProxyInternal(tree, a2, 0xFFul, 0, false);
+        int id3 = b2CreateTreeProxyInternal(tree, a3, 0xFFul, 0, false);
 
         B2AABB queryA = new B2AABB(lowerBound: new B2Vec2(-2.0f, -2.0f), upperBound: new B2Vec2(2.0f, 2.0f));
 
@@ -360,17 +360,17 @@ public class B2DynamicTreeTest
         Assert.That(list[0] >= 1); // at least one proxy should be collected
         Assert.That(allStats.leafVisits >= 1);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
         //(void)id1; (void)id3;
     }
 
     [Test]
     public void TreeMoveAndEnlargeTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         B2AABB a = new B2AABB(lowerBound: new B2Vec2(0.0f, 0.0f), upperBound: new B2Vec2(1.0f, 1.0f));
-        int id = b2DynamicTree_CreateProxyInternal(tree, a, 0x1ul, 100, false);
+        int id = b2CreateTreeProxyInternal(tree, a, 0x1ul, 100, false);
 
         // Move proxy to a new place
         B2AABB moved = new B2AABB(lowerBound: new B2Vec2(10.0f, 10.0f), upperBound: new B2Vec2(11.0f, 11.0f));
@@ -390,20 +390,20 @@ public class B2DynamicTreeTest
         Assert.That(got2.lowerBound.X <= enlarge.lowerBound.X + 1e-6f);
         Assert.That(got2.upperBound.X >= enlarge.upperBound.X - 1e-6f);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeRebuildAndValidateTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         // Create a number of proxies to make rebuild meaningful
         for (int i = 0; i < 12; ++i)
         {
             float x = (float)i * 2.0f;
             B2AABB a = new B2AABB(lowerBound: new B2Vec2(x - 0.5f, -0.5f), upperBound: new B2Vec2(x + 0.5f, 0.5f));
-            b2DynamicTree_CreateProxyInternal(tree, a, 0xFFul, (ulong)i, false);
+            b2CreateTreeProxyInternal(tree, a, 0xFFul, (ulong)i, false);
         }
 
         int sorted = b2DynamicTree_Rebuild(tree, true);
@@ -412,20 +412,20 @@ public class B2DynamicTreeTest
         Assert.That(b2DynamicTree_GetByteCount(tree), Is.GreaterThan(0));
         Assert.That(b2DynamicTree_GetHeight(tree), Is.GreaterThan(0));
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeRowHeightTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         int columnCount = 200;
         for (int i = 0; i < columnCount; ++i)
         {
             float x = 1.0f * i;
             B2AABB a = new B2AABB(lowerBound: new B2Vec2(x, 0.0f), upperBound: new B2Vec2(x + 1.0f, 1.0f));
-            b2DynamicTree_CreateProxyInternal(tree, a, 1, (ulong)i, false);
+            b2CreateTreeProxyInternal(tree, a, 1, (ulong)i, false);
         }
 
         float minHeight = MathF.Log2((float)columnCount);
@@ -433,13 +433,13 @@ public class B2DynamicTreeTest
         b2DynamicTree_Validate(tree);
         Assert.That(b2DynamicTree_GetHeight(tree) < 2.0f * minHeight);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeGridHeightTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         int columnCount = 20;
         int rowCount = 20;
@@ -450,7 +450,7 @@ public class B2DynamicTreeTest
             {
                 float y = 1.0f * j;
                 B2AABB a = new B2AABB(lowerBound: new B2Vec2(x, y), upperBound: new B2Vec2(x + 1.0f, y + 1.0f));
-                b2DynamicTree_CreateProxyInternal(tree, a, 1, (ulong)i, false);
+                b2CreateTreeProxyInternal(tree, a, 1, (ulong)i, false);
             }
         }
 
@@ -459,13 +459,13 @@ public class B2DynamicTreeTest
         b2DynamicTree_Validate(tree);
         Assert.That(b2DynamicTree_GetHeight(tree) < 2.0f * minHeight);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeGridMovementTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
 
         int[] proxyIds = new int[GRID_COUNT * GRID_COUNT];
         int index = 0;
@@ -476,7 +476,7 @@ public class B2DynamicTreeTest
             {
                 float y = 1.0f * j;
                 B2AABB a = new B2AABB(lowerBound: new B2Vec2(x, y), upperBound: new B2Vec2(x + 1.0f, y + 1.0f));
-                proxyIds[index] = b2DynamicTree_CreateProxyInternal(tree, a, 1, (ulong)i, false);
+                proxyIds[index] = b2CreateTreeProxyInternal(tree, a, 1, (ulong)i, false);
                 index += 1;
             }
         }
@@ -513,7 +513,7 @@ public class B2DynamicTreeTest
         int height3 = b2DynamicTree_GetHeight(tree);
         Assert.That(height3 < 2.0f * minHeight);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     private const int TREE_TEST_PROXY_COUNT = 200;
@@ -775,9 +775,9 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeOneProxyTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(1);
+        B2DynamicTree tree = b2CreateDynamicTree(1);
         B2AABB box = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 1.0f));
-        int proxyId = b2DynamicTree_CreateProxyInternal(tree, box, 1, 7, false);
+        int proxyId = b2CreateTreeProxyInternal(tree, box, 1, 7, false);
         int[] proxyIds = { proxyId };
         b2DynamicTree_Validate(tree);
 
@@ -830,7 +830,7 @@ public class B2DynamicTreeTest
         Assert.That(RootMarked(tree), Is.False);
         b2DynamicTree_ValidateNoMoved(tree);
 
-        b2DynamicTree_DestroyProxy(tree, proxyId);
+        b2DestroyTreeProxy(tree, proxyId);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.proxyCount, Is.EqualTo(0));
         Assert.That(tree.nodeEnd, Is.EqualTo(2));
@@ -838,7 +838,7 @@ public class B2DynamicTreeTest
         Assert.That(b2DynamicTree_GetHeight(tree), Is.EqualTo(0));
         CompareQuery(tree, proxyIds, 0, inside);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     // Removing down to one proxy puts the survivor at the root as a leaf, the next insert makes a
@@ -846,22 +846,22 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeLeafRootTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
         B2AABB boxA = new B2AABB(new B2Vec2(0.0f, 0.0f), new B2Vec2(1.0f, 1.0f));
         B2AABB boxB = new B2AABB(new B2Vec2(10.0f, 0.0f), new B2Vec2(11.0f, 1.0f));
         B2AABB boxC = new B2AABB(new B2Vec2(20.0f, 0.0f), new B2Vec2(21.0f, 1.0f));
         B2AABB boxD = new B2AABB(new B2Vec2(30.0f, 0.0f), new B2Vec2(31.0f, 1.0f));
         B2AABB all = new B2AABB(new B2Vec2(-1.0f, -1.0f), new B2Vec2(40.0f, 2.0f));
 
-        int idA = b2DynamicTree_CreateProxyInternal(tree, boxA, 1, 0, false);
-        int idB = b2DynamicTree_CreateProxyInternal(tree, boxB, 1, 1, false);
+        int idA = b2CreateTreeProxyInternal(tree, boxA, 1, 0, false);
+        int idB = b2CreateTreeProxyInternal(tree, boxB, 1, 1, false);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.nodeEnd, Is.EqualTo(4));
         Assert.That(tree.proxyCount, Is.EqualTo(2));
         Assert.That(b2IsLeaf(tree.nodes[B2_ROOT_NODE]), Is.False);
         Assert.That(b2DynamicTree_GetHeight(tree), Is.EqualTo(1));
 
-        b2DynamicTree_DestroyProxy(tree, idA);
+        b2DestroyTreeProxy(tree, idA);
         b2DynamicTree_Validate(tree);
         Assert.That(b2IsLeaf(tree.nodes[B2_ROOT_NODE]));
         Assert.That(tree.nodeEnd, Is.EqualTo(4));
@@ -872,7 +872,7 @@ public class B2DynamicTreeTest
         CompareQuery(tree, idsB, 1, boxA);
 
         // The freed pair is reused
-        int idC = b2DynamicTree_CreateProxyInternal(tree, boxC, 1, 2, false);
+        int idC = b2CreateTreeProxyInternal(tree, boxC, 1, 2, false);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.nodeEnd, Is.EqualTo(4));
         Assert.That(tree.pairFreeList, Is.EqualTo(B2_NULL_INDEX));
@@ -881,7 +881,7 @@ public class B2DynamicTreeTest
         CompareQuery(tree, idsBC, 2, all);
 
         // A third proxy extends the array
-        int idD = b2DynamicTree_CreateProxyInternal(tree, boxD, 1, 3, false);
+        int idD = b2CreateTreeProxyInternal(tree, boxD, 1, 3, false);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.nodeEnd, Is.EqualTo(6));
         Assert.That(tree.proxyCount, Is.EqualTo(3));
@@ -890,7 +890,7 @@ public class B2DynamicTreeTest
         CompareQuery(tree, idsBCD, 3, boxC);
 
         // A remove leaves a hole that the full build compacts
-        b2DynamicTree_DestroyProxy(tree, idB);
+        b2DestroyTreeProxy(tree, idB);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.nodeEnd, Is.EqualTo(6));
         Assert.That(tree.pairFreeList, Is.Not.EqualTo(B2_NULL_INDEX));
@@ -902,28 +902,28 @@ public class B2DynamicTreeTest
         Assert.That(tree.pairFreeList, Is.EqualTo(B2_NULL_INDEX));
         CompareQuery(tree, idsCD, 2, all);
 
-        b2DynamicTree_DestroyProxy(tree, idC);
+        b2DestroyTreeProxy(tree, idC);
         b2DynamicTree_Validate(tree);
         Assert.That(b2IsLeaf(tree.nodes[B2_ROOT_NODE]));
 
-        b2DynamicTree_DestroyProxy(tree, idD);
+        b2DestroyTreeProxy(tree, idD);
         b2DynamicTree_Validate(tree);
         Assert.That(tree.proxyCount, Is.EqualTo(0));
         Assert.That(b2IsEmptyNode(tree.nodes[B2_ROOT_NODE]));
         Assert.That(b2DynamicTree_GetHeight(tree), Is.EqualTo(0));
         CompareQuery(tree, idsBCD, 0, all);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeQueryBruteForceTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(TREE_TEST_PROXY_COUNT);
+        B2DynamicTree tree = b2CreateDynamicTree(TREE_TEST_PROXY_COUNT);
         int[] proxyIds = new int[TREE_TEST_PROXY_COUNT];
         for (int i = 0; i < TREE_TEST_PROXY_COUNT; ++i)
         {
-            proxyIds[i] = b2DynamicTree_CreateProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
+            proxyIds[i] = b2CreateTreeProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
         }
 
         b2DynamicTree_Validate(tree);
@@ -951,17 +951,17 @@ public class B2DynamicTreeTest
             CompareQuery(tree, proxyIds, TREE_TEST_PROXY_COUNT, RandomTreeBox(8.0f));
         }
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     [Test]
     public void TreeCastBruteForceTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(TREE_TEST_PROXY_COUNT);
+        B2DynamicTree tree = b2CreateDynamicTree(TREE_TEST_PROXY_COUNT);
         int[] proxyIds = new int[TREE_TEST_PROXY_COUNT];
         for (int i = 0; i < TREE_TEST_PROXY_COUNT; ++i)
         {
-            proxyIds[i] = b2DynamicTree_CreateProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
+            proxyIds[i] = b2CreateTreeProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
         }
 
         Assert.That(b2DynamicTree_Rebuild(tree, true), Is.EqualTo(TREE_TEST_PROXY_COUNT));
@@ -980,18 +980,18 @@ public class B2DynamicTreeTest
             CompareBoxCast(tree, proxyIds, TREE_TEST_PROXY_COUNT, box, translation);
         }
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     // Marks reach the root from any leaf, the sweep refit writes exact unions, and the rebuild clears
     [Test]
     public void TreeMarkAndRefitTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(TREE_TEST_PROXY_COUNT);
+        B2DynamicTree tree = b2CreateDynamicTree(TREE_TEST_PROXY_COUNT);
         int[] proxyIds = new int[TREE_TEST_PROXY_COUNT];
         for (int i = 0; i < TREE_TEST_PROXY_COUNT; ++i)
         {
-            proxyIds[i] = b2DynamicTree_CreateProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
+            proxyIds[i] = b2CreateTreeProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
         }
 
         Assert.That(b2DynamicTree_Rebuild(tree, true), Is.EqualTo(TREE_TEST_PROXY_COUNT));
@@ -1060,7 +1060,7 @@ public class B2DynamicTreeTest
         Assert.That(b2DynamicTree_Rebuild(tree, false), Is.GreaterThan(0));
         b2DynamicTree_ValidateNoMoved(tree);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     // The rebuild orders the array, a remove keeps the order, an insert that moves an internal node
@@ -1069,11 +1069,11 @@ public class B2DynamicTreeTest
     public void TreeDfsOrderTest()
     {
         int proxyCount = 50;
-        B2DynamicTree tree = b2DynamicTree_Create(TREE_TEST_PROXY_COUNT);
+        B2DynamicTree tree = b2CreateDynamicTree(TREE_TEST_PROXY_COUNT);
         int[] proxyIds = new int[TREE_TEST_PROXY_COUNT];
         for (int i = 0; i < proxyCount; ++i)
         {
-            proxyIds[i] = b2DynamicTree_CreateProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
+            proxyIds[i] = b2CreateTreeProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)i, false);
         }
 
         Assert.That(b2DynamicTree_Rebuild(tree, true), Is.EqualTo(proxyCount));
@@ -1083,7 +1083,7 @@ public class B2DynamicTreeTest
 
         // A fresh pair lands above everything, so the order survives when the sibling is a leaf.
         // Validate checks the flag against the array either way.
-        proxyIds[proxyCount] = b2DynamicTree_CreateProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)proxyCount, false);
+        proxyIds[proxyCount] = b2CreateTreeProxyInternal(tree, RandomTreeBox(2.0f), 1, (ulong)proxyCount, false);
         proxyCount += 1;
         b2DynamicTree_Validate(tree);
 
@@ -1098,8 +1098,8 @@ public class B2DynamicTreeTest
         int orderedEnd = tree.nodeEnd;
 
         // Removes leave holes but every survivor stays above its parent
-        b2DynamicTree_DestroyProxy(tree, proxyIds[3]);
-        b2DynamicTree_DestroyProxy(tree, proxyIds[20]);
+        b2DestroyTreeProxy(tree, proxyIds[3]);
+        b2DestroyTreeProxy(tree, proxyIds[20]);
         proxyIds[3] = proxyIds[proxyCount - 1];
         proxyIds[20] = proxyIds[proxyCount - 2];
         proxyCount -= 2;
@@ -1129,7 +1129,7 @@ public class B2DynamicTreeTest
         // A box around everything makes the root the best sibling, so the root's subtree moves into
         // the new pair below its own children and the order is lost with nothing marked
         B2AABB huge = new B2AABB(new B2Vec2(-100.0f, -100.0f), new B2Vec2(100.0f, 100.0f));
-        proxyIds[proxyCount] = b2DynamicTree_CreateProxyInternal(tree, huge, 1, (ulong)proxyCount, false);
+        proxyIds[proxyCount] = b2CreateTreeProxyInternal(tree, huge, 1, (ulong)proxyCount, false);
         proxyCount += 1;
         Assert.That(tree.dfsOrdered, Is.False);
         Assert.That(RootMarked(tree), Is.False);
@@ -1154,7 +1154,7 @@ public class B2DynamicTreeTest
             CompareQuery(tree, proxyIds, proxyCount, RandomTreeBox(8.0f));
         }
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 
     // A create and destroy between steps leaves no marks. The rebuild has to run anyway when the
@@ -1162,12 +1162,12 @@ public class B2DynamicTreeTest
     [Test]
     public void TreeStaleAfterInsertRemoveTest()
     {
-        B2DynamicTree tree = b2DynamicTree_Create(16);
+        B2DynamicTree tree = b2CreateDynamicTree(16);
         int[] ids = new int[16];
         for (int i = 0; i < 16; ++i)
         {
             B2AABB box = new B2AABB(new B2Vec2(2.0f * i, 0.0f), new B2Vec2(2.0f * i + 1.0f, 1.0f));
-            ids[i] = b2DynamicTree_CreateProxyInternal(tree, box, 1, (ulong)i, true);
+            ids[i] = b2CreateTreeProxyInternal(tree, box, 1, (ulong)i, true);
         }
 
         Assert.That(b2DynamicTree_Rebuild(tree, false), Is.EqualTo(16));
@@ -1181,8 +1181,8 @@ public class B2DynamicTreeTest
 
         // Insert and remove between steps leaves no marks
         B2AABB extra = new B2AABB(new B2Vec2(100.0f, 100.0f), new B2Vec2(101.0f, 101.0f));
-        int extraId = b2DynamicTree_CreateProxyInternal(tree, extra, 1, 99, true);
-        b2DynamicTree_DestroyProxy(tree, extraId);
+        int extraId = b2CreateTreeProxyInternal(tree, extra, 1, 99, true);
+        b2DestroyTreeProxy(tree, extraId);
         Assert.That(b2HasTreeMoved(tree), Is.False);
 
         // The world's rebuild call, then a proxy enlarges during the step
@@ -1193,6 +1193,6 @@ public class B2DynamicTreeTest
         Assert.That(b2AABB_Contains(b2DynamicTree_GetRootBounds(tree), bigger));
         b2DynamicTree_Validate(tree);
 
-        b2DynamicTree_Destroy(tree);
+        b2DestroyDynamicTree(tree);
     }
 }

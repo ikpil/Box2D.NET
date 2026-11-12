@@ -43,7 +43,7 @@ namespace Box2D.NET
         b2_dynamicFlag = 0x00000200,
         
         // Flag to indicate the user has used the updateBodyMass option to defer mass
-        // computation but b2Body_ApplyMassFromShapes was not called before the world step.
+        // computation but b2Body_UpdateMassFromShapes was not called before the world step.
         b2_dirtyMass = 0x00000400,
 
         b2_enableSleep = 0x00000800,
