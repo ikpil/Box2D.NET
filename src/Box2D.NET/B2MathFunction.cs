@@ -607,7 +607,7 @@ namespace Box2D.NET
             return new B2Vec2(t.q.c * vx + t.q.s * vy, -t.q.s * vx + t.q.c * vy);
         }
 
-        /// Relative transform of frame B in frame A. The narrow phase boundary.
+        /// Relative transform of frame B in frame A.
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static B2Transform b2InvMulWorldTransforms(in B2WorldTransform A, in B2WorldTransform B)
         {
@@ -615,6 +615,16 @@ namespace Box2D.NET
             C.q = b2InvMulRot(A.q, B.q);
             B2Vec2 d = new B2Vec2(B.p.X - A.p.X, B.p.Y - A.p.Y);
             C.p = b2InvRotateVector(A.q, d);
+            return C;
+        }
+
+        /// Convert a local transform B into world space using world transform A.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static B2WorldTransform b2OffsetWorldTransform(in B2WorldTransform A, in B2Transform B)
+        {
+            B2WorldTransform C;
+            C.q = b2MulRot(A.q, B.q);
+            C.p = b2OffsetPos(A.p, b2RotateVector(A.q, B.p));
             return C;
         }
 

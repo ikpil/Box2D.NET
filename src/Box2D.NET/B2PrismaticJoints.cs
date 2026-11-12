@@ -682,14 +682,14 @@ namespace Box2D.NET
         }
 #endif
 
-        internal static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB, float drawScale)
+        internal static void b2DrawPrismaticJoint(B2DebugDraw draw, B2JointSim @base, in B2WorldTransform transformA, in B2WorldTransform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_prismaticJoint);
 
             ref readonly B2PrismaticJoint joint = ref @base.uj.prismaticJoint;
 
-            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
-            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
             B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
             draw.DrawLineFcn(frameA.p, frameB.p, B2HexColor.b2_colorDimGray, draw.context);
@@ -697,21 +697,21 @@ namespace Box2D.NET
             if (joint.enableLimit)
             {
                 float b = 0.25f * drawScale;
-                B2Vec2 lower = b2MulAdd(frameA.p, joint.lowerTranslation, axisA);
-                B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
+                B2Pos lower = b2OffsetPos(frameA.p, b2MulSV(joint.lowerTranslation, axisA));
+                B2Pos upper = b2OffsetPos(frameA.p, b2MulSV(joint.upperTranslation, axisA));
                 B2Vec2 perp = b2LeftPerp(axisA);
                 draw.DrawLineFcn(lower, upper, B2HexColor.b2_colorGray, draw.context);
-                draw.DrawLineFcn(b2MulSub(lower, b, perp), b2MulAdd(lower, b, perp), B2HexColor.b2_colorGreen, draw.context);
-                draw.DrawLineFcn(b2MulSub(upper, b, perp), b2MulAdd(upper, b, perp), B2HexColor.b2_colorRed, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(lower, b2MulSV(-b, perp)), b2OffsetPos(lower, b2MulSV(b, perp)), B2HexColor.b2_colorGreen, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(upper, b2MulSV(-b, perp)), b2OffsetPos(upper, b2MulSV(b, perp)), B2HexColor.b2_colorRed, draw.context);
             }
             else
             {
-                draw.DrawLineFcn(b2MulSub(frameA.p, 1.0f, axisA), b2MulAdd(frameA.p, 1.0f, axisA), B2HexColor.b2_colorGray, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(frameA.p, b2Neg(axisA)), b2OffsetPos(frameA.p, axisA), B2HexColor.b2_colorGray, draw.context);
             }
 
             if (joint.enableSpring)
             {
-                B2Vec2 p = b2MulAdd(frameA.p, joint.targetTranslation, axisA);
+                B2Pos p = b2OffsetPos(frameA.p, b2MulSV(joint.targetTranslation, axisA));
                 draw.DrawPointFcn(p, 8.0f, B2HexColor.b2_colorViolet, draw.context);
             }
 

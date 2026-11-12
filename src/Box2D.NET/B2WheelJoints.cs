@@ -535,14 +535,14 @@ namespace Box2D.NET
     }
 #endif
 
-        internal static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB, float drawScale)
+        internal static void b2DrawWheelJoint(B2DebugDraw draw, B2JointSim @base, in B2WorldTransform transformA, in B2WorldTransform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_wheelJoint);
 
             ref readonly B2WheelJoint joint = ref @base.uj.wheelJoint;
 
-            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
-            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
             B2Vec2 axisA = b2RotateVector(frameA.q, new B2Vec2(1.0f, 0.0f));
 
             B2HexColor c1 = B2HexColor.b2_colorGray;
@@ -555,16 +555,16 @@ namespace Box2D.NET
 
             if (joint.enableLimit)
             {
-                B2Vec2 lower = b2MulAdd(frameA.p, joint.lowerTranslation, axisA);
-                B2Vec2 upper = b2MulAdd(frameA.p, joint.upperTranslation, axisA);
+                B2Pos lower = b2OffsetPos(frameA.p, b2MulSV(joint.lowerTranslation, axisA));
+                B2Pos upper = b2OffsetPos(frameA.p, b2MulSV(joint.upperTranslation, axisA));
                 B2Vec2 perp = b2LeftPerp(axisA);
                 draw.DrawLineFcn(lower, upper, c1, draw.context);
-                draw.DrawLineFcn(b2MulSub(lower, 0.1f * drawScale, perp), b2MulAdd(lower, 0.1f * drawScale, perp), c2, draw.context);
-                draw.DrawLineFcn(b2MulSub(upper, 0.1f * drawScale, perp), b2MulAdd(upper, 0.1f * drawScale, perp), c3, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(lower, b2MulSV(-0.1f * drawScale, perp)), b2OffsetPos(lower, b2MulSV(0.1f * drawScale, perp)), c2, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(upper, b2MulSV(-0.1f * drawScale, perp)), b2OffsetPos(upper, b2MulSV(0.1f * drawScale, perp)), c3, draw.context);
             }
             else
             {
-                draw.DrawLineFcn(b2MulSub(frameA.p, 1.0f, axisA), b2MulAdd(frameA.p, 1.0f, axisA), c1, draw.context);
+                draw.DrawLineFcn(b2OffsetPos(frameA.p, b2Neg(axisA)), b2OffsetPos(frameA.p, axisA), c1, draw.context);
             }
 
             draw.DrawPointFcn(frameA.p, 5.0f, c1, draw.context);

@@ -122,7 +122,7 @@ namespace Box2D.NET
     // Third:
     // The user may call the manifold functions directly and they should be easy to use and have easy to use
     // results.
-    public delegate B2Manifold b2ManifoldFcn(B2Shape shapeA, in B2WorldTransform xfA, B2Shape shapeB, in B2WorldTransform xfB, ref B2SimplexCache cache);
+    public delegate B2LocalManifold b2ManifoldFcn(B2Shape shapeA, B2Shape shapeB, in B2Transform xf, ref B2SimplexCache cache);
 
     /// This function receives proxies found in the AABB query.
     /// @return true if the query should continue
@@ -147,30 +147,33 @@ namespace Box2D.NET
     // -----------------------------------------------------------------------------------------------------------------
 
     /// Draw a closed polygon provided in CCW order.
-    //void ( *DrawPolygon )( const B2Vec2* vertices, int vertexCount, b2HexColor color, object context );
-    public delegate void DrawPolygonFcn(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context);
+        public delegate void DrawPolygonFcn(in B2WorldTransform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context);
 
     /// Draw a solid closed polygon provided in CCW order.
-    public delegate void DrawSolidPolygonFcn(in B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context);
+    public delegate void DrawSolidPolygonFcn(in B2WorldTransform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context);
 
     /// Draw a circle.
-    public delegate void DrawCircleFcn(in B2Vec2 center, float radius, B2HexColor color, object context);
+    public delegate void DrawCircleFcn(in B2Pos center, float radius, B2HexColor color, object context);
 
     /// Draw a solid circle.
-    public delegate void DrawSolidCircleFcn(in B2Transform transform, float radius, B2HexColor color, object context);
+    public delegate void DrawSolidCircleFcn(in B2WorldTransform transform, B2Vec2 center, float radius, B2HexColor color, object context);
 
     /// Draw a solid capsule.
-    public delegate void DrawSolidCapsuleFcn(in B2Vec2 p1, in B2Vec2 p2, float radius, B2HexColor color, object context);
+    public delegate void DrawSolidCapsuleFcn(in B2Pos p1, in B2Pos p2, float radius, B2HexColor color, object context);
 
     /// Draw a line segment.
-    public delegate void DrawLineFcn(in B2Vec2 p1, in B2Vec2 p2, B2HexColor color, object context);
+    public delegate void DrawLineFcn(in B2Pos p1, in B2Pos p2, B2HexColor color, object context);
 
     /// Draw a transform. Choose your own length scale.
-    public delegate void DrawTransformFcn(in B2Transform transform, object context);
+    public delegate void DrawTransformFcn(in B2WorldTransform transform, object context);
 
     /// Draw a point.
-    public delegate void DrawPointFcn(in B2Vec2 p, float size, B2HexColor color, object context);
+    public delegate void DrawPointFcn(in B2Pos p, float size, B2HexColor color, object context);
 
     /// Draw a string in world space
-    public delegate void DrawStringFcn(in B2Vec2 p, string s, B2HexColor color, object context);
+    public delegate void DrawStringFcn(in B2Pos p, string s, B2HexColor color, object context);
+
+    /// Draw a bounding box. With double precision enabled, the single precision bounding box
+    /// gets increasing padding when moving far from the origin.
+    public delegate void DrawBoundsFcn(in B2AABB aabb, B2HexColor color, object context);
 }

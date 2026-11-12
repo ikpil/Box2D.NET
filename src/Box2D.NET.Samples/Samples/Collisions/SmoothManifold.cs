@@ -219,14 +219,16 @@ public class SmoothManifold : Sample
         }
     }
 
-    void DrawManifold(in B2Manifold manifold)
+    void DrawManifold(in B2LocalManifold manifold, in B2Transform transformA)
     {
+        B2Vec2 normal = b2RotateVector(transformA.q, manifold.normal);
+
         for (int i = 0; i < manifold.pointCount; ++i)
         {
-            ref B2ManifoldPoint mp = ref manifold.points[i];
+            ref readonly B2LocalManifoldPoint mp = ref manifold.points[i];
 
-            B2Vec2 p1 = mp.anchorA;
-            B2Vec2 p2 = b2MulAdd(p1, 0.5f, manifold.normal);
+            B2Vec2 p1 = b2TransformPoint(transformA, mp.point);
+            B2Vec2 p2 = b2MulAdd(p1, 0.5f, normal);
             DrawLine(m_draw, p1, p2, B2HexColor.b2_colorWhite);
 
             if (m_showAnchors)
@@ -282,8 +284,8 @@ public class SmoothManifold : Sample
             for (int i = 0; i < m_count; ++i)
             {
                 ref readonly B2ChainSegment segment = ref m_segments[i];
-                B2Manifold m = b2CollideChainSegmentAndCircle(segment, b2MakeWorldTransform(transform1), circle, b2MakeWorldTransform(transform2));
-                DrawManifold(m);
+                B2LocalManifold m = b2CollideChainSegmentAndCircle(segment, circle, b2InvMulTransforms(transform1, transform2));
+                DrawManifold(m, transform1);
             }
         }
         else if (m_shapeType == ShapeType.e_boxShape)
@@ -296,8 +298,8 @@ public class SmoothManifold : Sample
             {
                 ref readonly B2ChainSegment segment = ref m_segments[i];
                 B2SimplexCache cache = new B2SimplexCache();
-                B2Manifold m = b2CollideChainSegmentAndPolygon(segment, b2MakeWorldTransform(transform1), rox, b2MakeWorldTransform(transform2), ref cache);
-                DrawManifold(m);
+                B2LocalManifold m = b2CollideChainSegmentAndPolygon(segment, rox, b2InvMulTransforms(transform1, transform2), ref cache);
+                DrawManifold(m, transform1);
             }
         }
     }

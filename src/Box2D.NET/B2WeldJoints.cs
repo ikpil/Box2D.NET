@@ -488,30 +488,16 @@ namespace Box2D.NET
         }
 #endif
 
-        internal static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB, float drawScale)
+        internal static void b2DrawWeldJoint(B2DebugDraw draw, B2JointSim @base, in B2WorldTransform transformA, in B2WorldTransform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_weldJoint);
 
-            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
-            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
 
             B2Polygon box = b2MakeBox(0.25f * drawScale, 0.125f * drawScale);
-
-            B2FixedArray4<B2Vec2> points = new B2FixedArray4<B2Vec2>();
-
-            for (int i = 0; i < 4; ++i)
-            {
-                points[i] = b2TransformPoint(frameA, box.vertices[i]);
-            }
-
-            draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkOrange, draw.context);
-
-            for (int i = 0; i < 4; ++i)
-            {
-                points[i] = b2TransformPoint(frameB, box.vertices[i]);
-            }
-
-            draw.DrawPolygonFcn(points.AsSpan(), 4, B2HexColor.b2_colorDarkCyan, draw.context);
+            draw.DrawPolygonFcn(frameA, box.vertices.AsSpan(), 4, B2HexColor.b2_colorDarkOrange, draw.context);
+            draw.DrawPolygonFcn(frameB, box.vertices.AsSpan(), 4, B2HexColor.b2_colorDarkCyan, draw.context);
         }
     }
 }

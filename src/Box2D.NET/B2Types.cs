@@ -106,49 +106,54 @@ namespace Box2D.NET
             return def;
         }
 
-        public static void b2EmptyDrawPolygon(ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context)
+        public static void b2EmptyDrawPolygon(in B2WorldTransform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, B2HexColor color, object context)
         {
             B2_UNUSED((B2Vec2[])null, vertexCount, color, context);
         }
 
-        public static void b2EmptyDrawSolidPolygon(in B2Transform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidPolygon(in B2WorldTransform transform, ReadOnlySpan<B2Vec2> vertices, int vertexCount, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(transform, (B2Vec2[])null, vertexCount, radius, color, context);
         }
 
-        public static void b2EmptyDrawCircle(in B2Vec2 center, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawCircle(in B2Pos center, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(center, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCircle(in B2Transform transform, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidCircle(in B2WorldTransform transform, B2Vec2 center, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(transform, radius, color, context);
         }
 
-        public static void b2EmptyDrawSolidCapsule(in B2Vec2 p1, in B2Vec2 p2, float radius, B2HexColor color, object context)
+        public static void b2EmptyDrawSolidCapsule(in B2Pos p1, in B2Pos p2, float radius, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, radius, color, context);
         }
 
-        public static void b2EmptyDrawSegment(in B2Vec2 p1, in B2Vec2 p2, B2HexColor color, object context)
+        public static void b2EmptyDrawSegment(in B2Pos p1, in B2Pos p2, B2HexColor color, object context)
         {
             B2_UNUSED(p1, p2, color, context);
         }
 
-        public static void b2EmptyDrawTransform(in B2Transform transform, object context)
+        public static void b2EmptyDrawTransform(in B2WorldTransform transform, object context)
         {
             B2_UNUSED(transform, context);
         }
 
-        public static void b2EmptyDrawPoint(in B2Vec2 p, float size, B2HexColor color, object context)
+        public static void b2EmptyDrawPoint(in B2Pos p, float size, B2HexColor color, object context)
         {
             B2_UNUSED(p, size, color, context);
         }
 
-        public static void b2EmptyDrawString(in B2Vec2 p, string s, B2HexColor color, object context)
+        public static void b2EmptyDrawString(in B2Pos p, string s, B2HexColor color, object context)
         {
             B2_UNUSED(p, s, color, context);
+        }
+
+        public static void b2EmptyDrawBounds(in B2AABB aabb, B2HexColor color, object context)
+        {
+            B2_UNUSED(aabb, color, context);
         }
 
         /// Use this to initialize your drawing interface. This allows you to implement a sub-set
@@ -167,6 +172,7 @@ namespace Box2D.NET
             draw.DrawTransformFcn = b2EmptyDrawTransform;
             draw.DrawPointFcn = b2EmptyDrawPoint;
             draw.DrawStringFcn = b2EmptyDrawString;
+            draw.DrawBoundsFcn = b2EmptyDrawBounds;
 
             draw.drawingBounds.lowerBound = new B2Vec2(-float.MaxValue, -float.MaxValue);
             draw.drawingBounds.upperBound = new B2Vec2(float.MaxValue, float.MaxValue);

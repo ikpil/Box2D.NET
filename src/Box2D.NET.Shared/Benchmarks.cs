@@ -184,7 +184,7 @@ namespace Box2D.NET.Shared
 
             for (int i = 0; i < rowCount; ++i)
             {
-                B2Segment segment = new B2Segment(new B2Vec2(-0.5f * 2.0f * groundWidth, groundY), new B2Vec2(0.5f * 2.0f * groundWidth, groundY));
+                B2Segment segment = new B2Segment(new B2Vec2(-0.5f * groundWidth, groundY), new B2Vec2(0.5f * groundWidth, groundY));
                 b2CreateSegmentShape(groundId, shapeDef, segment);
                 groundY += groundDeltaY;
             }
@@ -196,7 +196,7 @@ namespace Box2D.NET.Shared
             {
                 for (int j = 0; j < columnCount; ++j)
                 {
-                    float centerX = -0.5f * groundWidth + j * (baseWidth + 2.0f * extent) + extent;
+                    float centerX = -0.5f * groundWidth + j * (baseWidth + 2.0f * extent) + 2.0f * extent;
                     CreateSmallPyramid(worldId, baseCount, extent, centerX, baseY);
                 }
 

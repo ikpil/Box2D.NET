@@ -1587,10 +1587,11 @@ namespace Box2D.NET
 
             B2JointSim jointSim = b2GetJointSim(world, joint);
 
-            B2Transform transformA = b2ToRelativeTransform(b2GetBodyTransformQuick(world, bodyA), draw.origin);
-            B2Transform transformB = b2ToRelativeTransform(b2GetBodyTransformQuick(world, bodyB), draw.origin);
-            B2Vec2 pA = b2TransformPoint(transformA, jointSim.localFrameA.p);
-            B2Vec2 pB = b2TransformPoint(transformB, jointSim.localFrameB.p);
+            B2WorldTransform xfA = b2GetBodyTransformQuick(world, bodyA);
+            B2WorldTransform xfB = b2GetBodyTransformQuick(world, bodyB);
+
+            B2Pos pA = b2TransformWorldPoint(xfA, jointSim.localFrameA.p);
+            B2Pos pB = b2TransformWorldPoint(xfB, jointSim.localFrameB.p);
 
             B2HexColor color = B2HexColor.b2_colorDarkSeaGreen;
 
@@ -1599,7 +1600,7 @@ namespace Box2D.NET
             switch (joint.type)
             {
                 case B2JointType.b2_distanceJoint:
-                    b2DrawDistanceJoint(draw, jointSim, transformA, transformB);
+                    b2DrawDistanceJoint(draw, jointSim, xfA, xfB);
                     break;
 
                 case B2JointType.b2_filterJoint:
@@ -1613,25 +1614,25 @@ namespace Box2D.NET
                     break;
 
                 case B2JointType.b2_prismaticJoint:
-                    b2DrawPrismaticJoint(draw, jointSim, transformA, transformB, scale);
+                    b2DrawPrismaticJoint(draw, jointSim, xfA, xfB, scale);
                     break;
 
                 case B2JointType.b2_revoluteJoint:
-                    b2DrawRevoluteJoint(draw, jointSim, transformA, transformB, scale);
+                    b2DrawRevoluteJoint(draw, jointSim, xfA, xfB, scale);
                     break;
 
                 case B2JointType.b2_weldJoint:
-                    b2DrawWeldJoint(draw, jointSim, transformA, transformB, scale);
+                    b2DrawWeldJoint(draw, jointSim, xfA, xfB, scale);
                     break;
 
                 case B2JointType.b2_wheelJoint:
-                    b2DrawWheelJoint(draw, jointSim, transformA, transformB, scale);
+                    b2DrawWheelJoint(draw, jointSim, xfA, xfB, scale);
                     break;
 
                 default:
-                    draw.DrawLineFcn(transformA.p, pA, color, draw.context);
+                    draw.DrawLineFcn(xfA.p, pA, color, draw.context);
                     draw.DrawLineFcn(pA, pB, color, draw.context);
-                    draw.DrawLineFcn(transformB.p, pB, color, draw.context);
+                    draw.DrawLineFcn(xfB.p, pB, color, draw.context);
                     break;
             }
 
@@ -1640,7 +1641,7 @@ namespace Box2D.NET
                 int colorIndex = joint.colorIndex;
                 if (colorIndex != B2_NULL_INDEX)
                 {
-                    B2Vec2 p = b2Lerp(pA, pB, 0.5f);
+                    B2Pos p = b2LerpPosition(pA, pB, 0.5f);
                     draw.DrawPointFcn(p, 5.0f, b2GetGraphColor(colorIndex), draw.context);
                 }
             }
@@ -1649,9 +1650,9 @@ namespace Box2D.NET
             {
                 B2Vec2 force = b2GetJointConstraintForce(world, joint);
                 float torque = b2GetJointConstraintTorque(world, joint);
-                B2Vec2 p = b2Lerp(pA, pB, 0.5f);
+                B2Pos p = b2LerpPosition(pA, pB, 0.5f);
 
-                draw.DrawLineFcn(p, b2MulAdd(p, 0.001f, force), B2HexColor.b2_colorAzure, draw.context);
+                draw.DrawLineFcn(p, b2OffsetPos(p, b2MulSV(0.001f, force)), B2HexColor.b2_colorAzure, draw.context);
 
                 string result = $"f = [{force.X:g}, {force.Y:g}], t = {torque:g}";
                 draw.DrawStringFcn(p, result, B2HexColor.b2_colorAzure, draw.context);

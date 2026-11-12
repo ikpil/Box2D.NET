@@ -554,33 +554,31 @@ namespace Box2D.NET
     }
 #endif
 
-        internal static void b2DrawDistanceJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB)
+        internal static void b2DrawDistanceJoint(B2DebugDraw draw, B2JointSim @base, in B2WorldTransform transformA, in B2WorldTransform transformB)
         {
             B2_ASSERT(@base.type == B2JointType.b2_distanceJoint);
 
             ref readonly B2DistanceJoint joint = ref @base.uj.distanceJoint;
 
-            B2Vec2 pA = b2TransformPoint(transformA, @base.localFrameA.p);
-            B2Vec2 pB = b2TransformPoint(transformB, @base.localFrameB.p);
+            B2Pos pA = b2TransformWorldPoint(transformA, @base.localFrameA.p);
+            B2Pos pB = b2TransformWorldPoint(transformB, @base.localFrameB.p);
 
-            B2Vec2 axis = b2Normalize(b2Sub(pB, pA));
+            B2Vec2 axis = b2Normalize(b2SubPos(pB, pA));
 
             if (joint.minLength < joint.maxLength && joint.enableLimit)
             {
-                B2Vec2 pMin = b2MulAdd(pA, joint.minLength, axis);
-                B2Vec2 pMax = b2MulAdd(pA, joint.maxLength, axis);
+                B2Pos pMin = b2OffsetPos(pA, b2MulSV(joint.minLength, axis));
+                B2Pos pMax = b2OffsetPos(pA, b2MulSV(joint.maxLength, axis));
                 B2Vec2 offset = b2MulSV(0.05f * b2GetLengthUnitsPerMeter(), b2RightPerp(axis));
 
                 if (joint.minLength > B2_LINEAR_SLOP)
                 {
-                    // draw.DrawPoint(pMin, 4.0f, c2, draw.context);
-                    draw.DrawLineFcn(b2Sub(pMin, offset), b2Add(pMin, offset), B2HexColor.b2_colorLightGreen, draw.context);
+                    draw.DrawLineFcn(b2OffsetPos(pMin, b2Neg(offset)), b2OffsetPos(pMin, offset), B2HexColor.b2_colorLightGreen, draw.context);
                 }
 
                 if (joint.maxLength < B2_HUGE)
                 {
-                    // draw.DrawPoint(pMax, 4.0f, c3, draw.context);
-                    draw.DrawLineFcn(b2Sub(pMax, offset), b2Add(pMax, offset), B2HexColor.b2_colorRed, draw.context);
+                    draw.DrawLineFcn(b2OffsetPos(pMax, b2Neg(offset)), b2OffsetPos(pMax, offset), B2HexColor.b2_colorRed, draw.context);
                 }
 
                 if (joint.minLength > B2_LINEAR_SLOP && joint.maxLength < B2_HUGE)
@@ -595,7 +593,7 @@ namespace Box2D.NET
 
             if (joint.hertz > 0.0f && joint.enableSpring)
             {
-                B2Vec2 pRest = b2MulAdd(pA, joint.length, axis);
+                B2Pos pRest = b2OffsetPos(pA, b2MulSV(joint.length, axis));
                 draw.DrawPointFcn(pRest, 4.0f, B2HexColor.b2_colorBlue, draw.context);
             }
         }

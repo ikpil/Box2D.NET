@@ -512,30 +512,30 @@ namespace Box2D.NET
     }
 #endif
 
-        internal static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, in B2Transform transformA, in B2Transform transformB, float drawScale)
+        internal static void b2DrawRevoluteJoint(B2DebugDraw draw, B2JointSim @base, in B2WorldTransform transformA, in B2WorldTransform transformB, float drawScale)
         {
             B2_ASSERT(@base.type == B2JointType.b2_revoluteJoint);
 
             ref readonly B2RevoluteJoint joint = ref @base.uj.revoluteJoint;
 
-            B2Transform frameA = b2MulTransforms(transformA, @base.localFrameA);
-            B2Transform frameB = b2MulTransforms(transformB, @base.localFrameB);
+            B2WorldTransform frameA = b2OffsetWorldTransform(transformA, @base.localFrameA);
+            B2WorldTransform frameB = b2OffsetWorldTransform(transformB, @base.localFrameB);
 
             float radius = 0.25f * drawScale;
             draw.DrawCircleFcn(frameB.p, radius, B2HexColor.b2_colorGray, draw.context);
 
             B2Vec2 rx = new B2Vec2(radius, 0.0f);
             B2Vec2 r = b2RotateVector(frameA.q, rx);
-            draw.DrawLineFcn(frameA.p, b2Add(frameA.p, r), B2HexColor.b2_colorGray, draw.context);
+            draw.DrawLineFcn(frameA.p, b2OffsetPos(frameA.p, r), B2HexColor.b2_colorGray, draw.context);
 
             r = b2RotateVector(frameB.q, rx);
-            draw.DrawLineFcn(frameB.p, b2Add(frameB.p, r), B2HexColor.b2_colorBlue, draw.context);
+            draw.DrawLineFcn(frameB.p, b2OffsetPos(frameB.p, r), B2HexColor.b2_colorBlue, draw.context);
 
             if (draw.drawJointExtras)
             {
                 float jointAngle = b2RelativeAngle(frameA.q, frameB.q);
                 string buffer = $"{(180.0f * jointAngle / B2_PI):F1} deg";
-                draw.DrawStringFcn(b2Add(frameA.p, r), buffer, B2HexColor.b2_colorWhite, draw.context);
+                draw.DrawStringFcn(b2OffsetPos(frameA.p, r), buffer, B2HexColor.b2_colorWhite, draw.context);
             }
 
             float lowerAngle = joint.lowerAngle;
@@ -549,15 +549,15 @@ namespace Box2D.NET
                 B2Rot rotHi = b2MulRot(frameA.q, b2MakeRot(upperAngle));
                 B2Vec2 rhi = b2RotateVector(rotHi, rx);
 
-                draw.DrawLineFcn(frameB.p, b2Add(frameB.p, rlo), B2HexColor.b2_colorGreen, draw.context);
-                draw.DrawLineFcn(frameB.p, b2Add(frameB.p, rhi), B2HexColor.b2_colorRed, draw.context);
+                draw.DrawLineFcn(frameB.p, b2OffsetPos(frameB.p, rlo), B2HexColor.b2_colorGreen, draw.context);
+                draw.DrawLineFcn(frameB.p, b2OffsetPos(frameB.p, rhi), B2HexColor.b2_colorRed, draw.context);
             }
 
             if (joint.enableSpring)
             {
                 B2Rot q = b2MulRot(frameA.q, b2MakeRot(joint.targetAngle));
                 B2Vec2 v = b2RotateVector(q, rx);
-                draw.DrawLineFcn(frameB.p, b2Add(frameB.p, v), B2HexColor.b2_colorViolet, draw.context);
+                draw.DrawLineFcn(frameB.p, b2OffsetPos(frameB.p, v), B2HexColor.b2_colorViolet, draw.context);
             }
 
             B2HexColor color = B2HexColor.b2_colorGold;

@@ -758,10 +758,7 @@ namespace Box2D.NET
         /// Create a proxy. Provide an AABB and a userData value.
         public static int b2DynamicTree_CreateProxy(B2DynamicTree tree, in B2AABB aabb, ulong categoryBits, ulong userData)
         {
-            B2_ASSERT(-B2_HUGE < aabb.lowerBound.X && aabb.lowerBound.X < B2_HUGE);
-            B2_ASSERT(-B2_HUGE < aabb.lowerBound.Y && aabb.lowerBound.Y < B2_HUGE);
-            B2_ASSERT(-B2_HUGE < aabb.upperBound.X && aabb.upperBound.X < B2_HUGE);
-            B2_ASSERT(-B2_HUGE < aabb.upperBound.Y && aabb.upperBound.Y < B2_HUGE);
+            B2_VALIDATE(b2IsValidAABB(aabb));
 
             int proxyId = b2AllocateNode(tree);
             ref B2TreeNode node = ref tree.nodes[proxyId];

@@ -5,7 +5,9 @@
 namespace Box2D.NET
 {
     /// This struct holds callbacks you can implement to draw a Box2D world.
-    /// This structure should be zero initialized.
+    /// Callbacks receive world coordinates. In large world mode the translation is double precision so
+    /// it stays accurate far from the origin. Shift into your own camera frame inside the callbacks.
+    /// Initialize with b2DefaultDebugDraw.
     /// @ingroup world
     public struct B2DebugDraw
     {
@@ -18,6 +20,7 @@ namespace Box2D.NET
         public DrawTransformFcn DrawTransformFcn;
         public DrawPointFcn DrawPointFcn;
         public DrawStringFcn DrawStringFcn;
+        public DrawBoundsFcn DrawBoundsFcn;
         
         /// World bounds to use for debug draw
         public B2AABB drawingBounds;
@@ -72,11 +75,6 @@ namespace Box2D.NET
 
         /// Option to draw islands as bounding boxes
         public bool drawIslands;
-
-        /// World point that drawn coordinates are relative to. In large world mode set this to the
-        /// camera position each frame so callbacks receive float coordinates near the origin. Defaults
-        /// to zero, which is bit identical to passing world coordinates directly.
-        public B2Pos origin;
 
         /// User context that is passed as an argument to drawing callback functions
         public object context;

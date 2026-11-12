@@ -57,8 +57,8 @@ namespace Box2D.NET
             // Radius not handled
             B2CastOutput output = new B2CastOutput();
 
-            float tmin = -float.MaxValue;
-            float tmax = float.MaxValue;
+            float tMin = -float.MaxValue;
+            float tMax = float.MaxValue;
 
             B2Vec2 p = p1;
             B2Vec2 d = b2Sub(p2, p1);
@@ -91,17 +91,17 @@ namespace Box2D.NET
                 }
 
                 // Push the min up
-                if (t1 > tmin)
+                if (t1 > tMin)
                 {
                     normal.Y = 0.0f;
                     normal.X = s;
-                    tmin = t1;
+                    tMin = t1;
                 }
 
                 // Pull the max down
-                tmax = b2MinFloat(tmax, t2);
+                tMax = b2MinFloat(tMax, t2);
 
-                if (tmin > tmax)
+                if (tMin > tMax)
                 {
                     return output;
                 }
@@ -132,38 +132,38 @@ namespace Box2D.NET
                 }
 
                 // Push the min up
-                if (t1 > tmin)
+                if (t1 > tMin)
                 {
                     normal.X = 0.0f;
                     normal.Y = s;
-                    tmin = t1;
+                    tMin = t1;
                 }
 
                 // Pull the max down
-                tmax = b2MinFloat(tmax, t2);
+                tMax = b2MinFloat(tMax, t2);
 
-                if (tmin > tmax)
+                if (tMin > tMax)
                 {
                     return output;
                 }
             }
 
             // Does the ray start inside the box?
-            if ( tmin < 0.0f )
+            if ( tMin < 0.0f )
             {
                 return output;
             }
 
             // Does the ray intersect beyond the segment length?
-            if ( 1.0f < tmin )
+            if ( 1.0f < tMin )
             {
                 return output;
             }
             
             // Intersection.
-            output.fraction = tmin;
+            output.fraction = tMin;
             output.normal = normal;
-            output.point = b2Lerp(p1, p2, tmin);
+            output.point = b2Lerp(p1, p2, tMin);
             output.hit = true;
             return output;
         }

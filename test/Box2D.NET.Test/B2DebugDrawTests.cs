@@ -88,9 +88,9 @@ public class B2DebugDrawTests
         }));
     }
 
-    private static void CapturePoint(in B2Vec2 point, float size, B2HexColor color, object context)
+    private static void CapturePoint(in B2Pos point, float size, B2HexColor color, object context)
     {
-        ((PointCapture)context).Points.Add(point);
+        ((PointCapture)context).Points.Add(b2ToVec2(point));
     }
 
     private static bool AnyPointDiffers(B2Vec2[] pointsA, B2Vec2[] pointsB)

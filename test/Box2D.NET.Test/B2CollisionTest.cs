@@ -213,7 +213,7 @@ public class B2CollisionTest
 
         B2WorldTransform xfAo = b2WorldTransform_identity;
         B2WorldTransform xfBo = new B2WorldTransform(b2OffsetPos(b2Pos_zero, sep), b2Rot_identity);
-        B2Manifold mOrigin = b2CollidePolygons(boxA, xfAo, boxB, xfBo);
+        B2LocalManifold mOrigin = b2CollidePolygons(boxA, boxB, b2InvMulWorldTransforms(xfAo, xfBo));
 
         Assert.That(mOrigin.pointCount, Is.EqualTo(2));
         Assert.That(MathF.Abs(mOrigin.points[0].separation + 0.1f), Is.LessThanOrEqualTo(0.01f));
